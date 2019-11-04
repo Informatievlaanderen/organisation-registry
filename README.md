@@ -66,9 +66,9 @@ Content-Type: "application/json"
 
 ```json
 {
-  'type': 'rebuildProjection',
-  'params': [
-    'OrganisationRegistry.SqlServer.Organisation.ActiveOrganisationFormalFrameworkListView'
+  "type": "rebuildProjection",
+  "params": [
+    "OrganisationRegistry.SqlServer.Organisation.ActiveOrganisationFormalFrameworkListView"
   ]
 }
 ```
@@ -77,9 +77,9 @@ Content-Type: "application/json"
 
 ```json
 {
-  'type': 'compensatingAction',
-  'params': [
-    '2017-05-18-fix-bodies'
+  "type": "compensatingAction",
+  "params": [
+    "2017-05-18-fix-bodies"
   ]
 }
 ```
@@ -88,7 +88,7 @@ Content-Type: "application/json"
 
 ```json
 {
-  'type': 'checkIfDayHasPassed'
+  "type": "checkIfDayHasPassed"
 }
 ```
 
