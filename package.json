@@ -1,0 +1,300 @@
+{
+  "name": "organisation-registry",
+  "version": "2.15.3",
+  "description": "Authentic organisation registry.",
+  "author": "Basisregisters Vlaanderen",
+  "license": "EUPL-1.2",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:informatievlaanderen/organisation-registry.git"
+  },
+  "scripts": {
+    "ngc": "ngc -p ./tsconfig.aot.json",
+    "setheap": "npm install increase-memory-limit && increase-memory-limit",
+    "build:dev": "webpack --config config/webpack.dev.js --progress --profile",
+    "build:prod": "npm run setheap && npm run ngc && webpack --config config/webpack.prod.js  --progress --profile --bail",
+    "build": "npm run build:dev",
+    "ci": "npm run lint && npm test && npm run e2e",
+    "clean:dist": "npm run rimraf -- src/OrganisationRegistry.UI/dist",
+    "clean:install": "npm set progress=false && npm install",
+    "clean:start": "npm start",
+    "clean": "npm cache clean && npm run rimraf -- node_modules doc coverage src/OrganisationRegistry.UI/dist",
+    "docs": "npm run typedoc -- --options typedoc.json --exclude '**/*.spec.ts' ./src/OrganisationRegistry.UI/",
+    "e2e:live": "npm run e2e -- --elementExplorer",
+    "e2e": "npm run protractor",
+    "github-deploy:dev": "webpack --config config/webpack.github-deploy.js --progress --profile --github-dev",
+    "github-deploy:prod": "webpack --config config/webpack.github-deploy.js --progress --profile --github-prod",
+    "github-deploy": "npm run github-deploy:dev",
+    "lint": "npm run tslint \"src/OrganisationRegistry.UI/**/*.ts\"",
+    "postversion": "git push && git push --tags",
+    "prebuild:dev": "npm run clean:dist",
+    "prebuild:prod": "npm run clean:dist",
+    "preclean:install": "npm run clean",
+    "preclean:start": "npm run clean",
+    "pree2e": "npm run webdriver:update -- --standalone",
+    "preversion": "npm test",
+    "protractor": "protractor",
+    "rimraf": "rimraf",
+    "server:dev:hmr": "npm run server:dev -- --inline --hot",
+    "server:dev": "webpack-dev-server --config config/webpack.dev.js --progress --profile --watch --content-base src/OrganisationRegistry.UI/",
+    "server:prod": "http-server src/OrganisationRegistry.UI/dist --cors",
+    "server": "npm run server:dev",
+    "start:hmr": "npm run server:dev:hmr",
+    "start": "npm run server:dev",
+    "test": "karma start",
+    "tslint": "tslint",
+    "typedoc": "typedoc",
+    "version": "npm run build",
+    "watch:dev:hmr": "npm run watch:dev -- --hot",
+    "watch:dev": "npm run build:dev -- --watch",
+    "watch:prod": "npm run build:prod -- --watch",
+    "watch:test": "npm run test -- --auto-watch --no-single-run",
+    "watch": "npm run watch:dev",
+    "webdriver-manager": "webdriver-manager",
+    "webdriver:start": "npm run webdriver-manager start",
+    "webdriver:update": "npm run webdriver-manager update",
+    "webpack-dev-server": "webpack-dev-server",
+    "webpack": "webpack",
+    "commit": "git-cz",
+    "semantic-release": "semantic-release"
+  },
+  "dependencies": {
+    "@angular/common": "2.4.0",
+    "@angular/compiler": "2.4.0",
+    "@angular/compiler-cli": "2.4.0",
+    "@angular/core": "2.4.0",
+    "@angular/forms": "2.4.0",
+    "@angular/http": "2.4.0",
+    "@angular/platform-browser": "2.4.0",
+    "@angular/platform-browser-dynamic": "2.4.0",
+    "@angular/platform-server": "2.4.0",
+    "@angular/router": "3.4.0",
+    "@angular/tsc-wrapped": "0.4.0",
+    "@angularclass/conventions-loader": "1.0.13",
+    "@angularclass/hmr": "1.2.2",
+    "@angularclass/hmr-loader": "3.0.2",
+    "@angularclass/request-idle-callback": "1.0.7",
+    "@angularclass/webpack-toolkit": "1.3.3",
+    "angular2-uuid": "1.1.0",
+    "assets-webpack-plugin": "3.5.0",
+    "core-js": "2.4.1",
+    "file-saver": "1.3.3",
+    "http-server": "0.9.0",
+    "ibantools": "^1.5.0",
+    "ie-shim": "0.1.0",
+    "jwt-decode": "^2.2.0",
+    "moment": "2.16.0",
+    "oidc-client": "^1.8.2",
+    "rxjs": "5.0.1",
+    "zone.js": "0.7.4"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "8.1.0",
+    "@commitlint/config-conventional": "8.1.0",
+    "@commitlint/prompt": "8.1.0",
+    "@ngtools/webpack": "1.1.9",
+    "@semantic-release/changelog": "3.0.4",
+    "@semantic-release/commit-analyzer": "6.3.0",
+    "@semantic-release/exec": "3.3.6",
+    "@semantic-release/git": "7.0.16",
+    "@semantic-release/github": "5.4.3",
+    "@semantic-release/npm": "5.1.15",
+    "@semantic-release/release-notes-generator": "7.3.0",
+    "@types/hammerjs": "2.0.33",
+    "@types/jasmine": "2.5.38",
+    "@types/node": "6.0.48",
+    "@types/selenium-webdriver": "2.53.35",
+    "@types/source-map": "0.5.0",
+    "@types/uglify-js": "2.6.28",
+    "@types/webpack": "2.0.0",
+    "angular2-router-loader": "0.3.4",
+    "angular2-template-loader": "0.6.0",
+    "awesome-typescript-loader": "2.2.4",
+    "codelyzer": "~0.0.28",
+    "compression-webpack-plugin": "0.3.2",
+    "commitizen": "4.0.3",
+    "cz-conventional-changelog": "3.0.2",
+    "copy-webpack-plugin": "4.0.1",
+    "css-loader": "0.25.0",
+    "exports-loader": "0.6.3",
+    "expose-loader": "0.7.1",
+    "extract-text-webpack-plugin": "2.0.0-beta.4",
+    "file-loader": "0.9.0",
+    "gh-pages": "0.11.0",
+    "html-webpack-plugin": "2.24.1",
+    "imports-loader": "0.6.5",
+    "istanbul-instrumenter-loader": "1.0.0",
+    "json-loader": "0.5.4",
+    "karma": "1.3.0",
+    "karma-chrome-launcher": "2.0.0",
+    "karma-coverage": "1.1.1",
+    "karma-jasmine": "1.0.2",
+    "karma-mocha-reporter": "2.2.0",
+    "karma-phantomjs-launcher": "1.0.2",
+    "karma-remap-coverage": "0.1.2",
+    "karma-sourcemap-loader": "0.3.7",
+    "karma-webpack": "1.8.0",
+    "parse5": "2.2.3",
+    "phantomjs": "2.1.7",
+    "protractor": "4.0.11",
+    "raw-loader": "0.5.1",
+    "rimraf": "2.5.4",
+    "source-map-loader": "0.1.5",
+    "string-replace-loader": "1.0.5",
+    "style-loader": "0.13.1",
+    "to-string-loader": "1.1.5",
+    "ts-helpers": "1.1.2",
+    "ts-node": "1.7.0",
+    "tslint": "3.15.1",
+    "tslint-loader": "2.1.5",
+    "typedoc": "0.5.1",
+    "typescript": "2.0.10",
+    "url-loader": "0.5.7",
+    "webpack": "2.1.0-beta.22",
+    "webpack-dev-middleware": "1.8.4",
+    "webpack-dev-server": "2.1.0-beta.9",
+    "webpack-md5-hash": "0.0.5",
+    "webpack-merge": "0.16.0",
+    "form-data": "2.5.0",
+    "husky": "3.0.4",
+    "merge": "1.2.1",
+    "semantic-release": "15.13.23",
+    "lodash": "4.17.15"
+  },
+  "engines": {
+    "node": ">= 4.2.1",
+    "npm": ">= 3"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "release": {
+    "branch": "master",
+    "verifyConditions": [
+      "@semantic-release/changelog",
+      "@semantic-release/git",
+      "@semantic-release/github"
+    ],
+    "analyzeCommits": {
+      "path": "@semantic-release/commit-analyzer",
+      "preset": "angular",
+      "releaseRules": [
+        {
+          "breaking": true,
+          "release": "major"
+        },
+        {
+          "type": "docs",
+          "scope": "README",
+          "release": "patch"
+        },
+        {
+          "type": "refactor",
+          "release": "patch"
+        },
+        {
+          "type": "chore",
+          "scope": "breaking",
+          "release": "major"
+        }
+      ],
+      "parserOpts": {
+        "noteKeywords": [
+          "BREAKING CHANGE",
+          "BREAKING CHANGES",
+          "BREAKING"
+        ]
+      }
+    },
+    "generateNotes": {
+      "path": "@semantic-release/release-notes-generator",
+      "preset": "angular",
+      "parserOpts": {
+        "noteKeywords": [
+          "BREAKING CHANGE",
+          "BREAKING CHANGES",
+          "BREAKING"
+        ]
+      },
+      "writerOpts": {
+        "commitsSort": [
+          "scope",
+          "subject"
+        ]
+      }
+    },
+    "prepare": [
+      {
+        "path": "@semantic-release/changelog",
+        "changelogFile": "CHANGELOG.md"
+      },
+      {
+        "path": "@semantic-release/npm",
+        "npmPublish": false
+      },
+      {
+        "path": "@semantic-release/exec",
+        "cmd": "mkdir -p workspace"
+      },
+      {
+        "path": "@semantic-release/exec",
+        "cmd": "echo ${nextRelease.version} > workspace/semver"
+      },
+      {
+        "path": "@semantic-release/exec",
+        "cmd": "BITBUCKET_BUILD_NUMBER=${nextRelease.version} ./build.sh Push"
+      },
+      {
+        "path": "@semantic-release/git",
+        "assets": [
+          "CHANGELOG.md",
+          "package.json",
+          "package-lock.json"
+        ],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }
+    ],
+    "publish": [
+      {
+        "path": "@semantic-release/github",
+        "assets": [
+          {
+            "path": "dist/**/*.nupkg"
+          }
+        ]
+      },
+      {
+        "path": "@semantic-release/exec",
+        "cmd": "node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/Be.Vlaanderen.Basisregisters.OrganisationRegistry.Api.Legacy.${nextRelease.version}.nupkg"
+      },
+      {
+        "path": "@semantic-release/exec",
+        "cmd": "node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/Be.Vlaanderen.Basisregisters.OrganisationRegistry.Projector.${nextRelease.version}.nupkg"
+      },
+      {
+        "path": "@semantic-release/exec",
+        "cmd": "./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh"
+      },
+      {
+        "path": "@semantic-release/exec",
+        "cmd": "JIRA_VERSION=${nextRelease.version} JIRA_PREFIX=Organisation JIRA_PROJECT=WEGWIJS ./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-jira.sh"
+      }
+    ],
+    "success": [
+      "@semantic-release/github"
+    ],
+    "fail": false
+  }
+}
