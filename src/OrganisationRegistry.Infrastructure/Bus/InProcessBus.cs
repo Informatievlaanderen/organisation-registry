@@ -25,7 +25,7 @@ namespace OrganisationRegistry.Infrastructure.Bus
 
         public void RegisterEventHandler<T>(Action<DbConnection, DbTransaction, IEnvelope<T>> handler) where T : IEvent<T>
         {
-            if (!_eventRoutes.TryGetValue(typeof(T), out List<Action<DbConnection, DbTransaction, IMessage>> handlers))
+            if (!_eventRoutes.TryGetValue(typeof(T), out var handlers))
             {
                 handlers = new List<Action<DbConnection, DbTransaction, IMessage>>();
                 _eventRoutes.Add(typeof(T), handlers);

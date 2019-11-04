@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Infrastructure.Configuration
+namespace OrganisationRegistry.Infrastructure.Configuration
 {
     using System;
     using Infrastructure.Json;
@@ -15,12 +15,10 @@
         public string EventStoreAdministrationConnectionString { get; set; }
 
         public InfrastructureConfiguration Obfuscate()
-        {
-            return new InfrastructureConfiguration
+            => new InfrastructureConfiguration
             {
                 EventStoreConnectionString = Obfuscator.ObfuscateConnectionString(EventStoreConnectionString),
                 EventStoreAdministrationConnectionString = Obfuscator.ObfuscateConnectionString(EventStoreAdministrationConnectionString),
             };
-        }
     }
 }

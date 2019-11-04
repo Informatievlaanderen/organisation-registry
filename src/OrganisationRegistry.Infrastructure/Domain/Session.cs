@@ -11,7 +11,9 @@ namespace OrganisationRegistry.Infrastructure.Domain
         private readonly IRepository _repository;
         private readonly Dictionary<Guid, AggregateDescriptor> _trackedAggregates;
 
-        public Session(ILogger<Session> logger, IRepository repository)
+        public Session(
+            ILogger<Session> logger,
+            IRepository repository)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _trackedAggregates = new Dictionary<Guid, AggregateDescriptor>();

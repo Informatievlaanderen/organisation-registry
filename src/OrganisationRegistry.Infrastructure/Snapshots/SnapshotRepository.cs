@@ -14,7 +14,11 @@ namespace OrganisationRegistry.Infrastructure.Snapshots
         private readonly IRepository _repository;
         private readonly IEventStore _eventStore;
 
-        public SnapshotRepository(ISnapshotStore snapshotStore, ISnapshotStrategy snapshotStrategy, IRepository repository, IEventStore eventStore)
+        public SnapshotRepository(
+            ISnapshotStore snapshotStore,
+            ISnapshotStrategy snapshotStrategy,
+            IRepository repository,
+            IEventStore eventStore)
         {
             _snapshotStore = snapshotStore ?? throw new ArgumentNullException(nameof(snapshotStore));
             _snapshotStrategy = snapshotStrategy ?? throw new ArgumentNullException(nameof(snapshotStrategy));

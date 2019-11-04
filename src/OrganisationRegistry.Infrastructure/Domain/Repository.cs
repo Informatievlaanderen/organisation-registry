@@ -12,7 +12,9 @@ namespace OrganisationRegistry.Infrastructure.Domain
     {
         private readonly IEventStore _eventStore;
 
-        public Repository(ILogger<Repository> logger, IEventStore eventStore)
+        public Repository(
+            ILogger<Repository> logger,
+            IEventStore eventStore)
         {
             _eventStore = eventStore ?? throw new ArgumentNullException(nameof(eventStore));
 

@@ -42,6 +42,7 @@ namespace OrganisationRegistry.Infrastructure.Events
             string userId)
         {
             Id = id;
+
             Version = version;
             Name = name;
             Timestamp = timestamp;

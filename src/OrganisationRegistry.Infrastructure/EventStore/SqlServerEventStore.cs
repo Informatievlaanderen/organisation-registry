@@ -12,61 +12,9 @@ namespace OrganisationRegistry.Infrastructure.EventStore
     using System.Security.Claims;
     using AppSpecific;
     using Configuration;
-    using Messages;
     using Microsoft.Extensions.Options;
 
-    public class EventData
-    {
-        public Guid Id { get; private set; }
-        public int Number { get; private set; }
-        public int Version { get; private set; }
-        public string Name { get; private set; }
-        public DateTimeOffset Timestamp { get; private set; }
-        public string Data { get; private set; }
-        public string Ip { get; private set; }
-        public string LastName { get; private set; }
-        public string FirstName { get; private set; }
-        public string UserId { get; private set; }
-
-        public EventData WithName(string name)
-        {
-            return new EventData
-            {
-                Id = Id,
-                Number = Number,
-                Version = Version,
-                Name = name,
-                Timestamp = Timestamp,
-                Data = Data,
-                Ip = Ip,
-                LastName = LastName,
-                FirstName = FirstName,
-                UserId = UserId
-            };
-        }
-    }
-
-    public class Rollback : IEvent<Rollback>
-    {
-        protected Guid Id { get; set; }
-
-        public int Version { get; set; }
-
-        public DateTimeOffset Timestamp { get; set; }
-
-        Guid IMessage.Id
-        {
-            get => Id;
-            set => Id = value;
-        }
-
-        public List<IEvent> Events { get; }
-
-        public Rollback(IEnumerable<IEvent> events)
-        {
-            Events = events.ToList();
-        }
-    }
+    // TODO: We probably need to upgrade namespaces from Wegwijs to OrganisationRegistry and double check ExcludedEventTypes!
 
     // Scoped as SingleInstance()
     public class SqlServerEventStore : IEventStore

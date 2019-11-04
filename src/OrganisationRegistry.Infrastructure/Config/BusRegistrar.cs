@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Infrastructure.Config
+namespace OrganisationRegistry.Infrastructure.Config
 {
     using System;
     using System.Collections.Generic;
@@ -28,26 +28,26 @@
             _logger.LogTrace("Creating BusRegistrar.");
         }
 
-        public void RegisterCommandHandlersFromAssembly(params Type[] typesFromAssemblyContainingCommandHandlers) =>
-            RegisterHandlersFromAssembly(RegisterCommandHandlers, typesFromAssemblyContainingCommandHandlers);
+        public void RegisterCommandHandlersFromAssembly(params Type[] typesFromAssemblyContainingCommandHandlers)
+            => RegisterHandlersFromAssembly(RegisterCommandHandlers, typesFromAssemblyContainingCommandHandlers);
 
-        public void RegisterCommandHandlers(params Type[] commandHandlerTypes) =>
-            RegisterHandlers(typeof(ICommandHandler<>), InvokeCommandHandler, commandHandlerTypes);
+        public void RegisterCommandHandlers(params Type[] commandHandlerTypes)
+            => RegisterHandlers(typeof(ICommandHandler<>), InvokeCommandHandler, commandHandlerTypes);
 
-        public void RegisterEventHandlersFromAssembly(params Type[] typesFromAssemblyContainingEventHandlers) =>
-            RegisterHandlersFromAssembly(RegisterEventHandlers, typesFromAssemblyContainingEventHandlers);
+        public void RegisterEventHandlersFromAssembly(params Type[] typesFromAssemblyContainingEventHandlers)
+            => RegisterHandlersFromAssembly(RegisterEventHandlers, typesFromAssemblyContainingEventHandlers);
 
-        public void RegisterEventHandlers(params Type[] eventHandlerTypes) =>
-            RegisterHandlers(typeof(IEventHandler<>), InvokeEventHandler, eventHandlerTypes);
+        public void RegisterEventHandlers(params Type[] eventHandlerTypes)
+            => RegisterHandlers(typeof(IEventHandler<>), InvokeEventHandler, eventHandlerTypes);
 
-        public void RegisterReactionHandlersFromAssembly(params Type[] typesFromAssemblyContainingReactionHandlers) =>
-            RegisterHandlersFromAssembly(RegisterReactionHandlers, typesFromAssemblyContainingReactionHandlers);
+        public void RegisterReactionHandlersFromAssembly(params Type[] typesFromAssemblyContainingReactionHandlers)
+            => RegisterHandlersFromAssembly(RegisterReactionHandlers, typesFromAssemblyContainingReactionHandlers);
 
-        public void RegisterReactionHandlers(params Type[] reactionHandlerTypes) =>
-            RegisterHandlers(typeof(IReactionHandler<>), InvokeReactionHandler, reactionHandlerTypes);
+        public void RegisterReactionHandlers(params Type[] reactionHandlerTypes)
+            => RegisterHandlers(typeof(IReactionHandler<>), InvokeReactionHandler, reactionHandlerTypes);
 
-        private void InvokeCommandHandler(Type @interface, Type executorType) =>
-            InvokeHandler(
+        private void InvokeCommandHandler(Type @interface, Type executorType)
+            => InvokeHandler(
                 @interface,
                 executorType,
                 nameof(IHandlerRegistrar.RegisterCommandHandler),
@@ -62,8 +62,8 @@
                     LoggerExtensions.LogTrace(_logger, "Finished executing inner command handler for {CommandName} - {@Command}.", x.GetType(), x);
                 }));
 
-        private void InvokeEventHandler(Type @interface, Type executorType) =>
-            InvokeHandler(
+        private void InvokeEventHandler(Type @interface, Type executorType)
+            => InvokeHandler(
                 @interface,
                 executorType,
                 nameof(IHandlerRegistrar.RegisterEventHandler),
@@ -78,8 +78,8 @@
                     LoggerExtensions.LogTrace(_logger, "Finished executing inner event handler for {EventName} - {@Event}.", envelope.GetType(), envelope);
                 }));
 
-        private void InvokeReactionHandler(Type @interface, Type executorType) =>
-            InvokeHandler(
+        private void InvokeReactionHandler(Type @interface, Type executorType)
+            => InvokeHandler(
                 @interface,
                 executorType,
                 nameof(IHandlerRegistrar.RegisterReaction),
@@ -97,11 +97,9 @@
                 }));
 
         private static void RegisterHandlersFromAssembly(Action<Type[]> registerHandlersAction, params Type[] typesFromAssemblyContainingHandlers)
-        {
-            typesFromAssemblyContainingHandlers
+            => typesFromAssemblyContainingHandlers
                 .ToList()
                 .ForEach(typesFromAssemblyContainingMessage => registerHandlersAction(typesFromAssemblyContainingMessage.GetTypeInfo().Assembly.GetTypes()));
-        }
 
         private static void RegisterHandlers(Type handlerInterfaceType, Action<Type, Type> invokeHandlerAction, params Type[] reactionHandlerTypes)
         {
@@ -116,13 +114,11 @@
         }
 
         private static IEnumerable<Type> ResolveHandlerInterface(Type type, Type handlerInterfaceType)
-        {
-            return type
+            => type
                 .GetInterfaces()
                 .Where(i =>
                     i.GetTypeInfo().IsGenericType &&
                     i.GetGenericTypeDefinition() == handlerInterfaceType);
-        }
 
         private void InvokeHandler(Type @interface, Type executorType, string registerHandlerName, object handlerInvokerDelegate)
         {

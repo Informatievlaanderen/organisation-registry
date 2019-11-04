@@ -1,13 +1,11 @@
-﻿namespace OrganisationRegistry.Infrastructure.Events
+namespace OrganisationRegistry.Infrastructure.Events
 {
     using System;
     using Infrastructure.Json;
     using Messages;
     using Newtonsoft.Json;
 
-    public interface IEvent<in T> : IEvent
-    {
-    }
+    public interface IEvent<in T> : IEvent { }
 
     public interface IEvent : IMessage
     {

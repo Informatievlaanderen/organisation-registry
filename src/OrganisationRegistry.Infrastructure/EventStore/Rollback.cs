@@ -1,12 +1,12 @@
-namespace OrganisationRegistry.Infrastructure.AppSpecific
+namespace OrganisationRegistry.Infrastructure.EventStore
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Events;
     using Messages;
-    using System.Linq;
 
-    public class ResetMemoryCache : IEvent<ResetMemoryCache>
+    public class Rollback : IEvent<Rollback>
     {
         protected Guid Id { get; set; }
 
@@ -22,7 +22,7 @@ namespace OrganisationRegistry.Infrastructure.AppSpecific
 
         public List<IEvent> Events { get; }
 
-        public ResetMemoryCache(IEnumerable<IEvent> events)
+        public Rollback(IEnumerable<IEvent> events)
             => Events = events.ToList();
     }
 }
