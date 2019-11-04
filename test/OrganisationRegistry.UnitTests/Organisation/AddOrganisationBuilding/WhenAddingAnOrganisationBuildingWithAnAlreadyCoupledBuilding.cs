@@ -1,0 +1,78 @@
+namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
+{
+    using System;
+    using System.Collections.Generic;
+    using Building;
+    using Building.Events;
+    using FluentAssertions;
+    using Infrastructure.Tests.Extensions.TestHelpers;
+    using Microsoft.Extensions.Logging;
+    using Moq;
+    using Tests.Shared;
+    using OrganisationRegistry.Infrastructure.Events;
+    using OrganisationRegistry.Organisation;
+    using OrganisationRegistry.Organisation.Commands;
+    using OrganisationRegistry.Organisation.Events;
+    using Xunit;
+    using Xunit.Abstractions;
+
+    public class WhenAddingTheSameBuildingTwice: ExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationBuilding>
+    {
+        private Guid _organisationId;
+        private Guid _buildingId;
+        private Guid _organisationBuildingId;
+        private bool _isMainBuilding;
+        private DateTime _validTo;
+        private DateTime _validFrom;
+
+        protected override OrganisationCommandHandlers BuildHandler()
+        {
+            return new OrganisationCommandHandlers(
+                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+                Session,
+                new SequentialOvoNumberGenerator(),
+                null,
+                new DateTimeProvider(),
+                Mock.Of<IOrganisationRegistryConfiguration>());
+        }
+
+        protected override IEnumerable<IEvent> Given()
+        {
+            _organisationId = Guid.NewGuid();
+            _buildingId = Guid.NewGuid();
+            _organisationBuildingId = Guid.NewGuid();
+            _isMainBuilding = true;
+            _validFrom = DateTime.Now.AddDays(1);
+            _validTo = DateTime.Now.AddDays(2);
+
+            return new List<IEvent>
+            {
+                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", "Kindjes en gezinnetjes", new List<Purpose>(),false, null, null),
+                new BuildingCreated(_buildingId, "Gebouw A", 1234),
+                new OrganisationBuildingAdded(_organisationId, _organisationBuildingId, _buildingId, "Gebouw A", _isMainBuilding, _validFrom, _validTo)
+            };
+        }
+
+        protected override AddOrganisationBuilding When()
+        {
+            return new AddOrganisationBuilding(
+                Guid.NewGuid(),
+                new OrganisationId(_organisationId),
+                new BuildingId(_buildingId),
+                _isMainBuilding,
+                new ValidFrom(_validFrom),
+                new ValidTo(_validTo));
+        }
+
+        protected override int ExpectedNumberOfEvents => 0;
+
+        [Fact]
+        public void ThrowsAnException()
+        {
+            Exception.Should().BeOfType<BuildingAlreadyCoupledToInThisPeriodException>();
+            Exception.Message.Should().Be("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.");
+        }
+
+        public WhenAddingTheSameBuildingTwice(ITestOutputHelper helper) : base(helper) { }
+    }
+}
