@@ -84,10 +84,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
             PublishedEvents[0].Should().BeOfType<Envelope<OrganisationFormalFrameworkUpdated>>();
 
             var organisationFormalFrameworkUpdated = PublishedEvents.First().UnwrapBody<OrganisationFormalFrameworkUpdated>();
-            organisationFormalFrameworkUpdated.OrganisationId.Should().Be(_childOrganisationCreated.Id);
-            organisationFormalFrameworkUpdated.PreviousParentOrganisationId.Should().Be(_parentOrganisationACreated.Id);
-            organisationFormalFrameworkUpdated.ParentOrganisationId.Should().Be(_parentOrganisationBCreated.Id);
-            organisationFormalFrameworkUpdated.FormalFrameworkId.Should().Be(_formalFrameworkBCreated.Id);
+            organisationFormalFrameworkUpdated.OrganisationId.Should().Be((Guid)_childOrganisationCreated.Id);
+            organisationFormalFrameworkUpdated.PreviousParentOrganisationId.Should().Be((Guid)_parentOrganisationACreated.Id);
+            organisationFormalFrameworkUpdated.ParentOrganisationId.Should().Be((Guid)_parentOrganisationBCreated.Id);
+            organisationFormalFrameworkUpdated.FormalFrameworkId.Should().Be((Guid)_formalFrameworkBCreated.Id);
             organisationFormalFrameworkUpdated.ValidFrom.Should().Be(_tomorrow);
             organisationFormalFrameworkUpdated.ValidTo.Should().Be(_tomorrow);
         }

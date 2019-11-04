@@ -118,9 +118,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
             var @event = PublishedEvents[0];
             @event.Should().BeOfType<Envelope<FormalFrameworkClearedFromOrganisation>>();
             var frameworkClearedFromOrganisation = @event.UnwrapBody<FormalFrameworkClearedFromOrganisation>();
-            frameworkClearedFromOrganisation.OrganisationId.Should().Be(_childOrganisationCreated.Id);
-            frameworkClearedFromOrganisation.ParentOrganisationId.Should().Be(_parentOrganisationCreated.Id);
-            frameworkClearedFromOrganisation.FormalFrameworkId.Should().Be(_formalFrameworkCreated.Id);
+            frameworkClearedFromOrganisation.OrganisationId.Should().Be((Guid)_childOrganisationCreated.Id);
+            frameworkClearedFromOrganisation.ParentOrganisationId.Should().Be((Guid)_parentOrganisationCreated.Id);
+            frameworkClearedFromOrganisation.FormalFrameworkId.Should().Be((Guid)_formalFrameworkCreated.Id);
         }
 
         [Fact]
@@ -129,9 +129,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
             var @event = PublishedEvents[1];
             @event.Should().BeOfType<Envelope<FormalFrameworkAssignedToOrganisation>>();
             var formalFrameworkAssignedToOrganisation = @event.UnwrapBody<FormalFrameworkAssignedToOrganisation>();
-            formalFrameworkAssignedToOrganisation.OrganisationId.Should().Be(_childOrganisationCreated.Id);
-            formalFrameworkAssignedToOrganisation.ParentOrganisationId.Should().Be(_anotherParentOrganisationCreated.Id);
-            formalFrameworkAssignedToOrganisation.FormalFrameworkId.Should().Be(_formalFrameworkCreated.Id);
+            formalFrameworkAssignedToOrganisation.OrganisationId.Should().Be((Guid)_childOrganisationCreated.Id);
+            formalFrameworkAssignedToOrganisation.ParentOrganisationId.Should().Be((Guid)_anotherParentOrganisationCreated.Id);
+            formalFrameworkAssignedToOrganisation.FormalFrameworkId.Should().Be((Guid)_formalFrameworkCreated.Id);
         }
 
         public WhenOtherParentsAreNowActive(ITestOutputHelper helper) : base(helper) { }

@@ -1,9 +1,11 @@
-﻿namespace OrganisationRegistry.SeatType
+namespace OrganisationRegistry.SeatType
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Newtonsoft.Json;
 
-    public class SeatTypeId : GenericId<SeatTypeId>
+    public class SeatTypeId : GuidValueObject<SeatTypeId>
     {
-        public SeatTypeId(Guid id) : base(id) { }
+        public SeatTypeId([JsonProperty("id")] Guid seatTypeId) : base(seatTypeId) { }
     }
 }

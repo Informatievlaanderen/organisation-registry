@@ -72,8 +72,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
             PublishedEvents[0].Should().BeOfType<Envelope<OrganisationParentUpdated>>();
 
             var organisationParentUpdated = PublishedEvents.First().UnwrapBody<OrganisationParentUpdated>();
-            organisationParentUpdated.OrganisationId.Should().Be(_organisationId);
-            organisationParentUpdated.ParentOrganisationId.Should().Be(_organisationParentId);
+            organisationParentUpdated.OrganisationId.Should().Be((Guid)_organisationId);
+            organisationParentUpdated.ParentOrganisationId.Should().Be((Guid)_organisationParentId);
             organisationParentUpdated.ValidFrom.Should().Be(_validFrom);
             organisationParentUpdated.ValidTo.Should().Be(_validTo);
         }

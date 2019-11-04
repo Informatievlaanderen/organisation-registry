@@ -1,9 +1,11 @@
-﻿namespace OrganisationRegistry.Capacity
+namespace OrganisationRegistry.Capacity
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Newtonsoft.Json;
 
-    public class CapacityId : GenericId<CapacityId>
+    public class CapacityId : GuidValueObject<CapacityId>
     {
-        public CapacityId(Guid id) : base(id) { }
+        public CapacityId([JsonProperty("id")] Guid capacityId) : base(capacityId) { }
     }
 }

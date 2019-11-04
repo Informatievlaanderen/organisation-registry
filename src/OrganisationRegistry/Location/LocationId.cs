@@ -1,9 +1,11 @@
-﻿namespace OrganisationRegistry.Location
+namespace OrganisationRegistry.Location
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Newtonsoft.Json;
 
-    public class LocationId : GenericId<LocationId>
+    public class LocationId : GuidValueObject<LocationId>
     {
-        public LocationId(Guid id) : base(id) { }
+        public LocationId([JsonProperty("id")] Guid locationId) : base(locationId) { }
     }
 }

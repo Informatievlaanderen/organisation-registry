@@ -85,8 +85,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
             PublishedEvents[0].Should().BeOfType<Envelope<OrganisationFormalFrameworkUpdated>>();
 
             var organisationFormalFrameworkUpdated = PublishedEvents.First().UnwrapBody<OrganisationFormalFrameworkUpdated>();
-            organisationFormalFrameworkUpdated.OrganisationId.Should().Be(_childOrganisationCreated.Id);
-            organisationFormalFrameworkUpdated.ParentOrganisationId.Should().Be(_parentOrganisationBCreated.Id);
+            organisationFormalFrameworkUpdated.OrganisationId.Should().Be((Guid)_childOrganisationCreated.Id);
+            organisationFormalFrameworkUpdated.ParentOrganisationId.Should().Be((Guid)_parentOrganisationBCreated.Id);
             organisationFormalFrameworkUpdated.ValidFrom.Should().Be(_tomorrow);
             organisationFormalFrameworkUpdated.ValidTo.Should().Be(_tomorrow);
         }
@@ -95,9 +95,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
         public void ClearsAParent()
         {
             var formalFrameworkClearedFromOrganisation = PublishedEvents[1].UnwrapBody<FormalFrameworkClearedFromOrganisation>();
-            formalFrameworkClearedFromOrganisation.OrganisationId.Should().Be(_childOrganisationCreated.Id);
-            formalFrameworkClearedFromOrganisation.ParentOrganisationId.Should().Be(_parentOrganisationBCreated.Id);
-            formalFrameworkClearedFromOrganisation.FormalFrameworkId.Should().Be(_formalFrameworkACreated.Id);
+            formalFrameworkClearedFromOrganisation.OrganisationId.Should().Be((Guid)_childOrganisationCreated.Id);
+            formalFrameworkClearedFromOrganisation.ParentOrganisationId.Should().Be((Guid)_parentOrganisationBCreated.Id);
+            formalFrameworkClearedFromOrganisation.FormalFrameworkId.Should().Be((Guid)_formalFrameworkACreated.Id);
         }
 
         public WhenUpdatingAnOrganisationFormalFrameworkValidityToTheFuture(ITestOutputHelper helper) : base(helper) { }

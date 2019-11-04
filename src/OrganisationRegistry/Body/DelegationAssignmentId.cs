@@ -1,10 +1,12 @@
 namespace OrganisationRegistry.Body
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Newtonsoft.Json;
 
-    public class DelegationAssignmentId : GenericId<DelegationAssignmentId>
+    public class DelegationAssignmentId : GuidValueObject<DelegationAssignmentId>
     {
-        public DelegationAssignmentId(Guid id) : base(id) { }
+        public DelegationAssignmentId([JsonProperty("id")] Guid delegationAssignmentId) : base(delegationAssignmentId) { }
     }
 }
 

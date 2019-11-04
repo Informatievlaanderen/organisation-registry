@@ -1,9 +1,11 @@
-﻿namespace OrganisationRegistry.Purpose
+namespace OrganisationRegistry.Purpose
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Newtonsoft.Json;
 
-    public class PurposeId : GenericId<PurposeId>
+    public class PurposeId : GuidValueObject<PurposeId>
     {
-        public PurposeId(Guid id) : base(id) { }
+        public PurposeId([JsonProperty("id")] Guid purposeId) : base(purposeId) { }
     }
 }

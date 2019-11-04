@@ -1,9 +1,11 @@
-﻿namespace OrganisationRegistry.Function
+namespace OrganisationRegistry.Function
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Newtonsoft.Json;
 
-    public class FunctionTypeId : GenericId<FunctionTypeId>
+    public class FunctionTypeId : GuidValueObject<FunctionTypeId>
     {
-        public FunctionTypeId(Guid id) : base(id) { }
+        public FunctionTypeId([JsonProperty("id")] Guid functionTypeId) : base(functionTypeId) { }
     }
 }

@@ -1,9 +1,11 @@
-﻿namespace OrganisationRegistry.Building
+namespace OrganisationRegistry.Building
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Newtonsoft.Json;
 
-    public class BuildingId : GenericId<BuildingId>
+    public class BuildingId : GuidValueObject<BuildingId>
     {
-        public BuildingId(Guid id) : base(id) { }
+        public BuildingId([JsonProperty("id")] Guid buildingId) : base(buildingId) { }
     }
 }

@@ -74,8 +74,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
         {
             var organisationParentAdded = PublishedEvents[0].UnwrapBody<OrganisationParentAdded>();
 
-            organisationParentAdded.OrganisationId.Should().Be(_organisationACreated.Id);
-            organisationParentAdded.ParentOrganisationId.Should().Be(_organisationBCreated.Id);
+            organisationParentAdded.OrganisationId.Should().Be((Guid)_organisationACreated.Id);
+            organisationParentAdded.ParentOrganisationId.Should().Be((Guid)_organisationBCreated.Id);
             organisationParentAdded.ValidFrom.Should().Be(new DateTime(2017, 1, 1));
             organisationParentAdded.ValidTo.Should().Be(new DateTime(2017, 12, 31));
         }

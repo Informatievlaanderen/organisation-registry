@@ -1,9 +1,11 @@
-﻿namespace OrganisationRegistry.Infrastructure
+namespace OrganisationRegistry.Infrastructure
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Newtonsoft.Json;
 
-    public class ProjectionRebuilderId : GenericId<ProjectionRebuilderId>
+    public class ProjectionRebuilderId : GuidValueObject<ProjectionRebuilderId>
     {
-        public ProjectionRebuilderId(Guid id) : base(id) { }
+        public ProjectionRebuilderId([JsonProperty("id")] Guid projectionRebuilderId) : base(projectionRebuilderId) { }
     }
 }

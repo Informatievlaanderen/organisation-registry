@@ -84,8 +84,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
             PublishedEvents[0].Should().BeOfType<Envelope<OrganisationFormalFrameworkUpdated>>();
 
             var organisationFormalFrameworkUpdated = PublishedEvents[0].UnwrapBody<OrganisationFormalFrameworkUpdated>();
-            organisationFormalFrameworkUpdated.OrganisationId.Should().Be(_childOrganisationCreated.Id);
-            organisationFormalFrameworkUpdated.ParentOrganisationId.Should().Be(_parentOrganisationBCreated.Id);
+            organisationFormalFrameworkUpdated.OrganisationId.Should().Be((Guid)_childOrganisationCreated.Id);
+            organisationFormalFrameworkUpdated.ParentOrganisationId.Should().Be((Guid)_parentOrganisationBCreated.Id);
             organisationFormalFrameworkUpdated.ValidFrom.Should().Be(DateTimeProviderStub.Today);
             organisationFormalFrameworkUpdated.ValidTo.Should().Be(DateTimeProviderStub.Today);
         }
@@ -94,9 +94,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
         public void AssignsAParent()
         {
             var frameworkAssignedToOrganisation = PublishedEvents[1].UnwrapBody<FormalFrameworkAssignedToOrganisation>();
-            frameworkAssignedToOrganisation.OrganisationId.Should().Be(_childOrganisationCreated.Id);
-            frameworkAssignedToOrganisation.ParentOrganisationId.Should().Be(_parentOrganisationBCreated.Id);
-            frameworkAssignedToOrganisation.FormalFrameworkId.Should().Be(_formalFrameworkBCreated.Id);
+            frameworkAssignedToOrganisation.OrganisationId.Should().Be((Guid)_childOrganisationCreated.Id);
+            frameworkAssignedToOrganisation.ParentOrganisationId.Should().Be((Guid)_parentOrganisationBCreated.Id);
+            frameworkAssignedToOrganisation.FormalFrameworkId.Should().Be((Guid)_formalFrameworkBCreated.Id);
         }
 
         public WhenUpdatingAnOrganisationFormalFrameworkValidityToToday(ITestOutputHelper helper) : base(helper) { }

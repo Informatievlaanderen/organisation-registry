@@ -1,9 +1,11 @@
-﻿namespace OrganisationRegistry.KeyTypes
+namespace OrganisationRegistry.KeyTypes
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Newtonsoft.Json;
 
-    public class KeyTypeId : GenericId<KeyTypeId>
+    public class KeyTypeId : GuidValueObject<KeyTypeId>
     {
-        public KeyTypeId(Guid id) : base(id) { }
+        public KeyTypeId([JsonProperty("id")] Guid keyTypeId) : base(keyTypeId) { }
     }
 }

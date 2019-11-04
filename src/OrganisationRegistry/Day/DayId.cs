@@ -1,9 +1,11 @@
-﻿namespace OrganisationRegistry.Day
+namespace OrganisationRegistry.Day
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Newtonsoft.Json;
 
-    public class DayId : GenericId<DayId>
+    public class DayId : GuidValueObject<DayId>
     {
-        public DayId(Guid id) : base(id) { }
+        public DayId([JsonProperty("id")] Guid dayId) : base(dayId) { }
     }
 }

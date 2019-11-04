@@ -100,9 +100,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
         {
             PublishedEvents[0].Should().BeOfType<Envelope<FormalFrameworkClearedFromOrganisation>>();
             var formalFrameworkClearedFromOrganisation = PublishedEvents[0].UnwrapBody<FormalFrameworkClearedFromOrganisation>();
-            formalFrameworkClearedFromOrganisation.OrganisationId.Should().Be(_organisationCreated.Id);
-            formalFrameworkClearedFromOrganisation.FormalFrameworkId.Should().Be(_formalFrameworkCreated.Id);
-            formalFrameworkClearedFromOrganisation.ParentOrganisationId.Should().Be(_parentOrganisationCreated.Id);
+            formalFrameworkClearedFromOrganisation.OrganisationId.Should().Be((Guid)_organisationCreated.Id);
+            formalFrameworkClearedFromOrganisation.FormalFrameworkId.Should().Be((Guid)_formalFrameworkCreated.Id);
+            formalFrameworkClearedFromOrganisation.ParentOrganisationId.Should().Be((Guid)_parentOrganisationCreated.Id);
         }
 
         public WhenCurrentParentIsNoLongerActive(ITestOutputHelper helper) : base(helper) { }

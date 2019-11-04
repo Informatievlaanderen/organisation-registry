@@ -1,9 +1,11 @@
-﻿namespace OrganisationRegistry.LabelType
+namespace OrganisationRegistry.LabelType
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Newtonsoft.Json;
 
-    public class LabelTypeId : GenericId<LabelTypeId>
+    public class LabelTypeId : GuidValueObject<LabelTypeId>
     {
-        public LabelTypeId(Guid id) : base(id) { }
+        public LabelTypeId([JsonProperty("id")] Guid labelTypeId) : base(labelTypeId) { }
     }
 }

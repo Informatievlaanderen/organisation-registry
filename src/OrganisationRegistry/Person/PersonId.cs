@@ -1,9 +1,11 @@
-﻿namespace OrganisationRegistry.Person
+namespace OrganisationRegistry.Person
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Newtonsoft.Json;
 
-    public class PersonId : GenericId<PersonId>
+    public class PersonId : GuidValueObject<PersonId>
     {
-        public PersonId(Guid id) : base(id) { }
+        public PersonId([JsonProperty("id")] Guid personId) : base(personId) { }
     }
 }

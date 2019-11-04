@@ -1,9 +1,11 @@
-﻿namespace OrganisationRegistry.Organisation
+namespace OrganisationRegistry.Organisation
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Newtonsoft.Json;
 
-    public class OrganisationId : GenericId<OrganisationId>
+    public class OrganisationId : GuidValueObject<OrganisationId>
     {
-        public OrganisationId(Guid id) : base(id) { }
+        public OrganisationId([JsonProperty("id")] Guid organisationId) : base(organisationId) { }
     }
 }

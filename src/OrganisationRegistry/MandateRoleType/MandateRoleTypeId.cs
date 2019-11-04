@@ -1,9 +1,11 @@
-﻿namespace OrganisationRegistry.MandateRoleType
+namespace OrganisationRegistry.MandateRoleType
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Newtonsoft.Json;
 
-    public class MandateRoleTypeId : GenericId<MandateRoleTypeId>
+    public class MandateRoleTypeId : GuidValueObject<MandateRoleTypeId>
     {
-        public MandateRoleTypeId(Guid id) : base(id) { }
+        public MandateRoleTypeId([JsonProperty("id")] Guid mandateRoleTypeId) : base(mandateRoleTypeId) { }
     }
 }

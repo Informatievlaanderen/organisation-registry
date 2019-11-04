@@ -93,8 +93,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
             PublishedEvents[0].Should().BeOfType<Envelope<OrganisationFormalFrameworkUpdated>>();
 
             var organisationFormalFrameworkUpdated = PublishedEvents.First().UnwrapBody<OrganisationFormalFrameworkUpdated>();
-            organisationFormalFrameworkUpdated.OrganisationId.Should().Be(_grandParentOrganisationCreated.Id);
-            organisationFormalFrameworkUpdated.ParentOrganisationId.Should().Be(_childOrganisationCreated.Id);
+            organisationFormalFrameworkUpdated.OrganisationId.Should().Be((Guid)_grandParentOrganisationCreated.Id);
+            organisationFormalFrameworkUpdated.ParentOrganisationId.Should().Be((Guid)_childOrganisationCreated.Id);
             organisationFormalFrameworkUpdated.ValidFrom.Should().Be(DateTimeProviderStub.Today);
             organisationFormalFrameworkUpdated.ValidTo.Should().Be(DateTimeProviderStub.Today);
         }
@@ -103,9 +103,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
         public void AssignsAParent()
         {
             var frameworkAssignedToOrganisation = PublishedEvents[1].UnwrapBody<FormalFrameworkAssignedToOrganisation>();
-            frameworkAssignedToOrganisation.OrganisationId.Should().Be(_grandParentOrganisationCreated.Id);
-            frameworkAssignedToOrganisation.ParentOrganisationId.Should().Be(_childOrganisationCreated.Id);
-            frameworkAssignedToOrganisation.FormalFrameworkId.Should().Be(_formalFrameworkBCreated.Id);
+            frameworkAssignedToOrganisation.OrganisationId.Should().Be((Guid)_grandParentOrganisationCreated.Id);
+            frameworkAssignedToOrganisation.ParentOrganisationId.Should().Be((Guid)_childOrganisationCreated.Id);
+            frameworkAssignedToOrganisation.FormalFrameworkId.Should().Be((Guid)_formalFrameworkBCreated.Id);
         }
 
         public WhenUpdatingAnOrganisationFormalFrameworkWithCircularDependenciesButInAnotherFormalFramework(ITestOutputHelper helper) : base(helper) { }

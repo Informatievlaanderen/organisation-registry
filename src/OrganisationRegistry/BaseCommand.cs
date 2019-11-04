@@ -1,6 +1,7 @@
-﻿namespace OrganisationRegistry
+namespace OrganisationRegistry
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
     using Infrastructure.Commands;
     using Infrastructure.Messages;
 
@@ -17,7 +18,7 @@
         }
     }
 
-    public class BaseCommand<T> : BaseCommand where T : GenericId<T>
+    public class BaseCommand<T> : BaseCommand where T : GuidValueObject<T>
     {
         protected new T Id { get; set; }
     }

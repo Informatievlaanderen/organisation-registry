@@ -79,9 +79,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationFormalFrame
         {
             var organisationParentAdded = PublishedEvents[0].UnwrapBody<OrganisationFormalFrameworkAdded>();
 
-            organisationParentAdded.FormalFrameworkId.Should().Be(_formalFrameworkCreated.Id);
-            organisationParentAdded.OrganisationId.Should().Be(_childOrganisationCreated.Id);
-            organisationParentAdded.ParentOrganisationId.Should().Be(_parentOrganisationCreated.Id);
+            organisationParentAdded.FormalFrameworkId.Should().Be((Guid)_formalFrameworkCreated.Id);
+            organisationParentAdded.OrganisationId.Should().Be((Guid)_childOrganisationCreated.Id);
+            organisationParentAdded.ParentOrganisationId.Should().Be((Guid)_parentOrganisationCreated.Id);
             organisationParentAdded.ValidFrom.Should().Be(_tomorrow);
             organisationParentAdded.ValidTo.Should().Be(_tomorrow);
         }

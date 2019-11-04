@@ -1,9 +1,11 @@
-﻿namespace OrganisationRegistry.OrganisationRelationType
+namespace OrganisationRegistry.OrganisationRelationType
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Newtonsoft.Json;
 
-    public class OrganisationRelationTypeId : GenericId<OrganisationRelationTypeId>
+    public class OrganisationRelationTypeId : GuidValueObject<OrganisationRelationTypeId>
     {
-        public OrganisationRelationTypeId(Guid id) : base(id) { }
+        public OrganisationRelationTypeId([JsonProperty("id")] Guid organisationRelationTypeId) : base(organisationRelationTypeId) { }
     }
 }
