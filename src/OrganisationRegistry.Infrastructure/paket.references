@@ -1,0 +1,17 @@
+System.Dynamic.Runtime
+System.Reflection.TypeExtensions
+System.ComponentModel
+System.Security.Claims
+
+Microsoft.CSharp
+Microsoft.Extensions.Options.ConfigurationExtensions
+Microsoft.Extensions.DependencyInjection
+Microsoft.Extensions.Configuration.Abstractions
+Microsoft.Extensions.Logging
+
+Dapper
+Newtonsoft.Json
+Autofac.Extensions.DependencyInjection
+
+SourceLink.Embed.AllSourceFiles
+SourceLink.Copy.PdbFiles
