@@ -61,6 +61,8 @@ nuget Serilog.Sinks.ElasticSearch 6.1.0 // TODO: Update to 8.0.0
 // BASE REGISTRIES STUFF
 nuget Be.Vlaanderen.Basisregisters.Build.Pipeline ~> 1.11
 
+nuget Be.Vlaanderen.Basisregisters.AggregateSource ~> 3.2
+
 nuget Be.Vlaanderen.Basisregisters.Api ~> 7.8
 
 // TEST STUFF
