@@ -1,0 +1,23 @@
+// System.Data.SqlClient
+// System.Reflection.TypeExtensions
+
+Microsoft.Extensions.Options.ConfigurationExtensions
+Microsoft.Extensions.Logging
+// Microsoft.Extensions.DependencyInjection
+
+Autofac.Extensions.DependencyInjection
+Polly
+NEST
+Newtonsoft.Json
+// Destructurama.JsonNet
+
+Serilog
+// Serilog.Extensions.Logging
+// Serilog.Sinks.Literate
+// Serilog.Settings.Configuration
+// Serilog.Enrichers.Thread
+// Serilog.Enrichers.Environment
+Serilog.Sinks.ElasticSearch
+
+SourceLink.Embed.AllSourceFiles
+SourceLink.Copy.PdbFiles
