@@ -1,0 +1,10 @@
+System.Reflection.TypeExtensions
+
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.Extensions.Configuration
+Microsoft.Extensions.Configuration.Abstractions
+
+Autofac.Extensions.DependencyInjection
+
+SourceLink.Embed.AllSourceFiles
+SourceLink.Copy.PdbFiles
