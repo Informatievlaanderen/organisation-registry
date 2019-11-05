@@ -48,6 +48,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrganisationRegistry.Agents
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrganisationRegistry.VlaanderenBeNotifier", "src\OrganisationRegistry.VlaanderenBeNotifier\OrganisationRegistry.VlaanderenBeNotifier.csproj", "{1251D40D-7EF7-4FB0-8923-398954595756}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrganisationRegistry.VlaanderenBeNotifier.UnitTests", "test\OrganisationRegistry.VlaanderenBeNotifier.UnitTests\OrganisationRegistry.VlaanderenBeNotifier.UnitTests.csproj", "{A27A9E56-9865-41A6-AE51-D811FC20A700}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,6 +104,10 @@ Global
 		{1251D40D-7EF7-4FB0-8923-398954595756}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1251D40D-7EF7-4FB0-8923-398954595756}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1251D40D-7EF7-4FB0-8923-398954595756}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A27A9E56-9865-41A6-AE51-D811FC20A700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A27A9E56-9865-41A6-AE51-D811FC20A700}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A27A9E56-9865-41A6-AE51-D811FC20A700}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A27A9E56-9865-41A6-AE51-D811FC20A700}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
