@@ -1,0 +1,5 @@
+Microsoft.Rest.ClientRuntime
+AutoRest
+
+SourceLink.Embed.AllSourceFiles
+SourceLink.Copy.PdbFiles

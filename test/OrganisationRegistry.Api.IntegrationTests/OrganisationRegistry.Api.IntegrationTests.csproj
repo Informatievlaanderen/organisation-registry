@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\OrganisationRegistry.Api\OrganisationRegistry.Api.csproj" />
+    <ProjectReference Include="..\..\src\OrganisationRegistry.Import.Piavo\OrganisationRegistry.Import.Piavo.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ImportFiles\" />
+  </ItemGroup>
+
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>
