@@ -1,0 +1,14 @@
+System.Reflection.TypeExtensions
+
+Microsoft.Extensions.Options.ConfigurationExtensions
+
+Microsoft.EntityFrameworkCore
+Microsoft.EntityFrameworkCore.Relational
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.EntityFrameworkCore.Design
+
+Dapper
+Autofac.Extensions.DependencyInjection
+
+SourceLink.Embed.AllSourceFiles
+SourceLink.Copy.PdbFiles
