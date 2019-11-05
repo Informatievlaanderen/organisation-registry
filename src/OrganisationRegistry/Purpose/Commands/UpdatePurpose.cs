@@ -4,11 +4,11 @@ namespace OrganisationRegistry.Purpose.Commands
     {
         public PurposeId PurposeId => Id;
 
-        public string Name { get; }
+        public PurposeName Name { get; }
 
         public UpdatePurpose(
             PurposeId purposeId,
-            string name)
+            PurposeName name)
         {
             Id = purposeId;
 

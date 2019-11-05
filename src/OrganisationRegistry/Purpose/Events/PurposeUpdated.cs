@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Purpose.Events
 {
     using System;
+    using Newtonsoft.Json;
 
     public class PurposeUpdated : BaseEvent<PurposeUpdated>
     {
@@ -10,14 +11,24 @@ namespace OrganisationRegistry.Purpose.Events
         public string PreviousName { get; }
 
         public PurposeUpdated(
-            Guid purposeId,
-            string name,
-            string previousName)
+            PurposeId purposeId,
+            PurposeName name,
+            PurposeName previousName)
         {
             Id = purposeId;
 
             Name = name;
             PreviousName = previousName;
         }
+
+        [JsonConstructor]
+        public PurposeUpdated(
+            Guid purposeId,
+            string name,
+            string previousName)
+            : this(
+                new PurposeId(purposeId),
+                new PurposeName(name),
+                new PurposeName(previousName)) { }
     }
 }

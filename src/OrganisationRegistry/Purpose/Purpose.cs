@@ -1,34 +1,38 @@
-﻿namespace OrganisationRegistry.Purpose
+namespace OrganisationRegistry.Purpose
 {
     using Events;
     using Infrastructure.Domain;
 
     public class Purpose : AggregateRoot
     {
-        public string Name { get; private set; }
+        public PurposeName Name { get; private set; }
 
         private Purpose() { }
 
-        public Purpose(PurposeId id, string name)
+        public Purpose(PurposeId id, PurposeName name)
         {
-            ApplyChange(new PurposeCreated(id, name));
+            ApplyChange(new PurposeCreated(
+                id,
+                name));
         }
 
-        public void Update(string name)
+        public void Update(PurposeName name)
         {
-            var @event = new PurposeUpdated(Id, name, Name);
-            ApplyChange(@event);
+            ApplyChange(new PurposeUpdated(
+                Id,
+                name,
+                Name));
         }
 
         private void Apply(PurposeCreated @event)
         {
             Id = @event.PurposeId;
-            Name = @event.Name;
+            Name = new PurposeName(@event.Name);
         }
 
         private void Apply(PurposeUpdated @event)
         {
-            Name = @event.Name;
+            Name = new PurposeName(@event.Name);
         }
     }
 }

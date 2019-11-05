@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Person
+namespace OrganisationRegistry.Person
 {
     using System;
     using Events;
@@ -11,25 +11,27 @@
 
         public string FirstName { get; private set; }
         public string Name { get; private set; }
+
         public string FullName => $"{Name} {FirstName}";
 
         private Person() { }
 
         public Person(PersonId id, string firstName, string name, Sex? sex, DateTime? dateOfBirth)
         {
-            var @event = new PersonCreated(id, firstName, name, sex, dateOfBirth);
-            ApplyChange(@event);
+            ApplyChange(new PersonCreated(
+                id,
+                firstName,
+                name,
+                sex,
+                dateOfBirth));
         }
 
         public void Update(string firstName, string name, Sex? sex, DateTime? dateOfBirth)
         {
-            var @event =
-                new PersonUpdated(
-                    Id,
-                    firstName, name, sex, dateOfBirth,
-                    FirstName, Name, _sex, _dateOfBirth);
-
-            ApplyChange(@event);
+            ApplyChange(new PersonUpdated(
+                Id,
+                firstName, name, sex, dateOfBirth,
+                FirstName, Name, _sex, _dateOfBirth));
         }
 
         private void Apply(PersonCreated @event)
