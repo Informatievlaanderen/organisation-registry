@@ -4,12 +4,12 @@ namespace OrganisationRegistry.SeatType.Commands
     {
         public SeatTypeId SeatTypeId => Id;
 
-        public string Name { get; }
+        public SeatTypeName Name { get; }
         public int? Order { get; }
 
         public CreateSeatType(
             SeatTypeId seatTypeId,
-            string name,
+            SeatTypeName name,
             int? order)
         {
             Id = seatTypeId;

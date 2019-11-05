@@ -12,7 +12,7 @@ namespace OrganisationRegistry.SeatType.Events
 
         public SeatTypeCreated(
             SeatTypeId seatTypeId,
-            string name,
+            SeatTypeName name,
             int? order)
         {
             Id = seatTypeId;
@@ -26,11 +26,9 @@ namespace OrganisationRegistry.SeatType.Events
             Guid seatTypeId,
             string name,
             int? order)
-        {
-            Id = seatTypeId;
-
-            Name = name;
-            Order = order;
-        }
+            : this(
+                new SeatTypeId(seatTypeId),
+                new SeatTypeName(name),
+                order) { }
     }
 }

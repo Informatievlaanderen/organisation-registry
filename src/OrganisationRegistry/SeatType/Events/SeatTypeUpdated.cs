@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.SeatType.Events
 {
     using System;
+    using Newtonsoft.Json;
 
     public class SeatTypeUpdated : BaseEvent<SeatTypeUpdated>
     {
@@ -13,10 +14,10 @@ namespace OrganisationRegistry.SeatType.Events
         public int? PreviousOrder { get; }
 
         public SeatTypeUpdated(
-            Guid seatTypeId,
-            string name,
+            SeatTypeId seatTypeId,
+            SeatTypeName name,
             int? order,
-            string previousName,
+            SeatTypeName previousName,
             int? previousOrder)
         {
             Id = seatTypeId;
@@ -27,5 +28,19 @@ namespace OrganisationRegistry.SeatType.Events
             PreviousName = previousName;
             PreviousOrder = previousOrder;
         }
+
+        [JsonConstructor]
+        public SeatTypeUpdated(
+            Guid seatTypeId,
+            string name,
+            int? order,
+            string previousName,
+            int? previousOrder)
+            : this(
+                new SeatTypeId(seatTypeId),
+                new SeatTypeName(name),
+                order,
+                new SeatTypeName(previousName),
+                previousOrder) { }
     }
 }

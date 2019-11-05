@@ -1184,7 +1184,7 @@ namespace OrganisationRegistry.Body
                     @event.BodySeatNumber,
                     new SeatType(
                         new SeatTypeId(@event.SeatTypeId),
-                        @event.SeatTypeName,
+                        new SeatTypeName(@event.SeatTypeName),
                         @event.SeatTypeOrder),
                     @event.PaidSeat,
                     @event.EntitledToVote,
@@ -1204,7 +1204,7 @@ namespace OrganisationRegistry.Body
                     oldBodySeat.BodySeatNumber,
                     new SeatType(
                         new SeatTypeId(@event.SeatTypeId),
-                        @event.SeatTypeName,
+                        new SeatTypeName(@event.SeatTypeName),
                         @event.SeatTypeOrder),
                     @event.PaidSeat,
                     @event.EntitledToVote,

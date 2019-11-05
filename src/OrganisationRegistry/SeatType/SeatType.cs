@@ -5,33 +5,40 @@ namespace OrganisationRegistry.SeatType
 
     public class SeatType : AggregateRoot
     {
-        public string Name { get; private set; }
+        public SeatTypeName Name { get; private set; }
 
         public int? Order { get; private set; }
 
         private SeatType() { }
 
-        public SeatType(SeatTypeId id, string name, int? order)
+        public SeatType(SeatTypeId id, SeatTypeName name, int? order)
         {
-            ApplyChange(new SeatTypeCreated(id, name, order));
+            ApplyChange(new SeatTypeCreated(
+                id,
+                name,
+                order));
         }
 
-        public void Update(string name, int? order)
+        public void Update(SeatTypeName name, int? order)
         {
-            var @event = new SeatTypeUpdated(Id, name, order, Name, Order);
-            ApplyChange(@event);
+            ApplyChange(new SeatTypeUpdated(
+                Id,
+                name,
+                order,
+                Name,
+                Order));
         }
 
         private void Apply(SeatTypeCreated @event)
         {
             Id = @event.SeatTypeId;
-            Name = @event.Name;
+            Name = new SeatTypeName(@event.Name);
             Order = @event.Order;
         }
 
         private void Apply(SeatTypeUpdated @event)
         {
-            Name = @event.Name;
+            Name = new SeatTypeName(@event.Name);
             Order = @event.Order;
         }
     }
