@@ -1,0 +1,28 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:52446/",
+      "sslPort": 0
+    }
+  },
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "OrganisationRegistry.Api": {
+      "commandName": "Project",
+      "launchUrl": "https://api.wegwijs.dev.informatievlaanderen.be:2443",
+      "environmentVariables": {
+        "ASPNETCORE_URLS": "https://api.wegwijs.dev.informatievlaanderen.be:2443",
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://api.wegwijs.dev.informatievlaanderen.be:2443"
+    }
+  }
+}
