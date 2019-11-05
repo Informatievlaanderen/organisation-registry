@@ -1,0 +1,18 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Locatie types</h1>
+            <a class="button cta-title__cta" [routerLink]="['./create']">Voeg locatie type toe</a>
+        </div>
+
+        <ww-location-type-filter
+          [isBusy]="isLoading"
+          (filter)="search($event)">
+        </ww-location-type-filter>
+        <ww-location-type-list
+          [items]="locationTypes"
+          [isBusy]="isLoading"
+          (changePage)="changePage($event)">
+        </ww-location-type-list>
+    </div>
+</div>

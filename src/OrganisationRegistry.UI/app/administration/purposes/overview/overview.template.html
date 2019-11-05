@@ -1,0 +1,18 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Beleidsvelden</h1>
+            <a class="button cta-title__cta" [routerLink]="['./create']">Voeg beleidsveld toe</a>
+        </div>
+
+        <ww-purpose-filter
+            [isBusy]="isLoading"
+            (filter)="search($event)">
+        </ww-purpose-filter>
+        <ww-purpose-list
+            [items]="purposes"
+            [isBusy]="isLoading"
+            (changePage)="changePage($event)">
+        </ww-purpose-list>
+    </div>
+</div>

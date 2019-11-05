@@ -1,0 +1,44 @@
+<div class="contact-card__content-wrapper">
+
+    <div class="alert alert--warning" *ngIf="!body.hasAllSeatsAssigned">
+        <div class="alert__icon"></div>
+
+        <div class="alert__content">
+            <div class="alert__title">Ongeldige participatie</div>
+            <div class="alert__message">
+                <p>Participatie kan niet berekend worden omdat niet alle posten toegewezen zijn aan een mandaat.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert--warning" *ngIf="body.hasAllSeatsAssigned && !body.isMepCompliant">
+        <div class="alert__icon"></div>
+
+        <div class="alert__content">
+            <div class="alert__title">Ongeldige participatie</div>
+            <div class="alert__message">
+                <p>Participatie voldoet niet aan MEP.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="cta-title">
+        <h3 class="h3 cta-title__title">MEP-decreet</h3>
+        <ww-body-participation-filter
+            [isBusy]="isLoading"
+            (filter)="search($event)">
+        </ww-body-participation-filter>
+        <div class="cta-title__cta">
+            <a *ngIf="(canManageMep | async)" class="button cta-title__cta" [routerLink]="['./manage']">Beheer MEP</a>
+            <div class="u-align-right" style="clear: both;"></div>
+        </div>
+    </div>
+
+    <ww-body-participation-list
+        [items]="bodyParticipations"
+        [totals]="bodyParticipationTotals"
+        [showTotals]="body.hasAllSeatsAssigned"
+        [isBusy]="isLoading"
+        (changePage)="changePage($event)">
+    </ww-body-participation-list>
+</div>

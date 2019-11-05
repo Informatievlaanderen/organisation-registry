@@ -1,0 +1,17 @@
+<div class="grid">
+  <div class="col--1-1">
+      <div class="cta-title">
+          <h1 class="h2 cta-title__title">MEP-decreet ({{classificationLabel}})</h1>
+      </div>
+
+      <ww-report-classification-filter
+        [isBusy]="isLoading"
+        (filter)="search($event)">
+      </ww-report-classification-filter>
+      <ww-report-classification-list
+        [items]="classifications"
+        [isBusy]="isLoading"
+        (changePage)="changePage($event)">
+      </ww-report-classification-list>
+  </div>
+</div>

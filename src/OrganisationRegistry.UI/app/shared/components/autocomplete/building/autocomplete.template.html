@@ -1,0 +1,11 @@
+<ww-form-group-autocomplete
+  [id]="id"
+  [label]="label || 'Gebouw'"
+  [initialValue]="initialValue"
+  [control]="control"
+  [placeholder]="placeholder || 'Selecteer gebouw...'"
+  [name]="name || 'Gebouw'"
+  [focus]="focus"
+  [inline]="inline"
+  [fetch]="searchBuildings.bind(this)">
+</ww-form-group-autocomplete>

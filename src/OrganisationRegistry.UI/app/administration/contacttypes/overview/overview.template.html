@@ -1,0 +1,18 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Contact types</h1>
+            <a class="button cta-title__cta" [routerLink]="['./create']">Voeg contact type toe</a>
+        </div>
+
+        <ww-contact-type-filter
+          [isBusy]="isLoading"
+          (filter)="search($event)">
+        </ww-contact-type-filter>
+        <ww-contact-type-list
+          [items]="contactTypes"
+          [isBusy]="isLoading"
+          (changePage)="changePage($event)">
+        </ww-contact-type-list>
+    </div>
+</div>

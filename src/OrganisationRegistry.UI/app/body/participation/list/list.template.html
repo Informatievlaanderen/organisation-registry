@@ -1,0 +1,134 @@
+<div data-table="">
+
+  <div class="u-table-overflow">
+    <table id="addressTable" class="data-table">
+      <thead>
+        <tr class="data-table__header">
+          <th *ngIf="hasData(data)" class="data-table__header-title"></th>
+          <th class="data-table__header-title" style="width: 50%;">
+            <a class="data-table__header-title--sortable"
+              [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('bodyseatTypeName')}"
+              (click)="sortBy('bodyseatTypeName')">
+              Post
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+              [ngClass]="{'vi-u-180deg': isSortedByDescending('bodyseatTypeName')}"></i>
+            </a>
+          </th>
+          <th class="data-table__header-title" style="width: 15%;">
+            <a class="data-table__header-title--sortable"
+              [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('malePercentage')}"
+              (click)="sortBy('malePercentage')">
+              Man
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+              [ngClass]="{'vi-u-180deg': isSortedByDescending('malePercentage')}"></i>
+            </a>
+          </th>
+          <th class="data-table__header-title" style="width: 15%;">
+            <a class="data-table__header-title--sortable"
+              [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('femalePercentage')}"
+              (click)="sortBy('femalePercentage')">
+              Vrouw
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+              [ngClass]="{'vi-u-180deg': isSortedByDescending('femalePercentage')}"></i>
+            </a>
+          </th>
+          <th class="data-table__header-title" style="width: 15%;">
+            <a class="data-table__header-title--sortable"
+              [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('unknownPercentage')}"
+              (click)="sortBy('unknownPercentage')">
+              Onbekend
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+              [ngClass]="{'vi-u-180deg': isSortedByDescending('unknownPercentage')}"></i>
+            </a>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <template [ngIf]="isBusy">
+          <tr><td colspan="5">Bezig met laden...</td></tr>
+        </template>
+
+        <template [ngIf]="!isBusy">
+          <tr *ngIf="!hasData(data)">
+            <td colspan="5">Geen data beschikbaar...</td>
+          </tr>
+          <tr *ngFor="let bodyParticipation of data" [ngClass]="{'data-table__body-missing-mandate': bodyParticipation.unassignedCount > 0}">
+            <td class="data-table__body-title">
+              <div *ngIf="bodyParticipation.unassignedCount > 0" class="alert__icon missingMandate" title="{{bodyParticipation.unassignedCount}} {{bodyParticipation.unassignedCount === 1 ? 'post is' : 'posten zijn'}} niet toegewezen aan een mandaat."></div>
+              <div *ngIf="bodyParticipation.unassignedCount == 0" class="missingMandate"></div>
+            </td>
+            <td class="data-table__body-title data-table__body-ellipsis">
+              {{bodyParticipation.bodySeatTypeName}}
+            </td>
+            <td class="data-table__body-title data-table__body-ellipsis"
+            [ngClass]="{'text__alert': bodyParticipation.totalCount > 1 && !isMepCompliant(bodyParticipation.malePercentage), 'text__success': bodyParticipation.totalCount > 1 && isMepCompliant(bodyParticipation.malePercentage)}">
+              <div class="properties--percent">{{bodyParticipation.malePercentage | percent:'1.2-2'}}</div> <span class="properties--disabled">({{bodyParticipation.maleCount}}/{{bodyParticipation.assignedCount}})</span>
+            </td>
+            <td class="data-table__body-title data-table__body-ellipsis"
+            [ngClass]="{'text__alert': bodyParticipation.totalCount > 1 && !isMepCompliant(bodyParticipation.femalePercentage), 'text__success': bodyParticipation.totalCount > 1 && isMepCompliant(bodyParticipation.femalePercentage)}">
+              <div class="properties--percent">{{bodyParticipation.femalePercentage | percent:'1.2-2'}}</div> <span class="properties--disabled">({{bodyParticipation.femaleCount}}/{{bodyParticipation.assignedCount}})</span>
+            </td>
+            <td class="data-table__body-title data-table__body-ellipsis">
+              <div class="properties--percent">{{bodyParticipation.unknownPercentage | percent:'1.2-2'}}</div> <span class="properties--disabled">({{bodyParticipation.unknownCount}}/{{bodyParticipation.assignedCount}})</span>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="totalPages > 1" class="data-table__actions data-table__actions--bottom">
+    <div class="pager">
+      <ul class="pager__list pager__list--right">
+        <li class="pager__element">
+          <strong>{{firstItem}} - {{lastItem}}</strong> van {{totalItems}}
+        </li>
+
+        <li class="pager__element" *ngIf="firstItem > 1">
+          <a class="link-text" (click)="previousPage()"><i class="vi vi-arrow vi-u-180deg vi-u-s"></i> vorige</a>
+        </li>
+
+        <li class="pager__element" *ngIf="lastItem < totalItems">
+          <a class="link-text" (click)="nextPage()">volgende <i class="vi vi-arrow vi-u-s"></i></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<section *ngIf="hasData(data) && showTotals" class="region">
+    <div class="layout layout--wide">
+      <!-- component -->
+      <div class="grid">
+        <div class="col--3-12 col--6-12--s">
+          <div class="infotext">
+            <div class="infotext__value">{{totals.assignedCount}}/{{totals.totalCount}}</div>
+            <div class="infotext__text">posten toegewezen</div>
+          </div>
+        </div>
+        <div class="col--3-12 col--6-12--s">
+          <div class="infotext">
+            <div class="infotext__value"
+              [ngClass]="{'text__alert': totals.totalCount > 1 && !isMepCompliant(totals.malePercentage), 'text__success': totals.totalCount > 1 && isMepCompliant(totals.malePercentage)}">{{totals.malePercentage | percent:'1.2-2'}}</div>
+            <div class="infotext__text"
+              [ngClass]="{'text__alert': totals.totalCount > 1 && !isMepCompliant(totals.malePercentage), 'text__success': totals.totalCount > 1 && isMepCompliant(totals.malePercentage)}">mannen</div>
+          </div>
+        </div>
+        <div class="col--3-12 col--6-12--s">
+          <div class="infotext">
+            <div class="infotext__value"
+              [ngClass]="{'text__alert': totals.totalCount > 1 && !isMepCompliant(totals.femalePercentage), 'text__success': totals.totalCount > 1 && isMepCompliant(totals.femalePercentage)}">{{totals.femalePercentage | percent:'1.2-2'}}</div>
+            <div class="infotext__text"
+              [ngClass]="{'text__alert': totals.totalCount > 1 && !isMepCompliant(totals.femalePercentage), 'text__success': totals.totalCount > 1 && isMepCompliant(totals.femalePercentage)}">vrouwen</div>
+          </div>
+        </div>
+        <div class="col--3-12 col--6-12--s">
+          <div class="infotext">
+            <div class="infotext__value">{{totals.unknownPercentage | percent:'1.2-2'}}</div>
+            <div class="infotext__text">onbekend</div>
+          </div>
+        </div>
+      </div>
+      <!-- end component -->
+    </div>
+  </section>

@@ -1,0 +1,104 @@
+<div class="grid">
+  <div class="col--1-1">
+    <div class="cta-title">
+      <h1 class="h2 cta-title__title">Nieuwe toewijzing</h1>
+    </div>
+
+    <div class="back-arrow">
+      <a [routerLink]="['/manage/delegations', delegation.id]"><i class="vi vi-u-link vi-arrow"></i> terug naar delegatie</a>
+    </div>
+
+    <div class="cta-title">
+      <h3 class="h3 cta-title__title">Algemene informatie</h3>
+    </div>
+
+    <div class="properties ww-info">
+      <div class="properties__column">
+        <dl>
+          <dt class="properties__label">Orgaan:</dt>
+          <dd id="bodyName" class="properties__data">{{delegation.bodyName}}</dd>
+
+          <dt class="properties__label">Vertegenwoordiging:</dt>
+          <dd id="representation" class="properties__data">
+            <div *ngIf="delegation.functionTypeName">{{delegation.functionTypeName}} voor {{delegation.organisationName}}</div>
+            <div *ngIf="!delegation.functionTypeName">{{delegation.organisationName}}</div>
+          </dd>
+
+          <dt class="properties__label">Geldig vanaf:</dt>
+          <dd id="delegationValidFrom" class="properties__data" *ngIf="delegation.validFrom">{{delegation.validFrom}}</dd>
+          <dd id="delegationValidFrom" class="properties__data properties--disabled" *ngIf="!delegation.validFrom">Niet bekend</dd>
+        </dl>
+      </div>
+      <div class="properties__column">
+        <dl>
+          <dt class="properties__label">Organisatie:</dt>
+          <dd id="bodyOrganisationName" class="properties__data" *ngIf="delegation.bodyOrganisationName">{{delegation.bodyOrganisationName}}</dd>
+          <dd id="bodyOrganisationName" class="properties__data properties--disabled" *ngIf="!delegation.bodyOrganisationName">Niet gekoppeld</dd>
+
+          <dt class="properties__label">Post:</dt>
+          <dd id="seat" class="properties__data">{{delegation.bodySeatName}} (#{{delegation.bodySeatNumber}})</dd>
+
+          <dt class="properties__label">Geldig tot:</dt>
+          <dd id="delegationValidTo" class="properties__data" *ngIf="delegation.validTo">{{delegation.validTo}}</dd>
+          <dd id="delegationValidTo" class="properties__data properties--disabled" *ngIf="!delegation.validTo">Niet bekend</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="cta-title">
+        <h3 class="h3 cta-title__title">Toewijzing</h3>
+    </div>
+  </div>
+
+  <div class="col--8-12 col--10-12--m col--1-1--s">
+    <form class="form" [formGroup]="form" (ngSubmit)="create(form.value)" autocomplete="off">
+      <div class="form__group">
+        <ww-person-autocomplete
+          [id]="'personId'"
+          [label]="'Persoon'"
+          [name]="'Persoon'"
+          [control]="form.get('personId')">
+        </ww-person-autocomplete>
+
+        <ww-form-group-datepicker-range
+          [fromId]="'validFrom'"
+          [fromName]="'Geldig vanaf'"
+          [fromLabel]="'Geldig vanaf'"
+          [fromPlaceholder]="'Geldig vanaf'"
+          [fromControl]="form.get('validFrom')"
+          [toId]="'validTo'"
+          [toName]="'Geldig tot'"
+          [toLabel]="'Geldig tot'"
+          [toPlaceholder]="'Geldig tot'"
+          [toControl]="form.get('validTo')">
+        </ww-form-group-datepicker-range>
+
+        <div *ngFor="let contactType of contactTypes" class="ww-form-group-textboxes">
+          <ww-form-group-textbox
+            [id]="contactType.id"
+            [name]="contactType.id"
+            [label]="contactType.name"
+            [placeholder]="contactType.name"
+            [control]="form.controls.contacts.controls[contactType.id]">
+          </ww-form-group-textbox>
+        </div>
+
+        <div class="form__row">
+          <div class="form__buttons">
+            <div class="form__buttons__left">
+              <a [routerLink]="['./..']" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
+            </div>
+            <div class="form__buttons__right">
+              <button class="button form__button"
+                      type="submit"
+                      [ngClass]="{'button--disabled': !isFormValid, 'button--loading': form.disabled}"
+                      [disabled]="!isFormValid || form.disabled">
+                <span>Voeg toewijzing toe</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

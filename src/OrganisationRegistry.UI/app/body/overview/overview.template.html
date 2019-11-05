@@ -1,0 +1,19 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Organen</h1>
+            <a *ngIf="(canCreateBody | async)" class="button cta-title__cta" [routerLink]="['./create']">Voeg orgaan toe</a>
+        </div>
+
+        <ww-body-filter
+          [isBusy]="isLoading"
+          (filter)="search($event)">
+        </ww-body-filter>
+        <ww-body-list
+          [items]="bodies"
+          [isBusy]="isLoading"
+          (changePage)="changePage($event)"
+          (exportCsv)="exportCsv($event)">
+        </ww-body-list>
+    </div>
+</div>

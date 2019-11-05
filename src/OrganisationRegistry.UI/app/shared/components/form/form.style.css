@@ -1,0 +1,144 @@
+ww-organisation-classification-type-autocomplete,
+ww-formal-framework-category-autocomplete,
+ww-formal-framework-autocomplete,
+ww-organisation-autocomplete,
+ww-location-autocomplete,
+ww-location-type-autocomplete,
+ww-person-autocomplete,
+ww-form-group-autocomplete,
+ww-form-group-datepicker,
+ww-form-group-datepicker-range,
+ww-form-group-select,
+ww-form-group-textbox,
+ww-form-group-toggle,
+ww-form-group-textarea,
+ww-form-group-radiolist,
+ww-form-group-taglist {
+    display: block;
+}
+
+.ww-form-group-textboxes+.ww-form-group-textboxes,
+.form__row+ww-form-group-textbox,
+ww-form-group-select+ww-form-group-textbox,
+ww-form-group-select+ww-form-group-select,
+ww-form-group-datepicker+ww-form-group-datepicker,
+ww-form-group-textbox+ww-form-group-textbox,
+ww-form-group-textbox+ww-form-group-datepicker,
+ww-form-group-textbox+ww-form-group-datepicker-range,
+ww-form-group-datepicker-range+ww-form-group-datepicker-range,
+ww-form-group-textbox+ww-form-group-toggle,
+ww-form-group-textbox+ww-form-group-select,
+ww-form-group-textbox+ww-form-group-autocomplete,
+ww-form-group-textbox+ww-formal-framework-category-autocomplete,
+ww-form-group-textbox+ww-formal-framework-autocomplete,
+ww-form-group-textbox+ww-organisation-classification-type-autocomplete,
+ww-form-group-textbox+ww-organisation-autocomplete,
+ww-formal-framework-autocomplete+ww-organisation-autocomplete,
+ww-formal-framework-autocomplete+ww-form-group-datepicker-range,
+ww-form-group-textbox+ww-form-group-textarea,
+ww-location-autocomplete+ww-form-group-toggle,
+ww-form-group-datepicker-range+ww-location-autocomplete,
+ww-location-autocomplete+.ww-form-group-textboxes,
+ww-form-group-taglist+ww-form-group-toggle,
+ww-form-group-textbox+ww-form-group-radiolist,
+ww-form-group-datepicker+ww-form-group-radiolist,
+ww-form-group-datepicker-range+ww-form-group-radiolist,
+ww-form-group-radiolist+ww-form-group-datepicker,
+ww-form-group-radiolist+ww-form-group-datepicker-range,
+ww-organisation-classification-type-autocomplete+ww-form-group-textbox,
+ww-building-autocomplete+ww-form-group-toggle,
+ww-form-group-taglist+ww-form-group-datepicker-range,
+ww-person-autocomplete+ww-form-group-datepicker,
+ww-person-autocomplete+ww-form-group-datepicker-range,
+ww-location-type-autocomplete+ww-form-group-datepicker-range,
+ww-crab-location-autocomplete+ww-form-group-textbox,
+ww-crab-location-autocomplete+h2,
+ww-form-group-textarea+ww-form-group-textbox,
+ww-form-group-textarea+ww-organisation-autocomplete,
+ww-form-group-textarea+ww-form-group-textarea,
+ww-form-group-toggle+ww-form-group-textbox,
+ww-form-group-toggle+ww-form-group-datepicker,
+ww-form-group-toggle+ww-form-group-datepicker-range,
+ww-form-group-toggle+ww-form-group-toggle,
+ww-form-group-toggle+ww-location-type-autocomplete,
+ww-form-group-toggle+ww-form-group-textarea,
+ww-form-group-select+ww-form-group-toggle,
+ww-form-group-select+ww-form-group-datepicker,
+ww-form-group-select+ww-form-group-datepicker-range,
+ww-form-group-select+ww-person-autocomplete,
+ww-person-autocomplete+ww-form-group-select,
+ww-organisation-autocomplete+ww-form-group-datepicker,
+.form__row+ww-form-group-datepicker-range,
+ww-organisation-autocomplete+ww-form-group-datepicker-range,
+ww-organisation-autocomplete+ww-form-group-select,
+ww-form-group-datepicker+ww-organisation-autocomplete,
+ww-form-group-datepicker-range+ww-organisation-autocomplete,
+ww-form-group-datepicker-range+.ww-form-group-textboxes,
+ww-form-group-autocomplete+.form__row,
+ww-form-group-select+.form__row,
+ww-form-group-textbox+.form__row,
+ww-form-group-toggle+.form__row,
+ww-form-group-textarea+.form__row,
+ww-form-group-datepicker+.form__row,
+ww-form-group-datepicker-range+.form__row,
+ww-form-group-radiolist+.form__row,
+ww-formal-framework-category-autocomplete+.form__row,
+ww-formal-framework-autocomplete+.form__row,
+ww-organisation-classification-type-autocomplete+.form__row,
+ww-organisation-autocomplete+.form__row,
+ww-building-autocomplete+.form__row,
+ww-crab-location-autocomplete+.form__row,
+ww-create-organisation-fields+.form__row,
+ww-form-group-taglist+.form__row,
+.ww-form-group-textboxes+.form__row {
+  margin-top: 1.5rem;
+}
+
+ww-form-group-datepicker-range+hr,
+ww-form-group-taglist+hr,
+ww-organisation-autocomplete+hr {
+  margin-top: 1.7rem;
+}
+
+ww-form-group-select div.form__input {
+  height: 3.5rem;
+}
+
+.select__noresults section.select__list {
+  display: none;
+}
+
+.form__group {
+  padding: 0rem 1.5rem;
+  background-color: #fff;
+}
+
+label.form__label {
+  padding: 0 0.3rem;
+}
+
+div.form__error {
+  padding: 0.3rem 0.3rem;
+  float: right;
+}
+
+.js-select .select__cta:focus, .js-select .select__cta[data-selected=true] {
+  text-decoration: none;
+}
+.js-select .select__cta[data-selected=true]:hover {
+  text-decoration: underline;
+}
+
+.js-select .input-field--disabled {
+  color: #333332 !important;
+  background-color: #F3F5F6 !important;
+}
+
+/* ANGULAR VALIDATION STYLES */
+.select__error button.js-select__input,
+.ng-invalid.input-field--alwaysvalidate:not(form),
+.ng-invalid.ng-touched:not(form) {
+  outline: #ff3333 solid 2px;
+  outline-offset: -2px;
+  background-color: #fbeaea;
+}

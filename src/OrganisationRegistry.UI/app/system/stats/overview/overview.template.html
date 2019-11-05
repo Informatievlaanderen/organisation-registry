@@ -1,0 +1,31 @@
+<div class="grid">
+  <div class="col--1-1">
+    <div class="cta-title">
+        <h1 class="h2 cta-title__title">Statistieken</h1>
+    </div>
+    <form class="form" [formGroup]="form" (ngSubmit)="refreshStats()" autocomplete="off">
+      <div class="form__row" class="form__row--inline">
+        <label class="form__label" for="daysBack">Aantal dagen terug:</label>
+        <div class="form__input">
+            <input
+              id="daysBack"
+              type="number"
+              [formControl]="form.get('daysBack')"
+              class="input-field"/>
+        </div>
+      </div>
+    </form>
+    <div *ngIf="isBusy">
+      Loading statistics...
+    </div>
+    <div class="grid" *ngIf="!isBusy">
+        <div class="col--4-12 col--6-12--s"
+          *ngFor="let stat of stats | keys">
+              <div class="ww-stat">
+                <h4 class="h4">{{stat.key}}</h4>
+                <p style="text-align: right">{{stat.value}}</p>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

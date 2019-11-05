@@ -1,0 +1,19 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Organisaties</h1>
+            <a *ngIf="(canCreateOrganisation | async)" class="button cta-title__cta" [routerLink]="['./create']">Voeg organisatie toe</a>
+        </div>
+
+        <ww-organisation-filter
+          [isBusy]="isLoading"
+          (filter)="search($event)">
+        </ww-organisation-filter>
+        <ww-organisation-list
+          [items]="organisations"
+          [isBusy]="isLoading"
+          (changePage)="changePage($event)"
+          (exportCsv)="exportCsv($event)">
+        </ww-organisation-list>
+    </div>
+</div>

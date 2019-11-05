@@ -1,0 +1,11 @@
+export class OrganisationBuilding {
+  constructor(
+      public organisationBuildingId: string,
+      public organisationId: string,
+      public buildingId: string,
+      public buildingName: string,
+      public validFrom: Date,
+      public validTo: Date
+    ) {
+    }
+}

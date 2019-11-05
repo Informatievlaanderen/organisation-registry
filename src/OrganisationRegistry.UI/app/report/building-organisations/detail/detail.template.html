@@ -1,0 +1,18 @@
+<div class="grid">
+  <div class="col--1-1">
+    <div class="cta-title">
+        <h1 class="h2 cta-title__title">Gebouw {{building.name}}</h1>
+    </div>
+
+    <div class="back-arrow">
+      <a [routerLink]="['/report/building-organisations']"><i class="vi vi-u-link vi-arrow"></i> terug naar organisaties per gebouw</a>
+    </div>
+
+    <ww-report-building-organisation-list
+      [items]="buildingOrganisations"
+      [isBusy]="isLoading"
+      (changePage)="changePage($event)"
+      (exportCsv)="exportCsv($event)">
+    </ww-report-building-organisation-list>
+  </div>
+</div>

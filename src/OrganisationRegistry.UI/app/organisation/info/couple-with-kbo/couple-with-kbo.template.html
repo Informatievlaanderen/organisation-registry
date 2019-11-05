@@ -1,0 +1,47 @@
+<div class="grid">
+    <div class="col--8-12 col--10-12--m col--1-1--s">
+      <div>
+        <h1 class="h2">Koppelen met Kbo</h1>
+      </div>
+
+      <form class="form" [formGroup]="kboNumberForm" (ngSubmit)="submit()" autocomplete="off">
+          <div class="form__group">
+            <div [hidden]="this.organisationFromKbo.kboNumber">
+              <ww-form-group-textbox
+                [id]="'kboNumber'"
+                [name]="'Kbo nummer organisatie'"
+                [label]="'Kbo'"
+                [placeholder]="'Kbo nummer organisatie'"
+                [control]="kboNumberForm.get('kboNumber')"
+                [focus]="true">
+              </ww-form-group-textbox>
+            </div>
+
+            <div [hidden]="differences.length === 0">
+              <h3 class="h4">De volgende waarden zullen worden overschreven:</h3>
+              <ul>
+                <li *ngFor="let difference of differences">
+                  {{difference.name}}: {{difference.local}} &#8594; {{difference.remote}}
+                </li>
+              </ul>
+            </div>
+
+            <div class="form__row">
+              <div class="form__buttons">
+                <div class="form__buttons__left">
+                    <a [routerLink]="['./..']" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
+                </div>
+                <div class="form__buttons__right">
+                  <button class="button form__button"
+                          type="submit"
+                          [ngClass]="{'button--disabled': !kboNumberForm.valid, 'button--loading': kboNumberForm.disabled}"
+                          [disabled]="!kboNumberForm.valid || kboNumberForm.disabled">
+                    <span>{{primaryButtonText}}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+    </div>
+  </div>

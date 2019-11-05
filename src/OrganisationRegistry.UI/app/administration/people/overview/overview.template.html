@@ -1,0 +1,18 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Personen</h1>
+            <a class="button cta-title__cta" [routerLink]="['./create']">Voeg persoon toe</a>
+        </div>
+
+        <ww-person-filter
+          [isBusy]="isLoading"
+          (filter)="search($event)">
+        </ww-person-filter>
+        <ww-person-list
+          [items]="people"
+          [isBusy]="isLoading"
+          (changePage)="changePage($event)">
+        </ww-person-list>
+    </div>
+</div>

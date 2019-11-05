@@ -1,0 +1,18 @@
+<form class="form" [formGroup]="organisationFunctionForm" (ngSubmit)="filterForm(organisationFunctionForm.value)" autocomplete="off">
+  <div class="checkbox--switch__wrapper">
+    <input [attr.id]="'activeOnly'"
+           [attr.name]="'activeOnly'"
+           type="checkbox"
+           [formControl]="organisationFunctionForm.get('showHistory')"
+           class="checkbox--switch"
+           [ngClass]="{'checkbox--disabled': isBusy}"
+           [readonly]="isBusy"
+           (change)="filterForm(organisationFunctionForm.value)"/>
+
+    <label class="checkbox--switch__label"
+           [attr.for]="'activeOnly'"
+           [ngClass]="{'checkbox--disabled': isBusy}"></label>
+
+    <label class="form__label">toon inactieve</label>
+  </div>
+</form>

@@ -1,0 +1,12 @@
+<ww-form-group-autocomplete
+  [id]="id"
+  [label]="label || 'Adres'"
+  [initialValue]="initialValue"
+  [control]="control"
+  [placeholder]="placeholder || 'Selecteer adres...'"
+  [name]="name || 'Adres'"
+  [focus]="focus"
+  [inline]="inline"
+  [fetch]="searchCrabLocations.bind(this)"
+  (valueChanged)="onValueChanged($event)">
+</ww-form-group-autocomplete>

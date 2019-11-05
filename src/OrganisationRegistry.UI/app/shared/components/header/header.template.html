@@ -1,0 +1,39 @@
+<div class="iwgh3 js-iw3-widget-element iw3-retina-disabled iw3-js iw-no-ie">
+  <div class="iwgh3__placeholder js-iwgh3-placeholder">
+    <div class="iwgh3__top-bar js-iwgh3-bar js-iwgh3-bar--fixed">
+      <a href="https://www.vlaanderen.be/nl" class="iwgh3__home-link iwgh2" target="_self">
+        <div class="iwgh3__logo">
+          <svg class="iwgh3__logo__img">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#vlaanderen-logo"></use>
+          </svg>
+        </div>
+        <div class="iwgh3__label">Vlaanderen</div>
+      </a>
+      <form novalidate [formGroup]="searchForm" (ngSubmit)="search(searchForm.value)" autocomplete="off" class="iwgh3__search js-iwgh3__search" data-default-placeholder="Zoeken">
+        <label class="iwgh3__search__label js-iwgh3__search__label" id="iwgh3-search-label" for="q" onclick="">
+          <span>Zoekterm</span>
+          <svg class="iwgh3__search__img">
+            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#search"></use>
+          </svg>
+        </label>
+        <div class="iwgh3__search__form-wrapper">
+          <input
+            type="search"
+            autocomplete="off"
+            placeholder="Zoeken"
+            class="iwgh3__search__input js-iwgh3__search__input"
+            [attr.name]="'q'"
+            [attr.id]="'q'"
+            [formControl]="searchForm.get('q')"
+            required="">
+          <button type="submit" class="iwgh3__search__submit" id="iwgh3-search-submit" >
+            <span>Zoeken</span>
+            <svg class="iwgh3__search__submit__img">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#search"></use>
+            </svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

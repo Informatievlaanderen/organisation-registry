@@ -1,0 +1,74 @@
+<div class="grid">
+  <div class="col--1-1">
+    <div class="h2-sublink">
+      <h2 class="h2">{{organisation.name}}</h2>
+
+      <div *ngIf="organisation.parentOrganisationId">
+        <i class="vi vi-u-link vi-arrow"></i> dochter van
+        <a [routerLink]="['./../', organisation.parentOrganisationId]" title="{{organisation.parentOrganisation}}">{{organisation.parentOrganisation}}</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col--1-1">
+    <div class="grid">
+      <div class="col--2-12 col--1-1--s">
+        <nav class="side-navigation">
+          <div class="side-navigation__content">
+            <ul class="side-navigation__group">
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['info']">Algemeen</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['contacts']">Contacten</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['bankaccounts']" *ngIf="(enableBankAccounts | async)">Bankrekeningnummers</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['functions']">Functies</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['capacities']">Hoedanigheden</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['locations']">Locaties</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['buildings']">Gebouwen</a>
+              </li>
+              <li class="side-navigation__item">
+                  <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['parents']">Historiek</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['labels']">Benamingen</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['classifications']">Classificaties</a>
+              </li>
+              <li class="side-navigation__item">
+                  <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['formalframeworks']">Toepassingsgebieden</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['keys']">Sleutels</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['bodies']">Organen</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['relations']" *ngIf="(enableOrganisationRelations | async)">Relaties</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['openinghours']" *ngIf="(enableOrganisationOpeningHours | async)">Openingsuren</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <div class="col--10-12 col--1-1--s main-navigation__content">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+</div>

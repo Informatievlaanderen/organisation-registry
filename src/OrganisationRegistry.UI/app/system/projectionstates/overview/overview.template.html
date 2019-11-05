@@ -1,0 +1,29 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Projectie statussen</h1>                              
+        </div>
+
+        <ww-projection-state-list
+            [items]="projectionStates"
+            [isBusy]="isLoading"
+            (changePage)="changePage($event)">
+        </ww-projection-state-list>
+
+        <section class="region">
+            <div class="layout layout--wide">
+                <!-- component -->
+                <div class="grid">
+                <div class="col--12-12 col--12-12--s">
+                    <div class="infotext">
+                    <div class="infotext__value">{{ lastEventNumber }}</div>
+                    <div class="infotext__text">Laatste Event Nummer</div>
+                    </div>
+                </div>
+                </div>
+                <!-- end component -->
+            </div>
+        </section>          
+    </div>
+</div>
+    

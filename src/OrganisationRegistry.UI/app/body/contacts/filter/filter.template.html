@@ -1,0 +1,18 @@
+<form class="form" [formGroup]="bodyContactForm" (ngSubmit)="filterForm(bodyContactForm.value)" autocomplete="off">
+  <div class="checkbox--switch__wrapper">
+    <input [attr.id]="'activeOnly'"
+           [attr.name]="'activeOnly'"
+           type="checkbox"
+           [formControl]="bodyContactForm.get('showHistory')"
+           class="checkbox--switch"
+           [ngClass]="{'checkbox--disabled': isBusy}"
+           [readonly]="isBusy"
+           (change)="filterForm(bodyContactForm.value)"/>
+
+    <label class="checkbox--switch__label"
+           [attr.for]="'activeOnly'"
+           [ngClass]="{'checkbox--disabled': isBusy}"></label>
+
+    <label class="form__label">toon inactieve</label>
+  </div>
+</form>

@@ -1,0 +1,40 @@
+<div class="grid">
+  <div class="col--10-12 col--10-12--m col--1-1--s">
+    <div>
+      <h1 class="h2">Event #{{eventData.number}}</h1>
+    </div>
+
+    <div class="contact-card__content-wrapper">
+      <div class="properties ww-info">
+        <div class="properties__column">
+          <dl>
+            <dt class="properties__label">Type:</dt>
+            <dd class="properties__data">{{eventData.name}}</dd>
+
+            <dt class="properties__label">Datum:</dt>
+            <dd class="properties__data">{{eventData.timestamp}}</dd>
+
+            <dt class="properties__label">Persoon:</dt>
+            <dd class="properties__data">{{eventData.lastName}} {{eventData.firstName}}</dd>
+          </dl>
+        </div>
+        <div class="properties__column">
+          <dl>
+            <dt class="properties__label">Versie:</dt>
+            <dd class="properties__data">{{eventData.version}}</dd>
+
+            <dt class="properties__label">IP:</dt>
+            <dd class="properties__data" *ngIf="eventData.ip">{{eventData.ip}}</dd>
+            <dd class="properties__data properties--disabled" *ngIf="!eventData.ip">Geen</dd>
+
+            <dt class="properties__label">ACM Id:</dt>
+            <dd class="properties__data" *ngIf="eventData.userId">{{eventData.userId}}</dd>
+            <dd class="properties__data properties--disabled" *ngIf="!eventData.userId">Geen</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <pre><code>{{eventData.data | json}}</code></pre>
+  </div>
+</div>

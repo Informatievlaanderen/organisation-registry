@@ -1,0 +1,10 @@
+.checkbox--switch__wrapper {
+  float: left;
+  margin-left: 20px;
+  margin-top: 7px;
+}
+
+.form__label {
+  font-weight: normal;
+  font-size: 1.4rem;
+}

@@ -1,0 +1,36 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Projectie herbouwen</h1>
+        </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="rebuildProjection(form.value)" autocomplete="off">
+      <div class="form__group">
+        <ww-form-group-select
+          [id]="'projection'"
+          [label]="'Projectie'"
+          [control]="form.get('projection')"
+          [name]="'Projectie'"
+          [placeholder]="'Selecteer projectie...'"
+          [values]="projections">
+        </ww-form-group-select>
+
+        <div class="form__row">
+            <div class="form__buttons">
+              <div class="form__buttons__left">
+                <a [routerLink]="['./..']" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
+              </div>
+              <div class="form__buttons__right">
+                <button class="button form__button"
+                        type="submit"
+                        [ngClass]="{'button--disabled': !isFormValid, 'button--loading': form.disabled}"
+                        [disabled]="!isFormValid || form.disabled">
+                  <span>Herbouw projectie</span>
+                </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+    </div>
+</div>

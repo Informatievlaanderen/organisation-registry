@@ -1,0 +1,75 @@
+<form class="form" [formGroup]="form" (ngSubmit)="filterForm(form.value)" autocomplete="off">
+  <div class="grid">
+    <div class="col--6-12 col--1-1--s">
+      <div class="form__group">
+
+        <ww-form-group-textbox
+          [id]="'street'"
+          [label]="'Straat'"
+          [control]="form.get('street')"
+          [placeholder]="'Straat'"
+          [name]="'Straat'">
+        </ww-form-group-textbox>
+
+        <ww-form-group-textbox
+          [id]="'city'"
+          [label]="'Gemeente'"
+          [control]="form.get('city')"
+          [placeholder]="'Gemeente'"
+          [name]="'Gemeente'">
+        </ww-form-group-textbox>
+
+        <ww-form-group-toggle
+          [id]="'nonCrabOnly'"
+          [label]="'Enkel niet-Crab locaties'"
+          [control]="form.get('nonCrabOnly')"
+          [name]="'Niet-Crab locaties'">
+        </ww-form-group-toggle>
+
+      </div>
+    </div>
+    <div class="col--6-12 col--1-1--s">
+      <div class="form__group">
+
+        <ww-form-group-textbox
+          [id]="'zipCode'"
+          [label]="'Postcode'"
+          [control]="form.get('zipCode')"
+          [placeholder]="'Postcode'"
+          [name]="'Postcode'">
+        </ww-form-group-textbox>
+
+        <ww-form-group-textbox
+          [id]="'country'"
+          [label]="'Land'"
+          [control]="form.get('country')"
+          [placeholder]="'Land'"
+          [name]="'Land'">
+        </ww-form-group-textbox>
+      </div>
+    </div>
+    <div class="col--1-1">
+      <div class="form__row">
+        <div class="form__buttons">
+          <div class="form__buttons__right">
+            <button class="button form__button"
+                    type="reset"
+                    *ngIf="filterActive"
+                    (click)="resetForm()"
+                    [ngClass]="{'button--disabled': form.disabled}"
+                    [disabled]="form.disabled">
+              <span>Filter wissen</span>
+            </button>
+
+            <button class="button form__button"
+                    type="submit"
+                    [ngClass]="{'button--disabled': !isFormValid, 'button--loading': form.disabled}"
+                    [disabled]="!isFormValid || form.disabled">
+              <span>Zoeken</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+</form>

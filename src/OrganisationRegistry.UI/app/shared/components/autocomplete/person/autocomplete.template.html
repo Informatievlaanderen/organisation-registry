@@ -1,0 +1,11 @@
+<ww-form-group-autocomplete
+  [id]="id"
+  [label]="label || 'Persoon'"
+  [initialValue]="initialValue"
+  [control]="control"
+  [placeholder]="placeholder || 'Selecteer persoon...'"
+  [name]="name || 'Persoon'"
+  [focus]="focus"
+  [inline]="inline"
+  [fetch]="searchPeople.bind(this)">
+</ww-form-group-autocomplete>

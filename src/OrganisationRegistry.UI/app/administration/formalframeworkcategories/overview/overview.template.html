@@ -1,0 +1,18 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Toepassingsgebiedcategorie&euml;n</h1>
+            <a class="button cta-title__cta" [routerLink]="['./create']">Voeg toepassingsgebiedcategorie toe</a>
+        </div>
+
+        <ww-formal-framework-category-filter
+            [isBusy]="isLoading"
+            (filter)="search($event)">
+        </ww-formal-framework-category-filter>
+        <ww-formal-framework-category-list
+            [items]="formalFrameworkCategories"
+            [isBusy]="isLoading"
+            (changePage)="changePage($event)">
+        </ww-formal-framework-category-list>
+    </div>
+</div>

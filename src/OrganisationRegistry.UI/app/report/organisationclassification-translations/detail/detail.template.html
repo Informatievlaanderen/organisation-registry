@@ -1,0 +1,22 @@
+<div class="grid">
+  <div class="col--1-1">
+    <div class="cta-title">
+        <h1 class="h2 cta-title__title">Entiteit {{classification.name}}</h1>
+    </div>
+
+    <div class="back-arrow">
+      <a [routerLink]="['/report/organisationclassification-translations']"><i class="vi vi-u-link vi-arrow"></i> terug naar vertaling entiteiten</a>
+    </div>
+
+    <!-- <ww-report-classification-organisation-filter
+      [isBusy]="isLoading"
+      (filter)="search($event)">
+    </ww-report-classification-organisation-filter>-->
+    <ww-report-classification-organisation-list
+      [items]="classificationOrganisations"
+      [isBusy]="isLoading"
+      (changePage)="changePage($event)"
+      (exportCsv)="exportCsv($event)">
+    </ww-report-classification-organisation-list>
+  </div>
+</div>

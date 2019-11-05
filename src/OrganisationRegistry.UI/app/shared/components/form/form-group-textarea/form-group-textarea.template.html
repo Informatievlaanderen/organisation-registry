@@ -1,0 +1,19 @@
+<div class="form__row" [ngClass]="{'form__row--inline': inline}">
+    <label class="form__label" [attr.for]="id">{{label}}</label>
+    <div class="form__error" *ngIf="!inline && control.errors && control.touched && control.hasError('required')">'{{name}}' is verplicht.</div>
+
+    <div class="form__input">
+        <!-- TODO: decide on cols vs width %-->
+        <textarea [attr.id]="id"
+                  [attr.name]="id"
+                  [formControl]="control"
+                  class="textarea"
+                  style="width:100%"
+                  [attr.rows]="rows || '4'"
+                  [ngClass]="{'input-field--disabled': control.disabled}"
+                  placeholder="{{placeholder}}"
+                  [readonly]="control.disabled"
+                  #myTextArea>
+        </textarea>
+    </div>
+</div>

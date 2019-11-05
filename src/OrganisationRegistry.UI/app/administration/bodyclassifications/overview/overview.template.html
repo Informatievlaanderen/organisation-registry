@@ -1,0 +1,18 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Orgaanclassificaties</h1>
+            <a class="button cta-title__cta" [routerLink]="['./create']">Voeg orgaanclassificatie toe</a>
+        </div>
+
+        <ww-body-classification-filter
+          [isBusy]="isLoading"
+          (filter)="search($event)">
+        </ww-body-classification-filter>
+        <ww-body-classification-list
+          [items]="bodyClassifications"
+          [isBusy]="isLoading"
+          (changePage)="changePage($event)">
+        </ww-body-classification-list>
+    </div>
+</div>

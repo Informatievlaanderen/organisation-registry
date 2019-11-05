@@ -1,0 +1,16 @@
+<div class="alert" [ngClass]="alertClass" [@visibility]="visible" style="display: none;">
+    <div [ngSwitch]="alert.type">
+        <div *ngSwitchCase="alertType.Warning" class="alert__icon"></div>
+        <div *ngSwitchCase="alertType.Error" class="alert__icon"></div>
+        <div *ngSwitchCase="alertType.Success" class="alert__icon vi-check"></div>
+    </div>
+
+    <div class="alert__content">
+        <button type="button" (click)="dismissAlert()" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <div class="alert__title">{{ alert.title }}</div>
+        <div class="alert__message">
+            <a *ngIf="alert.link" [routerLink]="alert.link"><p>{{ alert.message }}</p></a>
+            <p *ngIf="!alert.link">{{ alert.message }}</p>
+        </div>
+    </div>
+</div>

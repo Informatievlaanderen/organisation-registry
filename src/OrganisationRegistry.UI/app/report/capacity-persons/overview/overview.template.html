@@ -1,0 +1,17 @@
+﻿<div class="grid">
+  <div class="col--1-1">
+    <div class="cta-title">
+      <h1 class="h2 cta-title__title">Personen per hoedanigheid</h1>
+    </div>
+
+    <ww-report-capacity-filter
+      [isBusy]="isLoading"
+      (filter)="search($event)">
+    </ww-report-capacity-filter>
+    <ww-report-capacity-list
+      [items]="capacities"
+      [isBusy]="isLoading"
+      (changePage)="changePage($event)">
+    </ww-report-capacity-list>
+  </div>
+</div>

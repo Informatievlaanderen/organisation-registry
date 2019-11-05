@@ -1,0 +1,15 @@
+.functional-header, .u-spacer {
+    margin-bottom: 0;
+}
+
+.functional-header__actions {
+    padding: 1rem .5rem 1rem;
+}
+
+.functional-header__action a {
+    cursor: pointer;
+}
+
+.functional-header__action a:hover {
+    text-decoration: underline;
+}

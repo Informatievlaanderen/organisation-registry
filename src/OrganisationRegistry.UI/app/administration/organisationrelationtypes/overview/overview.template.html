@@ -1,0 +1,18 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Organisatie relatie types</h1>
+            <a class="button cta-title__cta" [routerLink]="['./create']">Voeg organisatie relatie type toe</a>
+        </div>
+
+        <ww-organisation-relation-type-filter
+          [isBusy]="isLoading"
+          (filter)="search($event)">
+        </ww-organisation-relation-type-filter>
+        <ww-organisation-relation-type-list
+          [items]="organisationRelationTypes"
+          [isBusy]="isLoading"
+          (changePage)="changePage($event)">
+        </ww-organisation-relation-type-list>
+    </div>
+</div>

@@ -1,0 +1,264 @@
+﻿td.data-table__body-title,
+.h2-sublink .h2 {
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.center {
+  width: 100%;
+  height: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -moz-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+.center-container {
+  height: 10em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* For Anchor tags without href */
+.link-text {
+    cursor: pointer;
+}
+
+#vlaanderen-top {
+  width: 100%;
+  min-width: 768px;
+  background: #fff;
+  color: #333;
+  border-bottom: 1px solid #cbd2da;
+  font-size: 16px;
+  font-family: flanders-sans;
+  -webkit-text-size-adjust: none;
+  -webkit-font-smoothing: antialiased!important;
+  font-smoothing: antialiased!important;
+  text-rendering: optimizeLegibility;
+}
+
+#vlaanderen-navigation {
+  white-space: nowrap;
+}
+
+#vlaanderen-link {
+  display: inline-block;
+  font-family: flanders-sans;
+  font-weight: 500;
+  text-decoration: none;
+  outline: none;
+
+  color: #333332;
+  font-size: 1.1875em;
+  line-height: 2.31579em;
+  text-transform: none;
+  transition: color 0.2s;
+}
+
+#vlaanderen-link:hover {
+  color: #06c;
+}
+
+#vlaanderen-top-logo {
+  position: relative;
+  width: 47px;
+  background-color: #fff;
+  overflow: hidden;
+  transition: background-color 0.2s;
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAbCAYAAACa9mScAAAEk0lEQVR42pxV228UVRyendnt3mb2fpm9dtvdtrDixmrSIN4SNfiEJSXBB9MQkWBMJKjhBR8Mf4DwpA8kKglqKBgSrSUkEpsgSIwPoC3strSL3V7YS7d7m73MXmbX76zsppqK6CRnZs6cc77f9/t+l6GoTZfT4XSFHg8dpf7jRbdvNE3ZrLYnfL2+C61ma/h/gfT19u0Mbg/+qFAodtUb9e9kMhlhFWAYhn4UEAYHaZfTdVqtVg/F4/HD+UL+psflOaJRaxx6vb5/I7Nx+99A5AaDQWc0Gg2JRGLvYnTxEjS5iMPPLcWWXne73Edjy7HzTt7Zp9PpDjZxiVUxsnZ/bapcLgtdJj09PQq4MBu9F/1hcHDwpMViOZjL5T5eXVv9jOf548Vi8deKWIl53d5TYMuxWvYF3s7vzGQzU/V6vdkGEUWxJjWkNWhyxmQyvV2tVq+kUql3GlKjoexRvgJWLrD6RigK02az2Qa9ygzN7F9Pr18Eq/W2O7DG+by+L8BotNFonIvMRd7E+4jX43VIknQFlt/SarUMLEdu/XbrODTsGwgMMDJapu9GZ6B/4FO5XD6KA+fvhO+MVyoVcWho6BTmnkQycR2HPLDsJpuhA5XP53+HoQ8EQegKTjdbzf04EA1Hwodz+ZwU8AdOyhn5k4jUVbi6gD0Nu80+sjkapVLpPlh3haVBfQXiXc7msoXgtuAbVqv1PegyCd9/wbpQq9WWVSrV7ofmCRS+ipFUyBVNn8/3bavVKs3Nz+11Op1P1eo1CmABpMEINDmNfVtnLGJ+c2V15ZLX6z0CABasPsGBGCWjXuVt/MsA+Qm69EMX/h+Tjdw4jjOwLLsPryIAvyRpj4PDVbFaSqaSE3CRVSqV2yiBipP9/n7/bpTEM8lk8hymxnZtgIETDzfozkH1eaS8WcfpQvgObcW7WMugFMZJoT6IUtHj9nyI7J4J7Qjd6BQYQ6wXCoV5JBDl4B3PA8AAUaOYV4WCMMnpuHGL2RIkm8HuxvLK8gFENd6iWn9WMQAqGE0MkcwRjT3kmVpPRbCRQraeJa67ne5jyCkKJUQtLC6cRQCGsX6tDYKYL8GVMKz3qlVqGfR5Gu8bAF0j6xCfRPB7lmPH4CrbERQByOSF/HQbpFQuNYql4gQOsbCkhag2gKSwlG1rUCk3UeHHyDraxqGONiajya7n9HvkHVRQn7GarTtwmMGgH0SOjHZypDfSs0j5KZvN9hHcDUlNqcax3D5EydLtXBA1DNonYI2IXCMtF2D2zjrRAS79TIzApVEiJRrYGTStSfmmeohiUKRiodFduPUs+u6LBaHweTe9GSYHIZOR+cgu6HGv+/3v2QdrLZVSVUcCjqEJPQbgC2hKJbKG9B+sS/U4ut3Xf6mdrdIY1Xwbonk0Gs1LaFTD6XR6AuxAQuKsFisPba5vrqMtQeB3C/5eRlHSsH4A0WKy2ew0ki/psDvGUWcnUP0VgNbBuiJ76P9ERlN+v38Uv4/3Z2ZnXkO7SIChCq30K/ScMYA0UagLskf5r8AlB1hUUOE5Mkd0aLTPQ2jq7yJq2/8QYADHfmEQMqqC8gAAAABJRU5ErkJggg==');
+
+  display: inline-block;
+  float: left;
+  margin-right: 5px;
+  height: 44px;
+  background-repeat: no-repeat;
+  background-position: 11px center;
+}
+
+#vlaanderen-top-logo:after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 28px;
+  top: -4px;
+  height: 54px;
+  width: 1px;
+  background-image: none !important;
+  background-color: #cbd2da;
+  transform: rotate(-20deg);
+  transform-origin: top left;
+
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAsCAYAAABsSzi3AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTExIDc5LjE1ODMyNSwgMjAxNS8wOS8xMC0wMToxMDoyMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6Q0UxRTYyRjlGRkYwMTFFNUI5NjNCN0I5MjREOTYwN0QiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6Q0UxRTYyRkFGRkYwMTFFNUI5NjNCN0I5MjREOTYwN0QiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpDRTFFNjJGN0ZGRjAxMUU1Qjk2M0I3QjkyNEQ5NjA3RCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpDRTFFNjJGOEZGRjAxMUU1Qjk2M0I3QjkyNEQ5NjA3RCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pif4ca8AAAD7SURBVHjapNZdCwFBGIbhaf//X3DmTMjH5uNgFVKIJCRxICnFgZCwMZ5XO9qyaXeet+7Tq3ZndmccrfVSE+MopVJIK8sRII3mDLBBDQaQybFAF80Y4IKqDCCTYYEB6jGAj8oMYFbDZ4ApajKATJEFCujEAGvkMYBMngUqaMcAe1RngNhf6D9AXuSKAc7IZQCzGpoBOmjMAI9gZ1oDZmvfGWCE+gzw+rcnnJhb3g2W1RpYoBYDyGRZoIYODLCN+kKTAJGPkRTwgtPcGjiiEgP8/C9tgHb4RmMD3MJb2wYwp9eTAeRGM2SA74WEAeTwuTLARG40DPB5jLcAAwA4ZXyTFWLRuQAAAABJRU5ErkJggg==');
+}
+
+@media (max-width: 580px) {
+  #vlaanderen-top { display: none !important; }
+}
+
+footer {
+  /*position: static !important;*/
+  display: block;
+  font-family: flanders-sans;
+
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+
+  padding: 30px 40px;
+  color: #333332;
+  background: #fff;
+  border-top: 1px solid #cbd2da;
+  width: 100%;
+  box-sizing: border-box;
+
+  font-size: 18px;
+  -webkit-text-size-adjust: none;
+  -webkit-font-smoothing: antialiased!important;
+  font-smoothing: antialiased!important;
+  text-rendering: optimizeLegibility;
+}
+
+#vlaanderen-footer {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  vertical-align: baseline;
+  height: auto;
+
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+}
+
+#vlaanderen-footer-logo {
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 7%;
+  white-space: nowrap;
+}
+
+#vlaanderen-footer-logo:before {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 24px;
+  top: -5px;
+  height: 53.21px;
+  width: 1px;
+  background-color: #cbd2da;
+  -webkit-transform: rotate(-20deg);
+  -ms-transform: rotate(-20deg);
+  transform: rotate(-20deg);
+  -webkit-transform-origin: top left;
+  -ms-transform-origin: top left;
+  transform-origin: top left;
+}
+
+#vlaanderen-footer-logo svg {
+  display: inline-block;
+  vertical-align: middle;
+  height: 40px;
+  width: 25px;
+  margin: 0;
+  fill: #333332;
+}
+
+#vlaanderen-footer-logo-text {
+  margin-left: 13px;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1.2;
+  text-align: left;
+}
+
+#vlaanderen-footer-logo-title {
+  font-weight: 500;
+  font-size: 18px;
+}
+
+#vlaanderen-footer-logo-tagline {
+  font-size: 12px;
+  color: #3b3b3c;
+}
+
+#vlaanderen-footer-info {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 4%;
+  -webkit-box-flex: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+  -ms-flex-negative: 1;
+  flex-shrink: 1;
+}
+
+#vlaanderen-footer-info-title {
+  font-size: 19px;
+  line-height: 1.25;
+  font-weight: 500;
+}
+
+#vlaanderen-footer-info-publisher {
+  font-size: 14px;
+  line-height: 1.2;
+  overflow: hidden;
+  color: #3b3b3c;
+}
+
+#vlaanderen-footer-info-publisher a {
+  text-decoration: none;
+  -webkit-transition: all,0s;
+  transition: all,0s;
+  outline: 0;
+  color: #06c;
+}
+
+#vlaanderen-footer-info-publisher a:hover {
+  color: #3184d6;
+  text-decoration: none;
+}
+
+@media (max-width: 580px) {
+  #vlaanderen-footer {
+    display: block;
+    text-align: center;
+  }
+
+  #vlaanderen-footer-logo {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+
+  #vlaanderen-footer-info {
+    display: block;
+  }
+
+  #vlaanderen-footer-info-title {
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  #vlaanderen-footer-info-publisher {
+    margin-top: 5px;
+    font-size: 13px
+  }
+}
+

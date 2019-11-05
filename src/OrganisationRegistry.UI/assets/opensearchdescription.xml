@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+ <ShortName>wegwijs.vlaanderen.be</ShortName>
+ <Description>Wegwijs Organisatie doorzoeken</Description>
+ <Tags>wegwijs vlaanderen</Tags>
+ <Url type="text/html" template="https://wegwijs.vlaanderen.be/#/search/organisations?q={searchTerms}"/>
+ <Image height="16" width="16" type="image/vnd.microsoft.icon">https://wegwijs.vlaanderen.be/assets/icon/favicon-16x16.png</Image>
+</OpenSearchDescription>

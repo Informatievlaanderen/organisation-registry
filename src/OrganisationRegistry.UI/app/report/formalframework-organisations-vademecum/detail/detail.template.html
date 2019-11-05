@@ -1,0 +1,23 @@
+<div class="grid">
+  <div class="col--1-1">
+    <div class="cta-title">
+        <h1 class="h2 cta-title__title">Toepassingsgebied {{formalFramework.name}}</h1>
+    </div>
+
+    <div class="back-arrow">
+      <a [routerLink]="['/report/formalframework-organisations-vademecum']"><i class="vi vi-u-link vi-arrow"></i> terug naar Vademecum Vlaamse overheid</a>
+    </div>
+
+    <!-- <ww-report-formalframework-organisation-filter
+      [isBusy]="isLoading"
+      (filter)="search($event)">
+    </ww-report-formalframework-organisation-filter>-->
+
+    <ww-report-formalframework-organisation-list
+      [items]="formalFrameworkOrganisations"
+      [isBusy]="isLoading"
+      (changePage)="changePage($event)"
+      (exportCsv)="exportCsv($event)">
+    </ww-report-formalframework-organisation-list>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+<ww-form-group-autocomplete
+  [id]="id"
+  [label]="label || 'Categorie'"
+  [initialValue]="initialValue"
+  [control]="control"
+  [placeholder]="placeholder || 'Selecteer categorie...'"
+  [name]="name || 'Categorie'"
+  [focus]="focus"
+  [inline]="inline"
+  [fetch]="searchFormalFrameworkCategories.bind(this)">
+</ww-form-group-autocomplete>

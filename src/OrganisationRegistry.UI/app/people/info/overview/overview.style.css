@@ -1,0 +1,19 @@
+.contact-card__content-wrapper .cta-title {
+  margin-bottom: 1rem;
+}
+
+.ww-description {
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  color: #666;
+}
+
+.properties.ww-info {
+  background-color: #e8ebee;
+  padding: 2rem 1.5rem 0.5rem 2rem;
+}
+
+.properties--disabled {
+  color: #cbd2da;
+  font-weight: lighter;
+}

@@ -1,0 +1,16 @@
+Microsoft.AspNetCore.Diagnostics
+Microsoft.AspNetCore.Server.Kestrel
+Microsoft.AspNetCore.StaticFiles
+Microsoft.AspNetCore.Server.Kestrel.Https
+Microsoft.AspNetCore.ResponseCompression
+
+Microsoft.Extensions.Logging
+Microsoft.Extensions.Options
+Microsoft.Extensions.Configuration.FileExtensions
+Microsoft.Extensions.Configuration.Json
+
+Swashbuckle.AspNetCore.SwaggerUI
+BrotliSharpLib
+
+SourceLink.Embed.AllSourceFiles
+SourceLink.Copy.PdbFiles

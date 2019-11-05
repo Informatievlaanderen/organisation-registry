@@ -1,0 +1,20 @@
+<div class="contact-card__content-wrapper">
+    <div class="cta-title">
+        <h3 class="h3 cta-title__title">Bankrekeningnummers</h3>
+        <ww-organisation-bank-account-filter
+            [isBusy]="isLoading"
+            (filter)="search($event)">
+        </ww-organisation-bank-account-filter>
+        <div class="cta-title__cta">
+            <a *ngIf="(canEditOrganisation | async)" class="button cta-title__cta" [routerLink]="['./create']">Bankrekeningnummer koppelen</a>
+            <div class="u-align-right" style="clear: both;"></div>
+        </div>
+    </div>
+
+    <ww-organisation-bank-account-list
+      [items]="organisationBankAccounts"
+      [isBusy]="isLoading"
+      (changePage)="changePage($event)"
+      [canEdit]="canEditOrganisation">
+    </ww-organisation-bank-account-list>
+</div>

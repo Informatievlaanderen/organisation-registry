@@ -1,0 +1,92 @@
+.properties--disabled {
+    color: #cbd2da;
+    font-weight: lighter;
+  }
+
+  .properties--percent {
+    width: 60px;
+    display: inline-block;
+  }
+
+  a.data-table__header-title--sortable {
+    cursor: pointer;
+  }
+
+  th.data-table__last-header {
+    width: 40px;
+    display: inline-block;
+  }
+
+  td span.data-table__cell--disabled,
+  td div.data-table__cell--disabled {
+    color: #cbd2da;
+    font-weight: lighter;
+  }
+
+  td span.data-table__cell--additional-information,
+  td div.data-table__cell--additional-information {
+    font-style: italic;
+  }
+
+  tr.data-table__body-history {
+    background-color: #f3f3f3;
+    font-style: italic;
+  }
+
+  .data-table__header-title .alert__icon:before, .vi-u-badge--medium.external-link:after, .vi.vi-u-badge--medium:before,
+  .data-table__body-title .alert__icon:before, .vi-u-badge--medium.external-link:after, .vi.vi-u-badge--medium:before {
+    font-size: 1.4rem;
+  }
+
+  .data-table__body-ellipsis,
+  .data-table__body-ellipsis div.data-table__cell--additional-information {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+  }
+
+  tr.data-table__body-missing-mandate {
+    background-color: #fef9e5;
+  }
+
+  .data-table__body-title .missingMandate {
+    float: left;
+    margin: 0;
+    width: 2.0rem;
+    height: 2rem;
+    line-height: 2rem;
+    margin-right: 0px;
+    margin-left: 2px;
+  }
+
+  .text__alert{
+    color: #900;
+  }
+
+  .text__success{
+    color: #090;
+  }
+
+  .region:first-child {
+    padding-top: 0rem;
+  }
+
+  .region {
+      margin: 0 auto;
+      padding: 1rem 0 3rem;
+      clear: both;
+  }
+
+  .infotext__value {
+    font-size: 3.8rem;
+    line-height: 1.5;
+    color: #333332;
+  }
+
+  .infotext__value.text__alert  {
+    color: #900;
+  }
+
+  .infotext__value.text__success  {
+    color: #090;
+  }

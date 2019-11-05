@@ -1,0 +1,16 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Foutmeldingen</h1>
+        </div>
+      <div
+        class="ww-exception"
+        *ngFor="let exception of exceptions">
+        <div>
+          <h4 class="h4">{{exception.type}} ({{exception.timestamp}})</h4>
+            <p>{{exception.request}}</p>
+            <p>{{exception.method}}</p>
+        </div>
+      </div>
+    </div>
+</div>

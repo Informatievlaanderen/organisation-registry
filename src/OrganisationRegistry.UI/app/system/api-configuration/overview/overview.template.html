@@ -1,0 +1,17 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Api configuratie</h1>
+        </div>
+    <div class="grid">
+      <div
+        class="col--12-12 col--6-12--s"
+        *ngFor="let configurationSection of apiConfiguration | keys">
+            <div
+              class="ww-configuration-section">
+              <h4 class="h4">{{configurationSection.key}}</h4>
+              <pre style="text-align: left">{{configurationSection.value | json}}</pre>
+            </div>
+        </div>
+    </div>
+</div>

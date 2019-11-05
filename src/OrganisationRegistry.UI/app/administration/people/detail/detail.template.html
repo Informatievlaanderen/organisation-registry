@@ -1,0 +1,66 @@
+<div class="grid">
+  <div class="col--8-12 col--10-12--m col--1-1--s">
+    <div *ngIf="isEditMode">
+      <h1 class="h2">Bewerken persoon</h1>
+    </div>
+
+    <div *ngIf="!isEditMode">
+      <h1 class="h2">Nieuwe persoon</h1>
+    </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="createOrUpdate(form.value)" autocomplete="off">
+      <div class="form__group">
+          <ww-form-group-textbox
+            [id]="'name'"
+            [label]="'Naam'"
+            [control]="form.get('name')"
+            [placeholder]="'Naam persoon'"
+            [name]="'Naam persoon'"
+            [focus]="true">
+          </ww-form-group-textbox>
+
+          <ww-form-group-textbox
+            [id]="'firstName'"
+            [label]="'Voornaam'"
+            [control]="form.get('firstName')"
+            [placeholder]="'Voornaam persoon'"
+            [name]="'Voornaam persoon'">
+          </ww-form-group-textbox>
+
+          <ww-form-group-datepicker
+            [id]="'birthDate'"
+            [name]="'Geboortedatum'"
+            [label]="'Geboortedatum'"
+            [placeholder]="'Geboortedatum'"
+            [control]="form.get('dateOfBirth')"
+            [maxDate]="maxDate">
+          </ww-form-group-datepicker>
+
+          <ww-form-group-radiolist
+            [id]="'sex'"
+            [name]="'Geslacht'"
+            [label]="'Geslacht'"
+            [control]="form.get('sex')"
+            [values]="sexes">
+          </ww-form-group-radiolist>
+
+          <div class="form__row">
+            <div class="form__buttons">
+              <div class="form__buttons__left">
+                <a [routerLink]="['./..']" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
+              </div>
+              <div class="form__buttons__right">
+                <button class="button form__button"
+                        type="submit"
+                        [ngClass]="{'button--disabled': !isFormValid, 'button--loading': form.disabled}"
+                        [disabled]="!isFormValid || form.disabled">
+                  <span *ngIf="!isEditMode">Voeg persoon toe</span>
+                  <span *ngIf="isEditMode">Wijzigingen opslaan</span>
+                </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

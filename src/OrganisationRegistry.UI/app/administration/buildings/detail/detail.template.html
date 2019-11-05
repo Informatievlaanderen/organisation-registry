@@ -1,0 +1,49 @@
+<div class="grid">
+  <div class="col--8-12 col--10-12--m col--1-1--s">
+    <div *ngIf="isEditMode">
+      <h1 class="h2">Bewerken gebouw</h1>
+    </div>
+
+    <div *ngIf="!isEditMode">
+      <h1 class="h2">Nieuw gebouw</h1>
+    </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="createOrUpdate(form.value)" autocomplete="off">
+      <div class="form__group">
+          <ww-form-group-textbox
+            [id]="'name'"
+            [label]="'Gebouw'"
+            [control]="form.get('name')"
+            [placeholder]="'Naam gebouw'"
+            [name]="'Naam gebouw'"
+            [focus]="true">
+          </ww-form-group-textbox>
+
+          <ww-form-group-textbox
+            [id]="'vimId'"
+            [label]="'Vim Id'"
+            [control]="form.get('vimId')"
+            [placeholder]="'Vim Id'"
+            [name]="'Vim Id'">
+          </ww-form-group-textbox>
+
+          <div class="form__row">
+            <div class="form__buttons">
+              <div class="form__buttons__left">
+                <a [routerLink]="['./..']" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
+              </div>
+              <div class="form__buttons__right">
+                <button class="button form__button"
+                        type="submit"
+                        [ngClass]="{'button--disabled': !isFormValid, 'button--loading': form.disabled}"
+                        [disabled]="!isFormValid || form.disabled">
+                  <span *ngIf="!isEditMode">Voeg gebouw toe</span>
+                  <span *ngIf="isEditMode">Wijzigingen opslaan</span>
+                </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

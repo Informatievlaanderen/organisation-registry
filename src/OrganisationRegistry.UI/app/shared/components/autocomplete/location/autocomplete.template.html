@@ -1,0 +1,11 @@
+<ww-form-group-autocomplete
+  [id]="id"
+  [label]="label || 'Locatie'"
+  [initialValue]="initialValue"
+  [control]="control"
+  [placeholder]="placeholder || 'Selecteer locatie...'"
+  [name]="name || 'Locatie'"
+  [focus]="focus"
+  [inline]="inline"
+  [fetch]="searchLocations.bind(this)">
+</ww-form-group-autocomplete>

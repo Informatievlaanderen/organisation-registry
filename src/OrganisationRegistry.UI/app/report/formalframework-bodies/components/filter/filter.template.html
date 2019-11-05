@@ -1,0 +1,54 @@
+﻿<div class="grid">
+  <div class="col--8-12 col--10-12--m col--1-1--s">
+    <form class="form" [formGroup]="form" (ngSubmit)="filterForm(form.value)" autocomplete="off">
+      <div class="form__group">
+
+        <ww-form-group-textbox
+        [id]="'name'"
+        [label]="'Toepassingsgebied'"
+        [control]="form.get('name')"
+        [placeholder]="'Naam toepassingsgebied'"
+        [name]="'Naam toepassingsgebied'">
+      </ww-form-group-textbox>
+
+      <ww-form-group-textbox
+        [id]="'code'"
+        [label]="'Code'"
+        [control]="form.get('code')"
+        [placeholder]="'Code'"
+        [name]="'Code'">
+      </ww-form-group-textbox>
+
+      <ww-form-group-textbox
+        [id]="'formalFrameworkCategoryName'"
+        [label]="'Toepassingsgebiedcategorie'"
+        [control]="form.get('formalFrameworkCategoryName')"
+        [placeholder]="'Toepassingsgebiedcategorie'"
+        [name]="'Toepassingsgebiedcategorie'">
+      </ww-form-group-textbox>
+
+        <div class="form__row">
+          <div class="form__buttons">
+            <div class="form__buttons__right">
+              <button class="button form__button"
+                      type="reset"
+                      *ngIf="filterActive"
+                      (click)="resetForm()"
+                      [ngClass]="{'button--disabled': form.disabled}"
+                      [disabled]="form.disabled">
+                <span>Filter wissen</span>
+              </button>
+
+              <button class="button form__button"
+                      type="submit"
+                      [ngClass]="{'button--disabled': !isFormValid, 'button--loading': form.disabled}"
+                      [disabled]="!isFormValid || form.disabled">
+                <span>Zoeken</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

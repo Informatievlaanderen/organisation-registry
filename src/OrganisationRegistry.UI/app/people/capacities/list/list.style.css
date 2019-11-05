@@ -1,0 +1,13 @@
+a.data-table__header-title--sortable {
+  cursor: pointer;
+}
+
+th.data-table__last-header {
+  width: 40px;
+  display: inline-block;
+}
+
+td span.data-table__cell--disabled {
+  color: #cbd2da;
+  font-weight: lighter;
+}

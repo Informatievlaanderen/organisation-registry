@@ -1,0 +1,20 @@
+<div class="contact-card__content-wrapper">
+    <div class="cta-title">
+        <h3 class="h3 cta-title__title">Classificaties</h3>
+        <ww-body-bodyclassification-filter
+            [isBusy]="isLoading"
+            (filter)="search($event)">
+        </ww-body-bodyclassification-filter>
+        <div class="cta-title__cta">
+            <a *ngIf="(canEditBody | async)" class="button cta-title__cta" [routerLink]="['./create']">Classificatie toevoegen</a>
+            <div class="u-align-right" style="clear: both;"></div>
+        </div>
+    </div>
+
+    <ww-body-bodyclassification-list
+      [items]="bodyBodyClassifications"
+      [isBusy]="isLoading"
+      (changePage)="changePage($event)"
+      [canEdit]="canEditBody">
+    </ww-body-bodyclassification-list>
+</div>

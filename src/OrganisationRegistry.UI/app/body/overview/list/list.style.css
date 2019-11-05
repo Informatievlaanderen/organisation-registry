@@ -1,0 +1,18 @@
+a.data-table__header-title--sortable {
+  cursor: pointer;
+}
+
+.properties--disabled {
+  color: #cbd2da;
+  font-weight: lighter;
+}
+
+.ww-shortname a,
+.ww-shortname {
+  color: #8b929a;
+  margin-top: 0.3em;
+}
+
+.ww-date {
+  color: #8b929a;
+}

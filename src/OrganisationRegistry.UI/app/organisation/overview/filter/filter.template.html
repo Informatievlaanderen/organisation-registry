@@ -1,0 +1,88 @@
+<form class="form" [formGroup]="organisationForm" (ngSubmit)="filterForm(organisationForm.value)" autocomplete="off">
+  <div class="grid">
+    <div class="col--6-12 col--1-1--s">
+      <div class="form__group">
+        <ww-form-group-textbox
+          [id]="'name'"
+          [label]="'Naam'"
+          [control]="organisationForm.get('name')"
+          [placeholder]="'Naam organisatie'"
+          [name]="'Naam organisatie'">
+        </ww-form-group-textbox>
+
+        <ww-form-group-textbox
+          [id]="'ovoNumber'"
+          [label]="'OVO-nummer'"
+          [control]="organisationForm.get('ovoNumber')"
+          [placeholder]="'OVO-nummer'"
+          [name]="'OVO-nummer'">
+        </ww-form-group-textbox>
+
+        <ww-form-group-toggle
+          [id]="'activeOnly'"
+          [label]="'Enkel actieve organisaties'"
+          [control]="organisationForm.get('activeOnly')"
+          [name]="'Actieve organisaties'">
+        </ww-form-group-toggle>
+      </div>
+    </div>
+
+    <div class="col--6-12 col--1-1--s">
+      <div class="form__group">
+        <ww-form-group-select
+          [id]="'formalFrameworkId'"
+          [label]="'Toepassingsgebied'"
+          [control]="organisationForm.get('formalFrameworkId')"
+          [name]="'Toepassingsgebied'"
+          [placeholder]="'Selecteer toepassingsgebied...'"
+          [values]="formalFrameworks">
+        </ww-form-group-select>
+
+        <ww-form-group-select
+          [id]="'organisationClassificationTypeId'"
+          [label]="'Classificatietype'"
+          [control]="organisationForm.get('organisationClassificationTypeId')"
+          [name]="'Classificatietype'"
+          [placeholder]="'Selecteer classificatietype...'"
+          [values]="classificationTypes">
+        </ww-form-group-select>
+
+        <ww-form-group-select
+          [id]="'organisationClassificationId'"
+          [label]="'Classificatie'"
+          [control]="organisationForm.get('organisationClassificationId')"
+          [name]="'Classificatie'"
+          [placeholder]="'Selecteer classificatie...'"
+          [values]="classifications">
+        </ww-form-group-select>
+      </div>
+    </div>
+
+    <div class="col--1-1">
+      <div class="form__group">
+        <div class="form__row">
+          <div class="form__buttons">
+            <div class="form__buttons__right">
+              <button class="button form__button"
+                      type="reset"
+                      *ngIf="filterActive"
+                      (click)="resetForm()"
+                      [ngClass]="{'button--disabled': organisationForm.disabled}"
+                      [disabled]="organisationForm.disabled">
+                <span>Filter wissen</span>
+              </button>
+
+              <button class="button form__button"
+                      type="submit"
+                      id="organisationSearchSubmit"
+                      [ngClass]="{'button--disabled': !isFormValid, 'button--loading': organisationForm.disabled}"
+                      [disabled]="!isFormValid || organisationForm.disabled">
+                <span>Zoeken</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

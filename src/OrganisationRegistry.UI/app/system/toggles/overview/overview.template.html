@@ -1,0 +1,23 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Toggles</h1>
+        </div>
+    <div class="grid">
+      <div
+        class="col--4-12 col--6-12--s"
+        *ngFor="let toggle of toggles | keys">
+            <div
+              class="ww-toggle"
+              [ngClass]="
+              {
+                'ww-toggle-disabled': toggle.value === false,
+                'ww-toggle-enabled': toggle.value === true,
+                'ww-toggle-neither': toggle.value !== false && toggle.value !== true
+              }">
+              <h4 class="h4">{{toggle.key}}</h4>
+              <p style="text-align: right">{{toggle.value}}</p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+<div class="contact-card__content-wrapper">
+    <div class="cta-title">
+        <h3 class="h3 cta-title__title">Gebouwen</h3>
+        <ww-organisation-building-filter
+            [isBusy]="isLoading"
+            (filter)="search($event)">
+        </ww-organisation-building-filter>
+        <div class="cta-title__cta">
+            <a *ngIf="(canEditOrganisation | async)" class="button cta-title__cta" [routerLink]="['./create']">Gebouw koppelen</a>
+            <div class="u-align-right" style="clear: both;"></div>
+        </div>
+    </div>
+
+    <ww-organisation-building-list
+      [items]="organisationBuildings"
+      [isBusy]="isLoading"
+      (changePage)="changePage($event)"
+      [canEdit]="canEditOrganisation">
+    </ww-organisation-building-list>
+</div>

@@ -1,0 +1,11 @@
+<ww-form-group-autocomplete
+  [id]="id"
+  [label]="label || 'Type'"
+  [initialValue]="initialValue"
+  [control]="control"
+  [placeholder]="placeholder || 'Selecteer type...'"
+  [name]="name || 'Type'"
+  [focus]="focus"
+  [inline]="inline"
+  [fetch]="searchBodyClassificationTypes.bind(this)">
+</ww-form-group-autocomplete>

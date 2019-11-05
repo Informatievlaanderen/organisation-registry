@@ -1,0 +1,18 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Organisatieclassificaties</h1>
+            <a class="button cta-title__cta" [routerLink]="['./create']">Voeg organisatieclassificatie toe</a>
+        </div>
+
+        <ww-organisation-classification-filter
+          [isBusy]="isLoading"
+          (filter)="search($event)">
+        </ww-organisation-classification-filter>
+        <ww-organisation-classification-list
+          [items]="organisationClassifications"
+          [isBusy]="isLoading"
+          (changePage)="changePage($event)">
+        </ww-organisation-classification-list>
+    </div>
+</div>

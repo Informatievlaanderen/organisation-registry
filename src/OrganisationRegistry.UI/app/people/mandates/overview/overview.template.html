@@ -1,0 +1,11 @@
+<div class="contact-card__content-wrapper">
+    <div class="cta-title">
+        <h3 class="h3 cta-title__title">Mandaten</h3>
+        <div class="cta-title__cta">
+            <!--<a class="button cta-title__cta" [routerLink]="['./create']">Functie toevoegen</a>-->
+            <div class="u-align-right" style="clear: both;"></div>
+        </div>
+    </div>
+
+    <ww-person-mandate-list [items]="personMandates" [isBusy]="isLoading" (changePage)="changePage($event)"></ww-person-mandate-list>
+</div>

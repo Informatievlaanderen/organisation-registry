@@ -1,0 +1,118 @@
+tr.data-table__header {
+  white-space: nowrap;
+}
+
+a, a.infotext:focus .infotext__text, a.infotext:hover .infotext__text {
+  text-decoration: none;
+}
+
+.bullet-link, .toggle--arrow-down, a:focus, a:hover {
+  text-decoration: none;
+}
+
+a.tile,
+a.tile:focus, a.tile:hover {
+  text-decoration: none;
+}
+
+a.tile:focus div.tile__title, a.tile:hover div.tile__title {
+  text-decoration: underline;
+}
+
+.drilldown__item__cta--back:focus, .drilldown__item__cta:focus, .drilldown__subcolumn__title__cta:focus, .tab__link:focus, .tabs__toggle:focus {
+  outline: none;
+}
+
+.cta-title {
+  margin-bottom: 0;
+}
+
+.cta-title .cta-title__title {
+  margin-bottom: 0;
+}
+
+.cancel__button {
+  /* copied from .button */
+  display: inline-block;
+  height: 3.5rem;
+  font-size: 1.6rem;
+  font-family: flanders-sans;
+  line-height: 3.2rem;
+  padding: 0;
+  border-top: .3rem solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  text-align: center;
+  outline: 0;
+}
+
+a:before,
+a:hover:before { text-decoration: none; }
+
+.vi.vi-u-badge--small {
+  width: 1.9rem;
+  height: 1.9rem;
+  line-height: 1.9rem;
+}
+
+.vi-u-badge--small.external-link:after, .vi.vi-u-badge--small:before {
+  font-size: 1.2rem;
+}
+
+.data-table td:first-child, .data-table th:first-child, .spotlight-panel__text table td:first-child, .spotlight-panel__text table th:first-child, .table td table td:first-child, .table td table th:first-child, .table th table td:first-child, .table th table th:first-child, .typography table td:first-child, .typography table th:first-child,
+.data-table td:first-child, .spotlight-panel__text table td:first-child, .table td table td:first-child, .table th table td:first-child, .typography table td:first-child {
+  padding-left: .4rem;
+}
+
+ww-location-filter,
+ww-building-filter,
+ww-key-type-filter,
+ww-organisation-classification-filter,
+ww-organisation-classification-type-filter,
+ww-organisation-relation-type-filter,
+ww-formal-framework-filter,
+ww-formal-framework-category-filter,
+ww-lifecycle-phase-type-filter,
+ww-person-filter,
+ww-capacity-filter,
+ww-function-filter,
+ww-contact-type-filter,
+ww-label-type-filter,
+ww-purpose-filter,
+ww-seat-type-filter,
+ww-mandate-role-type-filter,
+
+ww-body-seat-filter,
+ww-body-formal-framework-filter,
+ww-body-mandate-filter,
+ww-body-organisation-filter,
+ww-body-filter,
+
+ww-delegation-filter,
+
+ww-organisation-body-filter,
+ww-organisation-building-filter,
+ww-organisation-capacity-filter,
+ww-organisation-organisationclassification-filter,
+ww-organisation-contact-filter,
+ww-organisation-formal-framework-filter,
+ww-organisation-function-filter,
+ww-organisation-key-filter,
+ww-organisation-label-filter,
+ww-organisation-location-filter,
+ww-organisation-filter,
+
+ww-people-filter,
+
+ww-report-capacity-filter,
+ww-report-classification-filter,
+ww-report-formal-framework-filter,
+ww-report-formal-framework-participation-filter,
+
+ww-body-participation-filter,
+
+ww-configuration-value-filter,
+ww-event-filter {
+  display: block;
+  margin-bottom: 1.5rem;
+}

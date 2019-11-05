@@ -1,0 +1,17 @@
+<div class="grid">
+  <div class="col--1-1">
+      <div class="cta-title">
+          <h1 class="h2 cta-title__title">Organisaties per gebouw</h1>
+      </div>
+
+      <ww-building-filter
+          [isBusy]="isLoading"
+          (filter)="search($event)">
+      </ww-building-filter>
+      <ww-building-list
+          [items]="buildings"
+          [isBusy]="isLoading"
+          (changePage)="changePage($event)">
+      </ww-building-list>
+  </div>
+</div>

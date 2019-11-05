@@ -1,0 +1,114 @@
+<div data-table="">
+  <div class="data-table__actions data-table__actions--top">
+    <div class="grid">
+      <div class="col--6-12 col--9-12--xs">
+        <ul class="data-table__actions__list">
+          <li class="data-table__action">
+            <div class="popdown popdown--left js-popup" ww-popup id="popup-0">
+              <button class="data-table__action__toggle data-table__action__toggle--arrow js-popup__toggle" aria-expanded="false" aria-controls="popup-0">Download</button>
+              <ul class="popdown__content">
+                <li><a id="exportCsvLink" (click)="doCsvExport()" class="popdown__link link-text">CSV</a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="u-table-overflow">
+    <table id="addressTable" class="data-table">
+      <thead>
+        <tr class="data-table__header">
+          <th class="data-table__header-title"></th>
+          <th class="data-table__header-title" style="width: 50%;">
+            <a class="data-table__header-title--sortable"
+              [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('bodyName')}"
+              (click)="sortBy('bodyName')">
+              Orgaan
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+              [ngClass]="{'vi-u-180deg': isSortedByDescending('bodyName')}"></i>
+            </a>
+          </th>
+          <th class="data-table__header-title" style="width: 16%;">
+            <a class="data-table__header-title--sortable"
+              [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('malePercentage')}"
+              (click)="sortBy('malePercentage')">
+              Man
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+              [ngClass]="{'vi-u-180deg': isSortedByDescending('malePercentage')}"></i>
+            </a>
+          </th>
+          <th class="data-table__header-title" style="width: 16%;">
+            <a class="data-table__header-title--sortable"
+              [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('femalePercentage')}"
+              (click)="sortBy('femalePercentage')">
+              Vrouw
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+              [ngClass]="{'vi-u-180deg': isSortedByDescending('femalePercentage')}"></i>
+            </a>
+          </th>
+          <th class="data-table__header-title" style="width: 16%;">
+            <a class="data-table__header-title--sortable"
+              [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('unknownPercentage')}"
+              (click)="sortBy('unknownPercentage')">
+              Onbekend
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+              [ngClass]="{'vi-u-180deg': isSortedByDescending('unknownPercentage')}"></i>
+            </a>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <template [ngIf]="isBusy">
+          <tr><td colspan="6">Bezig met laden...</td></tr>
+        </template>
+
+        <template [ngIf]="!isBusy">
+          <tr *ngIf="!hasData(data)">
+            <td colspan="6">Geen data beschikbaar...</td>
+          </tr>
+          <tr *ngFor="let bodyParticipation of data" [ngClass]="{'data-table__body-missing-mandate': bodyParticipation.unassignedCount>0}">
+            <td class="data-table__body-title">
+                <div *ngIf="bodyParticipation.unassignedCount>0" class="alert__icon missingMandate" title="{{bodyParticipation.unassignedCount}} {{bodyParticipation.unassignedCount === 1 ? 'post is' : 'posten zijn'}} niet toegewezen aan een mandaat."></div>
+                <div *ngIf="bodyParticipation.unassignedCount==0" class="missingMandate"></div>
+            </td>
+            <td class="data-table__body-title data-table__body-ellipsis">
+              <a [routerLink]="['/bodies/', bodyParticipation.bodyId, 'participation']" title="{{bodyParticipation.bodyName}}">{{bodyParticipation.bodyName}}</a>
+              <div *ngIf="bodyParticipation.organisationId" class="data-table__cell--disabled data-table__cell--additional-information">onderdeel van <a [routerLink]="['/organisations', bodyParticipation.organisationId]" title="{{bodyParticipation.organisationName}}">{{bodyParticipation.organisationName}}</a></div>
+            </td>
+            <td class="data-table__body-title data-table__body-ellipsis"
+                [ngClass]="{'text__alert': bodyParticipation.totalCount > 1 && !isMepCompliant(bodyParticipation.malePercentage), 'text__success': bodyParticipation.totalCount > 1 && isMepCompliant(bodyParticipation.malePercentage)}">
+              <div class="properties--percent">{{bodyParticipation.malePercentage | percent:'1.2-2'}}</div> <span class="properties--disabled">({{bodyParticipation.maleCount}}/{{bodyParticipation.assignedCount}})</span>
+            </td>
+            <td class="data-table__body-title data-table__body-ellipsis"
+                [ngClass]="{'text__alert': bodyParticipation.totalCount > 1 && !isMepCompliant(bodyParticipation.femalePercentage), 'text__success': bodyParticipation.totalCount > 1 && isMepCompliant(bodyParticipation.femalePercentage)}">
+              <div class="properties--percent">{{bodyParticipation.femalePercentage | percent:'1.2-2'}}</div> <span class="properties--disabled">({{bodyParticipation.femaleCount}}/{{bodyParticipation.assignedCount}})</span>
+            </td>
+            <td class="data-table__body-title data-table__body-ellipsis">
+              <div class="properties--percent">{{bodyParticipation.unknownPercentage | percent:'1.2-2'}}</div> <span class="properties--disabled">({{bodyParticipation.unknownCount}}/{{bodyParticipation.assignedCount}})</span>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="totalPages > 1" class="data-table__actions data-table__actions--bottom">
+    <div class="pager">
+      <ul class="pager__list pager__list--right">
+        <li class="pager__element">
+          <strong>{{firstItem}} - {{lastItem}}</strong> van {{totalItems}}
+        </li>
+
+        <li class="pager__element" *ngIf="firstItem > 1">
+          <a class="link-text" (click)="previousPage()"><i class="vi vi-arrow vi-u-180deg vi-u-s"></i> vorige</a>
+        </li>
+
+        <li class="pager__element" *ngIf="lastItem < totalItems">
+          <a class="link-text" (click)="nextPage()">volgende <i class="vi vi-arrow vi-u-s"></i></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

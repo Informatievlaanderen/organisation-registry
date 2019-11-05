@@ -1,0 +1,58 @@
+<div class="grid">
+  <div class="col--1-1">
+    <div class="h2-sublink">
+      <h2 class="h2">{{body.name}}</h2>
+
+      <div *ngIf="body.organisationId">
+        <i class="vi vi-u-link vi-arrow"></i> onderdeel van <a [routerLink]="['/organisations', body.organisationId]" title="{{body.organisation}}">{{body.organisation}}</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="col--1-1">
+    <div class="grid">
+      <div class="col--2-12 col--1-1--s">
+        <nav class="side-navigation">
+          <div class="side-navigation__content">
+            <ul class="side-navigation__group">
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['info']">Algemeen</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['contacts']">Contacten</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['composition']">Posten</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['mandates']">Mandaten</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['lifecycle']"><div *ngIf="!body.lifecycleValid" class="alert__icon invalidLifecycle"></div>Levensloop</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['organisations']">Organisaties</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['formalframeworks']">Toepassingsgebieden</a>
+              </li>
+              <!-- <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['responsibilities']">Bevoegdheden</a>
+              </li> -->
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['participation']"><div *ngIf="!body.hasAllSeatsAssigned || !body.isMepCompliant" class="alert__icon invalidParticipation"></div>MEP-decreet</a>
+              </li>
+              <li class="side-navigation__item">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['classifications']">Classificaties</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <div class="col--10-12 col--1-1--s main-navigation__content">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+</div>

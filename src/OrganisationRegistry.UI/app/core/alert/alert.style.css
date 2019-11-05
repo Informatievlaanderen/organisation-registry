@@ -1,0 +1,69 @@
+.alert {
+    margin-top: -3rem;
+}
+
+.alert--success {
+    border-color: #d0e9c6;
+    background-color: #dff0d8;
+}
+
+.alert--success .alert__icon,
+.vi.vi-u-badge--red {
+    background-color: #3c763d;
+    color: #fff;
+}
+
+.alert__icon:before, .vi-u-badge--medium.external-link:after, .vi.vi-u-badge--medium:before {
+    line-height: 1.8em;
+}
+
+.alert__icon.vi-check:before {
+    line-height: 2em;
+    content: "\E009";
+}
+
+/* Copied from Bootstrap */
+.alert__content .close {
+    float: right;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    filter: alpha(opacity=20);
+    opacity: .2;
+}
+
+.alert__content .close:hover,
+.alert__content .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+    filter: alpha(opacity=50);
+    opacity: .5;
+}
+
+.alert__content button.close {
+  /*
+  Additional properties for button version
+  iOS requires the button element instead of an anchor tag.
+  If you want the anchor version, it requires `href="#"`.
+  See https://developer.mozilla.org/en-US/docs/Web/Events/click#Safari_Mobile
+  */
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    -webkit-appearance: none;
+}
+
+.alert__content {
+    padding-right: 35px;
+}
+.alert__content .close {
+    /* Adjust close link position */
+    position: relative;
+    top: 7px;
+    right: -21px;
+    color: inherit;
+}

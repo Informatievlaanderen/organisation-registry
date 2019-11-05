@@ -1,0 +1,11 @@
+<ww-form-group-autocomplete
+  [id]="id"
+  [label]="label || 'Organisatie'"
+  [initialValue]="initialValue"
+  [control]="control"
+  [placeholder]="placeholder || 'Selecteer organisatie...'"
+  [name]="name || 'Organisatie'"
+  [focus]="focus"
+  [inline]="inline"
+  [fetch]="searchOrganisations.bind(this)">
+</ww-form-group-autocomplete>

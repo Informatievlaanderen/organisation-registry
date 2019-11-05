@@ -1,0 +1,38 @@
+.h2-sublink .vi-arrow:before {
+  margin-right: 0rem;
+  font-size: 1rem;
+}
+
+li.side-navigation__item .invalidLifecycle,
+li.side-navigation__item .invalidParticipation {
+  float: none;
+  margin: 0;
+  width: 2rem;
+  height: 2.3rem;
+  line-height: 2rem;
+  margin-right: 3px;
+}
+
+li.side-navigation__item a {
+  white-space: nowrap;
+  padding: 1.2rem 1.1rem 1.2rem 1.1rem;
+  margin-right: 1px;
+}
+
+li.side-navigation__item .alert__icon:before {
+  font-size: 1.5rem;
+}
+
+.vi-u-badge--medium.external-link:after,
+.vi.vi-u-badge--medium:before {
+  font-size: 1.7rem;
+}
+
+.main-navigation__content {
+  border-top: 1px solid #e8ebee;
+  padding-top: 2rem;
+}
+
+.side-navigation__content {
+  border-bottom: 0px solid #fff;
+}

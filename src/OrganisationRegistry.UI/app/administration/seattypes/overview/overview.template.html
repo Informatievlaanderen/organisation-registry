@@ -1,0 +1,18 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Post types</h1>
+            <a class="button cta-title__cta" [routerLink]="['./create']">Voeg post type toe</a>
+        </div>
+
+        <ww-seat-type-filter
+          [isBusy]="isLoading"
+          (filter)="search($event)">
+        </ww-seat-type-filter>
+        <ww-seat-type-list
+          [items]="seatTypes"
+          [isBusy]="isLoading"
+          (changePage)="changePage($event)">
+        </ww-seat-type-list>
+    </div>
+</div>

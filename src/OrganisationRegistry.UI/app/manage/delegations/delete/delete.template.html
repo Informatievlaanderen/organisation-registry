@@ -1,0 +1,97 @@
+<div class="grid">
+  <div class="col--1-1">
+    <div class="cta-title">
+        <h1 class="h2 cta-title__title">Verwijderen toewijzing</h1>
+    </div>
+
+    <div class="back-arrow">
+      <a [routerLink]="['/manage/delegations', delegation.id]"><i class="vi vi-u-link vi-arrow"></i> terug naar delegatie</a>
+    </div>
+
+    <div class="cta-title">
+      <h3 class="h3 cta-title__title">Algemene informatie</h3>
+    </div>
+
+    <div class="properties ww-info">
+      <div class="properties__column">
+        <dl>
+          <dt class="properties__label">Orgaan:</dt>
+          <dd id="bodyName" class="properties__data">{{delegation.bodyName}}</dd>
+
+          <dt class="properties__label">Vertegenwoordiging:</dt>
+          <dd id="representation" class="properties__data">
+            <div *ngIf="delegation.functionTypeName">{{delegation.functionTypeName}} voor {{delegation.organisationName}}</div>
+            <div *ngIf="!delegation.functionTypeName">{{delegation.organisationName}}</div>
+          </dd>
+
+          <dt class="properties__label">Geldig vanaf:</dt>
+          <dd id="delegationValidFrom" class="properties__data" *ngIf="delegation.validFrom">{{delegation.validFrom}}</dd>
+          <dd id="delegationValidFrom" class="properties__data properties--disabled" *ngIf="!delegation.validFrom">Niet bekend</dd>
+        </dl>
+      </div>
+      <div class="properties__column">
+        <dl>
+          <dt class="properties__label">Organisatie:</dt>
+          <dd id="bodyOrganisationName" class="properties__data" *ngIf="delegation.bodyOrganisationName">{{delegation.bodyOrganisationName}}</dd>
+          <dd id="bodyOrganisationName" class="properties__data properties--disabled" *ngIf="!delegation.bodyOrganisationName">Niet gekoppeld</dd>
+
+          <dt class="properties__label">Post:</dt>
+          <dd id="seat" class="properties__data">{{delegation.bodySeatName}} (#{{delegation.bodySeatNumber}})</dd>
+
+          <dt class="properties__label">Geldig tot:</dt>
+          <dd id="delegationValidTo" class="properties__data" *ngIf="delegation.validTo">{{delegation.validTo}}</dd>
+          <dd id="delegationValidTo" class="properties__data properties--disabled" *ngIf="!delegation.validTo">Niet bekend</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="cta-title">
+      <h3 class="h3 cta-title__title">Toewijzing</h3>
+    </div>
+
+    <div class="properties ww-info">
+      <div class="properties__column">
+        <dl>
+          <dt class="properties__label">Persoon:</dt>
+          <dd id="personName" class="properties__data">{{delegationAssignment.personName}}</dd>
+
+          <dt class="properties__label">Geldig vanaf:</dt>
+          <dd id="delegationAssignmentValidFrom" class="properties__data" *ngIf="delegationAssignment.validFrom">{{delegationAssignment.validFrom}}</dd>
+          <dd id="delegationAssignmentValidFrom" class="properties__data properties--disabled" *ngIf="!delegationAssignment.validFrom">Niet bekend</dd>
+        </dl>
+      </div>
+      <div class="properties__column">
+        <dl>
+          <dt class="properties__label">&nbsp;</dt>
+          <dd id="bodyOrganisationName" class="properties__data">&nbsp;</dd>
+
+          <dt class="properties__label">Geldig tot:</dt>
+          <dd id="delegationAssignmentValidTo" class="properties__data" *ngIf="delegationAssignment.validTo">{{delegationAssignment.validTo}}</dd>
+          <dd id="delegationAssignmentValidTo" class="properties__data properties--disabled" *ngIf="!delegationAssignment.validTo">Niet bekend</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="col--1-1">
+    <form class="form" [formGroup]="form" (ngSubmit)="delete(form.value)" autocomplete="off">
+      <div class="form__group">
+        <div class="form__row">
+          <div class="form__buttons">
+            <div class="form__buttons__left">
+              <a [routerLink]="['./../..']" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
+            </div>
+            <div class="form__buttons__right">
+              <button class="button form__button"
+                      type="submit"
+                      [ngClass]="{'button--loading': form.disabled}"
+                      [disabled]="form.disabled">
+                <span>Toewijzing verwijderen</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

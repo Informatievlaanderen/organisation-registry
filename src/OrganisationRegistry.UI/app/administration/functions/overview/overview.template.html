@@ -1,0 +1,18 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Functie types</h1>
+            <a class="button cta-title__cta" [routerLink]="['./create']">Voeg functie type toe</a>
+        </div>
+
+        <ww-function-filter
+            [isBusy]="isLoading"
+            (filter)="search($event)">
+        </ww-function-filter>
+        <ww-function-list
+            [items]="functions"
+            [isBusy]="isLoading"
+            (changePage)="changePage($event)">
+        </ww-function-list>
+    </div>
+</div>

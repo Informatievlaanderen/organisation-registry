@@ -1,0 +1,17 @@
+<div class="grid">
+  <div class="col--8-12 col--10-12--m col--1-1--s">
+    <div>
+      <h1 class="h2">Voeg dochterorganisatie toe</h1>
+    </div>
+
+    <ww-create-child-form
+      [isBusy]="isBusy"
+      [organisation]="organisation"
+      [purposes]="purposes"
+      [primaryButtonText]="'Voeg dochterorganisatie toe'"
+      [cancelRouterLink]="['./../']"
+      [parentOrganisationId]="parentOrganisationId"
+      (onSubmit)="create($event)">
+    </ww-create-child-form>
+  </div>
+</div>

@@ -1,0 +1,20 @@
+<div class="contact-card__content-wrapper">
+    <div class="cta-title">
+        <h3 class="h3 cta-title__title">Toepassingsgebieden</h3>
+        <ww-organisation-formal-framework-filter
+            [isBusy]="isLoading"
+            (filter)="search($event)">
+        </ww-organisation-formal-framework-filter>
+        <div class="cta-title__cta">
+            <a *ngIf="(canEditOrganisation | async)" class="button cta-title__cta" [routerLink]="['./create']">Toepassingsgebied koppelen</a>
+            <div class="u-align-right" style="clear: both;"></div>
+        </div>
+    </div>
+
+    <ww-organisation-formal-framework-list
+      [items]="organisationFormalFrameworks"
+      [isBusy]="isLoading"
+      (changePage)="changePage($event)"
+      [canEdit]="canEditOrganisation">
+    </ww-organisation-formal-framework-list>
+</div>

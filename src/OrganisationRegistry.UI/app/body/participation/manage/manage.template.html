@@ -1,0 +1,50 @@
+<div class="grid">
+  <div class="col--8-12 col--10-12--m col--1-1--s">
+    <div>
+      <h1 class="h2">Beheer MEP</h1>
+    </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="submit(form.value)" autocomplete="off">
+      <div class="form__group">
+        <ww-form-group-toggle
+          [id]="'obligatory'"
+          [label]="'MEP-plichtig'"
+          [control]="form.get('obligatory')"
+          [name]="'MEP-plichtig'">
+        </ww-form-group-toggle>
+
+        <ww-form-group-textarea
+          [id]="'extraRemark'"
+          [name]="'Extra commentaar'"
+          [label]="'Extra commentaar'"
+          [placeholder]="'Extra commentaar'"
+          [control]="form.get('extraRemark')">
+        </ww-form-group-textarea>
+
+        <ww-form-group-textarea
+          [id]="'exceptionMeasure'"
+          [name]="'Uitzonderingsmaatregel '"
+          [label]="'Uitzonderingsmaatregel '"
+          [placeholder]="'Uitzonderingsmaatregel '"
+          [control]="form.get('exceptionMeasure')">
+        </ww-form-group-textarea>
+
+        <div class="form__row">
+          <div class="form__buttons">
+            <div class="form__buttons__left">
+              <a [routerLink]="['./..']" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
+            </div>
+            <div class="form__buttons__right">
+              <button class="button form__button"
+                      type="submit"
+                      [ngClass]="{'button--disabled': !isFormValid, 'button--loading': form.disabled}"
+                      [disabled]="!isFormValid || form.disabled">
+                <span>Wijzigingen opslaan</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

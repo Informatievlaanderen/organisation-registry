@@ -1,0 +1,90 @@
+<div class="grid">
+  <div class="col--8-12 col--10-12--m col--1-1--s">
+    <div>
+      <h1 class="h2">Bankrekeningnummer koppelen</h1>
+    </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="create(form.value)" autocomplete="off">
+      <div class="form__group">
+        <ww-form-group-textbox
+          [id]="'bankAccountNumber'"
+          [label]="'Bankrekeningnummer'"
+          [name]="'Bankrekeningnummer'"
+          (valueChanged)="onBankAccountNumberChanged($event)"
+          [control]="form.get('bankAccountNumber')">
+        </ww-form-group-textbox>
+
+        <div class="form__row" [ngStyle]="{display : form.get('bankAccountNumber').value != '' ? 'block' : 'none'}">
+          <div class="form__buttons">
+            <div class="form__buttons__left" *ngIf="form.get('isIban').value">
+              <i aria-label="IBAN"
+                class="vi vi-u-badge vi-u-badge--green vi-u-badge--xxsmall vi-check">
+              </i>
+              <span>Het gekozen bankrekeningnummer is een geldig IBAN nummer.</span>
+            </div>
+            <div class="form__buttons__left" *ngIf="!form.get('isIban').value && form.get('bankAccountNumber').value">
+                <i aria-label="IBAN"
+                  class="vi vi-u-badge vi-u-badge--yellow vi-u-badge--xsmall vi-info">
+                </i>
+                <span>Het gekozen bankrekeningnummer is geen geldig IBAN nummer.</span>
+            </div>
+          </div>
+        </div>
+
+        <ww-form-group-textbox
+          [id]="'bic'"
+          [label]="'BIC'"
+          [name]="'BIC'"
+          (valueChanged)="onBicNumberChanged($event)"
+          [control]="form.get('bic')">
+        </ww-form-group-textbox>
+
+        <div class="form__row" [ngStyle]="{display : form.get('bic').value != '' ? 'block' : 'none'}">
+          <div class="form__buttons">
+            <div class="form__buttons__left" *ngIf="form.get('isBic').value">
+              <i aria-label="BIC"
+                class="vi vi-u-badge vi-u-badge--green vi-u-badge--xxsmall vi-check">
+              </i>
+              <span>Het gekozen BIC is een geldig BIC nummer.</span>
+            </div>
+            <div class="form__buttons__left" *ngIf="!form.get('isBic').value && form.get('bic').value">
+                <i aria-label="BIC"
+                  class="vi vi-u-badge vi-u-badge--yellow vi-u-badge--xsmall vi-info">
+                </i>
+                <span>Het gekozen BIC is geen geldig BIC nummer.</span>
+            </div>
+          </div>
+        </div>
+
+        <ww-form-group-datepicker-range
+          [fromId]="'validFrom'"
+          [fromName]="'Geldig vanaf'"
+          [fromLabel]="'Geldig vanaf'"
+          [fromPlaceholder]="'Geldig vanaf'"
+          [fromControl]="form.get('validFrom')"
+          [toId]="'validTo'"
+          [toName]="'Geldig tot'"
+          [toLabel]="'Geldig tot'"
+          [toPlaceholder]="'Geldig tot'"
+          [toControl]="form.get('validTo')">
+        </ww-form-group-datepicker-range>
+
+        <div class="form__row">
+          <div class="form__buttons">
+            <div class="form__buttons__left">
+              <a [routerLink]="['./..']" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
+            </div>
+            <div class="form__buttons__right">
+              <button class="button form__button"
+                      type="submit"
+                      [ngClass]="{'button--disabled': !isFormValid, 'button--loading': this.form.disabled}"
+                      [disabled]="!isFormValid || this.form.disabled">
+                <span>Koppel bankrekeningnummer</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

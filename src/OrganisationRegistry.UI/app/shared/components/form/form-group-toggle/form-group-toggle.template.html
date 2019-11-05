@@ -1,0 +1,20 @@
+<div class="form__row" [ngClass]="{'form__row--inline': inline}">
+  <label class="form__label">{{label}}</label>
+  <div class="form__error" *ngIf="!inline && control.errors && control.touched && control.hasError('required')">'{{name}}' is verplicht.</div>
+
+  <div class="form__input">
+    <div class="checkbox--switch__wrapper">
+      <input [attr.id]="id"
+             [attr.name]="id"
+             type="checkbox"
+             [formControl]="control"
+             class="checkbox--switch"
+             [ngClass]="{'checkbox--disabled': control.disabled}"
+             [readonly]="control.disabled"
+             #myToggle/>
+      <label class="checkbox--switch__label"
+             [attr.for]="id"
+             [ngClass]="{'checkbox--disabled': control.disabled}"></label>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,61 @@
+<form class="form" [formGroup]="form" (ngSubmit)="submit(form.value)" autocomplete="off">
+  <div class="form__group">
+    <ww-form-group-textbox
+      [id]="'name'"
+      [name]="'Naam'"
+      [label]="'Naam'"
+      [placeholder]="'Naam'"
+      [control]="form.get('name')">
+    </ww-form-group-textbox>
+
+    <ww-form-group-textbox
+      [id]="'shortName'"
+      [name]="'Korte naam'"
+      [label]="'Korte naam'"
+      [placeholder]="'Korte naam'"
+      [control]="form.get('shortName')">
+    </ww-form-group-textbox>
+
+    <ww-form-group-textarea
+      [id]="'description'"
+      [name]="'Omschrijving'"
+      [label]="'Omschrijving'"
+      [placeholder]="'Omschrijving'"
+      [control]="form.get('description')">
+    </ww-form-group-textarea>
+
+    <ww-form-group-taglist
+      [id]="'purposeIds'"
+      [name]="'Beleidsvelden'"
+      [label]="'Beleidsvelden'"
+      [placeholder]="'Beleidsvelden'"
+      [control]="form.get('purposeIds')"
+      [values]="purposes">
+    </ww-form-group-taglist>
+
+    <hr />
+
+    <ww-form-group-toggle
+      [id]="'showOnVlaamseOverheidSites'"
+      [label]="'Toon deze organisatie op sites van de Vlaamse Overheid'"
+      [control]="form.get('showOnVlaamseOverheidSites')"
+      [name]="'Toon deze organisatie op sites van de Vlaamse Overheid'">
+    </ww-form-group-toggle>
+
+    <div class="form__row">
+      <div class="form__buttons">
+        <div class="form__buttons__left">
+          <a [routerLink]="cancelRouterLink" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
+        </div>
+        <div class="form__buttons__right">
+          <button class="button form__button"
+                  type="submit"
+                  [ngClass]="{'button--disabled': !form.valid, 'button--loading': form.disabled}"
+                  [disabled]="!form.valid || form.disabled">
+            <span>{{primaryButtonText}}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

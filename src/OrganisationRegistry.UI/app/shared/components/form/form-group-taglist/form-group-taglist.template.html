@@ -1,0 +1,22 @@
+<div class="form__row" [ngClass]="{'form__row--inline': inline}">
+    <label class="form__label" [attr.for]="id">{{label}}</label>
+    <div class="form__error" *ngIf="!inline && control.errors && control.touched && control.hasError('required')">'{{name}}' is verplicht.</div>
+
+    <div class="form__input" [ngClass]="{'select__error': !inline && control.errors && control.touched}">
+        <div class="js-select">
+            <select multiple
+                    [attr.id]="id"
+                    [attr.name]="id"
+                    class="select select--block"
+                    [ngClass]="{'input-field--disabled': control.disabled}"
+                    [formControl]="control"
+                    tabindex="-1"
+                    (change)="onValueChanged($event)"
+                    data-search-empty="Geen resultaten gevonden"
+                    data-id=""
+                    data-multiselect>
+                <option *ngFor="let v of values" [value]="v.key" [selected]="isSelectedItem(control, v.key)">{{v.value}}</option>
+            </select>
+        </div>
+    </div>
+</div>

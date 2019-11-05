@@ -1,0 +1,18 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Benaming types</h1>
+            <a class="button cta-title__cta" [routerLink]="['./create']">Voeg benaming type toe</a>
+        </div>
+
+        <ww-label-type-filter
+            [isBusy]="isLoading"
+            (filter)="search($event)">
+        </ww-label-type-filter>
+        <ww-label-type-list
+            [items]="labelTypes"
+            [isBusy]="isLoading"
+            (changePage)="changePage($event)">
+        </ww-label-type-list>
+    </div>
+</div>

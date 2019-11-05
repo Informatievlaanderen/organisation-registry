@@ -1,0 +1,95 @@
+<div data-table="">
+  <div class="u-table-overflow">
+    <table id="addressTable" class="data-table">
+      <thead>
+        <tr class="data-table__header">
+          <th class="data-table__header-title" style="width: 55%">
+            <a class="data-table__header-title--sortable"
+               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('buildingName')}"
+               (click)="sortBy('buildingName')">
+              Gebouw
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                 [ngClass]="{'vi-u-180deg': isSortedByDescending('buildingName')}"></i>
+              </a>
+          </th>
+          <th class="data-table__header-title" style="width: 15%">
+            <a class="data-table__header-title--sortable"
+               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('validFrom')}"
+               (click)="sortBy('validFrom')">
+              Geldig vanaf
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                 [ngClass]="{'vi-u-180deg': isSortedByDescending('validFrom')}"></i>
+              </a>
+          </th>
+          <th class="data-table__header-title" style="width: 15%">
+            <a class="data-table__header-title--sortable"
+               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('validTo')}"
+               (click)="sortBy('validTo')">
+              Geldig tot
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                 [ngClass]="{'vi-u-180deg': isSortedByDescending('validTo')}"></i>
+              </a>
+          </th>
+          <th class="data-table__header-title" style="width: 15%">
+            <a class="data-table__header-title--sortable"
+               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('isMainBuilding')}"
+               (click)="sortBy('isMainBuilding')">
+              Hoofdgebouw
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                 [ngClass]="{'vi-u-180deg': isSortedByDescending('isMainBuilding')}"></i>
+              </a>
+          </th>
+          <th *ngIf="(canEdit | async)" class="data-table__last-header"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <template [ngIf]="isBusy">
+          <tr><td colspan="6">Bezig met laden...</td></tr>
+        </template>
+
+        <template [ngIf]="!isBusy">
+          <tr *ngIf="!hasData(data)">
+            <td colspan="6">Geen data beschikbaar...</td>
+          </tr>
+          <tr *ngFor="let building of data" [ngClass]="{'data-table__body-history': !building.isActive}">
+            <td class="data-table__body-title">{{building.buildingName}}</td>
+            <td class="data-table__body-title">
+              <span *ngIf="building.validFrom">{{building.validFrom}}</span>
+              <span class="data-table__cell--disabled" *ngIf="!building.validFrom">Niet bekend</span>
+            </td>
+            <td class="data-table__body-title">
+              <span *ngIf="building.validTo">{{building.validTo}}</span>
+              <span class="data-table__cell--disabled" *ngIf="!building.validTo">Niet bekend</span>
+            </td>
+            <td class="data-table__body-title">
+              <i aria-label="Hoofdgebouw"
+                [ngClass]="{'vi vi-u-badge vi-u-badge--green vi-u-badge--xxsmall vi-check': building.isMainBuilding}">
+              </i>
+            </td>
+            <td *ngIf="(canEdit | async)" class="u-align-right">
+              <a [routerLink]="['edit', building.organisationBuildingId]" class="vi vi-u-badge vi-u-badge--grey vi-u-badge--small vi-edit" title="Bewerken" aria-label="Bewerken"></a>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="totalPages > 1" class="data-table__actions data-table__actions--bottom">
+    <div class="pager">
+      <ul class="pager__list pager__list--right">
+        <li class="pager__element">
+          <strong>{{firstItem}} - {{lastItem}}</strong> van {{totalItems}}
+        </li>
+
+        <li class="pager__element" *ngIf="firstItem > 1">
+          <a class="link-text" (click)="previousPage()"><i class="vi vi-arrow vi-u-180deg vi-u-s"></i> vorige</a>
+        </li>
+
+        <li class="pager__element" *ngIf="lastItem < totalItems">
+          <a class="link-text" (click)="nextPage()">volgende <i class="vi vi-arrow vi-u-s"></i></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+.tab .tab__link {
+  white-space: nowrap;
+  padding: 1.2rem 1.1rem 1.2rem 1.1rem;
+  margin-right: 1px;
+}
+
+.functional-header, .u-spacer {
+    margin-bottom: 0;
+}
+
+.functional-header__actions {
+    padding: 1rem .5rem 1rem;
+}
+
+.functional-header__action a {
+    cursor: pointer;
+}
+
+.functional-header__action a:hover {
+    text-decoration: underline;
+}
+
+@media screen and (max-width: 767px) {
+    .functional-header--has-actions:before, .functional-header__actions {
+        display: block;
+    }
+
+    .functional-header__actions {
+       margin-top: -0.9rem;
+    }
+}

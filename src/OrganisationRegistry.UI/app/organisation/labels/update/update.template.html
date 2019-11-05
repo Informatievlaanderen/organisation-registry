@@ -1,0 +1,57 @@
+<div class="grid">
+  <div class="col--8-12 col--10-12--m col--1-1--s">
+    <div>
+      <h1 class="h2">Bewerken benaming</h1>
+    </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="update(form.value)" autocomplete="off">
+      <div class="form__group">
+        <ww-form-group-select
+          [id]="'labelTypeId'"
+          [name]="'Benaming type'"
+          [label]="'Benaming type'"
+          [control]="form.get('labelTypeId')"
+          [placeholder]="'Selecteer label type...'"
+          [values]="labelTypes">
+        </ww-form-group-select>
+
+        <ww-form-group-textbox
+          [id]="'labelValue'"
+          [name]="'Benaming'"
+          [label]="'Benaming'"
+          [placeholder]="'Benaming'"
+          [control]="form.get('labelValue')">
+        </ww-form-group-textbox>
+
+        <ww-form-group-datepicker-range
+          [fromId]="'validFrom'"
+          [fromName]="'Geldig vanaf'"
+          [fromLabel]="'Geldig vanaf'"
+          [fromPlaceholder]="'Geldig vanaf'"
+          [fromControl]="form.get('validFrom')"
+          [toId]="'validTo'"
+          [toName]="'Geldig tot'"
+          [toLabel]="'Geldig tot'"
+          [toPlaceholder]="'Geldig tot'"
+          [toControl]="form.get('validTo')">
+        </ww-form-group-datepicker-range>
+
+        <div class="form__row">
+          <div class="form__buttons">
+            <div class="form__buttons__left">
+              <a [routerLink]="['./../..']" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
+            </div>
+            <div class="form__buttons__right">
+              <button class="button form__button"
+                      type="submit"
+                      [ngClass]="{'button--disabled': !isFormValid, 'button--loading': form.disabled}"
+                      [disabled]="!isFormValid || form.disabled">
+                <span>Wijzigingen opslaan</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

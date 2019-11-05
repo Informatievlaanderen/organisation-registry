@@ -1,0 +1,11 @@
+<div class="contact-card__content-wrapper">
+  <div class="cta-title">
+    <h1 class="h2 cta-title__title">Organisaties zoeken ({{ query }})</h1>
+  </div>
+
+  <ww-organisation-search-list
+    [items]="organisations"
+    [isBusy]="isLoading"
+    (changePage)="changePage($event)">
+  </ww-organisation-search-list>
+</div>

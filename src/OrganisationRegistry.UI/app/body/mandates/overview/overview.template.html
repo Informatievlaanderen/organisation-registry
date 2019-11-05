@@ -1,0 +1,31 @@
+<div class="contact-card__content-wrapper">
+    <div class="cta-title">
+        <h3 class="h3 cta-title__title">Mandaten</h3>
+        <ww-body-mandate-filter
+            [isBusy]="isLoading"
+            (filter)="search($event)">
+        </ww-body-mandate-filter>
+        <div class="cta-title__cta">
+            <div *ngIf="(canEditBody | async)">
+                <div *ngIf="(hasSeats | async)">
+                    <a class="button" [routerLink]="['./linkperson']">Persoon toewijzen</a>
+                    <a class="button" [routerLink]="['./linkfunction']">Functie toewijzen</a>
+                    <a class="button" [routerLink]="['./linkorganisation']">Organisatie toewijzen</a>
+                </div>
+                <div *ngIf="!(hasSeats | async)">
+                    <a class="button button--disabled">Persoon toewijzen</a>
+                    <a class="button button--disabled">Functie toewijzen</a>
+                    <a class="button button--disabled">Organisatie toewijzen</a>
+                </div>
+            </div>
+            <div class="u-align-right" style="clear: both;"></div>
+        </div>
+    </div>
+
+    <ww-body-mandate-list
+      [items]="bodyMandates"
+      [isBusy]="isLoading"
+      (changePage)="changePage($event)"
+      [canEdit]="canEditBody">
+    </ww-body-mandate-list>
+</div>

@@ -1,0 +1,40 @@
+<div class="contact-card__content-wrapper">
+	<div class="cta-title">
+		<h3 class="h3 cta-title__title">Algemene informatie</h3>
+		<div class="cta-title__cta">
+			<a *ngIf="(canEditBody | async)" class="button" [routerLink]="['./general']">Wijzig informatie</a>
+			<a *ngIf="(canEditBody | async)" class="button" [routerLink]="['./validity']">Pas duurtijd aan</a>
+		</div>
+	</div>
+	<p class='ww-description'>
+		<span *ngIf="body.description">{{body.description}}</span>
+		<span class="properties--disabled" *ngIf="!body.description">Geen omschrijving</span>
+	</p>
+	<div class="properties ww-info">
+		<div class="properties__column">
+			<dl>
+				<dt class="properties__label">Naam:</dt>
+				<dd id="bodyName" class="properties__data">{{body.name}}</dd>
+
+				<dt class="properties__label">Formeel geldig vanaf:</dt>
+        <dd id="bodyFormalValidFrom" class="properties__data" *ngIf="body.formalValidFrom">{{body.formalValidFrom}}</dd>
+				<dd id="bodyFormalValidFrom" class="properties__data properties--disabled" *ngIf="!body.formalValidFrom">Niet bekend</dd>
+
+				<dt class="properties__label">Korte naam:</dt>
+				<dd class="properties__data" *ngIf="body.shortName">{{body.shortName}}</dd>
+				<dd class="properties__data properties--disabled" *ngIf="!body.shortName">Geen</dd>
+			</dl>
+		</div>
+		<div class="properties__column">
+			<dl>
+				<dt class="properties__label">Code:</dt>
+				<dd class="properties__data" *ngIf="body.bodyNumber">{{body.bodyNumber}}</dd>
+				<dd class="properties__data properties--disabled" *ngIf="!body.bodyNumber">Geen</dd>
+
+				<dt class="properties__label">Formeel geldig tot:</dt>
+				<dd id="bodyFormalValidTo" class="properties__data" *ngIf="body.formalValidTo">{{body.formalValidTo}}</dd>
+				<dd id="bodyFormalValidTo" class="properties__data properties--disabled" *ngIf="!body.formalValidTo">Niet bekend</dd>
+			</dl>
+		</div>
+	</div>
+</div>

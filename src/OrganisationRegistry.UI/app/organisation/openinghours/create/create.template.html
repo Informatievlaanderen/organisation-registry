@@ -1,0 +1,92 @@
+<div class="grid">
+  <div class="col--8-12 col--10-12--m col--1-1--s">
+    <div>
+      <h1 class="h2">Nieuw openingsuur</h1>
+    </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="create(form.value)" autocomplete="off">
+      <div class="form__group">
+
+        <ww-form-group-select
+          [id]="'opens'"
+          [name]="'Van'"
+          [label]="'Van'"
+          [control]="form.get('opens')"
+          [placeholder]="'Van'"
+          [values]="hours">
+        </ww-form-group-select>
+
+        <!-- <ww-form-group-textbox
+          [id]="'opens'"
+          [name]="'Van'"
+          [label]="'Van'"
+          [placeholder]="'Van'"
+          [control]="form.get('opens')">
+        </ww-form-group-textbox> -->
+
+        <ww-form-group-select
+          [id]="'closes'"
+          [name]="'Tot'"
+          [label]="'Tot'"
+          [control]="form.get('closes')"
+          [placeholder]="'Tot'"
+          [values]="hours">
+        </ww-form-group-select>
+
+        <!-- <ww-form-group-textbox
+          [id]="'closes'"
+          [name]="'Tot'"
+          [label]="'Tot'"
+          [placeholder]="'Tot'"
+          [control]="form.get('closes')">
+        </ww-form-group-textbox> -->
+
+        <ww-form-group-select
+          [id]="'dayOfWeek'"
+          [name]="'Dag'"
+          [label]="'Dag'"
+          [control]="form.get('dayOfWeek')"
+          [placeholder]="'Dag'"
+          [values]="days">
+        </ww-form-group-select>
+
+        <!-- <ww-form-group-textbox
+          [id]="'dayOfWeek'"
+          [name]="'Dag'"
+          [label]="'Dag'"
+          [placeholder]="'Dag'"
+          [control]="form.get('dayOfWeek')">
+        </ww-form-group-textbox> -->
+
+        <ww-form-group-datepicker-range
+          [fromId]="'validFrom'"
+          [fromName]="'Geldig vanaf'"
+          [fromLabel]="'Geldig vanaf'"
+          [fromPlaceholder]="'Geldig vanaf'"
+          [fromControl]="form.get('validFrom')"
+          [toId]="'validTo'"
+          [toName]="'Geldig tot'"
+          [toLabel]="'Geldig tot'"
+          [toPlaceholder]="'Geldig tot'"
+          [toControl]="form.get('validTo')">
+        </ww-form-group-datepicker-range>
+
+        <div class="form__row">
+          <div class="form__buttons">
+            <div class="form__buttons__left">
+              <a [routerLink]="['./..']" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
+            </div>
+            <div class="form__buttons__right">
+              <button class="button form__button"
+                      type="submit"
+                      [ngClass]="{'button--disabled': !isFormValid, 'button--loading': form.disabled}"
+                      [disabled]="!isFormValid || form.disabled">
+                <span>Voeg openingsuur toe</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

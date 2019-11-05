@@ -1,0 +1,18 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Toepassingsgebieden</h1>
+            <a class="button cta-title__cta" [routerLink]="['./create']">Voeg toepassingsgebied toe</a>
+        </div>
+
+        <ww-formal-framework-filter
+          [isBusy]="isLoading"
+          (filter)="search($event)">
+        </ww-formal-framework-filter>
+        <ww-formal-framework-list
+          [items]="formalFrameworks"
+          [isBusy]="isLoading"
+          (changePage)="changePage($event)">
+        </ww-formal-framework-list>
+    </div>
+</div>

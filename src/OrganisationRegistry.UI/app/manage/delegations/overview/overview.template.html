@@ -1,0 +1,32 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Delegaties</h1>
+            <!--<a class="button cta-title__cta" [routerLink]="['./create']">Voeg delegatie toe</a>-->
+        </div>
+
+        <div style="padding: 0rem 1.5rem;" *ngIf="hasNonDelegatedDelegations">
+            <div class="alert alert--warning">
+                <div class="alert__icon"></div>
+
+                <div class="alert__content">
+                    <div class="alert__title">Niet toegewezen delegaties aanwezig</div>
+                    <div class="alert__message">
+                        <p>Er zijn gedelegeerde mandaten waar nog geen persoon is aan toegewezen. Deze zijn gemarkeerd in het geel.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ww-delegation-filter
+            [isBusy]="isLoading"
+            (filter)="search($event)">
+        </ww-delegation-filter>
+        <ww-delegation-list
+            [items]="delegations"
+            [isBusy]="isLoading"
+            (changePage)="changePage($event)"
+            [hasNonDelegatedDelegations]="hasNonDelegatedDelegations">
+        </ww-delegation-list>
+    </div>
+</div>

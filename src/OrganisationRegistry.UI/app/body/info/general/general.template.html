@@ -1,0 +1,60 @@
+<div class="grid">
+  <div class="col--8-12 col--10-12--m col--1-1--s">
+    <div>
+      <h1 class="h2">Pas algemene informatie aan</h1>
+    </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="submit(form.value)" autocomplete="off">
+      <div class="form__group">
+        <ww-form-group-textbox
+          [id]="'bodyNumber'"
+          [name]="'Orgaan nummer'"
+          [label]="'Orgaan nummer'"
+          [placeholder]="'Orgaan nummer'"
+          [control]="form.get('bodyNumber')">
+        </ww-form-group-textbox>
+
+        <ww-form-group-textbox
+          [id]="'name'"
+          [name]="'Naam'"
+          [label]="'Naam'"
+          [placeholder]="'Naam'"
+          [control]="form.get('name')"
+          [focus]="true">
+        </ww-form-group-textbox>
+
+        <ww-form-group-textbox
+          [id]="'shortName'"
+          [name]="'Korte naam'"
+          [label]="'Korte naam'"
+          [placeholder]="'Korte naam'"
+          [control]="form.get('shortName')">
+        </ww-form-group-textbox>
+
+        <ww-form-group-textarea
+          [id]="'description'"
+          [name]="'Omschrijving'"
+          [label]="'Omschrijving'"
+          [placeholder]="'Omschrijving'"
+          [control]="form.get('description')">
+        </ww-form-group-textarea>
+
+        <div class="form__row">
+          <div class="form__buttons">
+            <div class="form__buttons__left">
+              <a [routerLink]="['./..']" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
+            </div>
+            <div class="form__buttons__right">
+              <button class="button form__button"
+                      type="submit"
+                      [ngClass]="{'button--disabled': !form.valid, 'button--loading': form.disabled}"
+                      [disabled]="!form.valid || form.disabled">
+                <span>Wijzigingen opslaan</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

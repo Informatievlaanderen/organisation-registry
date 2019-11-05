@@ -1,0 +1,61 @@
+<form class="form" [formGroup]="bodyForm" (ngSubmit)="filterForm(bodyForm.value)" autocomplete="off">
+  <div class="grid">
+    <div class="col--6-12 col--1-1--s">
+      <div class="form__group">
+        <ww-form-group-textbox
+          [id]="'name'"
+          [label]="'Naam'"
+          [control]="bodyForm.get('name')"
+          [placeholder]="'Naam orgaan'"
+          [name]="'Naam orgaan'">
+        </ww-form-group-textbox>
+
+        <ww-form-group-toggle
+          [id]="'activeOnly'"
+          [label]="'Enkel actieve organen'"
+          [control]="bodyForm.get('activeOnly')"
+          [name]="'Enkel actieve organen'">
+        </ww-form-group-toggle>
+      </div>
+    </div>
+
+    <div class="col--6-12 col--1-1--s">
+      <div class="form__group">
+        <ww-form-group-textbox
+          [id]="'name'"
+          [label]="'Organisatie'"
+          [control]="bodyForm.get('organisation')"
+          [placeholder]="'Naam organisatie'"
+          [name]="'Naam organisatie'">
+        </ww-form-group-textbox>
+      </div>
+    </div>
+
+    <div class="col--1-1">
+      <div class="form__group">
+        <div class="form__row">
+          <div class="form__buttons">
+            <div class="form__buttons__right">
+              <button class="button form__button"
+                      type="reset"
+                      *ngIf="filterActive"
+                      (click)="resetForm()"
+                      [ngClass]="{'button--disabled': bodyForm.disabled}"
+                      [disabled]="bodyForm.disabled">
+                <span>Filter wissen</span>
+              </button>
+
+              <button class="button form__button"
+                      type="submit"
+                      id="bodySearchSubmit"
+                      [ngClass]="{'button--disabled': !isFormValid, 'button--loading': bodyForm.disabled}"
+                      [disabled]="!isFormValid || bodyForm.disabled">
+                <span>Zoeken</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

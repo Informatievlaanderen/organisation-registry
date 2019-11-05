@@ -1,0 +1,18 @@
+<div class="grid">
+  <div class="col--1-1">
+    <div class="cta-title">
+        <h1 class="h2 cta-title__title">{{ classificationTitle }}</h1>
+    </div>
+
+    <div class="back-arrow">
+      <a [routerLink]="['/report/organisationclassification-participation', classificationTag]"><i class="vi vi-u-link vi-arrow"></i> terug naar MEP-decreet ({{classificationLabel}})</a>
+    </div>
+
+    <ww-report-classification-participation-list
+      [items]="classificationOrganisationParticipations"
+      [isBusy]="isLoading"
+      (changePage)="changePage($event)"
+      (exportCsv)="exportCsv($event)">
+    </ww-report-classification-participation-list>
+  </div>
+</div>

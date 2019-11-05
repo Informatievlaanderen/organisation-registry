@@ -1,0 +1,28 @@
+<form class="form" [formGroup]="bodyParticipationForm" (ngSubmit)="filterForm(bodyParticipationForm.value)" autocomplete="off">
+    <div class="checkbox--switch__wrapper">
+      <label class="pill pill--checkable" [attr.for]="'entitledToVote'">
+        <input
+            type="checkbox"
+            [attr.id]="'entitledToVote'"
+            [attr.name]="'entitledToVote'"
+            class="pill--checkable__checkbox"
+            [ngClass]="{'checkbox--disabled': isBusy}"
+            [readonly]="isBusy"
+            [formControl]="bodyParticipationForm.get('entitledToVote')"
+            (change)="filterForm(bodyParticipationForm.value)">
+        <span></span> stemgerechtigd
+      </label>
+      <label class="pill pill--checkable" [attr.for]="'notEntitledToVote'">
+          <input
+              type="checkbox"
+              [attr.id]="'notEntitledToVote'"
+              [attr.name]="'notEntitledToVote'"
+              class="pill--checkable__checkbox"
+              [ngClass]="{'checkbox--disabled': isBusy}"
+              [readonly]="isBusy"
+              [formControl]="bodyParticipationForm.get('notEntitledToVote')"
+              (change)="filterForm(bodyParticipationForm.value)">
+          <span></span> niet-stemgerechtigd
+        </label>
+    </div>
+  </form>

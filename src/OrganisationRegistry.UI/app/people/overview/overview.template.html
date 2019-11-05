@@ -1,0 +1,15 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Personen</h1>
+            <!--<a *ngIf="(canCreateOrganisation | async)" class="button cta-title__cta" [routerLink]="['./create']">Voeg organisatie toe</a>-->
+        </div>
+
+        <ww-people-filter [isBusy]="isLoading" (filter)="search($event)"></ww-people-filter>
+        <ww-people-list
+          [items]="people"
+          [isBusy]="isLoading"
+          (changePage)="changePage($event)"
+          (exportCsv)="exportCsv($event)"></ww-people-list>
+    </div>
+</div>

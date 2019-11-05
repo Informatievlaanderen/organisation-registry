@@ -1,0 +1,18 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Orgaan classificatietypes</h1>
+            <a class="button cta-title__cta" [routerLink]="['./create']">Voeg orgaan classificatietype toe</a>
+        </div>
+
+        <ww-body-classification-type-filter
+          [isBusy]="isLoading"
+          (filter)="search($event)">
+        </ww-body-classification-type-filter>
+        <ww-body-classification-type-list
+          [items]="bodyClassificationTypes"
+          [isBusy]="isLoading"
+          (changePage)="changePage($event)">
+        </ww-body-classification-type-list>
+    </div>
+</div>

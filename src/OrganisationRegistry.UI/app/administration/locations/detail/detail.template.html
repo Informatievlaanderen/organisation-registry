@@ -1,0 +1,100 @@
+<div class="grid">
+  <div class="col--8-12 col--10-12--m col--1-1--s">
+    <div *ngIf="isEditMode">
+      <h1 class="h2">Bewerken locatie</h1>
+    </div>
+
+    <div *ngIf="!isEditMode">
+      <h1 class="h2">Nieuwe locatie</h1>
+    </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="createOrUpdate(form.value)" autocomplete="off">
+      <div class="form__group">
+          <h2 class="h3">Zoek een Crab adres</h2>
+
+          <ww-crab-location-autocomplete
+            [id]="'crabLocation'"
+            [label]="'Zoek een Crab adres'"
+            [name]="'Zoek een Crab adres'"
+            [control]="form.get('crabLocationId')"
+            [initialValue]="formattedAddress"
+            [focus]="true"
+            (valueChanged)="crabValueChanged($event)">
+          </ww-crab-location-autocomplete>
+
+          <h2 class="h3">Of, vul zelf een adres in</h2>
+
+          <ww-form-group-textbox
+            [id]="'Straat'"
+            [label]="'Straat'"
+            [control]="form.get('street')"
+            [placeholder]="'Straat'"
+            [name]="'Straat'"
+            (keyup)="onKey()"
+            #streetInput>
+          </ww-form-group-textbox>
+
+          <ww-form-group-textbox
+            [id]="'Postcode'"
+            [label]="'Postcode'"
+            [control]="form.get('zipCode')"
+            [placeholder]="'Postcode'"
+            [name]="'Postcode'"
+            (keyup)="onKey()">
+          </ww-form-group-textbox>
+
+          <ww-form-group-textbox
+            [id]="'Gemeente'"
+            [label]="'Gemeente'"
+            [control]="form.get('city')"
+            [placeholder]="'Gemeente'"
+            [name]="'Gemeente'"
+            (keyup)="onKey()">
+          </ww-form-group-textbox>
+
+          <ww-form-group-textbox
+            [id]="'Land'"
+            [label]="'Land'"
+            [control]="form.get('country')"
+            [placeholder]="'Land'"
+            [name]="'Land'"
+            (keyup)="onKey()">
+          </ww-form-group-textbox>
+
+          <div class="form__row">
+            <div class="form__buttons">
+              <div class="form__buttons__left" *ngIf="form.get('crabLocationId').value">
+                <i aria-label="Crab"
+                  class="vi vi-u-badge vi-u-badge--green vi-u-badge--xxsmall vi-check">
+                </i>
+                <span>Het gekozen adres is gekend in Crab.</span>
+              </div>
+              <div class="form__buttons__left" *ngIf="!form.get('crabLocationId').value">
+                  <i aria-label="Crab"
+                    class="vi vi-u-badge vi-u-badge--yellow vi-u-badge--xsmall vi-info">
+                  </i>
+                  <span>Het gekozen adres is niet gekend in Crab.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form__row">
+            <div class="form__buttons">
+              <div class="form__buttons__left">
+                <a [routerLink]="['./..']" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
+              </div>
+              <div class="form__buttons__right">
+                <button class="button form__button"
+                        type="submit"
+                        [ngClass]="{'button--disabled': !isFormValid, 'button--loading': form.disabled}"
+                        [disabled]="!isFormValid || form.disabled">
+                  <span *ngIf="!isEditMode">Voeg locatie toe</span>
+                  <span *ngIf="isEditMode">Wijzigingen opslaan</span>
+                </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

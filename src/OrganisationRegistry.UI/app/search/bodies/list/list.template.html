@@ -1,0 +1,31 @@
+<div data-table="">
+  <div class="u-table-overflow">
+    <table id="addressTable" class="data-table">
+      <thead>
+        <tr class="data-table__header">
+          <th class="data-table__header-title" style="width: 20%">Nummer</th>
+          <th class="data-table__header-title" style="width: 70%">Naam</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template [ngIf]="isBusy">
+          <tr><td colspan="2">Bezig met laden...</td></tr>
+        </template>
+        <template [ngIf]="!isBusy">
+          <tr *ngIf="!hasData(data)">
+            <td colspan="2">Geen data beschikbaar...</td>
+          </tr>
+          <tr *ngFor="let body of data" class="ww-body-row">
+            <td class="data-table__body-title ww-bodyNumber"><a [routerLink]="['/bodies/:id/info', body.id]" title="{{body.bodyNumber}}">{{body.bodyNumber}}</a></td>
+            <td class="data-table__body-title ww-name">
+              <a [routerLink]="['/bodies/:id/info', body.id]" title="{{body.name}}">{{body.name}}</a>
+              <div *ngIf="body.shortName && body.shortName !== body.name" class="ww-shortname">
+                <a [routerLink]="['/bodies/:id/info', body.id]" title="{{body.shortName}}">{{body.shortName}}</a>
+              </div>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+.tile__title {
+  margin-bottom: 0;
+}
+
+.doormat:before, .paragraph-link:before, .tile:before {
+    left: -1.45rem;
+    top: 1.7rem;
+}

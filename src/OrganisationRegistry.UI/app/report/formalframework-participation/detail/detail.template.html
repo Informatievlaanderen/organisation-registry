@@ -1,0 +1,18 @@
+<div class="grid">
+    <div class="col--1-1">
+      <div class="cta-title">
+          <h1 class="h2 cta-title__title">Toepassingsgebied {{formalFramework.name}}</h1>
+      </div>
+
+      <div class="back-arrow">
+        <a [routerLink]="['/report/formalframework-participation']"><i class="vi vi-u-link vi-arrow"></i> terug naar MEP-decreet (toepassingsgebied)</a>
+      </div>
+
+      <ww-report-formal-framework-participation-list
+        [items]="formalFrameworkParticipations"
+        [isBusy]="isLoading"
+        (changePage)="changePage($event)"
+        (exportCsv)="exportCsv($event)">
+      </ww-report-formal-framework-participation-list>
+    </div>
+  </div>

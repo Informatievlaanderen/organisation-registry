@@ -1,0 +1,79 @@
+<form class="form" [formGroup]="form" (ngSubmit)="submit(form.value)" autocomplete="off">
+  <div class="form__group">
+    <ww-form-group-textbox
+      [id]="'name'"
+      [name]="'Naam'"
+      [label]="'Naam'"
+      [placeholder]="'Naam'"
+      [control]="form.get('name')"
+      [focus]="true">
+    </ww-form-group-textbox>
+
+    <ww-form-group-textbox
+      [id]="'shortName'"
+      [name]="'Korte naam'"
+      [label]="'Korte naam'"
+      [placeholder]="'Korte naam'"
+      [control]="form.get('shortName')">
+    </ww-form-group-textbox>
+
+    <ww-form-group-textarea
+      [id]="'description'"
+      [name]="'Omschrijving'"
+      [label]="'Omschrijving'"
+      [placeholder]="'Omschrijving'"
+      [control]="form.get('description')">
+    </ww-form-group-textarea>
+
+    <ww-form-group-datepicker-range
+      [fromId]="'validFrom'"
+      [fromName]="'Geldig vanaf'"
+      [fromLabel]="'Geldig vanaf'"
+      [fromPlaceholder]="'Geldig vanaf'"
+      [fromControl]="form.get('validFrom')"
+      [toId]="'validTo'"
+      [toName]="'Geldig tot'"
+      [toLabel]="'Geldig tot'"
+      [toPlaceholder]="'Geldig tot'"
+      [toControl]="form.get('validTo')">
+    </ww-form-group-datepicker-range>
+
+    <ww-form-group-datepicker-range
+      [fromId]="'formalValidFrom'"
+      [fromName]="'Formeel geldig vanaf'"
+      [fromLabel]="'Formeel geldig vanaf'"
+      [fromPlaceholder]="'Formeel geldig vanaf'"
+      [fromControl]="form.get('formalValidFrom')"
+      [toId]="'formalValidTo'"
+      [toName]="'Formeel geldig tot'"
+      [toLabel]="'Formeel geldig tot'"
+      [toPlaceholder]="'Formeel geldig tot'"
+      [toControl]="form.get('formalValidTo')">
+    </ww-form-group-datepicker-range>
+
+    <ww-organisation-autocomplete
+      [id]="'organisationId'"
+      [label]="'Organisatie'"
+      [name]="'Organisatie'"
+      [control]="form.get('organisationId')"
+      [authorizedOnly]="!isOrgaanBeheerder"
+      [initialValue]="initialOrganisation">
+    </ww-organisation-autocomplete>
+
+    <div class="form__row">
+      <div class="form__buttons">
+        <div class="form__buttons__left">
+          <a [routerLink]="cancelRouterLink" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
+        </div>
+        <div class="form__buttons__right">
+          <button class="button form__button"
+                  type="submit"
+                  [ngClass]="{'button--disabled': !form.valid, 'button--loading': form.disabled}"
+                  [disabled]="!form.valid || form.disabled">
+            <span>{{primaryButtonText}}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

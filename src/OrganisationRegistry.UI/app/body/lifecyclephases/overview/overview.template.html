@@ -1,0 +1,27 @@
+<div class="contact-card__content-wrapper">
+    <div class="alert alert--warning" *ngIf="!body.lifecycleValid">
+        <div class="alert__icon"></div>
+
+        <div class="alert__content">
+            <div class="alert__title">Ongeldige levensloop</div>
+            <div class="alert__message">
+                <p>Een levensloop moet een vaste startdatum hebben, een oneindige einddatum en moet een aaneengesloten geheel vormen.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="cta-title">
+        <h3 class="h3 cta-title__title">Levensloop</h3>
+        <div class="cta-title__cta">
+            <a *ngIf="(canEditBody | async)" class="button cta-title__cta" [routerLink]="['./create']">Levensloopfase koppelen</a>
+            <div class="u-align-right" style="clear: both;"></div>
+        </div>
+    </div>
+
+    <ww-body-lifecycle-phase-list
+      [items]="bodyLifecyclePhases"
+      [isBusy]="isLoading"
+      (changePage)="changePage($event)"
+      [canEdit]="canEditBody">
+    </ww-body-lifecycle-phase-list>
+</div>

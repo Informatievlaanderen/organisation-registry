@@ -1,0 +1,18 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Levensloopfase types</h1>
+            <a class="button cta-title__cta" [routerLink]="['./create']">Voeg levensloopfase type toe</a>
+        </div>
+
+        <ww-lifecycle-phase-type-filter
+          [isBusy]="isLoading"
+          (filter)="search($event)">
+        </ww-lifecycle-phase-type-filter>
+        <ww-lifecycle-phase-type-list
+          [items]="lifecyclePhaseTypes"
+          [isBusy]="isLoading"
+          (changePage)="changePage($event)">
+        </ww-lifecycle-phase-type-list>
+    </div>
+</div>

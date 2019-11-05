@@ -1,0 +1,17 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">MEP-decreet (toepassingsgebied)</h1>
+        </div>
+
+        <ww-report-formal-framework-filter
+          [isBusy]="isLoading"
+          (filter)="search($event)">
+        </ww-report-formal-framework-filter>
+        <ww-report-formal-framework-list
+          [items]="formalFrameworks"
+          [isBusy]="isLoading"
+          (changePage)="changePage($event)">
+        </ww-report-formal-framework-list>
+    </div>
+</div>

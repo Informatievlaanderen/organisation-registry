@@ -1,0 +1,88 @@
+<div data-table="">
+    <!--<div class="data-table__actions data-table__actions--top">
+      <div class="grid">
+        <div class="col--6-12 col--9-12--xs">
+          <ul class="data-table__actions__list">
+            <li class="data-table__action">
+              <div class="popdown popdown--left js-popup" ww-popup id="popup-0">
+                <button class="data-table__action__toggle data-table__action__toggle--arrow js-popup__toggle" aria-expanded="false" aria-controls="popup-0">Download</button>
+                <ul class="popdown__content">
+                  <li><a id="exportCsvLink" (click)="doCsvExport()" class="popdown__link link-text">CSV</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>-->
+
+    <div class="u-table-overflow">
+      <table id="addressTable" class="data-table">
+        <thead>
+          <tr class="data-table__header">
+            <th class="data-table__header-title" style="width: 50%">
+              <a class="data-table__header-title--sortable"
+                 [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('name')}"
+                 (click)="sortBy('name')">
+                Toepassingsgebied
+                <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                   [ngClass]="{'vi-u-180deg': isSortedByDescending('name')}"></i>
+                </a>
+            </th>
+            <th class="data-table__header-title" style="width: 20%">
+              <a class="data-table__header-title--sortable"
+                 [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('code')}"
+                 (click)="sortBy('code')">
+                Code
+                <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                   [ngClass]="{'vi-u-180deg': isSortedByDescending('code')}"></i>
+                </a>
+            </th>
+            <th class="data-table__header-title" style="width: 30%">
+              <a class="data-table__header-title--sortable"
+                 [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('formalFrameworkCategoryName')}"
+                 (click)="sortBy('formalFrameworkCategoryName')">
+                Categorie
+                <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                   [ngClass]="{'vi-u-180deg': isSortedByDescending('formalFrameworkCategoryName')}"></i>
+                </a>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <template [ngIf]="isBusy">
+            <tr><td colspan="3">Bezig met laden...</td></tr>
+          </template>
+
+          <template [ngIf]="!isBusy">
+            <tr *ngIf="!hasData(data)">
+              <td colspan="3">Geen data beschikbaar...</td>
+            </tr>
+            <tr *ngFor="let formalFramework of data">
+              <td class="data-table__body-title data-table__body-ellipsis"><a [routerLink]="['./', formalFramework.id]" title="{{formalFramework.name}}">{{formalFramework.name}}</a></td>
+              <td class="data-table__body-title data-table__body-ellipsis">{{formalFramework.code}}</td>
+              <td class="data-table__body-title data-table__body-ellipsis">{{formalFramework.formalFrameworkCategoryName}}</td> <!-- // TODO: Add a link to this item?-->
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="totalPages > 1" class="data-table__actions data-table__actions--bottom">
+      <div class="pager">
+        <ul class="pager__list pager__list--right">
+          <li class="pager__element">
+            <strong>{{firstItem}} - {{lastItem}}</strong> van {{totalItems}}
+          </li>
+
+          <li class="pager__element" *ngIf="firstItem > 1">
+            <a class="link-text" (click)="previousPage()"><i class="vi vi-arrow vi-u-180deg vi-u-s"></i> vorige</a>
+          </li>
+
+          <li class="pager__element" *ngIf="lastItem < totalItems">
+            <a class="link-text" (click)="nextPage()">volgende <i class="vi vi-arrow vi-u-s"></i></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>

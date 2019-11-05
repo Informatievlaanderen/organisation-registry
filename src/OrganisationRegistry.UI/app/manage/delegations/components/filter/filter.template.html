@@ -1,0 +1,101 @@
+<form class="form" [formGroup]="form" (ngSubmit)="filterForm(form.value)" autocomplete="off">
+  <div class="grid">
+    <div class="col--6-12 col--1-1--s">
+      <div class="form__group">
+        <ww-form-group-textbox
+          [id]="'bodyName'"
+          [label]="'Orgaan'"
+          [control]="form.get('bodyName')"
+          [placeholder]="'Naam orgaan'"
+          [name]="'Naam orgaan'">
+        </ww-form-group-textbox>
+
+        <ww-form-group-textbox
+          [id]="'organisationName'"
+          [label]="'Organisatie (Vertegenwoordiging)'"
+          [control]="form.get('organisationName')"
+          [placeholder]="'Naam vertegenwoordigende organisatie'"
+          [name]="'Naam vertegenwoordigende organisatie'">
+        </ww-form-group-textbox>
+
+        <ww-form-group-textbox
+          [id]="'bodySeatNumber'"
+          [label]="'Postnummer'"
+          [control]="form.get('bodySeatNumber')"
+          [placeholder]="'Nummer post'"
+          [name]="'Postnummer'">
+        </ww-form-group-textbox>
+
+        <ww-form-group-toggle
+          [id]="'activeMandatesOnly'"
+          [label]="'Enkel actieve mandaten'"
+          [control]="form.get('activeMandatesOnly')"
+          [name]="'Actieve mandaten'">
+        </ww-form-group-toggle>
+      </div>
+    </div>
+
+    <div class="col--6-12 col--1-1--s">
+      <div class="form__group">
+        <ww-form-group-textbox
+          [id]="'bodyOrganisationName'"
+          [label]="'Organisatie'"
+          [control]="form.get('bodyOrganisationName')"
+          [placeholder]="'Naam organisatie'"
+          [name]="'Naam organisatie'">
+        </ww-form-group-textbox>
+
+        <ww-form-group-textbox
+          [id]="'functionTypeName'"
+          [label]="'Functie (Vertegenwoordiging)'"
+          [control]="form.get('functionTypeName')"
+          [placeholder]="'Naam vertegenwoordigende functie'"
+          [name]="'Naam vertegenwoordigende functie'">
+        </ww-form-group-textbox>
+
+        <ww-form-group-textbox
+          [id]="'bodySeatName'"
+          [label]="'Post'"
+          [control]="form.get('bodySeatName')"
+          [placeholder]="'Naam post'"
+          [name]="'Naam post'">
+        </ww-form-group-textbox>
+
+        <ww-form-group-toggle
+          [id]="'emptyDelegationsOnly'"
+          [label]="'Enkel niet toegewezen delegaties'"
+          [control]="form.get('emptyDelegationsOnly')"
+          [name]="'Niet toegewezen delegaties'">
+        </ww-form-group-toggle>
+      </div>
+    </div>
+
+    <div class="col--1-1">
+      <div class="form__group">
+        <div class="form__row">
+          <div class="form__buttons">
+            <div class="form__buttons__right">
+              <button class="button form__button"
+                      type="reset"
+                      *ngIf="filterActive"
+                      (click)="resetForm()"
+                      [ngClass]="{'button--disabled': form.disabled}"
+                      [disabled]="form.disabled">
+                <span>Filter wissen</span>
+              </button>
+
+              <button class="button form__button"
+                      type="submit"
+                      id="organisationSearchSubmit"
+                      [ngClass]="{'button--disabled': !isFormValid, 'button--loading': form.disabled}"
+                      [disabled]="!isFormValid || form.disabled">
+                <span>Zoeken</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+

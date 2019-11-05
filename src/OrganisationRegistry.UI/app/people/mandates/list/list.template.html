@@ -1,0 +1,109 @@
+<div data-table="">
+  <div class="u-table-overflow">
+    <table id="addressTable" class="data-table">
+      <thead>
+        <tr class="data-table__header">
+          <th class="data-table__header-title" style="width: 40%">
+            <a class="data-table__header-title--sortable"
+               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('bodyName')}"
+               (click)="sortBy('bodyName')">
+              Orgaan
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                 [ngClass]="{'vi-u-180deg': isSortedByDescending('bodyName')}"></i>
+              </a>
+          </th>
+          <th class="data-table__header-title" style="width: 20%">
+            <a class="data-table__header-title--sortable"
+               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('bodySeatName')}"
+               (click)="sortBy('bodySeatName')">
+              Post
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                 [ngClass]="{'vi-u-180deg': isSortedByDescending('bodySeatName')}"></i>
+              </a>
+          </th>
+          <th class="data-table__header-title" style="width: 15%">
+            <a class="data-table__header-title--sortable"
+               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('validFrom')}"
+               (click)="sortBy('validFrom')">
+              Geldig vanaf
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                 [ngClass]="{'vi-u-180deg': isSortedByDescending('validFrom')}"></i>
+              </a>
+          </th>
+          <th class="data-table__header-title" style="width: 15%">
+            <a class="data-table__header-title--sortable"
+               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('validTo')}"
+               (click)="sortBy('validTo')">
+              Geldig tot
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                 [ngClass]="{'vi-u-180deg': isSortedByDescending('validTo')}"></i>
+              </a>
+          </th>
+          <th class="data-table__header-title" style="width: 5%">
+            <a class="data-table__header-title--sortable"
+               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('paidSeat')}"
+               (click)="sortBy('paidSeat')">
+               Bezoldigd
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                 [ngClass]="{'vi-u-180deg': isSortedByDescending('paidSeat')}"></i>
+              </a>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <template [ngIf]="isBusy">
+          <tr><td colspan="5">Bezig met laden...</td></tr>
+        </template>
+
+        <template [ngIf]="!isBusy">
+          <tr *ngIf="!hasData(data)">
+            <td colspan="5">Geen data beschikbaar...</td>
+          </tr>
+          <tr *ngFor="let mandate of data">
+            <td class="data-table__body-title data-table__body-ellipsis">
+              <a [routerLink]="['/bodies', mandate.bodyId, 'mandates']" title="{{mandate.bodyName}}">{{mandate.bodyName}}</a>
+              <div *ngIf="mandate.bodyOrganisationId" class="data-table__cell--disabled data-table__cell--additional-information">
+                onderdeel van <a [routerLink]="['/organisations', mandate.bodyOrganisationId]" title="{{mandate.bodyOrganisationName}}">{{mandate.bodyOrganisationName}}</a>
+              </div>
+            </td>
+            <td class="data-table__body-title data-table__body-ellipsis">
+              {{mandate.bodySeatName}}
+              <div class="data-table__cell--disabled data-table__cell--additional-information" *ngIf="mandate.bodySeatNumber">#{{mandate.bodySeatNumber}}</div>
+            </td>
+            <td class="data-table__body-title">
+              <span *ngIf="mandate.validFrom">{{mandate.validFrom}}</span>
+              <span class="data-table__cell--disabled" *ngIf="!mandate.validFrom">Niet bekend</span>
+            </td>
+            <td class="data-table__body-title">
+              <span *ngIf="mandate.validTo">{{mandate.validTo}}</span>
+              <span class="data-table__cell--disabled" *ngIf="!mandate.validTo">Niet bekend</span>
+            </td>
+            <td class="data-table__body-title">
+              <i aria-label="Bezoldigd"
+                [ngClass]="{'vi vi-u-badge vi-u-badge--green vi-u-badge--xxsmall vi-check': mandate.paidSeat}">
+              </i>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="totalPages > 1" class="data-table__actions data-table__actions--bottom">
+    <div class="pager">
+      <ul class="pager__list pager__list--right">
+        <li class="pager__element">
+          <strong>{{firstItem}} - {{lastItem}}</strong> van {{totalItems}}
+        </li>
+
+        <li class="pager__element" *ngIf="firstItem > 1">
+          <a class="link-text" (click)="previousPage()"><i class="vi vi-arrow vi-u-180deg vi-u-s"></i> vorige</a>
+        </li>
+
+        <li class="pager__element" *ngIf="lastItem < totalItems">
+          <a class="link-text" (click)="nextPage()">volgende <i class="vi vi-arrow vi-u-s"></i></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

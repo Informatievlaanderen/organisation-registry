@@ -1,0 +1,57 @@
+﻿<header class="functional-header functional-header--has-actions" role="banner">
+  <div class="layout layout--wide">
+    <div class="functional-header__actions">
+      <div *ngIf="isLoggedIn | async">
+        <ul>
+          <li class="functional-header__action">{{userName | async}} ({{role | async}})</li>
+          <li class="functional-header__action"><a (click)="logoutClicked()">Meld af</a></li>
+        </ul>
+      </div>
+      <div *ngIf="!(isLoggedIn | async)">
+        <ul>
+          <li class="functional-header__action"><a (click)="loginClicked()">Aanmelden</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="functional-header__content">
+      <a class="functional-header__title" [routerLink]="['./']">OrganisationRegistry Organisatie</a>
+    </div>
+
+    <div class="functional-header__sub">
+      <div class="grid">
+        <nav class="col--9-12 col--8-12--m col--1-1--s" role="navigation">
+          <ul class="functional-header__tabs tabs tabs--small tabs--left">
+            <li class="tab" [routerLinkActive]="['tab--active']">
+              <a class="tab__link" [routerLink]="['/organisations']">Organisaties</a>
+            </li>
+            <li class="tab" [routerLinkActive]="['tab--active']">
+              <a class="tab__link" [routerLink]="['/bodies']">Organen</a>
+            </li>
+            <li class="tab" [routerLinkActive]="['tab--active']">
+              <a class="tab__link" [routerLink]="['/people']">Personen</a>
+            </li>
+            <li *ngIf="(isLoggedIn | async) && ((isOrganisationRegistryBeheerder | async) || (isOrganisatieBeheerder | async))" class="tab" [routerLinkActive]="['tab--active']">
+              <a class="tab__link" [routerLink]="['./manage/delegations']">Delegaties</a>
+            </li>
+            <li *ngIf="(enableReporting | async)" class="tab" [routerLinkActive]="['tab--active']">
+              <a class="tab__link" [routerLink]="['./report']">Rapportering</a>
+            </li>
+            <li *ngIf="(isLoggedIn | async) && (isOrganisationRegistryBeheerder | async)" class="tab" [routerLinkActive]="['tab--active']">
+              <a class="tab__link" [routerLink]="['./administration']">Parameters</a>
+            </li>
+            <li *ngIf="(isLoggedIn | async) && ((isOrganisationRegistryBeheerder | async) || (isDeveloper | async))" class="tab" [routerLinkActive]="['tab--active']">
+              <a class="tab__link" [routerLink]="['./system']">Systeem</a>
+            </li>
+            <!--<li class="tab" [routerLinkActive]="['tab--active']">
+              <a class="tab__link" [routerLink]="['/api']">Integratie (API)</a>
+            </li>-->
+            <!--<li class="tab" [routerLinkActive]="['tab--active']">
+              <a class="tab__link" [routerLink]="['./help']">Help</a>
+            </li>-->
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</header>
