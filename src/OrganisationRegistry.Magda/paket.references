@@ -1,0 +1,15 @@
+System.ServiceModel.Duplex
+System.ServiceModel.Http
+System.ServiceModel.NetTcp
+System.ServiceModel.Security
+System.Security.Cryptography.Xml
+
+Microsoft.Extensions.Configuration.EnvironmentVariables
+Microsoft.Extensions.Configuration.FileExtensions
+Microsoft.Extensions.Configuration.Json
+Microsoft.Extensions.Configuration.Binder
+
+Autofac.Extensions.DependencyInjection
+
+SourceLink.Embed.AllSourceFiles
+SourceLink.Copy.PdbFiles

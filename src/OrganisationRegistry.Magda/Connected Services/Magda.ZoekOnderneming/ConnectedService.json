@@ -1,0 +1,24 @@
+﻿{
+  "ProviderId": "Microsoft.VisualStudio.ConnectedService.Wcf",
+  "Version": "15.0.20406.879",
+  "ExtendedData": {
+    "Uri": "C:\\Users\\maenhoutma\\Downloads\\Onderneming-xsd-02.00_201602171620\\xsd\\ZoekOndernemingDienst-02.00\\WebService\\ZoekOnderneming.wsdl",
+    "Namespace": "Magda.ZoekOnderneming",
+    "SelectedAccessLevelForGeneratedClass": "Public",
+    "GenerateMessageContract": false,
+    "ReuseTypesinReferencedAssemblies": true,
+    "ReuseTypesinAllReferencedAssemblies": true,
+    "CollectionTypeReference": {
+      "Item1": "System.Array",
+      "Item2": "System.Runtime.dll"
+    },
+    "DictionaryCollectionTypeReference": {
+      "Item1": "System.Collections.Generic.Dictionary`2",
+      "Item2": "System.Collections.dll"
+    },
+    "CheckedReferencedAssemblies": [],
+    "InstanceId": null,
+    "Name": "Magda.ZoekOnderneming",
+    "Metadata": {}
+  }
+}
