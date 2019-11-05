@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Purpose.Requests
+namespace OrganisationRegistry.Api.Purpose.Requests
 {
     using System;
     using FluentValidation;
@@ -47,7 +47,7 @@
         {
             return new UpdatePurpose(
                 new PurposeId(message.PurposeId),
-                message.Body.Name);
+                new PurposeName(message.Body.Name));
         }
     }
 }
