@@ -1,4 +1,3 @@
-System.Data.SqlClient
 System.Reflection.TypeExtensions
 
 Microsoft.EntityFrameworkCore
@@ -16,8 +15,6 @@ Autofac.Extensions.DependencyInjection
 
 Newtonsoft.Json
 Destructurama.JsonNet
-
-NEST
 
 Serilog
 Serilog.Extensions.Logging
