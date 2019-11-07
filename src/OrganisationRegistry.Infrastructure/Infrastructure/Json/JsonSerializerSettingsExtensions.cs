@@ -1,5 +1,6 @@
-﻿namespace OrganisationRegistry.Infrastructure.Infrastructure.Json
+namespace OrganisationRegistry.Infrastructure.Infrastructure.Json
 {
+    using Be.Vlaanderen.Basisregisters.Converters.TrimString;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
     using Newtonsoft.Json.Serialization;

@@ -13,6 +13,7 @@ namespace OrganisationRegistry.Api.Infrastructure
     using App.Metrics.Reporting.Interfaces;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Middleware;
     using Configuration;
     using FluentValidation.AspNetCore;
     using Microsoft.AspNetCore.Builder;
@@ -41,6 +42,7 @@ namespace OrganisationRegistry.Api.Infrastructure
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
     using JsonSerializerSettingsProvider = OrganisationRegistry.Infrastructure.Infrastructure.Json.JsonSerializerSettingsProvider;
     using Microsoft.AspNetCore.ResponseCompression;
+    using AddHttpSecurityHeadersMiddleware = Security.AddHttpSecurityHeadersMiddleware;
 
     public class Startup
     {
@@ -255,7 +257,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                 .UseMiddleware<AddCorrelationIdToLogContextMiddleware>()
                 .UseMiddleware<AddCorrelationIdToResponseMiddleware>()
                 .UseMiddleware<AddHttpSecurityHeadersMiddleware>()
-                .UseMiddleware<AddVersionHeaderMiddleware>()
+                .UseMiddleware<AddVersionHeaderMiddleware>("x-wegwijs-version")
                 .UseMiddleware<ConfigureClaimsPrincipalSelectorMiddleware>()
 
                 .UseOrganisationRegistryExceptionHandler(loggerFactory)
@@ -283,7 +285,7 @@ namespace OrganisationRegistry.Api.Infrastructure
 
                 .UseMvc()
 
-                .UseMiddleware<ResponseCompressionQualityMiddleware>(new Dictionary<string, double>
+                .UseMiddleware<DefaultResponseCompressionQualityMiddleware>(new Dictionary<string, double>
                 {
                     {"br", 1.0},
                     {"gzip", 0.9}

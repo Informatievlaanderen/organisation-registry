@@ -9,6 +9,8 @@ Microsoft.Extensions.DependencyInjection
 Microsoft.Extensions.Configuration.Abstractions
 Microsoft.Extensions.Logging
 
+Be.Vlaanderen.Basisregisters.Converters.TrimString
+
 Dapper
 Newtonsoft.Json
 Autofac.Extensions.DependencyInjection

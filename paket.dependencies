@@ -101,6 +101,8 @@ nuget Be.Vlaanderen.Basisregisters.AggregateSource ~> 3.2
 
 nuget Be.Vlaanderen.Basisregisters.Api ~> 7.8
 
+nuget Be.Vlaanderen.Basisregisters.Converters.TrimString ~> 1.1
+
 // TEST STUFF
 nuget Microsoft.NET.Test.Sdk 16.2.0
 nuget Microsoft.EntityFrameworkCore.InMemory 2.2.6
