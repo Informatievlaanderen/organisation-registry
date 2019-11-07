@@ -9,7 +9,9 @@ namespace OrganisationRegistry.Purpose
 
         private Purpose() { }
 
-        public Purpose(PurposeId id, PurposeName name)
+        public Purpose(
+            PurposeId id,
+            PurposeName name)
         {
             ApplyChange(new PurposeCreated(
                 id,

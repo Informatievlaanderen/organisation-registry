@@ -1,25 +1,24 @@
 namespace OrganisationRegistry.OrganisationClassification
 {
-    using System;
     using Events;
     using Infrastructure.Domain;
     using OrganisationClassificationType;
 
     public class OrganisationClassification: AggregateRoot
     {
-        public string Name { get; private set; }
-        public Guid OrganisationClassificationTypeId { get; private set; }
+        public OrganisationClassificationName Name { get; private set; }
+        public OrganisationClassificationTypeId OrganisationClassificationTypeId { get; private set; }
 
         private int _order;
         private string _externalKey;
         private bool _active;
-        private string _organisationClassificationTypeName;
+        private OrganisationClassificationTypeName _organisationClassificationTypeName;
 
         public OrganisationClassification() { }
 
         public OrganisationClassification(
             OrganisationClassificationId id,
-            string name,
+            OrganisationClassificationName name,
             int order,
             string externalKey,
             bool active,
@@ -35,8 +34,12 @@ namespace OrganisationRegistry.OrganisationClassification
                 organisationClassificationType.Name));
         }
 
-        public void Update(string name, int order, string externalKey,
-            bool active, OrganisationClassificationType organisationClassificationType)
+        public void Update(
+            OrganisationClassificationName name,
+            int order,
+            string externalKey,
+            bool active,
+            OrganisationClassificationType organisationClassificationType)
         {
             ApplyChange(new OrganisationClassificationUpdated(
                 Id,
@@ -47,21 +50,21 @@ namespace OrganisationRegistry.OrganisationClassification
         private void Apply(OrganisationClassificationCreated @event)
         {
             Id = @event.OrganisationClassificationId;
-            Name = @event.Name;
+            Name = new OrganisationClassificationName(@event.Name);
             _order = @event.Order;
             _externalKey = @event.ExternalKey;
             _active = @event.Active;
-            OrganisationClassificationTypeId = @event.OrganisationClassificationTypeId;
+            OrganisationClassificationTypeId = new OrganisationClassificationTypeId(@event.OrganisationClassificationTypeId);
         }
 
         private void Apply(OrganisationClassificationUpdated @event)
         {
-            Name = @event.Name;
+            Name = new OrganisationClassificationName(@event.Name);
             _order = @event.Order;
             _externalKey = @event.ExternalKey;
             _active = @event.Active;
-            OrganisationClassificationTypeId = @event.OrganisationClassificationTypeId;
-            _organisationClassificationTypeName = @event.OrganisationClassificationTypeName;
+            OrganisationClassificationTypeId = new OrganisationClassificationTypeId(@event.OrganisationClassificationTypeId);
+            _organisationClassificationTypeName = new OrganisationClassificationTypeName(@event.OrganisationClassificationTypeName);
         }
     }
 }

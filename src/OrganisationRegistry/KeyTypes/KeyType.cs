@@ -1,34 +1,38 @@
-﻿namespace OrganisationRegistry.KeyTypes
+namespace OrganisationRegistry.KeyTypes
 {
     using Events;
     using Infrastructure.Domain;
 
     public class KeyType : AggregateRoot
     {
-        public string Name { get; private set; }
+        public KeyTypeName Name { get; private set; }
 
         private KeyType() { }
 
-        public KeyType(KeyTypeId id, string name)
+        public KeyType(KeyTypeId id, KeyTypeName name)
         {
-            ApplyChange(new KeyTypeCreated(id, name));
+            ApplyChange(new KeyTypeCreated(
+                id,
+                name));
         }
 
-        public void Update(string name)
+        public void Update(KeyTypeName name)
         {
-            var @event = new KeyTypeUpdated(Id, name, Name);
-            ApplyChange(@event);
+            ApplyChange(new KeyTypeUpdated(
+                Id,
+                name,
+                Name));
         }
 
         private void Apply(KeyTypeCreated @event)
         {
             Id = @event.KeyTypeId;
-            Name = @event.Name;
+            Name = new KeyTypeName(@event.Name);
         }
 
         private void Apply(KeyTypeUpdated @event)
         {
-            Name = @event.Name;
+            Name = new KeyTypeName(@event.Name);
         }
     }
 }

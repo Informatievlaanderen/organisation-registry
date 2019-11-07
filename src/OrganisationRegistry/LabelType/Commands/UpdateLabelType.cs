@@ -4,13 +4,14 @@ namespace OrganisationRegistry.LabelType.Commands
     {
         public LabelTypeId LabelTypeId => Id;
 
-        public string Name { get; }
+        public LabelTypeName Name { get; }
 
         public UpdateLabelType(
             LabelTypeId labelTypeId,
-            string name)
+            LabelTypeName name)
         {
             Id = labelTypeId;
+
             Name = name;
         }
     }

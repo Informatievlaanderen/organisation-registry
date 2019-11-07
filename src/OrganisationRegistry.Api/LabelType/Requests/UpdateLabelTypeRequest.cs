@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.LabelType.Requests
+namespace OrganisationRegistry.Api.LabelType.Requests
 {
     using System;
     using FluentValidation;
@@ -44,10 +44,8 @@
     public static class UpdateLabelTypeRequestMapping
     {
         public static UpdateLabelType Map(UpdateLabelTypeInternalRequest message)
-        {
-            return new UpdateLabelType(
+            => new UpdateLabelType(
                 new LabelTypeId(message.LabelTypeId),
-                message.Body.Name);
-        }
+                new LabelTypeName(message.Body.Name));
     }
 }

@@ -4,11 +4,11 @@ namespace OrganisationRegistry.OrganisationClassificationType.Commands
     {
         public OrganisationClassificationTypeId OrganisationClassificationTypeId => Id;
 
-        public string Name { get; }
+        public OrganisationClassificationTypeName Name { get; }
 
         public UpdateOrganisationClassificationType(
             OrganisationClassificationTypeId organisationClassificationTypeId,
-            string name)
+            OrganisationClassificationTypeName name)
         {
             Id = organisationClassificationTypeId;
 

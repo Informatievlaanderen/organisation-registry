@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.LocationType.Events
 {
     using System;
+    using Newtonsoft.Json;
 
     public class LocationTypeUpdated : BaseEvent<LocationTypeUpdated>
     {
@@ -10,14 +11,24 @@ namespace OrganisationRegistry.LocationType.Events
         public string PreviousName { get; }
 
         public LocationTypeUpdated(
-            Guid locationTypeId,
-            string name,
-            string previousName)
+            LocationTypeId locationTypeId,
+            LocationTypeName name,
+            LocationTypeName previousName)
         {
             Id = locationTypeId;
 
             Name = name;
             PreviousName = previousName;
         }
+
+        [JsonConstructor]
+        public LocationTypeUpdated(
+            Guid locationTypeId,
+            string name,
+            string previousName)
+            : this(
+                new LocationTypeId(locationTypeId),
+                new LocationTypeName(name),
+                new LocationTypeName(previousName)) { }
     }
 }

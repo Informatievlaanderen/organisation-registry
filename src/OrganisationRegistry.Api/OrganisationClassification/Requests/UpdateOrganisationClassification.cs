@@ -57,14 +57,12 @@ namespace OrganisationRegistry.Api.OrganisationClassification.Requests
     public static class UpdateOrganisationClassificationRequestMapping
     {
         public static UpdateOrganisationClassification Map(UpdateOrganisationClassificationInternalRequest message)
-        {
-            return new UpdateOrganisationClassification(
+            => new UpdateOrganisationClassification(
                 new OrganisationClassificationId(message.OrganisationClassificationId),
-                message.Body.Name,
+                new OrganisationClassificationName(message.Body.Name),
                 message.Body.Order,
                 message.Body.ExternalKey,
                 message.Body.Active,
                 new OrganisationClassificationTypeId(message.Body.OrganisationClassificationTypeId));
-        }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.OrganisationClassificationType.Requests
+namespace OrganisationRegistry.Api.OrganisationClassificationType.Requests
 {
     using System;
     using FluentValidation;
@@ -44,10 +44,8 @@
     public static class UpdateOrganisationClassificationTypeRequestMapping
     {
         public static UpdateOrganisationClassificationType Map(UpdateOrganisationClassificationTypeInternalRequest message)
-        {
-            return new UpdateOrganisationClassificationType(
+            => new UpdateOrganisationClassificationType(
                 new OrganisationClassificationTypeId(message.OrganisationClassificationTypeId),
-                message.Body.Name);
-        }
+                new OrganisationClassificationTypeName(message.Body.Name));
     }
 }

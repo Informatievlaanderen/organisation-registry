@@ -46,11 +46,9 @@ namespace OrganisationRegistry.Api.SeatType.Requests
     public static class UpdateSeatTypeRequestMapping
     {
         public static UpdateSeatType Map(UpdateSeatTypeInternalRequest message)
-        {
-            return new UpdateSeatType(
+            => new UpdateSeatType(
                 new SeatTypeId(message.SeatTypeId),
                 new SeatTypeName(message.Body.Name),
                 message.Body.Order);
-        }
     }
 }

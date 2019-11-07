@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.MandateRoleType.Requests
+namespace OrganisationRegistry.Api.MandateRoleType.Requests
 {
     using System;
     using FluentValidation;
@@ -34,10 +34,8 @@
     public static class CreateMandateRoleTypeRequestMapping
     {
         public static CreateMandateRoleType Map(CreateMandateRoleTypeRequest message)
-        {
-            return new CreateMandateRoleType(
+            => new CreateMandateRoleType(
                 new MandateRoleTypeId(message.Id),
-                message.Name);
-        }
+                new MandateRoleTypeName(message.Name));
     }
 }

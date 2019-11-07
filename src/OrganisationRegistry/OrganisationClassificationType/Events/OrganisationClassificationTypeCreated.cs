@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.OrganisationClassificationType.Events
 {
     using System;
+    using Newtonsoft.Json;
 
     public class OrganisationClassificationTypeCreated : BaseEvent<OrganisationClassificationTypeCreated>
     {
@@ -9,12 +10,20 @@ namespace OrganisationRegistry.OrganisationClassificationType.Events
         public string Name { get; }
 
         public OrganisationClassificationTypeCreated(
-            Guid organisationClassificationTypeId,
-            string name)
+            OrganisationClassificationTypeId organisationClassificationTypeId,
+            OrganisationClassificationTypeName name)
         {
             Id = organisationClassificationTypeId;
 
             Name = name;
         }
+
+        [JsonConstructor]
+        public OrganisationClassificationTypeCreated(
+            Guid organisationClassificationTypeId,
+            string name)
+            : this(
+                new OrganisationClassificationTypeId(organisationClassificationTypeId),
+                new OrganisationClassificationTypeName(name)) { }
     }
 }

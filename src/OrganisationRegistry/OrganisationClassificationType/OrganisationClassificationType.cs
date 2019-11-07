@@ -1,20 +1,22 @@
-﻿namespace OrganisationRegistry.OrganisationClassificationType
+namespace OrganisationRegistry.OrganisationClassificationType
 {
     using Events;
     using Infrastructure.Domain;
 
     public class OrganisationClassificationType : AggregateRoot
     {
-        public string Name { get; private set; }
+        public OrganisationClassificationTypeName Name { get; private set; }
 
         private OrganisationClassificationType() { }
 
-        public OrganisationClassificationType(OrganisationClassificationTypeId id, string name)
+        public OrganisationClassificationType(
+            OrganisationClassificationTypeId id,
+            OrganisationClassificationTypeName name)
         {
             ApplyChange(new OrganisationClassificationTypeCreated(id, name));
         }
 
-        public void Update(string name)
+        public void Update(OrganisationClassificationTypeName name)
         {
             var @event = new OrganisationClassificationTypeUpdated(Id, name, Name);
             ApplyChange(@event);
@@ -23,12 +25,12 @@
         private void Apply(OrganisationClassificationTypeCreated @event)
         {
             Id = @event.OrganisationClassificationTypeId;
-            Name = @event.Name;
+            Name = new OrganisationClassificationTypeName(@event.Name);
         }
 
         private void Apply(OrganisationClassificationTypeUpdated @event)
         {
-            Name = @event.Name;
+            Name = new OrganisationClassificationTypeName(@event.Name);
         }
     }
 }

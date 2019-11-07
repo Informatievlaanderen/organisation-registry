@@ -44,10 +44,8 @@ namespace OrganisationRegistry.Api.Purpose.Requests
     public static class UpdatePurposeRequestMapping
     {
         public static UpdatePurpose Map(UpdatePurposeInternalRequest message)
-        {
-            return new UpdatePurpose(
+            => new UpdatePurpose(
                 new PurposeId(message.PurposeId),
                 new PurposeName(message.Body.Name));
-        }
     }
 }

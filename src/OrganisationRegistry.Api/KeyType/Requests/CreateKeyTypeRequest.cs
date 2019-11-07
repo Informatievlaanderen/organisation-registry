@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.KeyType.Requests
+namespace OrganisationRegistry.Api.KeyType.Requests
 {
     using System;
     using FluentValidation;
@@ -34,10 +34,8 @@
     public static class CreateKeyTypeRequestMapping
     {
         public static CreateKeyType Map(CreateKeyTypeRequest message)
-        {
-            return new CreateKeyType(
+            => new CreateKeyType(
                 new KeyTypeId(message.Id),
-                message.Name);
-        }
+                new KeyTypeName(message.Name));
     }
 }

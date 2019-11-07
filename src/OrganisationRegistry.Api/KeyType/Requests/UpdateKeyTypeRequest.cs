@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.KeyType.Requests
+namespace OrganisationRegistry.Api.KeyType.Requests
 {
     using System;
     using FluentValidation;
@@ -44,10 +44,8 @@
     public static class UpdateKeyTypeRequestMapping
     {
         public static UpdateKeyType Map(UpdateKeyTypeInternalRequest message)
-        {
-            return new UpdateKeyType(
+            => new UpdateKeyType(
                 new KeyTypeId(message.KeyTypeId),
-                message.Body.Name);
-        }
+                new KeyTypeName(message.Body.Name));
     }
 }

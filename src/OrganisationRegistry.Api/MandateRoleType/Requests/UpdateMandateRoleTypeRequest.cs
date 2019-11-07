@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.MandateRoleType.Requests
+namespace OrganisationRegistry.Api.MandateRoleType.Requests
 {
     using System;
     using FluentValidation;
@@ -44,10 +44,8 @@
     public static class UpdateMandateRoleTypeRequestMapping
     {
         public static UpdateMandateRoleType Map(UpdateMandateRoleTypeInternalRequest message)
-        {
-            return new UpdateMandateRoleType(
+            => new UpdateMandateRoleType(
                 new MandateRoleTypeId(message.MandateRoleTypeId),
-                message.Body.Name);
-        }
+                new MandateRoleTypeName(message.Body.Name));
     }
 }

@@ -4,11 +4,11 @@ namespace OrganisationRegistry.LocationType.Commands
     {
         public LocationTypeId LocationTypeId => Id;
 
-        public string Name { get; }
+        public LocationTypeName Name { get; }
 
         public CreateLocationType(
             LocationTypeId locationTypeId,
-            string name)
+            LocationTypeName name)
         {
             Id = locationTypeId;
             Name = name;

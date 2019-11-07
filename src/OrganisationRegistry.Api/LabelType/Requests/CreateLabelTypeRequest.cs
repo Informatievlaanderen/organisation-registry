@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.LabelType.Requests
+namespace OrganisationRegistry.Api.LabelType.Requests
 {
     using System;
     using FluentValidation;
@@ -34,10 +34,8 @@
     public static class CreateLabelTypeRequestMapping
     {
         public static CreateLabelType Map(CreateLabelTypeRequest message)
-        {
-            return new CreateLabelType(
+            => new CreateLabelType(
                 new LabelTypeId(message.Id),
-                message.Name);
-        }
+                new LabelTypeName(message.Name));
     }
 }

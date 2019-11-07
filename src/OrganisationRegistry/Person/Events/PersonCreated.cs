@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Person.Events
 {
     using System;
+    using Newtonsoft.Json;
 
     public class PersonCreated : BaseEvent<PersonCreated>
     {
@@ -12,9 +13,9 @@ namespace OrganisationRegistry.Person.Events
         public DateTime? DateOfBirth { get; }
 
         public PersonCreated(
-            Guid personId,
-            string firstName,
-            string name,
+            PersonId personId,
+            PersonFirstName firstName,
+            PersonName name,
             Sex? sex,
             DateTime? dateOfBirth)
         {
@@ -25,5 +26,19 @@ namespace OrganisationRegistry.Person.Events
             Sex = sex;
             DateOfBirth = dateOfBirth;
         }
+
+        [JsonConstructor]
+        public PersonCreated(
+            Guid personId,
+            string firstName,
+            string name,
+            Sex? sex,
+            DateTime? dateOfBirth)
+            : this(
+                new PersonId(personId),
+                new PersonFirstName(firstName),
+                new PersonName(name),
+                sex,
+                dateOfBirth) { }
     }
 }

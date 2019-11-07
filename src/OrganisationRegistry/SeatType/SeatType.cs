@@ -11,7 +11,10 @@ namespace OrganisationRegistry.SeatType
 
         private SeatType() { }
 
-        public SeatType(SeatTypeId id, SeatTypeName name, int? order)
+        public SeatType(
+            SeatTypeId id,
+            SeatTypeName name,
+            int? order)
         {
             ApplyChange(new SeatTypeCreated(
                 id,

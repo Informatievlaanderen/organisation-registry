@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.MandateRoleType.Events
 {
     using System;
+    using Newtonsoft.Json;
 
     public class MandateRoleTypeCreated : BaseEvent<MandateRoleTypeCreated>
     {
@@ -9,11 +10,19 @@ namespace OrganisationRegistry.MandateRoleType.Events
         public string Name { get; }
 
         public MandateRoleTypeCreated(
-            Guid mandateRoleTypeId,
-            string name)
+            MandateRoleTypeId mandateRoleTypeId,
+            MandateRoleTypeName name)
         {
             Id = mandateRoleTypeId;
             Name = name;
         }
+
+        [JsonConstructor]
+        public MandateRoleTypeCreated(
+            Guid mandateRoleTypeId,
+            string name)
+            : this(
+                new MandateRoleTypeId(mandateRoleTypeId),
+                new MandateRoleTypeName(name)) { }
     }
 }

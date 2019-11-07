@@ -4,13 +4,14 @@ namespace OrganisationRegistry.KeyTypes.Commands
     {
         public KeyTypeId KeyTypeId => Id;
 
-        public string Name { get; }
+        public KeyTypeName Name { get; }
 
         public UpdateKeyType(
             KeyTypeId keyTypeId,
-            string name)
+            KeyTypeName name)
         {
             Id = keyTypeId;
+
             Name = name;
         }
     }

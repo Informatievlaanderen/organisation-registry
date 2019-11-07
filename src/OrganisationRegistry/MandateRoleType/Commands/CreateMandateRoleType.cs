@@ -4,11 +4,11 @@ namespace OrganisationRegistry.MandateRoleType.Commands
     {
         public MandateRoleTypeId MandateRoleTypeId => Id;
 
-        public string Name { get; }
+        public MandateRoleTypeName Name { get; }
 
         public CreateMandateRoleType(
             MandateRoleTypeId mandateRoleTypeId,
-            string name)
+            MandateRoleTypeName name)
         {
             Id = mandateRoleTypeId;
             Name = name;

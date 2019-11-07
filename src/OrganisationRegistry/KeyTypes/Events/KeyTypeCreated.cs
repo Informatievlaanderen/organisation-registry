@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.KeyTypes.Events
 {
     using System;
+    using Newtonsoft.Json;
 
     public class KeyTypeCreated : BaseEvent<KeyTypeCreated>
     {
@@ -9,11 +10,19 @@ namespace OrganisationRegistry.KeyTypes.Events
         public string Name { get; }
 
         public KeyTypeCreated(
-            Guid keyTypeId,
-            string name)
+            KeyTypeId keyTypeId,
+            KeyTypeName name)
         {
             Id = keyTypeId;
             Name = name;
         }
+
+        [JsonConstructor]
+        public KeyTypeCreated(
+            Guid keyTypeId,
+            string name)
+            : this(
+                new KeyTypeId(keyTypeId),
+                new KeyTypeName(name)) { }
     }
 }

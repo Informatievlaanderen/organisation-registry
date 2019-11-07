@@ -1,34 +1,40 @@
-﻿namespace OrganisationRegistry.LabelType
+namespace OrganisationRegistry.LabelType
 {
     using Events;
     using Infrastructure.Domain;
 
     public class LabelType : AggregateRoot
     {
-        public string Name { get; private set; }
+        public LabelTypeName Name { get; private set; }
 
         private LabelType() { }
 
-        public LabelType(LabelTypeId id, string name)
+        public LabelType(
+            LabelTypeId id,
+            LabelTypeName name)
         {
-            ApplyChange(new LabelTypeCreated(id, name));
+            ApplyChange(new LabelTypeCreated(
+                id,
+                name));
         }
 
-        public void Update(string name)
+        public void Update(LabelTypeName name)
         {
-            var @event = new LabelTypeUpdated(Id, name, Name);
-            ApplyChange(@event);
+            ApplyChange(new LabelTypeUpdated(
+                Id,
+                name,
+                Name));
         }
 
         private void Apply(LabelTypeCreated @event)
         {
             Id = @event.LabelTypeId;
-            Name = @event.Name;
+            Name = new LabelTypeName(@event.Name);
         }
 
         private void Apply(LabelTypeUpdated @event)
         {
-            Name = @event.Name;
+            Name = new LabelTypeName(@event.Name);
         }
     }
 }

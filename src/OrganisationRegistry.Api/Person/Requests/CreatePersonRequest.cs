@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Person.Requests
+namespace OrganisationRegistry.Api.Person.Requests
 {
     using System;
     using FluentValidation;
@@ -45,13 +45,11 @@
     public static class CreatePersonRequestMapping
     {
         public static CreatePerson Map(CreatePersonRequest message)
-        {
-            return new CreatePerson(
+            => new CreatePerson(
                 new PersonId(message.Id),
-                message.FirstName,
-                message.Name,
+                new PersonFirstName(message.FirstName),
+                new PersonName(message.Name),
                 message.Sex,
                 message.DateOfBirth);
-        }
     }
 }

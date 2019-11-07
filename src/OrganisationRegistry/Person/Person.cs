@@ -9,14 +9,19 @@ namespace OrganisationRegistry.Person
         private Sex? _sex;
         private DateTime? _dateOfBirth;
 
-        public string FirstName { get; private set; }
-        public string Name { get; private set; }
+        public PersonFirstName FirstName { get; private set; }
+        public PersonName Name { get; private set; }
 
         public string FullName => $"{Name} {FirstName}";
 
         private Person() { }
 
-        public Person(PersonId id, string firstName, string name, Sex? sex, DateTime? dateOfBirth)
+        public Person(
+            PersonId id,
+            PersonFirstName firstName,
+            PersonName name,
+            Sex? sex,
+            DateTime? dateOfBirth)
         {
             ApplyChange(new PersonCreated(
                 id,
@@ -26,7 +31,11 @@ namespace OrganisationRegistry.Person
                 dateOfBirth));
         }
 
-        public void Update(string firstName, string name, Sex? sex, DateTime? dateOfBirth)
+        public void Update(
+            PersonFirstName firstName,
+            PersonName name,
+            Sex? sex,
+            DateTime? dateOfBirth)
         {
             ApplyChange(new PersonUpdated(
                 Id,
@@ -37,16 +46,16 @@ namespace OrganisationRegistry.Person
         private void Apply(PersonCreated @event)
         {
             Id = @event.PersonId;
-            FirstName = @event.FirstName;
-            Name = @event.Name;
+            FirstName = new PersonFirstName(@event.FirstName);
+            Name = new PersonName(@event.Name);
             _sex = @event.Sex;
             _dateOfBirth = @event.DateOfBirth;
         }
 
         private void Apply(PersonUpdated @event)
         {
-            FirstName = @event.FirstName;
-            Name = @event.Name;
+            FirstName = new PersonFirstName(@event.FirstName);
+            Name = new PersonName(@event.Name);
             _sex = @event.Sex;
             _dateOfBirth = @event.DateOfBirth;
         }

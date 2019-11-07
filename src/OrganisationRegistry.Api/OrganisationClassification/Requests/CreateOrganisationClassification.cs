@@ -51,14 +51,12 @@ namespace OrganisationRegistry.Api.OrganisationClassification.Requests
     public static class CreateOrganisationClassificationRequestMapping
     {
         public static CreateOrganisationClassification Map(CreateOrganisationClassificationRequest message)
-        {
-            return new CreateOrganisationClassification(
+            => new CreateOrganisationClassification(
                 new OrganisationClassificationId(message.Id),
-                message.Name,
+                new OrganisationClassificationName(message.Name),
                 message.Order,
                 message.ExternalKey,
                 message.Active,
                 new OrganisationClassificationTypeId(message.OrganisationClassificationTypeId));
-        }
     }
 }

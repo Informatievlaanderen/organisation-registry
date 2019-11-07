@@ -6,15 +6,15 @@ namespace OrganisationRegistry.Person.Commands
     {
         public PersonId PersonId => Id;
 
-        public string FirstName { get; }
-        public string Name { get; }
+        public PersonFirstName FirstName { get; }
+        public PersonName Name { get; }
         public Sex? Sex { get; }
         public DateTime? DateOfBirth { get; }
 
         public CreatePerson(
             PersonId personId,
-            string firstName,
-            string name,
+            PersonFirstName firstName,
+            PersonName name,
             Sex? sex,
             DateTime? dateOfBirth)
         {

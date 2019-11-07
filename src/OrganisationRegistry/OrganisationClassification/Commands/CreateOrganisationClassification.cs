@@ -6,7 +6,7 @@ namespace OrganisationRegistry.OrganisationClassification.Commands
     {
         public OrganisationClassificationId OrganisationClassificationId => Id;
 
-        public string Name { get; }
+        public OrganisationClassificationName Name { get; }
         public int Order { get; }
         public string ExternalKey { get; }
         public bool Active { get; }
@@ -14,7 +14,7 @@ namespace OrganisationRegistry.OrganisationClassification.Commands
 
         public CreateOrganisationClassification(
             OrganisationClassificationId organisationClassificationId,
-            string name,
+            OrganisationClassificationName name,
             int order,
             string externalKey,
             bool active,

@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.LocationType.Requests
+namespace OrganisationRegistry.Api.LocationType.Requests
 {
     using System;
     using FluentValidation;
@@ -34,10 +34,8 @@
     public static class CreateLocationTypeRequestMapping
     {
         public static CreateLocationType Map(CreateLocationTypeRequest message)
-        {
-            return new CreateLocationType(
+            => new CreateLocationType(
                 new LocationTypeId(message.Id),
-                message.Name);
-        }
+                new LocationTypeName(message.Name));
     }
 }

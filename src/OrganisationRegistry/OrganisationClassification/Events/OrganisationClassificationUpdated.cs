@@ -1,6 +1,8 @@
 namespace OrganisationRegistry.OrganisationClassification.Events
 {
     using System;
+    using Newtonsoft.Json;
+    using OrganisationClassificationType;
 
     public class OrganisationClassificationUpdated : BaseEvent<OrganisationClassificationUpdated>
     {
@@ -25,19 +27,19 @@ namespace OrganisationRegistry.OrganisationClassification.Events
         public string PreviousOrganisationClassificationTypeName { get; }
 
         public OrganisationClassificationUpdated(
-            Guid organisationClassificationId,
-            string name,
+            OrganisationClassificationId organisationClassificationId,
+            OrganisationClassificationName name,
             int order,
             string externalKey,
             bool active,
-            Guid organisationClassificationTypeId,
-            string organisationClassificationTypeName,
-            string previousName,
+            OrganisationClassificationTypeId organisationClassificationTypeId,
+            OrganisationClassificationTypeName organisationClassificationTypeName,
+            OrganisationClassificationName previousName,
             int previousOrder,
             string previousExternalKey,
             bool previousActive,
-            Guid previousOrganisationClassificationTypeId,
-            string previousOrganisationClassificationTypeName)
+            OrganisationClassificationTypeId previousOrganisationClassificationTypeId,
+            OrganisationClassificationTypeName previousOrganisationClassificationTypeName)
         {
             Id = organisationClassificationId;
 
@@ -55,5 +57,35 @@ namespace OrganisationRegistry.OrganisationClassification.Events
             PreviousOrganisationClassificationTypeId = previousOrganisationClassificationTypeId;
             PreviousOrganisationClassificationTypeName = previousOrganisationClassificationTypeName;
         }
+
+        [JsonConstructor]
+        public OrganisationClassificationUpdated(
+            Guid organisationClassificationId,
+            string name,
+            int order,
+            string externalKey,
+            bool active,
+            Guid organisationClassificationTypeId,
+            string organisationClassificationTypeName,
+            string previousName,
+            int previousOrder,
+            string previousExternalKey,
+            bool previousActive,
+            Guid previousOrganisationClassificationTypeId,
+            string previousOrganisationClassificationTypeName)
+            : this(
+                new OrganisationClassificationId(organisationClassificationId),
+                new OrganisationClassificationName(name),
+                order,
+                externalKey,
+                active,
+                new OrganisationClassificationTypeId(organisationClassificationTypeId),
+                new OrganisationClassificationTypeName(organisationClassificationTypeName),
+                new OrganisationClassificationName(previousName),
+                previousOrder,
+                previousExternalKey,
+                previousActive,
+                new OrganisationClassificationTypeId(previousOrganisationClassificationTypeId),
+                new OrganisationClassificationTypeName(previousOrganisationClassificationTypeName)) { }
     }
 }

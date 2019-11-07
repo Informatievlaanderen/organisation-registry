@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.OrganisationClassificationType.Requests
+namespace OrganisationRegistry.Api.OrganisationClassificationType.Requests
 {
     using System;
     using FluentValidation;
@@ -34,10 +34,8 @@
     public static class CreateOrganisationClassificationTypeRequestMapping
     {
         public static CreateOrganisationClassificationType Map(CreateOrganisationClassificationTypeRequest message)
-        {
-            return new CreateOrganisationClassificationType(
+            => new CreateOrganisationClassificationType(
                 new OrganisationClassificationTypeId(message.Id),
-                message.Name);
-        }
+                new OrganisationClassificationTypeName(message.Name));
     }
 }

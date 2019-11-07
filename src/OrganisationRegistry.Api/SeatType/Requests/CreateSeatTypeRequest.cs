@@ -36,11 +36,9 @@ namespace OrganisationRegistry.Api.SeatType.Requests
     public static class CreateSeatTypeRequestMapping
     {
         public static CreateSeatType Map(CreateSeatTypeRequest message)
-        {
-            return new CreateSeatType(
+            => new CreateSeatType(
                 new SeatTypeId(message.Id),
                 new SeatTypeName(message.Name),
                 message.Order);
-        }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Person.Requests
+namespace OrganisationRegistry.Api.Person.Requests
 {
     using System;
     using FluentValidation;
@@ -56,13 +56,11 @@
     public static class UpdatePersonRequestMapping
     {
         public static UpdatePerson Map(UpdatePersonInternalRequest message)
-        {
-            return new UpdatePerson(
+            => new UpdatePerson(
                 new PersonId(message.PersonId),
-                message.Body.FirstName,
-                message.Body.Name,
+                new PersonFirstName(message.Body.FirstName),
+                new PersonName(message.Body.Name),
                 message.Body.Sex,
                 message.Body.DateOfBirth);
-        }
     }
 }

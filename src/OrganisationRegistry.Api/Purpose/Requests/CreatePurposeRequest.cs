@@ -34,10 +34,8 @@ namespace OrganisationRegistry.Api.Purpose.Requests
     public static class CreatePurposeRequestMapping
     {
         public static CreatePurpose Map(CreatePurposeRequest message)
-        {
-            return new CreatePurpose(
+            => new CreatePurpose(
                 new PurposeId(message.Id),
                 new PurposeName(message.Name));
-        }
     }
 }

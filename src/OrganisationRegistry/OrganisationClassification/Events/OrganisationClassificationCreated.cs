@@ -1,6 +1,8 @@
 namespace OrganisationRegistry.OrganisationClassification.Events
 {
     using System;
+    using Newtonsoft.Json;
+    using OrganisationClassificationType;
 
     public class OrganisationClassificationCreated : BaseEvent<OrganisationClassificationCreated>
     {
@@ -14,13 +16,13 @@ namespace OrganisationRegistry.OrganisationClassification.Events
         public string OrganisationClassificationTypeName { get; }
 
         public OrganisationClassificationCreated(
-            Guid organisationClassificationId,
-            string name,
+            OrganisationClassificationId organisationClassificationId,
+            OrganisationClassificationName name,
             int order,
             string externalKey,
             bool active,
-            Guid organisationClassificationTypeId,
-            string organisationClassificationTypeName)
+            OrganisationClassificationTypeId organisationClassificationTypeId,
+            OrganisationClassificationTypeName organisationClassificationTypeName)
         {
             Id = organisationClassificationId;
 
@@ -31,5 +33,23 @@ namespace OrganisationRegistry.OrganisationClassification.Events
             OrganisationClassificationTypeId = organisationClassificationTypeId;
             OrganisationClassificationTypeName = organisationClassificationTypeName;
         }
+
+        [JsonConstructor]
+        public OrganisationClassificationCreated(
+            Guid organisationClassificationId,
+            string name,
+            int order,
+            string externalKey,
+            bool active,
+            Guid organisationClassificationTypeId,
+            string organisationClassificationTypeName)
+            : this(
+                new OrganisationClassificationId(organisationClassificationId),
+                new OrganisationClassificationName(name),
+                order,
+                externalKey,
+                active,
+                new OrganisationClassificationTypeId(organisationClassificationTypeId),
+                new OrganisationClassificationTypeName(organisationClassificationTypeName)) { }
     }
 }
