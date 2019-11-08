@@ -1,10 +1,22 @@
 System.Reflection.TypeExtensions
 
-Microsoft.EntityFrameworkCore.SqlServer
-Microsoft.Extensions.Configuration
-Microsoft.Extensions.Configuration.Abstractions
+Microsoft.Extensions.Options.ConfigurationExtensions
+// Microsoft.Extensions.Configuration
+// Microsoft.Extensions.Configuration.Abstractions
 
+Microsoft.EntityFrameworkCore
+Microsoft.EntityFrameworkCore.Relational
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.EntityFrameworkCore.Design
+Microsoft.EntityFrameworkCore.InMemory
+
+Dapper
 Autofac.Extensions.DependencyInjection
+
+Be.Vlaanderen.Basisregisters.Api
+Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql
+
+AspNetCore.HealthChecks.SqlServer
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

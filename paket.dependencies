@@ -57,7 +57,6 @@ nuget Microsoft.EntityFrameworkCore.Relational 2.2.6
 nuget Microsoft.EntityFrameworkCore 2.2.6
 nuget Microsoft.EntityFrameworkCore.Abstractions 2.2.6
 nuget Microsoft.EntityFrameworkCore.Analyzers 2.2.6
-nuget Microsoft.EntityFrameworkCore.Design 2.2.6
 
 nuget Microsoft.Extensions.Caching.Abstractions 2.2.0
 nuget Microsoft.Extensions.Configuration 2.2.0
@@ -76,11 +75,14 @@ nuget Microsoft.Extensions.Logging.Abstractions 2.2.0
 nuget Microsoft.Rest.ClientRuntime 2.3.10 // TODO: Can we remove this if AutoRest depends on it?
 nuget Microsoft.DotNet.InternalAbstractions 1.0.0
 
+// TODO: App Metrics can be removed eventually
 nuget App.Metrics.Extensions.Mvc 1.2.1
 nuget App.Metrics.Extensions.Reporting.Graphite 1.3.0
 nuget App.Metrics.Formatters.Graphite 1.1.0
 nuget App.Metrics.Formatters.InfluxDB 1.0.0
 nuget App.Metrics.Formatters.Json 1.2.0
+
+nuget AspNetCore.HealthChecks.SqlServer 2.2.1
 
 nuget NEST 6.0.2 // TODO: Update to 7.3.1
 nuget FluentFTP 19.1.2
@@ -91,17 +93,25 @@ nuget BrotliSharpLib 0.2.1
 nuget IdentityModel 3.10.10
 nuget EPPlus.Core 1.5.4
 
-nuget Serilog.Sinks.Literate 3.0.0
+nuget Serilog.Sinks.Literate 3.0.0 // TODO: This can be removed eventually
 nuget Serilog.Sinks.ElasticSearch 6.1.0 // TODO: Update to 8.0.0
+
+nuget Microsoft.EntityFrameworkCore.Design 2.2.6
 
 // BASE REGISTRIES STUFF
 nuget Be.Vlaanderen.Basisregisters.Build.Pipeline ~> 1.11
+nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events ~> 1.1 content: true, copy_content_to_output_dir: always, copy_local: true
 
 nuget Be.Vlaanderen.Basisregisters.AggregateSource ~> 3.2
 
-nuget Be.Vlaanderen.Basisregisters.Api ~> 7.8
+nuget Be.Vlaanderen.Basisregisters.Api ~> 7.9
 
-nuget Be.Vlaanderen.Basisregisters.Converters.TrimString ~> 1.1
+nuget Be.Vlaanderen.Basisregisters.Converters.TrimString ~> 1.1 // TODO: Remove this eventually
+
+//nuget Be.Vlaanderen.Basisregisters.Projector ~> 4.2
+
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac ~> 3.9
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql ~> 3.9
 
 // TEST STUFF
 nuget Microsoft.NET.Test.Sdk 16.2.0

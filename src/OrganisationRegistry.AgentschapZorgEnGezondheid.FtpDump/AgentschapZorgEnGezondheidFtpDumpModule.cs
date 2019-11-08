@@ -12,18 +12,22 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
     using SqlServer;
     using Infrastructure;
     using Infrastructure.Events;
+    using Microsoft.Extensions.Logging;
 
     public class AgentschapZorgEnGezondheidFtpDumpModule : Autofac.Module
     {
         private readonly IConfiguration _configuration;
         private readonly IServiceCollection _services;
+        private readonly ILoggerFactory _loggerFactory;
 
         public AgentschapZorgEnGezondheidFtpDumpModule(
             IConfiguration configuration,
-            IServiceCollection services)
+            IServiceCollection services,
+            ILoggerFactory loggerFactory)
         {
             _configuration = configuration;
             _services = services;
+            _loggerFactory = loggerFactory;
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -31,7 +35,7 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
             builder.RegisterModule(new InfrastructureModule(_configuration, ProvideScopedServiceProvider, _services));
             builder.RegisterModule(new OrganisationRegistryModule());
             builder.RegisterModule(new ElasticSearchModule(_configuration, _services));
-            builder.RegisterModule(new SqlServerModule(_configuration, _services));
+            builder.RegisterModule(new SqlServerModule(_configuration, _services, _loggerFactory));
 
             builder.RegisterInstance<IConfigureOptions<AgentschapZorgEnGezondheidFtpDumpConfiguration>>(
                     new ConfigureFromConfigurationOptions<AgentschapZorgEnGezondheidFtpDumpConfiguration>(_configuration.GetSection(AgentschapZorgEnGezondheidFtpDumpConfiguration.Section)))

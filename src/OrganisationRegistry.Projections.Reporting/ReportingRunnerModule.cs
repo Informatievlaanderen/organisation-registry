@@ -11,6 +11,7 @@ namespace OrganisationRegistry.Projections.Reporting
     using SqlServer;
     using System;
     using System.Reflection;
+    using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
 
@@ -18,20 +19,23 @@ namespace OrganisationRegistry.Projections.Reporting
     {
         private readonly IConfiguration _configuration;
         private readonly IServiceCollection _services;
+        private readonly ILoggerFactory _loggerFactory;
 
         public ReportingRunnerModule(
             IConfiguration configuration,
-            IServiceCollection services)
+            IServiceCollection services,
+            ILoggerFactory loggerFactory)
         {
             _configuration = configuration;
             _services = services;
+            _loggerFactory = loggerFactory;
         }
 
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterModule(new InfrastructureModule(_configuration, ProvideScopedServiceProvider, _services));
             builder.RegisterModule(new ElasticSearchModule(_configuration, _services));
-            builder.RegisterModule(new SqlServerModule(_configuration, _services));
+            builder.RegisterModule(new SqlServerModule(_configuration, _services, _loggerFactory));
 
             builder.RegisterInstance<IConfigureOptions<ReportingRunnerConfiguration>>(
                     new ConfigureFromConfigurationOptions<ReportingRunnerConfiguration>(_configuration.GetSection(ReportingRunnerConfiguration.Section)))

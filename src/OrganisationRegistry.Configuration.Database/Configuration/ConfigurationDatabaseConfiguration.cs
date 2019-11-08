@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Configuration.Database.Configuration
+namespace OrganisationRegistry.Configuration.Database.Configuration
 {
     using System;
     using Newtonsoft.Json;

@@ -11,18 +11,22 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
     using SendGrid;
     using SqlServer;
     using System.Reflection;
+    using Microsoft.Extensions.Logging;
 
     public class VlaanderenBeNotifierRunnerModule : Autofac.Module
     {
         private readonly IConfiguration _configuration;
         private readonly IServiceCollection _services;
+        private readonly ILoggerFactory _loggerFactory;
 
         public VlaanderenBeNotifierRunnerModule(
             IConfiguration configuration,
-            IServiceCollection services)
+            IServiceCollection services,
+            ILoggerFactory loggerFactory)
         {
             _configuration = configuration;
             _services = services;
+            _loggerFactory = loggerFactory;
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -30,7 +34,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             builder.RegisterModule(new InfrastructureModule(_configuration, ProvideScopedServiceProvider, _services));
             builder.RegisterModule(new OrganisationRegistryModule());
             builder.RegisterModule(new ElasticSearchModule(_configuration, _services));
-            builder.RegisterModule(new SqlServerModule(_configuration, _services));
+            builder.RegisterModule(new SqlServerModule(_configuration, _services, _loggerFactory));
             builder.RegisterModule(new VlaanderenBeNotifierModule(_configuration, _services));
 
             builder.RegisterAssemblyTypes(typeof(OrganisationRegistryVlaanderenBeNotifierAssemblyTokenClass).GetTypeInfo().Assembly)

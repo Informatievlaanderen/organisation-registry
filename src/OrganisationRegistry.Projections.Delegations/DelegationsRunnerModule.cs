@@ -8,6 +8,7 @@ namespace OrganisationRegistry.Projections.Delegations
     using ElasticSearch;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using SqlServer;
     using OrganisationRegistry.Infrastructure;
@@ -17,13 +18,16 @@ namespace OrganisationRegistry.Projections.Delegations
     {
         private readonly IConfiguration _configuration;
         private readonly IServiceCollection _services;
+        private readonly ILoggerFactory _loggerFactory;
 
         public DelegationsRunnerModule(
             IConfiguration configuration,
-            IServiceCollection services)
+            IServiceCollection services,
+            ILoggerFactory loggerFactory)
         {
             _configuration = configuration;
             _services = services;
+            _loggerFactory = loggerFactory;
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -31,7 +35,7 @@ namespace OrganisationRegistry.Projections.Delegations
             builder.RegisterModule(new InfrastructureModule(_configuration, ProvideScopedServiceProvider, _services));
             builder.RegisterModule(new OrganisationRegistryModule());
             builder.RegisterModule(new ElasticSearchModule(_configuration, _services));
-            builder.RegisterModule(new SqlServerModule(_configuration, _services));
+            builder.RegisterModule(new SqlServerModule(_configuration, _services, _loggerFactory));
 
             builder.RegisterInstance<IConfigureOptions<DelegationsRunnerConfiguration>>(
                     new ConfigureFromConfigurationOptions<DelegationsRunnerConfiguration>(_configuration.GetSection(DelegationsRunnerConfiguration.Section)))

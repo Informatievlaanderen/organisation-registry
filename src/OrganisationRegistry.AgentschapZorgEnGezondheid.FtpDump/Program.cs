@@ -5,6 +5,7 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
     using System.Threading;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Destructurama;
     using Infrastructure.Configuration;
     using Infrastructure.Infrastructure.Json;
@@ -25,7 +26,7 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
             Console.WriteLine("Starting Agentschap Zorg en Gezondheid FTP Dump");
 
             JsonConvert.DefaultSettings =
-                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
+                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureDefaultForApi();
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -83,12 +84,14 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
             Thread.Sleep(1000);
         }
 
-        private static IServiceProvider ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        private static IServiceProvider ConfigureServices(
+            IServiceCollection services,
+            IConfiguration configuration)
         {
             services.AddOptions();
 
             var builder = new ContainerBuilder();
-            builder.RegisterModule(new AgentschapZorgEnGezondheidFtpDumpModule(configuration, services));
+            builder.RegisterModule(new AgentschapZorgEnGezondheidFtpDumpModule(configuration, services, null));
             return new AutofacServiceProvider(builder.Build());
         }
 

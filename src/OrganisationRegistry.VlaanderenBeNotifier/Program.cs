@@ -5,6 +5,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
     using System.Threading;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Destructurama;
     using Infrastructure.Config;
     using Infrastructure.Configuration;
@@ -27,7 +28,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             Console.WriteLine("Starting VlaanderenBeNotifier");
 
             JsonConvert.DefaultSettings =
-                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
+                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureDefaultForApi();
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -87,12 +88,14 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             Thread.Sleep(1000);
         }
 
-        private static IServiceProvider ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        private static IServiceProvider ConfigureServices(
+            IServiceCollection services,
+            IConfiguration configuration)
         {
             services.AddOptions();
 
             var builder = new ContainerBuilder();
-            builder.RegisterModule(new VlaanderenBeNotifierRunnerModule(configuration, services));
+            builder.RegisterModule(new VlaanderenBeNotifierRunnerModule(configuration, services, null));
             return new AutofacServiceProvider(builder.Build());
         }
 

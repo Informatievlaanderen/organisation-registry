@@ -15,6 +15,7 @@ namespace OrganisationRegistry.Projections.Reporting
     using System;
     using System.IO;
     using System.Threading;
+    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using OrganisationRegistry.Configuration.Database;
     using OrganisationRegistry.Configuration.Database.Configuration;
     using OrganisationRegistry.Infrastructure.Config;
@@ -28,7 +29,7 @@ namespace OrganisationRegistry.Projections.Reporting
             Console.WriteLine("Starting Reporting Runner");
 
             JsonConvert.DefaultSettings =
-                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
+                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureDefaultForApi();
 
             var builder =
                 new ConfigurationBuilder()
@@ -107,12 +108,14 @@ namespace OrganisationRegistry.Projections.Reporting
             Thread.Sleep(1000);
         }
 
-        private static IServiceProvider ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        private static IServiceProvider ConfigureServices(
+            IServiceCollection services,
+            IConfiguration configuration)
         {
             services.AddOptions();
 
             var builder = new ContainerBuilder();
-            builder.RegisterModule(new ReportingRunnerModule(configuration, services));
+            builder.RegisterModule(new ReportingRunnerModule(configuration, services, null));
             return new AutofacServiceProvider(builder.Build());
         }
 

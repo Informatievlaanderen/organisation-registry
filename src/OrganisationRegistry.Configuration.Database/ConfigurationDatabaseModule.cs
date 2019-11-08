@@ -1,36 +1,77 @@
 namespace OrganisationRegistry.Configuration.Database
 {
+    using System;
+    using System.Data.SqlClient;
     using Autofac;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Configuration;
+    using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Options;
+    using Microsoft.Extensions.Logging;
 
     public class ConfigurationDatabaseModule : Module
     {
-        private readonly IConfiguration _configuration;
-        private readonly IServiceCollection _services;
-
         public ConfigurationDatabaseModule(
             IConfiguration configuration,
-            IServiceCollection services)
+            IServiceCollection services,
+            ILoggerFactory loggerFactory)
         {
-            _configuration = configuration;
-            _services = services;
-
+            var logger = loggerFactory.CreateLogger<ConfigurationDatabaseModule>();
             var sqlConfiguration = configuration.GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>();
+            var connectionString = sqlConfiguration.ConnectionString;
 
-            services.AddDbContext<ConfigurationContext>(options => options.UseSqlServer(
-                sqlConfiguration.ConnectionString,
-                x => x.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")));
+            var hasConnectionString = !string.IsNullOrWhiteSpace(connectionString);
+            if (hasConnectionString)
+                RunOnSqlServer(configuration, services, loggerFactory, connectionString);
+            else
+                RunInMemoryDb(services, loggerFactory, logger);
 
-            _services.Configure<ConfigurationDatabaseConfiguration>(
-                _configuration.GetSection(ConfigurationDatabaseConfiguration.Section));
+            services.Configure<ConfigurationDatabaseConfiguration>(configuration.GetSection(ConfigurationDatabaseConfiguration.Section));
+
+            logger.LogInformation(
+                "Added {Context} to services:" +
+                Environment.NewLine +
+                "\tSchema: {Schema}" +
+                Environment.NewLine +
+                "\tTableName: {TableName}",
+                nameof(ConfigurationContext), Schema.Default, MigrationTables.Default);
         }
 
-        protected override void Load(ContainerBuilder builder)
+        private static void RunOnSqlServer(
+            IConfiguration configuration,
+            IServiceCollection services,
+            ILoggerFactory loggerFactory,
+            string backofficeProjectionsConnectionString)
         {
+            services
+                .AddScoped(s => new TraceDbConnection<ConfigurationContext>(
+                    new SqlConnection(backofficeProjectionsConnectionString),
+                    configuration["DataDog:ServiceName"]))
+                .AddDbContext<ConfigurationContext>((provider, options) => options
+                    .UseLoggerFactory(loggerFactory)
+                    .UseSqlServer(provider.GetRequiredService<TraceDbConnection<ConfigurationContext>>(), sqlServerOptions =>
+                    {
+                        sqlServerOptions
+                            .EnableRetryOnFailure()
+                            .MigrationsHistoryTable(MigrationTables.Default, Schema.Default);
+                    }));
         }
+
+        private static void RunInMemoryDb(
+            IServiceCollection services,
+            ILoggerFactory loggerFactory,
+            ILogger logger)
+        {
+            services
+                .AddDbContext<ConfigurationContext>(options => options
+                    .UseLoggerFactory(loggerFactory)
+                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }));
+
+            logger.LogWarning("Running InMemory for {Context}!", nameof(ConfigurationContext));
+        }
+
+        protected override void Load(ContainerBuilder builder) { }
     }
 }

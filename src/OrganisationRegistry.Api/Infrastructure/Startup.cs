@@ -1,305 +1,219 @@
 namespace OrganisationRegistry.Api.Infrastructure
 {
     using System;
-    using System.Collections.Generic;
     using System.Globalization;
-    using System.IO.Compression;
     using System.Linq;
-    using Api.Configuration;
+    using System.Reflection;
     using Api.Security;
-    using App.Metrics.Configuration;
-    using App.Metrics.Extensions.Reporting.Graphite;
-    using App.Metrics.Extensions.Reporting.Graphite.Client;
-    using App.Metrics.Reporting.Interfaces;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
-    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Middleware;
+    using Be.Vlaanderen.Basisregisters.Api;
+    using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Configuration;
-    using FluentValidation.AspNetCore;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Mvc.Cors.Internal;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Net.Http.Headers;
-    using Newtonsoft.Json;
     using Security;
-    using Logging;
     using Magda;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Localization;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Formatters;
+    using Microsoft.AspNetCore.Mvc.ApiExplorer;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
-    using Microsoft.EntityFrameworkCore;
-    using Serilog;
     using SqlServer.Configuration;
-    using OrganisationRegistry.Configuration.Database;
-    using OrganisationRegistry.Configuration.Database.Configuration;
     using OrganisationRegistry.Infrastructure.Configuration;
-    using OrganisationRegistry.Infrastructure.Infrastructure.Json;
-    using JsonSerializerSettingsProvider = OrganisationRegistry.Infrastructure.Infrastructure.Json.JsonSerializerSettingsProvider;
-    using Microsoft.AspNetCore.ResponseCompression;
-    using AddHttpSecurityHeadersMiddleware = Security.AddHttpSecurityHeadersMiddleware;
+    using Microsoft.Extensions.Diagnostics.HealthChecks;
+    using Microsoft.Net.Http.Headers;
+    using SqlServer.Infrastructure;
+    using Swashbuckle.AspNetCore.Swagger;
 
     public class Startup
     {
-        private const string AllowSpecificOrigin = "AllowSpecificOrigin";
-
-        private readonly IConfiguration _configuration;
-        private readonly IHostingEnvironment _env;
-        private readonly ILoggerFactory _loggerFactory;
+        private const string DatabaseTag = "db";
 
         private IContainer _applicationContainer;
 
+        private readonly IConfiguration _configuration;
+        private readonly ILoggerFactory _loggerFactory;
+
         public Startup(
-            IHostingEnvironment env,
+            IConfiguration configuration,
             ILoggerFactory loggerFactory)
         {
-            JsonConvert.DefaultSettings =
-                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
-
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true)
-                .AddEnvironmentVariables();
-
-            //var keyVaultConfiguration = builder.Build().GetSection(KeyVaultConfiguration.Section).Get<KeyVaultConfiguration>();
-            //if (!string.IsNullOrWhiteSpace(keyVaultConfiguration?.Vault))
-            //    builder.AddAzureKeyVault(
-            //        $"https://{keyVaultConfiguration.Vault}.vault.azure.net/",
-            //        keyVaultConfiguration.ClientId,
-            //        keyVaultConfiguration.ClientSecret);
-
-            Console.WriteLine("Infrastructure__EventStoreConnectionString = {0}", Environment.GetEnvironmentVariable("Infrastructure__EventStoreConnectionString") ?? "NOT SET");
-            Console.WriteLine("Infrastructure__EventStoreAdministrationConnectionString = {0}", Environment.GetEnvironmentVariable("Infrastructure__EventStoreAdministrationConnectionString") ?? "NOT SET");
-            Console.WriteLine("Configuration__ConnectionString = {0}", Environment.GetEnvironmentVariable("Configuration__ConnectionString") ?? "NOT SET");
-            Console.WriteLine("SqlServer__ConnectionString = {0}", Environment.GetEnvironmentVariable("SqlServer__ConnectionString") ?? "NOT SET");
-            Console.WriteLine("SqlServer__MigrationsConnectionString = {0}", Environment.GetEnvironmentVariable("SqlServer__MigrationsConnectionString") ?? "NOT SET");
-
-            var sqlConfiguration = builder.Build().GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>();
-            _configuration = builder
-                .AddEntityFramework(x =>
-                    x.UseSqlServer(
-                        sqlConfiguration.ConnectionString,
-                        y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")))
-                .Build();
-
-            _env = env;
+            _configuration = configuration;
             _loggerFactory = loggerFactory;
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>Configures services for the application.</summary>
+        /// <param name="services">The collection of services to configure the application with.</param>
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            var apiConfiguration = _configuration.GetSection(ApiConfiguration.Section).Get<ApiConfiguration>();
-            var togglesConfiguration = _configuration.GetSection(TogglesConfiguration.Section).Get<TogglesConfiguration>();
-
             Migrations.Run(_configuration.GetSection(SqlServerConfiguration.Section).Get<SqlServerConfiguration>());
             var openIdConfiguration = _configuration.GetSection(OpenIdConnectConfiguration.Section).Get<OpenIdConnectConfiguration>();
 
-            services.AddAuthentication(options =>
+            services
+                .AddAuthentication(options =>
                 {
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 })
+
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                 {
                     options.TokenValidationParameters =
                         new OrganisationRegistryTokenValidationParameters(openIdConfiguration);
-                });
+                })
+                .Services
 
-            services
-                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 //.AddTransient<IPrincipal>(provider => provider.GetService<IHttpContextAccessor>().HttpContext.User)
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
                 .AddScoped<ISecurityService, SecurityService>()
 
-                .AddMvc(options =>
-                {
-                    options.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
-                    options.FormatterMappings.SetMediaTypeMappingForFormat("xml", MediaTypeHeaderValue.Parse("application/xml"));
-                    options.OutputFormatters.Add(new CsvOutputFormatter(new CsvFormatterOptions()));
-                    options.FormatterMappings.SetMediaTypeMappingForFormat("csv", MediaTypeHeaderValue.Parse("text/csv"));
-                    //options.Filters.Add(new LoggingFilterFactory());
-                    options.Filters.Add(new CorsAuthorizationFilterFactory(AllowSpecificOrigin));
-                    options.AddMetricsResourceFilter();
-                })
-
-                .AddJsonOptions(options => options.SerializerSettings.ConfigureForOrganisationRegistry())
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>())
-                .Services
-
-                .AddResponseCompression(options =>
-                {
-                    options.Providers.Add<GzipCompressionProvider>();
-
-                    options.EnableForHttps = true;
-
-                    options.MimeTypes = new[]
+                .ConfigureDefaultForApi<Startup>(
+                    new StartupConfigureOptions
                     {
-                        // General
-                        "text/plain",
-
-                        // Static files
-                        "text/css",
-                        "application/javascript",
-
-                        // MVC
-                        "text/html",
-                        "application/xml",
-                        "text/xml",
-                        "application/json",
-                        "text/json",
-
-                        // Fonts
-                        "application/font-woff",
-                        "font/otf",
-                        "application/vnd.ms-fontobject"
-                    };
-                })
-
-                .Configure<GzipCompressionProviderOptions>(options =>
-                {
-                    options.Level = CompressionLevel.Fastest;
-                })
-
-                .AddApiVersioning(x => x.ReportApiVersions = true)
-
-                //.AddSwagger(apiConfiguration)
-
-                .AddCors(options => options.AddPolicy(AllowSpecificOrigin, corsPolicy => corsPolicy
-                    .WithOrigins(GetCorsOrigins(apiConfiguration, _env))
-                    .WithMethods("GET", "POST", "PUT", "HEAD", "DELETE")
-                    .WithHeaders("accept", "content-type", "origin", "x-filtering", "x-sorting", "x-pagination",
-                        "authorization")
-                    .WithExposedHeaders("location", "x-filtering", "x-sorting", "x-pagination")
-                    .SetPreflightMaxAge(TimeSpan.FromSeconds(60 * 15))
-                    .AllowCredentials()))
-
-                .AddMetrics(options =>
-                {
-                    options.MetricsEnabled = togglesConfiguration.EnableMonitoring;
-                    options.ReportingEnabled = togglesConfiguration.EnableMonitoring;
-
-                    options.WithGlobalTags((globalTags, envInfo) =>
-                    {
-                        globalTags.Add("server", envInfo.MachineName);
-                        globalTags.Add("app", envInfo.EntryAssemblyName);
-                        globalTags.Add("env", apiConfiguration.EnvironmentName);
-                    });
-                })
-                .AddJsonSerialization() //Enables json format on the /metrics-text, /metrics, /health and /env endpoints.
-                .AddGraphiteMetricsSerialization() // Enables graphite plain text format on the /metrics endpoint.
-                .AddGraphiteMetricsTextSerialization() // Enables json format on the /metrics endpoint.
-                .AddJsonHealthSerialization() // Enables json format on the /health endpont.
-                .AddJsonEnvironmentInfoSerialization() // Enables json format on the /env endpont.
-                .AddHealthChecks()
-                .AddMetricsMiddleware()
-                .AddReporting(factory => factory
-                    .AddGraphite(new GraphiteReporterSettings
-                    {
-                        HttpPolicy = new HttpPolicy
+                        Cors =
                         {
-                            FailuresBeforeBackoff = 3,
-                            BackoffPeriod = TimeSpan.FromSeconds(30),
-                            Timeout = TimeSpan.FromSeconds(3)
+                            Origins = _configuration
+                                .GetSection("Cors")
+                                .GetChildren()
+                                .Select(c => c.Value)
+                                .ToArray()
                         },
-                        GraphiteSettings = new GraphiteSettings(new Uri(apiConfiguration.GraphiteAddress)),
-                        ReportInterval = TimeSpan.FromSeconds(5)
-                    }));
+                        Localization =
+                        {
+                            DefaultCulture = new CultureInfo("nl-BE") { DateTimeFormat = { FirstDayOfWeek = DayOfWeek.Monday } }
+                        },
+                        Swagger =
+                        {
+                            ApiInfo = (provider, description) => new Info
+                            {
+                                Version = description.ApiVersion.ToString(),
+                                Title = "Basisregisters Vlaanderen Organisation Registry API",
+                                Description = GetApiLeadingText(description),
+                                Contact = new Contact
+                                {
+                                    Name = "Informatie Vlaanderen",
+                                    Email = "informatie.vlaanderen@vlaanderen.be",
+                                    Url = "https://legacy.basisregisters.vlaanderen"
+                                }
+                            },
+                            XmlCommentPaths = new[] {typeof(Startup).GetTypeInfo().Assembly.GetName().Name}
+                        },
+                        Server =
+                        {
+                            VersionHeaderName = "x-wegwijs-version"
+                        },
+                        MiddlewareHooks =
+                        {
+                            ConfigureMvcCore = cfg =>
+                            {
+                                cfg.OutputFormatters.Add(new CsvOutputFormatter(new CsvFormatterOptions()));
+                                cfg.FormatterMappings.SetMediaTypeMappingForFormat("csv", MediaTypeHeaderValue.Parse("text/csv"));
+                            },
+                            AfterHealthChecks = health =>
+                            {
+                                var connectionStrings = _configuration
+                                    .GetSection("ConnectionStrings")
+                                    .GetChildren();
 
-            services.AddOptions();
+                                foreach (var connectionString in connectionStrings)
+                                    health.AddSqlServer(
+                                        connectionString.Value,
+                                        name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
+                                        tags: new[] {DatabaseTag, "sql", "sqlserver"});
 
-            var builder = new ContainerBuilder();
-            builder.RegisterModule(new MagdaModule(_configuration));
-            builder.RegisterModule(new ApiModule(_configuration, services));
-            _applicationContainer = builder.Build();
+                                health.AddDbContextCheck<OrganisationRegistryContext>(
+                                    $"dbcontext-{nameof(OrganisationRegistryContext).ToLowerInvariant()}",
+                                    tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                            }
+                        }
+                    });
+
+            var containerBuilder = new ContainerBuilder();
+            containerBuilder.RegisterModule(new MagdaModule(_configuration));
+            containerBuilder.RegisterModule(new ApiModule(_configuration, services, _loggerFactory));
+            _applicationContainer = containerBuilder.Build();
 
             return new AutofacServiceProvider(_applicationContainer);
         }
 
-        private static string[] GetCorsOrigins(ApiConfiguration apiConfiguration, IHostingEnvironment env)
-        {
-            var corsOrigins = apiConfiguration.CorsOrigin.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-            if (env.IsDevelopment())
-            {
-                corsOrigins = corsOrigins
-                    .Append("http://localhost:3000")
-                    .Append("https://wegwijs.dev.informatievlaanderen.be:3000")
-                    .ToArray();
-            }
-            return corsOrigins;
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(
+            IServiceProvider serviceProvider,
             IApplicationBuilder app,
+            IHostingEnvironment env,
+            IApplicationLifetime appLifetime,
             ILoggerFactory loggerFactory,
-            IApplicationLifetime appLifetime/*,
-            OrganisationRegistryTokenValidationParameters tokenValidationParameters*/)
+            IApiVersionDescriptionProvider apiVersionProvider,
+            ApiDataDogToggle datadogToggle,
+            ApiDebugDataDogToggle debugDataDogToggle,
+            HealthCheckService healthCheckService)
         {
-            var defaultCulture = new CultureInfo("nl-BE") { DateTimeFormat = { FirstDayOfWeek = DayOfWeek.Monday } };
+            StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag).GetAwaiter().GetResult();
 
             app
-                .ConfigureLogging()
-                .InitialiseAndUpdateDatabase()
-
-                .UseCors(policyName: AllowSpecificOrigin)
-
-                .UseMiddleware<ApplicationStatusMiddleware>()
-                .UseMiddleware<EnableRequestRewindMiddleware>()
-                .UseMiddleware<AddCorrelationIdToLogContextMiddleware>()
-                .UseMiddleware<AddCorrelationIdToResponseMiddleware>()
-                .UseMiddleware<AddHttpSecurityHeadersMiddleware>()
-                .UseMiddleware<AddVersionHeaderMiddleware>("x-wegwijs-version")
-                .UseMiddleware<ConfigureClaimsPrincipalSelectorMiddleware>()
-
-                .UseOrganisationRegistryExceptionHandler(loggerFactory)
-                .UseOrganisationRegistryEventSourcing()
-
-                //.UseOrganisationRegistryCookieAuthentication(tokenValidationParameters)
-                //.UseOrganisationRegistryJwtBearerAuthentication(tokenValidationParameters)
-                .UseAuthentication()
-
-                .UseMetrics()
-                .UseMetricsReporting(appLifetime)
-
-                .UseRequestLocalization(new RequestLocalizationOptions
+                .UseDataDog<Startup>(new DataDogOptions
                 {
-                    DefaultRequestCulture = new RequestCulture(defaultCulture),
-                    SupportedCultures = new List<CultureInfo>
+                    Common =
                     {
-                        defaultCulture
+                        ServiceProvider = serviceProvider,
+                        LoggerFactory = loggerFactory
                     },
-                    SupportedUICultures = new List<CultureInfo>
+                    Toggles =
                     {
-                        defaultCulture
+                        Enable = datadogToggle,
+                        Debug = debugDataDogToggle
+                    },
+                    Tracing =
+                    {
+                        ServiceName = _configuration["DataDog:ServiceName"],
                     }
                 })
 
-                .UseMvc()
-
-                .UseMiddleware<DefaultResponseCompressionQualityMiddleware>(new Dictionary<string, double>
+                .UseDefaultForApi(new StartupUseOptions
                 {
-                    {"br", 1.0},
-                    {"gzip", 0.9}
-                })
-                .UseResponseCompression();
+                    Common =
+                    {
+                        ApplicationContainer = _applicationContainer,
+                        ServiceProvider = serviceProvider,
+                        HostingEnvironment = env,
+                        ApplicationLifetime = appLifetime,
+                        LoggerFactory = loggerFactory
+                    },
+                    Api =
+                    {
+                        VersionProvider = apiVersionProvider,
+                        Info = groupName => $"Basisregisters Vlaanderen - Organisation Registry API {groupName}",
+                        CSharpClientOptions =
+                        {
+                            ClassName = "OrganisationRegistry",
+                            Namespace = "Be.Vlaanderen.Basisregisters"
+                        },
+                        TypeScriptClientOptions =
+                        {
+                            ClassName = "OrganisationRegistry"
+                        }
+                    },
+                    MiddlewareHooks =
+                    {
+                        AfterMiddleware = x => x
+                            .UseMiddleware<ApplicationStatusMiddleware>()
+                            .UseMiddleware<AddNoCacheHeadersMiddleware>()
+                            .UseMiddleware<ConfigureClaimsPrincipalSelectorMiddleware>(),
 
-                // swagger/v1/swagger.json -> docs/v1/docs.json
-                //.UseSwagger("docs/{documentName}/docs.json");
-
-            appLifetime.ApplicationStopped.Register(() =>
-            {
-                Log.CloseAndFlush();
-                _applicationContainer.Dispose();
-            });
+                        AfterHealthChecks = x => x
+                            .InitialiseAndUpdateDatabase()
+                            .UseOrganisationRegistryExceptionHandler(loggerFactory)
+                            .UseOrganisationRegistryEventSourcing()
+                            //.UseOrganisationRegistryCookieAuthentication(tokenValidationParameters)
+                            //.UseOrganisationRegistryJwtBearerAuthentication(tokenValidationParameters)
+                            .UseAuthentication()
+                    }
+                });
         }
+
+        private static string GetApiLeadingText(ApiVersionDescription description)
+            => $"Momenteel leest u de documentatie voor versie {description.ApiVersion} van de Basisregisters Vlaanderen Organisation Registry API{string.Format(description.IsDeprecated ? ", **deze API versie is niet meer ondersteund * *." : ".")}";
     }
 }

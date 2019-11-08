@@ -9,14 +9,9 @@ namespace OrganisationRegistry.ElasticSearch
     public class ElasticSearchModule : Module
     {
         public ElasticSearchModule(IConfiguration configuration, IServiceCollection services)
-        {
-            services.Configure<ElasticSearchConfiguration>(
-                configuration.GetSection(ElasticSearchConfiguration.Section));
-        }
+            => services.Configure<ElasticSearchConfiguration>(configuration.GetSection(ElasticSearchConfiguration.Section));
 
         protected override void Load(ContainerBuilder builder)
-        {
-            builder.RegisterType<Elastic>().SingleInstance();
-        }
+            => builder.RegisterType<Elastic>().SingleInstance();
     }
 }

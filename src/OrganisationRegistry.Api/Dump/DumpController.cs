@@ -12,8 +12,8 @@ namespace OrganisationRegistry.Api.Dump
     using Newtonsoft.Json;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
-    using JsonSerializerSettingsProvider = OrganisationRegistry.Infrastructure.Infrastructure.Json.JsonSerializerSettingsProvider;
     using System.Xml;
+    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Newtonsoft.Json.Serialization;
 
     [ApiVersion("1.0")]
@@ -53,7 +53,7 @@ namespace OrganisationRegistry.Api.Dump
                 ScrollSize,
                 ScrollTimeout);
 
-            var jsonSerializerSettings = JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
+            var jsonSerializerSettings = JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureDefaultForApi();
             jsonSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             jsonSerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
 

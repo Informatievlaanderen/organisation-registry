@@ -5,6 +5,7 @@ namespace OrganisationRegistry.Projections.Delegations
     using System.Threading;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Destructurama;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -27,7 +28,7 @@ namespace OrganisationRegistry.Projections.Delegations
             Console.WriteLine("Starting Delegations Runner");
 
             JsonConvert.DefaultSettings =
-                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
+                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureDefaultForApi();
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -86,10 +87,12 @@ namespace OrganisationRegistry.Projections.Delegations
             Thread.Sleep(1000);
         }
 
-        private static IServiceProvider ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        private static IServiceProvider ConfigureServices(
+            IServiceCollection services,
+            IConfiguration configuration)
         {
             var builder = new ContainerBuilder();
-            builder.RegisterModule(new DelegationsRunnerModule(configuration, services));
+            builder.RegisterModule(new DelegationsRunnerModule(configuration, services, null));
             return new AutofacServiceProvider(builder.Build());
         }
 

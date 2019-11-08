@@ -6,9 +6,15 @@ Microsoft.EntityFrameworkCore
 Microsoft.EntityFrameworkCore.Relational
 Microsoft.EntityFrameworkCore.SqlServer
 Microsoft.EntityFrameworkCore.Design
+Microsoft.EntityFrameworkCore.InMemory
 
 Dapper
 Autofac.Extensions.DependencyInjection
+
+Be.Vlaanderen.Basisregisters.Api
+Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql
+
+AspNetCore.HealthChecks.SqlServer
 
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

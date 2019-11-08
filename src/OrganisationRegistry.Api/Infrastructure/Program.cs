@@ -1,47 +1,56 @@
 namespace OrganisationRegistry.Api.Infrastructure
 {
-    using System;
     using System.IO;
-    using System.Net;
     using System.Security.Cryptography.X509Certificates;
+    using Be.Vlaanderen.Basisregisters.Api;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
+    using OrganisationRegistry.Configuration.Database;
+    using OrganisationRegistry.Configuration.Database.Configuration;
 
     public class Program
     {
-        public static void Main(string[] args)
-        {
-            Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
+        public static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
 
-            IWebHostBuilder hostBuilder = new WebHostBuilder();
-            var environment = hostBuilder.GetSetting("environment");
-
-            if (environment == "Development")
-            {
-                var cert = new X509Certificate2(Path.Join("..", "..", "organisationregistry-api.pfx"), "organisationregistry");
-
-                hostBuilder = hostBuilder
-                    .UseKestrel(server =>
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+            => new WebHostBuilder()
+                .UseDefaultForApi<Startup>(
+                    new ProgramOptions
                     {
+                        Hosting =
+                        {
+                            HttpPort = 8002,
+                            HttpsPort = 8003,
+                            HttpsCertificate =
+                                () => new X509Certificate2(Path.Join("..", "..", "organisationregistry-api.pfx"), "organisationregistry")
+                        },
+                        Logging =
+                        {
+                            WriteTextToConsole = false,
+                            WriteJsonToConsole = false
+                        },
+                        Runtime =
+                        {
+                            CommandLineArgs = args
+                        },
+                        MiddlewareHooks =
+                        {
+                            ConfigureAppConfiguration = (hostingContext, config) =>
+                            {
+                                var sqlConfiguration = config
+                                    .Build()
+                                    .GetSection(ConfigurationDatabaseConfiguration.Section)
+                                    .Get<ConfigurationDatabaseConfiguration>();
 
-                        server.AddServerHeader = false;
-
-                        // Map localhost to api.wegwijs.dev.informatievlaanderen.be
-                        // Then use https://api.wegwijs.dev.informatievlaanderen.be:2443/ in a browser
-                        server.Listen(IPAddress.Loopback, 2443, listenOptions => listenOptions.UseConnectionLogging().UseHttps(cert));
-                        server.Listen(IPAddress.Loopback, 2080, listenOptions => listenOptions.UseConnectionLogging());
+                                config
+                                    .AddEntityFramework(x =>
+                                        x.UseSqlServer(
+                                            sqlConfiguration.ConnectionString,
+                                            y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")))
+                                    .Build();
+                            }
+                        }
                     });
-            }
-            else
-            {
-                hostBuilder = hostBuilder.UseKestrel(server => server.AddServerHeader = false);
-            }
-
-            var host = hostBuilder
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseStartup<Startup>()
-                .Build();
-
-            host.Run();
-        }
     }
 }

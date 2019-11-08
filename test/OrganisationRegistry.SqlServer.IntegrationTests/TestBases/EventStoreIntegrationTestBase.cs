@@ -35,9 +35,9 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
             var services = new ServiceCollection();
 
             builder.RegisterModule(new InfrastructureModule(fixture.Config, ProvideScopedServiceProvider, new ServiceCollection()));
-            builder.RegisterModule(new SqlServerModule(fixture.Config, services));
+            builder.RegisterModule(new SqlServerModule(fixture.Config, services, null));
             builder.RegisterModule(new MagdaModule(fixture.Config));
-            builder.RegisterModule(new ApiModule(fixture.Config, services));
+            builder.RegisterModule(new ApiModule(fixture.Config, services, null));
             builder.RegisterInstance(dateTimeProvider).As<IDateTimeProvider>();
 
             AutofacServiceProvider = new AutofacServiceProvider(builder.Build());
