@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Magda
 {
+    using System.IO;
     using System.Security.Cryptography.X509Certificates;
     using Autofac;
     using Microsoft.Extensions.Configuration;
@@ -12,13 +13,18 @@ namespace OrganisationRegistry.Magda
         {
             var apiConfiguration = configuration.GetSection("Api");
 
+            var certificate =
+                File.Exists(apiConfiguration["KboCertificate"])
+                    ? new X509Certificate2(
+                        fileName: apiConfiguration["KboCertificate"],
+                        password: apiConfiguration["RijksRegisterCertificatePwd"],
+                        keyStorageFlags: X509KeyStorageFlags.MachineKeySet |
+                                         X509KeyStorageFlags.PersistKeySet |
+                                         X509KeyStorageFlags.Exportable)
+                    : new X509Certificate2();
+
             MagdaConfiguration = new MagdaConfiguration(
-                new X509Certificate2(
-                    fileName: apiConfiguration["KboCertificate"],
-                    password: apiConfiguration["RijksRegisterCertificatePwd"],
-                    keyStorageFlags: X509KeyStorageFlags.MachineKeySet |
-                                     X509KeyStorageFlags.PersistKeySet |
-                                     X509KeyStorageFlags.Exportable),
+                certificate,
                 apiConfiguration.GetValue<int>("KboMagdaTimeout"),
                 apiConfiguration["KboSender"],
                 apiConfiguration["RijksRegisterCapacity"],
