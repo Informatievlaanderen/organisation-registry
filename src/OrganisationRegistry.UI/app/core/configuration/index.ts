@@ -18,7 +18,7 @@ export class ConfigurationService {
   }
 
   public get apiUrl() {
-    return (<any>window).wegwijsApiEndpoint || 'https://api.wegwijs.dev.informatievlaanderen.be:2443';
+    return (<any>window).wegwijsApiEndpoint || 'https://api.wegwijs.dev.informatievlaanderen.be:8003';
   }
 
   public get authUrl() {
