@@ -162,7 +162,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
             if (!optionsBuilder.IsConfigured)
                 optionsBuilder.UseSqlServer(
-                    @"Server=(localdb)\mssqllocaldb;Database=EFProviders.InMemory;Trusted_Connection=True;",
+                    @"Server=127.0.0.1,21433;Database=OrganisationRegistry;User ID=sa;Password=E@syP@ssw0rd;",
                     x => x.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry"));
         }
 
@@ -190,7 +190,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
             var builder = new DbContextOptionsBuilder<OrganisationRegistryContext>();
 
             builder.UseSqlServer(
-                @"Server=.;Database=wegwijstemp;Trusted_Connection=True;",
+                @"Server=127.0.0.1,21433;Database=OrganisationRegistry;User ID=sa;Password=E@syP@ssw0rd;",
                 x => x.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry"));
 
             return new OrganisationRegistryContext(builder.Options);
