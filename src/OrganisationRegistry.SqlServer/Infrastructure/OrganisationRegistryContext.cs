@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.SqlServer.Infrastructure
 {
     using System.Reflection;
-    using Microsoft.EntityFrameworkCore;
     using Body;
     using Body.ScheduledActions.Organisation;
     using Body.ScheduledActions.PeopleAssignedToBodyMandates;
@@ -9,8 +8,8 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     using BodyClassificationType;
     using Building;
     using Capacity;
-    using ContactType;
     using Configuration;
+    using ContactType;
     using DelegationAssignments;
     using Delegations;
     using ElasticSearchProjections;
@@ -26,6 +25,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     using Log;
     using Magda;
     using MandateRoleType;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
     using Organisation;
     using Organisation.ScheduledActions.Building;
@@ -41,7 +41,6 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     using Reporting;
     using SeatType;
     using Security;
-    using ActiveOrganisationParentListItem = Organisation.ScheduledActions.Parent.ActiveOrganisationParentListItem;
 
     public class OrganisationRegistryContext : DbContext
     {
@@ -194,13 +193,6 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                 x => x.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry"));
 
             return new OrganisationRegistryContext(builder.Options);
-        }
-    }
-
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
         }
     }
 }
