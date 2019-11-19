@@ -151,9 +151,9 @@ namespace OrganisationRegistry.Api.Organisation.Queries
     {
         public string Name { get; set; }
         public string OvoNumber { get; set; }
-        public Guid FormalFrameworkId { get; set; }
-        public Guid OrganisationClassificationId { get; set; }
-        public Guid OrganisationClassificationTypeId { get; set; }
+        public Guid? FormalFrameworkId { get; set; }
+        public Guid? OrganisationClassificationId { get; set; }
+        public Guid? OrganisationClassificationTypeId { get; set; }
         public bool ActiveOnly { get; set; }
         public bool AuthorizedOnly { get; set; }
     }
