@@ -18,14 +18,14 @@ export class ConfigurationService {
   }
 
   public get apiUrl() {
-    return (<any>window).wegwijsApiEndpoint || 'https://api.wegwijs.dev.informatievlaanderen.be:8003';
+    return (<any>window).wegwijsApiEndpoint || 'https://api.organisatie.staging-basisregisters.vlaanderen:8003';
   }
 
   public get authUrl() {
-    return (<any>window).wegwijsAuthEndpoint || 'https://auth.wegwijs.dev.informatievlaanderen.be';
+    return (<any>window).wegwijsAuthEndpoint || 'https://auth.organisatie.staging-basisregisters.vlaanderen';
   }
 
   public get uiUrl() {
-    return (<any>window).wegwijsUiEndpoint || 'http://wegwijs.dev.informatievlaanderen.be:3000';
+    return (<any>window).wegwijsUiEndpoint || 'https://organisatie.staging-basisregisters.vlaanderen:3000';
   }
 }
