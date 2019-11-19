@@ -6,6 +6,7 @@ namespace OrganisationRegistry.Infrastructure.EventStore
     using System.Data.Common;
     using System.Data.SqlClient;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using Dapper;
     using Events;
     using Newtonsoft.Json;
@@ -34,6 +35,8 @@ namespace OrganisationRegistry.Infrastructure.EventStore
             "OrganisationRegistry.Infrastructure.Events.RebuildProjection, OrganisationRegistry, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
         };
 
+        private readonly RefactorMoveNamespaceToOrganisationRegistry _refactorMoveNamespaceToOrganisationRegistry;
+
         private DbConnection GetConnection()
         {
             return new SqlConnection(_connectionString);
@@ -49,6 +52,8 @@ namespace OrganisationRegistry.Infrastructure.EventStore
             _connectionString = infrastructureOptions.Value.EventStoreConnectionString;
             _administrationConnectionString = infrastructureOptions.Value.EventStoreAdministrationConnectionString;
             _publisher = publisher;
+
+            _refactorMoveNamespaceToOrganisationRegistry = new RefactorMoveNamespaceToOrganisationRegistry();
         }
 
         public void InitaliseEventStore()
@@ -183,6 +188,7 @@ ORDER BY Version ASC",
             }
 
             return events
+                .SelectMany(data => _refactorMoveNamespaceToOrganisationRegistry.Upgrade(data))
                 .Select(e =>
                 {
                     try
@@ -229,11 +235,11 @@ WHERE [Name] IN @EventTypes
 ORDER BY [Number] ASC",
                     new
                     {
-                        EventTypes = eventTypes.Select(x => x.AssemblyQualifiedName).ToList()
+                        EventTypes = eventTypes.GetEventTypeNames()
                     }).ToList();
             }
 
-            return ParseEventsIntoEnvelopes(events);
+            return ParseEventsIntoEnvelopes(events, _refactorMoveNamespaceToOrganisationRegistry);
         }
 
         public IEnumerable<IEnvelope> GetEventEnvelopesAfter(int eventNumber)
@@ -247,7 +253,7 @@ ORDER BY [Number] ASC",
                 events = SelectEvents(eventNumber, db);
             }
 
-            return ParseEventsIntoEnvelopes(events);
+            return ParseEventsIntoEnvelopes(events, _refactorMoveNamespaceToOrganisationRegistry);
         }
 
         public IEnumerable<IEnvelope> GetEventEnvelopesAfter(int eventNumber, int maxEvents, params Type[] eventTypesToInclude)
@@ -263,7 +269,7 @@ ORDER BY [Number] ASC",
                     : SelectMaxEvents(eventNumber, maxEvents, db);
             }
 
-            return ParseEventsIntoEnvelopes(events);
+            return ParseEventsIntoEnvelopes(events, _refactorMoveNamespaceToOrganisationRegistry);
         }
 
         public int GetLastEvent()
@@ -276,9 +282,10 @@ ORDER BY [Number] ASC",
             }
         }
 
-        private static IEnumerable<IEnvelope> ParseEventsIntoEnvelopes(IEnumerable<EventData> events)
+        private static IEnumerable<IEnvelope> ParseEventsIntoEnvelopes(IEnumerable<EventData> events, RefactorMoveNamespaceToOrganisationRegistry upgrader)
         {
             return events
+                .SelectMany(data => upgrader.Upgrade(data))
                 .Select(e =>
                 {
                     try
@@ -333,37 +340,48 @@ ORDER BY [Number] ASC",
                 {
                     MaxEvents = maxEvents,
                     Number = eventNumber,
-                    EventTypesToInclude = eventTypesToInclude.Select(x => x.AssemblyQualifiedName).ToList()
+                    EventTypesToInclude = eventTypesToInclude.GetEventTypeNames()
                 }).ToList();
         }
     }
 
+    public static class EventTypeExtensions
+    {
+        public static List<string> GetEventTypeNames(this IEnumerable<Type> eventTypes)
+        {
+            return eventTypes
+                .Select(et => et
+                    .AssemblyQualifiedName?
+                    .Substring("OrganisationRegistry.".Length)
+                    .Insert(0, "Wegwijs.")
+                    .Replace(", OrganisationRegistry, Version=2.0.0.0,", ", Wegwijs, Version=1.0.0.0,"))
+                .ToList();
+        }
+    }
+
     // Example of an event upgrader
-    //internal class RefactorMoveNamespace20161019
-    //{
-    //    public DateTime DefinedOn => new DateTime(2016, 10, 19);
+    internal class RefactorMoveNamespaceToOrganisationRegistry
+    {
+        public DateTime DefinedOn => new DateTime(2010, 11, 19);
 
-    //    public IEnumerable<SqlServerEventStore.EventData> Upgrade(SqlServerEventStore.EventData e, Guid id)
-    //    {
-    //        if (e.Name.StartsWith("OrganisationRegistry.ReadModel."))
-    //        {
-    //            // old: OrganisationRegistry.ReadModel.Location.LocationCreated, OrganisationRegistry, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-    //            // new: OrganisationRegistry.Location.Events.LocationCreated, OrganisationRegistry, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+        public IEnumerable<EventData> Upgrade(EventData e)
+        {
+            if (e.Name.StartsWith("Wegwijs."))
+            {
+                // old: Wegwijs.Purpose.Events.PurposeUpdated, Wegwijs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+                // new: Organisation.Purpose.Events.PurposeUpdated, OrganisationRegistry, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null
 
-    //            var className = e.Name.Substring(0, e.Name.IndexOf(',', 0));
-    //            var parts = className.Split('.');
-    //            var newName =
-    //                string.Concat(
-    //                    parts[0], ".", // OrganisationRegistry
-    //                    parts[2], ".", // Location
-    //                    "Events", ".", // Events
-    //                    parts[3]); // LocationCreated
+                var className = e.Name.Substring(0, e.Name.IndexOf(',', 0));
+                var newName = string.Concat("OrganisationRegistry", className.Substring(e.Name.IndexOf('.', 0)));
 
-    //            yield return e.WithName(e.Name.Replace(className, newName));
-    //            yield break;
-    //        }
+                yield return e.WithName(
+                    e.Name
+                        .Replace(className, newName)
+                        .Replace(", Wegwijs, Version=1.0.0.0,", ", OrganisationRegistry, Version=2.0.0.0,"));
+                yield break;
+            }
 
-    //        yield return e;
-    //    }
-    //}
+            yield return e;
+        }
+    }
 }
