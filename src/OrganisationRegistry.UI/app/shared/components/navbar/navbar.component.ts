@@ -67,21 +67,17 @@ export class NavbarComponent implements OnInit {
 
     const roles = this.oidcService.roles;
 
-    this.isOrganisationRegistryBeheerder = roles.map(roles => {
-      return (roles.indexOf(Role.OrganisationRegistryBeheerder) !== -1) ;
-    });
+    this.isOrganisationRegistryBeheerder =
+      this.oidcService.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
 
-    this.isOrganisatieBeheerder = roles.map(roles => {
-      return (roles.indexOf(Role.OrganisatieBeheerder) !== -1) ;
-    });
+    this.isOrganisatieBeheerder =
+      this.oidcService.hasAnyOfRoles([Role.OrganisatieBeheerder]);
 
-    this.isDeveloper = roles.map(roles => {
-      return (roles.indexOf(Role.Developer) !== -1) ;
-    });
+    this.isDeveloper =
+      this.oidcService.hasAnyOfRoles([Role.Developer]);
 
-    this.isOrgaanBeheerder = roles.map(roles => {
-      return (roles.indexOf(Role.OrgaanBeheerder) !== -1) ;
-    });
+    this.isOrgaanBeheerder =
+      this.oidcService.hasAnyOfRoles([Role.OrgaanBeheerder]);
 
     this.userName = this.oidcService.userName;
 
