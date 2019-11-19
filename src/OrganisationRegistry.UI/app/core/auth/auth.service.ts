@@ -21,8 +21,6 @@ interface SecurityInfo {
   expires: number;
 }
 
-declare var appInsights: any; // global application insights
-
 @Injectable()
 export class AuthService {
   private securityUrl = `${this.configurationService.apiUrl}/v1/security`;
@@ -200,9 +198,6 @@ export class AuthService {
     // console.log('loading from server request');
     return this.get()
       .map(user => {
-        if (appInsights)
-          appInsights.setAuthenticatedUserContext(user.userName.replace(/[,;=| ]+/g, "_"));
-
         return {
           isLoggedIn: true,
           userName: user.userName,
@@ -215,9 +210,6 @@ export class AuthService {
         } as SecurityInfo;
       })
       .catch(err => {
-        if (appInsights)
-          appInsights.clearAuthenticatedUserContext();
-
         return Observable.throw({
           isLoggedIn: false,
           userName: '',
