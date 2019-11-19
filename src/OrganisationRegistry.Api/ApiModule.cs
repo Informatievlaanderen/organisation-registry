@@ -36,8 +36,7 @@ namespace OrganisationRegistry.Api
 
             _services
                 .Configure<ApiConfiguration>(_configuration.GetSection(ApiConfiguration.Section))
-                .Configure<OpenIdConnectConfiguration>(_configuration.GetSection(OpenIdConnectConfiguration.Section))
-                .Configure<AuthConfiguration>(_configuration.GetSection(AuthConfiguration.Section));
+                .Configure<OpenIdConnectConfiguration>(_configuration.GetSection(OpenIdConnectConfiguration.Section));
         }
 
         protected override void Load(ContainerBuilder builder)
