@@ -2,10 +2,7 @@ import { Component, ViewEncapsulation, OnInit } from '@angular/core';
 import { Router, NavigationStart, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 
-import { AppState } from './app.service';
 import { AlertService } from './core/alert';
-
-declare var appInsights: any; // global application insights
 
 @Component({
   selector: 'wegwijs',
@@ -43,15 +40,6 @@ export class App implements OnInit  {
         } else {
           this.titleService.setTitle('Wegwijs');
         }
-      });
-
-    router.events
-      .filter(event => event instanceof NavigationEnd)
-      .subscribe(event => {
-        //console.log(this.titleService.getTitle(), event);
-        let e = event as NavigationEnd;
-        if (appInsights)
-          appInsights.trackPageView(this.titleService.getTitle(), e.urlAfterRedirects);
       });
   }
 
