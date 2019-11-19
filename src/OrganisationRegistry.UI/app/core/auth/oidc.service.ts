@@ -187,7 +187,7 @@ export class OidcService {
             return true;
         }
 
-        return false;
+        return roles.findIndex(x => x === Role.Developer) > -1;
       })
       .catch(err => {
         return Observable.of(false);
