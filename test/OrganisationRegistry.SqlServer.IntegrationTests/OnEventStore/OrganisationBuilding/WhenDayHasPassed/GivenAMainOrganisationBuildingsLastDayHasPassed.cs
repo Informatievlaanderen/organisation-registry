@@ -9,6 +9,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnEventStore.Organisat
     using FluentAssertions.Execution;
     using Infrastructure;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Polly;
     using TestBases;
     using Tests.Shared;
@@ -30,7 +31,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnEventStore.Organisat
         private static readonly DateTime DateTime = DateTime.Today;
 
         public GivenAMainOrganisationBuildingsLastDayHasPassedWithIntegration(EventStoreSqlServerFixture fixture) :
-            base(new DateTimeProviderStub(DateTime), fixture)
+            base(new DateTimeProviderStub(DateTime), fixture, new LoggerFactory())
         {
         }
 
