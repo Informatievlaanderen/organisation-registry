@@ -52,6 +52,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections
 
             var webHost = new TestServer(hostBuilder
                 .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseConfiguration(configuration)
                 .UseStartup<Startup>()).Host;
 
             Publisher = (IEventPublisher)webHost.Services.GetService(typeof(IEventPublisher));

@@ -7,6 +7,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using OnEventStore;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Config;
@@ -27,17 +28,21 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
         protected abstract TEvent When();
         protected IDateTimeProvider DateTimeProvider { get; }
 
-        protected EventStoreIntegrationTestBase(IDateTimeProvider dateTimeProvider, EventStoreSqlServerFixture fixture)
+        protected EventStoreIntegrationTestBase(IDateTimeProvider dateTimeProvider, EventStoreSqlServerFixture fixture,
+            LoggerFactory loggerFactory)
         {
             DateTimeProvider = dateTimeProvider;
 
             var builder = new ContainerBuilder();
             var services = new ServiceCollection();
 
+            services.AddSingleton(loggerFactory);
+            services.AddLogging();
+
             builder.RegisterModule(new InfrastructureModule(fixture.Config, ProvideScopedServiceProvider, new ServiceCollection()));
-            builder.RegisterModule(new SqlServerModule(fixture.Config, services, null));
+            builder.RegisterModule(new SqlServerModule(fixture.Config, services, loggerFactory));
             builder.RegisterModule(new MagdaModule(fixture.Config));
-            builder.RegisterModule(new ApiModule(fixture.Config, services, null));
+            builder.RegisterModule(new ApiModule(fixture.Config, services, loggerFactory));
             builder.RegisterInstance(dateTimeProvider).As<IDateTimeProvider>();
 
             AutofacServiceProvider = new AutofacServiceProvider(builder.Build());
