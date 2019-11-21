@@ -13,12 +13,14 @@ namespace OrganisationRegistry.Infrastructure.Configuration
 
         public string EventStoreConnectionString { get; set; }
         public string EventStoreAdministrationConnectionString { get; set; }
+        public int EventStoreCommandTimeout { get; set; }
 
         public InfrastructureConfiguration Obfuscate()
             => new InfrastructureConfiguration
             {
                 EventStoreConnectionString = Obfuscator.ObfuscateConnectionString(EventStoreConnectionString),
                 EventStoreAdministrationConnectionString = Obfuscator.ObfuscateConnectionString(EventStoreAdministrationConnectionString),
+                EventStoreCommandTimeout = EventStoreCommandTimeout
             };
     }
 }

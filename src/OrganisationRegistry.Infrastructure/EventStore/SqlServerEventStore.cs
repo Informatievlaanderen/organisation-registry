@@ -54,6 +54,7 @@ namespace OrganisationRegistry.Infrastructure.EventStore
             _publisher = publisher;
 
             _refactorMoveNamespaceToOrganisationRegistry = new RefactorMoveNamespaceToOrganisationRegistry();
+            SqlMapper.Settings.CommandTimeout = options.EventStoreCommandTimeout;
         }
 
         public void InitaliseEventStore()
