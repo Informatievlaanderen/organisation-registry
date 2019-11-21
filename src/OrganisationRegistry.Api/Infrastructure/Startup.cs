@@ -111,6 +111,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                             {
                                 cfg.OutputFormatters.Add(new CsvOutputFormatter(new CsvFormatterOptions()));
                                 cfg.FormatterMappings.SetMediaTypeMappingForFormat("csv", MediaTypeHeaderValue.Parse("text/csv"));
+                                cfg.EnableEndpointRouting = false;
                             },
                             AfterHealthChecks = health =>
                             {
