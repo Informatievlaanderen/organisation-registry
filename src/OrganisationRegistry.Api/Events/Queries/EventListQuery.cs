@@ -13,6 +13,7 @@ namespace OrganisationRegistry.Api.Events.Queries
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
+    using OrganisationRegistry.Infrastructure.EventStore;
 
     public class EventWithData
     {
@@ -42,7 +43,7 @@ namespace OrganisationRegistry.Api.Events.Queries
             string firstName,
             string userId)
         {
-            var eventType = Type.GetType(name);
+            var eventType = name.ToEventType();
             var eventData = (IEvent) JsonConvert.DeserializeObject(data, eventType);
 
             Id = id;
