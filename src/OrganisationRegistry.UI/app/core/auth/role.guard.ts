@@ -46,11 +46,6 @@ export class RoleGuard implements CanActivate, CanActivateChild {
   }
 
   private redirectToAuth() {
-    let auth = this.configurationService.authUrl;
-    let url = window.location.toString();
-    let authUrl = auth + '/secure?returnUrl=' + url;
-
-    // console.log('auth guard - redirect', authUrl);
-    window.location.href = authUrl;
+    this.oidcService.signIn();
   }
 }

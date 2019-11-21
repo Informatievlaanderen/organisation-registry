@@ -26,8 +26,8 @@ export function httpInterceptor(
   router: Router,
   activatedRoute: ActivatedRoute,
   configuration: ConfigurationService,
-  alertService: AlertService) {
-  return new HttpInterceptor(backend, defaultOptions, router, activatedRoute, configuration, alertService);
+  oidcService: OidcService) {
+  return new HttpInterceptor(backend, defaultOptions, router, activatedRoute, configuration, oidcService);
 }
 
 export function jsonpInterceptor(
