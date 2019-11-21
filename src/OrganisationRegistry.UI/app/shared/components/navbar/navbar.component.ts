@@ -27,7 +27,6 @@ export class NavbarComponent implements OnInit {
   public userName: Observable<string>;
   public role: Observable<string>;
   public enableReporting: Observable<boolean>;
-  private client: OidcClient;
 
   private securityInfoUrl = `${this.configurationService.apiUrl}/v1/security/info`;
 
@@ -35,31 +34,7 @@ export class NavbarComponent implements OnInit {
     private oidcService: OidcService,
     private configurationService: ConfigurationService,
     private togglesService: TogglesService,
-    http: Http
   ) {
-      http.get(this.securityInfoUrl)
-        .subscribe(r => {
-          var data = r.json();
-          const settings = {
-            authority: data.authority,
-            metadata: {
-              issuer: data.issuer,
-              authorization_endpoint: data.authorizationEndpoint,
-              userinfo_endpoint: data.userInfoEndPoint,
-              end_session_endpoint: data.endSessionEndPoint,
-              jwks_uri: data.jwksUri,
-            },
-            signing_keys: ['RS256'],
-            client_id: data.clientId,
-            redirect_uri: data.redirectUri,
-            post_logout_redirect_uri: data.postLogoutRedirectUri,
-            response_type: 'code',
-            scope: 'openid profile vo iv_wegwijs',
-            filterProtocolClaims: true,
-            loadUserInfo: true,
-          }
-          this.client = new OidcClient(settings);
-        })
    }
 
   ngOnInit() {
@@ -104,33 +79,10 @@ export class NavbarComponent implements OnInit {
   }
 
   loginClicked(): void {
-    this.client
-      .createSigninRequest({
-        state: {
-          bar: 15,
-        },
-      })
-      .then((req) => {
-        window.location.href = req.url;
-      }).catch((err) => {
-        console.log('Shriek!', err);
-        console.log('Shriek!', err.request);
-      });
+    this.oidcService.signIn();
   }
 
   logoutClicked(): void {
-    localStorage.removeItem('token');
-    this.client
-      .createSignoutRequest({
-        state: {
-          bar: 15,
-        },
-      })
-      .then((req) => {
-        window.location.href = req.url;
-      }).catch((err) => {
-        console.log('Shriek!', err);
-        console.log('Shriek!', err.request);
-      });
+    this.oidcService.signOut();
   }
 }

@@ -10,8 +10,8 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 
-import { AlertService, AlertBuilder } from './../alert';
 import { ConfigurationService } from './../configuration';
+import {OidcService} from "./oidc.service";
 
 export class HttpInterceptor extends Http {
   private securityUrl = `${this.configurationService.apiUrl}/v1/security`;
@@ -22,7 +22,7 @@ export class HttpInterceptor extends Http {
     private router: Router,
     private route: ActivatedRoute,
     private configurationService: ConfigurationService,
-    private alertService: AlertService
+    private oidcService: OidcService
   ) {
     super(backend, defaultOptions);
   }
@@ -84,10 +84,7 @@ export class HttpInterceptor extends Http {
     return observable.catch((err, source) => {
       switch (err.status) {
         case 401:
-          let auth = this.configurationService.authUrl;
-          let url = window.location.toString();
-          let authUrl = auth + '/secure?returnUrl=' + url;
-          window.location.href = authUrl;
+          this.oidcService.signIn();
           return Observable.empty();
         case 403:
           break;
