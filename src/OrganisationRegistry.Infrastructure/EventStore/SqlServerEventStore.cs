@@ -32,10 +32,8 @@ namespace OrganisationRegistry.Infrastructure.EventStore
 
         private static readonly string[] ExcludedEventTypes =
         {
-            "OrganisationRegistry.Infrastructure.Events.RebuildProjection, OrganisationRegistry, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+            "OrganisationRegistry.Infrastructure.Events.RebuildProjection"
         };
-
-        private readonly RefactorMoveNamespaceToOrganisationRegistry _refactorMoveNamespaceToOrganisationRegistry;
 
         private DbConnection GetConnection()
         {
@@ -49,11 +47,12 @@ namespace OrganisationRegistry.Infrastructure.EventStore
 
         public SqlServerEventStore(IOptions<InfrastructureConfiguration> infrastructureOptions, IEventPublisher publisher)
         {
-            _connectionString = infrastructureOptions.Value.EventStoreConnectionString;
-            _administrationConnectionString = infrastructureOptions.Value.EventStoreAdministrationConnectionString;
+            var options = infrastructureOptions.Value;
+
+            _connectionString = options.EventStoreConnectionString;
+            _administrationConnectionString = options.EventStoreAdministrationConnectionString;
             _publisher = publisher;
 
-            _refactorMoveNamespaceToOrganisationRegistry = new RefactorMoveNamespaceToOrganisationRegistry();
             SqlMapper.Settings.CommandTimeout = options.EventStoreCommandTimeout;
         }
 
@@ -119,7 +118,7 @@ IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Events_Number' AND obj
                         foreach (var envelope in envelopes)
                         {
                             // Some type of events we dont want to store in the database, but we want to publish them however
-                            if (ExcludedEventTypes.Contains(envelope.Body.GetType().AssemblyQualifiedName))
+                            if (ExcludedEventTypes.Contains(envelope.Body.GetType().FullName))
                                 continue;
 
                             // These are the fields of EventData
@@ -133,7 +132,7 @@ SELECT CAST(SCOPE_IDENTITY() as int)",
                                 {
                                     Id = envelope.Id.ToString("D"),
                                     Version = envelope.Version,
-                                    Name = envelope.Body.GetType().AssemblyQualifiedName,
+                                    Name = envelope.Body.GetType().FullName,
                                     Timestamp = envelope.Timestamp,
                                     Data = JsonConvert.SerializeObject(envelope.Body),
                                     Ip = envelope.Ip ?? string.Empty,
@@ -189,12 +188,11 @@ ORDER BY Version ASC",
             }
 
             return events
-                .SelectMany(data => _refactorMoveNamespaceToOrganisationRegistry.Upgrade(data))
                 .Select(e =>
                 {
                     try
                     {
-                        var eventType = Type.GetType(e.Name);
+                        var eventType = e.Name.ToEventType();
                         return (IEvent)JsonConvert.DeserializeObject(e.Data, eventType);
                     }
                     catch (InvalidCastException ex)
@@ -240,7 +238,7 @@ ORDER BY [Number] ASC",
                     }).ToList();
             }
 
-            return ParseEventsIntoEnvelopes(events, _refactorMoveNamespaceToOrganisationRegistry);
+            return ParseEventsIntoEnvelopes(events);
         }
 
         public IEnumerable<IEnvelope> GetEventEnvelopesAfter(int eventNumber)
@@ -254,7 +252,7 @@ ORDER BY [Number] ASC",
                 events = SelectEvents(eventNumber, db);
             }
 
-            return ParseEventsIntoEnvelopes(events, _refactorMoveNamespaceToOrganisationRegistry);
+            return ParseEventsIntoEnvelopes(events);
         }
 
         public IEnumerable<IEnvelope> GetEventEnvelopesAfter(int eventNumber, int maxEvents, params Type[] eventTypesToInclude)
@@ -270,7 +268,7 @@ ORDER BY [Number] ASC",
                     : SelectMaxEvents(eventNumber, maxEvents, db);
             }
 
-            return ParseEventsIntoEnvelopes(events, _refactorMoveNamespaceToOrganisationRegistry);
+            return ParseEventsIntoEnvelopes(events);
         }
 
         public int GetLastEvent()
@@ -283,15 +281,14 @@ ORDER BY [Number] ASC",
             }
         }
 
-        private static IEnumerable<IEnvelope> ParseEventsIntoEnvelopes(IEnumerable<EventData> events, RefactorMoveNamespaceToOrganisationRegistry upgrader)
+        private static IEnumerable<IEnvelope> ParseEventsIntoEnvelopes(IEnumerable<EventData> events)
         {
             return events
-                .SelectMany(data => upgrader.Upgrade(data))
                 .Select(e =>
                 {
                     try
                     {
-                        var eventType = Type.GetType(e.Name);
+                        var eventType = e.Name.ToEventType();
                         var @event = (IEvent)JsonConvert.DeserializeObject(e.Data, eventType);
                         return @event.ToEnvelope(e.Number, e.Ip, e.LastName, e.FirstName, e.UserId);
                     }
@@ -343,46 +340,6 @@ ORDER BY [Number] ASC",
                     Number = eventNumber,
                     EventTypesToInclude = eventTypesToInclude.GetEventTypeNames()
                 }).ToList();
-        }
-    }
-
-    public static class EventTypeExtensions
-    {
-        public static List<string> GetEventTypeNames(this IEnumerable<Type> eventTypes)
-        {
-            return eventTypes
-                .Select(et => et
-                    .AssemblyQualifiedName?
-                    .Substring("OrganisationRegistry.".Length)
-                    .Insert(0, "Wegwijs.")
-                    .Replace(", OrganisationRegistry, Version=2.0.0.0,", ", Wegwijs, Version=1.0.0.0,"))
-                .ToList();
-        }
-    }
-
-    // Example of an event upgrader
-    internal class RefactorMoveNamespaceToOrganisationRegistry
-    {
-        public DateTime DefinedOn => new DateTime(2010, 11, 19);
-
-        public IEnumerable<EventData> Upgrade(EventData e)
-        {
-            if (e.Name.StartsWith("Wegwijs."))
-            {
-                // old: Wegwijs.Purpose.Events.PurposeUpdated, Wegwijs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-                // new: Organisation.Purpose.Events.PurposeUpdated, OrganisationRegistry, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null
-
-                var className = e.Name.Substring(0, e.Name.IndexOf(',', 0));
-                var newName = string.Concat("OrganisationRegistry", className.Substring(e.Name.IndexOf('.', 0)));
-
-                yield return e.WithName(
-                    e.Name
-                        .Replace(className, newName)
-                        .Replace(", Wegwijs, Version=1.0.0.0,", ", OrganisationRegistry, Version=2.0.0.0,"));
-                yield break;
-            }
-
-            yield return e;
         }
     }
 }
