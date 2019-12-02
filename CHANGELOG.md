@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.0.0...v1.0.1) (2019-12-02)
+
+
+### Bug Fixes
+
+* dont push non existent nugets ([6a33912](https://github.com/informatievlaanderen/organisation-registry/commit/6a339127e77b9b6c21a8f68b5bb3ac546e686db6))
+
 # 1.0.0 (2019-12-02)
 
 
