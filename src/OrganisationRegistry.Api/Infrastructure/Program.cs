@@ -20,8 +20,8 @@ namespace OrganisationRegistry.Api.Infrastructure
                     {
                         Hosting =
                         {
-                            HttpPort = 8002,
-                            HttpsPort = 8003,
+                            HttpPort = 9002,
+                            HttpsPort = 9003,
                             HttpsCertificate =
                                 () => new X509Certificate2(Path.Join("..", "..", "organisationregistry-api.pfx"), "organisationregistry")
                         },

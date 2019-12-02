@@ -18,7 +18,7 @@ export class ConfigurationService {
   }
 
   public get apiUrl() {
-    return (<any>window).wegwijsApiEndpoint || 'https://api.organisatie.staging-basisregisters.vlaanderen:8003';
+    return (<any>window).wegwijsApiEndpoint || 'https://api.organisatie.staging-basisregisters.vlaanderen:9003';
   }
 
   public get authUrl() {
