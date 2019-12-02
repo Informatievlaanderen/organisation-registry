@@ -20,7 +20,7 @@
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.eventstore.json", optional: true)
+                .AddJsonFile("appsettings.eventstore.json", optional: false)
                 .AddJsonFile($"appsettings.eventstore.{Environment.MachineName}.json", optional: true);
 
             Config = builder.Build();

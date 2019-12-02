@@ -26,7 +26,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections
 
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true)
+                .AddJsonFile("appsettings.json", optional: false)
                 .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
                 .Build();
 
