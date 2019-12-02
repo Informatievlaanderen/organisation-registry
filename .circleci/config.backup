@@ -114,6 +114,26 @@ jobs:
             docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/api:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/api:$SEMVER
             docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/api:$SEMVER
 
+            docker pull $BUILD_DOCKER_REGISTRY/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
+            docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
+            docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-agentschapzorgengezondheidftpdump:$SEMVER
+
+            docker pull $BUILD_DOCKER_REGISTRY/organisation-registry/batch-vlaanderenbe:$SEMVER
+            docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/batch-vlaanderenbe:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-vlaanderenbe:$SEMVER
+            docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/batch-vlaanderenbe:$SEMVER
+
+            docker pull $BUILD_DOCKER_REGISTRY/organisation-registry/projections-elasticsearch:$SEMVER
+            docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-elasticsearch:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-elasticsearch:$SEMVER
+            docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-elasticsearch:$SEMVER
+
+            docker pull $BUILD_DOCKER_REGISTRY/organisation-registry/projections-delegations:$SEMVER
+            docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-delegations:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-delegations:$SEMVER
+            docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-delegations:$SEMVER
+
+            docker pull $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER
+            docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/projections-reporting:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-reporting:$SEMVER
+            docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/projections-reporting:$SEMVER
+
             docker pull $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER
             docker tag  $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/ui:$SEMVER
             docker push $BUILD_DOCKER_REGISTRY_PRD/organisation-registry/ui:$SEMVER
