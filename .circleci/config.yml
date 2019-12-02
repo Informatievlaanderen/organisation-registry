@@ -8,7 +8,6 @@ executors:
         environment:
           ACCEPT_EULA: Y
           SA_PASSWORD: E@syP@ssw0rd
-          MSSQL_TCP_PORT: 21433
 
 jobs:
   build:
