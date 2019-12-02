@@ -151,7 +151,7 @@ Target "Push" DoNothing
 
 "Build"              ==> "Test"
 "Site_Build"         ==> "Test"
-"Test_Solution"      ==> "Test"
+// "Test_Solution"      ==> "Test"
 
 "Test"               ==> "Publish"
 "Publish_Solution"   ==> "Publish"
