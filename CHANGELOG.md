@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.0.1...v1.0.2) (2019-12-02)
+
+
+### Bug Fixes
+
+* dont push non existent docker images ([0cbe6c0](https://github.com/informatievlaanderen/organisation-registry/commit/0cbe6c0add7c8a8274b9dc85e3443e1e169d07c9))
+
 ## [1.0.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.0.0...v1.0.1) (2019-12-02)
 
 
