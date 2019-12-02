@@ -277,14 +277,6 @@
       },
       {
         "path": "@semantic-release/exec",
-        "cmd": "node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/Be.Vlaanderen.Basisregisters.OrganisationRegistry.Api.Legacy.${nextRelease.version}.nupkg"
-      },
-      {
-        "path": "@semantic-release/exec",
-        "cmd": "node packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-nuget.js dist/nuget/Be.Vlaanderen.Basisregisters.OrganisationRegistry.Projector.${nextRelease.version}.nupkg"
-      },
-      {
-        "path": "@semantic-release/exec",
         "cmd": "./packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/ci-confluence.sh"
       },
       {
