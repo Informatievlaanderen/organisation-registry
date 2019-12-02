@@ -157,7 +157,7 @@ Target "Push" DoNothing
 "Publish_Solution"   ==> "Publish"
 
 "Publish"            ==> "Pack"
-"Pack_Solution"      ==> "Pack"
+// "Pack_Solution"      ==> "Pack"
 
 "Pack"                                    ==> "Containerize"
 "Containerize_Api"                        ==> "Containerize"
