@@ -12,7 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="xunit.runner.json" CopyToOutputDirectory="Always" />
+    <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
+    <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />
