@@ -1,3 +1,10 @@
+## [1.0.6](https://github.com/informatievlaanderen/organisation-registry/compare/v1.0.5...v1.0.6) (2019-12-03)
+
+
+### Bug Fixes
+
+* use correct header names ([e622c42](https://github.com/informatievlaanderen/organisation-registry/commit/e622c42330441b0529b7b209fcf527f9144ea9b2))
+
 ## [1.0.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.0.4...v1.0.5) (2019-12-03)
 
 
