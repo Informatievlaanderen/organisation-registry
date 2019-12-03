@@ -1,3 +1,21 @@
+# [1.1.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.0.6...v1.1.0) (2019-12-03)
+
+
+### Bug Fixes
+
+* add paket.template for public api DC-24 ([fad7259](https://github.com/informatievlaanderen/organisation-registry/commit/fad72598d0c3b80018b18a25553c5fe17bcd3b78))
+* add paket.template for public api DC-24 ([20d4971](https://github.com/informatievlaanderen/organisation-registry/commit/20d4971e11cc7a78c5da3f823e65aadf25c01f13))
+* push docker containers to production ([f9b344f](https://github.com/informatievlaanderen/organisation-registry/commit/f9b344f775e314e2c00708cc26ac983f8f5c682e))
+
+
+### Features
+
+* dockerize AgentschapZorgEnGezondheid.FtpDump DC-7 ([fbbc877](https://github.com/informatievlaanderen/organisation-registry/commit/fbbc87702ec0e860695f86f0743260c6c19b24ba))
+* dockerize ElasticSearch.Projections DC-9 ([15d7f0b](https://github.com/informatievlaanderen/organisation-registry/commit/15d7f0b96ce8bda71146c8e80e6f1c10e090e2a9))
+* dockerize Projections.Delegations DC-10 ([e4787d3](https://github.com/informatievlaanderen/organisation-registry/commit/e4787d3de858681593de72e2e63feff5cabbbb27))
+* dockerize Projections.Reporting DC-11 ([a63ba9a](https://github.com/informatievlaanderen/organisation-registry/commit/a63ba9a0a26b76526f6835e8f02d4319a5a589d5))
+* dockerize VlaanderenBeNotifier DC-8 ([77d364e](https://github.com/informatievlaanderen/organisation-registry/commit/77d364e86bd2bc1d7bd83abddfdc7a44a6bd2088))
+
 ## [1.0.6](https://github.com/informatievlaanderen/organisation-registry/compare/v1.0.5...v1.0.6) (2019-12-03)
 
 
