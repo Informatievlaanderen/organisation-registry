@@ -106,11 +106,6 @@ Target "Publish_Solution" (fun _ ->
 Target "Pack_Solution" (fun _ ->
   [
     "OrganisationRegistry.Api"
-    "OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump"
-    "OrganisationRegistry.VlaanderenBeNotifier"
-    "OrganisationRegistry.ElasticSearch.Projections"
-    "OrganisationRegistry.Projections.Delegations"
-    "OrganisationRegistry.Projections.Reporting"
   ] |> List.iter pack)
 
 Target "Containerize_Api" (fun _ -> containerize "OrganisationRegistry.Api" "api")
@@ -157,7 +152,7 @@ Target "Push" DoNothing
 "Publish_Solution"   ==> "Publish"
 
 "Publish"            ==> "Pack"
-// "Pack_Solution"      ==> "Pack"
+"Pack_Solution"      ==> "Pack"
 
 "Pack"                                    ==> "Containerize"
 "Containerize_Api"                        ==> "Containerize"
