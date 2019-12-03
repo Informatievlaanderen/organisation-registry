@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.0.4...v1.0.5) (2019-12-03)
+
+
+### Bug Fixes
+
+* use correct api url ([c49bfb8](https://github.com/informatievlaanderen/organisation-registry/commit/c49bfb8a01816e932a8fc4c636bcb30eb4a5ee05))
+
 ## [1.0.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.0.3...v1.0.4) (2019-12-03)
 
 
