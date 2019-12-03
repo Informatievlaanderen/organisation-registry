@@ -14,18 +14,14 @@ export class ConfigurationService {
   }
 
   public get applicationVersion() {
-    return (<any>window).wegwijsVersion || '2.0.0.0';
+    return (<any>window).organisationRegistryVersion || '2.0.0.0';
   }
 
   public get apiUrl() {
-    return (<any>window).wegwijsApiEndpoint || 'https://api.organisatie.staging-basisregisters.vlaanderen:9003';
-  }
-
-  public get authUrl() {
-    return (<any>window).wegwijsAuthEndpoint || 'https://auth.organisatie.staging-basisregisters.vlaanderen';
+    return (<any>window).organisationRegistryApiEndpoint || 'https://api.organisatie.staging-basisregisters.vlaanderen:9003';
   }
 
   public get uiUrl() {
-    return (<any>window).wegwijsUiEndpoint || 'https://organisatie.staging-basisregisters.vlaanderen:3000';
+    return (<any>window).organisationRegistryUiEndpoint || 'https://organisatie.staging-basisregisters.vlaanderen:3000';
   }
 }
