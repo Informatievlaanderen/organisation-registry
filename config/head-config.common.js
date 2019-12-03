@@ -52,8 +52,8 @@ module.exports = {
     { rel: 'manifest', href: '/assets/manifest.json?v=gAElMxQYY' }
   ],
   meta: [
-    { name: 'apple-mobile-web-app-title', content: 'OrganisationRegistry' },
-    { name: 'application-name', content: 'OrganisationRegistry' },
+    { name: 'apple-mobile-web-app-title', content: 'Wegwijs' },
+    { name: 'application-name', content: 'Wegwijs' },
     { name: 'msapplication-TileColor', content: '#ffe615' },
     { name: 'msapplication-TileImage', content: '/assets/icon/mstile-144x144.png?v=gAElMxQYY', '=content': true },
     { name: 'msapplication-config', content: '/assets/browserconfig.xml?v=gAElMxQYY' },
