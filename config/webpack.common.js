@@ -23,7 +23,7 @@ const AotPlugin = require('@ngtools/webpack').AotPlugin;
  */
 const HMR = helpers.hasProcessFlag('hot');
 const METADATA = {
-  title: 'OrganisationRegistry',
+  title: 'Wegwijs',
   baseUrl: '/',
   isDevServer: helpers.isWebpackDevServer()
 };
