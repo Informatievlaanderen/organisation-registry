@@ -159,7 +159,7 @@ Target "Push" DoNothing
 "Containerize_AgentschapZorgEnGezondheid" ==> "Containerize"
 "Containerize_VlaanderenBeNotifier"       ==> "Containerize"
 "Containerize_ElasticSearch"              ==> "Containerize"
-// "Containerize_Delegations"                ==> "Containerize"
+"Containerize_Delegations"                ==> "Containerize"
 // "Containerize_Reporting"                  ==> "Containerize"
 "Containerize_Site"                       ==> "Containerize"
 // Possibly add more projects to containerize here
@@ -170,7 +170,7 @@ Target "Push" DoNothing
 "PushContainer_AgentschapZorgEnGezondheid" ==> "Push"
 "PushContainer_VlaanderenBeNotifier"       ==> "Push"
 "PushContainer_ElasticSearch"              ==> "Push"
-// "PushContainer_Delegations"                ==> "Push"
+"PushContainer_Delegations"                ==> "Push"
 // "PushContainer_Reporting"                  ==> "Push"
 "PushContainer_Site"                       ==> "Push"
 // Possibly add more projects to push here
