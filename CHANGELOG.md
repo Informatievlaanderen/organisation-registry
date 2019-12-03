@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.0.3...v1.0.4) (2019-12-03)
+
+
+### Bug Fixes
+
+* correct title before angular loads ([92dc130](https://github.com/informatievlaanderen/organisation-registry/commit/92dc130e20a38f9a491dbd6e2e9f6fb4a02939d7))
+
 ## [1.0.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.0.2...v1.0.3) (2019-12-02)
 
 
