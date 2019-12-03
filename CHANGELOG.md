@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.0.2...v1.0.3) (2019-12-02)
+
+
+### Bug Fixes
+
+* use 9xxx port range ([b882889](https://github.com/informatievlaanderen/organisation-registry/commit/b8828897100dc8fd9803ddc3f6a74346a82cf7a8))
+
 ## [1.0.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.0.1...v1.0.2) (2019-12-02)
 
 
