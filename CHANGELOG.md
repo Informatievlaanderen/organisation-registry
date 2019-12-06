@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.3.0...v1.3.1) (2019-12-06)
+
+
+### Bug Fixes
+
+* use serilog values for logging ([28c3b85](https://github.com/informatievlaanderen/organisation-registry/commit/28c3b8507685124c1ff2f1d0fafa9d3a914e806a))
+
 # [1.3.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.2.0...v1.3.0) (2019-12-06)
 
 
