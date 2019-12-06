@@ -1,3 +1,11 @@
+## [1.1.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.1.0...v1.1.1) (2019-12-06)
+
+
+### Bug Fixes
+
+* push docs to nuget DC-24 ([937d911](https://github.com/informatievlaanderen/organisation-registry/commit/937d911d81b4b4817b1f5e014840e7650611ea3a))
+* rename listview ([1ac6fb6](https://github.com/informatievlaanderen/organisation-registry/commit/1ac6fb6ac5edabbd47a7f92dc4e5d1889af1c969))
+
 # [1.1.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.0.6...v1.1.0) (2019-12-03)
 
 
