@@ -1,3 +1,11 @@
+# [1.2.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.1.1...v1.2.0) (2019-12-06)
+
+
+### Features
+
+* increase log level ([9b65709](https://github.com/informatievlaanderen/organisation-registry/commit/9b65709f06fa2cfe73adc3a127e88dd1029f1ed2))
+* provide more info on oic exchange failure ([056115d](https://github.com/informatievlaanderen/organisation-registry/commit/056115d3f9a2415924092e7969d134a641325a79))
+
 ## [1.1.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.1.0...v1.1.1) (2019-12-06)
 
 
