@@ -10,6 +10,7 @@ namespace OrganisationRegistry.Api.Security
     using IdentityModel;
     using IdentityModel.Client;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using Infrastructure;
     using Infrastructure.Security;
     using Microsoft.Extensions.Options;
@@ -23,13 +24,16 @@ namespace OrganisationRegistry.Api.Security
     public class SecurityController : OrganisationRegistryController
     {
         private readonly OpenIdConnectConfiguration _openIdConnectConfiguration;
+        private readonly ILogger<SecurityController> _logger;
 
         public SecurityController(
-            IOptions<OpenIdConnectConfiguration> openIdConnectConfiguration,
-            ICommandSender commandSender)
+            IOptions<OpenIdConnectConfiguration> openIdConnectConfiguration,            
+            ICommandSender commandSender,
+            ILogger<SecurityController> logger)
             : base(commandSender)
         {
-            _openIdConnectConfiguration = openIdConnectConfiguration.Value;
+            _openIdConnectConfiguration = openIdConnectConfiguration.Value;            
+            _logger = logger;
         }
 
         [HttpGet]
@@ -61,11 +65,15 @@ namespace OrganisationRegistry.Api.Security
                     UriKind.RelativeOrAbsolute).ToString());
 
             if (tokenResponse.IsError)
+            {
+                var message = $"[Error] {tokenResponse.Error}\n" +
+                            $"[ErrorDescription] {tokenResponse.ErrorDescription}\n" +
+                            $"[TokenEndpoint] {tokenEndpointAddress}";
+                _logger.LogError(message);
                 throw new Exception(
-                    $"[Error] {tokenResponse.Error}\n" +
-                    $"[ErrorDescription] {tokenResponse.ErrorDescription}\n" +
-                    $"[TokenEndpoint] {tokenEndpointAddress}\n",
+                    message,
                     tokenResponse.Exception);
+            }
 
             var token = new JwtSecurityToken(tokenResponse.IdentityToken);
             var identity = new ClaimsIdentity();
