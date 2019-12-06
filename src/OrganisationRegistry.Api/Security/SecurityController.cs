@@ -48,8 +48,9 @@ namespace OrganisationRegistry.Api.Security
         [HttpGet("exchange")]
         public async Task<IActionResult> ExchangeCode(string code)
         {
+            var tokenEndpointAddress = $"{_openIdConnectConfiguration.Authority}{_openIdConnectConfiguration.TokenEndPoint}";
             var tokenClient = new TokenClient(
-                $"{_openIdConnectConfiguration.Authority}{_openIdConnectConfiguration.TokenEndPoint}",
+                tokenEndpointAddress,
                 _openIdConnectConfiguration.ClientId,
                 _openIdConnectConfiguration.ClientSecret);
 
@@ -60,7 +61,11 @@ namespace OrganisationRegistry.Api.Security
                     UriKind.RelativeOrAbsolute).ToString());
 
             if (tokenResponse.IsError)
-                throw new Exception(tokenResponse.Error);
+                throw new Exception(
+                    $"[Error] {tokenResponse.Error}\n" +
+                    $"[ErrorDescription] {tokenResponse.ErrorDescription}\n" +
+                    $"[TokenEndpoint] {tokenEndpointAddress}\n",
+                    tokenResponse.Exception);
 
             var token = new JwtSecurityToken(tokenResponse.IdentityToken);
             var identity = new ClaimsIdentity();
