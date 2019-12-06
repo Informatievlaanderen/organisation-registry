@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.2.0...v1.3.0) (2019-12-06)
+
+
+### Features
+
+* also oic exception log to logger ([ab72bf6](https://github.com/informatievlaanderen/organisation-registry/commit/ab72bf6733adf2c5a7d9112e423ed388dd35a874))
+
 # [1.2.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.1.1...v1.2.0) (2019-12-06)
 
 
