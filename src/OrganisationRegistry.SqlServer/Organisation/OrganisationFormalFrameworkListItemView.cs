@@ -146,7 +146,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 organisationFormalFramework.OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId;
                 organisationFormalFramework.OrganisationId = message.Body.OrganisationId;
                 organisationFormalFramework.FormalFrameworkId = message.Body.FormalFrameworkId;
-                organisationFormalFramework.FormalFrameworkName = message.Body.FormalFrameworkName;
+                organisationFormalFramework.FormalFrameworkName = message.Body.FormalFrameworkName ?? string.Empty;
                 organisationFormalFramework.ParentOrganisationId = message.Body.ParentOrganisationId;
                 organisationFormalFramework.ParentOrganisationName = message.Body.ParentOrganisationName;
                 organisationFormalFramework.ValidFrom = message.Body.ValidFrom;
