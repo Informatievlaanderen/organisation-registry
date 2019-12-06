@@ -12,6 +12,7 @@ namespace OrganisationRegistry.Api.Security
     using Microsoft.AspNetCore.Mvc;
     using Infrastructure;
     using Infrastructure.Security;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Microsoft.IdentityModel.Tokens;
     using OrganisationRegistry.Infrastructure.Commands;
@@ -22,13 +23,16 @@ namespace OrganisationRegistry.Api.Security
     [OrganisationRegistryRoute("security")]
     public class SecurityController : OrganisationRegistryController
     {
+        private readonly ILogger<SecurityController> _logger;
         private readonly OpenIdConnectConfiguration _openIdConnectConfiguration;
 
         public SecurityController(
             IOptions<OpenIdConnectConfiguration> openIdConnectConfiguration,
-            ICommandSender commandSender)
+            ICommandSender commandSender,
+            ILogger<SecurityController> logger)
             : base(commandSender)
         {
+            _logger = logger;
             _openIdConnectConfiguration = openIdConnectConfiguration.Value;
         }
 
@@ -61,11 +65,16 @@ namespace OrganisationRegistry.Api.Security
                     UriKind.RelativeOrAbsolute).ToString());
 
             if (tokenResponse.IsError)
+            {
+                var message = $"[Error] {tokenResponse.Error}\n" +
+                              $"[ErrorDescription] {tokenResponse.ErrorDescription}\n" +
+                              $"[TokenEndpoint] {tokenEndpointAddress}";
+
+                _logger.LogError(message);
                 throw new Exception(
-                    $"[Error] {tokenResponse.Error}\n" +
-                    $"[ErrorDescription] {tokenResponse.ErrorDescription}\n" +
-                    $"[TokenEndpoint] {tokenEndpointAddress}\n",
+                    message,
                     tokenResponse.Exception);
+            }
 
             var token = new JwtSecurityToken(tokenResponse.IdentityToken);
             var identity = new ClaimsIdentity();
