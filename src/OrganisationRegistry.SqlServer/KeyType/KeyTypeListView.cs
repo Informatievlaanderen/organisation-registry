@@ -23,7 +23,7 @@
 
         public override void Map(EntityTypeBuilder<KeyTypeListItem> b)
         {
-            b.ToTable(nameof(LocationListView.ProjectionTables.KeyTypeList), "OrganisationRegistry")
+            b.ToTable(nameof(KeyTypeListView.ProjectionTables.KeyTypeList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
                 .ForSqlServerIsClustered(false);
 
@@ -35,8 +35,8 @@
         }
     }
 
-    public class LocationListView :
-        Projection<LocationListView>,
+    public class KeyTypeListView :
+        Projection<KeyTypeListView>,
         IEventHandler<KeyTypeCreated>,
         IEventHandler<KeyTypeUpdated>
     {
@@ -49,8 +49,8 @@
 
         private readonly IEventStore _eventStore;
 
-        public LocationListView(
-            ILogger<LocationListView> logger,
+        public KeyTypeListView(
+            ILogger<KeyTypeListView> logger,
             IEventStore eventStore) : base(logger)
         {
             _eventStore = eventStore;
