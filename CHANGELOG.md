@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.3.1...v1.3.2) (2019-12-06)
+
+
+### Bug Fixes
+
+* coalesce empty string for FormalFrameworkName ([6d0bd70](https://github.com/informatievlaanderen/organisation-registry/commit/6d0bd70a5e584f2f0ec4cf0d3204f83d883d9516))
+
 ## [1.3.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.3.0...v1.3.1) (2019-12-06)
 
 
