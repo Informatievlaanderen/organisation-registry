@@ -1,3 +1,10 @@
+## [1.3.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.3.2...v1.3.3) (2019-12-09)
+
+
+### Bug Fixes
+
+* redirect using $http_host ([c6b76db](https://github.com/informatievlaanderen/organisation-registry/commit/c6b76dba19d68d5f8b6755bf09c9e7d19c7c5a7d))
+
 ## [1.3.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.3.1...v1.3.2) (2019-12-06)
 
 
