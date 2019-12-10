@@ -1,3 +1,10 @@
+## [1.3.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.3.3...v1.3.4) (2019-12-10)
+
+
+### Bug Fixes
+
+* add missing kboNumber form control ([53a81f2](https://github.com/informatievlaanderen/organisation-registry/commit/53a81f203e672ab95926b79a776c6c2ce9b2a58c))
+
 ## [1.3.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.3.2...v1.3.3) (2019-12-09)
 
 
