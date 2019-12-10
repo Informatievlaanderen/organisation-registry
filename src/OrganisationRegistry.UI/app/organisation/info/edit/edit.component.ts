@@ -38,6 +38,7 @@ export class OrganisationInfoEditComponent implements OnInit {
       id: ['', required],
       name: ['', required],
       ovoNumber: ['', required],
+      kboNumber: [''],
       shortName: [''],
       description: ['', Validators.nullValidator],
       formalFrameworkId: ['', Validators.nullValidator],
