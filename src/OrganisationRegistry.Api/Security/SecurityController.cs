@@ -106,7 +106,7 @@ namespace OrganisationRegistry.Api.Security
 
     public class OrganisationRegistryApiClaims
     {
-        public const string OrganisationRegistryBeheerder = "wegwijsBeheerder";
+        public const string OrganisationRegistryBeheerder = "organisationRegistryBeheerder";
         public const string OrgaanBeheerder = "orgaanBeheerder";
         public const string Invoerder = "organisatieBeheerder";
         public const string Developer = "developer";
