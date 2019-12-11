@@ -1,3 +1,10 @@
+## [1.3.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.3.4...v1.3.5) (2019-12-11)
+
+
+### Bug Fixes
+
+* rename roles consistently ([9abae8b](https://github.com/informatievlaanderen/organisation-registry/commit/9abae8b8778b477756c12a129929c27031179587))
+
 ## [1.3.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.3.3...v1.3.4) (2019-12-10)
 
 
