@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.3.5...v1.4.0) (2019-12-12)
+
+
+### Features
+
+* add scheduler image ([272252e](https://github.com/informatievlaanderen/organisation-registry/commit/272252ed3659320c2b9fbab216684320f5ab90f2))
+
 ## [1.3.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.3.4...v1.3.5) (2019-12-11)
 
 
