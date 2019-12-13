@@ -69,6 +69,14 @@ jobs:
             fi
 
       - run:
+          name: Create workspace (non-master)
+          command: |
+            if [ "$CIRCLE_BRANCH" != "master" ];
+            then
+              mkdir -p workspace;
+            fi
+
+      - run:
           name: Run Build (non-master)
           command: |
             if [ "$CIRCLE_BRANCH" != "master" ];
