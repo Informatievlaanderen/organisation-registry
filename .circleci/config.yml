@@ -74,6 +74,7 @@ jobs:
             if [ "$CIRCLE_BRANCH" != "master" ];
             then
               mkdir -p workspace;
+              touch workspace/semver;
             fi
 
       - run:
@@ -100,7 +101,7 @@ jobs:
       - persist_to_workspace:
           root: workspace
           paths:
-            - ./*
+            - semver
 
   push_to_production:
     executor: job-executor
