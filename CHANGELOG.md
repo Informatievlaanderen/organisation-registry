@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.4.0...v1.5.0) (2019-12-13)
+
+
+### Features
+
+* default log levels to Information ([855578b](https://github.com/informatievlaanderen/organisation-registry/commit/855578bc76b33df23d5222b43c95101a44993689))
+
 # [1.4.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.3.5...v1.4.0) (2019-12-12)
 
 
