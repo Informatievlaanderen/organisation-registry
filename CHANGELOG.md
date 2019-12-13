@@ -1,3 +1,14 @@
+## [1.5.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.5.0...v1.5.1) (2019-12-13)
+
+
+### Bug Fixes
+
+* configure logging to provide ILoggerFactory sooner ([0007d34](https://github.com/informatievlaanderen/organisation-registry/commit/0007d34c1f4db89a07fa8e5613ba6b4338a5389e))
+* copy any files in workspace ([cc3625f](https://github.com/informatievlaanderen/organisation-registry/commit/cc3625f68b68ff20fe0a610025509a18d6ced7c2))
+* create semver file manually ([46c832b](https://github.com/informatievlaanderen/organisation-registry/commit/46c832be4eda2304e9db54ae575e600424a8529d))
+* create workspace dir ([97a0e17](https://github.com/informatievlaanderen/organisation-registry/commit/97a0e170c6c61bfcfdea32d52ef2a8a5a62cfa44))
+* use correct syntax ([f006587](https://github.com/informatievlaanderen/organisation-registry/commit/f006587c071bd76be5e55db3f7cbad72402f6a2d))
+
 # [1.5.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.4.0...v1.5.0) (2019-12-13)
 
 
