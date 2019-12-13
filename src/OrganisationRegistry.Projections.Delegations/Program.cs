@@ -44,9 +44,25 @@ namespace OrganisationRegistry.Projections.Delegations
                 .Build();
 
             var services = new ServiceCollection();
-            var app = ConfigureServices(services, configuration);
+            services.AddLogging(loggingBuilder =>
+            {
+                var loggerConfiguration = new LoggerConfiguration()
+                    .ReadFrom.Configuration(configuration)
+                    .WriteTo.LiterateConsole()
+                    .Enrich.FromLogContext()
+                    .Enrich.WithMachineName()
+                    .Enrich.WithThreadId()
+                    .Enrich.WithEnvironmentUserName()
+                    .Destructure.JsonNetTypes();
 
-            ConfigureLogging(app);
+                Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
+
+                Log.Logger = loggerConfiguration.CreateLogger();
+
+                loggingBuilder.AddSerilog();
+            });
+
+            var app = ConfigureServices(services, configuration);
 
             var logger = app.GetService<ILogger<Program>>();
 
@@ -91,30 +107,11 @@ namespace OrganisationRegistry.Projections.Delegations
             IServiceCollection services,
             IConfiguration configuration)
         {
+            var serviceProvider = services.BuildServiceProvider();
+
             var builder = new ContainerBuilder();
-            builder.RegisterModule(new DelegationsRunnerModule(configuration, services, null));
+            builder.RegisterModule(new DelegationsRunnerModule(configuration, services, serviceProvider.GetService<ILoggerFactory>()));
             return new AutofacServiceProvider(builder.Build());
-        }
-
-        private static void ConfigureLogging(IServiceProvider app)
-        {
-            var configuration = app.GetService<IConfiguration>();
-            var loggerFactory = app.GetService<ILoggerFactory>();
-
-            Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
-
-            var logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
-                .WriteTo.LiterateConsole()
-                .Enrich.FromLogContext()
-                .Enrich.WithMachineName()
-                .Enrich.WithThreadId()
-                .Enrich.WithEnvironmentUserName()
-                .Destructure.JsonNetTypes();
-
-            Log.Logger = logger.CreateLogger();
-
-            loggerFactory.AddSerilog();
         }
 
         private static void UseOrganisationRegistryEventSourcing(IServiceProvider app)
