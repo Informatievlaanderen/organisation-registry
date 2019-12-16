@@ -101,7 +101,14 @@ Target "Publish_Solution" (fun _ ->
     "OrganisationRegistry.ElasticSearch.Projections"
     "OrganisationRegistry.Projections.Delegations"
     "OrganisationRegistry.Projections.Reporting"
-  ] |> List.iter publish)
+  ] |> List.iter publish
+
+  let dist = (buildDir @@ "OrganisationRegistry.Scheduler" @@ "linux")
+  let source = "src" @@ "OrganisationRegistry.Scheduler"
+
+  CreateDir dist
+  CopyFile dist (source @@ "Dockerfile")
+)
 
 Target "Pack_Solution" (fun _ ->
   [
@@ -128,6 +135,9 @@ Target "PushContainer_Reporting" (fun _ -> push "projections-reporting")
 
 Target "Containerize_Site" (fun _ -> containerize "OrganisationRegistry.UI" "ui")
 Target "PushContainer_Site" (fun _ -> push "ui")
+
+Target "Containerize_Scheduler" (fun _ -> containerize "OrganisationRegistry.Scheduler" "scheduler")
+Target "PushContainer_Scheduler" (fun _ -> push "scheduler")
 
 // --------------------------------------------------------------------------------
 
@@ -162,6 +172,7 @@ Target "Push" DoNothing
 "Containerize_Delegations"                ==> "Containerize"
 "Containerize_Reporting"                  ==> "Containerize"
 "Containerize_Site"                       ==> "Containerize"
+"Containerize_Scheduler"                  ==> "Containerize"
 // Possibly add more projects to containerize here
 
 "Containerize"                             ==> "Push"
@@ -173,6 +184,7 @@ Target "Push" DoNothing
 "PushContainer_Delegations"                ==> "Push"
 "PushContainer_Reporting"                  ==> "Push"
 "PushContainer_Site"                       ==> "Push"
+"PushContainer_Scheduler"                  ==> "Push"
 // Possibly add more projects to push here
 
 // By default we build & test
