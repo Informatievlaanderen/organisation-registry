@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.5.1...v1.6.0) (2019-12-16)
+
+
+### Features
+
+* add scheduler to docker build ([8419123](https://github.com/informatievlaanderen/organisation-registry/commit/841912392ff76ed009b996e7d850e97daabb9df8))
+
 ## [1.5.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.5.0...v1.5.1) (2019-12-13)
 
 
