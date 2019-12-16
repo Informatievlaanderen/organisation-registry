@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.6.0...v1.6.1) (2019-12-16)
+
+
+### Bug Fixes
+
+* push scheduler to production ([fe6e5ad](https://github.com/informatievlaanderen/organisation-registry/commit/fe6e5ad1e9a2ffedb2b82a54add88e97906e794c))
+
 # [1.6.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.5.1...v1.6.0) (2019-12-16)
 
 
