@@ -1,3 +1,10 @@
+## [1.6.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.6.1...v1.6.2) (2019-12-17)
+
+
+### Bug Fixes
+
+* prevent flood of localization warnings in logging ([f592f5a](https://github.com/informatievlaanderen/organisation-registry/commit/f592f5aa11ee033631f099cac6b4b3de92e50253))
+
 ## [1.6.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.6.0...v1.6.1) (2019-12-16)
 
 
