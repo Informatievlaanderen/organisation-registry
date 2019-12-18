@@ -3,9 +3,12 @@ namespace OrganisationRegistry.Projections.Delegations
     using System;
     using System.IO;
     using System.Threading;
+    using Amazon;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
+    using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
+    using Configuration;
     using Destructurama;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -36,7 +39,8 @@ namespace OrganisationRegistry.Projections.Delegations
                 .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
                 .AddEnvironmentVariables();
 
-            var sqlConfiguration = builder.Build().GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>();
+            var sqlConfiguration = builder.Build().GetSection(ConfigurationDatabaseConfiguration.Section)
+                .Get<ConfigurationDatabaseConfiguration>();
             var configuration = builder
                 .AddEntityFramework(x => x.UseSqlServer(
                     sqlConfiguration.ConnectionString,
@@ -66,6 +70,8 @@ namespace OrganisationRegistry.Projections.Delegations
 
             var logger = app.GetService<ILogger<Program>>();
 
+            var delegationsRunnerOptions = app.GetService<IOptions<DelegationsRunnerConfiguration>>().Value;
+
             if (!app.GetService<IOptions<TogglesConfiguration>>().Value.ApplicationAvailable)
             {
                 logger.LogInformation("Application offline, exiting program.");
@@ -74,8 +80,28 @@ namespace OrganisationRegistry.Projections.Delegations
 
             UseOrganisationRegistryEventSourcing(app);
 
+            var distributedLock = new DistributedLock<Program>(
+                new DistributedLockOptions
+                {
+                    Region = RegionEndpoint.GetBySystemName(delegationsRunnerOptions.LockRegionEndPoint),
+                    AwsAccessKeyId = delegationsRunnerOptions.LockAccessKeyId,
+                    AwsSecretAccessKey = delegationsRunnerOptions.LockAccessKeySecret,
+                    TableName = delegationsRunnerOptions.LockTableName,
+                    LeasePeriod = TimeSpan.FromMinutes(delegationsRunnerOptions.LockLeasePeriodInMinutes),
+                    ThrowOnFailedRenew = true,
+                    TerminateApplicationOnFailedRenew = true
+                });
+
+            bool acquiredLock = false;
             try
             {
+                acquiredLock = distributedLock.AcquireLock();
+                if (!acquiredLock)
+                {
+                    logger.LogInformation("Could not get lock, another instance is busy");
+                    return;
+                }
+
                 if (app.GetService<Runner>().Run())
                 {
                     logger.LogInformation("Processing completed successfully, exiting program.");
@@ -89,9 +115,17 @@ namespace OrganisationRegistry.Projections.Delegations
             }
             catch (Exception e)
             {
-                logger.LogCritical(0, e, "Encountered a fatal exception, exiting program."); // dotnet core only supports global exceptionhandler starting from 1.2
+                // dotnet core only supports global exceptionhandler starting from 1.2 (TODO)
+                logger.LogCritical(0, e, "Encountered a fatal exception, exiting program.");
                 FlushLoggerAndTelemetry();
                 throw;
+            }
+            finally
+            {
+                if (acquiredLock)
+                {
+                    distributedLock.ReleaseLock();
+                }
             }
         }
 
