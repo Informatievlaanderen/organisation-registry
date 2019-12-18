@@ -10,8 +10,8 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.Tests
         public EnvVarIgnoreFactAttribute(string envVar)
         {
             var env = Environment.GetEnvironmentVariable(envVar);
-//            if (string.IsNullOrEmpty(env))
-//                Skip = $"Please set {envVar} env var to run.";
+            if (string.IsNullOrEmpty(env))
+                Skip = $"Please set {envVar} env var to run.";
         }
     }
 
@@ -20,8 +20,8 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.Tests
         public EnvVarIgnoreTheoryAttribute(string envVar)
         {
             var env = Environment.GetEnvironmentVariable(envVar);
-//            if (string.IsNullOrEmpty(env))
-//                Skip = $"Please set {envVar} env var to run.";
+            if (string.IsNullOrEmpty(env))
+                Skip = $"Please set {envVar} env var to run.";
         }
     }
 
