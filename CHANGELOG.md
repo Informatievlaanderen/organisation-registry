@@ -1,3 +1,17 @@
+# [1.7.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.6.2...v1.7.0) (2019-12-18)
+
+
+### Bug Fixes
+
+* don't run dynamo tests unless env var is set ([387e7e2](https://github.com/informatievlaanderen/organisation-registry/commit/387e7e22e6ffe2e955a379663028befedc36bb72))
+
+
+### Features
+
+* add DistributedMutex ([eb1b876](https://github.com/informatievlaanderen/organisation-registry/commit/eb1b876f615a590f8b93b77c49856fe0b467c8fa))
+* print settings on run ([9b33be5](https://github.com/informatievlaanderen/organisation-registry/commit/9b33be5287cacfdd552ea6ddb788655848e64aea))
+* use mutex to prevent concurring processing ([ef0db79](https://github.com/informatievlaanderen/organisation-registry/commit/ef0db792e10eceffab369b4e3ed36ae4dd6ea0ae))
+
 ## [1.6.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.6.1...v1.6.2) (2019-12-17)
 
 
