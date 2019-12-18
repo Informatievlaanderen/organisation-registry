@@ -53,7 +53,7 @@ namespace OrganisationRegistry.Projections.Delegations
 
         public bool Run()
         {
-            _logger.LogInformation(ProgramInformation.Build(_delegationsRunnerConfiguration));
+            _logger.LogInformation(ProgramInformation.Build(_delegationsRunnerConfiguration, _togglesConfiguration));
 
             if (!_togglesConfiguration.DelegationsRunnerAvailable)
                 return false;

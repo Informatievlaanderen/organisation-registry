@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Be.Vlaanderen.Basisregisters.Aws.DistributedMutex\Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.Configuration.Database\OrganisationRegistry.Configuration.Database.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.ElasticSearch\OrganisationRegistry.ElasticSearch.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.Infrastructure\OrganisationRegistry.Infrastructure.csproj" />
