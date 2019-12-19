@@ -1,3 +1,17 @@
+# [1.8.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.7.0...v1.8.0) (2019-12-19)
+
+
+### Bug Fixes
+
+* make logging setup consistent, pass ILoggerFactory ([1591307](https://github.com/informatievlaanderen/organisation-registry/commit/159130755c213a7e70e5cfb0a0d457aef8449072))
+
+
+### Features
+
+* allow anonymous connection if no user provided ([37e2781](https://github.com/informatievlaanderen/organisation-registry/commit/37e2781f3aa61ecd9b19a3c3e3f03af9339a14d3))
+* use mutex to prevent concurring processing in elasticsearch runner ([376f425](https://github.com/informatievlaanderen/organisation-registry/commit/376f42533b44f876457f737fa5a946fffb1f5fc8))
+* use mutex to prevent concurring processing in reporting runner ([c6090b9](https://github.com/informatievlaanderen/organisation-registry/commit/c6090b977666e41bf52bce1444f2766631cf400d))
+
 # [1.7.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.6.2...v1.7.0) (2019-12-18)
 
 
