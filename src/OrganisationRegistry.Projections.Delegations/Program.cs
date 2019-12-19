@@ -95,10 +95,11 @@ namespace OrganisationRegistry.Projections.Delegations
             bool acquiredLock = false;
             try
             {
+                logger.LogInformation("Trying to acquire lock.");
                 acquiredLock = distributedLock.AcquireLock();
                 if (!acquiredLock)
                 {
-                    logger.LogInformation("Could not get lock, another instance is busy");
+                    logger.LogInformation("Could not get lock, another instance is busy.");
                     return;
                 }
 

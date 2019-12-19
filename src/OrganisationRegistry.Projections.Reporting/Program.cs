@@ -15,7 +15,10 @@ namespace OrganisationRegistry.Projections.Reporting
     using System;
     using System.IO;
     using System.Threading;
+    using Amazon;
     using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
+    using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
+    using Configuration;
     using OrganisationRegistry.Configuration.Database;
     using OrganisationRegistry.Configuration.Database.Configuration;
     using OrganisationRegistry.Infrastructure.Config;
@@ -79,8 +82,31 @@ namespace OrganisationRegistry.Projections.Reporting
                 return;
             }
 
+            var reportingRunnerOptions = app.GetService<IOptions<ReportingRunnerConfiguration>>().Value;
+
+            var distributedLock = new DistributedLock<Program>(
+                new DistributedLockOptions
+                {
+                    Region = RegionEndpoint.GetBySystemName(reportingRunnerOptions.LockRegionEndPoint),
+                    AwsAccessKeyId = reportingRunnerOptions.LockAccessKeyId,
+                    AwsSecretAccessKey = reportingRunnerOptions.LockAccessKeySecret,
+                    TableName = reportingRunnerOptions.LockTableName,
+                    LeasePeriod = TimeSpan.FromMinutes(reportingRunnerOptions.LockLeasePeriodInMinutes),
+                    ThrowOnFailedRenew = true,
+                    TerminateApplicationOnFailedRenew = true
+                });
+
+            bool acquiredLock = false;
             try
             {
+                logger.LogInformation("Trying to acquire lock.");
+                acquiredLock = distributedLock.AcquireLock();
+                if (!acquiredLock)
+                {
+                    logger.LogInformation("Could not get lock, another instance is busy");
+                    return;
+                }
+
                 if (app.GetService<IOptions<TogglesConfiguration>>().Value.ReportingRunnerAvailable)
                 {
                     var runner = app.GetService<T>();
@@ -100,11 +126,17 @@ namespace OrganisationRegistry.Projections.Reporting
             }
             catch (Exception e)
             {
-                logger.LogCritical(0, e, "Encountered a fatal exception, exiting program."); // dotnet core only supports global exceptionhandler starting from 1.2
-
+                // dotnet core only supports global exceptionhandler starting from 1.2
+                logger.LogCritical(0, e, "Encountered a fatal exception, exiting program.");
                 FlushLoggerAndTelemetry();
-
                 throw;
+            }
+            finally
+            {
+                if (acquiredLock)
+                {
+                    distributedLock.ReleaseLock();
+                }
             }
         }
 
