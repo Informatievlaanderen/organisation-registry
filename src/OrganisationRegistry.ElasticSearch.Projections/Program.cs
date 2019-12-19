@@ -55,9 +55,24 @@ namespace OrganisationRegistry.ElasticSearch.Projections
         private static void RunProgram<T>(IConfiguration configuration) where T : BaseRunner
         {
             var services = new ServiceCollection();
-            var app = ConfigureServices(services, configuration);
+            services.AddLogging(loggingBuilder =>
+            {
+                var loggerConfiguration = new LoggerConfiguration()
+                    .ReadFrom.Configuration(configuration)
+                    .WriteTo.LiterateConsole()
+                    .Enrich.FromLogContext()
+                    .Enrich.WithMachineName()
+                    .Enrich.WithThreadId()
+                    .Enrich.WithEnvironmentUserName()
+                    .Destructure.JsonNetTypes();
 
-            ConfigureLogging(app);
+                Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
+
+                Log.Logger = loggerConfiguration.CreateLogger();
+
+                loggingBuilder.AddSerilog();
+            });
+            var app = ConfigureServices(services, configuration);
 
             var logger = app.GetService<ILogger<Program>>();
 
@@ -125,7 +140,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
         private static void ExecuteRunner(BaseRunner runner)
         {
             runner.Run();
-            //telemetryClient.TrackEvent($"ElasticSearchProjections::{runner.ProjectionName}::Ran");
         }
 
         private static void FlushLoggerAndTelemetry()
@@ -142,30 +156,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections
         {
             services.AddOptions();
 
+            var serviceProvider = services.BuildServiceProvider();
+
             var builder = new ContainerBuilder();
-            builder.RegisterModule(new ElasticSearchProjectionsModule(configuration, services, null));
+            builder.RegisterModule(new ElasticSearchProjectionsModule(configuration, services, serviceProvider.GetService<ILoggerFactory>()));
             return new AutofacServiceProvider(builder.Build());
-        }
-
-        private static void ConfigureLogging(IServiceProvider app)
-        {
-            var configuration = app.GetService<IConfiguration>();
-            var loggerFactory = app.GetService<ILoggerFactory>();
-
-            Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
-
-            var logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
-                .WriteTo.LiterateConsole()
-                .Enrich.FromLogContext()
-                .Enrich.WithMachineName()
-                .Enrich.WithThreadId()
-                .Enrich.WithEnvironmentUserName()
-                .Destructure.JsonNetTypes();
-
-            Log.Logger = logger.CreateLogger();
-
-            loggerFactory.AddSerilog();
         }
 
         private static void UseOrganisationRegistryEventSourcing(IServiceProvider app, BaseRunner runner)
