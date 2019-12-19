@@ -48,9 +48,13 @@ namespace OrganisationRegistry.ElasticSearch.Client
 
         private ElasticClient GetElasticClient(bool write)
         {
+
             var connectionSettings = new ConnectionSettings(new Uri(_configuration.ConnectionString))
-                .BasicAuthentication(_configuration.User, _configuration.Pass)
                 .DisableDirectStreaming();
+
+            if (!string.IsNullOrEmpty(_configuration.User))
+                connectionSettings.BasicAuthentication(_configuration.User, _configuration.Pass);
+
 
             IConnectionSettingsValues settings = connectionSettings;
 
