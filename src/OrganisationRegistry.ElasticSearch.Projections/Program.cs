@@ -3,9 +3,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using System;
     using System.IO;
     using System.Threading;
+    using Amazon;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
+    using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
+    using Configuration;
     using Destructurama;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -64,8 +67,31 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 return;
             }
 
+            var elasticSearchOptions = app.GetService<IOptions<ElasticSearchConfiguration>>().Value;
+
+            var distributedLock = new DistributedLock<T>(
+                new DistributedLockOptions
+                {
+                    Region = RegionEndpoint.GetBySystemName(elasticSearchOptions.LockRegionEndPoint),
+                    AwsAccessKeyId = elasticSearchOptions.LockAccessKeyId,
+                    AwsSecretAccessKey = elasticSearchOptions.LockAccessKeySecret,
+                    TableName = elasticSearchOptions.LockTableName,
+                    LeasePeriod = TimeSpan.FromMinutes(elasticSearchOptions.LockLeasePeriodInMinutes),
+                    ThrowOnFailedRenew = true,
+                    TerminateApplicationOnFailedRenew = true
+                });
+
+            bool acquiredLock = false;
             try
             {
+                logger.LogInformation("Trying to acquire lock.");
+                acquiredLock = distributedLock.AcquireLock();
+                if (!acquiredLock)
+                {
+                    logger.LogInformation("Could not get lock, another instance is busy");
+                    return;
+                }
+
                 if (app.GetService<IOptions<TogglesConfiguration>>().Value.ElasticSearchProjectionsAvailable)
                 {
                     var runner = app.GetService<T>();
@@ -86,6 +112,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 logger.LogCritical(0, e, "Encountered a fatal exception, exiting program."); // dotnet core only supports global exceptionhandler starting from 1.2
                 FlushLoggerAndTelemetry();
                 throw;
+            }
+            finally
+            {
+                if (acquiredLock)
+                {
+                    distributedLock.ReleaseLock();
+                }
             }
         }
 

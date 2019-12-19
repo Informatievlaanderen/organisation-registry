@@ -41,6 +41,12 @@ namespace OrganisationRegistry.ElasticSearch.Configuration
         public string BodyWriteIndex { get; set; }
         public string BodyType { get; set; }
 
+        public string LockRegionEndPoint { get; set; }
+        public string LockAccessKeyId { get; set; }
+        public string LockAccessKeySecret { get; set; }
+        public string LockTableName { get; set; }
+        public int LockLeasePeriodInMinutes { get; set; }
+
         public ElasticSearchConfiguration Obfuscate()
         {
             return new ElasticSearchConfiguration
