@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.8.0...v1.8.1) (2019-12-20)
+
+
+### Bug Fixes
+
+* use OR serialization settings ([cbd9b87](https://github.com/informatievlaanderen/organisation-registry/commit/cbd9b8762dd68c2a112ca623387cc2ea2a5ec6ad))
+
 # [1.8.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.7.0...v1.8.0) (2019-12-19)
 
 
