@@ -31,7 +31,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             Console.WriteLine("Starting ElasticSearch Projections Runner");
 
             JsonConvert.DefaultSettings =
-                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureDefaultForApi();
+                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
 
             var builder =
                 new ConfigurationBuilder()

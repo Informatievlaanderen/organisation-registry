@@ -28,7 +28,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             Console.WriteLine("Starting VlaanderenBeNotifier");
 
             JsonConvert.DefaultSettings =
-                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureDefaultForApi();
+                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())

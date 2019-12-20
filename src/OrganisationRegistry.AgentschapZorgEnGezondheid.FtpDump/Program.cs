@@ -26,7 +26,7 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
             Console.WriteLine("Starting Agentschap Zorg en Gezondheid FTP Dump");
 
             JsonConvert.DefaultSettings =
-                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureDefaultForApi();
+                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())

@@ -32,7 +32,7 @@ namespace OrganisationRegistry.Projections.Reporting
             Console.WriteLine("Starting Reporting Runner");
 
             JsonConvert.DefaultSettings =
-                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureDefaultForApi();
+                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
 
             var builder =
                 new ConfigurationBuilder()
