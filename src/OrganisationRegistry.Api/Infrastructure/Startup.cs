@@ -24,8 +24,11 @@ namespace OrganisationRegistry.Api.Infrastructure
     using OrganisationRegistry.Infrastructure.Configuration;
     using Microsoft.Extensions.Diagnostics.HealthChecks;
     using Microsoft.Net.Http.Headers;
+    using Newtonsoft.Json;
     using SqlServer.Infrastructure;
     using Swashbuckle.AspNetCore.Swagger;
+    using OrganisationRegistry.Infrastructure.Infrastructure.Json;
+    using JsonSerializerSettingsProvider = Microsoft.AspNetCore.Mvc.Formatters.JsonSerializerSettingsProvider;
 
     public class Startup
     {
@@ -48,10 +51,14 @@ namespace OrganisationRegistry.Api.Infrastructure
         /// <param name="services">The collection of services to configure the application with.</param>
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            JsonConvert.DefaultSettings =
+                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
+
             Migrations.Run(_configuration.GetSection(SqlServerConfiguration.Section).Get<SqlServerConfiguration>());
             var openIdConfiguration = _configuration.GetSection(OpenIdConnectConfiguration.Section).Get<OpenIdConnectConfiguration>();
 
             services
+
                 .AddAuthentication(options =>
                 {
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;

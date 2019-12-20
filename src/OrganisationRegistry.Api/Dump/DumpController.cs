@@ -53,7 +53,7 @@ namespace OrganisationRegistry.Api.Dump
                 ScrollSize,
                 ScrollTimeout);
 
-            var jsonSerializerSettings = JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureDefaultForApi();
+            var jsonSerializerSettings = JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
             jsonSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             jsonSerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
 
