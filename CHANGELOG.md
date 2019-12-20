@@ -1,3 +1,5 @@
+## [1.8.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.8.1...v1.8.2) (2019-12-20)
+
 ## [1.8.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.8.0...v1.8.1) (2019-12-20)
 
 
