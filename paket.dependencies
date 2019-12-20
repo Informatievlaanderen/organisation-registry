@@ -98,6 +98,9 @@ nuget Serilog.Sinks.ElasticSearch 6.1.0 // TODO: Update to 8.0.0
 
 nuget Microsoft.EntityFrameworkCore.Design 2.2.6
 
+// Mutex
+nuget AWSSDK.DynamoDBv2 3.3.102"
+
 // BASE REGISTRIES STUFF
 nuget Be.Vlaanderen.Basisregisters.Build.Pipeline ~> 1.11
 nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events ~> 1.1 content: true, copy_content_to_output_dir: always, copy_local: true
