@@ -18,6 +18,7 @@ Newtonsoft.Json
 Destructurama.JsonNet
 
 NEST
+NEST.7xUpgradeAssistant
 
 Serilog
 Serilog.Extensions.Logging

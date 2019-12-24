@@ -24,7 +24,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Events;
 
-
     public class BodyHandler :
         Infrastructure.BaseProjection<BodyHandler>,
         IEventHandler<InitialiseProjection>,
@@ -88,7 +87,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
             if (deleteIndex && client.DoesIndexExist(indexName))
             {
-                var deleteResult = client.DeleteIndex(
+                var deleteResult = client.Indices.Delete(
                     new DeleteIndexRequest(Indices.Index(new List<IndexName> { indexName })));
 
                 if (!deleteResult.IsValid)
@@ -97,11 +96,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
             if (!client.DoesIndexExist(indexName))
             {
-                var indexResult = client.CreateIndex(
+                var indexResult = client.Indices.Create(
                     indexName,
-                    index => index
-                        .Mappings(mappings => mappings
-                            .Map<BodyDocument>(typeName, BodyDocument.Mapping)));
+                    index => index.Map<BodyDocument>(BodyDocument.Mapping));
 
                 if (!indexResult.IsValid)
                     throw new Exception($"Could not create body index '{indexName}'.");
@@ -518,7 +515,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         private void UpdatePersonForMandates(IEnvelope<PersonUpdated> message)
         {
             // TODO: we will need to move away from search, since that is limited in results
-            _elastic.WriteClient.Refresh(Indices.All);
+            _elastic.WriteClient.Indices.Refresh(Indices.All);
 
             var results =
                 _elastic.TryGet(
@@ -549,7 +546,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         private void UpdatePersonForDelegations(IEnvelope<PersonUpdated> message)
         {
-            _elastic.WriteClient.Refresh(Indices.All);
+            _elastic.WriteClient.Indices.Refresh(Indices.All);
 
             var delegationResults =
                 _elastic.TryGet(
@@ -591,7 +588,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         private void UpdateMandateOrganisationName(Guid organisationId, string organisationName)
         {
-            _elastic.WriteClient.Refresh(Indices.All);
+            _elastic.WriteClient.Indices.Refresh(Indices.All);
             var results =
                 _elastic.TryGet(
                     () => _elastic.WriteClient.Search<BodyDocument>(
@@ -620,7 +617,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
         {
-            _elastic.WriteClient.Refresh(Indices.All);
+            _elastic.WriteClient.Indices.Refresh(Indices.All);
             var results =
                 _elastic.TryGet(
                     () => _elastic.WriteClient.Search<BodyDocument>(

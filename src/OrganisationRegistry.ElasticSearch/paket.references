@@ -7,7 +7,10 @@ Microsoft.Extensions.Logging
 
 Autofac.Extensions.DependencyInjection
 Polly
+
 NEST
+NEST.7xUpgradeAssistant
+
 Newtonsoft.Json
 // Destructurama.JsonNet
 

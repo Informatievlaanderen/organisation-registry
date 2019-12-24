@@ -92,7 +92,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
             UpdateCacheShowOnVlaamseOverheidSites(message);
 
-            _elastic.WriteClient.Refresh(Indices.Index<PersonDocument>());
+            _elastic.WriteClient.Indices.Refresh(Indices.Index<PersonDocument>());
 
             // TODO: Discuss: what if we get more than 10.000 people in a capacity for a certain organisation?
             // -> Then we implement scrolling API in this bit of code.

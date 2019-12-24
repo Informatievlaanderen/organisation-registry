@@ -20,7 +20,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             DateTimeOffset changeTime,
             int scrollSize = 100)
         {
-            client.Refresh(Indices.Index<OrganisationDocument>());
+            client.Indices.Refresh(Indices.Index<OrganisationDocument>());
 
             client
                 .UpdateByQuery<OrganisationDocument>(x => x

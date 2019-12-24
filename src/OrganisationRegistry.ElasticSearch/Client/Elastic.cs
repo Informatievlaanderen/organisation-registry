@@ -10,10 +10,11 @@ namespace OrganisationRegistry.ElasticSearch.Client
     using People;
     using Polly;
     using Polly.Retry;
+    using Policy = Polly.Policy;
 
     public static class ElasticSearch6BugFix
     {
-        public static bool DoesIndexExist(this IElasticClient client, string indexName) => client.IndexExistsAsync(indexName).GetAwaiter().GetResult().Exists;
+        public static bool DoesIndexExist(this IElasticClient client, string indexName) => client.Indices.ExistsAsync(indexName).GetAwaiter().GetResult().Exists;
     }
 
     // Scoped as SingleInstance()
@@ -57,14 +58,14 @@ namespace OrganisationRegistry.ElasticSearch.Client
             IConnectionSettingsValues settings = connectionSettings;
 
             settings.DefaultIndices.Add(typeof(OrganisationDocument), write ? _configuration.OrganisationsWriteIndex : _configuration.OrganisationsReadIndex);
-            settings.DefaultTypeNames.Add(typeof(OrganisationDocument), _configuration.OrganisationType);
+            settings.DefaultRelationNames.Add(typeof(OrganisationDocument), _configuration.OrganisationType);
 
             settings.DefaultIndices.Add(typeof(PersonDocument), write ? _configuration.PeopleWriteIndex : _configuration.PeopleReadIndex);
-            settings.DefaultTypeNames.Add(typeof(PersonDocument), _configuration.PersonType);
+            settings.DefaultRelationNames.Add(typeof(PersonDocument), _configuration.PersonType);
             settings.IdProperties.Add(typeof(PersonDocument), nameof(PersonDocument.Id));
 
             settings.DefaultIndices.Add(typeof(BodyDocument), write ? _configuration.BodyWriteIndex : _configuration.BodyReadIndex);
-            settings.DefaultTypeNames.Add(typeof(BodyDocument), _configuration.BodyType);
+            settings.DefaultRelationNames.Add(typeof(BodyDocument), _configuration.BodyType);
 
             return new ElasticClient(settings);
         }
