@@ -11,7 +11,6 @@ Serilog.Sinks.Literate
 Serilog.Settings.Configuration
 Serilog.Enrichers.Thread
 Serilog.Enrichers.Environment
-Serilog.Sinks.ElasticSearch
 Serilog.Formatting.Compact
 
 xunit

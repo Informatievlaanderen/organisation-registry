@@ -5,12 +5,10 @@ Autofac.Extensions.DependencyInjection
 Polly
 
 NEST
-NEST.7xUpgradeAssistant
 
 Newtonsoft.Json
 
 Serilog
-Serilog.Sinks.ElasticSearch
 Serilog.Formatting.Compact
 
 SourceLink.Embed.AllSourceFiles

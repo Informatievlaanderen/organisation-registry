@@ -47,7 +47,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
 
             Handle(scenario.Create<InitialiseProjection>());
 
-            var indices = _fixture.Elastic.ReadClient.GetIndex(_fixture.ElasticSearchOptions.Value.BodyWriteIndex).Indices;
+            var indices = _fixture.Elastic.ReadClient.Indices.Get(_fixture.ElasticSearchOptions.Value.BodyWriteIndex).Indices;
             indices.Should().NotBeEmpty();
         }
 
