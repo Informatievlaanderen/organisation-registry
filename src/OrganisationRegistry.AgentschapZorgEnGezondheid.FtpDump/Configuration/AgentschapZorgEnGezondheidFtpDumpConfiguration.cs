@@ -18,6 +18,12 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump.Configuration
         public string Pass { get; set; }
         public string FtpPath { get; set; }
 
+        public string LockRegionEndPoint { get; set; }
+        public string LockAccessKeyId { get; set; }
+        public string LockAccessKeySecret { get; set; }
+        public string LockTableName { get; set; }
+        public int LockLeasePeriodInMinutes { get; set; }
+
         public AgentschapZorgEnGezondheidFtpDumpConfiguration Obfuscate()
         {
             return new AgentschapZorgEnGezondheidFtpDumpConfiguration

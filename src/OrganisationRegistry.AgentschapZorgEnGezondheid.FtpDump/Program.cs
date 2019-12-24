@@ -3,9 +3,11 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
     using System;
     using System.IO;
     using System.Threading;
+    using Amazon;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
-    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
+    using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
+    using Configuration;
     using Destructurama;
     using Infrastructure.Configuration;
     using Infrastructure.Infrastructure.Json;
@@ -41,10 +43,31 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
                     y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")))
                 .Build();
 
-            var services = new ServiceCollection();
-            var app = ConfigureServices(services, configuration);
+            RunProgram<Runner>(configuration);
+        }
 
-            ConfigureLogging(app);
+        private static void RunProgram<T>(IConfiguration configuration) where T : Runner
+        {
+            var services = new ServiceCollection();
+
+            services.AddLogging(loggingBuilder =>
+            {
+                var loggerConfiguration = new LoggerConfiguration()
+                    .ReadFrom.Configuration(configuration)
+                    .Enrich.FromLogContext()
+                    .Enrich.WithMachineName()
+                    .Enrich.WithThreadId()
+                    .Enrich.WithEnvironmentUserName()
+                    .Destructure.JsonNetTypes();
+
+                Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
+
+                Log.Logger = loggerConfiguration.CreateLogger();
+
+                loggingBuilder.AddSerilog();
+            });
+
+            var app = ConfigureServices(services, configuration);
 
             var logger = app.GetService<ILogger<Program>>();
 
@@ -54,11 +77,36 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
                 return;
             }
 
+            var options = app.GetService<IOptions<AgentschapZorgEnGezondheidFtpDumpConfiguration>>().Value;
+
+            var distributedLock = new DistributedLock<T>(
+                new DistributedLockOptions
+                {
+                    Region = RegionEndpoint.GetBySystemName(options.LockRegionEndPoint),
+                    AwsAccessKeyId = options.LockAccessKeyId,
+                    AwsSecretAccessKey = options.LockAccessKeySecret,
+                    TableName = options.LockTableName,
+                    LeasePeriod = TimeSpan.FromMinutes(options.LockLeasePeriodInMinutes),
+                    ThrowOnFailedRenew = true,
+                    TerminateApplicationOnFailedRenew = true
+                });
+
+            var acquiredLock = false;
             try
             {
-                if (app.GetService<Runner>().Run())
+                logger.LogInformation("Trying to acquire lock.");
+                acquiredLock = distributedLock.AcquireLock();
+
+                if (!acquiredLock)
                 {
-                    //telemetryClient.TrackEvent("AgentschapZorgEnGezondheidFtpDump::Ran");
+                    logger.LogInformation("Could not get lock, another instance is busy");
+                    return;
+                }
+
+                if (app.GetService<IOptions<TogglesConfiguration>>().Value.AgentschapZorgEnGezondheidFtpDumpAvailable)
+                {
+                    var runner = app.GetService<T>();
+                    ExecuteRunner(runner);
                     logger.LogInformation("Processing completed successfully, exiting program.");
                 }
                 else
@@ -74,7 +122,14 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
                 FlushLoggerAndTelemetry();
                 throw;
             }
+            finally
+            {
+                if (acquiredLock)
+                    distributedLock.ReleaseLock();
+            }
         }
+
+        private static void ExecuteRunner(Runner runner) => runner.Run();
 
         private static void FlushLoggerAndTelemetry()
         {
@@ -93,27 +148,6 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
             var builder = new ContainerBuilder();
             builder.RegisterModule(new AgentschapZorgEnGezondheidFtpDumpModule(configuration, services, null));
             return new AutofacServiceProvider(builder.Build());
-        }
-
-        private static void ConfigureLogging(IServiceProvider app)
-        {
-            var configuration = app.GetService<IConfiguration>();
-            var loggerFactory = app.GetService<ILoggerFactory>();
-
-            Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
-
-            var logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
-                .WriteTo.LiterateConsole()
-                .Enrich.FromLogContext()
-                .Enrich.WithMachineName()
-                .Enrich.WithThreadId()
-                .Enrich.WithEnvironmentUserName()
-                .Destructure.JsonNetTypes();
-
-            Log.Logger = logger.CreateLogger();
-
-            loggerFactory.AddSerilog();
         }
     }
 }
