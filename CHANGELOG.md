@@ -1,3 +1,16 @@
+# [1.9.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.8.2...v1.9.0) (2019-12-24)
+
+
+### Bug Fixes
+
+* remove hardcoded literate console logging ([1dfb24a](https://github.com/informatievlaanderen/organisation-registry/commit/1dfb24a0e10fd092561dcbdf5970011a794d10dc))
+
+
+### Features
+
+* add mutex to ftp dump ([7a5bf4c](https://github.com/informatievlaanderen/organisation-registry/commit/7a5bf4c0762e0f4fc3c36c398b04863f3933f7e9))
+* add mutex to vlaanderenbenotifier ([fdac74c](https://github.com/informatievlaanderen/organisation-registry/commit/fdac74cc7b61be1992057025befaf8ace02ed6e4))
+
 ## [1.8.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.8.1...v1.8.2) (2019-12-20)
 
 ## [1.8.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.8.0...v1.8.1) (2019-12-20)
