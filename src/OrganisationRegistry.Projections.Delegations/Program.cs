@@ -52,7 +52,6 @@ namespace OrganisationRegistry.Projections.Delegations
             {
                 var loggerConfiguration = new LoggerConfiguration()
                     .ReadFrom.Configuration(configuration)
-                    .WriteTo.LiterateConsole()
                     .Enrich.FromLogContext()
                     .Enrich.WithMachineName()
                     .Enrich.WithThreadId()

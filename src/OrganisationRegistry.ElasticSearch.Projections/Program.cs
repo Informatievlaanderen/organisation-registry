@@ -6,7 +6,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using Amazon;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
-    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Configuration;
     using Destructurama;
@@ -55,11 +54,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections
         private static void RunProgram<T>(IConfiguration configuration) where T : BaseRunner
         {
             var services = new ServiceCollection();
+
             services.AddLogging(loggingBuilder =>
             {
                 var loggerConfiguration = new LoggerConfiguration()
                     .ReadFrom.Configuration(configuration)
-                    .WriteTo.LiterateConsole()
                     .Enrich.FromLogContext()
                     .Enrich.WithMachineName()
                     .Enrich.WithThreadId()
@@ -72,6 +71,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
 
                 loggingBuilder.AddSerilog();
             });
+
             var app = ConfigureServices(services, configuration);
 
             var logger = app.GetService<ILogger<Program>>();
@@ -96,11 +96,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     TerminateApplicationOnFailedRenew = true
                 });
 
-            bool acquiredLock = false;
+            var acquiredLock = false;
             try
             {
                 logger.LogInformation("Trying to acquire lock.");
                 acquiredLock = distributedLock.AcquireLock();
+
                 if (!acquiredLock)
                 {
                     logger.LogInformation("Could not get lock, another instance is busy");
@@ -131,16 +132,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             finally
             {
                 if (acquiredLock)
-                {
                     distributedLock.ReleaseLock();
-                }
             }
         }
 
-        private static void ExecuteRunner(BaseRunner runner)
-        {
-            runner.Run();
-        }
+        private static void ExecuteRunner(BaseRunner runner) => runner.Run();
 
         private static void FlushLoggerAndTelemetry()
         {

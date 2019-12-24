@@ -58,7 +58,6 @@ namespace OrganisationRegistry.Projections.Reporting
             {
                 var loggerConfiguration = new LoggerConfiguration()
                     .ReadFrom.Configuration(configuration)
-                    .WriteTo.LiterateConsole()
                     .Enrich.FromLogContext()
                     .Enrich.WithMachineName()
                     .Enrich.WithThreadId()
