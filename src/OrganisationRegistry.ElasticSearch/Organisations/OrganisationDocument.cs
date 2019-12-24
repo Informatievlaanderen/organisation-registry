@@ -30,8 +30,7 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
                     .Name(p => p.ChangeId))
 
                 .Date(d => d
-                    .Name(p => p.ChangeTime)
-                    .Format(ElasticSearchConfiguration.DateFormat))
+                    .Name(p => p.ChangeTime))
 
                 .Keyword(k => k
                     .Name(p => p.Id))

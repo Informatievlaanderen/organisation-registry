@@ -77,7 +77,5 @@ namespace OrganisationRegistry.ElasticSearch.Configuration
                 BodyType = BodyType,
             };
         }
-
-        public const string DateFormat = "yyyy-MM-dd'T'HH:mm:ssXXX||yyyy-MM-dd'T'HH:mm:ss.SSSSSSSZZZZ||yyyy-MM-dd'T'HH:mm:ss.SSSSSSSZZ||yyyy-MM-dd'T'HH:mm:ssZZ||yyyy-MM-dd'T'HH:mm:ss||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis";
     }
 }
