@@ -20,7 +20,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             DateTimeOffset changeTime,
             int scrollSize = 100)
         {
-            client.Refresh(Indices.Index<BodyDocument>());
+            client.Indices.Refresh(Indices.Index<BodyDocument>());
 
             client
                 .UpdateByQuery<BodyDocument>(x => x

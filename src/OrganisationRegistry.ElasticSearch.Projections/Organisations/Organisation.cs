@@ -152,7 +152,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             if (deleteIndex && client.DoesIndexExist(indexName))
             {
-                var deleteResult = client.DeleteIndex(
+                var deleteResult = client.Indices.Delete(
                     new DeleteIndexRequest(Indices.Index(new List<IndexName> { indexName })));
 
                 if (!deleteResult.IsValid)
@@ -161,11 +161,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             if (!client.DoesIndexExist(indexName))
             {
-                var indexResult = client.CreateIndex(
+                var indexResult = client.Indices.Create(
                     indexName,
-                    index => index
-                        .Mappings(mappings => mappings
-                            .Map<OrganisationDocument>(typeName, OrganisationDocument.Mapping)));
+                    index => index.Map<OrganisationDocument>(OrganisationDocument.Mapping));
 
                 if (!indexResult.IsValid)
                     throw new Exception($"Could not create organisation index '{indexName}'.");
