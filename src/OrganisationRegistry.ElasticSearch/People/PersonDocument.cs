@@ -5,6 +5,7 @@
     using System.Collections.Generic;
     using Bodies;
     using Common;
+    using Configuration;
 
     public class PersonDocument : IDocument
     {
@@ -25,7 +26,7 @@
 
                 .Date(d => d
                     .Name(p => p.ChangeTime)
-                    .Format("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSZZ||yyyy-MM-dd'T'HH:mm:ssZZ||yyyy-MM-dd'T'HH:mm:ss||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"))
+                    .Format(ElasticSearchConfiguration.DateFormat))
 
                 .Keyword(k => k
                     .Name(p => p.Id))
