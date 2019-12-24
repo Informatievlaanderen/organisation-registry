@@ -22,6 +22,12 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.Configuration
         public string BodyFormalFrameworkUriTemplate { get; set; }
         public Guid MepFormalFrameworkId { get; set; }
 
+        public string LockRegionEndPoint { get; set; }
+        public string LockAccessKeyId { get; set; }
+        public string LockAccessKeySecret { get; set; }
+        public string LockTableName { get; set; }
+        public int LockLeasePeriodInMinutes { get; set; }
+
         public VlaanderenBeNotifierConfiguration Obfuscate()
         {
             return new VlaanderenBeNotifierConfiguration
