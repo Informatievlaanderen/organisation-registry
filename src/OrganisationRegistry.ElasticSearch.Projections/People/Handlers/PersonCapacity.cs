@@ -254,19 +254,22 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             {
                 var organisationIds =
                     personDocument.Capacities
-                        .Select(capacity => capacity.OrganisationId);
+                        .Select(capacity => capacity.OrganisationId)
+                        .ToList();
 
                 var organisationsInPersonCapacitiesShownOnVlaamseOverheidSites =
                     context.ShowOnVlaamseOverheidSitesPerOrganisationList
                         .AsNoTracking()
                         .Where(organisation => organisationIds.Contains(organisation.Id))
                         .Where(organisation => organisation.ShowOnVlaamseOverheidSites)
-                        .Select(organisation => organisation.Id);
+                        .Select(organisation => organisation.Id)
+                        .ToList();
 
                 var capacitiesWithOrganisationShownOnVlaamseOverheidSites =
                     personDocument.Capacities
                         .Where(capacity => organisationsInPersonCapacitiesShownOnVlaamseOverheidSites.Contains(capacity.OrganisationId))
-                        .Select(capacity => capacity.PersonCapacityId);
+                        .Select(capacity => capacity.PersonCapacityId)
+                        .ToList();
 
                 return context.IsActivePerOrganisationCapacityList
                     .AsNoTracking()
