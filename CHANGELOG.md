@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.9.0...v1.9.1) (2019-12-27)
+
+
+### Bug Fixes
+
+* don't nest query ([a28f77b](https://github.com/informatievlaanderen/organisation-registry/commit/a28f77bac98a82d13c6743b02c3487e7148ff96d))
+
 # [1.9.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.8.2...v1.9.0) (2019-12-24)
 
 
