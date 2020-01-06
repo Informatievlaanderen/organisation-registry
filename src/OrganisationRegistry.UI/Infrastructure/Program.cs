@@ -25,7 +25,7 @@ namespace OrganisationRegistry.UI.Infrastructure
                             listenOptions.UseHttps(cert);
                         });
                     })
-                    .UseUrls("https://wegwijs.dev.informatievlaanderen.be:1443");
+                    .UseUrls("https://organisatie.dev-basisregisters.vlaanderen:1443");
             }
             else
             {
