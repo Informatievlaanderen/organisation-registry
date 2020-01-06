@@ -18,10 +18,10 @@ export class ConfigurationService {
   }
 
   public get apiUrl() {
-    return (<any>window).organisationRegistryApiEndpoint || 'https://api.organisatie.staging-basisregisters.vlaanderen:9003';
+    return (<any>window).organisationRegistryApiEndpoint || 'https://api.organisatie.dev-basisregisters.vlaanderen:9003';
   }
 
   public get uiUrl() {
-    return (<any>window).organisationRegistryUiEndpoint || 'https://organisatie.staging-basisregisters.vlaanderen:3000';
+    return (<any>window).organisationRegistryUiEndpoint || 'https://organisatie.dev-basisregisters.vlaanderen:3000';
   }
 }
