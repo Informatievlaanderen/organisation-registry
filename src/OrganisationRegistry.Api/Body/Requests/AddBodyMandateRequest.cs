@@ -29,7 +29,7 @@
         public Guid BodySeatId { get; set; }
         public BodyMandateType? BodyMandateType { get; set; }
         public Guid DelegatorId { get; set; }
-        public Guid DelegatedId { get; set; }
+        public Guid? DelegatedId { get; set; }
         public Dictionary<Guid, string> Contacts { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
@@ -94,7 +94,7 @@
                 new BodyMandateId(message.Body.BodyMandateId),
                 new BodySeatId(message.Body.BodySeatId),
                 new OrganisationId(message.Body.DelegatorId),
-                new FunctionTypeId(message.Body.DelegatedId),
+                new FunctionTypeId(message.Body.DelegatedId.Value),
                 new Period(
                     new ValidFrom(message.Body.ValidFrom),
                     new ValidTo(message.Body.ValidTo)));
