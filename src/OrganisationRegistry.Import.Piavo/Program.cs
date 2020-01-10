@@ -1066,43 +1066,6 @@ namespace OrganisationRegistry.Import.Piavo
         public OrganisationKey() { NewId = Guid.NewGuid(); }
     }
 
-    //public class OrganisationKeyComparer : IEqualityComparer<OrganisationKey>
-    //{
-    //    public bool Equals(OrganisationKey x, OrganisationKey y)
-    //    {
-    //        //return x.OvoNumber == y.OvoNumber &&
-    //        //    x.KeyTypeId == y.KeyTypeId &&
-    //        //    x.KeyValue == y.KeyValue &&
-    //        //    x.StartDate == y.StartDate &&
-    //        //    x.EndDate == y.EndDate;
-
-    //        // TODO: It seems the import has duplicate keys
-    //        return x.OvoNumber == y.OvoNumber &&
-    //            x.KeyTypeId == y.KeyTypeId;
-    //    }
-
-    //    public int GetHashCode(OrganisationKey obj)
-    //    {
-    //        //return GetHashCode(obj.OvoNumber, obj.KeyTypeId, obj.KeyValue, obj.StartDate, obj.EndDate);
-    //        return GetHashCode(obj.OvoNumber, obj.KeyTypeId);
-    //    }
-
-    //    private static int GetHashCode(params object[] values)
-    //    {
-    //        int hash = 17;
-    //        foreach (object value in values)
-    //        {
-    //            hash = hash * 23 + GetNullSafeHashCode(value);
-    //        }
-    //        return hash;
-    //    }
-
-    //    private static int GetNullSafeHashCode<T>(T value) where T : class
-    //    {
-    //        return value?.GetHashCode() ?? 1;
-    //    }
-    //}
-
     public static class StringHelper
     {
         public static string UpperCaseFirstLetter(this string str)
@@ -1119,5 +1082,4 @@ namespace OrganisationRegistry.Import.Piavo
                 throw new Exception($"Bad request, import data is crap!");
         }
     }
-
 }
