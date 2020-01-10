@@ -1,0 +1,3 @@
+LocationId|Street|Number|PostalCode|City|Country|CountryCode|ISOCountryCode
+1001|Koning voorbeeld II-laan|35|1030|Brussel|België|056|ISO 3166-2:BE
+1003|voorbeeldstraat|35|1000|Brussel|België|056|ISO 3166-2:BE

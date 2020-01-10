@@ -15,16 +15,16 @@
             _fixture = fixture;
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task StatusResourceReturns200()
         {
             (await _fixture.HttpClient.GetAsync("status")).StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task StatusResourceReturnsItsOk()
         {
-            (await (await _fixture.HttpClient.GetAsync("status")).Content.ReadAsStringAsync()).Should().Be("I'm ok!");
+            (await (await _fixture.HttpClient.GetAsync("status")).Content.ReadAsStringAsync()).Should().Be("\"I'm ok!\"");
         }
     }
 }
