@@ -24,7 +24,7 @@
             return JsonConvert.DeserializeObject<IEnumerable<T>>(items);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task ThereAreBuildings()
         {
             (await Get<BuildingListItem>("buildings"))
@@ -33,7 +33,7 @@
                 .BeGreaterThan(0);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task ThereAreCapacities()
         {
             (await Get<CapacityListItem>("capacities"))
@@ -42,7 +42,7 @@
                 .BeGreaterThan(0);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task ThereAreContactTypes()
         {
             (await Get<OrganisationContactListItem>("contacttypes"))
@@ -51,7 +51,7 @@
                 .BeGreaterThan(0);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task ThereAreKeyTypes()
         {
             (await Get<OrganisationKeyListItem>("keytypes"))
@@ -60,7 +60,7 @@
                 .BeGreaterThan(0);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task ThereAreLabelTypes()
         {
             (await Get<OrganisationLabelListItem>("labeltypes"))
@@ -69,7 +69,7 @@
                 .BeGreaterThan(0);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task ThereAreOrganisationClassifications()
         {
             (await Get<OrganisationClassificationListItem>("organisationclassifications"))
@@ -78,7 +78,7 @@
                 .BeGreaterThan(0);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task ThereAreOrganisationClassificationTypes()
         {
             (await Get<OrganisationClassificationTypeListItem>("organisationclassificationtypes"))
@@ -87,7 +87,7 @@
                 .BeGreaterThan(0);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task ThereAreOrganisations()
         {
             (await Get<OrganisationListQueryResult>("organisations"))
@@ -96,7 +96,7 @@
                 .BeGreaterThan(0);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task ThereAreFunctions()
         {
             (await Get<FunctionListItem>("functiontypes"))
@@ -105,7 +105,7 @@
                 .BeGreaterThan(0);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task ThereArePeople()
         {
             (await Get<PersonListItem>("people"))
@@ -114,7 +114,7 @@
                 .BeGreaterThan(0);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task AtLeastOneOrganisationHasCapacities()
         {
             (await Get<OrganisationListQueryResult>("organisations"))
@@ -123,7 +123,7 @@
                 .BeGreaterThan(0);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task AtLeastOneOrganisationHasChildren()
         {
             (await Get<OrganisationListQueryResult>("organisations"))
@@ -132,7 +132,7 @@
                 .BeGreaterThan(0);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task AtLeastOneOrganisationHasContacts()
         {
             (await Get<OrganisationListQueryResult>("organisations"))
@@ -141,7 +141,7 @@
                 .BeGreaterThan(0);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task AtLeastOneOrganisationHasKeys()
         {
             (await Get<OrganisationListQueryResult>("organisations"))
@@ -150,7 +150,7 @@
                 .BeGreaterThan(0);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task AtLeastOneOrganisationHasClassifications()
         {
             (await Get<OrganisationListQueryResult>("organisations"))
@@ -159,7 +159,7 @@
                 .BeGreaterThan(0);
         }
 
-        [Fact(Skip = "Skip.")]
+        [Fact]
         public async Task AtLeastOnePersonHasCapacities()
         {
             (await Get<PersonListItem>("people"))

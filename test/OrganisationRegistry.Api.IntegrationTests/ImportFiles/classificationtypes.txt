@@ -1,0 +1,4 @@
+﻿﻿ClassificationTypeId|ClassificationType
+1|Juridische vorm
+2|Categorie
+3|Entiteitsvorm

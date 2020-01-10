@@ -4,6 +4,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
     using System.IO;
     using System.Net;
     using System.Net.Http;
+    using System.Net.Http.Headers;
     using System.Reflection;
     using System.Security.Cryptography.X509Certificates;
     using Infrastructure;
@@ -64,15 +65,17 @@ namespace OrganisationRegistry.Api.IntegrationTests
 
             _webHost = hostBuilder
                 .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseConfiguration(builder.Build())
                 .UseStartup<Startup>()
                 .Build();
 
             _webHost.Start();
 
-            //Import.Piavo.Program.Import(
-            //    ApiEndpoint,
-            //    "dwegwijs_api",
-            //    "");
+            HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            Import.Piavo.Program.Import(
+                ApiEndpoint,
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdF9oYXNoIjoiMklEMHdGR3l6WnJWaHRmbi00Ty1EQSIsImF1ZCI6WyJodHRwczovL2RpZW5zdHZlcmxlbmluZy10ZXN0LmJhc2lzcmVnaXN0ZXJzLnZsYWFuZGVyZW4iXSwiYXpwIjoiN2Q4MDExOTctNmQ0My00NzZhLTgzZWYtMzU4NjllZTUyZDg1IiwiZXhwIjoxODkzOTM2ODIzLCJmYW1pbHlfbmFtZSI6IkFwaSIsImdpdmVuX25hbWUiOiJUZXN0IiwiaWF0IjoxNTc4MzExNjMzLCJpc3MiOiJodHRwczovL2RpZW5zdHZlcmxlbmluZy10ZXN0LmJhc2lzcmVnaXN0ZXJzLnZsYWFuZGVyZW4iLCJ1cm46YmU6dmxhYW5kZXJlbjpkaWVuc3R2ZXJsZW5pbmc6YWNtaWQiOiJ2b19pZCIsInVybjpiZTp2bGFhbmRlcmVuOmFjbTpmYW1pbGllbmFhbSI6ImZhbWlseV9uYW1lIiwidXJuOmJlOnZsYWFuZGVyZW46YWNtOnZvb3JuYWFtIjoiZ2l2ZW5fbmFtZSIsInJvbGUiOlsib3JnYW5pc2F0aW9uUmVnaXN0cnlCZWhlZXJkZXIiXSwibmJmIjoxNTc4Mzk2NjMzfQ.5RrgdQviGmgNIDWyP4cTCF4wVlKmcMy0ly-XEcyALw8");
         }
 
         protected virtual void Dispose(bool disposing)

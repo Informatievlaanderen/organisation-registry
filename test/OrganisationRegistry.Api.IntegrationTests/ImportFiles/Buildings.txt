@@ -1,0 +1,39 @@
+﻿﻿Id|Building
+1|Anna Bijnsgebouw
+2|Arenberggebouw
+3|Artemisgebouw
+4|Botanic Building
+5|Boudewijngebouw
+6|Chrysalisgebouw
+7|Consciencegebouw
+8|Corda Campus
+9|De Zandloper
+10|Diamant Building
+11|Dirk Boutsgebouw
+12|Ellipsgebouw
+13|Graaf de Ferrarisgebouw
+14|Hendrik Van Veldekegebouw
+15|Het Lijnhuis
+16|Hoofdkantoor VIB
+17|Huis van de Economie
+18|Huis van het GO!
+19|InnovOcean site
+20|Jacob van Maerlantgebouw
+21|K12 A
+22|Kasteel van Gaasbeek
+23|Koninklijk Pakhuis 301
+24|Kunsthuis Antwerpen
+25|Kunsthuis Gent
+26|Landcommanderij Alden Biesen
+27|Lavoisier Building
+28|Phoenixgebouw
+29|Radio 2 Antwerpen
+30|Radio 2 Limburg
+31|Radio 2 Oost-Vlaanderen
+32|Radio 2 Vlaams Brabant
+33|Radio 2 West-Vlaanderen
+34|Ravensteingalerij
+35|Sphere Business Park Z 3
+36|Tour & Taxis
+37|Virginie Lovelinggebouw
+38|Zenithgebouw

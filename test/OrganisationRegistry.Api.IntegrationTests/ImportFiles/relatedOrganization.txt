@@ -1,0 +1,4 @@
+﻿﻿relationType|sourceOrgId|targetOrgId|startDate|endDate|formalFrameworkId|code|status
+parent-child|14|1|2006-04-01|9999-12-31|0|S1312|Ja
+parent-child|14|1|2006-04-01|9999-12-31|1|S1312|Ja
+parent-child|14|1|2006-04-01|9999-12-31|2|S1312|Ja

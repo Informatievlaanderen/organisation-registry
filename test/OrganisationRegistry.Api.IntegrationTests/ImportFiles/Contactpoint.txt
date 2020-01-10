@@ -1,0 +1,11 @@
+﻿﻿Id|OrganizationId|Contactpoint|Type
+6077|101|departement@example.vlaanderen.be|1
+2876|101|http://www.example.be|2
+101000|101|123465789|5
+102010|101|987653214|6
+6521|103|info@example.be|1
+6520|103|info@example2.be|1
+3162|103|http://www.example.be|2
+3165|103|http://www.example2.be|2
+103000|103|543216789|5
+104030|103|098764321|6
