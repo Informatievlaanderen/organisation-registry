@@ -79,6 +79,7 @@ jobs:
 
       - run:
           name: Run Build (non-master)
+          no_output_timeout: 30m
           command: |
             if [ "$CIRCLE_BRANCH" != "master" ];
             then
