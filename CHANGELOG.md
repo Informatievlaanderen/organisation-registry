@@ -1,3 +1,11 @@
+## [1.9.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.9.1...v1.9.2) (2020-01-10)
+
+
+### Bug Fixes
+
+* use optional guids for body mandate requests ([11d3397](https://github.com/informatievlaanderen/organisation-registry/commit/11d339704fa26474868acf42f9795f41f46a8a5f))
+* use OR json options in mvc ([58e6d63](https://github.com/informatievlaanderen/organisation-registry/commit/58e6d634fea7c7ba13d66643b474311df114a11f))
+
 ## [1.9.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.9.0...v1.9.1) (2019-12-27)
 
 
