@@ -1,3 +1,16 @@
+# [1.10.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.9.2...v1.10.0) (2020-01-28)
+
+
+### Bug Fixes
+
+* force build ([8b296e1](https://github.com/informatievlaanderen/organisation-registry/commit/8b296e19e16ea8f8f22b3c8a6fa349b97a9070dd))
+* increase no_output_timeout ([236e3c2](https://github.com/informatievlaanderen/organisation-registry/commit/236e3c227c9bd2ff4ed6e35cf1a43388b8568cce))
+
+
+### Features
+
+* re-enable api integration tests ([3a94e40](https://github.com/informatievlaanderen/organisation-registry/commit/3a94e40af3de723401fafae915edb049944afea9))
+
 ## [1.9.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.9.1...v1.9.2) (2020-01-10)
 
 
