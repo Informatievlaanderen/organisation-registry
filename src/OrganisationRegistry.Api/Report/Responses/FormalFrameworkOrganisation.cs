@@ -82,7 +82,7 @@ namespace OrganisationRegistry.Api.Report.Responses
                 if (formalFrameworks == null || !formalFrameworks.Any())
                     continue;
 
-                formalFrameworkOrganisations.Add(new FormalFrameworkOrganisationBase(document, @params));
+                formalFrameworkOrganisations.Add(new FormalFrameworkOrganisationBase(document, @params, DateTime.Now));
             }
 
             return formalFrameworkOrganisations;
@@ -94,11 +94,13 @@ namespace OrganisationRegistry.Api.Report.Responses
         /// <param name="documents"></param>
         /// <param name="formalFrameworkId"></param>
         /// <param name="params"></param>
+        /// <param name="today"></param>
         /// <returns></returns>
         public static IEnumerable<FormalFrameworkOrganisationExtended> MapExtended(
             IEnumerable<OrganisationDocument> documents,
             Guid formalFrameworkId,
-            ApiConfiguration @params)
+            ApiConfiguration @params,
+            DateTime today)
         {
             var formalFrameworkOrganisations = new List<FormalFrameworkOrganisationExtended>();
 
@@ -109,14 +111,18 @@ namespace OrganisationRegistry.Api.Report.Responses
                     .Where(x =>
                         x.FormalFrameworkId == formalFrameworkId &&
                         (x.Validity == null ||
-                         (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
-                         (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))
+                         (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
+                         (!x.Validity.End.HasValue || x.Validity.End.Value >= today)))
                     .ToList();
 
                 if (formalFrameworks == null || !formalFrameworks.Any())
                     continue;
 
-                formalFrameworkOrganisations.Add(new FormalFrameworkOrganisationExtended(document, @params));
+                formalFrameworkOrganisations.Add(
+                    new FormalFrameworkOrganisationExtended(
+                        document,
+                        @params,
+                        today));
             }
 
             return formalFrameworkOrganisations;
@@ -209,14 +215,15 @@ namespace OrganisationRegistry.Api.Report.Responses
 
         public FormalFrameworkOrganisationBase(
             OrganisationDocument document,
-            ApiConfiguration @params)
+            ApiConfiguration @params,
+            DateTime today)
         {
             var parent = document
                 .Parents?
                 .FirstOrDefault(
                     x => x.Validity == null ||
-                         (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
-                         (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now));
+                         (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
+                         (!x.Validity.End.HasValue || x.Validity.End.Value >= today));
 
             ParentOrganisationId = parent?.ParentOrganisationId;
             ParentOrganisationName = parent?.ParentOrganisationName;
@@ -239,8 +246,8 @@ namespace OrganisationRegistry.Api.Report.Responses
 
             ResponsibleMinister = document.OrganisationClassifications
                 ?.Where(x =>
-                    (!x.Validity.Start.HasValue || x.Validity.Start <= DateTime.Today) &&
-                    (!x.Validity.End.HasValue || x.Validity.End >= DateTime.Today))
+                    (!x.Validity.Start.HasValue || x.Validity.Start <= today) &&
+                    (!x.Validity.End.HasValue || x.Validity.End >= today))
                 .SingleOrDefault(x =>
                     x.OrganisationClassificationTypeId == @params.ResponsibleMinisterClassificationTypeId)
                 ?.OrganisationClassificationName;
@@ -315,8 +322,9 @@ namespace OrganisationRegistry.Api.Report.Responses
 
         public FormalFrameworkOrganisationExtended(
             OrganisationDocument document,
-            ApiConfiguration @params)
-            : base(document, @params)
+            ApiConfiguration @params,
+            DateTime today)
+            : base(document, @params, today)
         {
             INR = document.Keys
                 ?.FirstOrDefault(x =>
