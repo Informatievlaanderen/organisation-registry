@@ -96,6 +96,7 @@ namespace OrganisationRegistry.Api.Report
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetFormalFrameworkOrganisationsExtended(
             [FromServices] Elastic elastic,
+            [FromServices] IDateTimeProvider dateTimeProvider,
             [FromRoute] Guid id)
         {
             var sorting = Request.ExtractSortingRequest();
@@ -109,7 +110,7 @@ namespace OrganisationRegistry.Api.Report
                                 ScrollSize,
                                 ScrollTimeout),
                             id,
-                            _config),
+                            _config, dateTimeProvider.Today),
                         sorting)
                     .ToList();
 
