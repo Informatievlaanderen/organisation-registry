@@ -1,3 +1,11 @@
+## [1.10.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.10.0...v1.10.1) (2020-02-03)
+
+
+### Bug Fixes
+
+* make FormalFrameworkOrganisationReport more testable ([ff4ccf4](https://github.com/informatievlaanderen/organisation-registry/commit/ff4ccf4d4a2b7d9fa189c1a898d3ad406dda205d))
+* use only the currently active org classifications ([29827c9](https://github.com/informatievlaanderen/organisation-registry/commit/29827c9cfd783a3b9c32642aa6a38207cf3f0d3a))
+
 # [1.10.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.9.2...v1.10.0) (2020-01-28)
 
 
