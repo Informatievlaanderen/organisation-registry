@@ -238,7 +238,10 @@ namespace OrganisationRegistry.Api.Report.Responses
                 ?.OrganisationClassificationName;
 
             ResponsibleMinister = document.OrganisationClassifications
-                ?.FirstOrDefault(x =>
+                ?.Where(x =>
+                    (!x.Validity.Start.HasValue || x.Validity.Start <= DateTime.Today) &&
+                    (!x.Validity.End.HasValue || x.Validity.End >= DateTime.Today))
+                .SingleOrDefault(x =>
                     x.OrganisationClassificationTypeId == @params.ResponsibleMinisterClassificationTypeId)
                 ?.OrganisationClassificationName;
 
