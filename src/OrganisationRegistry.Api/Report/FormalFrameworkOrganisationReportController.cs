@@ -88,6 +88,7 @@ namespace OrganisationRegistry.Api.Report
         /// Get all organisations for a formal framework.
         /// </summary>
         /// <param name="elastic"></param>
+        /// <param name="dateTimeProvider"></param>
         /// <param name="id">A formal framework GUID identifier</param>
         /// <returns></returns>
         [HttpGet("formalframeworkorganisations/{id}/extended")]
@@ -110,7 +111,8 @@ namespace OrganisationRegistry.Api.Report
                                 ScrollSize,
                                 ScrollTimeout),
                             id,
-                            _config, dateTimeProvider.Today),
+                            _config,
+                            dateTimeProvider.Today),
                         sorting)
                     .ToList();
 
