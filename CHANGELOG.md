@@ -1,3 +1,10 @@
+## [1.10.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.10.1...v1.10.2) (2020-02-07)
+
+
+### Bug Fixes
+
+* use the formal framework parent org ([56ed2ec](https://github.com/informatievlaanderen/organisation-registry/commit/56ed2ecb9c156bce98c1a9795d9597b7ad792122))
+
 ## [1.10.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.10.0...v1.10.1) (2020-02-03)
 
 
