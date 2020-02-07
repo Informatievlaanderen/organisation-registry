@@ -82,7 +82,12 @@ namespace OrganisationRegistry.Api.Report.Responses
                 if (formalFrameworks == null || !formalFrameworks.Any())
                     continue;
 
-                formalFrameworkOrganisations.Add(new FormalFrameworkOrganisationBase(document, @params, DateTime.Now));
+                formalFrameworkOrganisations.Add(
+                    new FormalFrameworkOrganisationBase(
+                        document,
+                        @params,
+                        formalFrameworkId,
+                        DateTime.Now));
             }
 
             return formalFrameworkOrganisations;
@@ -122,6 +127,7 @@ namespace OrganisationRegistry.Api.Report.Responses
                     new FormalFrameworkOrganisationExtended(
                         document,
                         @params,
+                        formalFrameworkId,
                         today));
             }
 
@@ -216,17 +222,19 @@ namespace OrganisationRegistry.Api.Report.Responses
         public FormalFrameworkOrganisationBase(
             OrganisationDocument document,
             ApiConfiguration @params,
+            Guid formalFrameworkId,
             DateTime today)
         {
-            var parent = document
-                .Parents?
-                .FirstOrDefault(
-                    x => x.Validity == null ||
+            var formalFramework = document.FormalFrameworks
+                ?.Single(
+                    x =>
+                        x.FormalFrameworkId == formalFrameworkId &&
+                        (x.Validity == null ||
                          (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
-                         (!x.Validity.End.HasValue || x.Validity.End.Value >= today));
+                         (!x.Validity.End.HasValue || x.Validity.End.Value >= today)));
 
-            ParentOrganisationId = parent?.ParentOrganisationId;
-            ParentOrganisationName = parent?.ParentOrganisationName;
+            ParentOrganisationId = formalFramework?.ParentOrganisationId;
+            ParentOrganisationName = formalFramework?.ParentOrganisationName;
 
             OrganisationId = document.Id;
             OrganisationName = document.Name;
@@ -323,8 +331,9 @@ namespace OrganisationRegistry.Api.Report.Responses
         public FormalFrameworkOrganisationExtended(
             OrganisationDocument document,
             ApiConfiguration @params,
+            Guid formalFrameworkId,
             DateTime today)
-            : base(document, @params, today)
+            : base(document, @params, formalFrameworkId, today)
         {
             INR = document.Keys
                 ?.FirstOrDefault(x =>
