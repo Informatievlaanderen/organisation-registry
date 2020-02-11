@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.10.2...v1.11.0) (2020-02-11)
+
+
+### Features
+
+* use base64 string for Kbo cert ([0e00d22](https://github.com/informatievlaanderen/organisation-registry/commit/0e00d2265662283a45d165e40b34c6157dcf7272))
+
 ## [1.10.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.10.1...v1.10.2) (2020-02-07)
 
 
