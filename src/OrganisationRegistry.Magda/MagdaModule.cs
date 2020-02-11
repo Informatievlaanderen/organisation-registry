@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Magda
 {
+    using System;
     using System.IO;
     using System.Security.Cryptography.X509Certificates;
     using Autofac;
@@ -14,9 +15,9 @@ namespace OrganisationRegistry.Magda
             var apiConfiguration = configuration.GetSection("Api");
 
             var certificate =
-                File.Exists(apiConfiguration["KboCertificate"])
+                !string.IsNullOrWhiteSpace(apiConfiguration["KboCertificate"])
                     ? new X509Certificate2(
-                        fileName: apiConfiguration["KboCertificate"],
+                        rawData: Convert.FromBase64String(apiConfiguration["KboCertificate"]),
                         password: apiConfiguration["RijksRegisterCertificatePwd"],
                         keyStorageFlags: X509KeyStorageFlags.MachineKeySet |
                                          X509KeyStorageFlags.PersistKeySet |
