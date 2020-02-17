@@ -1,7 +1,9 @@
 namespace OrganisationRegistry.ElasticSearch.Projections
 {
     using System;
+    using Configuration;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using People.Cache;
     using People.Handlers;
     using SqlServer.Infrastructure;
@@ -28,11 +30,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections
 
         public PeopleRunner(
             ILogger<PeopleRunner> logger,
+            IOptions<ElasticSearchConfiguration> configuration,
             IEventStore store,
             IProjectionStates projectionStates,
             IEventPublisher bus) :
             base(
                 logger,
+                configuration,
                 store,
                 projectionStates,
                 bus,
