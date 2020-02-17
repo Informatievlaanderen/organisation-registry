@@ -53,6 +53,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
 
         private static void RunProgram<T>(IConfiguration configuration) where T : BaseRunner
         {
+            var runnerName = typeof(T).Name;
             var services = new ServiceCollection();
 
             services.AddLogging(loggingBuilder =>
@@ -78,7 +79,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
 
             if (!app.GetService<IOptions<TogglesConfiguration>>().Value.ApplicationAvailable)
             {
-                logger.LogInformation("Application offline, exiting program.");
+                logger.LogInformation("[{RunnerName}] Application offline, exiting program.", runnerName);
                 return;
             }
 
@@ -99,12 +100,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             var acquiredLock = false;
             try
             {
-                logger.LogInformation("Trying to acquire lock.");
+                logger.LogInformation("[{RunnerName}] Trying to acquire lock.", runnerName);
                 acquiredLock = distributedLock.AcquireLock();
 
                 if (!acquiredLock)
                 {
-                    logger.LogInformation("Could not get lock, another instance is busy");
+                    logger.LogInformation("[{RunnerName}] Could not get lock, another instance is busy", runnerName);
                     return;
                 }
 
@@ -114,18 +115,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     UseOrganisationRegistryEventSourcing(app, runner);
 
                     ExecuteRunner(runner);
-                    logger.LogInformation("Processing completed successfully, exiting program.");
+                    logger.LogInformation("[{RunnerName}] Processing completed successfully, exiting program.", runnerName);
                 }
                 else
                 {
-                    logger.LogInformation("ElasticSearch Projections Toggle not enabled, exiting program.");
+                    logger.LogInformation("[{RunnerName}] ElasticSearch Projections Toggle not enabled, exiting program.", runnerName);
                 }
 
                 FlushLoggerAndTelemetry();
             }
             catch (Exception e)
             {
-                logger.LogCritical(0, e, "Encountered a fatal exception, exiting program."); // dotnet core only supports global exceptionhandler starting from 1.2
+                logger.LogCritical(0, e, "[{RunnerName}] Encountered a fatal exception, exiting program."); // dotnet core only supports global exceptionhandler starting from 1.2
                 FlushLoggerAndTelemetry();
                 throw;
             }
