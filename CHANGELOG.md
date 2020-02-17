@@ -1,3 +1,17 @@
+# [1.13.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.12.0...v1.13.0) (2020-02-17)
+
+
+### Bug Fixes
+
+* don't show inactive results in mep report ([2ec7776](https://github.com/informatievlaanderen/organisation-registry/commit/2ec7776a027674a0f2c75f99eaa336a0e8812a08))
+
+
+### Features
+
+* allow setting max retry attempts in config ([3589cb6](https://github.com/informatievlaanderen/organisation-registry/commit/3589cb68453219c79432112cd94c2136996164d6))
+* log runner name ([67257fe](https://github.com/informatievlaanderen/organisation-registry/commit/67257fe64c8162721363fb4c27b63f561857f1b3))
+* set ES batch size via params ([8c02d44](https://github.com/informatievlaanderen/organisation-registry/commit/8c02d446e71c0b83b43287f276deb5cccbc4a52e))
+
 # [1.12.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.11.0...v1.12.0) (2020-02-17)
 
 
