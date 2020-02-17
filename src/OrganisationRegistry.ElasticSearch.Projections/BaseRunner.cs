@@ -4,8 +4,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using Configuration;
     using Infrastructure;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using SqlServer.ProjectionState;
     using OrganisationRegistry.Infrastructure.Events;
 
@@ -18,8 +20,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
         private readonly string _elasticSearchProjectionsProjectionName;
         private readonly string _projectionFullName;
 
-        private const int BatchSize = 5000;
-
+        private readonly int _batchSize = 5000;
         private readonly ILogger<BaseRunner> _logger;
         private readonly IEventStore _store;
         private readonly IProjectionStates _projectionStates;
@@ -27,6 +28,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
 
         protected BaseRunner(
             ILogger<BaseRunner> logger,
+            IOptions<ElasticSearchConfiguration> configuration,
             IEventStore store,
             IProjectionStates projectionStates,
             IEventPublisher bus,
@@ -41,6 +43,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             _projectionStates = projectionStates;
             _bus = bus;
 
+            _batchSize = configuration.Value.BatchSize;
             _elasticSearchProjectionsProjectionName = elasticSearchProjectionsProjectionName;
             _projectionFullName = projectionFullName;
 
@@ -63,7 +66,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     .Distinct()
                     .ToList();
 
-            var envelopes = _store.GetEventEnvelopesAfter(lastProcessedEventNumber, BatchSize, eventsBeingListenedTo.ToArray()).ToList();
+            var envelopes = _store.GetEventEnvelopesAfter(lastProcessedEventNumber, _batchSize, eventsBeingListenedTo.ToArray()).ToList();
 
             LogEnvelopeCount(envelopes);
 

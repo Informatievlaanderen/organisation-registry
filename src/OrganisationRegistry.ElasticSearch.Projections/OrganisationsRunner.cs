@@ -1,7 +1,9 @@
 namespace OrganisationRegistry.ElasticSearch.Projections
 {
     using System;
+    using Configuration;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using Organisations;
     using SqlServer.Infrastructure;
     using SqlServer.ProjectionState;
@@ -37,11 +39,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections
 
         public OrganisationsRunner(
             ILogger<OrganisationsRunner> logger,
+            IOptions<ElasticSearchConfiguration> configuration,
             IEventStore store,
             IProjectionStates projectionStates,
             IEventPublisher bus) :
             base(
                 logger,
+                configuration,
                 store,
                 projectionStates,
                 bus,

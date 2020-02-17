@@ -48,6 +48,7 @@ namespace OrganisationRegistry.ElasticSearch.Configuration
         public int LockLeasePeriodInMinutes { get; set; }
 
         public int MaxRetryAttempts { get; set; }
+        public int BatchSize { get; set; }
 
         public ElasticSearchConfiguration Obfuscate()
         {
