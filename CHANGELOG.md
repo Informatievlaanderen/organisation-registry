@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.11.0...v1.12.0) (2020-02-17)
+
+
+### Features
+
+* pass original exception to ES exception ([e84b0c6](https://github.com/informatievlaanderen/organisation-registry/commit/e84b0c637fe5e87de5a0a0171ec8f8b606031ac5))
+
 # [1.11.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.10.2...v1.11.0) (2020-02-11)
 
 
