@@ -47,6 +47,8 @@ namespace OrganisationRegistry.ElasticSearch.Configuration
         public string LockTableName { get; set; }
         public int LockLeasePeriodInMinutes { get; set; }
 
+        public int MaxRetryAttempts { get; set; }
+
         public ElasticSearchConfiguration Obfuscate()
         {
             return new ElasticSearchConfiguration
