@@ -33,23 +33,30 @@ namespace OrganisationRegistry.Api.Report.Responses
         [ExcludeFromCsv] public int AssignedCount { get; set; }
         [ExcludeFromCsv] public int UnassignedCount { get; set; }
 
-        ///  <summary>
+        /// <summary>
         ///
-        ///  </summary>
-        ///  <param name="context"></param>
-        ///  <param name="organisationClassificationId"></param>
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="organisationClassificationId"></param>
         /// <param name="configuration"></param>
+        /// <param name="today"></param>
         /// <returns></returns>
         public static IEnumerable<ClassificationOrganisationParticipation> Search(
             OrganisationRegistryContext context,
             Guid organisationClassificationId,
-            ApiConfiguration configuration)
+            ApiConfiguration configuration,
+            DateTime today)
         {
             //get organisation ids for organisation classification
             var organisationIds = context.BodySeatGenderRatioOrganisationClassificationList
-                .Where(body => body.OrganisationClassificationId == organisationClassificationId)
+                .Where(
+                    body =>
+                        body.OrganisationClassificationId == organisationClassificationId &&
+                        (!body.ClassificationValidFrom.HasValue || body.ClassificationValidFrom.Value <= today) &&
+                        (!body.ClassificationValidTo.HasValue || body.ClassificationValidTo.Value >= today))
                 .Select(x => x.OrganisationId)
                 .ToList();
+
             if (!organisationIds.Any())
                 return new List<ClassificationOrganisationParticipation>();
 
@@ -67,8 +74,8 @@ namespace OrganisationRegistry.Api.Report.Responses
                 .BodyFormalFrameworkList
                 .Where(x => nonFilteredBodyIds.Contains(x.BodyId) &&
                             x.FormalFrameworkId == configuration.Mep_FormalFrameworkId &&
-                            (!x.ValidFrom.HasValue || x.ValidFrom.Value <= DateTime.Now) &&
-                            (!x.ValidTo.HasValue || x.ValidTo.Value >= DateTime.Now))
+                            (!x.ValidFrom.HasValue || x.ValidFrom.Value <= today) &&
+                            (!x.ValidTo.HasValue || x.ValidTo.Value >= today))
                 .Select(x => x.BodyId);
 
             foreach (var bodyId in filteredBodyIds)
