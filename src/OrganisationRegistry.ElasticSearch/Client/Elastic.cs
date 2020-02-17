@@ -27,10 +27,9 @@ namespace OrganisationRegistry.ElasticSearch.Client
         private Policy RetryPolicy =>
             _waitAndRetry ??
             (_waitAndRetry = Policy
-                //.Handle<ElasticsearchException>()
                 .Handle<Exception>()
                 .WaitAndRetry(
-                    3,
+                    _configuration.MaxRetryAttempts,
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                     (exception, timeSpan, retryCount, context) =>
                         _logger.LogError(0, exception, "Elasticsearch exception occurred, attempt #{RetryCount}, trying again in {RetrySeconds} seconds.", retryCount, timeSpan.TotalSeconds)));
