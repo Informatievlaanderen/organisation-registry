@@ -154,6 +154,7 @@ namespace OrganisationRegistry.Api.Report
         /// Get gender ratio for a classification organisation (grouped by body)
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="dateTimeProvider"></param>
         /// <param name="classificationOrganisationId">A classification organisation GUID identifier</param>
         /// <returns></returns>
         [HttpGet("classificationorganisationsparticipation/{classificationOrganisationId}")]
@@ -162,6 +163,7 @@ namespace OrganisationRegistry.Api.Report
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
         public IActionResult GetClassificationOrganisationParticipation(
             [FromServices] OrganisationRegistryContext context,
+            [FromServices] IDateTimeProvider dateTimeProvider,
             [FromRoute] Guid classificationOrganisationId)
         {
             var sorting = Request.ExtractSortingRequest();
@@ -172,7 +174,8 @@ namespace OrganisationRegistry.Api.Report
                             ClassificationOrganisationParticipation.Search(
                                 context,
                                 classificationOrganisationId,
-                                _config)),
+                                _config,
+                                dateTimeProvider.Today)),
                         sorting)
                     .ToList();
 
