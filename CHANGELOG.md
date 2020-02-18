@@ -1,3 +1,10 @@
+## [1.14.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.14.0...v1.14.1) (2020-02-18)
+
+
+### Bug Fixes
+
+* add missing label fields ([1fb617e](https://github.com/informatievlaanderen/organisation-registry/commit/1fb617e3cde38b824a7be9d0ca752ba67fbec445))
+
 # [1.14.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.13.0...v1.14.0) (2020-02-18)
 
 
