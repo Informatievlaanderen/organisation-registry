@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { UpdateAlertMessages } from 'core/alertmessages';
-import { Update, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder } from 'core/alert';
 import { required } from 'core/validation';
 
-import { LabelType, LabelTypeService } from 'services/labeltypes';
+import { LabelTypeService } from 'services/labeltypes';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
 
@@ -24,9 +22,6 @@ import {
 export class OrganisationLabelsUpdateOrganisationLabelComponent implements OnInit {
   public form: FormGroup;
   public labelTypes: SelectItem[];
-
-  private readonly updateAlerts = new UpdateAlertMessages('Benaming');
-  private labelTypeId: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -44,6 +39,8 @@ export class OrganisationLabelsUpdateOrganisationLabelComponent implements OnIni
       labelValue: ['', required],
       validFrom: [''],
       validTo: [''],
+      source: [''],
+      isEditable: [false]
     });
   }
 
