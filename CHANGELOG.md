@@ -1,3 +1,15 @@
+# [1.14.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.13.0...v1.14.0) (2020-02-18)
+
+
+### Bug Fixes
+
+* add missing bank account fields ([7b5a879](https://github.com/informatievlaanderen/organisation-registry/commit/7b5a8798ad06f38753d899c58b8d7624b0f238f1))
+
+
+### Features
+
+* use dev uris in launchSettings ([d72fa9d](https://github.com/informatievlaanderen/organisation-registry/commit/d72fa9df58e4e0d03dbde690a733b96f74a4bc79))
+
 # [1.13.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.12.0...v1.13.0) (2020-02-17)
 
 
