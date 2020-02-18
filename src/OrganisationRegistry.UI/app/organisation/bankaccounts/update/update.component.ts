@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 
-import { Alert, AlertBuilder, AlertService, AlertType } from 'core/alert';
+import { AlertBuilder, AlertService } from 'core/alert';
 import { UpdateAlertMessages } from 'core/alertmessages';
-import { ICrud, Update } from 'core/crud';
 import { required } from 'core/validation';
 
-import { SelectItem } from 'shared/components/form/form-group-select';
 import { SearchResult } from 'shared/components/form/form-group-autocomplete';
 
 import { isValidIBAN, isValidBIC } from 'ibantools';
@@ -26,7 +24,6 @@ export class OrganisationBankAccountsUpdateOrganisationBankAccountComponent impl
   public form: FormGroup;
   public bankAccount: SearchResult;
 
-  private readonly updateAlerts = new UpdateAlertMessages('Bankrekeningnummer');
   private bankAccountId: string;
 
   constructor(
@@ -45,6 +42,8 @@ export class OrganisationBankAccountsUpdateOrganisationBankAccountComponent impl
       isBic: [false, Validators.required],
       validFrom: [''],
       validTo: [''],
+      source: [''],
+      isEditable: [false]
     });
   }
 
