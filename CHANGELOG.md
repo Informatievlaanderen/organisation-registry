@@ -1,3 +1,10 @@
+## [1.14.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.14.1...v1.14.2) (2020-02-19)
+
+
+### Bug Fixes
+
+* add IsEditable placeholder ([eefd13f](https://github.com/informatievlaanderen/organisation-registry/commit/eefd13fa19ac75cf013ba0e463f3535dffdab896))
+
 ## [1.14.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.14.0...v1.14.1) (2020-02-18)
 
 
