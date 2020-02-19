@@ -51,6 +51,8 @@ export class OrganisationOrganisationClassificationsUpdateOrganisationOrganisati
       organisationClassificationName: ['', required],
       validFrom: [''],
       validTo: [''],
+      source: [''],
+      isEditable: ['', false]
     });
   }
 
