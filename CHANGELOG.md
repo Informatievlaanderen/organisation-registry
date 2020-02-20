@@ -1,3 +1,10 @@
+## [1.14.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.14.2...v1.14.3) (2020-02-20)
+
+
+### Bug Fixes
+
+* add missing classifications fields ([165a86e](https://github.com/informatievlaanderen/organisation-registry/commit/165a86eff4b1db636d28bb5754294874fa080c12))
+
 ## [1.14.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.14.1...v1.14.2) (2020-02-19)
 
 
