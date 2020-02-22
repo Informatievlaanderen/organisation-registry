@@ -145,8 +145,10 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
         {
             services.AddOptions();
 
+            var serviceProvider = services.BuildServiceProvider();
+
             var builder = new ContainerBuilder();
-            builder.RegisterModule(new AgentschapZorgEnGezondheidFtpDumpModule(configuration, services, null));
+            builder.RegisterModule(new AgentschapZorgEnGezondheidFtpDumpModule(configuration, services, serviceProvider.GetService<ILoggerFactory>()));
             return new AutofacServiceProvider(builder.Build());
         }
     }

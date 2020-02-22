@@ -149,8 +149,10 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
         {
             services.AddOptions();
 
+            var serviceProvider = services.BuildServiceProvider();
+
             var builder = new ContainerBuilder();
-            builder.RegisterModule(new VlaanderenBeNotifierRunnerModule(configuration, services, null));
+            builder.RegisterModule(new VlaanderenBeNotifierRunnerModule(configuration, services, serviceProvider.GetService<ILoggerFactory>()));
             return new AutofacServiceProvider(builder.Build());
         }
 
