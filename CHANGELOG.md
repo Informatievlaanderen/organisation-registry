@@ -1,3 +1,10 @@
+## [1.14.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.14.3...v1.14.4) (2020-02-22)
+
+
+### Bug Fixes
+
+* provide logging factory ([866a8fa](https://github.com/informatievlaanderen/organisation-registry/commit/866a8fab709ceaaa06f18c17f8e8bc316a4d22fe))
+
 ## [1.14.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.14.2...v1.14.3) (2020-02-20)
 
 
