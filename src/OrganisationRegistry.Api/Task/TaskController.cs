@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Api.Task
 {
+    using System;
     using System.Linq;
     using System.Net;
     using Day.Commands;
@@ -14,6 +15,8 @@ namespace OrganisationRegistry.Api.Task
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
+    using OrganisationRegistry.Organisation;
+    using OrganisationRegistry.Organisation.Commands;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
@@ -75,11 +78,43 @@ namespace OrganisationRegistry.Api.Task
 
                     break;
 
+                case TaskType.SyncFromKbo:
+                    SyncFromKbo(context);
+                    break;
+
                 default:
                     return BadRequest(ModelState);
             }
 
             return Ok();
+        }
+
+        private void SyncFromKbo(OrganisationRegistryContext context)
+        {
+            var itemsInQueue = context.KboSyncQueue.Where(item => item.SyncCompletedAt == null);
+            foreach (var kboSyncQueueItem in itemsInQueue.OrderBy(item => item.MutationReadAt))
+            {
+                try
+                {
+                    var organisationDetailItem = context.OrganisationDetail.SingleOrDefault(item => item.KboNumber == kboSyncQueueItem.SourceKboNumber);
+                    if (organisationDetailItem == null)
+                    {
+                        kboSyncQueueItem.SyncStatus = "NOT FOUND: Er werd geen organisatie gevonden voor dit kbo nummer";
+                        continue;
+                    }
+
+                    CommandSender.Send(new UpdateFromKbo(new OrganisationId(organisationDetailItem.Id), User, DateTime.Today));
+
+                    kboSyncQueueItem.SyncCompletedAt = DateTimeOffset.UtcNow;
+                    kboSyncQueueItem.SyncStatus = "SUCCESS";
+                }
+                catch (Exception e)
+                {
+                    kboSyncQueueItem.SyncStatus = $"ERROR: {e}";
+                }
+            }
+
+            context.SaveChanges();
         }
 
         private void CompensatingAction20170518FixBodies(OrganisationRegistryContext context)

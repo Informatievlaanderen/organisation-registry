@@ -85,7 +85,7 @@ nuget App.Metrics.Formatters.Json 1.2.0
 nuget AspNetCore.HealthChecks.SqlServer 2.2.1
 
 nuget NEST 6.0.2 // TODO: Update to 7.3.1
-nuget FluentFTP 19.1.2
+nuget FluentFTP 27.1.0
 nuget Dapper 1.50.4
 nuget AutoRest 0.17.3
 nuget RestSharp 106.3.1
@@ -97,6 +97,10 @@ nuget Serilog.Sinks.Literate 3.0.0 // TODO: This can be removed eventually
 nuget Serilog.Sinks.ElasticSearch 6.1.0 // TODO: Update to 8.0.0
 
 nuget Microsoft.EntityFrameworkCore.Design 2.2.6
+
+// Kbo Mutations
+nuget CsvHelper 12.1.2
+nuget Optional 4.0.0
 
 // Mutex
 nuget AWSSDK.DynamoDBv2 3.3.102"

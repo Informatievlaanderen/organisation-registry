@@ -10,8 +10,12 @@ namespace OrganisationRegistry.Api.Kbo.Responses
     {
         private const string KBODateFormat = "yyyy-MM-dd";
 
-        public string Name { get; }
-        public string ShortName { get; }
+        // https://vlaamseoverheid.atlassian.net/wiki/spaces/MG/pages/500074551/Beschrijving+Antwoord+GeefOnderneming-02.00#BeschrijvingAntwoord(GeefOnderneming-02.00)-Adres
+        private const string MaatschappelijkeZetelCode = "001";
+
+        public IMagdaName FormalName { get; }
+        public IMagdaName ShortName { get; }
+
 
         public DateTime? ValidFrom { get; }
 
@@ -19,29 +23,15 @@ namespace OrganisationRegistry.Api.Kbo.Responses
 
         public List<IMagdaBankAccount> BankAccounts { get; }
 
-        public List<IMagdaLegalForm> LegalForms { get; }
+        public IMagdaLegalForm LegalForm { get; }
 
-        public List<IMagdaAddress> Addresses { get; }
+        public IMagdaAddress Address { get; }
 
-        public MagdaOrganisationResponse(Onderneming2_0Type onderneming)
+        public MagdaOrganisationResponse(Onderneming2_0Type onderneming, IDateTimeProvider dateTimeProvider)
         {
-            var names = onderneming?.Namen?.MaatschappelijkeNamen;
-            Name = names
-                       ?.Where(IsDutch())
-                       .FirstOrDefault(IsValid)
-                       ?.Naam ??
-                   names?
-                       .FirstOrDefault(IsValid)?
-                       .Naam;
+            FormalName = new Name(onderneming?.Namen?.MaatschappelijkeNamen);
 
-            var shortNames = onderneming?.Namen?.AfgekorteNamen;
-            ShortName = shortNames
-                    ?.Where(IsDutch())
-                    .FirstOrDefault(IsValid)
-                    ?.Naam ??
-                shortNames
-                    ?.FirstOrDefault(IsValid)?
-                    .Naam;
+            ShortName = new Name(onderneming?.Namen?.AfgekorteNamen);
 
             ValidFrom = ParseKboDate(onderneming?.Start?.Datum);
 
@@ -53,19 +43,63 @@ namespace OrganisationRegistry.Api.Kbo.Responses
                 .Cast<IMagdaBankAccount>()
                 .ToList() ?? new List<IMagdaBankAccount>();
 
-            LegalForms = onderneming
-                ?.Rechtsvormen
-                ?.Select(r => new LegalForm(r))
-                .Cast<IMagdaLegalForm>()
-                .ToList() ?? new List<IMagdaLegalForm>();
-
-            Addresses =
+            LegalForm = new MagdaLegalForm(
                 onderneming
-                ?.Adressen
-                ?.Where(a => a.Straat != null && a.Huisnummer != null && a.Gemeente != null && a.Land != null)
-                .Select(a => new Address(a))
-                .Cast<IMagdaAddress>()
-                .ToList() ?? new List<IMagdaAddress>();
+                    ?.Rechtsvormen
+                    .FirstOrDefault(type =>
+                        OverlapsWithToday(type, dateTimeProvider.Today)));
+
+            Address = new MagdaAddress(
+                onderneming
+                    ?.Adressen
+                    ?.Where(a => a.Straat != null && a.Huisnummer != null && a.Gemeente != null && a.Land != null)
+                    .SingleOrDefault(a => a.Type?.Code?.Value == MaatschappelijkeZetelCode));
+        }
+
+        private static bool OverlapsWithToday(RechtsvormExtentieType type, DateTime today)
+        {
+            return new Period(
+                    new ValidFrom(ParseKboDate(type.DatumBegin)),
+                    new ValidTo(ParseKboDate(type.DatumEinde)))
+                .OverlapsWith(today);
+        }
+
+        public class Name : IMagdaName
+        {
+            public string Value { get; }
+            public DateTime? ValidFrom { get; }
+
+            public Name(NaamOndernemingType[] namen)
+            {
+                var name = FirstValidDutchOrOtherwise(namen);
+                Value = name?.Naam;
+                ValidFrom = ParseKboDate(name?.DatumEinde);
+            }
+
+            private static NaamOndernemingType FirstValidDutchOrOtherwise(NaamOndernemingType[] names)
+            {
+                var s = names
+                    ?.Where(IsDutch())
+                    .FirstOrDefault(IsValid);
+
+                if (s?.Naam != null)
+                {
+                    return s;
+                }
+
+                return names?
+                    .FirstOrDefault(IsValid);
+            }
+
+            private static Func<NaamOndernemingType, bool> IsDutch()
+            {
+                return x => x.Taalcode == "nl";
+            }
+
+            private static bool IsValid(NaamOndernemingType x)
+            {
+                return (string.IsNullOrEmpty(x.DatumBegin) || DateTime.ParseExact(x.DatumBegin, KBODateFormat, null) <= DateTime.UtcNow) && (string.IsNullOrEmpty(x.DatumEinde) || DateTime.ParseExact(x.DatumEinde, KBODateFormat, null) >= DateTime.UtcNow);
+            }
         }
 
         public class BankAccount : IMagdaBankAccount
@@ -84,13 +118,13 @@ namespace OrganisationRegistry.Api.Kbo.Responses
             }
         }
 
-        public class LegalForm : IMagdaLegalForm
+        public class MagdaLegalForm : IMagdaLegalForm
         {
             public string Code { get; }
             public DateTime? ValidFrom { get; }
             public DateTime? ValidTo { get; }
 
-            public LegalForm(RechtsvormExtentieType rechtsvormExtentieType)
+            public MagdaLegalForm(RechtsvormExtentieType rechtsvormExtentieType)
             {
                 Code = rechtsvormExtentieType.Code?.Value;
                 ValidFrom = ParseKboDate(rechtsvormExtentieType.DatumBegin);
@@ -98,7 +132,7 @@ namespace OrganisationRegistry.Api.Kbo.Responses
             }
         }
 
-        public class Address : IMagdaAddress
+        public class MagdaAddress : IMagdaAddress
         {
             public string Country { get; }
             public string City { get; }
@@ -107,7 +141,7 @@ namespace OrganisationRegistry.Api.Kbo.Responses
             public DateTime? ValidFrom { get; }
             public DateTime? ValidTo { get; }
 
-            public Address(AdresOndernemingType adresOndernemingType)
+            public MagdaAddress(AdresOndernemingType adresOndernemingType)
             {
                 Country = adresOndernemingType.Descripties?[0].Adres?.Land?.Naam?.Trim();
                 City = adresOndernemingType.Descripties?[0].Adres?.Gemeente?.Naam?.Trim();
@@ -134,16 +168,6 @@ namespace OrganisationRegistry.Api.Kbo.Responses
                 ValidFrom = ParseKboDate(adresOndernemingType.DatumBegin);
                 ValidTo = ParseKboDate(adresOndernemingType.DatumEinde);
             }
-        }
-
-        private static Func<NaamOndernemingType, bool> IsDutch()
-        {
-            return x => x.Taalcode == "nl";
-        }
-
-        private static bool IsValid(NaamOndernemingType x)
-        {
-            return (string.IsNullOrEmpty(x.DatumBegin) || DateTime.ParseExact(x.DatumBegin, KBODateFormat, null) <= DateTime.UtcNow) && (string.IsNullOrEmpty(x.DatumEinde) || DateTime.ParseExact(x.DatumEinde, KBODateFormat, null) >= DateTime.UtcNow);
         }
 
         private static DateTime? ParseKboDate(string d)

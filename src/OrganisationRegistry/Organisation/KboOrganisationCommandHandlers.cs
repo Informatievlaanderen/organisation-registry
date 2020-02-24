@@ -19,7 +19,8 @@ namespace OrganisationRegistry.Organisation
     public class KboOrganisationCommandHandlers :
         BaseCommandHandler<KboOrganisationCommandHandlers>,
         ICommandHandler<CreateKboOrganisation>,
-        ICommandHandler<CoupleOrganisationToKbo>
+        ICommandHandler<CoupleOrganisationToKbo>,
+        ICommandHandler<UpdateFromKbo>
     {
         private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
         private readonly IOvoNumberGenerator _ovoNumberGenerator;
@@ -54,6 +55,12 @@ namespace OrganisationRegistry.Organisation
 
         public void Handle(CreateKboOrganisation message)
         {
+            var registeredOfficeLocationType =
+                Session.Get<LocationType>(_organisationRegistryConfiguration.KboV2RegisteredOfficeLocationTypeId);
+
+            var legalFormOrganisationClassificationType = Session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration.KboV2LegalFormOrganisationClassificationTypeId);
+
+
             if (_uniqueOvoNumberValidator.IsOvoNumberTaken(message.OvoNumber))
                 throw new OvoNumberNotUniqueException();
 
@@ -80,7 +87,7 @@ namespace OrganisationRegistry.Organisation
                 .Select(purposeId => Session.Get<Purpose>(purposeId))
                 .ToList();
 
-            var locations = CreateLocations(kboOrganisation.Addresses);
+            var location = GetOrAddLocations(kboOrganisation.Address);
 
             Session.Commit();
 
@@ -98,9 +105,9 @@ namespace OrganisationRegistry.Organisation
 
             AddBankAccounts(organisation, kboOrganisation.BankAccounts);
 
-            AddLegalForms(organisation, kboOrganisation.LegalForms);
+            AddLegalForm(organisation, kboOrganisation.LegalForm, legalFormOrganisationClassificationType);
 
-            AddAddresses(organisation, locations, kboOrganisation.Addresses);
+            AddAddresses(organisation, location, registeredOfficeLocationType);
 
             AddLabel(organisation, kboOrganisation);
 
@@ -109,65 +116,100 @@ namespace OrganisationRegistry.Organisation
 
         public void Handle(CoupleOrganisationToKbo message)
         {
+            var registeredOfficeLocationType =
+                Session.Get<LocationType>(_organisationRegistryConfiguration.KboV2RegisteredOfficeLocationTypeId);
+
+            var legalFormOrganisationClassificationType = Session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration.KboV2LegalFormOrganisationClassificationTypeId);
+
             var kboOrganisation =
                 _kboOrganisationRetriever.RetrieveOrganisation(message.User, message.KboNumber).Result;
 
             if (_uniqueKboValidator.IsKboNumberTaken(message.KboNumber, kboOrganisation.ValidFrom, new ValidTo()))
                 throw new KboNumberNotUniqueException();
 
-            var locations = CreateLocations(kboOrganisation.Addresses);
+            var location = GetOrAddLocations(kboOrganisation.Address);
 
             Session.Commit();
 
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
-            // TODO: ask thomas: is this ValidFrom correct?
             organisation.CoupleToKbo(message.KboNumber, _dateTimeProvider);
 
-            organisation.UpdateInfoFromKbo(kboOrganisation.Name, kboOrganisation.ShortName);
+            organisation.UpdateInfoFromKbo(kboOrganisation.FormalName.Value, kboOrganisation.ShortName.Value);
 
-            // TODO: ask thomas: is this ValidTo correct? And if so, is the one in CreateFromKbo correct?
             AddKey(organisation, kboOrganisation, message.KboNumber, new ValidTo());
 
             AddBankAccounts(organisation, kboOrganisation.BankAccounts);
 
-            AddLegalForms(organisation, kboOrganisation.LegalForms);
+            AddLegalForm(organisation, kboOrganisation.LegalForm, legalFormOrganisationClassificationType);
 
-            AddAddresses(organisation, locations, kboOrganisation.Addresses);
+            AddAddresses(organisation, location, registeredOfficeLocationType);
 
             AddLabel(organisation, kboOrganisation);
 
             Session.Commit();
         }
 
-        private Dictionary<MagdaAddressWithoutValidity, Location> CreateLocations(IEnumerable<IMagdaAddress> kboOrganisationAddresses)
+        public void Handle(UpdateFromKbo message)
         {
-            var locations = new Dictionary<MagdaAddressWithoutValidity, Location>();
+            var registeredOfficeLocationType =
+                Session.Get<LocationType>(_organisationRegistryConfiguration.KboV2RegisteredOfficeLocationTypeId);
 
-            foreach (var address in kboOrganisationAddresses)
+            var formalNameLabelType = Session.Get<LabelType>(_organisationRegistryConfiguration.KboV2FormalNameLabelTypeId);
+
+            var legalFormOrganisationClassificationType = Session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration.KboV2LegalFormOrganisationClassificationTypeId);
+
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+
+            var kboOrganisation =
+                _kboOrganisationRetriever.RetrieveOrganisation(message.User, organisation.KboNumber).Result;
+
+            var location = GetOrAddLocations(kboOrganisation.Address);
+
+            Session.Commit();
+
+            // IMPORTANT: Need to re-Get the organisation, otherwise the Session will not properly handle the events.
+            organisation = Session.Get<Organisation>(message.OrganisationId);
+
+            organisation.UpdateInfoFromKbo(kboOrganisation.FormalName.Value, kboOrganisation.ShortName.Value);
+
+            organisation.UpdateKboRegisteredOfficeLocations(location, registeredOfficeLocationType, message.ModificationTime);
+
+            organisation.UpdateKboFormalNameLabel(kboOrganisation.FormalName, formalNameLabelType);
+
+            organisation.UpdateKboLegalFormOrganisationClassification(
+                _organisationClassificationRetriever,
+                legalFormOrganisationClassificationType,
+                kboOrganisation.LegalForm,
+                guid => Session.Get<OrganisationClassification>(guid),
+                message.ModificationTime);
+
+            Session.Commit();
+        }
+
+        private RegisteredOffice GetOrAddLocations(IMagdaAddress address)
+        {
+            var location = AddOrGetLocation(address);
+            return new RegisteredOffice(location, address.ValidFrom, address.ValidTo);
+        }
+
+        private Location AddOrGetLocation(IMagdaAddress address)
+        {
+            var existingLocationId = _locationRetriever.RetrieveLocation(address);
+            Location location;
+            if (!existingLocationId.HasValue)
             {
-                var addressWithoutValidity = new MagdaAddressWithoutValidity(address);
-                if (locations.ContainsKey(addressWithoutValidity))
-                    continue;
+                location = new Location(new LocationId(Guid.NewGuid()), null, new Address(
+                    address.Street, address.ZipCode, address.City, address.Country));
 
-                var existingLocationId = _locationRetriever.RetrieveLocation(address);
-
-                if (!existingLocationId.HasValue)
-                {
-                    var location = new Location(new LocationId(Guid.NewGuid()), null, new Address(
-                        address.Street, address.ZipCode, address.City, address.Country));
-
-                    Session.Add(location);
-                    locations[addressWithoutValidity] = location;
-                }
-
-                if (existingLocationId.HasValue)
-                {
-                    locations[addressWithoutValidity] = Session.Get<Location>(existingLocationId.Value);
-                }
+                Session.Add(location);
+            }
+            else
+            {
+                location = Session.Get<Location>(existingLocationId.Value);
             }
 
-            return locations;
+            return location;
         }
 
         private void AddKey(
@@ -190,64 +232,46 @@ namespace OrganisationRegistry.Organisation
             organisation.AddKboFormalNameLabel(
                 Guid.NewGuid(),
                 labelType,
-                kboOrganisation.Name,
+                kboOrganisation.FormalName.Value,
                 new Period(
                     new ValidFrom(kboOrganisation.ValidFrom),
                     new ValidTo()));
         }
 
         private void AddAddresses(Organisation organisation,
-            IReadOnlyDictionary<MagdaAddressWithoutValidity, Location> locations, IEnumerable<IMagdaAddress> addresses)
+            RegisteredOffice address,
+            LocationType registeredOfficeLocationType)
         {
-            foreach (var address in addresses)
-            {
-                var registeredOfficeLocationType =
-                    Session.Get<LocationType>(_organisationRegistryConfiguration.KboV2RegisteredOfficeLocationTypeId);
-
-                var addressWithoutValidity = new MagdaAddressWithoutValidity(address);
-
-                if (!locations.ContainsKey(addressWithoutValidity))
-                    throw new LocationNotFoundException(
-                        $"{address.Street}, {address.ZipCode} {address.City}, {address.Country}");
-
-                var existingLocation = locations[addressWithoutValidity];
-
-                organisation.AddKboRegisteredOfficeLocation(
-                    Guid.NewGuid(),
-                    existingLocation,
-                    registeredOfficeLocationType,
-                    new Period(
-                        new ValidFrom(address.ValidFrom),
-                        new ValidTo(address.ValidTo)),
-                    _dateTimeProvider);
-            }
+            organisation.AddKboRegisteredOfficeLocation(
+                Guid.NewGuid(),
+                address.Location,
+                registeredOfficeLocationType,
+                new Period(
+                    new ValidFrom(address.ValidFrom),
+                    new ValidTo(address.ValidTo)),
+                _dateTimeProvider);
         }
 
-        private void AddLegalForms(Organisation organisation, IEnumerable<IMagdaLegalForm> legalForms)
+        private void AddLegalForm(Organisation organisation, IMagdaLegalForm legalForm,
+            OrganisationClassificationType legalFormOrganisationClassificationType)
         {
-            foreach (var legalForm in legalForms)
-            {
-                var organisationClassificationId =
-                    _organisationClassificationRetriever
-                        .FetchOrganisationClassificationForLegalFormCode(legalForm.Code);
+            var organisationClassificationId =
+                _organisationClassificationRetriever
+                    .FetchOrganisationClassificationForLegalFormCode(legalForm.Code);
 
-                if (organisationClassificationId == null)
-                    continue;
+            if (organisationClassificationId == null)
+                return;
 
-                var organisationClassification =
-                    Session.Get<OrganisationClassification>(organisationClassificationId.Value);
-                var organisationClassificationType =
-                    Session.Get<OrganisationClassificationType>(organisationClassification
-                        .OrganisationClassificationTypeId);
+            var organisationClassification =
+                Session.Get<OrganisationClassification>(organisationClassificationId.Value);
 
-                organisation.AddKboLegalFormOrganisationClassification(
-                    Guid.NewGuid(),
-                    organisationClassificationType,
-                    organisationClassification,
-                    new Period(
-                        new ValidFrom(legalForm.ValidFrom),
-                        new ValidTo(legalForm.ValidTo)));
-            }
+            organisation.AddKboLegalFormOrganisationClassification(
+                Guid.NewGuid(),
+                legalFormOrganisationClassificationType,
+                organisationClassification,
+                new Period(
+                    new ValidFrom(legalForm.ValidFrom),
+                    new ValidTo()));
         }
 
         private static void AddBankAccounts(Organisation organisation, IEnumerable<IMagdaBankAccount> bankAccounts)
@@ -264,4 +288,19 @@ namespace OrganisationRegistry.Organisation
             }
         }
     }
+
+    public class RegisteredOffice
+    {
+        public Location Location { get; }
+        public DateTime? ValidFrom { get; }
+        public DateTime? ValidTo { get; }
+
+        public RegisteredOffice(Location location, DateTime? validFrom, DateTime? validTo)
+        {
+            Location = location;
+            ValidFrom = validFrom;
+            ValidTo = validTo;
+        }
+    }
+
 }

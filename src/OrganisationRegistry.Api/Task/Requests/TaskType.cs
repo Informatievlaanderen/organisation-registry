@@ -4,6 +4,7 @@
     {
         CheckIfDayHasPassed,
         RebuildProjection,
-        CompensatingAction
+        CompensatingAction,
+        SyncFromKbo
     }
 }

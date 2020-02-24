@@ -902,6 +902,32 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.ToTable("FunctionList","OrganisationRegistry");
                 });
 
+            modelBuilder.Entity("OrganisationRegistry.SqlServer.KboSyncQueue.KboSyncQueueItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTimeOffset>("MutationReadAt");
+
+                    b.Property<DateTimeOffset>("SourceAddressModifiedAt");
+
+                    b.Property<string>("SourceFileName");
+
+                    b.Property<string>("SourceKboNumber");
+
+                    b.Property<DateTimeOffset>("SourceModifiedAt");
+
+                    b.Property<string>("SourceName");
+
+                    b.Property<DateTimeOffset?>("SyncCompletedAt");
+
+                    b.Property<string>("SyncStatus");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("KboSyncQueue","Magda");
+                });
+
             modelBuilder.Entity("OrganisationRegistry.SqlServer.KeyType.KeyTypeListItem", b =>
                 {
                     b.Property<Guid>("Id")

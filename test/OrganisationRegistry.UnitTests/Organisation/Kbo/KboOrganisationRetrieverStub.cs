@@ -16,6 +16,19 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             => Task.FromResult(_response);
     }
 
+    public class NameStub : IMagdaName
+    {
+        public NameStub(string value, DateTime? validFrom)
+        {
+            Value = value;
+            ValidFrom = validFrom;
+        }
+
+        public string Value { get; set; }
+        public DateTime? ValidFrom { get; set; }
+    }
+
+
     public class BankAccountStub : IMagdaBankAccount
     {
         public string Iban { get; set; }

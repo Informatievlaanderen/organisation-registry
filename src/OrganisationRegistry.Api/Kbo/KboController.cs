@@ -2,7 +2,6 @@ namespace OrganisationRegistry.Api.Kbo
 {
     using Configuration;
     using Infrastructure;
-    using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Options;
@@ -36,8 +35,11 @@ namespace OrganisationRegistry.Api.Kbo
         /// <response code="404">If the kbo number does not exist</response>
         [HttpGet("{kboNumberInput}")]
         [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] string kboNumberInput)
+        [ProducesResponseType(typeof(NotFoundResult), (int) HttpStatusCode.NotFound)]
+        public async Task<IActionResult> Get(
+            [FromServices] OrganisationRegistryContext context,
+            [FromServices] IDateTimeProvider dateTimeProvider,
+            [FromRoute] string kboNumberInput)
         {
             var kboNumber = new KboNumber(kboNumberInput);
             var dotFormat = kboNumber.ToDotFormat();
@@ -57,7 +59,7 @@ namespace OrganisationRegistry.Api.Kbo
             }
 
             var kboOrganisation = await
-                new KboOrganisationRetriever(_magdaConfiguration, () => context)
+                new KboOrganisationRetriever(_magdaConfiguration, () => context, dateTimeProvider)
                     .RetrieveOrganisation(User, kboNumber);
 
             if (kboOrganisation == null)

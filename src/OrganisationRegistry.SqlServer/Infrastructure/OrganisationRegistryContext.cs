@@ -17,6 +17,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     using FormalFramework;
     using FormalFrameworkCategory;
     using FunctionType;
+    using KboSyncQueue;
     using KeyType;
     using LabelType;
     using LifecyclePhaseType;
@@ -148,6 +149,9 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         public DbSet<BodySeatGenderRatioPostsPerTypeItem> BodySeatGenderRatioPostsPerTypeList { get; set; }
         public DbSet<BodySeatGenderRatioBodyMandateItem> BodySeatGenderRatioBodyMandateList { get; set; }
         public DbSet<BodySeatGenderRatioOrganisationClassificationItem> BodySeatGenderRatioOrganisationClassificationList { get; set; }
+
+        //Kbo Sync Queue
+        public DbSet<KboSyncQueueItem> KboSyncQueue { get; set; }
 
         // This needs to be DbContextOptions<T> for Autofac!
         public OrganisationRegistryContext(DbContextOptions<OrganisationRegistryContext> options)

@@ -6,18 +6,17 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 
     public class MockMagdaOrganisationResponse: IMagdaOrganisationResponse
     {
-        public string Name { get; set; }
-        public string ShortName { get; set; }
+        public IMagdaName FormalName { get; set; }
+        public IMagdaName ShortName { get; set; }
         public DateTime? ValidFrom { get; set; }
         public List<IMagdaBankAccount> BankAccounts { get; }
-        public List<IMagdaLegalForm> LegalForms { get; }
-        public List<IMagdaAddress> Addresses { get; }
+        public IMagdaLegalForm LegalForm { get; set; }
+        public IMagdaAddress Address { get; set; }
+
 
         public MockMagdaOrganisationResponse()
         {
             BankAccounts = new List<IMagdaBankAccount>();
-            LegalForms = new List<IMagdaLegalForm>();
-            Addresses = new List<IMagdaAddress>();
         }
     }
 }
