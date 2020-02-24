@@ -17,13 +17,16 @@ namespace OrganisationRegistry.Api.Kbo
     {
         private readonly MagdaConfiguration _configuration;
         private readonly Func<OrganisationRegistryContext> _contextFactory;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
         public KboOrganisationRetriever(
             MagdaConfiguration configuration,
-            Func<OrganisationRegistryContext> contextFactory)
+            Func<OrganisationRegistryContext> contextFactory,
+            IDateTimeProvider dateTimeProvider)
         {
             _configuration = configuration;
             _contextFactory = contextFactory;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<IMagdaOrganisationResponse> RetrieveOrganisation(ClaimsPrincipal user, KboNumber kboNumber)
@@ -39,7 +42,7 @@ namespace OrganisationRegistry.Api.Kbo
             if (response == null || response.Uitzonderingen != null && response.Uitzonderingen.Any())
                 return null;
 
-            return new MagdaOrganisationResponse(response.Inhoud?.Onderneming);
+            return new MagdaOrganisationResponse(response.Inhoud?.Onderneming, _dateTimeProvider);
         }
     }
 }

@@ -70,6 +70,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{694835F2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6DE8E902-CCF9-4158-8686-33816FC5EE44}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganisationRegistry.KboMutations.UnitTests", "test\OrganisationRegistry.KboMutations.UnitTests\OrganisationRegistry.KboMutations.UnitTests.csproj", "{9FB7EE1A-863F-4E0C-A373-53461C21507E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganisationRegistry.KboMutations", "src\OrganisationRegistry.KboMutations\OrganisationRegistry.KboMutations.csproj", "{B13040BE-E1BD-47CC-95AD-7598CAD3B2A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -160,6 +164,14 @@ Global
 		{31FCE0F3-FCE4-40A7-89AE-CCE570DBED33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31FCE0F3-FCE4-40A7-89AE-CCE570DBED33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31FCE0F3-FCE4-40A7-89AE-CCE570DBED33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FB7EE1A-863F-4E0C-A373-53461C21507E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FB7EE1A-863F-4E0C-A373-53461C21507E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FB7EE1A-863F-4E0C-A373-53461C21507E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FB7EE1A-863F-4E0C-A373-53461C21507E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B13040BE-E1BD-47CC-95AD-7598CAD3B2A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B13040BE-E1BD-47CC-95AD-7598CAD3B2A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B13040BE-E1BD-47CC-95AD-7598CAD3B2A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B13040BE-E1BD-47CC-95AD-7598CAD3B2A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -189,5 +201,7 @@ Global
 		{FAD32F9E-7D92-4E28-957B-57B653C34B9F} = {6DE8E902-CCF9-4158-8686-33816FC5EE44}
 		{822DECF7-9869-4ECE-8222-4C56CA7E0B38} = {6DE8E902-CCF9-4158-8686-33816FC5EE44}
 		{1251D40D-7EF7-4FB0-8923-398954595756} = {6DE8E902-CCF9-4158-8686-33816FC5EE44}
+		{9FB7EE1A-863F-4E0C-A373-53461C21507E} = {694835F2-9FEE-41C0-8989-44A574C6AF2E}
+		{B13040BE-E1BD-47CC-95AD-7598CAD3B2A2} = {6DE8E902-CCF9-4158-8686-33816FC5EE44}
 	EndGlobalSection
 EndGlobal

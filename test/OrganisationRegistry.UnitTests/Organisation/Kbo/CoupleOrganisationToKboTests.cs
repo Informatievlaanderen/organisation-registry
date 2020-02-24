@@ -119,8 +119,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 _dateTimeProviderStub,
                 new KboOrganisationRetrieverStub(new MockMagdaOrganisationResponse
                 {
-                    Name = "NAME FROM KBO",
-                    ShortName = "SHORT NAME FROM KBO",
+                    FormalName = new NameStub("NAME FROM KBO", _kboOrganisationValidFromDate),
+                    ShortName = new NameStub("SHORT NAME FROM KBO", _kboOrganisationValidFromDate),
                     ValidFrom = _kboOrganisationValidFromDate,
                     BankAccounts =
                     {
@@ -132,25 +132,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                             ValidTo = new DateTime(2001, 1, 1),
                         }
                     },
-                    LegalForms =
-                    {
+                    LegalForm =
                         new LegalFormStub
                         {
                             Code = "Some Legal Code",
                             ValidFrom = new DateTime(2020, 12, 11),
                             ValidTo = new DateTime(2020, 12, 12)
                         },
-                        // This next one won't make it into the event stream, because the code does not match with
-                        // the one from the LegalFormClassificationTypeId in the wegwijs options.
-                        new LegalFormStub
-                        {
-                            Code = "Some Illegal Code",
-                            ValidFrom = new DateTime(2020, 12, 11),
-                            ValidTo = new DateTime(2020, 12, 13)
-                        }
-                    },
-                    Addresses =
-                    {
+                    Address =
                         new AddressStub
                         {
                             City = "Evergem",
@@ -159,26 +148,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                             ZipCode = "8999",
                             ValidFrom = new DateTime(2015, 5, 5),
                             ValidTo = new DateTime(2016, 6, 6)
-                        },
-                        new AddressStub
-                        {
-                            City = "Evergem",
-                            Street = "Zedelgemsestraat",
-                            Country = "Belgie",
-                            ZipCode = "9999",
-                            ValidFrom = new DateTime(2017, 5, 5),
-                            ValidTo = new DateTime(2018, 6, 6)
-                        },
-                        new AddressStub
-                        {
-                            City = "Evergem",
-                            Street = "Zedelgemsestraat",
-                            Country = "Belgie",
-                            ZipCode = "9999",
-                            ValidFrom = new DateTime(2018, 7, 7),
-                            ValidTo = new DateTime(2018, 8, 8)
                         }
-                    }
                 }),
                 new KboOrganisationClassificationRetrieverStub("Some Legal Code", _organisationClassificationId),
                 new KboLocationRetrieverStub(address => address.Street == "Waregemsestraat" ? _registeredOfficeLocationId : (Guid?)null));

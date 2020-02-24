@@ -17,6 +17,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         BaseProjection<OrganisationLocation>,
         IEventHandler<OrganisationLocationAdded>,
         IEventHandler<KboRegisteredOfficeOrganisationLocationAdded>,
+        IEventHandler<KboRegisteredOfficeOrganisationLocationEnded>,
         IEventHandler<OrganisationLocationUpdated>,
         IEventHandler<LocationUpdated>
     {
@@ -51,6 +52,16 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             AddOrganisationLocation(message.Body.OrganisationId, message.Body.LocationId, message.Body.LocationFormattedAddress, message.Body.IsMainLocation, message.Body.LocationTypeId, message.Body.LocationTypeName, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp, message.Body.OrganisationLocationId);
         }
 
+        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationEnded> message)
+        {
+            UpdateOrganisationLocation(message.Body.OrganisationId, message.Number, message.Timestamp, message.Body.OrganisationLocationId, message.Body.LocationId, message.Body.LocationFormattedAddress, message.Body.IsMainLocation, message.Body.LocationTypeId, message.Body.LocationTypeName, message.Body.ValidFrom, message.Body.ValidTo);
+        }
+
+        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationUpdated> message)
+        {
+            UpdateOrganisationLocation(message.Body.OrganisationId, message.Number, message.Timestamp, message.Body.OrganisationLocationId, message.Body.LocationId, message.Body.LocationFormattedAddress, message.Body.IsMainLocation, message.Body.LocationTypeId, message.Body.LocationTypeName, message.Body.ValidFrom, message.Body.ValidTo);
+        }
+
         private void AddOrganisationLocation(Guid organisationId, Guid locationId, string locationFormattedAddress, bool isMainLocation, Guid? locationTypeId, string locationTypeName, DateTime? validFrom, DateTime? validTo, int documentChangeId, DateTimeOffset timestamp, Guid organisationLocationId)
         {
             var organisationDocument = _elastic.TryGet(() =>
@@ -78,24 +89,26 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationUpdated> message)
+        private void UpdateOrganisationLocation(Guid bodyOrganisationId, int organisationDocumentChangeId, DateTimeOffset organisationDocumentChangeTime, Guid bodyOrganisationLocationId, Guid bodyLocationId, string bodyLocationFormattedAddress, bool bodyIsMainLocation, Guid? bodyLocationTypeId, string bodyLocationTypeName, DateTime? bodyValidFrom, DateTime? bodyValidTo)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            var organisationDocument = _elastic.TryGet(() =>
+                _elastic.WriteClient.Get<OrganisationDocument>(bodyOrganisationId).ThrowOnFailure().Source);
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+            organisationDocument.ChangeId = organisationDocumentChangeId;
+            organisationDocument.ChangeTime = organisationDocumentChangeTime;
 
-            organisationDocument.Locations.RemoveExistingListItems(x => x.OrganisationLocationId == message.Body.OrganisationLocationId);
+            organisationDocument.Locations.RemoveExistingListItems(x =>
+                x.OrganisationLocationId == bodyOrganisationLocationId);
 
             organisationDocument.Locations.Add(
                 new OrganisationDocument.OrganisationLocation(
-                    message.Body.OrganisationLocationId,
-                    message.Body.LocationId,
-                    message.Body.LocationFormattedAddress,
-                    message.Body.IsMainLocation,
-                    message.Body.LocationTypeId,
-                    message.Body.LocationTypeName,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                    bodyOrganisationLocationId,
+                    bodyLocationId,
+                    bodyLocationFormattedAddress,
+                    bodyIsMainLocation,
+                    bodyLocationTypeId,
+                    bodyLocationTypeName,
+                    new Period(bodyValidFrom, bodyValidTo)));
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }

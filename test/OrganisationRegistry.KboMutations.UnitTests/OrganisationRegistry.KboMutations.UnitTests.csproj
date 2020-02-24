@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\OrganisationRegistry.KboMutations\OrganisationRegistry.KboMutations.csproj" />
+    <ProjectReference Include="..\..\src\OrganisationRegistry\OrganisationRegistry.KboMutations.csproj" />
+    <ProjectReference Include="..\OrganisationRegistry.Tests.Shared\OrganisationRegistry.Tests.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="mutationsInvalid.csv" />
+    <EmbeddedResource Include="mutationsInvalid.csv" />
+    <None Remove="mutations.csv" />
+    <EmbeddedResource Include="mutations.csv" />
+  </ItemGroup>
+
+  <Import Project="..\..\.paket\Paket.Restore.targets" />
+</Project>

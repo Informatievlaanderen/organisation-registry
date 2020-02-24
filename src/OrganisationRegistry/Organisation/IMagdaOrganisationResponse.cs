@@ -5,12 +5,18 @@ namespace OrganisationRegistry.Organisation
 
     public interface IMagdaOrganisationResponse
     {
-        string Name { get; }
-        string ShortName { get; }
+        IMagdaName FormalName { get; }
+        IMagdaName ShortName { get; }
         DateTime? ValidFrom { get; }
         List<IMagdaBankAccount> BankAccounts { get; }
-        List<IMagdaLegalForm> LegalForms { get; }
-        List<IMagdaAddress> Addresses { get; }
+        IMagdaLegalForm LegalForm { get; }
+        IMagdaAddress Address { get; }
+    }
+
+    public interface IMagdaName
+    {
+        string Value { get; }
+        DateTime? ValidFrom { get; }
     }
 
     public interface IMagdaBankAccount

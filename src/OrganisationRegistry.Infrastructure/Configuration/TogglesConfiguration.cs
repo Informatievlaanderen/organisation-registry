@@ -39,6 +39,8 @@ namespace OrganisationRegistry.Infrastructure.Configuration
         public bool EnableOrganisationRelations { get; set; }
         public bool EnableOrganisationOpeningHours { get; set; }
 
+        public bool KboMutationsAvailable { get; set; }
+
         public TogglesConfiguration() { }
     }
 }

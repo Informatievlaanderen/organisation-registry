@@ -92,6 +92,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<LocationUpdated>,
         IEventHandler<OrganisationLocationAdded>,
         IEventHandler<KboRegisteredOfficeOrganisationLocationAdded>,
+        IEventHandler<KboRegisteredOfficeOrganisationLocationEnded>,
         IEventHandler<OrganisationLocationUpdated>,
         IEventHandler<LocationTypeUpdated>
     {
@@ -179,6 +180,20 @@ namespace OrganisationRegistry.SqlServer.Organisation
             using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
             {
                 context.OrganisationLocationList.Add(organisationLocationListItem);
+                context.SaveChanges();
+            }
+        }
+
+
+        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationEnded> message)
+        {
+            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            {
+                var organisationLocationListItem = context.OrganisationLocationList.Single(b =>
+                    b.OrganisationLocationId == message.Body.OrganisationLocationId);
+
+                organisationLocationListItem.ValidTo = message.Body.ValidTo;
+
                 context.SaveChanges();
             }
         }
