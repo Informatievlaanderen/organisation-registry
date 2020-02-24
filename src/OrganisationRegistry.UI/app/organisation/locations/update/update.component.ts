@@ -49,6 +49,8 @@ export class OrganisationLocationsUpdateOrganisationLocationComponent implements
       isMainLocation: [false, Validators.required],
       validFrom: [''],
       validTo: [''],
+      source: [''],
+      isEditable: [false]
     });
   }
 
