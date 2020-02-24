@@ -1,3 +1,10 @@
+## [1.14.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.14.4...v1.14.5) (2020-02-24)
+
+
+### Bug Fixes
+
+* add missing location fields ([c6edffb](https://github.com/informatievlaanderen/organisation-registry/commit/c6edffbca0e28617336344625fbdeb1385d30bb0))
+
 ## [1.14.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.14.3...v1.14.4) (2020-02-22)
 
 
