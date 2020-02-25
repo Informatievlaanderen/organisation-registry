@@ -121,10 +121,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                                 cfg.FormatterMappings.SetMediaTypeMappingForFormat("csv", MediaTypeHeaderValue.Parse("text/csv"));
                                 cfg.EnableEndpointRouting = false;
                             },
-                            AfterMvc = builder =>
-                            {
-                                builder.AddFormatterMappings();
-                            },
+                            AfterMvc = builder => builder.AddFormatterMappings(),
                             AfterHealthChecks = health =>
                             {
                                 var connectionStrings = _configuration
