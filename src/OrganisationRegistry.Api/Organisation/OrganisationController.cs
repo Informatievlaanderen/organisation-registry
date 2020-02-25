@@ -85,7 +85,9 @@ namespace OrganisationRegistry.Api.Organisation
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Post([FromServices] OrganisationRegistryContext context, [FromServices] ISecurityService securityService, [FromBody] CreateOrganisationRequest message)
+        public async Task<IActionResult> Post(
+            [FromServices] ISecurityService securityService,
+            [FromBody] CreateOrganisationRequest message)
         {
             if (!securityService.CanAddOrganisation(User, message.ParentOrganisationId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
@@ -97,7 +99,7 @@ namespace OrganisationRegistry.Api.Organisation
             if (authInfo.Principal == null || !authInfo.Principal.IsInRole(Roles.Developer))
                 message.OvoNumber = string.Empty;
 
-            if (!string.IsNullOrWhiteSpace(message.Kbo))
+            if (!string.IsNullOrWhiteSpace(message.KboNumber))
             {
                 CommandSender.Send(CreateOrganisationRequestMapping.MapToCreateKboOrganisation(message, User));
             }

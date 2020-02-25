@@ -35,7 +35,7 @@ namespace OrganisationRegistry.Api.Organisation.Requests
 
         public DateTime? ValidTo { get; set; }
 
-        public string Kbo { get; set; }
+        public string KboNumber { get; set; }
 
         public List<BankAccount> BankAccounts { get; set; }
 
@@ -80,7 +80,7 @@ namespace OrganisationRegistry.Api.Organisation.Requests
             RuleFor(x => x.Name)
                 .NotEmpty()
                 .WithMessage("Name is required.")
-                .When(x => string.IsNullOrEmpty(x.Kbo));
+                .When(x => string.IsNullOrEmpty(x.KboNumber));
 
             RuleFor(x => x.Name)
                 .Length(0, OrganisationListConfiguration.NameLength)
@@ -209,7 +209,7 @@ namespace OrganisationRegistry.Api.Organisation.Requests
                 new ValidFrom(message.ValidFrom),
                 new ValidTo(message.ValidTo),
                 user,
-                new KboNumber(message.Kbo));
+                new KboNumber(message.KboNumber));
         }
     }
 }
