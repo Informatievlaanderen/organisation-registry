@@ -1,3 +1,11 @@
+## [1.14.6](https://github.com/informatievlaanderen/organisation-registry/compare/v1.14.5...v1.14.6) (2020-02-25)
+
+
+### Bug Fixes
+
+* add support for format filters ([c938440](https://github.com/informatievlaanderen/organisation-registry/commit/c938440e0a127d1dbc1b72377a6b970426518b3a))
+* rename request param to match with client ([56a09a6](https://github.com/informatievlaanderen/organisation-registry/commit/56a09a607baaee91fa61632b1df5b8b9a78a3dfc))
+
 ## [1.14.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.14.4...v1.14.5) (2020-02-24)
 
 
