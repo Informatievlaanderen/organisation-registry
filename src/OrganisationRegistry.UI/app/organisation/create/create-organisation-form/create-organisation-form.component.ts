@@ -101,9 +101,9 @@ export class CreateOrganisationFormComponent implements OnInit {
       .finally(() => this.isBusy = false)
       .subscribe(
         result => {
-          if (result.name) {
-            this.form.controls['name'].setValue(result.name);
-            this.form.controls['shortName'].setValue(result.shortName);
+          if (result.formalName && result.formalName.value) {
+            this.form.controls['name'].setValue(result.formalName.value);
+            this.form.controls['shortName'].setValue(result.shortName.value);
             this.form.controls['kboNumber'].setValue(result.kboNumber);
             this.form.controls['validFrom'].setValue(result.validFrom);
             this.form.controls['validTo'].setValue(result.validTo);
