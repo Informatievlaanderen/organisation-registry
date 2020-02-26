@@ -56,7 +56,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 
             return new List<IEvent>
             {
-                new OrganisationCreatedFromKbo(_organisationId, _kboNumber.ToDigitsOnly(), "organisation X", "OVO001234", "org", "", new List<Purpose>(), false, new ValidFrom(), new ValidTo()),
                 new KeyTypeCreated(_organisationRegistryConfigurationStub.KboKeyTypeId, "KBO sleutel"),
                 new OrganisationClassificationTypeCreated(_legalFormOrganisationClassificationTypeId, "ClassificatieType"),
                 new OrganisationClassificationCreated(_organisationClassificationId, "Classificatie", 1, "Some Legal Code", true, _legalFormOrganisationClassificationTypeId, "ClassificatieType"),
@@ -77,6 +76,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     "Adinkerke",
                     "Belgie"),
                 new LabelTypeCreated(_organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId, "Kbo formele naam"),
+                new OrganisationCreatedFromKbo(_organisationId, _kboNumber.ToDigitsOnly(), "organisation X", "OVO001234", "org", "", new List<Purpose>(), false, new ValidFrom(), new ValidTo()),
                 new KboRegisteredOfficeOrganisationLocationAdded(
                     _organisationId,
                     Guid.NewGuid(),
@@ -119,48 +119,50 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         {
             _dateTimeProviderStub = new DateTimeProviderStub(_today);
             return new KboOrganisationCommandHandlers(
-                new Mock<ILogger<KboOrganisationCommandHandlers>>().Object,
-                _organisationRegistryConfigurationStub,
-                Session,
-                new SequentialOvoNumberGenerator(),
-                new UniqueOvoNumberValidatorStub(false),
-                new UniqueKboNumberValidatorStub(false),
-                _dateTimeProviderStub,
-                new KboOrganisationRetrieverStub(new MockMagdaOrganisationResponse
-                {
-                    FormalName = new NameStub("NAME FROM KBO", new DateTime(2009, 1, 1)),
-                    ShortName = new NameStub("SHORT NAME FROM KBO", new DateTime(2010, 1, 1)),
-                    ValidFrom = new DateTime(2000, 12, 31),
-                    BankAccounts =
+                logger: new Mock<ILogger<KboOrganisationCommandHandlers>>().Object,
+                organisationRegistryConfiguration: _organisationRegistryConfigurationStub,
+                session: Session,
+                ovoNumberGenerator: new SequentialOvoNumberGenerator(),
+                uniqueOvoNumberValidator: new UniqueOvoNumberValidatorStub(false),
+                uniqueKboValidator: new UniqueKboNumberValidatorStub(false),
+                dateTimeProvider: _dateTimeProviderStub,
+                kboOrganisationRetriever: new KboOrganisationRetrieverStub(
+                    new MockMagdaOrganisationResponse
                     {
-                        new BankAccountStub
+                        FormalName = new NameStub("NAME FROM KBO", new DateTime(2009, 1, 1)),
+                        ShortName = new NameStub("SHORT NAME FROM KBO", new DateTime(2010, 1, 1)),
+                        ValidFrom = new DateTime(2000, 12, 31),
+                        BankAccounts =
                         {
-                            Iban = "BE71 0961 2345 6769",
-                            Bic = "GKCCBEBB",
-                            ValidFrom = new DateTime(2000, 1, 1),
-                            ValidTo = new DateTime(2001, 1, 1),
-                        }
-                    },
-                    LegalForm =
-                        new LegalFormStub
-                        {
-                            Code = "Some Legal Code",
-                            ValidFrom = new DateTime(2020, 12, 11),
-                            ValidTo = new DateTime(2020, 12, 12)
+                            new BankAccountStub
+                            {
+                                Iban = "BE71 0961 2345 6769",
+                                Bic = "GKCCBEBB",
+                                ValidFrom = new DateTime(2000, 1, 1),
+                                ValidTo = new DateTime(2001, 1, 1),
+                            }
                         },
-                    Address =
-                        new AddressStub
-                        {
-                            City = "Evergem",
-                            Street = "Waregemsestraat",
-                            Country = "Belgie",
-                            ZipCode = "8999",
-                            ValidFrom = null,
-                            ValidTo = null
-                        }
-                }),
-                new KboOrganisationClassificationRetrieverStub("Another Legal Code", _anotherOrganisationClassificationId),
-                new KboLocationRetrieverStub(address => (Guid?)null));
+                        LegalForm =
+                            new LegalFormStub
+                            {
+                                Code = "Another Legal Code",
+                                ValidFrom = new DateTime(2020, 12, 11),
+                                ValidTo = new DateTime(2020, 12, 12)
+                            },
+                        Address =
+                            new AddressStub
+                            {
+                                City = "Evergem",
+                                Street = "Waregemsestraat",
+                                Country = "Belgie",
+                                ZipCode = "8999",
+                                ValidFrom = null,
+                                ValidTo = null
+                            }
+                    }),
+                organisationClassificationRetriever: new KboOrganisationClassificationRetrieverStub(
+                    "Another Legal Code", _anotherOrganisationClassificationId),
+                locationRetriever: new KboLocationRetrieverStub(address => (Guid?) null));
         }
 
         protected override int ExpectedNumberOfEvents => 9;
@@ -189,50 +191,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             organisationCoupledWithKbo.OrganisationId.Should().Be(_organisationId);
             organisationCoupledWithKbo.Name.Should().Be("NAME FROM KBO");
             organisationCoupledWithKbo.ShortName.Should().Be("SHORT NAME FROM KBO");
-        }
-
-        [Fact]
-        public void AddsBankAccounts()
-        {
-            var organisationBankAccountAdded = PublishedEvents[4].UnwrapBody<KboOrganisationBankAccountAdded>();
-            organisationBankAccountAdded.Should().NotBeNull();
-
-            organisationBankAccountAdded.OrganisationId.Should().Be(_organisationId);
-            organisationBankAccountAdded.OrganisationBankAccountId.Should().NotBeEmpty();
-            organisationBankAccountAdded.BankAccountNumber.Should().Be("BE71096123456769");
-            organisationBankAccountAdded.Bic.Should().Be("GKCCBEBB");
-            organisationBankAccountAdded.IsIban.Should().Be(true);
-            organisationBankAccountAdded.IsBic.Should().Be(true);
-            organisationBankAccountAdded.ValidFrom.Should().Be(new ValidFrom(2000, 1, 1));
-            organisationBankAccountAdded.ValidTo.Should().Be(new ValidTo(2001, 1, 1));
-        }
-
-        [Fact]
-        public void UpdatesLegalForms()
-        {
-            var legalFormOrganisationOrganisationClassificationAdded = PublishedEvents[5].UnwrapBody<KboLegalFormOrganisationOrganisationClassificationAdded>();
-            legalFormOrganisationOrganisationClassificationAdded.Should().NotBeNull();
-
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationId.Should().Be(_organisationId);
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationOrganisationClassificationId.Should().NotBeEmpty();
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationTypeId.Should().Be(_legalFormOrganisationClassificationTypeId);
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationTypeName.Should().Be("ClassificatieType");
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationId.Should().Be(_anotherOrganisationClassificationId);
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationName.Should().Be("Classificatie");
-            legalFormOrganisationOrganisationClassificationAdded.ValidFrom.Should().Be(new ValidFrom(2019, 9, 9));
-            legalFormOrganisationOrganisationClassificationAdded.ValidTo.Should().Be(null);
-
-            var legalFormOrganisationOrganisationClassificationEnded = PublishedEvents[6].UnwrapBody<KboLegalFormOrganisationOrganisationClassificationEnded>();
-            legalFormOrganisationOrganisationClassificationEnded.Should().NotBeNull();
-
-            legalFormOrganisationOrganisationClassificationEnded.OrganisationId.Should().Be(_organisationId);
-            legalFormOrganisationOrganisationClassificationEnded.OrganisationOrganisationClassificationId.Should().NotBeEmpty();
-            legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationTypeId.Should().Be(_legalFormOrganisationClassificationTypeId);
-            legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationTypeName.Should().Be("ClassificatieType");
-            legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationId.Should().Be(_organisationClassificationId);
-            legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationName.Should().Be("Classificatie");
-            legalFormOrganisationOrganisationClassificationEnded.ValidFrom.Should().Be(new ValidFrom(2020, 12, 11));
-            legalFormOrganisationOrganisationClassificationEnded.ValidTo.Should().Be(new ValidTo(2020, 12, 12));
         }
 
         [Fact]
@@ -289,6 +247,50 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             kboFormalNameLabelAdded.Value.Should().Be("NAME FROM KBO");
             kboFormalNameLabelAdded.ValidFrom.Should().Be(new ValidFrom(new DateTime(2009, 1, 1)));
             kboFormalNameLabelAdded.ValidTo.Should().Be(new ValidTo());
+        }
+
+        [Fact]
+        public void UpdatesLegalForms()
+        {
+            var legalFormOrganisationOrganisationClassificationAdded = PublishedEvents[6].UnwrapBody<KboLegalFormOrganisationOrganisationClassificationAdded>();
+            legalFormOrganisationOrganisationClassificationAdded.Should().NotBeNull();
+
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationId.Should().Be(_organisationId);
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationOrganisationClassificationId.Should().NotBeEmpty();
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationTypeId.Should().Be(_legalFormOrganisationClassificationTypeId);
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationTypeName.Should().Be("ClassificatieType");
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationId.Should().Be(_anotherOrganisationClassificationId);
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationName.Should().Be("Classificatie");
+            legalFormOrganisationOrganisationClassificationAdded.ValidFrom.Should().Be(new ValidFrom(2019, 9, 9));
+            legalFormOrganisationOrganisationClassificationAdded.ValidTo.Should().Be(null);
+
+            var legalFormOrganisationOrganisationClassificationEnded = PublishedEvents[7].UnwrapBody<KboLegalFormOrganisationOrganisationClassificationEnded>();
+            legalFormOrganisationOrganisationClassificationEnded.Should().NotBeNull();
+
+            legalFormOrganisationOrganisationClassificationEnded.OrganisationId.Should().Be(_organisationId);
+            legalFormOrganisationOrganisationClassificationEnded.OrganisationOrganisationClassificationId.Should().NotBeEmpty();
+            legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationTypeId.Should().Be(_legalFormOrganisationClassificationTypeId);
+            legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationTypeName.Should().Be("ClassificatieType");
+            legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationId.Should().Be(_organisationClassificationId);
+            legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationName.Should().Be("Classificatie");
+            legalFormOrganisationOrganisationClassificationEnded.ValidFrom.Should().Be(new ValidFrom(2020, 12, 11));
+            legalFormOrganisationOrganisationClassificationEnded.ValidTo.Should().Be(new ValidTo(2020, 12, 12));
+        }
+
+        [Fact]
+        public void AddsBankAccounts()
+        {
+            var organisationBankAccountAdded = PublishedEvents[7].UnwrapBody<KboOrganisationBankAccountAdded>();
+            organisationBankAccountAdded.Should().NotBeNull();
+
+            organisationBankAccountAdded.OrganisationId.Should().Be(_organisationId);
+            organisationBankAccountAdded.OrganisationBankAccountId.Should().NotBeEmpty();
+            organisationBankAccountAdded.BankAccountNumber.Should().Be("BE71096123456769");
+            organisationBankAccountAdded.Bic.Should().Be("GKCCBEBB");
+            organisationBankAccountAdded.IsIban.Should().Be(true);
+            organisationBankAccountAdded.IsBic.Should().Be(true);
+            organisationBankAccountAdded.ValidFrom.Should().Be(new ValidFrom(2000, 1, 1));
+            organisationBankAccountAdded.ValidTo.Should().Be(new ValidTo(2001, 1, 1));
         }
 
         public UpdateFromKboTests(ITestOutputHelper helper) : base(helper)
