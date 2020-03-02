@@ -1,14 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
-import { combineLatest } from 'rxjs/observable/combineLatest';
 
-import { AlertBuilder, AlertService, Alert, AlertType } from 'core/alert';
-import { PagedEvent, PagedResult, SortOrder } from 'core/pagination';
-import { BaseAlertMessages } from 'core/alertmessages';
-import { AuthService, OidcService } from 'core/auth';
+import { AlertService} from 'core/alert';
+import { PagedEvent, PagedResult} from 'core/pagination';
+import { OidcService } from 'core/auth';
 
 import { OrganisationChild, Organisation } from 'services/organisations';
 import { OrganisationInfoService } from 'services/organisationinfo';
@@ -23,11 +21,9 @@ export class OrganisationInfoOverviewComponent implements OnInit, OnDestroy {
   public organisation: Organisation;
   public canEditOrganisation: Observable<boolean>;
 
-  private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Organisatie');
   private id: string;
 
   private readonly subscriptions: Subscription[] = new Array<Subscription>();
-  private organisationChildrenChangedSubscription: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -81,15 +77,5 @@ export class OrganisationInfoOverviewComponent implements OnInit, OnDestroy {
 
   changePage(event: PagedEvent) {
     return this.store.changePage(this.id, event);
-  }
-
-  get canCoupleKbo(){
-    return combineLatest(
-      this.oidcService.canEditOrganisation(this.id),
-      this.store.organisationChanged,
-      (canEditOrg, org) => {
-        console.log('canCouple', canEditOrg, org.kboNumber);
-        return canEditOrg && !org.kboNumber
-      });
   }
 }
