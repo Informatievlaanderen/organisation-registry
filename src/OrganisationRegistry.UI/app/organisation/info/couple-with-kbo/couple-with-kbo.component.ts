@@ -6,11 +6,9 @@ import * as moment from 'moment/moment';
 
 import { AlertService, AlertBuilder } from 'core/alert';
 
-import { RadioItem } from 'shared/components/form/form-group-radio/form-group-radio.model';
-
 import { Difference } from './difference.model';
 import { CreateOrganisationFormValues } from './create-organisation.model';
-import { OrganisationService } from 'services/organisations';
+import {KboOrganisation, OrganisationService} from 'services/organisations';
 
 @Component({
   templateUrl: 'couple-with-kbo.template.html',
@@ -22,7 +20,7 @@ export class OrganisationCoupleWithKboComponent implements OnInit {
 
   public kboNumberForm: FormGroup;
   public organisation: CreateOrganisationFormValues;
-  public organisationFromKbo: CreateOrganisationFormValues;
+  public organisationFromKbo: KboOrganisation;
   public today: string;
   public organisationId: string;
   public differences: Difference[] = new Array();
@@ -34,12 +32,12 @@ export class OrganisationCoupleWithKboComponent implements OnInit {
     private organisationService: OrganisationService,
     private alertService: AlertService  ) {
 
-    this.today = moment().format('YYYY-MM-DD')
+    this.today = moment().format('YYYY-MM-DD');
 
     this.kboNumberForm = formBuilder.group({
       kboNumber: [''],
     });
-    this.organisationFromKbo = new CreateOrganisationFormValues();
+    this.organisationFromKbo = new KboOrganisation();
   }
 
   @Input('isBusy')
@@ -124,22 +122,20 @@ export class OrganisationCoupleWithKboComponent implements OnInit {
     this.isBusy = true;
     this.alertService.clearAlert();
     this.differences = new Array();
+
     this.organisationService.checkKbo(this.kboNumberForm.get('kboNumber').value)
       .finally(() => {
         this.isBusy = false;
       })
       .subscribe(
         result => {
-          this.organisationFromKbo = new CreateOrganisationFormValues();
-          this.organisationFromKbo.name = result.name;
-          this.organisationFromKbo.shortName = result.shortName;
-          this.organisationFromKbo.kboNumber = result.kboNumber;
+          this.organisationFromKbo = result;
 
-          if (this.organisationFromKbo.name !== this.organisation.name) {
-            this.differences.push(new Difference('Naam', this.organisation.name, this.organisationFromKbo.name));
+          if (this.organisationFromKbo.formalName.value !== this.organisation.name) {
+            this.differences.push(new Difference('Naam', this.organisation.name, this.organisationFromKbo.formalName.value));
           }
-          if (this.organisationFromKbo.shortName !== this.organisation.shortName) {
-            this.differences.push(new Difference('Korte naam', this.organisation.shortName, this.organisationFromKbo.shortName));
+          if (this.organisationFromKbo.shortName.value !== this.organisation.shortName) {
+            this.differences.push(new Difference('Korte naam', this.organisation.shortName, this.organisationFromKbo.shortName.value));
           }
           if (this.differences.length > 0) {
             this.alertService.setAlert(
@@ -157,7 +153,6 @@ export class OrganisationCoupleWithKboComponent implements OnInit {
               .withTitle('Kbo nummer')
               .withMessage('Het opgegeven kbo nummer werd niet gevonden.')
               .build());
-          this.organisationFromKbo = null;
         });
   }
 }

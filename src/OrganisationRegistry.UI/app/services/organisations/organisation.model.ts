@@ -1,4 +1,5 @@
 import { ICrudItem } from 'core/crud';
+import {UUID} from "angular2-uuid";
 
 export class Organisation implements ICrudItem<Organisation>, ICreateOrganisation {
   constructor(
@@ -19,22 +20,20 @@ export class Organisation implements ICrudItem<Organisation>, ICreateOrganisatio
   }
 }
 
-export class KboOrganisation implements ICrudItem<ICreateOrganisation> {
+class KboName {
+  public value: string = '';
+}
+
+export class KboOrganisation {
   constructor(
-    public id: string = '',
-    public ovoNumber: string = '',
+    public id: string = UUID.UUID(),
+    public formalName: KboName = null,
+    public shortName: KboName = null,
     public kboNumber: string = '',
-    public shortName: string = '',
-    public name: string = '',
-    public parentOrganisation: string = '',
-    public parentOrganisationId: string = '',
     public description: string = '',
     public validFrom: Date = null,
     public validTo: Date = null,
-    public purposeIds: Array<string> = [],
-    public purposes: Array<string> = [],
-    public showOnVlaamseOverheidSites: boolean = false
-) { }
+  ) { }
 }
 
 export interface ICreateOrganisation {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Response, Headers, Http } from '@angular/http';
+import { Response, Http } from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
 
@@ -129,9 +129,13 @@ export class OrganisationService implements ICrudService<Organisation> {
   }
 
   public checkKbo(kbo: string): Observable<KboOrganisation> {
+    let headers = new HeadersBuilder()
+      .json()
+      .build();
+
     let result =
       this.http
-        .get(`${this.kboUrl}/${kbo}?noRedirect=1`);
+        .get(`${this.kboUrl}/${kbo}?noRedirect=1`, { headers: headers });
     return result
       .map(this.toKboOrganisation);
   }
