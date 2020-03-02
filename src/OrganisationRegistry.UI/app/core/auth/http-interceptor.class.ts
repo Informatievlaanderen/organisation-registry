@@ -80,6 +80,16 @@ export class HttpInterceptor extends Http {
     return options;
   }
 
+  public getUrlParams(url: string): any {
+    let hashes = url.slice(url.indexOf('?') + 1).split('&');
+    let params = {};
+    hashes.map(hash => {
+      let [key, val] = hash.split('=');
+      params[key] = decodeURIComponent(val)
+    });
+    return params;
+  }
+
   intercept(observable: Observable<Response>): Observable<Response> {
     return observable.catch((err, source) => {
       switch (err.status) {
@@ -89,6 +99,11 @@ export class HttpInterceptor extends Http {
         case 403:
           break;
         case 404:
+        case 404:
+          let params = this.getUrlParams(err.url);
+          if (params.noRedirect && params.noRedirect === '1')
+            return observable;
+
           this.router.navigate(['404']);
           return Observable.empty();
         default:
