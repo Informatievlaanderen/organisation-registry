@@ -1,3 +1,10 @@
+## [1.14.7](https://github.com/informatievlaanderen/organisation-registry/compare/v1.14.6...v1.14.7) (2020-03-03)
+
+
+### Bug Fixes
+
+* update dockerid detection ([720d495](https://github.com/informatievlaanderen/organisation-registry/commit/720d4952fe0cf116ac0e3cae64b8fa1b6da5199e))
+
 ## [1.14.6](https://github.com/informatievlaanderen/organisation-registry/compare/v1.14.5...v1.14.6) (2020-02-25)
 
 
