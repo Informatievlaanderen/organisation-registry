@@ -1,3 +1,21 @@
+# [1.15.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.14.7...v1.15.0) (2020-03-05)
+
+
+### Bug Fixes
+
+* match response models to actual response ([93a5654](https://github.com/informatievlaanderen/organisation-registry/commit/93a56545b0eeb1e493d738a31c674d07464b2a37))
+* more rework from previous repo ([9e09e4a](https://github.com/informatievlaanderen/organisation-registry/commit/9e09e4a238678fd8e6939031f9c895fc20237594))
+* rework coupling to kbo after copying from prev repo ([2cf4e17](https://github.com/informatievlaanderen/organisation-registry/commit/2cf4e17dd2e509a8f85fcef144ccc2b5c86f002d))
+* update tests after code migration ([5dc5b59](https://github.com/informatievlaanderen/organisation-registry/commit/5dc5b59a6fb3114fc26d2ab11e577896f1a513fe))
+
+
+### Features
+
+* apply OrganisationCoupledWithKbo ([4fbc135](https://github.com/informatievlaanderen/organisation-registry/commit/4fbc1351c054f4bdb9099e8dde678a46fce7b9b7))
+* don't redirect uris when requested not to ([9b53bee](https://github.com/informatievlaanderen/organisation-registry/commit/9b53bee2004ad808d8321b37190b9b3e7a958a6b))
+* migrate kbo sync code from agiv repo ([56f30de](https://github.com/informatievlaanderen/organisation-registry/commit/56f30de77503bf102ccec2f8256ebe956ea16570))
+* only get one legal form from kbo ([901b08a](https://github.com/informatievlaanderen/organisation-registry/commit/901b08a638072761516de3b2a038fe2e8173e33c))
+
 ## [1.14.7](https://github.com/informatievlaanderen/organisation-registry/compare/v1.14.6...v1.14.7) (2020-03-03)
 
 
