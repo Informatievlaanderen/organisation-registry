@@ -28,9 +28,8 @@ namespace OrganisationRegistry.Api.OrganisationClassification
             using (var context = _contextFactory().Value)
             {
                 var keys =
-                    context.OrganisationKeyList
-                        .Where(item => item.KeyTypeId == _configuration.KboKeyTypeId &&
-                                       (item.KeyValue == dotFormat || item.KeyValue == digitsOnly))
+                    context.OrganisationDetail
+                        .Where(item => item.KboNumber == dotFormat || item.KboNumber == digitsOnly)
                         .ToList();
 
                 return keys.Any(item => period.OverlapsWith(
