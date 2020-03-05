@@ -143,9 +143,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                         new AddressStub
                         {
                             City = "Evergem",
-                            Street = "Waregemsestraat",
+                            Street = "Zedelgemsestraat",
                             Country = "Belgie",
-                            ZipCode = "8999",
+                            ZipCode = "9999",
                             ValidFrom = new DateTime(2015, 5, 5),
                             ValidTo = new DateTime(2016, 6, 6)
                         }
@@ -154,7 +154,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 new KboLocationRetrieverStub(address => address.Street == "Waregemsestraat" ? _registeredOfficeLocationId : (Guid?)null));
         }
 
-        protected override int ExpectedNumberOfEvents => 10;
+        protected override int ExpectedNumberOfEvents => 8;
 
         [Fact]
         public void CreatesTheMissingLocationsOnceBeforeCreatingTheOrganisation()
@@ -239,7 +239,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             organisationClassificationAdded.OrganisationClassificationId.Should().Be((Guid)_organisationClassificationId);
             organisationClassificationAdded.OrganisationClassificationName.Should().Be("Classificatie");
             organisationClassificationAdded.ValidFrom.Should().Be(new ValidFrom(2020, 12, 11));
-            organisationClassificationAdded.ValidTo.Should().Be(new ValidTo(2020, 12, 12));
+            organisationClassificationAdded.ValidTo.Should().Be(new ValidTo(null));
         }
 
         [Fact]
@@ -250,45 +250,19 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 
             organisationLocationAdded.OrganisationId.Should().Be((Guid)_organisationId);
             organisationLocationAdded.OrganisationLocationId.Should().NotBeEmpty();
-            organisationLocationAdded.LocationId.Should().Be((Guid)_registeredOfficeLocationId);
+            organisationLocationAdded.LocationId.Should().Be(PublishedEvents[0].UnwrapBody<LocationCreated>().LocationId);
             organisationLocationAdded.IsMainLocation.Should().BeFalse();
-            organisationLocationAdded.LocationFormattedAddress.Should().Be("Waregemsestraat, 8999 Evergem, Belgie");
+            organisationLocationAdded.LocationFormattedAddress.Should().Be("Zedelgemsestraat, 9999 Evergem, Belgie");
             organisationLocationAdded.LocationTypeId.Should().Be(_organisationRegistryConfigurationStub.KboV2RegisteredOfficeLocationTypeId);
             organisationLocationAdded.LocationTypeName.Should().Be("Registered KBO Office");
             organisationLocationAdded.ValidFrom.Should().Be(new ValidFrom(2015, 5, 5));
             organisationLocationAdded.ValidTo.Should().Be(new ValidTo(2016, 6, 6));
-
-            organisationLocationAdded = PublishedEvents[7].UnwrapBody<KboRegisteredOfficeOrganisationLocationAdded>();
-            organisationLocationAdded.Should().NotBeNull();
-
-            organisationLocationAdded.OrganisationId.Should().Be((Guid)_organisationId);
-            organisationLocationAdded.OrganisationLocationId.Should().NotBeEmpty();
-            organisationLocationAdded.LocationId.Should().Be(PublishedEvents[0].UnwrapBody<LocationCreated>().LocationId);
-            organisationLocationAdded.IsMainLocation.Should().BeFalse();
-            organisationLocationAdded.LocationFormattedAddress.Should().Be("Zedelgemsestraat, 9999 Evergem, Belgie");
-            organisationLocationAdded.LocationTypeId.Should().Be(_organisationRegistryConfigurationStub.KboV2RegisteredOfficeLocationTypeId);
-            organisationLocationAdded.LocationTypeName.Should().Be("Registered KBO Office");
-            organisationLocationAdded.ValidFrom.Should().Be(new ValidFrom(2017, 5, 5));
-            organisationLocationAdded.ValidTo.Should().Be(new ValidTo(2018, 6, 6));
-
-            organisationLocationAdded = PublishedEvents[8].UnwrapBody<KboRegisteredOfficeOrganisationLocationAdded>();
-            organisationLocationAdded.Should().NotBeNull();
-
-            organisationLocationAdded.OrganisationId.Should().Be((Guid)_organisationId);
-            organisationLocationAdded.OrganisationLocationId.Should().NotBeEmpty();
-            organisationLocationAdded.LocationId.Should().Be(PublishedEvents[0].UnwrapBody<LocationCreated>().LocationId);
-            organisationLocationAdded.IsMainLocation.Should().BeFalse();
-            organisationLocationAdded.LocationFormattedAddress.Should().Be("Zedelgemsestraat, 9999 Evergem, Belgie");
-            organisationLocationAdded.LocationTypeId.Should().Be(_organisationRegistryConfigurationStub.KboV2RegisteredOfficeLocationTypeId);
-            organisationLocationAdded.LocationTypeName.Should().Be("Registered KBO Office");
-            organisationLocationAdded.ValidFrom.Should().Be(new ValidFrom(2018, 7, 7));
-            organisationLocationAdded.ValidTo.Should().Be(new ValidTo(2018, 8, 8));
         }
 
         [Fact]
         public void AddsFormalNameLabel()
         {
-            var organisationLabelAdded = PublishedEvents[9].UnwrapBody<KboFormalNameLabelAdded>();
+            var organisationLabelAdded = PublishedEvents[7].UnwrapBody<KboFormalNameLabelAdded>();
             organisationLabelAdded.Should().NotBeNull();
 
             organisationLabelAdded.OrganisationId.Should().Be((Guid)_organisationId);
