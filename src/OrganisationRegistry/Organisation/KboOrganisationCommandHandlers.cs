@@ -184,6 +184,8 @@ namespace OrganisationRegistry.Organisation
                 guid => Session.Get<OrganisationClassification>(guid),
                 message.ModificationTime);
 
+            organisation.UpdateKboBankAccount(kboOrganisation.BankAccounts, message.ModificationTime);
+
             Session.Commit();
         }
 

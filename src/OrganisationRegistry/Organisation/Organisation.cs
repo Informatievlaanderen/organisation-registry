@@ -1239,23 +1239,6 @@ namespace OrganisationRegistry.Organisation
                 validity.End));
         }
 
-        public void AddKboBankAccount(
-            Guid organisationBankAccountId,
-            BankAccountNumber bankAccountNumber,
-            BankAccountBic bankAccountBic,
-            Period validity)
-        {
-            ApplyChange(new KboOrganisationBankAccountAdded(
-                Id,
-                organisationBankAccountId,
-                bankAccountNumber.Number,
-                bankAccountNumber.IsValidIban,
-                bankAccountBic.Bic,
-                bankAccountBic.IsValidBic,
-                validity.Start,
-                validity.End));
-        }
-
         public void UpdateBankAccount(
             Guid organisationBankAccountId,
             BankAccountNumber bankAccountNumber,
@@ -1280,6 +1263,29 @@ namespace OrganisationRegistry.Organisation
                 previousBankAccount.IsBic,
                 previousBankAccount.Validity.Start,
                 previousBankAccount.Validity.End));
+        }
+
+        public void AddKboBankAccount(
+            Guid organisationBankAccountId,
+            BankAccountNumber bankAccountNumber,
+            BankAccountBic bankAccountBic,
+            Period validity)
+        {
+            ApplyChange(new KboOrganisationBankAccountAdded(
+                Id,
+                organisationBankAccountId,
+                bankAccountNumber.Number,
+                bankAccountNumber.IsValidIban,
+                bankAccountBic.Bic,
+                bankAccountBic.IsValidBic,
+                validity.Start,
+                validity.End));
+        }
+
+        public void UpdateKboBankAccount(List<IMagdaBankAccount> kboOrganisationBankAccounts,
+            DateTime messageModificationTime)
+        {
+            // throw new NotImplementedException();
         }
 
         public void UpdateMainBuilding(DateTime today)
