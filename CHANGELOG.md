@@ -1,3 +1,10 @@
+# [1.16.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.15.0...v1.16.0) (2020-03-05)
+
+
+### Features
+
+* use new kbo field for uniqueness ([e8f79c8](https://github.com/informatievlaanderen/organisation-registry/commit/e8f79c8e80909d556a946f54f748a893fed3d6d4))
+
 # [1.15.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.14.7...v1.15.0) (2020-03-05)
 
 
