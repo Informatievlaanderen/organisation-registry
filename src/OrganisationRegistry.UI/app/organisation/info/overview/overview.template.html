@@ -1,71 +1,86 @@
 <div class="contact-card__content-wrapper">
-	<div class="cta-title">
-		<h3 class="h3 cta-title__title">Algemene informatie</h3>
-		<div class="cta-title__cta">
-			<div>
-				<a *ngIf="(canCoupleKbo | async)"
-					class="button button--secondary button--notice"
-					[ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
-					[routerLink]="'./couplewithkbo'">Koppel met Kbo</a>
+  <div class="cta-title">
+    <h3 class="h3 cta-title__title">Algemene informatie</h3>
+    <div class="cta-title__cta">
+      <div>
+        <a *ngIf="!organisation.kboNumber"
+           class="button button--secondary button--notice"
+           [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
+           [routerLink]="'./couplewithkbo'">Koppel met Kbo</a>
 
-				<a *ngIf="(canEditOrganisation | async)"
-					class="button"
-					[ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
-					[routerLink]="'./edit'">Wijzig</a>
-			</div>
-			<div class="u-align-right" style="clear: both;"></div>
-		</div>
-	</div>
-	<p class='ww-description'>
-		<span *ngIf="organisation.description">{{organisation.description}}</span>
-		<span class="properties--disabled" *ngIf="!organisation.description">Geen omschrijving</span>
-	</p>
-	<div class="properties ww-info">
-		<div class="properties__column">
-			<dl>
-				<dt class="properties__label">Naam:</dt>
-				<dd id="organisationName" class="properties__data">{{organisation.name}}</dd>
+        <a *ngIf="(canEditOrganisation | async)"
+           class="button"
+           [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
+           [routerLink]="'./edit'">Wijzig</a>
+      </div>
+      <div class="u-align-right" style="clear: both;"></div>
+    </div>
+  </div>
+  <p class='ww-description'>
+    <span *ngIf="organisation.description">{{organisation.description}}</span>
+    <span class="properties--disabled" *ngIf="!organisation.description">Geen omschrijving</span>
+  </p>
+  <div class="properties ww-info">
+    <div class="properties__column">
+      <dl>
+        <dt class="properties__label">Naam:</dt>
+        <dd id="organisationName" class="properties__data">{{organisation.name}}</dd>
 
-				<dt class="properties__label">Geldig vanaf:</dt>
-        <dd id="organisationValidFrom" class="properties__data" *ngIf="organisation.validFrom">{{organisation.validFrom}}</dd>
-				<dd id="organisationValidFrom" class="properties__data properties--disabled" *ngIf="!organisation.validFrom">Niet bekend</dd>
+        <dt class="properties__label">Geldig vanaf:</dt>
+        <dd id="organisationValidFrom" class="properties__data" *ngIf="organisation.validFrom">
+          {{organisation.validFrom}}
+        </dd>
+        <dd id="organisationValidFrom" class="properties__data properties--disabled" *ngIf="!organisation.validFrom">
+          Niet bekend
+        </dd>
 
         <dt class="properties__label">Korte naam:</dt>
-				<dd class="properties__data" *ngIf="organisation.shortName">{{organisation.shortName}}</dd>
-				<dd class="properties__data properties--disabled" *ngIf="!organisation.shortName">Geen</dd>
-			</dl>
-		</div>
-		<div class="properties__column">
-			<dl>
-				<dt class="properties__label">Code:</dt>
-				<dd id="organisationOvoNumber" class="properties__data">{{organisation.ovoNumber}}</dd>
+        <dd class="properties__data" *ngIf="organisation.shortName">{{organisation.shortName}}</dd>
+        <dd class="properties__data properties--disabled" *ngIf="!organisation.shortName">Geen</dd>
+      </dl>
+    </div>
+    <div class="properties__column">
+      <dl>
+        <dt class="properties__label">Code:</dt>
+        <dd id="organisationOvoNumber" class="properties__data">{{organisation.ovoNumber}}</dd>
 
-				<dt class="properties__label">Geldig tot:</dt>
-				<dd id="organisationValidTo" class="properties__data" *ngIf="organisation.validTo">{{organisation.validTo}}</dd>
-				<dd id="organisationValidTo" class="properties__data properties--disabled" *ngIf="!organisation.validTo">Niet bekend</dd>
+        <dt class="properties__label">Geldig tot:</dt>
+        <dd id="organisationValidTo" class="properties__data" *ngIf="organisation.validTo">{{organisation.validTo}}</dd>
+        <dd id="organisationValidTo" class="properties__data properties--disabled" *ngIf="!organisation.validTo">Niet
+          bekend
+        </dd>
 
         <dt class="properties__label">Moeder entiteit:</dt>
-				<dd id="organisationParentOrganisation" class="properties__data" *ngIf="organisation.parentOrganisation">{{organisation.parentOrganisation}}</dd>
-				<dd class="properties__data properties--disabled" *ngIf="!organisation.parentOrganisation">Geen</dd>
-			</dl>
-		</div>
+        <dd id="organisationParentOrganisation" class="properties__data" *ngIf="organisation.parentOrganisation">
+          {{organisation.parentOrganisation}}
+        </dd>
+        <dd class="properties__data properties--disabled" *ngIf="!organisation.parentOrganisation">Geen</dd>
+      </dl>
+    </div>
     <div class="properties__column properties__column_full">
-			<dl>
-				<dt class="properties__label">Beleidsvelden:</dt>
-				<dd id="organisationPurposes" class="properties__data" *ngIf="organisation.purposes && organisation.purposes.length > 0"><span class="comma" *ngFor="let purpose of organisation.purposes">{{purpose}}</span></dd>
-				<dd class="properties__data properties--disabled" *ngIf="!organisation.purposes || organisation.purposes.length === 0">Geen</dd>
-			</dl>
-		</div>
-	</div>
-</div>
-<div class="contact-card__content-wrapper">
-	<div class="cta-title">
-		<h3 class="h3 cta-title__title">Dochterorganisaties</h3>
+      <dl>
+        <dt class="properties__label">Beleidsvelden:</dt>
+        <dd id="organisationPurposes" class="properties__data"
+            *ngIf="organisation.purposes && organisation.purposes.length > 0"><span class="comma"
+                                                                                    *ngFor="let purpose of organisation.purposes">{{purpose}}</span>
+        </dd>
+        <dd class="properties__data properties--disabled"
+            *ngIf="!organisation.purposes || organisation.purposes.length === 0">Geen
+        </dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="cta-title">
+    <h3 class="h3 cta-title__title">Dochterorganisaties</h3>
     <div class="cta-title__cta">
-      <a *ngIf="(canEditOrganisation | async)" class="button cta-title__cta" [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}" [routerLink]="'./addchild'">Voeg dochter toe</a>
-			<div class="u-align-right" style="clear: both;">
-			</div>
-		</div>
-	</div>
-	<ww-organisation-child-list [items]="children" [isBusy]="isBusy" (changePage)="changePage($event)"></ww-organisation-child-list>
+      <a *ngIf="(canEditOrganisation | async)" class="button cta-title__cta"
+         [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}" [routerLink]="'./addchild'">Voeg dochter
+        toe</a>
+      <div class="u-align-right" style="clear: both;">
+      </div>
+    </div>
+  </div>
+  <ww-organisation-child-list [items]="children" [isBusy]="isBusy"
+                              (changePage)="changePage($event)"></ww-organisation-child-list>
 </div>
