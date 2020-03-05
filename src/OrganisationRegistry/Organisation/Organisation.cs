@@ -1397,7 +1397,7 @@ namespace OrganisationRegistry.Organisation
             IDateTimeProvider dateTimeProvider)
         {
             if (KboNumber != null)
-                throw new Exception("Todo");
+                throw new OrganisationAlreadyCoupledWithKbo();
 
             ApplyChange(new OrganisationCoupledWithKbo(
                 Id,
@@ -2092,6 +2092,11 @@ namespace OrganisationRegistry.Organisation
             _organisationCapacities
                 .Single(ob => ob.OrganisationCapacityId == @event.OrganisationCapacityId)
                 .IsActive = false;
+        }
+
+        private void Apply(OrganisationCoupledWithKbo @event)
+        {
+            KboNumber = new KboNumber(@event.KboNumber);
         }
 
         public IEnumerable<OrganisationParent> ParentsInPeriod(Period validity)
