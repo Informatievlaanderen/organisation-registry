@@ -3,7 +3,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrganisationRegistry.KboMutations\OrganisationRegistry.KboMutations.csproj" />
-    <ProjectReference Include="..\..\src\OrganisationRegistry\OrganisationRegistry.KboMutations.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.Tests.Shared\OrganisationRegistry.Tests.Shared.csproj" />
   </ItemGroup>
 
