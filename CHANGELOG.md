@@ -1,3 +1,11 @@
+# [1.19.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.18.0...v1.19.0) (2020-03-10)
+
+
+### Features
+
+* throw if no kbo org found ([e62cdf8](https://github.com/informatievlaanderen/organisation-registry/commit/e62cdf8f3203fa664102b219f1de958d973f378a))
+* use GetAwaiter ([83ca019](https://github.com/informatievlaanderen/organisation-registry/commit/83ca0198829865decc49c2ae6daa95774fceff5a))
+
 # [1.18.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.17.0...v1.18.0) (2020-03-10)
 
 
