@@ -30,13 +30,18 @@
         <dd id="organisationValidFrom" class="properties__data" *ngIf="organisation.validFrom">
           {{organisation.validFrom}}
         </dd>
-        <dd id="organisationValidFrom" class="properties__data properties--disabled" *ngIf="!organisation.validFrom">
+        <dd class="properties__data properties--disabled" *ngIf="!organisation.validFrom">
           Niet bekend
         </dd>
 
         <dt class="properties__label">Korte naam:</dt>
         <dd class="properties__data" *ngIf="organisation.shortName">{{organisation.shortName}}</dd>
         <dd class="properties__data properties--disabled" *ngIf="!organisation.shortName">Geen</dd>
+
+        <dt class="properties__label">Kbo nummer:</dt>
+        <dd id="organisationKboNumber" class="properties__data" *ngIf="organisation.kboNumber">
+          {{organisation.kboNumber}}
+        </dd>
       </dl>
     </div>
     <div class="properties__column">
@@ -46,7 +51,7 @@
 
         <dt class="properties__label">Geldig tot:</dt>
         <dd id="organisationValidTo" class="properties__data" *ngIf="organisation.validTo">{{organisation.validTo}}</dd>
-        <dd id="organisationValidTo" class="properties__data properties--disabled" *ngIf="!organisation.validTo">Niet
+        <dd class="properties__data properties--disabled" *ngIf="!organisation.validTo">Niet
           bekend
         </dd>
 
