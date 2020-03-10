@@ -101,8 +101,6 @@ namespace OrganisationRegistry.Organisation
 
             Session.Add(organisation);
 
-            AddKey(organisation, kboOrganisation, message.KboNumber, message.ValidTo);
-
             AddBankAccounts(organisation, kboOrganisation.BankAccounts);
 
             AddLegalForm(organisation, kboOrganisation.LegalForm, legalFormOrganisationClassificationType);
@@ -136,8 +134,6 @@ namespace OrganisationRegistry.Organisation
             organisation.CoupleToKbo(message.KboNumber, _dateTimeProvider);
 
             organisation.UpdateInfoFromKbo(kboOrganisation.FormalName.Value, kboOrganisation.ShortName.Value);
-
-            AddKey(organisation, kboOrganisation, message.KboNumber, new ValidTo());
 
             AddBankAccounts(organisation, kboOrganisation.BankAccounts);
 
