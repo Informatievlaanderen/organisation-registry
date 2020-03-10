@@ -66,7 +66,8 @@ namespace OrganisationRegistry.Api.Kbo
                             .PostAsync(
                                 endpoint,
                                 new StringContent(signedEnvelope, Encoding.UTF8, "application/soap+xml"))
-                            .Result;
+                            .GetAwaiter()
+                            .GetResult();
 
                         if (response.IsSuccessStatusCode)
                         {
