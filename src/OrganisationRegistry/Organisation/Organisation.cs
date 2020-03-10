@@ -33,6 +33,8 @@ namespace OrganisationRegistry.Organisation
         private bool _isActive;
         private List<Events.Purpose> _purposes;
 
+        private OrganisationLabel _kboFormalNameLabel;
+
         private readonly List<OrganisationKey> _organisationKeys;
         private readonly List<OrganisationContact> _organisationContacts;
         private readonly List<OrganisationLabel> _organisationLabels;
@@ -43,7 +45,6 @@ namespace OrganisationRegistry.Organisation
         private readonly List<OrganisationParent> _organisationParents;
         private readonly List<OrganisationFormalFramework> _organisationFormalFrameworks;
         private readonly List<OrganisationBankAccount> _organisationBankAccounts;
-        private readonly List<OrganisationBankAccount> _kboOrganisationBankAccounts;
         private readonly List<OrganisationOpeningHour> _organisationOpeningHours;
         private readonly Dictionary<Guid, OrganisationFormalFramework> _organisationFormalFrameworkParentsPerFormalFramework;
         private readonly OrganisationBuildings _organisationBuildings;
@@ -68,7 +69,6 @@ namespace OrganisationRegistry.Organisation
             _organisationLocations = new OrganisationLocations();
             _organisationFormalFrameworkParentsPerFormalFramework = new Dictionary<Guid, OrganisationFormalFramework>();
             _organisationBankAccounts = new List<OrganisationBankAccount>();
-            _kboOrganisationBankAccounts = new List<OrganisationBankAccount>();
             _organisationOpeningHours = new List<OrganisationOpeningHour>();
         }
 
@@ -886,20 +886,19 @@ namespace OrganisationRegistry.Organisation
 
         public void UpdateKboFormalNameLabel(IMagdaName kboFormalName, LabelType formalNameLabelType)
         {
-            var formalName = _organisationLabels.Single(label => label.LabelTypeId == formalNameLabelType.Id);
-            if (formalName.Value == kboFormalName.Value)
+            if (_kboFormalNameLabel.Value == kboFormalName.Value)
                 return;
 
             ApplyChange(
                 new KboFormalNameLabelEnded(
                     Id,
-                    formalName.OrganisationLabelId,
-                    formalName.LabelTypeId,
-                    formalName.LabelTypeName,
-                    formalName.Value,
-                    formalName.Validity.Start,
+                    _kboFormalNameLabel.OrganisationLabelId,
+                    _kboFormalNameLabel.LabelTypeId,
+                    _kboFormalNameLabel.LabelTypeName,
+                    _kboFormalNameLabel.Value,
+                    _kboFormalNameLabel.Validity.Start,
                     kboFormalName.ValidFrom,
-                    formalName.Validity.End));
+                    _kboFormalNameLabel.Validity.End));
 
             ApplyChange(
                 new KboFormalNameLabelAdded(
@@ -1063,20 +1062,6 @@ namespace OrganisationRegistry.Organisation
             Period validity,
             IDateTimeProvider dateTimeProvider)
         {
-            var organisationLocation =
-                new OrganisationLocation(
-                    organisationLocationId,
-                    Id,
-                    location.Id,
-                    location.FormattedAddress,
-                    false,
-                    locationType?.Id,
-                    locationType?.Name,
-                    validity);
-
-            if (_organisationLocations.AlreadyHasTheSameOrganisationAndLocationInTheSamePeriod(organisationLocation))
-                throw new LocationAlreadyCoupledToInThisPeriodException();
-
             ApplyChange(new KboRegisteredOfficeOrganisationLocationAdded(
                 Id,
                 organisationLocationId,
@@ -1702,14 +1687,6 @@ namespace OrganisationRegistry.Organisation
 
         private void Apply(KboLegalFormOrganisationOrganisationClassificationAdded @event)
         {
-            _organisationOrganisationClassifications.Add(new OrganisationOrganisationClassification(
-                @event.OrganisationOrganisationClassificationId,
-                @event.OrganisationId,
-                @event.OrganisationClassificationTypeId,
-                @event.OrganisationClassificationTypeName,
-                @event.OrganisationClassificationId,
-                @event.OrganisationClassificationName,
-                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
         }
 
         private void Apply(OrganisationLabelAdded @event)
@@ -1725,26 +1702,28 @@ namespace OrganisationRegistry.Organisation
 
         private void Apply(KboFormalNameLabelAdded @event)
         {
-            _organisationLabels.Add(new OrganisationLabel(
+            _kboFormalNameLabel = new OrganisationLabel(
                 @event.OrganisationLabelId,
                 @event.OrganisationId,
                 @event.LabelTypeId,
                 @event.LabelTypeName,
                 @event.Value,
-                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
+                new Period(
+                new ValidFrom(@event.ValidFrom),
+                new ValidTo(@event.ValidTo)));
         }
 
         private void Apply(KboFormalNameLabelEnded @event)
         {
-            _organisationLabels.Remove(_organisationLabels.Single(ob => ob.OrganisationLabelId == @event.OrganisationLabelId));
-            _organisationLabels.Add(
-                new OrganisationLabel(
-                    @event.OrganisationLabelId,
-                    @event.OrganisationId,
-                    @event.LabelTypeId,
-                    @event.LabelTypeName,
-                    @event.Value,
-                    new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
+            _kboFormalNameLabel = new OrganisationLabel(
+                @event.OrganisationLabelId,
+                @event.OrganisationId,
+                @event.LabelTypeId,
+                @event.LabelTypeName,
+                @event.Value,
+                new Period(
+                    new ValidFrom(@event.ValidFrom),
+                    new ValidTo(@event.ValidTo)));
         }
 
         private void Apply(OrganisationBuildingAdded @event)
@@ -1802,33 +1781,10 @@ namespace OrganisationRegistry.Organisation
 
         private void Apply(KboRegisteredOfficeOrganisationLocationAdded @event)
         {
-            _organisationLocations.Add(
-                new OrganisationLocation(
-                    @event.OrganisationLocationId,
-                    @event.OrganisationId,
-                    @event.LocationId,
-                    @event.LocationFormattedAddress,
-                    @event.IsMainLocation,
-                    @event.LocationTypeId,
-                    @event.LocationTypeName,
-                    new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
         }
 
         private void Apply(KboRegisteredOfficeOrganisationLocationEnded @event)
         {
-            var organisationLocation = new OrganisationLocation(
-                @event.OrganisationLocationId,
-                @event.OrganisationId,
-                @event.LocationId,
-                @event.LocationFormattedAddress,
-                @event.IsMainLocation,
-                @event.LocationTypeId,
-                @event.LocationTypeName,
-                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)));
-
-            var oldOrganisationLocation = _organisationLocations.Single(location => location.OrganisationLocationId == @event.OrganisationLocationId);
-            _organisationLocations.Remove(oldOrganisationLocation);
-            _organisationLocations.Add(organisationLocation);
         }
 
         private void Apply(OrganisationLocationUpdated @event)
@@ -2002,15 +1958,6 @@ namespace OrganisationRegistry.Organisation
 
         private void Apply(KboOrganisationBankAccountAdded @event)
         {
-            _kboOrganisationBankAccounts.Add(
-                new OrganisationBankAccount(
-                    @event.OrganisationBankAccountId,
-                    @event.OrganisationId,
-                    @event.BankAccountNumber,
-                    @event.IsIban,
-                    @event.Bic,
-                    @event.IsBic,
-                    new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
         }
 
         private void Apply(OrganisationBankAccountUpdated @event)
