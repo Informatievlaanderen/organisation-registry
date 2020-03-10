@@ -32,8 +32,8 @@ namespace OrganisationRegistry.Api.Kbo
         public async Task<IMagdaOrganisationResponse> RetrieveOrganisation(ClaimsPrincipal user, KboNumber kboNumber)
         {
             var kboOrganisation =
-                await new GeefOndernemingQuery(_configuration, _contextFactory).Execute(user,
-                    kboNumber.ToDigitsOnly());
+                await new GeefOndernemingQuery(_configuration, _contextFactory)
+                    .Execute(user, kboNumber.ToDigitsOnly());
 
             if (kboOrganisation == null)
                 return null;
