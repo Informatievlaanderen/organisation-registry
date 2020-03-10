@@ -122,6 +122,9 @@ namespace OrganisationRegistry.Organisation
             var kboOrganisation =
                 _kboOrganisationRetriever.RetrieveOrganisation(message.User, message.KboNumber).GetAwaiter().GetResult();
 
+            if (kboOrganisation == null)
+                throw new KboOrganisationNotFoundException();
+
             if (_uniqueKboValidator.IsKboNumberTaken(message.KboNumber, kboOrganisation.ValidFrom, new ValidTo()))
                 throw new KboNumberNotUniqueException();
 
