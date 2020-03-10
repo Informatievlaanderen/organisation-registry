@@ -18,6 +18,7 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
         public string ShortName { get; set; }
         public Period Validity { get; set; }
         public string Description { get; set; }
+        public string KboNumber { get; set; }
         public bool? ShowOnVlaamseOverheidSites { get; set; }
 
         public OrganisationDocument() { }
@@ -52,6 +53,9 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
                 .Text(t => t
                     .Name(p => p.Description)
                     .Analyzer("dutch"))
+
+                .Keyword(k => k
+                    .Name(p => p.KboNumber))
 
                 .Boolean(b => b
                     .Name(p => p.ShowOnVlaamseOverheidSites))
