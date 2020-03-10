@@ -1,3 +1,16 @@
+# [1.18.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.17.0...v1.18.0) (2020-03-10)
+
+
+### Bug Fixes
+
+* remove invalid ref ([4a46ed6](https://github.com/informatievlaanderen/organisation-registry/commit/4a46ed62ca218fb738726d9720d97cc6012be45b))
+
+
+### Features
+
+* show kbo nr on info page ([0b6c526](https://github.com/informatievlaanderen/organisation-registry/commit/0b6c526d3c0aa8ac9495f5101f8b3c29d62a09c2))
+* split kbo from non-kbo data in aggregate ([129e05b](https://github.com/informatievlaanderen/organisation-registry/commit/129e05be95ca4b42ae9a0c9c82e238c8f58cb8ed))
+
 # [1.17.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.16.0...v1.17.0) (2020-03-10)
 
 
