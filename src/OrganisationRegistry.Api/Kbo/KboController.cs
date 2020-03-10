@@ -46,10 +46,8 @@ namespace OrganisationRegistry.Api.Kbo
             var digitsOnly = kboNumber.ToDigitsOnly();
 
             if (await context
-                .OrganisationKeyList
-                .AnyAsync(x =>
-                    x.KeyTypeId == _apiConfiguration.KBO_KeyTypeId &&
-                    (x.KeyValue.Equals(dotFormat) || x.KeyValue.Equals(digitsOnly))))
+                .OrganisationDetail
+                .AnyAsync(x => x.KboNumber.Equals(dotFormat) || x.KboNumber.Equals(digitsOnly)))
             {
                 ModelState.AddModelError(
                     key: "Duplicate",
