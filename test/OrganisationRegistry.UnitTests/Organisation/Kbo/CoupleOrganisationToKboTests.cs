@@ -154,7 +154,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 new KboLocationRetrieverStub(address => address.Street == "Waregemsestraat" ? _registeredOfficeLocationId : (Guid?)null));
         }
 
-        protected override int ExpectedNumberOfEvents => 8;
+        protected override int ExpectedNumberOfEvents => 7;
 
         [Fact]
         public void CreatesTheMissingLocationsOnceBeforeCreatingTheOrganisation()
@@ -196,24 +196,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         }
 
         [Fact]
-        public void AddsAKboKey()
-        {
-            var organisationKeyAdded = PublishedEvents[3].UnwrapBody<OrganisationKeyAdded>();
-            organisationKeyAdded.Should().NotBeNull();
-
-            organisationKeyAdded.OrganisationId.Should().Be((Guid)_organisationId);
-            organisationKeyAdded.OrganisationKeyId.Should().NotBeEmpty();
-            organisationKeyAdded.KeyTypeId.Should().Be(_organisationRegistryConfigurationStub.KboKeyTypeId);
-            organisationKeyAdded.KeyTypeName.Should().Be("KBO sleutel");
-            organisationKeyAdded.ValidFrom.Should().Be(new ValidFrom(_kboOrganisationValidFromDate));
-            organisationKeyAdded.ValidTo.Should().Be(new ValidTo());
-            organisationKeyAdded.Value.Should().Be("0123456789");
-        }
-
-        [Fact]
         public void AddsBankAccounts()
         {
-            var organisationBankAccountAdded = PublishedEvents[4].UnwrapBody<KboOrganisationBankAccountAdded>();
+            var organisationBankAccountAdded = PublishedEvents[3].UnwrapBody<KboOrganisationBankAccountAdded>();
             organisationBankAccountAdded.Should().NotBeNull();
 
             organisationBankAccountAdded.OrganisationId.Should().Be((Guid)_organisationId);
@@ -229,7 +214,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         [Fact]
         public void AddsLegalForms()
         {
-            var organisationClassificationAdded = PublishedEvents[5].UnwrapBody<KboLegalFormOrganisationOrganisationClassificationAdded>();
+            var organisationClassificationAdded = PublishedEvents[4].UnwrapBody<KboLegalFormOrganisationOrganisationClassificationAdded>();
             organisationClassificationAdded.Should().NotBeNull();
 
             organisationClassificationAdded.OrganisationId.Should().Be((Guid)_organisationId);
@@ -245,7 +230,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         [Fact]
         public void AddsLocations()
         {
-            var organisationLocationAdded = PublishedEvents[6].UnwrapBody<KboRegisteredOfficeOrganisationLocationAdded>();
+            var organisationLocationAdded = PublishedEvents[5].UnwrapBody<KboRegisteredOfficeOrganisationLocationAdded>();
             organisationLocationAdded.Should().NotBeNull();
 
             organisationLocationAdded.OrganisationId.Should().Be((Guid)_organisationId);
@@ -262,7 +247,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         [Fact]
         public void AddsFormalNameLabel()
         {
-            var organisationLabelAdded = PublishedEvents[7].UnwrapBody<KboFormalNameLabelAdded>();
+            var organisationLabelAdded = PublishedEvents[6].UnwrapBody<KboFormalNameLabelAdded>();
             organisationLabelAdded.Should().NotBeNull();
 
             organisationLabelAdded.OrganisationId.Should().Be((Guid)_organisationId);
