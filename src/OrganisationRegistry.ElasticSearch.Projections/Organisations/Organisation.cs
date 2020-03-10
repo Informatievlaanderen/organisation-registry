@@ -23,6 +23,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<OrganisationCreatedFromKbo>,
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
+        IEventHandler<OrganisationCoupledWithKbo>,
         IEventHandler<PurposeUpdated>
     {
         private readonly Elastic _elastic;
@@ -72,6 +73,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 ShortName = message.Body.ShortName,
                 Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo),
                 Description = message.Body.Description,
+                KboNumber = message.Body.KboNumber,
                 ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites,
                 Purposes = message.Body.Purposes.Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList(),
             };
@@ -105,6 +107,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             organisationDocument.Name = message.Body.Name;
             organisationDocument.ShortName = message.Body.ShortName;
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+        }
+
+        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCoupledWithKbo> message)
+        {
+            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = message.Number;
+            organisationDocument.ChangeTime = message.Timestamp;
+
+            organisationDocument.KboNumber = message.Body.KboNumber;
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }
