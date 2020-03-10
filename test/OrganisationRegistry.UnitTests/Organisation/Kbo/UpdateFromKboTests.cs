@@ -201,7 +201,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 locationRetriever: new KboLocationRetrieverStub(address => (Guid?) null));
         }
 
-        protected override int ExpectedNumberOfEvents => 8;
+        protected override int ExpectedNumberOfEvents => 6;
 
         [Fact(Skip = "Under construction")]
         public void CreatesTheMissingLocationsOnceBeforeCreatingTheOrganisation()
