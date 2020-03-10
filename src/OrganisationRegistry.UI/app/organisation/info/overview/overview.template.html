@@ -60,14 +60,15 @@
           {{organisation.parentOrganisation}}
         </dd>
         <dd class="properties__data properties--disabled" *ngIf="!organisation.parentOrganisation">Geen</dd>
+
       </dl>
     </div>
     <div class="properties__column properties__column_full">
       <dl>
         <dt class="properties__label">Beleidsvelden:</dt>
         <dd id="organisationPurposes" class="properties__data"
-            *ngIf="organisation.purposes && organisation.purposes.length > 0"><span class="comma"
-                                                                                    *ngFor="let purpose of organisation.purposes">{{purpose}}</span>
+            *ngIf="organisation.purposes && organisation.purposes.length > 0">
+          <span class="comma" *ngFor="let purpose of organisation.purposes">{{purpose}}</span>
         </dd>
         <dd class="properties__data properties--disabled"
             *ngIf="!organisation.purposes || organisation.purposes.length === 0">Geen
