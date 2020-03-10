@@ -1,3 +1,12 @@
+# [1.17.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.16.0...v1.17.0) (2020-03-10)
+
+
+### Features
+
+* add kbo number as prop on ES projections ([e913fdb](https://github.com/informatievlaanderen/organisation-registry/commit/e913fdba23a6cc46133977d95af5ebeb9bb3aede))
+* don't add key for kbo ([bbfad04](https://github.com/informatievlaanderen/organisation-registry/commit/bbfad04a286494628d891f95ffd461bc3621f0ab))
+* use kbo number prop on org ([fdf0b5b](https://github.com/informatievlaanderen/organisation-registry/commit/fdf0b5b92336dea4ab0005b3bf1448f84f12f542))
+
 # [1.16.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.15.0...v1.16.0) (2020-03-05)
 
 
