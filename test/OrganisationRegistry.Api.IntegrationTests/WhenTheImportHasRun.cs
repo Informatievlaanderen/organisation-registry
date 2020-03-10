@@ -118,7 +118,7 @@
         public async Task AtLeastOneOrganisationHasCapacities()
         {
             (await Get<OrganisationListQueryResult>("organisations"))
-                .Count(item => Get<OrganisationCapacityListItem>($"organisations/{item.Id}/capacities").Result.Any())
+                .Count(item => Get<OrganisationCapacityListItem>($"organisations/{item.Id}/capacities").GetAwaiter().GetResult().Any())
                 .Should()
                 .BeGreaterThan(0);
         }
@@ -127,7 +127,7 @@
         public async Task AtLeastOneOrganisationHasChildren()
         {
             (await Get<OrganisationListQueryResult>("organisations"))
-                .Count(item => Get<object>($"organisations/{item.Id}/children").Result.Any())
+                .Count(item => Get<object>($"organisations/{item.Id}/children").GetAwaiter().GetResult().Any())
                 .Should()
                 .BeGreaterThan(0);
         }
@@ -136,7 +136,7 @@
         public async Task AtLeastOneOrganisationHasContacts()
         {
             (await Get<OrganisationListQueryResult>("organisations"))
-                .Count(item => Get<OrganisationContactListItem>($"organisations/{item.Id}/contacts").Result.Any())
+                .Count(item => Get<OrganisationContactListItem>($"organisations/{item.Id}/contacts").GetAwaiter().GetResult().Any())
                 .Should()
                 .BeGreaterThan(0);
         }
@@ -145,7 +145,7 @@
         public async Task AtLeastOneOrganisationHasKeys()
         {
             (await Get<OrganisationListQueryResult>("organisations"))
-                .Count(item => Get<OrganisationKeyListItem>($"organisations/{item.Id}/keys").Result.Any())
+                .Count(item => Get<OrganisationKeyListItem>($"organisations/{item.Id}/keys").GetAwaiter().GetResult().Any())
                 .Should()
                 .BeGreaterThan(0);
         }
@@ -154,7 +154,7 @@
         public async Task AtLeastOneOrganisationHasClassifications()
         {
             (await Get<OrganisationListQueryResult>("organisations"))
-                .Count(item => Get<OrganisationOrganisationClassificationListItem>($"organisations/{item.Id}/classifications").Result.Any())
+                .Count(item => Get<OrganisationOrganisationClassificationListItem>($"organisations/{item.Id}/classifications").GetAwaiter().GetResult().Any())
                 .Should()
                 .BeGreaterThan(0);
         }
@@ -163,7 +163,7 @@
         public async Task AtLeastOnePersonHasCapacities()
         {
             (await Get<PersonListItem>("people"))
-                .Count(item => Get<object>($"people/{item.Id}/capacities").Result.Any())
+                .Count(item => Get<object>($"people/{item.Id}/capacities").GetAwaiter().GetResult().Any())
                 .Should()
                 .BeGreaterThan(0);
         }

@@ -104,11 +104,11 @@ namespace Be.Vlaanderen.Basisregisters.Aws.DistributedMutex.Tests
             Task.WaitAll(t1, t2, t3);
 
             var i = 0;
-            if (t1.Result != null)
+            if (t1.GetAwaiter().GetResult() != null)
                 i++;
-            if (t2.Result != null)
+            if (t2.GetAwaiter().GetResult() != null)
                 i++;
-            if (t3.Result != null)
+            if (t3.GetAwaiter().GetResult() != null)
                 i++;
 
             Assert.Equal(1, i);

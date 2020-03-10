@@ -18,7 +18,7 @@ namespace OrganisationRegistry.Api.Infrastructure.Security
 
         public static AuthenticateResult GetAuthenticateInfo(this HttpContext source)
         {
-            var bearerInfo = source.GetBearerAuthenticateInfo().Result;
+            var bearerInfo = source.GetBearerAuthenticateInfo().GetAwaiter().GetResult();
             if (bearerInfo != null && bearerInfo.Succeeded)
                 return bearerInfo;
 

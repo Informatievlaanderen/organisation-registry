@@ -69,7 +69,7 @@ namespace OrganisationRegistry.Organisation
                 : message.OvoNumber;
 
             var kboOrganisation =
-                _kboOrganisationRetriever.RetrieveOrganisation(message.User, message.KboNumber).Result;
+                _kboOrganisationRetriever.RetrieveOrganisation(message.User, message.KboNumber).GetAwaiter().GetResult();
 
             if (kboOrganisation == null)
                 throw new KboOrganisationNotFoundException();
@@ -120,7 +120,7 @@ namespace OrganisationRegistry.Organisation
             var legalFormOrganisationClassificationType = Session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration.KboV2LegalFormOrganisationClassificationTypeId);
 
             var kboOrganisation =
-                _kboOrganisationRetriever.RetrieveOrganisation(message.User, message.KboNumber).Result;
+                _kboOrganisationRetriever.RetrieveOrganisation(message.User, message.KboNumber).GetAwaiter().GetResult();
 
             if (_uniqueKboValidator.IsKboNumberTaken(message.KboNumber, kboOrganisation.ValidFrom, new ValidTo()))
                 throw new KboNumberNotUniqueException();
@@ -158,7 +158,7 @@ namespace OrganisationRegistry.Organisation
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             var kboOrganisation =
-                _kboOrganisationRetriever.RetrieveOrganisation(message.User, organisation.KboNumber).Result;
+                _kboOrganisationRetriever.RetrieveOrganisation(message.User, organisation.KboNumber).GetAwaiter().GetResult();
 
             var location = GetOrAddLocations(kboOrganisation.Address);
 
