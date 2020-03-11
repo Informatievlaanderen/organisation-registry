@@ -1,3 +1,10 @@
+# [1.20.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.19.0...v1.20.0) (2020-03-11)
+
+
+### Features
+
+* apply postel's law to magda data ([fe0d29c](https://github.com/informatievlaanderen/organisation-registry/commit/fe0d29c2ef1edc8add8a02fb4755d4725c4f26aa))
+
 # [1.19.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.18.0...v1.19.0) (2020-03-10)
 
 
