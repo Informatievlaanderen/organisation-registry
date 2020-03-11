@@ -43,17 +43,21 @@ namespace OrganisationRegistry.Api.Kbo.Responses
                 .Cast<IMagdaBankAccount>()
                 .ToList() ?? new List<IMagdaBankAccount>();
 
-            LegalForm = new MagdaLegalForm(
-                onderneming
-                    ?.Rechtsvormen
-                    .FirstOrDefault(type =>
-                        OverlapsWithToday(type, dateTimeProvider.Today)));
+            var legalForm = onderneming
+                ?.Rechtsvormen
+                .FirstOrDefault(type =>
+                    OverlapsWithToday(type, dateTimeProvider.Today));
 
-            Address = new MagdaAddress(
-                onderneming
-                    ?.Adressen
-                    ?.Where(a => a.Straat != null && a.Huisnummer != null && a.Gemeente != null && a.Land != null)
-                    .SingleOrDefault(a => a.Type?.Code?.Value == MaatschappelijkeZetelCode));
+            if (legalForm != null)
+                LegalForm = new MagdaLegalForm(legalForm);
+
+            var address = onderneming
+                ?.Adressen
+                ?.Where(a => a.Straat != null && a.Huisnummer != null && a.Gemeente != null && a.Land != null)
+                .SingleOrDefault(a => a.Type?.Code?.Value == MaatschappelijkeZetelCode);
+
+            if (address != null)
+                Address = new MagdaAddress(address);
         }
 
         private static bool OverlapsWithToday(RechtsvormExtentieType type, DateTime today)
@@ -73,27 +77,35 @@ namespace OrganisationRegistry.Api.Kbo.Responses
             {
                 var name = FirstValidDutchOrOtherwise(namen);
                 Value = name?.Naam;
-                ValidFrom = ParseKboDate(name?.DatumEinde);
+                ValidFrom = ParseKboDate(name?.DatumBegin);
             }
 
             private static NaamOndernemingType FirstValidDutchOrOtherwise(NaamOndernemingType[] names)
             {
-                var s = names
-                    ?.Where(IsDutch())
-                    .FirstOrDefault(IsValid);
+                if (names == null)
+                    return null;
 
-                if (s?.Naam != null)
-                {
-                    return s;
-                }
+                var dutchName = FirstValidOrMostRecent(names?.Where(IsDutch));
 
-                return names?
-                    .FirstOrDefault(IsValid);
+                return dutchName?.Naam != null ?
+                    dutchName :
+                    FirstValidOrMostRecent(names);
             }
 
-            private static Func<NaamOndernemingType, bool> IsDutch()
+            private static NaamOndernemingType FirstValidOrMostRecent(IEnumerable<NaamOndernemingType> names)
             {
-                return x => x.Taalcode == "nl";
+                var naamOndernemingTypes = names as NaamOndernemingType[] ?? names.ToArray();
+
+                return naamOndernemingTypes
+                           .FirstOrDefault(IsValid) ??
+                       naamOndernemingTypes
+                           .OrderBy(nameType => nameType.DatumEinde)
+                           .FirstOrDefault();
+            }
+
+            private static bool IsDutch(NaamOndernemingType x)
+            {
+                return x.Taalcode == "nl";
             }
 
             private static bool IsValid(NaamOndernemingType x)
