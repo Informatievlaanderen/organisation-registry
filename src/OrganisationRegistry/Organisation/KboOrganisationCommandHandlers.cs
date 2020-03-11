@@ -190,6 +190,9 @@ namespace OrganisationRegistry.Organisation
 
         private RegisteredOffice GetOrAddLocations(IMagdaAddress address)
         {
+            if (address == null)
+                return null;
+
             var location = AddOrGetLocation(address);
             return new RegisteredOffice(location, address.ValidFrom, address.ValidTo);
         }
@@ -243,6 +246,9 @@ namespace OrganisationRegistry.Organisation
             RegisteredOffice address,
             LocationType registeredOfficeLocationType)
         {
+            if (address == null)
+                return;
+
             organisation.AddKboRegisteredOfficeLocation(
                 Guid.NewGuid(),
                 address.Location,
@@ -256,6 +262,9 @@ namespace OrganisationRegistry.Organisation
         private void AddLegalForm(Organisation organisation, IMagdaLegalForm legalForm,
             OrganisationClassificationType legalFormOrganisationClassificationType)
         {
+            if (legalForm == null)
+                return;
+
             var organisationClassificationId =
                 _organisationClassificationRetriever
                     .FetchOrganisationClassificationForLegalFormCode(legalForm.Code);
