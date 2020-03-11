@@ -1,0 +1,588 @@
+{
+  "Header": {},
+  "Body": {
+    "GeefOndernemingResponse": {
+      "Repliek": {
+        "Context": {
+          "Naam": "GeefOnderneming",
+          "Versie": "02.00.0000",
+          "Bericht": {
+            "Type": 1,
+            "Tijdstip": {
+              "Datum": "2020-03-11",
+              "Tijd": "15:02:40.963"
+            },
+            "Afzender": {
+              "Identificatie": "vip.vlaanderen.be",
+              "Naam": "MagdaGateway",
+              "Referte": "3ca8bee2-c82d-4f85-930c-dc7b4a8967bb",
+              "OrganisatieEenheid": null,
+              "Hoedanigheid": null,
+              "Gebruiker": null
+            },
+            "Ontvanger": {
+              "Identificatie": "kb.vlaanderen.be/aiv/organisatieregister-ond-aip",
+              "Naam": null,
+              "Referte": "ce89fefb-d0e2-47bf-8f91-12c762dc0a37",
+              "OrganisatieEenheid": null,
+              "Hoedanigheid": null,
+              "Gebruiker": null
+            }
+          },
+          "Annotaties": null
+        },
+        "Antwoorden": {
+          "Antwoord": {
+            "Referte": "ce89fefb-d0e2-47bf-8f91-12c762dc0a37",
+            "Inhoud": {
+              "Onderneming": {
+                "Rechtstoestanden": null,
+                "Vestigingen": [
+                  {
+                    "Vestigingsnummer": "2136205561",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": {
+                      "MaatschappelijkeNamen": null,
+                      "AfgekorteNamen": null,
+                      "CommercieleNamen": [
+                        {
+                          "Naam": "ARKimedes Management",
+                          "Taalcode": "fr",
+                          "DatumBegin": "2004-03-30",
+                          "DatumEinde": null
+                        }
+                      ]
+                    },
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Oude Graanmarkt"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Brussel"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "2008-11-01",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "3172",
+                          "Naam": null
+                        },
+                        "Huisnummer": "63",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "21004",
+                          "PostCode": "1000",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "2004-03-30",
+                    "DatumEinde": null
+                  }
+                ],
+                "Bankrekeningen": null,
+                "Functies": [
+                  {
+                    "FunctiehouderVan": "0863557445",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": {
+                      "Ondernemingsnummer": "0431367017",
+                      "MaatschappelijkeNaam": {
+                        "Naam": "IMPEX INTER",
+                        "Taalcode": "nl",
+                        "DatumBegin": "1987-06-12",
+                        "DatumEinde": null
+                      }
+                    },
+                    "DatumBegin": "2010-08-26",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0863557445",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2010-05-04",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0863557445",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2010-05-04",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0863557445",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2010-05-04",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0863557445",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2004-07-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0863557445",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2004-07-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0863557445",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2004-07-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0863557445",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": {
+                      "Ondernemingsnummer": "0465565851",
+                      "MaatschappelijkeNaam": {
+                        "Naam": "MANAGEMENT CONSULTANTS R. VERPOEST EN CO",
+                        "Taalcode": "nl",
+                        "DatumBegin": "1999-02-24",
+                        "DatumEinde": null
+                      }
+                    },
+                    "DatumBegin": "2004-07-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0863557445",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2004-02-20",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0863557445",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": {
+                      "AanduidingVrijstelling": {
+                        "Beschrijving": null,
+                        "Value": 0
+                      },
+                      "GeenKMO": null,
+                      "Code": null,
+                      "Omschrijving": null
+                    },
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "20090"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Basiskennis bedrijfsbeheer"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2004-03-30",
+                    "DatumEinde": null
+                  }
+                ],
+                "Activiteiten": null,
+                "GerelateerdeOndernemingen": null,
+                "Hoedanigheden": [
+                  {
+                    "InstrumenterendeAdministratie": "BTW001",
+                    "Inschrijving": {
+                      "Datum": "2004-06-14"
+                    },
+                    "Duurtijd": "0.0",
+                    "Fase": {
+                      "Code": {
+                        "Beschrijving": "hoedanigheid/Toelating verworven",
+                        "Value": "002"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Beeindiging": null,
+                    "DatumBegin": "2004-06-01",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": "Onderneming onderworpen aan BTW",
+                      "Value": "00084"
+                    },
+                    "Omschrijving": null
+                  },
+                  {
+                    "InstrumenterendeAdministratie": "OLK001",
+                    "Inschrijving": {
+                      "Datum": "2004-03-30"
+                    },
+                    "Duurtijd": "0.0",
+                    "Fase": {
+                      "Code": {
+                        "Beschrijving": "hoedanigheid/Toelating verworven",
+                        "Value": "002"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Beeindiging": null,
+                    "DatumBegin": "2004-03-30",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": "Handelsonderneming",
+                      "Value": "00293"
+                    },
+                    "Omschrijving": null
+                  },
+                  {
+                    "InstrumenterendeAdministratie": "RSZ001",
+                    "Inschrijving": {
+                      "Datum": "2006-10-03"
+                    },
+                    "Duurtijd": "0.0",
+                    "Fase": {
+                      "Code": {
+                        "Beschrijving": "hoedanigheid/Toelating verworven",
+                        "Value": "002"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Beeindiging": null,
+                    "DatumBegin": "2006-09-11",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": "Werkgever RSZ",
+                      "Value": "00070"
+                    },
+                    "Omschrijving": null
+                  }
+                ],
+                "ExterneIdentificaties": null,
+                "Bijhuis": null,
+                "AmbtshalveDoorhalingen": null,
+                "StatusKBO": {
+                  "Code": {
+                    "Beschrijving": null,
+                    "Value": "AC"
+                  },
+                  "Omschrijving": {
+                    "Oorsprong": null,
+                    "TaalCode": null,
+                    "Value": "Actief"
+                  }
+                },
+                "SoortOnderneming": {
+                  "Code": {
+                    "Beschrijving": "Rechtspersoon",
+                    "Value": "2"
+                  },
+                  "Omschrijving": null
+                },
+                "MaatschappelijkeZetel": null,
+                "Namen": {
+                  "MaatschappelijkeNamen": [
+                    {
+                      "Naam": "ARKIMEDES MANAGEMENT",
+                      "Taalcode": "nl",
+                      "DatumBegin": "2004-02-20",
+                      "DatumEinde": null
+                    }
+                  ],
+                  "AfgekorteNamen": null,
+                  "CommercieleNamen": null
+                },
+                "Adressen": [
+                  {
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "001"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Zetel"
+                      }
+                    },
+                    "Descripties": [
+                      {
+                        "Adres": {
+                          "Land": {
+                            "NISCode": "150",
+                            "ISOCode": null,
+                            "Naam": "België"
+                          },
+                          "Straat": {
+                            "Code": null,
+                            "Naam": "Oude Graanmarkt"
+                          },
+                          "Huisnummer": null,
+                          "Busnummer": null,
+                          "Gemeente": {
+                            "NISCode": null,
+                            "PostCode": null,
+                            "Naam": "Brussel"
+                          },
+                          "Staat": null
+                        },
+                        "Contact": null,
+                        "Taalcode": null,
+                        "Aanvulling": null
+                      }
+                    ],
+                    "Doorhalingen": null,
+                    "DatumBegin": "2008-11-01",
+                    "DatumEinde": null,
+                    "Land": {
+                      "NISCode": "150",
+                      "ISOCode": "BE",
+                      "Naam": "BELGIE"
+                    },
+                    "Straat": {
+                      "Code": "3172",
+                      "Naam": null
+                    },
+                    "Huisnummer": "63",
+                    "Busnummer": null,
+                    "Gemeente": {
+                      "NISCode": "21004",
+                      "PostCode": "1000",
+                      "Naam": null
+                    },
+                    "Staat": null
+                  }
+                ],
+                "Start": {
+                  "Datum": "2004-02-20"
+                },
+                "Inschrijving": {
+                  "Datum": "2004-02-20"
+                },
+                "Duurtijd": null,
+                "Afsluiting": null,
+                "Stopzetting": null,
+                "Rechtsvormen": [
+                  {
+                    "Afkorting": "NV",
+                    "DatumBegin": "2004-02-20",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": null,
+                      "Value": "014"
+                    },
+                    "Omschrijving": {
+                      "Oorsprong": null,
+                      "TaalCode": null,
+                      "Value": "Naamloze vennootschap"
+                    }
+                  }
+                ],
+                "Ondernemingsnummer": "0863557445",
+                "AuthentiekBron": {
+                  "Code": {
+                    "Beschrijving": null,
+                    "Value": "03"
+                  },
+                  "Omschrijving": {
+                    "Oorsprong": null,
+                    "TaalCode": null,
+                    "Value": "KBO"
+                  }
+                },
+                "OndernemingOfVestiging": {
+                  "Code": {
+                    "Beschrijving": "Onderneming",
+                    "Value": "1"
+                  }
+                }
+              }
+            },
+            "Uitzonderingen": null
+          }
+        },
+        "Uitzonderingen": null
+      }
+    }
+  }
+}

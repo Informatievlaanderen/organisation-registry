@@ -2,12 +2,23 @@
   <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\OrganisationRegistry.Api\OrganisationRegistry.Api.csproj" />
+    <ProjectReference Include="..\..\src\OrganisationRegistry.Magda\OrganisationRegistry.Magda.csproj" />
     <ProjectReference Include="..\..\src\OrganisationRegistry\OrganisationRegistry.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.Tests.Shared\OrganisationRegistry.Tests.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
+    <Content Include="MagdaResponses\*.json" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="MagdaResponses" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />
