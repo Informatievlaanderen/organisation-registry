@@ -1,3 +1,11 @@
+# [1.21.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.20.0...v1.21.0) (2020-03-12)
+
+
+### Features
+
+* allow lack of legal form ([e0df61a](https://github.com/informatievlaanderen/organisation-registry/commit/e0df61a128a0d262eaba1d8d72e1a0cd4ebbea80))
+* make magda responses testable ([c2d1c1e](https://github.com/informatievlaanderen/organisation-registry/commit/c2d1c1e20367f12cbbde4e526eb90cd05cc7eba2))
+
 # [1.20.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.19.0...v1.20.0) (2020-03-11)
 
 
