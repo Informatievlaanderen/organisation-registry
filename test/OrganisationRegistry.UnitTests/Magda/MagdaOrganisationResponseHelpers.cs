@@ -8,6 +8,8 @@ namespace OrganisationRegistry.UnitTests.Magda
     using System.Threading.Tasks;
     using Api.Configuration;
     using Api.Kbo;
+    using Autofac.Features.OwnedInstances;
+    using Autofac.Util;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -49,13 +51,13 @@ namespace OrganisationRegistry.UnitTests.Magda
                     capacity: null,
                     recipient: _apiConfiguration.KboRecipient,
                     kboMagdaEndPoint: _apiConfiguration.KboMagdaEndpoint),
-                context: () =>
+                contextFactory: () => new Owned<OrganisationRegistryContext>(
                     new OrganisationRegistryContext(
                         new DbContextOptionsBuilder<OrganisationRegistryContext>()
                             .UseInMemoryDatabase(
                                 "org-magda-test",
                                 builder => { })
-                            .Options));
+                            .Options), new Disposable()));
         }
 
         // [Theory]

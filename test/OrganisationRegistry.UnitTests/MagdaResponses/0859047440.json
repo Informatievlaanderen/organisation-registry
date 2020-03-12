@@ -10,12 +10,12 @@
             "Type": 1,
             "Tijdstip": {
               "Datum": "2020-03-12",
-              "Tijd": "09:38:08.026"
+              "Tijd": "13:28:40.639"
             },
             "Afzender": {
               "Identificatie": "vip.vlaanderen.be",
               "Naam": "MagdaGateway",
-              "Referte": "30ebb8b5-2691-4c34-8ca1-4f76fd5c5622",
+              "Referte": "dae553b1-c1b0-4907-8b60-3fbe5092b2a6",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -23,7 +23,7 @@
             "Ontvanger": {
               "Identificatie": "kb.vlaanderen.be/aiv/organisatieregister-ond-aip",
               "Naam": null,
-              "Referte": "ff64feff-3b87-4518-8cf6-3197417eb04a",
+              "Referte": "9f0c5b38-dfd8-4d68-9b61-b928e3a58b4d",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -33,13 +33,13 @@
         },
         "Antwoorden": {
           "Antwoord": {
-            "Referte": "ff64feff-3b87-4518-8cf6-3197417eb04a",
+            "Referte": "9f0c5b38-dfd8-4d68-9b61-b928e3a58b4d",
             "Inhoud": {
               "Onderneming": {
                 "Rechtstoestanden": null,
                 "Vestigingen": [
                   {
-                    "Vestigingsnummer": "2125511609",
+                    "Vestigingsnummer": "98798798",
                     "StatusKBO": {
                       "Code": {
                         "Beschrijving": null,
@@ -76,14 +76,14 @@
                               },
                               "Straat": {
                                 "Code": null,
-                                "Naam": "Succalaan"
+                                "Naam": "Somelaan"
                               },
                               "Huisnummer": null,
                               "Busnummer": null,
                               "Gemeente": {
                                 "NISCode": null,
                                 "PostCode": null,
-                                "Naam": "Destelbergen"
+                                "Naam": "Somewhere"
                               },
                               "Staat": null
                             },
@@ -93,10 +93,10 @@
                           }
                         ],
                         "Doorhalingen": null,
-                        "DatumBegin": "1996-04-05",
-                        "DatumEinde": "1999-02-23",
+                        "DatumBegin": "1988-04-05",
+                        "DatumEinde": "2001-06-01",
                         "Land": {
-                          "NISCode": "150",
+                          "NISCode": "987",
                           "ISOCode": "BE",
                           "Naam": "BELGIE"
                         },
@@ -107,8 +107,8 @@
                         "Huisnummer": "11",
                         "Busnummer": null,
                         "Gemeente": {
-                          "NISCode": "44013",
-                          "PostCode": "9070",
+                          "NISCode": "98766",
+                          "PostCode": "6788",
                           "Naam": null
                         },
                         "Staat": null
@@ -116,21 +116,21 @@
                     ],
                     "Afsluiting": null,
                     "Stopzetting": {
-                      "Datum": "1999-02-23",
+                      "Datum": "2001-06-01",
                       "Code": {
                         "Beschrijving": null,
                         "Value": "080"
                       },
                       "Omschrijving": null
                     },
-                    "DatumBegin": "1996-04-05",
+                    "DatumBegin": "1988-10-05",
                     "DatumEinde": null
                   }
                 ],
                 "Bankrekeningen": null,
                 "Functies": [
                   {
-                    "FunctiehouderVan": "0859047440",
+                    "FunctiehouderVan": "987987987",
                     "AanduidingPersoonOnderneming": null,
                     "Vrijstelling": null,
                     "EindeFunctie": {
@@ -157,8 +157,8 @@
                     },
                     "Persoon": null,
                     "Onderneming": null,
-                    "DatumBegin": "1996-04-05",
-                    "DatumEinde": "1999-02-23"
+                    "DatumBegin": "1988-04-05",
+                    "DatumEinde": "2001-06-01"
                   }
                 ],
                 "Activiteiten": null,
@@ -184,8 +184,8 @@
                       },
                       "Omschrijving": null
                     },
-                    "DatumBegin": "1996-04-05",
-                    "DatumEinde": "1999-02-23",
+                    "DatumBegin": "1988-04-05",
+                    "DatumEinde": "2001-06-01",
                     "Code": {
                       "Beschrijving": "Handelsonderneming",
                       "Value": "00293"
@@ -218,10 +218,10 @@
                 "Namen": {
                   "MaatschappelijkeNamen": [
                     {
-                      "Naam": "Acke, Dirk",
+                      "Naam": "Someone, Somewhere",
                       "Taalcode": "xx",
-                      "DatumBegin": "1996-04-05",
-                      "DatumEinde": "1999-02-23"
+                      "DatumBegin": "1976-09-05",
+                      "DatumEinde": "1988-12-23"
                     }
                   ],
                   "AfgekorteNamen": null,
@@ -244,20 +244,20 @@
                       {
                         "Adres": {
                           "Land": {
-                            "NISCode": "150",
+                            "NISCode": "233",
                             "ISOCode": null,
                             "Naam": "België"
                           },
                           "Straat": {
                             "Code": null,
-                            "Naam": "Succalaan"
+                            "Naam": "Somelaan"
                           },
                           "Huisnummer": null,
                           "Busnummer": null,
                           "Gemeente": {
                             "NISCode": null,
                             "PostCode": null,
-                            "Naam": "Destelbergen"
+                            "Naam": "Somewhere"
                           },
                           "Staat": null
                         },
@@ -267,10 +267,10 @@
                       }
                     ],
                     "Doorhalingen": null,
-                    "DatumBegin": "1996-04-05",
-                    "DatumEinde": "1999-02-23",
+                    "DatumBegin": "1988-04-05",
+                    "DatumEinde": "2001-06-01",
                     "Land": {
-                      "NISCode": "150",
+                      "NISCode": "233",
                       "ISOCode": "BE",
                       "Naam": "BELGIE"
                     },
@@ -281,15 +281,15 @@
                     "Huisnummer": "11",
                     "Busnummer": null,
                     "Gemeente": {
-                      "NISCode": "44013",
-                      "PostCode": "9070",
+                      "NISCode": "9879",
+                      "PostCode": "9999",
                       "Naam": null
                     },
                     "Staat": null
                   }
                 ],
                 "Start": {
-                  "Datum": "1996-04-05"
+                  "Datum": "1988-04-05"
                 },
                 "Inschrijving": {
                   "Datum": "2003-05-23"
@@ -297,7 +297,7 @@
                 "Duurtijd": null,
                 "Afsluiting": null,
                 "Stopzetting": {
-                  "Datum": "1999-02-23",
+                  "Datum": "2001-06-01",
                   "Code": {
                     "Beschrijving": null,
                     "Value": "016"
@@ -305,7 +305,7 @@
                   "Omschrijving": null
                 },
                 "Rechtsvormen": null,
-                "Ondernemingsnummer": "0859047440",
+                "Ondernemingsnummer": "09809870987",
                 "AuthentiekBron": {
                   "Code": {
                     "Beschrijving": null,
