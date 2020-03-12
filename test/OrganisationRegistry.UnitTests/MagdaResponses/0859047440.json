@@ -1,0 +1,335 @@
+{
+  "Header": {},
+  "Body": {
+    "GeefOndernemingResponse": {
+      "Repliek": {
+        "Context": {
+          "Naam": "GeefOnderneming",
+          "Versie": "02.00.0000",
+          "Bericht": {
+            "Type": 1,
+            "Tijdstip": {
+              "Datum": "2020-03-12",
+              "Tijd": "09:38:08.026"
+            },
+            "Afzender": {
+              "Identificatie": "vip.vlaanderen.be",
+              "Naam": "MagdaGateway",
+              "Referte": "30ebb8b5-2691-4c34-8ca1-4f76fd5c5622",
+              "OrganisatieEenheid": null,
+              "Hoedanigheid": null,
+              "Gebruiker": null
+            },
+            "Ontvanger": {
+              "Identificatie": "kb.vlaanderen.be/aiv/organisatieregister-ond-aip",
+              "Naam": null,
+              "Referte": "ff64feff-3b87-4518-8cf6-3197417eb04a",
+              "OrganisatieEenheid": null,
+              "Hoedanigheid": null,
+              "Gebruiker": null
+            }
+          },
+          "Annotaties": null
+        },
+        "Antwoorden": {
+          "Antwoord": {
+            "Referte": "ff64feff-3b87-4518-8cf6-3197417eb04a",
+            "Inhoud": {
+              "Onderneming": {
+                "Rechtstoestanden": null,
+                "Vestigingen": [
+                  {
+                    "Vestigingsnummer": "2125511609",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "ST"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Stopgezet"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": null,
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Succalaan"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Destelbergen"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "1996-04-05",
+                        "DatumEinde": "1999-02-23",
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "0465",
+                          "Naam": null
+                        },
+                        "Huisnummer": "11",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "44013",
+                          "PostCode": "9070",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": {
+                      "Datum": "1999-02-23",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "080"
+                      },
+                      "Omschrijving": null
+                    },
+                    "DatumBegin": "1996-04-05",
+                    "DatumEinde": null
+                  }
+                ],
+                "Bankrekeningen": null,
+                "Functies": [
+                  {
+                    "FunctiehouderVan": "0859047440",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "016"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Activiteitstopz NP"
+                      }
+                    },
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "00001"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Oprichter van een geregistreerde entiteit-natuurlijk persoon"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "1996-04-05",
+                    "DatumEinde": "1999-02-23"
+                  }
+                ],
+                "Activiteiten": null,
+                "GerelateerdeOndernemingen": null,
+                "Hoedanigheden": [
+                  {
+                    "InstrumenterendeAdministratie": "OLK001",
+                    "Inschrijving": {
+                      "Datum": "2003-05-23"
+                    },
+                    "Duurtijd": "0.0",
+                    "Fase": {
+                      "Code": {
+                        "Beschrijving": "Hoedanigheid/Toelating stopgezet",
+                        "Value": "003"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Beeindiging": {
+                      "Code": {
+                        "Beschrijving": "Hoedanigheid/toelating stopgezet",
+                        "Value": "003"
+                      },
+                      "Omschrijving": null
+                    },
+                    "DatumBegin": "1996-04-05",
+                    "DatumEinde": "1999-02-23",
+                    "Code": {
+                      "Beschrijving": "Handelsonderneming",
+                      "Value": "00293"
+                    },
+                    "Omschrijving": null
+                  }
+                ],
+                "ExterneIdentificaties": null,
+                "Bijhuis": null,
+                "AmbtshalveDoorhalingen": null,
+                "StatusKBO": {
+                  "Code": {
+                    "Beschrijving": null,
+                    "Value": "ST"
+                  },
+                  "Omschrijving": {
+                    "Oorsprong": null,
+                    "TaalCode": null,
+                    "Value": "Stopgezet"
+                  }
+                },
+                "SoortOnderneming": {
+                  "Code": {
+                    "Beschrijving": "Natuurlijke Persoon",
+                    "Value": "1"
+                  },
+                  "Omschrijving": null
+                },
+                "MaatschappelijkeZetel": null,
+                "Namen": {
+                  "MaatschappelijkeNamen": [
+                    {
+                      "Naam": "Acke, Dirk",
+                      "Taalcode": "xx",
+                      "DatumBegin": "1996-04-05",
+                      "DatumEinde": "1999-02-23"
+                    }
+                  ],
+                  "AfgekorteNamen": null,
+                  "CommercieleNamen": null
+                },
+                "Adressen": [
+                  {
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "001"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Zetel"
+                      }
+                    },
+                    "Descripties": [
+                      {
+                        "Adres": {
+                          "Land": {
+                            "NISCode": "150",
+                            "ISOCode": null,
+                            "Naam": "België"
+                          },
+                          "Straat": {
+                            "Code": null,
+                            "Naam": "Succalaan"
+                          },
+                          "Huisnummer": null,
+                          "Busnummer": null,
+                          "Gemeente": {
+                            "NISCode": null,
+                            "PostCode": null,
+                            "Naam": "Destelbergen"
+                          },
+                          "Staat": null
+                        },
+                        "Contact": null,
+                        "Taalcode": null,
+                        "Aanvulling": null
+                      }
+                    ],
+                    "Doorhalingen": null,
+                    "DatumBegin": "1996-04-05",
+                    "DatumEinde": "1999-02-23",
+                    "Land": {
+                      "NISCode": "150",
+                      "ISOCode": "BE",
+                      "Naam": "BELGIE"
+                    },
+                    "Straat": {
+                      "Code": "0465",
+                      "Naam": null
+                    },
+                    "Huisnummer": "11",
+                    "Busnummer": null,
+                    "Gemeente": {
+                      "NISCode": "44013",
+                      "PostCode": "9070",
+                      "Naam": null
+                    },
+                    "Staat": null
+                  }
+                ],
+                "Start": {
+                  "Datum": "1996-04-05"
+                },
+                "Inschrijving": {
+                  "Datum": "2003-05-23"
+                },
+                "Duurtijd": null,
+                "Afsluiting": null,
+                "Stopzetting": {
+                  "Datum": "1999-02-23",
+                  "Code": {
+                    "Beschrijving": null,
+                    "Value": "016"
+                  },
+                  "Omschrijving": null
+                },
+                "Rechtsvormen": null,
+                "Ondernemingsnummer": "0859047440",
+                "AuthentiekBron": {
+                  "Code": {
+                    "Beschrijving": null,
+                    "Value": "03"
+                  },
+                  "Omschrijving": {
+                    "Oorsprong": null,
+                    "TaalCode": null,
+                    "Value": "KBO"
+                  }
+                },
+                "OndernemingOfVestiging": {
+                  "Code": {
+                    "Beschrijving": "Onderneming",
+                    "Value": "1"
+                  }
+                }
+              }
+            },
+            "Uitzonderingen": null
+          }
+        },
+        "Uitzonderingen": null
+      }
+    }
+  }
+}

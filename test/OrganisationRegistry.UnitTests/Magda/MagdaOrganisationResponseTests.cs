@@ -12,17 +12,25 @@ namespace OrganisationRegistry.UnitTests.Magda
 
     public class MagdaOrganisationResponseTests
     {
-        [Fact]
-        public async Task WithoutShortName()
+        private static async Task<Envelope<GeefOndernemingResponseBody>> LoadMagdaResponse(string kboNr)
         {
-            var path = Path.Join("MagdaResponses", "0404055577.json");
+            var path = Path.Join("MagdaResponses", $"{kboNr}.json");
             var json = await File.ReadAllTextAsync(path);
 
             var magdaResponse = JsonConvert.DeserializeObject<Envelope<GeefOndernemingResponseBody>>(json);
+            return magdaResponse;
+        }
+
+        [Fact]
+        public async Task WithoutShortName()
+        {
+            var magdaResponse = await LoadMagdaResponse("0404055577");
 
             var magdaOrganisationResponse = new MagdaOrganisationResponse(
                 magdaResponse.Body.GeefOndernemingResponse.Repliek.Antwoorden.Antwoord.Inhoud.Onderneming,
                 new DateTimeProviderStub(DateTime.Today));
+
+            magdaOrganisationResponse.Should().NotBeNull();
 
             magdaOrganisationResponse.KboNumber.Should().Be("0404055577");
 
@@ -46,6 +54,20 @@ namespace OrganisationRegistry.UnitTests.Magda
             magdaOrganisationResponse.Address.ZipCode.Should().Be("2000");
 
             magdaOrganisationResponse.ValidFrom.Should().Be(new DateTime(1930, 02, 21));
+        }
+
+        [Fact]
+        public async Task WithoutLegalForms()
+        {
+            var magdaResponse = await LoadMagdaResponse("0859047440");
+
+            var magdaOrganisationResponse = new MagdaOrganisationResponse(
+                magdaResponse.Body.GeefOndernemingResponse.Repliek.Antwoorden.Antwoord.Inhoud.Onderneming,
+                new DateTimeProviderStub(DateTime.Today));
+
+            magdaOrganisationResponse.Should().NotBeNull();
+
+            magdaOrganisationResponse.LegalForm.Should().BeNull();
         }
     }
 }
