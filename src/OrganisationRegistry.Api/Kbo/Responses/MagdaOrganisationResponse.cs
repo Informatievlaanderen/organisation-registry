@@ -45,7 +45,7 @@ namespace OrganisationRegistry.Api.Kbo.Responses
 
             var legalForm = onderneming
                 ?.Rechtsvormen
-                .FirstOrDefault(type =>
+                ?.FirstOrDefault(type =>
                     OverlapsWithToday(type, dateTimeProvider.Today));
 
             if (legalForm != null)
