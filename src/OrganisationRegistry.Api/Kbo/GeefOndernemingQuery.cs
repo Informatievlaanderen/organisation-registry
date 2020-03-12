@@ -13,6 +13,7 @@ namespace OrganisationRegistry.Api.Kbo
     using System.Threading.Tasks;
     using System.Xml;
     using System.Xml.Serialization;
+    using Autofac.Features.OwnedInstances;
     using Configuration;
     using global::Magda.GeefOnderneming;
     using Magda;
@@ -23,28 +24,37 @@ namespace OrganisationRegistry.Api.Kbo
     using SqlServer.Infrastructure;
     using SqlServer.Magda;
 
-    public class GeefOndernemingQuery
+    public interface IGeefOndernemingQuery
+    {
+        Task<Envelope<GeefOndernemingResponseBody>> Execute(ClaimsPrincipal user, string kboNumberDotLess);
+    }
+
+    public class GeefOndernemingQuery : IGeefOndernemingQuery
     {
         private readonly MagdaConfiguration _configuration;
-        private readonly Func<OrganisationRegistryContext> _context;
+        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
 
-        public GeefOndernemingQuery(MagdaConfiguration configuration, Func<OrganisationRegistryContext> context)
+        public GeefOndernemingQuery(MagdaConfiguration configuration, Func<Owned<OrganisationRegistryContext>> contextFactory)
         {
             _configuration = configuration;
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
         public async Task<Envelope<GeefOndernemingResponseBody>> Execute(ClaimsPrincipal user, string kboNumberDotLess)
         {
-            var reference = await CreateAndStoreReference(_context(), user);
-            return await PerformMagdaRequest<GeefOndernemingResponseBody>(
-                $"{_configuration.KBOMagdaEndPoint}/GeefOndernemingDienst-02.00/soap/WebService",
-                SignEnvelope(
-                    MakeEnvelope(
-                        new GeefOndernemingBody
-                        {
-                            GeefOnderneming = MakeGeefOndernemingRequest(kboNumberDotLess, reference)
-                        })));
+            using (var organisationRegistryContext = _contextFactory().Value)
+            {
+                var reference = await CreateAndStoreReference(organisationRegistryContext, user);
+
+                return await PerformMagdaRequest<GeefOndernemingResponseBody>(
+                    $"{_configuration.KBOMagdaEndPoint}/GeefOndernemingDienst-02.00/soap/WebService",
+                    SignEnvelope(
+                        MakeEnvelope(
+                            new GeefOndernemingBody
+                            {
+                                GeefOnderneming = MakeGeefOndernemingRequest(kboNumberDotLess, reference)
+                            })));
+            }
         }
 
         private async Task<Envelope<T>> PerformMagdaRequest<T>(string endpoint, string signedEnvelope)

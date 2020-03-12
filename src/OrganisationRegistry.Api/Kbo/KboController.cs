@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Api.Kbo
 {
+    using System;
     using Configuration;
     using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ namespace OrganisationRegistry.Api.Kbo
     using SqlServer.Infrastructure;
     using System.Net;
     using System.Threading.Tasks;
+    using Autofac.Features.OwnedInstances;
     using Infrastructure.Security;
     using Magda;
     using OrganisationRegistry.Infrastructure.Commands;
@@ -37,28 +39,29 @@ namespace OrganisationRegistry.Api.Kbo
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(NotFoundResult), (int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> Get(
-            [FromServices] OrganisationRegistryContext context,
-            [FromServices] IDateTimeProvider dateTimeProvider,
+            [FromServices] Func<Owned<OrganisationRegistryContext>> contextFactory,
+            [FromServices] IKboOrganisationRetriever kboOrganisationRetriever,
             [FromRoute] string kboNumberInput)
         {
             var kboNumber = new KboNumber(kboNumberInput);
             var dotFormat = kboNumber.ToDotFormat();
             var digitsOnly = kboNumber.ToDigitsOnly();
 
-            if (await context
-                .OrganisationDetail
-                .AnyAsync(x => x.KboNumber.Equals(dotFormat) || x.KboNumber.Equals(digitsOnly)))
+            using (var organisationRegistryContext = contextFactory().Value)
             {
-                ModelState.AddModelError(
-                    key: "Duplicate",
-                    errorMessage: $"Organisatie met KBO nummer {kboNumber} is reeds gedefinieerd in wegwijs.");
+                if (await organisationRegistryContext
+                    .OrganisationDetail
+                    .AnyAsync(x => x.KboNumber.Equals(dotFormat) || x.KboNumber.Equals(digitsOnly)))
+                {
+                    ModelState.AddModelError(
+                        key: "Duplicate",
+                        errorMessage: $"Organisatie met KBO nummer {kboNumber} is reeds gedefinieerd in wegwijs.");
 
-                return BadRequest(ModelState);
+                    return BadRequest(ModelState);
+                }
             }
 
-            var kboOrganisation = await
-                new KboOrganisationRetriever(_magdaConfiguration, () => context, dateTimeProvider)
-                    .RetrieveOrganisation(User, kboNumber);
+            var kboOrganisation = await kboOrganisationRetriever.RetrieveOrganisation(User, kboNumber);
 
             if (kboOrganisation == null)
                 return NotFound();

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,33 +6,26 @@ namespace OrganisationRegistry.Api.Kbo
 {
     using System.Security.Claims;
     using Configuration;
-    using Magda;
     using Microsoft.AspNetCore.Hosting;
     using Responses;
-    using SqlServer.Infrastructure;
     using OrganisationRegistry.Organisation;
 
     public class KboOrganisationRetriever: IKboOrganisationRetriever
     {
-        private readonly MagdaConfiguration _configuration;
-        private readonly Func<OrganisationRegistryContext> _contextFactory;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IGeefOndernemingQuery _geefOndernemingQuery;
 
         public KboOrganisationRetriever(
-            MagdaConfiguration configuration,
-            Func<OrganisationRegistryContext> contextFactory,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider,
+            IGeefOndernemingQuery geefOndernemingQuery)
         {
-            _configuration = configuration;
-            _contextFactory = contextFactory;
             _dateTimeProvider = dateTimeProvider;
+            _geefOndernemingQuery = geefOndernemingQuery;
         }
 
         public async Task<IMagdaOrganisationResponse> RetrieveOrganisation(ClaimsPrincipal user, KboNumber kboNumber)
         {
-            var kboOrganisation =
-                await new GeefOndernemingQuery(_configuration, _contextFactory)
-                    .Execute(user, kboNumber.ToDigitsOnly());
+            var kboOrganisation = await _geefOndernemingQuery.Execute(user, kboNumber.ToDigitsOnly());
 
             if (kboOrganisation == null)
                 return null;
