@@ -1,3 +1,10 @@
+## [1.22.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.22.0...v1.22.1) (2020-03-13)
+
+
+### Bug Fixes
+
+* force build ([8f7db8d](https://github.com/informatievlaanderen/organisation-registry/commit/8f7db8d814e13e9cbc26df4fc527e48340b3dcbf))
+
 # [1.22.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.21.0...v1.22.0) (2020-03-13)
 
 
