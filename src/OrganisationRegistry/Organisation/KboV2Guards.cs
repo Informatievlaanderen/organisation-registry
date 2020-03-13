@@ -42,7 +42,7 @@ namespace OrganisationRegistry.Organisation
 
         public static void ThrowIfChanged(string previousValue, string newValue)
         {
-            if(previousValue != newValue)
+            if (previousValue != newValue)
                 throw new CannotChangeKboDataException();
         }
     }
