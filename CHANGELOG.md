@@ -1,3 +1,10 @@
+# [1.22.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.21.0...v1.22.0) (2020-03-13)
+
+
+### Features
+
+* make kbo data readonly ([64ffeb1](https://github.com/informatievlaanderen/organisation-registry/commit/64ffeb158bf523e017bc3fd2b72846b2bbc10e9a))
+
 # [1.21.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.20.0...v1.21.0) (2020-03-12)
 
 
