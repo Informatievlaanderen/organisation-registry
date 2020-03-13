@@ -126,5 +126,9 @@ export class OrganisationInfoEditComponent implements OnInit {
   private enableForm() {
     this.form.enable();
     this.form.get('ovoNumber').disable();
+    if (this.form.value.kboNumber) {
+      this.form.get('name').disable();
+      this.form.get('shortName').disable();
+    }
   }
 }

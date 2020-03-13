@@ -196,6 +196,12 @@ namespace OrganisationRegistry.Organisation
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
 
+            if (KboNumber != null)
+            {
+                KboV2Guards.ThrowIfChanged(Name, name);
+                KboV2Guards.ThrowIfChanged(_shortName, shortName);
+            }
+
             ApplyChange(new OrganisationInfoUpdated(
                 Id,
                 name,

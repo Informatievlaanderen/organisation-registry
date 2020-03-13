@@ -39,5 +39,11 @@ namespace OrganisationRegistry.Organisation
             if (organisationRegistryConfiguration.KboV2LegalFormOrganisationClassificationTypeId == organisationClassificationType.Id)
                 throw new UserCannotCoupleKboLegalFormOrganisationClassification();
         }
+
+        public static void ThrowIfChanged(string previousValue, string newValue)
+        {
+            if(previousValue != newValue)
+                throw new CannotChangeKboDataException();
+        }
     }
 }
