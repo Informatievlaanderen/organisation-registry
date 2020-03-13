@@ -188,13 +188,13 @@ namespace OrganisationRegistry.Organisation
             Session.Commit();
         }
 
-        private RegisteredOffice GetOrAddLocations(IMagdaAddress address)
+        private KboRegisteredOffice GetOrAddLocations(IMagdaAddress address)
         {
             if (address == null)
                 return null;
 
             var location = AddOrGetLocation(address);
-            return new RegisteredOffice(location, address.ValidFrom, address.ValidTo);
+            return new KboRegisteredOffice(location, address.ValidFrom, address.ValidTo);
         }
 
         private Location AddOrGetLocation(IMagdaAddress address)
@@ -243,7 +243,7 @@ namespace OrganisationRegistry.Organisation
         }
 
         private void AddAddresses(Organisation organisation,
-            RegisteredOffice address,
+            KboRegisteredOffice address,
             LocationType registeredOfficeLocationType)
         {
             if (address == null)
@@ -299,13 +299,13 @@ namespace OrganisationRegistry.Organisation
         }
     }
 
-    public class RegisteredOffice
+    public class KboRegisteredOffice
     {
         public Location Location { get; }
         public DateTime? ValidFrom { get; }
         public DateTime? ValidTo { get; }
 
-        public RegisteredOffice(Location location, DateTime? validFrom, DateTime? validTo)
+        public KboRegisteredOffice(Location location, DateTime? validFrom, DateTime? validTo)
         {
             Location = location;
             ValidFrom = validFrom;

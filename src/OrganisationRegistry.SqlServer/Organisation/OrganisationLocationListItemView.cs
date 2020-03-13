@@ -92,7 +92,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<LocationUpdated>,
         IEventHandler<OrganisationLocationAdded>,
         IEventHandler<KboRegisteredOfficeOrganisationLocationAdded>,
-        IEventHandler<KboRegisteredOfficeOrganisationLocationEnded>,
+        IEventHandler<KboRegisteredOfficeOrganisationLocationRemoved>,
         IEventHandler<OrganisationLocationUpdated>,
         IEventHandler<LocationTypeUpdated>
     {
@@ -185,7 +185,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         }
 
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationEnded> message)
+        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationRemoved> message)
         {
             using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
             {
