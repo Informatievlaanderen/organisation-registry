@@ -2,7 +2,7 @@ namespace OrganisationRegistry.Organisation.Events
 {
     using System;
 
-    public class KboLegalFormOrganisationOrganisationClassificationEnded : BaseEvent<KboLegalFormOrganisationOrganisationClassificationEnded>
+    public class KboLegalFormOrganisationOrganisationClassificationRemoved : BaseEvent<KboLegalFormOrganisationOrganisationClassificationRemoved>
     {
         public Guid OrganisationId => Id;
         public Guid OrganisationOrganisationClassificationId { get; }
@@ -14,7 +14,7 @@ namespace OrganisationRegistry.Organisation.Events
         public DateTime? ValidTo { get; }
         public DateTime? PreviouslyValidTo { get; }
 
-        public KboLegalFormOrganisationOrganisationClassificationEnded(
+        public KboLegalFormOrganisationOrganisationClassificationRemoved(
             Guid organisationId, Guid organisationOrganisationClassificationId,
             Guid organisationClassificationTypeId, string organisationClassificationTypeName,
             Guid organisationClassificationId, string organisationClassificationName,

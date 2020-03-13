@@ -31,7 +31,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         private Guid _legalFormOrganisationClassificationTypeId;
         private Guid _organisationClassificationId;
         private Guid _anotherOrganisationClassificationId;
-        private Guid _registeredOfficeLocationId;
         private Guid _registeredOfficeLocationToRemoveId;
         private DateTimeProviderStub _dateTimeProviderStub;
         private KboNumber _kboNumber;
@@ -48,7 +47,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             };
             _kboNumber = new KboNumber("BE0123456789");
             _organisationId = new OrganisationId(Guid.NewGuid());
-            _registeredOfficeLocationId = new LocationId(Guid.NewGuid());
             _registeredOfficeLocationToRemoveId = new LocationId(Guid.NewGuid());
             _legalFormOrganisationClassificationTypeId = new OrganisationClassificationTypeId(_organisationRegistryConfigurationStub.KboV2LegalFormOrganisationClassificationTypeId);
             _organisationClassificationId = new OrganisationClassificationId(Guid.NewGuid());
@@ -61,13 +59,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 new OrganisationClassificationCreated(_organisationClassificationId, "Classificatie", 1, "Some Legal Code", true, _legalFormOrganisationClassificationTypeId, "ClassificatieType"),
                 new OrganisationClassificationCreated(_anotherOrganisationClassificationId, "Classificatie", 1, "Another Legal Code", true, _legalFormOrganisationClassificationTypeId, "ClassificatieType"),
                 new LocationTypeCreated(_organisationRegistryConfigurationStub.KboV2RegisteredOfficeLocationTypeId, "Registered KBO Office"),
-                new LocationCreated(_registeredOfficeLocationId,
-                    null,
-                    "Waregemsestraat, 8999 Evergem, Belgie",
-                    "Waregemsestraat",
-                    "8999",
-                    "Evergem",
-                    "Belgie"),
                 new LocationCreated(_registeredOfficeLocationToRemoveId,
                     null,
                     "Derbylaan, 8881 Adinkerke, Belgie",
@@ -117,7 +108,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 new KboOrganisationBankAccountAdded(
                     _organisationId,
                     Guid.NewGuid(),
-                    "BE71 0000 2345 6769",
+                    "BE71 0961 2345 6769",
                     true,
                     "GKCCBEBB",
                     true,
@@ -126,9 +117,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 new KboOrganisationBankAccountAdded(
                     _organisationId,
                     Guid.NewGuid(),
-                    "BE71 0961 2345 6769",
+                    "BE71 0961 9876 6769",
                     true,
-                    "GKCCBEBB",
+                    "GKCCBABB",
                     true,
                     new DateTime(2000, 1, 1),
                     new DateTime(2001, 1, 1))
@@ -166,17 +157,16 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                             {
                                 Iban = "BE71 0961 2345 6769",
                                 Bic = "GKCCBEBB",
-                                ValidFrom = new DateTime(1990, 1, 1),
-                                ValidTo = new DateTime(2010, 1, 1),
+                                ValidFrom = new DateTime(2000, 1, 1),
+                                ValidTo = new DateTime(2001, 1, 1),
                             },
                             new BankAccountStub
                             {
-                                Iban = "BE88 8881 2345 6769",
+                                Iban = "BE88 8881 8888 6769",
                                 Bic = "GKCCBEBB",
                                 ValidFrom = new DateTime(2000, 1, 1),
                                 ValidTo = new DateTime(2001, 1, 1),
                             }
-
                         },
                         LegalForm =
                             new LegalFormStub
@@ -189,7 +179,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                             new AddressStub
                             {
                                 City = "Evergem",
-                                Street = "Waregemsestraat",
+                                Street = "AndereStraat",
                                 Country = "Belgie",
                                 ZipCode = "8999",
                                 ValidFrom = null,
@@ -201,24 +191,24 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 locationRetriever: new KboLocationRetrieverStub(address => (Guid?) null));
         }
 
-        protected override int ExpectedNumberOfEvents => 6;
+        protected override int ExpectedNumberOfEvents => 10;
 
-        [Fact(Skip = "Under construction")]
+        [Fact]
         public void CreatesTheMissingLocationsOnceBeforeCreatingTheOrganisation()
         {
             var organisationCreated = PublishedEvents[0].UnwrapBody<LocationCreated>();
             organisationCreated.Should().NotBeNull();
 
             organisationCreated.LocationId.Should().NotBeEmpty();
-            organisationCreated.Street.Should().Be("Waregemsestraat");
+            organisationCreated.Street.Should().Be("AndereStraat");
             organisationCreated.City.Should().Be("Evergem");
             organisationCreated.ZipCode.Should().Be("8999");
             organisationCreated.Country.Should().Be("Belgie");
             organisationCreated.CrabLocationId.Should().BeNullOrEmpty();
-            organisationCreated.FormattedAddress.Should().Be("Waregemsestraat, 8999 Evergem, Belgie");
+            organisationCreated.FormattedAddress.Should().Be("AndereStraat, 8999 Evergem, Belgie");
         }
 
-        [Fact(Skip = "Under construction")]
+        [Fact]
         public void UpdatesTheOrganisationInfoFromKbo()
         {
             var organisationCoupledWithKbo = PublishedEvents[1].UnwrapBody<OrganisationInfoUpdatedFromKbo>();
@@ -229,55 +219,55 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             organisationCoupledWithKbo.ShortName.Should().Be("SHORT NAME FROM KBO");
         }
 
-        [Fact(Skip = "Under construction")]
+        [Fact]
         public void UpdatesTheLocations()
         {
-            var organisationLocationAdded = PublishedEvents[2].UnwrapBody<KboRegisteredOfficeOrganisationLocationAdded>();
+            var organisationLocationRemoved = PublishedEvents[2].UnwrapBody<KboRegisteredOfficeOrganisationLocationRemoved>();
+            organisationLocationRemoved.Should().NotBeNull();
+
+            organisationLocationRemoved.OrganisationId.Should().Be(_organisationId);
+            organisationLocationRemoved.OrganisationLocationId.Should().NotBeEmpty();
+            organisationLocationRemoved.LocationId.Should().Be(_registeredOfficeLocationToRemoveId);
+            organisationLocationRemoved.IsMainLocation.Should().BeFalse();
+            organisationLocationRemoved.LocationFormattedAddress.Should().Be("Derbylaan, 8881 Adinkerke, Belgie");
+            organisationLocationRemoved.LocationTypeId.Should().Be(_organisationRegistryConfigurationStub.KboV2RegisteredOfficeLocationTypeId);
+            organisationLocationRemoved.LocationTypeName.Should().Be("Registered KBO Office");
+            organisationLocationRemoved.ValidFrom.Should().Be(new ValidFrom(1999, 12, 31));
+            organisationLocationRemoved.ValidTo.Should().Be(new ValidTo(2019, 9, 8));
+
+            var organisationLocationAdded = PublishedEvents[3].UnwrapBody<KboRegisteredOfficeOrganisationLocationAdded>();
             organisationLocationAdded.Should().NotBeNull();
 
             organisationLocationAdded.OrganisationId.Should().Be(_organisationId);
             organisationLocationAdded.OrganisationLocationId.Should().NotBeEmpty();
             organisationLocationAdded.LocationId.Should().Be(PublishedEvents[0].UnwrapBody<LocationCreated>().LocationId);
             organisationLocationAdded.IsMainLocation.Should().BeFalse();
-            organisationLocationAdded.LocationFormattedAddress.Should().Be("Waregemsestraat, 8999 Evergem, Belgie");
+            organisationLocationAdded.LocationFormattedAddress.Should().Be("AndereStraat, 8999 Evergem, Belgie");
             organisationLocationAdded.LocationTypeId.Should().Be(_organisationRegistryConfigurationStub.KboV2RegisteredOfficeLocationTypeId);
             organisationLocationAdded.LocationTypeName.Should().Be("Registered KBO Office");
             organisationLocationAdded.ValidFrom.Should().Be(new ValidFrom(2019, 9, 9));
             organisationLocationAdded.ValidTo.Should().Be(null);
-
-            var organisationLocationUpdated = PublishedEvents[3].UnwrapBody<KboRegisteredOfficeOrganisationLocationEnded>();
-            organisationLocationUpdated.Should().NotBeNull();
-
-            organisationLocationUpdated.OrganisationId.Should().Be(_organisationId);
-            organisationLocationUpdated.OrganisationLocationId.Should().NotBeEmpty();
-            organisationLocationUpdated.LocationId.Should().Be(_registeredOfficeLocationToRemoveId);
-            organisationLocationUpdated.IsMainLocation.Should().BeFalse();
-            organisationLocationUpdated.LocationFormattedAddress.Should().Be("Derbylaan, 8881 Adinkerke, Belgie");
-            organisationLocationUpdated.LocationTypeId.Should().Be(_organisationRegistryConfigurationStub.KboV2RegisteredOfficeLocationTypeId);
-            organisationLocationUpdated.LocationTypeName.Should().Be("Registered KBO Office");
-            organisationLocationUpdated.ValidFrom.Should().Be(new ValidFrom(1999, 12, 31));
-            organisationLocationUpdated.ValidTo.Should().Be(new ValidTo(2019, 9, 8));
         }
 
-        [Fact(Skip = "Under construction")]
+        [Fact]
         public void UpdatesTheFormalNameLabel()
         {
-            var kboFormalNameLabelEnded = PublishedEvents[4].UnwrapBody<KboFormalNameLabelEnded>();
-            kboFormalNameLabelEnded.Should().NotBeNull();
+            var kboFormalNameLabelRemoved = PublishedEvents[4].UnwrapBody<KboFormalNameLabelRemoved>();
+            kboFormalNameLabelRemoved.Should().NotBeNull();
 
-            kboFormalNameLabelEnded.OrganisationId.Should().Be(_organisationId);
-            kboFormalNameLabelEnded.OrganisationLabelId.Should().NotBeEmpty();
-            kboFormalNameLabelEnded.LabelTypeId.Should().Be(_organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId);
-            kboFormalNameLabelEnded.LabelTypeName.Should().Be("Kbo formele naam");
-            kboFormalNameLabelEnded.Value.Should().Be("Formele naam organisatie");
-            kboFormalNameLabelEnded.ValidFrom.Should().Be(new ValidFrom(new DateTime(2008, 12, 22)));
-            kboFormalNameLabelEnded.ValidTo.Should().Be(new ValidTo(new DateTime(2009, 1, 1)));
+            kboFormalNameLabelRemoved.OrganisationId.Should().Be(_organisationId);
+            kboFormalNameLabelRemoved.OrganisationLabelId.Should().NotBeEmpty();
+            kboFormalNameLabelRemoved.LabelTypeId.Should().Be(_organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId);
+            kboFormalNameLabelRemoved.LabelTypeName.Should().Be("Kbo formele naam");
+            kboFormalNameLabelRemoved.Value.Should().Be("Formele naam organisatie");
+            kboFormalNameLabelRemoved.ValidFrom.Should().Be(new ValidFrom(new DateTime(2008, 12, 22)));
+            kboFormalNameLabelRemoved.ValidTo.Should().Be(new ValidTo(new DateTime(2009, 1, 1)));
 
             var kboFormalNameLabelAdded = PublishedEvents[5].UnwrapBody<KboFormalNameLabelAdded>();
             kboFormalNameLabelAdded.Should().NotBeNull();
 
             kboFormalNameLabelAdded.OrganisationId.Should().Be(_organisationId);
-            kboFormalNameLabelAdded.OrganisationLabelId.Should().NotBeEmpty().And.Should().NotBe(kboFormalNameLabelEnded.OrganisationLabelId);
+            kboFormalNameLabelAdded.OrganisationLabelId.Should().NotBeEmpty().And.Should().NotBe(kboFormalNameLabelRemoved.OrganisationLabelId);
             kboFormalNameLabelAdded.LabelTypeId.Should().Be(_organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId);
             kboFormalNameLabelAdded.LabelTypeName.Should().Be("Kbo formele naam");
             kboFormalNameLabelAdded.Value.Should().Be("NAME FROM KBO");
@@ -285,22 +275,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             kboFormalNameLabelAdded.ValidTo.Should().Be(new ValidTo());
         }
 
-        [Fact(Skip = "Under construction")]
+        [Fact]
         public void UpdatesLegalForms()
         {
-            var legalFormOrganisationOrganisationClassificationAdded = PublishedEvents[6].UnwrapBody<KboLegalFormOrganisationOrganisationClassificationAdded>();
-            legalFormOrganisationOrganisationClassificationAdded.Should().NotBeNull();
-
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationId.Should().Be(_organisationId);
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationOrganisationClassificationId.Should().NotBeEmpty();
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationTypeId.Should().Be(_legalFormOrganisationClassificationTypeId);
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationTypeName.Should().Be("ClassificatieType");
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationId.Should().Be(_anotherOrganisationClassificationId);
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationName.Should().Be("Classificatie");
-            legalFormOrganisationOrganisationClassificationAdded.ValidFrom.Should().Be(new ValidFrom(2019, 9, 9));
-            legalFormOrganisationOrganisationClassificationAdded.ValidTo.Should().Be(null);
-
-            var legalFormOrganisationOrganisationClassificationEnded = PublishedEvents[7].UnwrapBody<KboLegalFormOrganisationOrganisationClassificationEnded>();
+            var legalFormOrganisationOrganisationClassificationEnded = PublishedEvents[6].UnwrapBody<KboLegalFormOrganisationOrganisationClassificationRemoved>();
             legalFormOrganisationOrganisationClassificationEnded.Should().NotBeNull();
 
             legalFormOrganisationOrganisationClassificationEnded.OrganisationId.Should().Be(_organisationId);
@@ -311,22 +289,48 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationName.Should().Be("Classificatie");
             legalFormOrganisationOrganisationClassificationEnded.ValidFrom.Should().Be(new ValidFrom(2020, 12, 11));
             legalFormOrganisationOrganisationClassificationEnded.ValidTo.Should().Be(new ValidTo(2020, 12, 12));
+
+            var legalFormOrganisationOrganisationClassificationAdded = PublishedEvents[7].UnwrapBody<KboLegalFormOrganisationOrganisationClassificationAdded>();
+            legalFormOrganisationOrganisationClassificationAdded.Should().NotBeNull();
+
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationId.Should().Be(_organisationId);
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationOrganisationClassificationId.Should().NotBeEmpty();
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationTypeId.Should().Be(_legalFormOrganisationClassificationTypeId);
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationTypeName.Should().Be("ClassificatieType");
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationId.Should().Be(_anotherOrganisationClassificationId);
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationName.Should().Be("Classificatie");
+            legalFormOrganisationOrganisationClassificationAdded.ValidFrom.Should().Be(new ValidFrom(2019, 9, 9));
+            legalFormOrganisationOrganisationClassificationAdded.ValidTo.Should().Be(null);
         }
 
-        [Fact(Skip = "Under construction")]
+        [Fact]
         public void AddsBankAccounts()
         {
-            var organisationBankAccountAdded = PublishedEvents[7].UnwrapBody<KboOrganisationBankAccountAdded>();
+            var organisationBankAccountRemoved = PublishedEvents[8].UnwrapBody<KboOrganisationBankAccountRemoved>();
+            organisationBankAccountRemoved.Should().NotBeNull();
+
+            organisationBankAccountRemoved.OrganisationId.Should().Be(_organisationId);
+            organisationBankAccountRemoved.OrganisationBankAccountId.Should().NotBeEmpty();
+            organisationBankAccountRemoved.BankAccountNumber.Should().Be("BE71 0961 9876 6769");
+            organisationBankAccountRemoved.Bic.Should().Be("GKCCBABB");
+            organisationBankAccountRemoved.IsIban.Should().Be(true);
+            organisationBankAccountRemoved.IsBic.Should().Be(true);
+            organisationBankAccountRemoved.ValidFrom.Should().Be(new ValidFrom(2000, 1, 1));
+            organisationBankAccountRemoved.ValidTo.Should().Be(new ValidTo(2001, 1, 1));
+
+            var organisationBankAccountAdded = PublishedEvents[9].UnwrapBody<KboOrganisationBankAccountAdded>();
             organisationBankAccountAdded.Should().NotBeNull();
 
             organisationBankAccountAdded.OrganisationId.Should().Be(_organisationId);
             organisationBankAccountAdded.OrganisationBankAccountId.Should().NotBeEmpty();
-            organisationBankAccountAdded.BankAccountNumber.Should().Be("BE71096123456769");
+            organisationBankAccountAdded.BankAccountNumber.Should().Be("BE88 8881 8888 6769");
             organisationBankAccountAdded.Bic.Should().Be("GKCCBEBB");
             organisationBankAccountAdded.IsIban.Should().Be(true);
             organisationBankAccountAdded.IsBic.Should().Be(true);
             organisationBankAccountAdded.ValidFrom.Should().Be(new ValidFrom(2000, 1, 1));
             organisationBankAccountAdded.ValidTo.Should().Be(new ValidTo(2001, 1, 1));
+
+
         }
 
         public UpdateFromKboTests(ITestOutputHelper helper) : base(helper)

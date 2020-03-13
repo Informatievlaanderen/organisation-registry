@@ -2,7 +2,7 @@ namespace OrganisationRegistry.Organisation.Events
 {
     using System;
 
-    public class KboFormalNameLabelEnded : BaseEvent<KboFormalNameLabelEnded>
+    public class KboFormalNameLabelRemoved : BaseEvent<KboFormalNameLabelRemoved>
     {
         public Guid OrganisationId => Id;
         public Guid OrganisationLabelId { get; }
@@ -13,7 +13,7 @@ namespace OrganisationRegistry.Organisation.Events
         public DateTime? ValidTo { get; }
         public DateTime? PreviouslyValidTo { get; }
 
-        public KboFormalNameLabelEnded(Guid organisationId, Guid organisationLabelId, Guid labelTypeId, string labelTypeName, string value, DateTime? validFrom, DateTime? validTo, DateTime? previouslyValidTo)
+        public KboFormalNameLabelRemoved(Guid organisationId, Guid organisationLabelId, Guid labelTypeId, string labelTypeName, string value, DateTime? validFrom, DateTime? validTo, DateTime? previouslyValidTo)
         {
             Id = organisationId;
             OrganisationLabelId = organisationLabelId;
