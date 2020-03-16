@@ -2,13 +2,13 @@
   <div class="cta-title">
     <h3 class="h3 cta-title__title">Algemene informatie</h3>
     <div class="cta-title__cta">
-      <div>
+      <div *ngIf="(canEditOrganisation | async)">
         <a *ngIf="!organisation.kboNumber"
            class="button button--secondary button--notice"
            [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
            [routerLink]="'./couplewithkbo'">Koppel met Kbo</a>
 
-        <a *ngIf="(canEditOrganisation | async)"
+        <a
            class="button"
            [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
            [routerLink]="'./edit'">Wijzig</a>
