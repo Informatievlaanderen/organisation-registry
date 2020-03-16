@@ -15,6 +15,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         BaseProjection<OrganisationBankAccount>,
         IEventHandler<OrganisationBankAccountAdded>,
         IEventHandler<KboOrganisationBankAccountAdded>,
+        IEventHandler<KboOrganisationBankAccountRemoved>,
         IEventHandler<OrganisationBankAccountUpdated>
     {
         private readonly Elastic _elastic;
@@ -35,6 +36,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountAdded> message)
         {
             AddBankAccount(message.Body.OrganisationId, message.Body.OrganisationBankAccountId, message.Body.BankAccountNumber, message.Body.IsIban, message.Body.Bic, message.Body.IsBic, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
+        }
+
+        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountRemoved> message)
+        {
+            RemoveBankAccount(message.Body.OrganisationId, message.Body.OrganisationBankAccountId, message.Number, message.Timestamp);
         }
 
         private void AddBankAccount(Guid organisationId, Guid organisationBankAccountId, string bankAccountNumber, bool isIban, string bic, bool isBic, DateTime? validFrom, DateTime? validTo, int changeId, DateTimeOffset timestamp)
@@ -58,6 +64,22 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     bic,
                     isBic,
                     new Period(validFrom, validTo)));
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+        }
+
+        private void RemoveBankAccount(Guid organisationId, Guid organisationBankAccountId, int changeId, DateTimeOffset timestamp)
+        {
+            var organisationDocument = _elastic.TryGet(() =>
+                _elastic.WriteClient.Get<OrganisationDocument>(organisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = changeId;
+            organisationDocument.ChangeTime = timestamp;
+
+            if (organisationDocument.BankAccounts == null)
+                organisationDocument.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
+            organisationDocument.BankAccounts.RemoveExistingListItems(x =>
+                x.OrganisationBankAccountId == organisationBankAccountId);
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }

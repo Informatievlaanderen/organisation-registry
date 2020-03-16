@@ -192,7 +192,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 var organisationLocationListItem = context.OrganisationLocationList.Single(b =>
                     b.OrganisationLocationId == message.Body.OrganisationLocationId);
 
-                organisationLocationListItem.ValidTo = message.Body.ValidTo;
+                context.OrganisationLocationList.Remove(organisationLocationListItem);
 
                 context.SaveChanges();
             }

@@ -57,6 +57,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
         IEventHandler<OrganisationOrganisationClassificationAdded>,
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
+        IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
         IEventHandler<OrganisationOrganisationClassificationUpdated>,
 
         IEventHandler<InitialiseProjection>
@@ -855,6 +856,19 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
                         ClassificationValidFrom = validFrom,
                         ClassificationValidTo = validTo
                     });
+
+                context.SaveChanges();
+            }
+        }
+
+        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationRemoved> message)
+        {
+            using (var context = _contextFactory().Value)
+            {
+                var item = context.BodySeatGenderRatioOrganisationClassificationList.Single(x =>
+                    x.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId);
+
+                context.BodySeatGenderRatioOrganisationClassificationList.Remove(item);
 
                 context.SaveChanges();
             }
