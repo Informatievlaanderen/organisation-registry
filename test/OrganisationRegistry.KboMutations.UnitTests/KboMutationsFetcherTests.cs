@@ -33,7 +33,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                 var kboFtpClient = new KboMutationsFetcher(
                     null,
                     new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
-                    () => new Owned<IFtpClient>(ftpClient.Object, this));
+                    new FtpClientFactoryStub(ftpClient.Object));
 
                 var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
 
@@ -58,7 +58,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                 var kboFtpClient = new KboMutationsFetcher(
                     null,
                     new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
-                    () => new Owned<IFtpClient>(ftpClient.Object, this));
+                    new FtpClientFactoryStub(ftpClient.Object));
 
                 var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
 
@@ -83,7 +83,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                 var kboFtpClient = new KboMutationsFetcher(
                     null,
                     new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
-                    () => new Owned<IFtpClient>(ftpClient.Object, this));
+                    new FtpClientFactoryStub(ftpClient.Object));
 
                 var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
 
@@ -107,7 +107,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                 var kboFtpClient = new KboMutationsFetcher(
                     null,
                     new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
-                    () => new Owned<IFtpClient>(ftpClient.Object, this));
+                    new FtpClientFactoryStub(ftpClient.Object));
 
                 var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
 
@@ -133,7 +133,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                 var kboFtpClient = new KboMutationsFetcher(
                     null,
                     new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
-                    () => new Owned<IFtpClient>(ftpClient.Object, this));
+                    new FtpClientFactoryStub(ftpClient.Object));
 
                 var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
 
@@ -159,7 +159,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                 var kboFtpClient = new KboMutationsFetcher(
                     null,
                     new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
-                    () => new Owned<IFtpClient>(ftpClient.Object, this));
+                    new FtpClientFactoryStub(ftpClient.Object));
 
                 var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
 
@@ -183,7 +183,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                 var kboFtpClient = new KboMutationsFetcher(
                     null,
                     new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
-                    () => new Owned<IFtpClient>(ftpClient.Object, this));
+                    new FtpClientFactoryStub(ftpClient.Object));
 
                 var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
 
@@ -199,7 +199,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
             var kboFtpClient = new KboMutationsFetcher(
                 null,
                 new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
-                () => new Owned<IFtpClient>(ftpClient.Object, this));
+                new FtpClientFactoryStub(ftpClient.Object));
 
             var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
 
@@ -236,6 +236,21 @@ namespace OrganisationRegistry.KboMutations.UnitTests
 
         public void Dispose()
         {
+        }
+    }
+
+    public class FtpClientFactoryStub : IFtpClientFactory
+    {
+        private readonly IFtpClient _ftpClient;
+
+        public FtpClientFactoryStub(IFtpClient ftpClient)
+        {
+            _ftpClient = ftpClient;
+        }
+
+        public IFtpClient CreateFtpClient(KboMutationsConfiguration kboMutationsConfiguration)
+        {
+            return _ftpClient;
         }
     }
 }

@@ -1,12 +1,9 @@
 namespace OrganisationRegistry.KboMutations
 {
-    using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
     using System.Linq;
-    using System.Net;
-    using Autofac.Features.OwnedInstances;
     using Configuration;
     using CsvHelper;
     using FluentFTP;
@@ -24,13 +21,13 @@ namespace OrganisationRegistry.KboMutations
     public class KboMutationsFetcher : IKboMutationsFetcher
     {
         private readonly ILogger<KboMutationsFetcher> _logger;
-        private readonly Func<Owned<IFtpClient>> _ftpClientFactory;
+        private readonly IFtpClientFactory _ftpClientFactory;
         private readonly KboMutationsConfiguration _kboMutationsConfiguration;
         private readonly CsvHelper.Configuration.Configuration _csvFileConfiguration;
 
         public KboMutationsFetcher(ILogger<KboMutationsFetcher> logger,
             IOptions<KboMutationsConfiguration> kboMutationsConfiguration,
-            Func<Owned<IFtpClient>> ftpClientFactory)
+            IFtpClientFactory ftpClientFactory)
         {
             _logger = logger;
             _ftpClientFactory = ftpClientFactory;
@@ -47,7 +44,7 @@ namespace OrganisationRegistry.KboMutations
         public IEnumerable<MutationsFile> GetKboMutationFiles()
         {
             var mutationFiles = new List<MutationsFile>();
-            using (var ftpClient = _ftpClientFactory().Value)
+            using (var ftpClient = _ftpClientFactory.CreateFtpClient(_kboMutationsConfiguration))
             {
                 ftpClient.Connect();
 
@@ -103,7 +100,7 @@ namespace OrganisationRegistry.KboMutations
 
         public void Archive(MutationsFile file)
         {
-            using (var ftpClient = CreateFtpClient())
+            using (var ftpClient = _ftpClientFactory.CreateFtpClient(_kboMutationsConfiguration))
             {
                 ftpClient.Connect();
 
@@ -111,18 +108,6 @@ namespace OrganisationRegistry.KboMutations
 
                 ftpClient.Disconnect();
             }
-        }
-
-        private FtpClient CreateFtpClient()
-        {
-            return new FtpClient
-            {
-                Host = _kboMutationsConfiguration.Host,
-                Port = _kboMutationsConfiguration.Port,
-                Credentials = new NetworkCredential(
-                    _kboMutationsConfiguration.Username,
-                    _kboMutationsConfiguration.Password),
-            };
         }
     }
 }
