@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Api.Task
     using System;
     using System.Linq;
     using System.Net;
+    using Autofac.Features.OwnedInstances;
     using Day.Commands;
     using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
@@ -37,7 +38,9 @@ namespace OrganisationRegistry.Api.Task
         [OrganisationRegistryAuthorize(Roles = Roles.AutomatedTask + "," + Roles.Developer)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromServices] OrganisationRegistryContext context, [FromBody] TaskRequest task)
+        public IActionResult Post(
+            [FromServices] Func<Owned<OrganisationRegistryContext>> contextFactory,
+            [FromBody] TaskRequest task)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -61,25 +64,32 @@ namespace OrganisationRegistry.Api.Task
                         throw new CompensatingActionRequiresANameException();
 
                     _logger.LogInformation("Requested execution of {CompensatingAction}.", task.Params[0]);
-                    switch (task.Params[0].ToLowerInvariant())
+                    using (var context = contextFactory().Value)
                     {
-                        case "2017-05-18-fix-bodies":
-                            CompensatingAction20170518FixBodies(context);
-                            break;
+                        switch (task.Params[0].ToLowerInvariant())
+                        {
+                            case "2017-05-18-fix-bodies":
+                                CompensatingAction20170518FixBodies(context);
+                                break;
 
-                        case "2017-05-18-fix-body-seats":
-                            CompensatingAction20170518FixBodySeats(context);
-                            break;
+                            case "2017-05-18-fix-body-seats":
+                                CompensatingAction20170518FixBodySeats(context);
+                                break;
 
-                        case "2017-11-24-fix-body-mandates":
-                            CompensatingAction20171124FixBodyMandates(context);
-                            break;
+                            case "2017-11-24-fix-body-mandates":
+                                CompensatingAction20171124FixBodyMandates(context);
+                                break;
+                        }
                     }
 
                     break;
 
                 case TaskType.SyncFromKbo:
-                    SyncFromKbo(context);
+                    using (var context = contextFactory().Value)
+                    {
+                        SyncFromKbo(context);
+                    }
+
                     break;
 
                 default:
