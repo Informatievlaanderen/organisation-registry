@@ -29,7 +29,8 @@ namespace OrganisationRegistry.Api.Organisation.Queries
             string locationName,
             string locationTypeName,
             DateTime? validFrom,
-            DateTime? validTo)
+            DateTime? validTo,
+            bool isEditable)
         {
             OrganisationLocationId = organisationLocationId;
             IsMainLocation = isMainLocation;
@@ -39,7 +40,7 @@ namespace OrganisationRegistry.Api.Organisation.Queries
             ValidTo = validTo;
 
             IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
-            IsEditable = true; // will later be determined based on source (kbo or not)
+            IsEditable = isEditable;
         }
     }
 
@@ -57,7 +58,8 @@ namespace OrganisationRegistry.Api.Organisation.Queries
                 x.LocationName,
                 x.LocationTypeName,
                 x.ValidFrom,
-                x.ValidTo);
+                x.ValidTo,
+                x.IsEditable);
 
         public OrganisationLocationListQuery(OrganisationRegistryContext context, Guid organisationId)
         {
