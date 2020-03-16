@@ -22,8 +22,8 @@
               <li class="side-navigation__item">
                 <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['contacts']">Contacten</a>
               </li>
-              <li class="side-navigation__item">
-                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['bankaccounts']" *ngIf="(enableBankAccounts | async)">Bankrekeningnummers</a>
+              <li class="side-navigation__item" *ngIf="(enableBankAccounts | async)">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['bankaccounts']">Bankrekeningnummers</a>
               </li>
               <li class="side-navigation__item">
                 <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['functions']">Functies</a>
