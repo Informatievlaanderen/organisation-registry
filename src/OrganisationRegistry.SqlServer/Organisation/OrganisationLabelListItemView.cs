@@ -60,6 +60,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         Projection<OrganisationLabelListView>,
         IEventHandler<OrganisationLabelAdded>,
         IEventHandler<KboFormalNameLabelAdded>,
+        IEventHandler<KboFormalNameLabelRemoved>,
         IEventHandler<OrganisationLabelUpdated>,
         IEventHandler<LabelTypeUpdated>
     {
@@ -132,6 +133,18 @@ namespace OrganisationRegistry.SqlServer.Organisation
             using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
             {
                 context.OrganisationLabelList.Add(organisationLabelListItem);
+                context.SaveChanges();
+            }
+        }
+
+        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboFormalNameLabelRemoved> message)
+        {
+            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            {
+                var label = context.OrganisationLabelList.SingleOrDefault(item => item.OrganisationLabelId == message.Body.OrganisationLabelId);
+
+                context.OrganisationLabelList.Remove(label);
+
                 context.SaveChanges();
             }
         }

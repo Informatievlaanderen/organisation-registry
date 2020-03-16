@@ -162,6 +162,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationFormalFrameworkUpdated>,
         IEventHandler<OrganisationOrganisationClassificationAdded>,
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
+        IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
         IEventHandler<OrganisationOrganisationClassificationUpdated>,
         IEventHandler<OrganisationClassificationUpdated>
     {
@@ -641,6 +642,29 @@ namespace OrganisationRegistry.SqlServer.Organisation
                                 ValidFrom = validFrom,
                                 ValidTo = validTo
                             }));
+
+                context.SaveChanges();
+            }
+        }
+
+        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationRemoved> message)
+        {
+            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            {
+                context.OrganisationList
+                    .Include(item => item.OrganisationClassificationValidities)
+                    .Where(item => item.OrganisationId == message.Body.OrganisationId)
+                    .ToList()
+                    .ForEach(item =>
+                    {
+                        var organisationClassificationValidities = item.OrganisationClassificationValidities
+                            .Where(validity =>
+                                validity.OrganisationOrganisationClassificationId ==
+                                message.Body.OrganisationOrganisationClassificationId)
+                            .ToList();
+
+                        context.OrganisationClassificationValidities.RemoveRange(organisationClassificationValidities);
+                    });
 
                 context.SaveChanges();
             }

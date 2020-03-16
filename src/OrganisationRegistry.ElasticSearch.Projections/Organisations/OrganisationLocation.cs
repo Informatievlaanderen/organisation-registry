@@ -54,7 +54,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationRemoved> message)
         {
-            UpdateOrganisationLocation(message.Body.OrganisationId, message.Number, message.Timestamp, message.Body.OrganisationLocationId, message.Body.LocationId, message.Body.LocationFormattedAddress, message.Body.IsMainLocation, message.Body.LocationTypeId, message.Body.LocationTypeName, message.Body.ValidFrom, message.Body.ValidTo);
+            RemoveOrganisationLocation(message.Body.OrganisationId, message.Number, message.Timestamp, message.Body.OrganisationLocationId, message.Body.LocationId, message.Body.LocationFormattedAddress, message.Body.IsMainLocation, message.Body.LocationTypeId, message.Body.LocationTypeName, message.Body.ValidFrom, message.Body.ValidTo);
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationUpdated> message)
@@ -109,6 +109,20 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     bodyLocationTypeId,
                     bodyLocationTypeName,
                     new Period(bodyValidFrom, bodyValidTo)));
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+        }
+
+        private void RemoveOrganisationLocation(Guid bodyOrganisationId, int organisationDocumentChangeId, DateTimeOffset organisationDocumentChangeTime, Guid bodyOrganisationLocationId, Guid bodyLocationId, string bodyLocationFormattedAddress, bool bodyIsMainLocation, Guid? bodyLocationTypeId, string bodyLocationTypeName, DateTime? bodyValidFrom, DateTime? bodyValidTo)
+        {
+            var organisationDocument = _elastic.TryGet(() =>
+                _elastic.WriteClient.Get<OrganisationDocument>(bodyOrganisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = organisationDocumentChangeId;
+            organisationDocument.ChangeTime = organisationDocumentChangeTime;
+
+            organisationDocument.Locations.RemoveExistingListItems(x =>
+                x.OrganisationLocationId == bodyOrganisationLocationId);
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }

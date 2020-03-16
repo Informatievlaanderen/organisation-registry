@@ -66,6 +66,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         Projection<OrganisationOrganisationClassificationListView>,
         IEventHandler<OrganisationOrganisationClassificationAdded>,
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
+        IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
         IEventHandler<OrganisationOrganisationClassificationUpdated>,
         IEventHandler<OrganisationClassificationTypeUpdated>,
         IEventHandler<OrganisationClassificationUpdated>
@@ -166,6 +167,18 @@ namespace OrganisationRegistry.SqlServer.Organisation
             using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
             {
                 context.OrganisationOrganisationClassificationList.Add(organisationOrganisationClassificationListItem);
+                context.SaveChanges();
+            }
+        }
+
+        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationRemoved> message)
+        {
+            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            {
+                var key = context.OrganisationOrganisationClassificationList.Single(item => item.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId);
+
+                context.OrganisationOrganisationClassificationList.Remove(key);
+
                 context.SaveChanges();
             }
         }

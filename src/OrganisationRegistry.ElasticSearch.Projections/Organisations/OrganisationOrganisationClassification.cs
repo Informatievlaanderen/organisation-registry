@@ -18,6 +18,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         BaseProjection<OrganisationOrganisationClassification>,
         IEventHandler<OrganisationOrganisationClassificationAdded>,
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
+        IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
         IEventHandler<OrganisationOrganisationClassificationUpdated>,
         IEventHandler<OrganisationClassificationTypeUpdated>,
         IEventHandler<OrganisationClassificationUpdated>
@@ -85,6 +86,15 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 message.Timestamp);
         }
 
+        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationRemoved> message)
+        {
+            RemoveOrganisationOrganisationClassification(
+                message.Body.OrganisationId,
+                message.Body.OrganisationOrganisationClassificationId,
+                message.Number,
+                message.Timestamp);
+        }
+
         private void AddOrganisationOrganisationClassification(Guid organisationId, Guid organisationOrganisationClassificationId, Guid organisationClassificationTypeId, string organisationClassificationTypeName, Guid organisationClassificationId, string organisationClassificationName, DateTime? validFrom, DateTime? validTo, int messageNumber, DateTimeOffset messageTimestamp)
         {
             var organisationDocument = _elastic.TryGet(() =>
@@ -108,6 +118,24 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     organisationClassificationId,
                     organisationClassificationName,
                     new Period(validFrom, validTo)));
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+        }
+
+        private void RemoveOrganisationOrganisationClassification(Guid organisationId, Guid organisationOrganisationClassificationId, int messageNumber, DateTimeOffset messageTimestamp)
+        {
+            var organisationDocument = _elastic.TryGet(() =>
+                _elastic.WriteClient.Get<OrganisationDocument>(organisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = messageNumber;
+            organisationDocument.ChangeTime = messageTimestamp;
+
+            if (organisationDocument.OrganisationClassifications == null)
+                organisationDocument.OrganisationClassifications =
+                    new List<OrganisationDocument.OrganisationOrganisationClassification>();
+
+            organisationDocument.OrganisationClassifications.RemoveExistingListItems(x =>
+                x.OrganisationOrganisationClassificationId == organisationOrganisationClassificationId);
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }

@@ -38,7 +38,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
             string bic,
             bool isBic,
             DateTime? validFrom,
-            DateTime? validTo)
+            DateTime? validTo,
+            string source = null)
         {
             OrganisationBankAccountId = organisationBankAccountId;
             OrganisationId = organisationId;
@@ -48,6 +49,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             IsBic = isBic;
             ValidFrom = validFrom;
             ValidTo = validTo;
+            Source = source;
         }
     }
 
@@ -81,6 +83,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         Projection<OrganisationBankAccountListView>,
         IEventHandler<OrganisationBankAccountAdded>,
         IEventHandler<KboOrganisationBankAccountAdded>,
+        IEventHandler<KboOrganisationBankAccountRemoved>,
         IEventHandler<OrganisationBankAccountUpdated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
@@ -128,13 +131,24 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 message.Body.Bic,
                 message.Body.IsBic,
                 message.Body.ValidFrom,
-                message.Body.ValidTo);
-
-            organisationBankAccountListItem.Source = Sources.Kbo;
+                message.Body.ValidTo,
+                Sources.Kbo);
 
             using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
             {
                 context.OrganisationBankAccountList.Add(organisationBankAccountListItem);
+                context.SaveChanges();
+            }
+        }
+
+        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountRemoved> message)
+        {
+            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            {
+                var organisationBankAccountListItem = context.OrganisationBankAccountList.Single(b => b.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
+
+                context.OrganisationBankAccountList.Remove(organisationBankAccountListItem);
+
                 context.SaveChanges();
             }
         }

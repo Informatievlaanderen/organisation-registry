@@ -17,6 +17,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         BaseProjection<OrganisationLabel>,
         IEventHandler<OrganisationLabelAdded>,
         IEventHandler<KboFormalNameLabelAdded>,
+        IEventHandler<KboFormalNameLabelRemoved>,
         IEventHandler<OrganisationLabelUpdated>,
         IEventHandler<LabelTypeUpdated>
     {
@@ -51,6 +52,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             AddLabel(message.Body.OrganisationId, message.Body.OrganisationLabelId, message.Body.LabelTypeId, message.Body.LabelTypeName, message.Body.Value, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
         }
 
+        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboFormalNameLabelRemoved> message)
+        {
+            AddLabel(message.Body.OrganisationId, message.Body.OrganisationLabelId, message.Body.LabelTypeId, message.Body.LabelTypeName, message.Body.Value, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
+        }
+
         private void AddLabel(Guid organisationId, Guid organisationLabelId, Guid labelTypeId, string labelTypeName, string labelValue, DateTime? validFrom, DateTime? validTo, int documentChangeId, DateTimeOffset timestamp)
         {
             var organisationDocument = _elastic.TryGet(() =>
@@ -71,6 +77,22 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     labelTypeName,
                     labelValue,
                     new Period(validFrom, validTo)));
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+        }
+
+        private void RemoveLabel(Guid organisationId, Guid organisationLabelId, Guid labelTypeId, string labelTypeName, string labelValue, DateTime? validFrom, DateTime? validTo, int documentChangeId, DateTimeOffset timestamp)
+        {
+            var organisationDocument = _elastic.TryGet(() =>
+                _elastic.WriteClient.Get<OrganisationDocument>(organisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = documentChangeId;
+            organisationDocument.ChangeTime = timestamp;
+
+            if (organisationDocument.Labels == null)
+                organisationDocument.Labels = new List<OrganisationDocument.OrganisationLabel>();
+
+            organisationDocument.Labels.RemoveExistingListItems(x => x.OrganisationLabelId == organisationLabelId);
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }
