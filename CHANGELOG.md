@@ -1,3 +1,10 @@
+## [1.22.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.22.1...v1.22.2) (2020-03-16)
+
+
+### Bug Fixes
+
+* disable editing kbo locations ([c64103b](https://github.com/informatievlaanderen/organisation-registry/commit/c64103b64705c80d328d4b5da02023022e5e46fb))
+
 ## [1.22.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.22.0...v1.22.1) (2020-03-13)
 
 
