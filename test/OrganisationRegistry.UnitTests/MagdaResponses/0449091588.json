@@ -1,0 +1,429 @@
+{
+  "Header": {},
+  "Body": {
+    "GeefOndernemingResponse": {
+      "Repliek": {
+        "Context": {
+          "Naam": "GeefOnderneming",
+          "Versie": "02.00.0000",
+          "Bericht": {
+            "Type": 1,
+            "Tijdstip": {
+              "Datum": "2020-03-17",
+              "Tijd": "15:20:29.526"
+            },
+            "Afzender": {
+              "Identificatie": "vip.vlaanderen.be",
+              "Naam": "MagdaGateway",
+              "Referte": "c5a887d2-c05f-48cf-a2d3-63c15521bf84",
+              "OrganisatieEenheid": null,
+              "Hoedanigheid": null,
+              "Gebruiker": null
+            },
+            "Ontvanger": {
+              "Identificatie": "kb.vlaanderen.be/aiv/organisatieregister-ond-aip",
+              "Naam": null,
+              "Referte": "da2667a9-f09b-401d-8aae-adca780b95cf",
+              "OrganisatieEenheid": null,
+              "Hoedanigheid": null,
+              "Gebruiker": null
+            }
+          },
+          "Annotaties": null
+        },
+        "Antwoorden": {
+          "Antwoord": {
+            "Referte": "da2667a9-f09b-401d-8aae-adca780b95cf",
+            "Inhoud": {
+              "Onderneming": {
+                "Rechtstoestanden": [
+                  {
+                    "InstrumenterendeOverheid": "449091588",
+                    "DatumBegin": "1993-01-08",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": null,
+                      "Value": "000"
+                    },
+                    "Omschrijving": {
+                      "Oorsprong": null,
+                      "TaalCode": null,
+                      "Value": "Normale toestand"
+                    }
+                  }
+                ],
+                "Vestigingen": [
+                  {
+                    "Vestigingsnummer": "2060387292",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": {
+                      "MaatschappelijkeNamen": null,
+                      "AfgekorteNamen": null,
+                      "CommercieleNamen": [
+                        {
+                          "Naam": "D'HAESE OCTAAF EN ZOON BVBA",
+                          "Taalcode": "nl",
+                          "DatumBegin": "1993-01-20",
+                          "DatumEinde": null
+                        }
+                      ]
+                    },
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Grotekapellelaan"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Lede"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "1993-01-20",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "1225",
+                          "Naam": null
+                        },
+                        "Huisnummer": "40",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "41034",
+                          "PostCode": "9340",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "1993-01-20",
+                    "DatumEinde": null
+                  }
+                ],
+                "Bankrekeningen": [
+                  {
+                    "Rekeningnummer": "293 2550004 26",
+                    "Doel": "003",
+                    "IBAN": "BE59293255000426",
+                    "BIC": "GEBABEBB",
+                    "NietSEPAnummer": null,
+                    "DatumBegin": "1993-01-20",
+                    "DatumEinde": null
+                  }
+                ],
+                "Functies": null,
+                "Activiteiten": [
+                  {
+                    "Nace": {
+                      "Versie": "2008",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "25120"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Vervaardiging van metalen deuren en vensters"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Hoofdactiviteit",
+                        "Value": "P"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "001",
+                    "DatumBegin": "2008-01-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Nace": {
+                      "Versie": "2003",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "28120"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Vervaardiging van metalen ramen, deuren, wanden en dergelijke"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Hoofdactiviteit",
+                        "Value": "P"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "001",
+                    "DatumBegin": "1993-02-01",
+                    "DatumEinde": "2007-12-31"
+                  },
+                  {
+                    "Nace": {
+                      "Versie": "2008",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "43320"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Schrijnwerk"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Nevenactiviteit",
+                        "Value": "S"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "001",
+                    "DatumBegin": "2008-04-16",
+                    "DatumEinde": null
+                  }
+                ],
+                "GerelateerdeOndernemingen": null,
+                "Hoedanigheden": [
+                  {
+                    "InstrumenterendeAdministratie": "BTW001",
+                    "Inschrijving": {
+                      "Datum": "2003-01-19"
+                    },
+                    "Duurtijd": "0.0",
+                    "Fase": {
+                      "Code": {
+                        "Beschrijving": "hoedanigheid/Toelating verworven",
+                        "Value": "002"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Beeindiging": null,
+                    "DatumBegin": "1993-02-01",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": "Onderneming onderworpen aan BTW",
+                      "Value": "00084"
+                    },
+                    "Omschrijving": null
+                  },
+                  {
+                    "InstrumenterendeAdministratie": "OLK001",
+                    "Inschrijving": {
+                      "Datum": "2003-01-25"
+                    },
+                    "Duurtijd": "0.0",
+                    "Fase": {
+                      "Code": {
+                        "Beschrijving": "hoedanigheid/Toelating verworven",
+                        "Value": "002"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Beeindiging": null,
+                    "DatumBegin": "1993-01-20",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": "Handelsonderneming",
+                      "Value": "00293"
+                    },
+                    "Omschrijving": null
+                  }
+                ],
+                "ExterneIdentificaties": null,
+                "Bijhuis": null,
+                "AmbtshalveDoorhalingen": null,
+                "StatusKBO": {
+                  "Code": {
+                    "Beschrijving": null,
+                    "Value": "AC"
+                  },
+                  "Omschrijving": {
+                    "Oorsprong": null,
+                    "TaalCode": null,
+                    "Value": "Actief"
+                  }
+                },
+                "SoortOnderneming": {
+                  "Code": {
+                    "Beschrijving": "Rechtspersoon",
+                    "Value": "2"
+                  },
+                  "Omschrijving": null
+                },
+                "MaatschappelijkeZetel": null,
+                "Namen": {
+                  "MaatschappelijkeNamen": [
+                    {
+                      "Naam": "D'HAESE OCTAAF EN ZOON",
+                      "Taalcode": "nl",
+                      "DatumBegin": "1993-01-08",
+                      "DatumEinde": null
+                    }
+                  ],
+                  "AfgekorteNamen": null,
+                  "CommercieleNamen": null
+                },
+                "Adressen": [
+                  {
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "001"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Zetel"
+                      }
+                    },
+                    "Descripties": [
+                      {
+                        "Adres": {
+                          "Land": {
+                            "NISCode": "150",
+                            "ISOCode": null,
+                            "Naam": "België"
+                          },
+                          "Straat": {
+                            "Code": null,
+                            "Naam": "Grotekapellelaan"
+                          },
+                          "Huisnummer": null,
+                          "Busnummer": null,
+                          "Gemeente": {
+                            "NISCode": null,
+                            "PostCode": null,
+                            "Naam": "Lede"
+                          },
+                          "Staat": null
+                        },
+                        "Contact": null,
+                        "Taalcode": null,
+                        "Aanvulling": null
+                      }
+                    ],
+                    "Doorhalingen": null,
+                    "DatumBegin": "1993-01-08",
+                    "DatumEinde": null,
+                    "Land": {
+                      "NISCode": "150",
+                      "ISOCode": "BE",
+                      "Naam": "BELGIE"
+                    },
+                    "Straat": {
+                      "Code": "1225",
+                      "Naam": null
+                    },
+                    "Huisnummer": "40",
+                    "Busnummer": null,
+                    "Gemeente": {
+                      "NISCode": "41034",
+                      "PostCode": "9340",
+                      "Naam": null
+                    },
+                    "Staat": null
+                  }
+                ],
+                "Start": {
+                  "Datum": "1993-01-08"
+                },
+                "Inschrijving": {
+                  "Datum": "2003-01-18"
+                },
+                "Duurtijd": null,
+                "Afsluiting": null,
+                "Stopzetting": null,
+                "Rechtsvormen": [
+                  {
+                    "Afkorting": "BVBA",
+                    "DatumBegin": "1993-01-08",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": null,
+                      "Value": "015"
+                    },
+                    "Omschrijving": {
+                      "Oorsprong": null,
+                      "TaalCode": null,
+                      "Value": "Besloten vennootschap met beperkte aansprakelijkheid"
+                    }
+                  }
+                ],
+                "Ondernemingsnummer": "0449091588",
+                "AuthentiekBron": {
+                  "Code": {
+                    "Beschrijving": null,
+                    "Value": "03"
+                  },
+                  "Omschrijving": {
+                    "Oorsprong": null,
+                    "TaalCode": null,
+                    "Value": "KBO"
+                  }
+                },
+                "OndernemingOfVestiging": {
+                  "Code": {
+                    "Beschrijving": "Onderneming",
+                    "Value": "1"
+                  }
+                }
+              }
+            },
+            "Uitzonderingen": null
+          }
+        },
+        "Uitzonderingen": null
+      }
+    }
+  }
+}
