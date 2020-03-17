@@ -138,18 +138,21 @@ namespace OrganisationRegistry.Api.Kbo
                                 Basisgegevens = VlagEnumType.Item1,
                                 Ondernemingsnummer = kboNumber,
                                 Rechtstoestanden = VlagEnumType.Item1,
+                                RechtstoestandenSpecified = true,
                                 Vestigingen = new CriteriaVestigingenType
                                 {
                                     Aanduiding = VlagEnumType.Item1,
                                     Details = VlagEnumType.Item1
                                 },
                                 Bankrekeningen = VlagEnumType.Item1,
+                                BankrekeningenSpecified = true,
                                 Functies = new CriteriaFunctiesType
                                 {
                                     Aanduiding = VlagEnumType.Item1,
                                     Onderneming = VlagEnumType.Item1
                                 },
                                 Activiteiten = VlagEnumType.Item1,
+                                ActiviteitenSpecified = true,
                                 GerelateerdeOndernemingen = new CriteriaGerelateerdeOndernemingenType
                                 {
                                     Aanduiding = VlagEnumType.Item1,
@@ -160,8 +163,11 @@ namespace OrganisationRegistry.Api.Kbo
                                     Aanduiding = VlagEnumType.Item1,
                                 },
                                 ExterneIdentificaties = VlagEnumType.Item1,
+                                ExterneIdentificatiesSpecified = true,
                                 Bijhuis = VlagEnumType.Item1,
+                                BijhuisSpecified = true,
                                 AmbtshalveDoorhalingen = VlagEnumType.Item1,
+                                AmbtshalveDoorhalingenSpecified = true,
                                 Omschrijvingen = new CriteriaOmschrijvingenType
                                 {
                                     Aanduiding = VlagEnumType.Item1
