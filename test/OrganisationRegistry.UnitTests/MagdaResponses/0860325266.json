@@ -1,0 +1,280 @@
+{
+  "Header": {},
+  "Body": {
+    "GeefOndernemingResponse": {
+      "Repliek": {
+        "Context": {
+          "Naam": "GeefOnderneming",
+          "Versie": "02.00.0000",
+          "Bericht": {
+            "Type": 1,
+            "Tijdstip": {
+              "Datum": "2020-03-17",
+              "Tijd": "09:36:31.030"
+            },
+            "Afzender": {
+              "Identificatie": "vip.vlaanderen.be",
+              "Naam": "MagdaGateway",
+              "Referte": "b7d2d1b9-6d89-40a4-8956-40223dc09b1b",
+              "OrganisatieEenheid": null,
+              "Hoedanigheid": null,
+              "Gebruiker": null
+            },
+            "Ontvanger": {
+              "Identificatie": "kb.vlaanderen.be/aiv/organisatieregister-ond-aip",
+              "Naam": null,
+              "Referte": "129c7c91-9731-4012-8078-879a290c506b",
+              "OrganisatieEenheid": null,
+              "Hoedanigheid": null,
+              "Gebruiker": null
+            }
+          },
+          "Annotaties": null
+        },
+        "Antwoorden": {
+          "Antwoord": {
+            "Referte": "129c7c91-9731-4012-8078-879a290c506b",
+            "Inhoud": {
+              "Onderneming": {
+                "Rechtstoestanden": null,
+                "Vestigingen": null,
+                "Bankrekeningen": null,
+                "Functies": [
+                  {
+                    "FunctiehouderVan": "0860325266",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2003-08-13",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0860325266",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2003-08-13",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0860325266",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2003-08-13",
+                    "DatumEinde": null
+                  }
+                ],
+                "Activiteiten": null,
+                "GerelateerdeOndernemingen": null,
+                "Hoedanigheden": [
+                  {
+                    "InstrumenterendeAdministratie": "BTW001",
+                    "Inschrijving": {
+                      "Datum": "2005-11-18"
+                    },
+                    "Duurtijd": "0.0",
+                    "Fase": {
+                      "Code": {
+                        "Beschrijving": "hoedanigheid/Toelating verworven",
+                        "Value": "002"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Beeindiging": null,
+                    "DatumBegin": "2006-01-01",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": "Onderneming onderworpen aan BTW",
+                      "Value": "00084"
+                    },
+                    "Omschrijving": null
+                  }
+                ],
+                "ExterneIdentificaties": null,
+                "Bijhuis": null,
+                "AmbtshalveDoorhalingen": null,
+                "StatusKBO": {
+                  "Code": {
+                    "Beschrijving": null,
+                    "Value": "AC"
+                  },
+                  "Omschrijving": {
+                    "Oorsprong": null,
+                    "TaalCode": null,
+                    "Value": "Actief"
+                  }
+                },
+                "SoortOnderneming": {
+                  "Code": {
+                    "Beschrijving": "Rechtspersoon",
+                    "Value": "2"
+                  },
+                  "Omschrijving": null
+                },
+                "MaatschappelijkeZetel": null,
+                "Namen": {
+                  "MaatschappelijkeNamen": [
+                    {
+                      "Naam": " FamilyRadio  FM GOUD",
+                      "Taalcode": "nl",
+                      "DatumBegin": "2011-06-23",
+                      "DatumEinde": null
+                    }
+                  ],
+                  "AfgekorteNamen": null,
+                  "CommercieleNamen": null
+                },
+                "Adressen": [
+                  {
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "001"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Zetel"
+                      }
+                    },
+                    "Descripties": [
+                      {
+                        "Adres": {
+                          "Land": {
+                            "NISCode": "150",
+                            "ISOCode": null,
+                            "Naam": "België"
+                          },
+                          "Straat": {
+                            "Code": null,
+                            "Naam": "Markt"
+                          },
+                          "Huisnummer": null,
+                          "Busnummer": null,
+                          "Gemeente": {
+                            "NISCode": null,
+                            "PostCode": null,
+                            "Naam": "Peer"
+                          },
+                          "Staat": null
+                        },
+                        "Contact": null,
+                        "Taalcode": null,
+                        "Aanvulling": null
+                      }
+                    ],
+                    "Doorhalingen": null,
+                    "DatumBegin": "2011-06-23",
+                    "DatumEinde": null,
+                    "Land": {
+                      "NISCode": "150",
+                      "ISOCode": "BE",
+                      "Naam": "BELGIE"
+                    },
+                    "Straat": {
+                      "Code": "2370",
+                      "Naam": null
+                    },
+                    "Huisnummer": "15",
+                    "Busnummer": "1",
+                    "Gemeente": {
+                      "NISCode": "72030",
+                      "PostCode": "3990",
+                      "Naam": null
+                    },
+                    "Staat": null
+                  }
+                ],
+                "Start": {
+                  "Datum": "2003-08-13"
+                },
+                "Inschrijving": {
+                  "Datum": "2003-09-02"
+                },
+                "Duurtijd": null,
+                "Afsluiting": null,
+                "Stopzetting": null,
+                "Rechtsvormen": [
+                  {
+                    "Afkorting": "VZW",
+                    "DatumBegin": "2003-08-13",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": null,
+                      "Value": "017"
+                    },
+                    "Omschrijving": {
+                      "Oorsprong": null,
+                      "TaalCode": null,
+                      "Value": "Vereniging zonder winstoogmerk"
+                    }
+                  }
+                ],
+                "Ondernemingsnummer": "0860325266",
+                "AuthentiekBron": {
+                  "Code": {
+                    "Beschrijving": null,
+                    "Value": "03"
+                  },
+                  "Omschrijving": {
+                    "Oorsprong": null,
+                    "TaalCode": null,
+                    "Value": "KBO"
+                  }
+                },
+                "OndernemingOfVestiging": {
+                  "Code": {
+                    "Beschrijving": "Onderneming",
+                    "Value": "1"
+                  }
+                }
+              }
+            },
+            "Uitzonderingen": null
+          }
+        },
+        "Uitzonderingen": null
+      }
+    }
+  }
+}

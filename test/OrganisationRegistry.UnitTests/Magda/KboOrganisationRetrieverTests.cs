@@ -84,5 +84,19 @@ namespace OrganisationRegistry.UnitTests.Magda
 
             organisation.LegalForm.Should().BeNull();
         }
+
+        [Fact]
+        public async Task TrimsLeadingSpaces()
+        {
+            var kboNr = "0860325266";
+            var magdaResponse = await MagdaJsonLoader.Load(kboNr);
+            var sut = SetUpKboOrganisationRetriever(kboNr, magdaResponse);
+
+            var organisation = await sut.RetrieveOrganisation(new ClaimsPrincipal(), new KboNumber(kboNr));
+
+            organisation.Should().NotBeNull();
+
+            organisation.FormalName.Value.Should().Be("FamilyRadio  FM GOUD");
+        }
     }
 }
