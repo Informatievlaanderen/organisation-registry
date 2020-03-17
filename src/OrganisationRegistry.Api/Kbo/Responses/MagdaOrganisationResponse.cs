@@ -76,7 +76,7 @@ namespace OrganisationRegistry.Api.Kbo.Responses
             public Name(NaamOndernemingType[] namen)
             {
                 var name = FirstValidDutchOrOtherwise(namen);
-                Value = name?.Naam;
+                Value = name?.Naam.Trim();
                 ValidFrom = ParseKboDate(name?.DatumBegin);
             }
 
