@@ -67,5 +67,7 @@ namespace OrganisationRegistry.Api.Configuration
         public Guid KboV2FormalNameLabelTypeId { get; set; }
         public Guid KboV2RegisteredOfficeLocationTypeId { get; set; }
         public Guid KboV2LegalFormOrganisationClassificationTypeId { get; set; }
+
+        public string ExternalIpServiceUri { get; set; }
     }
 }

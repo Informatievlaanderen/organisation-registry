@@ -13,6 +13,8 @@ Microsoft.Extensions.Configuration.Binder
 Microsoft.Extensions.Options.ConfigurationExtensions
 Microsoft.Extensions.Logging
 
+Microsoft.Extensions.Http
+
 Microsoft.AspNetCore.Mvc.Formatters.Xml
 Microsoft.AspNetCore.ResponseCompression
 Microsoft.AspNetCore.Mvc
