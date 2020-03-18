@@ -101,6 +101,7 @@ Target "Publish_Solution" (fun _ ->
     "OrganisationRegistry.ElasticSearch.Projections"
     "OrganisationRegistry.Projections.Delegations"
     "OrganisationRegistry.Projections.Reporting"
+    "OrganisationRegistry.KboMutations"
   ] |> List.iter publish
 
   let dist = (buildDir @@ "OrganisationRegistry.Scheduler" @@ "linux")
@@ -132,6 +133,9 @@ Target "PushContainer_Delegations" (fun _ -> push "projections-delegations")
 
 Target "Containerize_Reporting" (fun _ -> containerize "OrganisationRegistry.Projections.Reporting" "projections-reporting")
 Target "PushContainer_Reporting" (fun _ -> push "projections-reporting")
+
+Target "Containerize_KboMutations" (fun _ -> containerize "OrganisationRegistry.KboMutations" "kbo-mutations")
+Target "PushContainer_KboMutations" (fun _ -> push "kbo-mutations")
 
 Target "Containerize_Site" (fun _ -> containerize "OrganisationRegistry.UI" "ui")
 Target "PushContainer_Site" (fun _ -> push "ui")
@@ -171,6 +175,7 @@ Target "Push" DoNothing
 "Containerize_ElasticSearch"              ==> "Containerize"
 "Containerize_Delegations"                ==> "Containerize"
 "Containerize_Reporting"                  ==> "Containerize"
+"Containerize_KboMutations"               ==> "Containerize"
 "Containerize_Site"                       ==> "Containerize"
 "Containerize_Scheduler"                  ==> "Containerize"
 // Possibly add more projects to containerize here
@@ -183,6 +188,7 @@ Target "Push" DoNothing
 "PushContainer_ElasticSearch"              ==> "Push"
 "PushContainer_Delegations"                ==> "Push"
 "PushContainer_Reporting"                  ==> "Push"
+"PushContainer_KboMutations"               ==> "Push"
 "PushContainer_Site"                       ==> "Push"
 "PushContainer_Scheduler"                  ==> "Push"
 // Possibly add more projects to push here
