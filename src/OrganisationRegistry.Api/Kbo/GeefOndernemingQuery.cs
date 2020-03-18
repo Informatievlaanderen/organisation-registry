@@ -70,12 +70,10 @@ namespace OrganisationRegistry.Api.Kbo
 
                 try
                 {
-                    var response = client
+                    var response = await client
                         .PostAsync(
                             endpoint,
-                            new StringContent(signedEnvelope, Encoding.UTF8, "application/soap+xml"))
-                        .GetAwaiter()
-                        .GetResult();
+                            new StringContent(signedEnvelope, Encoding.UTF8, "application/soap+xml"));
 
                     if (response.IsSuccessStatusCode)
                     {
