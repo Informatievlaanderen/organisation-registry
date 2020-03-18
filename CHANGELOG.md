@@ -1,3 +1,24 @@
+# [1.23.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.22.2...v1.23.0) (2020-03-18)
+
+
+### Bug Fixes
+
+* change build to new user ([fd05169](https://github.com/informatievlaanderen/organisation-registry/commit/fd051690d6cfe23bdf53cd3ad775e2604caa83fb))
+* decrease whitespace in menu when bank accounts not visible ([cc261d2](https://github.com/informatievlaanderen/organisation-registry/commit/cc261d235b819ee1eb3fa71798d6f047abbc0c88))
+* use context factory ([a7288da](https://github.com/informatievlaanderen/organisation-registry/commit/a7288da2f8014e1046ad37ae2c99b4746b5d32a4))
+
+
+### Features
+
+* complete domain logic for update from kbo ([9d4d16d](https://github.com/informatievlaanderen/organisation-registry/commit/9d4d16da91011e641ee67577ac354ea3239d73fd))
+* handle kbo removed events ([fb7a18f](https://github.com/informatievlaanderen/organisation-registry/commit/fb7a18fb0ff414a0d78eb672d255126eab6aac7b))
+* make sure bank accounts are also fetched from magda ([cb8bc86](https://github.com/informatievlaanderen/organisation-registry/commit/cb8bc864f37448924c4b5a36a7e72caa34757c6d))
+* only show couple button when allowed to edit ([bacb9cb](https://github.com/informatievlaanderen/organisation-registry/commit/bacb9cbdcd268b804ae27a08561da3d18ab50dfb))
+* prevent accidental commit of personal data ([5860b41](https://github.com/informatievlaanderen/organisation-registry/commit/5860b410992a5a6d84648ad71624b3f4b4db8534))
+* show external ip in developer config endpoint ([06a03b0](https://github.com/informatievlaanderen/organisation-registry/commit/06a03b0313b743daff8b0079c6987b41a629f84f))
+* trim names coming from kbo ([b097a76](https://github.com/informatievlaanderen/organisation-registry/commit/b097a76a04db030a0e81290395e5b5db3cea042d))
+* use factory to create ftp client ([be30bcf](https://github.com/informatievlaanderen/organisation-registry/commit/be30bcf35e9bf84e4b362430e679ffcc0a71af6b))
+
 ## [1.22.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.22.1...v1.22.2) (2020-03-16)
 
 
