@@ -1745,7 +1745,6 @@ namespace OrganisationRegistry.Organisation
             _kboLegalFormOrganisationClassification = null;
         }
 
-
         private void Apply(OrganisationLabelAdded @event)
         {
             _organisationLabels.Add(new OrganisationLabel(
