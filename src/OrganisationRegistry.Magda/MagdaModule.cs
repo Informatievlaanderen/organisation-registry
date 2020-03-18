@@ -35,7 +35,7 @@ namespace OrganisationRegistry.Magda
 
     public class MagdaConfiguration
     {
-        public MagdaClientCertificate ClientClientCertificate { get; }
+        public MagdaClientCertificate ClientCertificate { get; }
         public int Timeout { get; }
 
         public string Sender { get; }
@@ -44,9 +44,9 @@ namespace OrganisationRegistry.Magda
 
         public string KBOMagdaEndPoint { get; }
 
-        public MagdaConfiguration(MagdaClientCertificate clientClientCertificate, int timeout, string sender, string capacity, string recipient, string kboMagdaEndPoint)
+        public MagdaConfiguration(MagdaClientCertificate clientCertificate, int timeout, string sender, string capacity, string recipient, string kboMagdaEndPoint)
         {
-            ClientClientCertificate = clientClientCertificate;
+            ClientCertificate = clientCertificate;
             Timeout = timeout;
             Sender = sender;
             Capacity = capacity;

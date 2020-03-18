@@ -207,7 +207,7 @@ namespace OrganisationRegistry.Api.Kbo
             xmlBody.LoadXml(unsignedXmlEnvelope);
             var signature = SignXml(
                 xmlBody,
-                _configuration.ClientClientCertificate);
+                _configuration.ClientCertificate);
 
             var signedXmlEnvelope = unsignedXmlEnvelope
                 .Replace("<s:Header />", $"<s:Header>{signature}</s:Header>");
