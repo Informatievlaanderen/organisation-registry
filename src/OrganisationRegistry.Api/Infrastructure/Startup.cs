@@ -4,12 +4,14 @@ namespace OrganisationRegistry.Api.Infrastructure
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
+    using Api.Configuration;
     using Api.Security;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Configuration;
+    using Kbo;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -56,6 +58,11 @@ namespace OrganisationRegistry.Api.Infrastructure
 
             Migrations.Run(_configuration.GetSection(SqlServerConfiguration.Section).Get<SqlServerConfiguration>());
             var openIdConfiguration = _configuration.GetSection(OpenIdConnectConfiguration.Section).Get<OpenIdConnectConfiguration>();
+            var apiConfiguration = _configuration.GetSection(ApiConfiguration.Section).Get<ApiConfiguration>();
+
+            var magdaClientCertificate = MagdaClientCertificate.Create(
+                apiConfiguration.KboCertificate,
+                apiConfiguration.RijksRegisterCertificatePwd);
 
             services
 
@@ -78,6 +85,10 @@ namespace OrganisationRegistry.Api.Infrastructure
                 .AddScoped<ISecurityService, SecurityService>()
 
                 .AddHttpClient()
+
+                .AddHttpClient(MagdaModule.HttpClientName)
+                .ConfigurePrimaryHttpMessageHandler(() => new MagdaHttpClientHandler(magdaClientCertificate))
+                .Services
 
                 .ConfigureDefaultForApi<Startup>(
                     new StartupConfigureOptions

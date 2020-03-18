@@ -63,6 +63,7 @@ namespace OrganisationRegistry.Api.Configuration
         public string KboCertificate { get; set; }
         public int KboMagdaTimeout { get; set; }
         public string RijksRegisterCapacity { get; set; }
+        public string RijksRegisterCertificatePwd { get; set; }
 
         public Guid KboV2FormalNameLabelTypeId { get; set; }
         public Guid KboV2RegisteredOfficeLocationTypeId { get; set; }
