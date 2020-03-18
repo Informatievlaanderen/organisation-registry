@@ -53,6 +53,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             if (organisationDocument.BankAccounts == null)
                 organisationDocument.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
+                
             organisationDocument.BankAccounts.RemoveExistingListItems(x =>
                 x.OrganisationBankAccountId == organisationBankAccountId);
 
@@ -78,6 +79,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             if (organisationDocument.BankAccounts == null)
                 organisationDocument.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
+                
             organisationDocument.BankAccounts.RemoveExistingListItems(x =>
                 x.OrganisationBankAccountId == organisationBankAccountId);
 
@@ -94,6 +96,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             if (organisationDocument.BankAccounts == null)
                 organisationDocument.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
+                
             organisationDocument.BankAccounts.RemoveExistingListItems(x => x.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
 
             organisationDocument.BankAccounts.Add(
