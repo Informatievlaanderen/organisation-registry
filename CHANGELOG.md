@@ -1,3 +1,18 @@
+# [1.24.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.23.0...v1.24.0) (2020-03-18)
+
+
+### Bug Fixes
+
+* copy kbo mutations to production ([440c183](https://github.com/informatievlaanderen/organisation-registry/commit/440c183c44a6bab03fbf5ff965841ec20ba2b538))
+* force build ([07760bb](https://github.com/informatievlaanderen/organisation-registry/commit/07760bb833d48a3e1f83b3b52166790c88f02f27))
+* make async ([ffb26f7](https://github.com/informatievlaanderen/organisation-registry/commit/ffb26f7a9f8461bd194c385b8d06acd20e0d94ec))
+
+
+### Features
+
+* include kbo mutations in build script ([1e7609a](https://github.com/informatievlaanderen/organisation-registry/commit/1e7609a5ad8ed0e145f3a30b0bf3d22e17f79cd4))
+* use IHttpClientFactory for magda calls ([d67cada](https://github.com/informatievlaanderen/organisation-registry/commit/d67cadab53cdee35f8656de7e8c14952ae4dfbb0))
+
 # [1.23.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.22.2...v1.23.0) (2020-03-18)
 
 
