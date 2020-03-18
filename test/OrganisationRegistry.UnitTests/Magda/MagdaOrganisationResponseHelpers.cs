@@ -47,7 +47,7 @@ namespace OrganisationRegistry.UnitTests.Magda
                 .Returns(() => new HttpClient(new MagdaHttpClientHandler(magdaClientCertificate)));
 
             var magdaConfiguration = new MagdaConfiguration(
-                clientClientCertificate: magdaClientCertificate,
+                clientCertificate: magdaClientCertificate,
                 timeout: _apiConfiguration.KboMagdaTimeout,
                 sender: _apiConfiguration.KboSender,
                 capacity: null,
