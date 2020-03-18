@@ -77,6 +77,8 @@ namespace OrganisationRegistry.Api.Infrastructure
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
                 .AddScoped<ISecurityService, SecurityService>()
 
+                .AddHttpClient()
+
                 .ConfigureDefaultForApi<Startup>(
                     new StartupConfigureOptions
                     {

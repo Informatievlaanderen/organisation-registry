@@ -1,8 +1,11 @@
 namespace OrganisationRegistry.Api.Status
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
     using Configuration;
     using ElasticSearch.Configuration;
     using Infrastructure;
@@ -45,11 +48,20 @@ namespace OrganisationRegistry.Api.Status
         [HttpGet]
         [Route("configuration")]
         [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
-        public IActionResult GetConfiguration([FromServices] IConfiguration configuration)
+        public async System.Threading.Tasks.Task<IActionResult> GetConfiguration(
+            [FromServices] IConfiguration configuration,
+            [FromServices] IHttpClientFactory httpClientFactory)
         {
+            var apiConfiguration = configuration.GetSection(ApiConfiguration.Section).Get<ApiConfiguration>();
+
+            var httpClient = httpClientFactory.CreateClient();
+            httpClient.BaseAddress = new Uri(apiConfiguration.ExternalIpServiceUri);
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            var httpResponseMessage = await httpClient.GetAsync("");
             var summary = new
             {
-                Api = configuration.GetSection(ApiConfiguration.Section).Get<ApiConfiguration>(),
+                Api = apiConfiguration,
                 Configuration = configuration.GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>().Obfuscate(),
                 ElasticSearch = configuration.GetSection(ElasticSearchConfiguration.Section).Get<ElasticSearchConfiguration>().Obfuscate(),
                 Infrastructure = configuration.GetSection(InfrastructureConfiguration.Section).Get<InfrastructureConfiguration>().Obfuscate(),
@@ -57,6 +69,7 @@ namespace OrganisationRegistry.Api.Status
                 Serilog = PrintConfig(configuration.GetSection("Serilog")),
                 SqlServer = configuration.GetSection(SqlServerConfiguration.Section).Get<SqlServerConfiguration>().Obfuscate(),
                 Toggles = configuration.GetSection(TogglesConfiguration.Section).Get<TogglesConfiguration>(),
+                Ip = await httpResponseMessage.Content.ReadAsStringAsync()
             };
 
             var jsonSerializerSettings = JsonConvert.DefaultSettings();
@@ -66,7 +79,7 @@ namespace OrganisationRegistry.Api.Status
             return new ContentResult
             {
                 ContentType = "application/json",
-                StatusCode = (int)HttpStatusCode.OK,
+                StatusCode = (int) HttpStatusCode.OK,
                 Content = JsonConvert.SerializeObject(summary, Formatting.Indented, jsonSerializerSettings)
             };
         }
