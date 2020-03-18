@@ -734,7 +734,6 @@ namespace OrganisationRegistry.Organisation
                     validity.End));
         }
 
-
         public void UpdateKboLegalFormOrganisationClassification(
             IKboOrganisationClassificationRetriever organisationClassificationRetriever,
             OrganisationClassificationType legalFormOrganisationClassificationType,
@@ -1269,7 +1268,8 @@ namespace OrganisationRegistry.Organisation
                 validity.End));
         }
 
-        public void UpdateKboBankAccount(List<IMagdaBankAccount> kboOrganisationBankAccounts,
+        public void UpdateKboBankAccount(
+            List<IMagdaBankAccount> kboOrganisationBankAccounts,
             DateTime messageModificationTime)
         {
             var events = new List<IEvent>();
