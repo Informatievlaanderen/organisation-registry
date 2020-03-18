@@ -33,11 +33,16 @@ namespace OrganisationRegistry.Api.Kbo
     {
         private readonly MagdaConfiguration _configuration;
         private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public GeefOndernemingQuery(MagdaConfiguration configuration, Func<Owned<OrganisationRegistryContext>> contextFactory)
+        public GeefOndernemingQuery(
+            MagdaConfiguration configuration,
+            Func<Owned<OrganisationRegistryContext>> contextFactory,
+            IHttpClientFactory httpClientFactory)
         {
             _configuration = configuration;
             _contextFactory = contextFactory;
+            _httpClientFactory = httpClientFactory;
         }
 
         public async Task<Envelope<GeefOndernemingResponseBody>> Execute(ClaimsPrincipal user, string kboNumberDotLess)
@@ -59,40 +64,32 @@ namespace OrganisationRegistry.Api.Kbo
 
         private async Task<Envelope<T>> PerformMagdaRequest<T>(string endpoint, string signedEnvelope)
         {
-            using (var handler = new HttpClientHandler())
+            using (var client = _httpClientFactory.CreateClient(MagdaModule.HttpClientName))
             {
-                handler.ClientCertificateOptions = ClientCertificateOption.Manual;
-                handler.SslProtocols = SslProtocols.Tls12;
-                handler.ClientCertificates.Add(
-                    _configuration.ClientCertificate);
+                client.Timeout = TimeSpan.FromSeconds(_configuration.Timeout);
 
-                using (var client = new HttpClient(handler))
+                try
                 {
-                    client.Timeout = TimeSpan.FromSeconds(_configuration.Timeout);
+                    var response = client
+                        .PostAsync(
+                            endpoint,
+                            new StringContent(signedEnvelope, Encoding.UTF8, "application/soap+xml"))
+                        .GetAwaiter()
+                        .GetResult();
 
-                    try
+                    if (response.IsSuccessStatusCode)
                     {
-                        var response = client
-                            .PostAsync(
-                                endpoint,
-                                new StringContent(signedEnvelope, Encoding.UTF8, "application/soap+xml"))
-                            .GetAwaiter()
-                            .GetResult();
+                        var serializer = new XmlSerializer(typeof(Envelope<T>));
 
-                        if (response.IsSuccessStatusCode)
+                        using (var reader = new StringReader(await response.Content.ReadAsStringAsync()))
                         {
-                            var serializer = new XmlSerializer(typeof(Envelope<T>));
-
-                            using (var reader = new StringReader(await response.Content.ReadAsStringAsync()))
-                            {
-                                return (Envelope<T>)serializer.Deserialize(reader);
-                            }
+                            return (Envelope<T>) serializer.Deserialize(reader);
                         }
                     }
-                    catch (Exception)
-                    {
-                        // ignored
-                    }
+                }
+                catch (Exception)
+                {
+                    // ignored
                 }
             }
 
@@ -212,7 +209,7 @@ namespace OrganisationRegistry.Api.Kbo
             xmlBody.LoadXml(unsignedXmlEnvelope);
             var signature = SignXml(
                 xmlBody,
-                _configuration.ClientCertificate);
+                _configuration.ClientClientCertificate);
 
             var signedXmlEnvelope = unsignedXmlEnvelope
                 .Replace("<s:Header />", $"<s:Header>{signature}</s:Header>");

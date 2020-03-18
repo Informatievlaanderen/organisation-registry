@@ -2,8 +2,8 @@ namespace OrganisationRegistry.UnitTests.Magda
 {
     using System;
     using System.IO;
+    using System.Net.Http;
     using System.Reflection;
-    using System.Security.Cryptography.X509Certificates;
     using System.Security.Principal;
     using System.Threading.Tasks;
     using Api.Configuration;
@@ -13,10 +13,9 @@ namespace OrganisationRegistry.UnitTests.Magda
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
+    using Moq;
     using Newtonsoft.Json;
     using OrganisationRegistry.Magda;
-    using OrganisationRegistry.Magda.Common;
-    using OrganisationRegistry.Magda.Responses;
     using SqlServer.Infrastructure;
     using Xunit;
 
@@ -38,26 +37,32 @@ namespace OrganisationRegistry.UnitTests.Magda
 
         private GeefOndernemingQuery CreateGeefOndernemingQuery()
         {
+            var magdaClientCertificate = MagdaClientCertificate.Create(
+                _apiConfiguration.KboCertificate,
+                string.Empty);
+
+            var httpClientFactoryMock = new Mock<IHttpClientFactory>();
+            httpClientFactoryMock
+                .Setup(factory => factory.CreateClient(MagdaModule.HttpClientName))
+                .Returns(() => new HttpClient(new MagdaHttpClientHandler(magdaClientCertificate)));
+
+            var magdaConfiguration = new MagdaConfiguration(
+                clientClientCertificate: magdaClientCertificate,
+                timeout: _apiConfiguration.KboMagdaTimeout,
+                sender: _apiConfiguration.KboSender,
+                capacity: null,
+                recipient: _apiConfiguration.KboRecipient,
+                kboMagdaEndPoint: _apiConfiguration.KboMagdaEndpoint);
             return new GeefOndernemingQuery(
-                configuration: new MagdaConfiguration(
-                    clientCertificate: new X509Certificate2(
-                        rawData: Convert.FromBase64String(_apiConfiguration.KboCertificate),
-                        password: string.Empty,
-                        keyStorageFlags: X509KeyStorageFlags.MachineKeySet |
-                                         X509KeyStorageFlags.PersistKeySet |
-                                         X509KeyStorageFlags.Exportable),
-                    timeout: _apiConfiguration.KboMagdaTimeout,
-                    sender: _apiConfiguration.KboSender,
-                    capacity: null,
-                    recipient: _apiConfiguration.KboRecipient,
-                    kboMagdaEndPoint: _apiConfiguration.KboMagdaEndpoint),
+                configuration: magdaConfiguration,
                 contextFactory: () => new Owned<OrganisationRegistryContext>(
                     new OrganisationRegistryContext(
                         new DbContextOptionsBuilder<OrganisationRegistryContext>()
                             .UseInMemoryDatabase(
                                 "org-magda-test",
                                 builder => { })
-                            .Options), new Disposable()));
+                            .Options), new Disposable()),
+                httpClientFactory: httpClientFactoryMock.Object);
         }
 
         // [Theory]

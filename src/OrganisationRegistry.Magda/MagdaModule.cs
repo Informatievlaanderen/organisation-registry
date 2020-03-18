@@ -1,8 +1,5 @@
 namespace OrganisationRegistry.Magda
 {
-    using System;
-    using System.IO;
-    using System.Security.Cryptography.X509Certificates;
     using Autofac;
     using Microsoft.Extensions.Configuration;
 
@@ -14,15 +11,9 @@ namespace OrganisationRegistry.Magda
         {
             var apiConfiguration = configuration.GetSection("Api");
 
-            var certificate =
-                !string.IsNullOrWhiteSpace(apiConfiguration["KboCertificate"])
-                    ? new X509Certificate2(
-                        rawData: Convert.FromBase64String(apiConfiguration["KboCertificate"]),
-                        password: apiConfiguration["RijksRegisterCertificatePwd"],
-                        keyStorageFlags: X509KeyStorageFlags.MachineKeySet |
-                                         X509KeyStorageFlags.PersistKeySet |
-                                         X509KeyStorageFlags.Exportable)
-                    : new X509Certificate2();
+            var certificate = MagdaClientCertificate.Create(
+                apiConfiguration["KboCertificate"],
+                apiConfiguration["RijksRegisterCertificatePwd"]);
 
             MagdaConfiguration = new MagdaConfiguration(
                 certificate,
@@ -38,11 +29,13 @@ namespace OrganisationRegistry.Magda
             builder.RegisterInstance(MagdaConfiguration)
                 .SingleInstance();
         }
+
+        public const string HttpClientName = "MagdaClient";
     }
 
     public class MagdaConfiguration
     {
-        public X509Certificate2 ClientCertificate { get; }
+        public MagdaClientCertificate ClientClientCertificate { get; }
         public int Timeout { get; }
 
         public string Sender { get; }
@@ -51,9 +44,9 @@ namespace OrganisationRegistry.Magda
 
         public string KBOMagdaEndPoint { get; }
 
-        public MagdaConfiguration(X509Certificate2 clientCertificate, int timeout, string sender, string capacity, string recipient, string kboMagdaEndPoint)
+        public MagdaConfiguration(MagdaClientCertificate clientClientCertificate, int timeout, string sender, string capacity, string recipient, string kboMagdaEndPoint)
         {
-            ClientCertificate = clientCertificate;
+            ClientClientCertificate = clientClientCertificate;
             Timeout = timeout;
             Sender = sender;
             Capacity = capacity;
@@ -61,5 +54,4 @@ namespace OrganisationRegistry.Magda
             KBOMagdaEndPoint = kboMagdaEndPoint;
         }
     }
-
 }
