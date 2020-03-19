@@ -1,3 +1,10 @@
+# [1.25.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.24.0...v1.25.0) (2020-03-19)
+
+
+### Features
+
+* use mutex for kbo mutations fetcher ([2a4d4d0](https://github.com/informatievlaanderen/organisation-registry/commit/2a4d4d07a4211b996be21321bbe25ff2683fe505))
+
 # [1.24.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.23.0...v1.24.0) (2020-03-18)
 
 
