@@ -3,8 +3,11 @@ namespace OrganisationRegistry.KboMutations
     using System;
     using System.IO;
     using System.Threading;
+    using Amazon;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
+    using Configuration;
     using Destructurama;
     using Infrastructure.Configuration;
     using Infrastructure.Infrastructure.Json;
@@ -69,8 +72,32 @@ namespace OrganisationRegistry.KboMutations
                 return;
             }
 
+            var kboMutationsConfiguration = app.GetService<IOptions<KboMutationsConfiguration>>().Value;
+
+            var distributedLock = new DistributedLock<Program>(
+                new DistributedLockOptions
+                {
+                    Region = RegionEndpoint.GetBySystemName(kboMutationsConfiguration.LockRegionEndPoint),
+                    AwsAccessKeyId = kboMutationsConfiguration.LockAccessKeyId,
+                    AwsSecretAccessKey = kboMutationsConfiguration.LockAccessKeySecret,
+                    TableName = kboMutationsConfiguration.LockTableName,
+                    LeasePeriod = TimeSpan.FromMinutes(kboMutationsConfiguration.LockLeasePeriodInMinutes),
+                    ThrowOnFailedRenew = true,
+                    TerminateApplicationOnFailedRenew = true
+                });
+
+            var acquiredLock = false;
             try
             {
+                logger.LogInformation("[KboMutations] Trying to acquire lock.");
+                acquiredLock = distributedLock.AcquireLock();
+
+                if (!acquiredLock)
+                {
+                    logger.LogInformation("[KboMutations] Could not get lock, another instance is busy");
+                    return;
+                }
+
                 if (app.GetService<Runner>().Run())
                 {
                     logger.LogInformation("Processing completed successfully, exiting program.");
@@ -84,9 +111,14 @@ namespace OrganisationRegistry.KboMutations
             }
             catch (Exception e)
             {
-                logger.LogCritical(0, e, "Encountered a fatal exception, exiting program."); // dotnet core only supports global exceptionhandler starting from 1.2
+                logger.LogCritical(0, e, "[KboMutations] Encountered a fatal exception, exiting program."); // dotnet core only supports global exceptionhandler starting from 1.2
                 FlushLoggerAndTelemetry();
                 throw;
+            }
+            finally
+            {
+                if (acquiredLock)
+                    distributedLock.ReleaseLock();
             }
         }
 
