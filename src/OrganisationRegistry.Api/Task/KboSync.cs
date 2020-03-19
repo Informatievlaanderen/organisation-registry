@@ -44,14 +44,14 @@ namespace OrganisationRegistry.Api.Task
             var itemsInQueue = context.KboSyncQueue
                 .Where(item => item.SyncCompletedAt == null)
                 .OrderBy(item => item.MutationReadAt)
-                .ThenBy(item => item.SourceKboNumber)
+                .ThenBy(item => item.SourceOrganisationKboNumber)
                 .Take(_syncFromKboBatchSize);
 
             foreach (var kboSyncQueueItem in itemsInQueue)
             {
                 try
                 {
-                    var organisationDetailItem = context.OrganisationDetail.SingleOrDefault(item => item.KboNumber == kboSyncQueueItem.SourceKboNumber);
+                    var organisationDetailItem = context.OrganisationDetail.SingleOrDefault(item => item.KboNumber == kboSyncQueueItem.SourceOrganisationKboNumber);
                     if (organisationDetailItem == null)
                     {
                         kboSyncQueueItem.SyncStatus = SyncStatusNotFound;

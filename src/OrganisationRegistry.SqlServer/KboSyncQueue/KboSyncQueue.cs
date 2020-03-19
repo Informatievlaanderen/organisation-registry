@@ -9,10 +9,9 @@ namespace OrganisationRegistry.SqlServer.KboSyncQueue
     {
         public Guid Id { get; set; }
         public string SourceFileName { get; set; }
-        public string SourceKboNumber { get; set; }
-        public string SourceName { get; set; }
-        public DateTimeOffset SourceAddressModifiedAt { get; set; }
-        public DateTimeOffset SourceModifiedAt { get; set; }
+        public string SourceOrganisationKboNumber { get; set; }
+        public string SourceOrganisationName { get; set; }
+        public DateTimeOffset SourceOrganisationModifiedAt { get; set; }
         public DateTimeOffset MutationReadAt { get; set; }
         public DateTimeOffset? SyncCompletedAt { get; set; }
         public string SyncStatus { get; set; }
@@ -27,10 +26,9 @@ namespace OrganisationRegistry.SqlServer.KboSyncQueue
                 .HasKey(p => p.Id);
 
             b.Property(p => p.SourceFileName);
-            b.Property(p => p.SourceKboNumber);
-            b.Property(p => p.SourceName);
-            b.Property(p => p.SourceAddressModifiedAt);
-            b.Property(p => p.SourceModifiedAt);
+            b.Property(p => p.SourceOrganisationKboNumber);
+            b.Property(p => p.SourceOrganisationName);
+            b.Property(p => p.SourceOrganisationModifiedAt);
             b.Property(p => p.SyncCompletedAt);
             b.Property(p => p.MutationReadAt);
             b.Property(p => p.SyncStatus);
