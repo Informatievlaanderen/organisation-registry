@@ -4,6 +4,7 @@ namespace OrganisationRegistry.Api.Task
     using System.Linq;
     using System.Net;
     using Autofac.Features.OwnedInstances;
+    using Configuration;
     using Day.Commands;
     using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
@@ -11,13 +12,12 @@ namespace OrganisationRegistry.Api.Task
     using Infrastructure.Security;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using Requests;
     using Security;
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
-    using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
@@ -40,6 +40,7 @@ namespace OrganisationRegistry.Api.Task
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
         public IActionResult Post(
             [FromServices] Func<Owned<OrganisationRegistryContext>> contextFactory,
+            [FromServices] IKboSync kboSync,
             [FromBody] TaskRequest task)
         {
             if (!ModelState.IsValid)
@@ -87,7 +88,7 @@ namespace OrganisationRegistry.Api.Task
                 case TaskType.SyncFromKbo:
                     using (var context = contextFactory().Value)
                     {
-                        SyncFromKbo(context);
+                        kboSync.SyncFromKbo(CommandSender, context, User);
                     }
 
                     break;
@@ -97,34 +98,6 @@ namespace OrganisationRegistry.Api.Task
             }
 
             return Ok();
-        }
-
-        private void SyncFromKbo(OrganisationRegistryContext context)
-        {
-            var itemsInQueue = context.KboSyncQueue.Where(item => item.SyncCompletedAt == null);
-            foreach (var kboSyncQueueItem in itemsInQueue.OrderBy(item => item.MutationReadAt))
-            {
-                try
-                {
-                    var organisationDetailItem = context.OrganisationDetail.SingleOrDefault(item => item.KboNumber == kboSyncQueueItem.SourceKboNumber);
-                    if (organisationDetailItem == null)
-                    {
-                        kboSyncQueueItem.SyncStatus = "NOT FOUND: Er werd geen organisatie gevonden voor dit kbo nummer";
-                        continue;
-                    }
-
-                    CommandSender.Send(new UpdateFromKbo(new OrganisationId(organisationDetailItem.Id), User, DateTime.Today));
-
-                    kboSyncQueueItem.SyncCompletedAt = DateTimeOffset.UtcNow;
-                    kboSyncQueueItem.SyncStatus = "SUCCESS";
-                }
-                catch (Exception e)
-                {
-                    kboSyncQueueItem.SyncStatus = $"ERROR: {e}";
-                }
-            }
-
-            context.SaveChanges();
         }
 
         private void CompensatingAction20170518FixBodies(OrganisationRegistryContext context)
