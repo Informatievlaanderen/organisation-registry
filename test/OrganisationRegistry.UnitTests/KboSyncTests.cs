@@ -52,24 +52,22 @@ namespace OrganisationRegistry.UnitTests
                 new KboSyncQueueItem
                 {
                     Id = kboSyncQueueItem.Id,
-                    SourceName = kboSyncQueueItem.SourceName,
+                    SourceOrganisationName = kboSyncQueueItem.SourceOrganisationName,
                     MutationReadAt = kboSyncQueueItem.MutationReadAt,
-                    SourceAddressModifiedAt = kboSyncQueueItem.SourceAddressModifiedAt,
                     SourceFileName = kboSyncQueueItem.SourceFileName,
-                    SourceKboNumber = kboSyncQueueItem.SourceKboNumber,
-                    SourceModifiedAt = kboSyncQueueItem.SourceModifiedAt,
+                    SourceOrganisationKboNumber = kboSyncQueueItem.SourceOrganisationKboNumber,
+                    SourceOrganisationModifiedAt = kboSyncQueueItem.SourceOrganisationModifiedAt,
                     SyncCompletedAt = _dateTimeProviderStub.UtcNow,
                     SyncStatus = KboSync.SyncStatusSuccess
                 },
                 new KboSyncQueueItem
                 {
                     Id = kboSyncQueueItem2.Id,
-                    SourceName = kboSyncQueueItem2.SourceName,
+                    SourceOrganisationName = kboSyncQueueItem2.SourceOrganisationName,
                     MutationReadAt = kboSyncQueueItem2.MutationReadAt,
-                    SourceAddressModifiedAt = kboSyncQueueItem2.SourceAddressModifiedAt,
                     SourceFileName = kboSyncQueueItem2.SourceFileName,
-                    SourceKboNumber = kboSyncQueueItem2.SourceKboNumber,
-                    SourceModifiedAt = kboSyncQueueItem2.SourceModifiedAt,
+                    SourceOrganisationKboNumber = kboSyncQueueItem2.SourceOrganisationKboNumber,
+                    SourceOrganisationModifiedAt = kboSyncQueueItem2.SourceOrganisationModifiedAt,
                     SyncCompletedAt = _dateTimeProviderStub.UtcNow,
                     SyncStatus = KboSync.SyncStatusSuccess
                 });
@@ -99,12 +97,11 @@ namespace OrganisationRegistry.UnitTests
                 new KboSyncQueueItem
                 {
                     Id = kboSyncQueueItem.Id,
-                    SourceName = kboSyncQueueItem.SourceName,
+                    SourceOrganisationName = kboSyncQueueItem.SourceOrganisationName,
                     MutationReadAt = kboSyncQueueItem.MutationReadAt,
-                    SourceAddressModifiedAt = kboSyncQueueItem.SourceAddressModifiedAt,
                     SourceFileName = kboSyncQueueItem.SourceFileName,
-                    SourceKboNumber = kboSyncQueueItem.SourceKboNumber,
-                    SourceModifiedAt = kboSyncQueueItem.SourceModifiedAt,
+                    SourceOrganisationKboNumber = kboSyncQueueItem.SourceOrganisationKboNumber,
+                    SourceOrganisationModifiedAt = kboSyncQueueItem.SourceOrganisationModifiedAt,
                     SyncCompletedAt = null,
                     SyncStatus = KboSync.SyncStatusError,
                     SyncInfo = aggregateNotFoundException.ToString()
@@ -119,12 +116,11 @@ namespace OrganisationRegistry.UnitTests
             var kboSyncQueueItem = new KboSyncQueueItem
             {
                 Id = Guid.NewGuid(),
-                SourceName = "test",
+                SourceOrganisationName = "test",
                 MutationReadAt = DateTimeOffset.UtcNow,
-                SourceAddressModifiedAt = DateTimeOffset.Now,
                 SourceFileName = "test-file.fake",
-                SourceKboNumber = "0123456789",
-                SourceModifiedAt = DateTimeOffset.Now,
+                SourceOrganisationKboNumber = "0123456789",
+                SourceOrganisationModifiedAt = DateTimeOffset.Now,
                 SyncCompletedAt = null,
                 SyncStatus = null,
             };
@@ -140,12 +136,11 @@ namespace OrganisationRegistry.UnitTests
                 new KboSyncQueueItem
                 {
                     Id = kboSyncQueueItem.Id,
-                    SourceName = kboSyncQueueItem.SourceName,
+                    SourceOrganisationName = kboSyncQueueItem.SourceOrganisationName,
                     MutationReadAt = kboSyncQueueItem.MutationReadAt,
-                    SourceAddressModifiedAt = kboSyncQueueItem.SourceAddressModifiedAt,
                     SourceFileName = kboSyncQueueItem.SourceFileName,
-                    SourceKboNumber = kboSyncQueueItem.SourceKboNumber,
-                    SourceModifiedAt = kboSyncQueueItem.SourceModifiedAt,
+                    SourceOrganisationKboNumber = kboSyncQueueItem.SourceOrganisationKboNumber,
+                    SourceOrganisationModifiedAt = kboSyncQueueItem.SourceOrganisationModifiedAt,
                     SyncCompletedAt = null,
                     SyncStatus = KboSync.SyncStatusNotFound,
                     SyncInfo = KboSync.SyncInfoNotFound
@@ -157,12 +152,11 @@ namespace OrganisationRegistry.UnitTests
             var kboSyncQueueItem = new KboSyncQueueItem
             {
                 Id = Guid.NewGuid(),
-                SourceName = "test",
+                SourceOrganisationName = "test",
                 MutationReadAt = mutationReadAt,
-                SourceAddressModifiedAt = DateTimeOffset.Now,
                 SourceFileName = "test-file.fake",
-                SourceKboNumber = kboNumber,
-                SourceModifiedAt = DateTimeOffset.Now,
+                SourceOrganisationKboNumber = kboNumber,
+                SourceOrganisationModifiedAt = DateTimeOffset.Now,
                 SyncCompletedAt = null,
                 SyncStatus = null,
             };
@@ -172,7 +166,7 @@ namespace OrganisationRegistry.UnitTests
             var organisationItem = new OrganisationDetailItem
             {
                 Id = Guid.NewGuid(),
-                KboNumber = kboSyncQueueItem.SourceKboNumber,
+                KboNumber = kboSyncQueueItem.SourceOrganisationKboNumber,
             };
 
             context.OrganisationDetail.Add(organisationItem);

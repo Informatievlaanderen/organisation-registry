@@ -30,10 +30,9 @@ namespace OrganisationRegistry.KboMutations
                     {
                         Id = Guid.NewGuid(),
                         SourceFileName = fileName,
-                        SourceKboNumber = mutation.Ondernemingsnummer,
-                        SourceName = mutation.MaatschappelijkeNaam,
-                        SourceAddressModifiedAt = mutation.AdresDatumModificatie,
-                        SourceModifiedAt = mutation.DatumModificatie,
+                        SourceOrganisationKboNumber = mutation.Ondernemingsnummer,
+                        SourceOrganisationName = mutation.MaatschappelijkeNaam,
+                        SourceOrganisationModifiedAt = mutation.DatumModificatie,
                         MutationReadAt = DateTime.UtcNow,
                     });
                 }

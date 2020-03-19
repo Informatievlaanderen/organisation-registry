@@ -14,15 +14,11 @@ namespace OrganisationRegistry.KboMutations
         [Index(25)]
         public string MaatschappelijkeNaam { get; set; }
 
-        [Index(34)]
-        public DateTime AdresDatumModificatie { get; set; }
-
         protected bool Equals(MutationsLine other)
         {
             return DatumModificatie.Equals(other.DatumModificatie) &&
                    Ondernemingsnummer == other.Ondernemingsnummer &&
-                   MaatschappelijkeNaam == other.MaatschappelijkeNaam &&
-                AdresDatumModificatie.Equals(other.AdresDatumModificatie);
+                   MaatschappelijkeNaam == other.MaatschappelijkeNaam;
         }
 
         public override bool Equals(object obj)
@@ -40,7 +36,6 @@ namespace OrganisationRegistry.KboMutations
                 var hashCode = DatumModificatie.GetHashCode();
                 hashCode = (hashCode * 397) ^ (Ondernemingsnummer != null ? Ondernemingsnummer.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (MaatschappelijkeNaam != null ? MaatschappelijkeNaam.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (AdresDatumModificatie != null ? AdresDatumModificatie.GetHashCode() : 0);
                 return hashCode;
             }
         }
