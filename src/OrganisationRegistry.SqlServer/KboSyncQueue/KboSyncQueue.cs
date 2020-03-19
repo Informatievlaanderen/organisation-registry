@@ -16,6 +16,7 @@ namespace OrganisationRegistry.SqlServer.KboSyncQueue
         public DateTimeOffset MutationReadAt { get; set; }
         public DateTimeOffset? SyncCompletedAt { get; set; }
         public string SyncStatus { get; set; }
+        public string SyncInfo { get; set; }
     }
 
     public class KboSyncQueueItemConfiguration : EntityMappingConfiguration<KboSyncQueueItem>
@@ -33,6 +34,7 @@ namespace OrganisationRegistry.SqlServer.KboSyncQueue
             b.Property(p => p.SyncCompletedAt);
             b.Property(p => p.MutationReadAt);
             b.Property(p => p.SyncStatus);
+            b.Property(p => p.SyncInfo);
         }
     }
 }

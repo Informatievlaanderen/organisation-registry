@@ -11,6 +11,9 @@ namespace OrganisationRegistry.UnitTests
         public DateTime Today
             => StubDate.Date;
 
+        public DateTimeOffset UtcNow
+            => StubDate;
+
         public DateTime StubDate { get; set; }
 
         public DateTimeProviderStub(DateTime date)

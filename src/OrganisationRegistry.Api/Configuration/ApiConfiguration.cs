@@ -65,6 +65,8 @@ namespace OrganisationRegistry.Api.Configuration
         public string RijksRegisterCapacity { get; set; }
         public string RijksRegisterCertificatePwd { get; set; }
 
+        public int SyncFromKboBatchSize { get; set; }
+
         public Guid KboV2FormalNameLabelTypeId { get; set; }
         public Guid KboV2RegisteredOfficeLocationTypeId { get; set; }
         public Guid KboV2LegalFormOrganisationClassificationTypeId { get; set; }

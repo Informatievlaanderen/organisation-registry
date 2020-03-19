@@ -8,6 +8,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnEventStore
         public DateTime Now => StubDate;
 
         public DateTime Today => StubDate.Date;
+        public DateTimeOffset UtcNow => StubDate;
 
         public DateTime StubDate { get; set; }
 
