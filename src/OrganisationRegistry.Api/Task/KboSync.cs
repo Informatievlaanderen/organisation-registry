@@ -59,7 +59,11 @@ namespace OrganisationRegistry.Api.Task
                         continue;
                     }
 
-                    commandSender.Send(new UpdateFromKbo(new OrganisationId(organisationDetailItem.Id), claimsPrincipal, _dateTimeProvider.Today));
+                    commandSender.Send(new UpdateFromKbo(
+                        new OrganisationId(organisationDetailItem.Id),
+                        claimsPrincipal,
+                        _dateTimeProvider.Today,
+                        kboSyncQueueItem.Id));
 
                     kboSyncQueueItem.SyncCompletedAt = _dateTimeProvider.UtcNow;
                     kboSyncQueueItem.SyncStatus = SyncStatusSuccess;
