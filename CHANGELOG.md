@@ -1,3 +1,13 @@
+# [1.26.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.25.0...v1.26.0) (2020-03-20)
+
+
+### Features
+
+* add kbo sync marker event ([db10994](https://github.com/informatievlaanderen/organisation-registry/commit/db10994ff17703836f51f07f11a321a379964fc2))
+* add migration to separate status from info ([8e8b2fd](https://github.com/informatievlaanderen/organisation-registry/commit/8e8b2fde716d53c48980796ac72d0601e8ca8519))
+* clarify kbo sync item properties ([5bb839f](https://github.com/informatievlaanderen/organisation-registry/commit/5bb839f2fbecf1d3d2be83de1dc32d22dc2854ae))
+* put limit on kbo sync ([8697d5e](https://github.com/informatievlaanderen/organisation-registry/commit/8697d5ea834e41de6d3c3626925e2471dab4b761))
+
 # [1.25.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.24.0...v1.25.0) (2020-03-19)
 
 
