@@ -1,3 +1,15 @@
+# [1.27.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.26.0...v1.27.0) (2020-03-20)
+
+
+### Bug Fixes
+
+* use owned instance ([730eabb](https://github.com/informatievlaanderen/organisation-registry/commit/730eabbb0ba0b876144adeb80922cc3c2cc704b2))
+
+
+### Features
+
+* add logging ([b9aaa94](https://github.com/informatievlaanderen/organisation-registry/commit/b9aaa9483f7773470738ae55d007ca462e52628a))
+
 # [1.26.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.25.0...v1.26.0) (2020-03-20)
 
 
