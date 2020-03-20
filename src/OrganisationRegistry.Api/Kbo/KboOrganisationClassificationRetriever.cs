@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Api.Kbo
 {
     using System;
     using System.Linq;
+    using Autofac.Features.OwnedInstances;
     using Configuration;
     using Microsoft.Extensions.Options;
     using SqlServer.Infrastructure;
@@ -11,11 +12,11 @@ namespace OrganisationRegistry.Api.Kbo
     public class KboOrganisationClassificationRetriever : IKboOrganisationClassificationRetriever
     {
         private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
-        private readonly Func<OrganisationRegistryContext> _contextFactory;
+        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
 
         public KboOrganisationClassificationRetriever(
             IOrganisationRegistryConfiguration organisationRegistryConfiguration,
-            Func<OrganisationRegistryContext> contextFactory
+            Func<Owned<OrganisationRegistryContext>> contextFactory
             )
         {
             _organisationRegistryConfiguration = organisationRegistryConfiguration;
@@ -24,7 +25,7 @@ namespace OrganisationRegistry.Api.Kbo
 
         public Guid? FetchOrganisationClassificationForLegalFormCode(string legalFormCode)
         {
-            using (var context = _contextFactory())
+            using (var context = _contextFactory().Value)
                 return context.OrganisationClassificationList
                     .FirstOrDefault(o => MatchesLegalFormCode(legalFormCode, o))
                     ?.Id;
