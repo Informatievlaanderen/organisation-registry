@@ -6,16 +6,20 @@ namespace OrganisationRegistry.UnitTests
     using Api.Task;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Microsoft.Extensions.Options;
     using Moq;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Domain.Exception;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+    using Serilog;
     using SqlServer.Infrastructure;
     using SqlServer.KboSyncQueue;
     using SqlServer.Organisation;
     using Xunit;
+    using ILogger = Serilog.ILogger;
 
     public class KboSyncTests
     {
@@ -46,7 +50,7 @@ namespace OrganisationRegistry.UnitTests
 
             _context.SaveChanges();
 
-            new KboSync(_dateTimeProviderStub, _apiConfiguration).SyncFromKbo(commandSender, _context, _claimsPrincipal);
+            new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(commandSender, _context, _claimsPrincipal);
 
             _context.KboSyncQueue.Should().BeEquivalentTo(
                 new KboSyncQueueItem
@@ -90,7 +94,7 @@ namespace OrganisationRegistry.UnitTests
 
             _context.SaveChanges();
 
-            new KboSync(_dateTimeProviderStub, _apiConfiguration).SyncFromKbo(commandSender.Object, _context,
+            new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(commandSender.Object, _context,
                 _claimsPrincipal);
 
             _context.KboSyncQueue.Should().BeEquivalentTo(
@@ -129,7 +133,7 @@ namespace OrganisationRegistry.UnitTests
 
             _context.SaveChanges();
 
-            new KboSync(_dateTimeProviderStub, _apiConfiguration).SyncFromKbo(commandSender, _context,
+            new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(commandSender, _context,
                 _claimsPrincipal);
 
             _context.KboSyncQueue.Should().BeEquivalentTo(
