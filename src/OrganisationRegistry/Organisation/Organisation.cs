@@ -232,6 +232,11 @@ namespace OrganisationRegistry.Organisation
                 ApplyChange(new OrganisationBecameActive(Id));
         }
 
+        public void MarkAsSynced(Guid kboSyncItemId)
+        {
+            ApplyChange(new OrganisationSyncedFromKbo(Id, kboSyncItemId));
+        }
+
         public void UpdateInfoFromKbo(
             string kboOrganisationName,
             string kboOrganisationShortName)

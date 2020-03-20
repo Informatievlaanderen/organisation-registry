@@ -28,6 +28,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
 
         private Guid _organisationId;
+        private Guid _kboSyncItemId;
         private Guid _legalFormOrganisationClassificationTypeId;
         private Guid _organisationClassificationId;
         private Guid _anotherOrganisationClassificationId;
@@ -51,6 +52,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             _legalFormOrganisationClassificationTypeId = new OrganisationClassificationTypeId(_organisationRegistryConfigurationStub.KboV2LegalFormOrganisationClassificationTypeId);
             _organisationClassificationId = new OrganisationClassificationId(Guid.NewGuid());
             _anotherOrganisationClassificationId = new OrganisationClassificationId(Guid.NewGuid());
+            _kboSyncItemId = Guid.NewGuid();
 
             return new List<IEvent>
             {
@@ -131,7 +133,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             return new UpdateFromKbo(
                 new OrganisationId(_organisationId),
                 null,
-                new DateTimeOffset(new DateTime(2019, 9, 9)));
+                new DateTimeOffset(new DateTime(2019, 9, 9)),
+                _kboSyncItemId);
         }
 
         protected override KboOrganisationCommandHandlers BuildHandler()
@@ -191,7 +194,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 locationRetriever: new KboLocationRetrieverStub(address => (Guid?) null));
         }
 
-        protected override int ExpectedNumberOfEvents => 10;
+        protected override int ExpectedNumberOfEvents => 11;
 
         [Fact]
         public void CreatesTheMissingLocationsOnceBeforeCreatingTheOrganisation()
@@ -329,8 +332,16 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             organisationBankAccountAdded.IsBic.Should().Be(true);
             organisationBankAccountAdded.ValidFrom.Should().Be(new ValidFrom(2000, 1, 1));
             organisationBankAccountAdded.ValidTo.Should().Be(new ValidTo(2001, 1, 1));
+        }
 
+        [Fact]
+        public void MarksAsSynced()
+        {
+            var organisationSyncedFromKbo = PublishedEvents[10].UnwrapBody<OrganisationSyncedFromKbo>();
+            organisationSyncedFromKbo.Should().NotBeNull();
 
+            organisationSyncedFromKbo.OrganisationId.Should().Be(_organisationId);
+            organisationSyncedFromKbo.KBOSyncItemId.Should().Be(_kboSyncItemId);
         }
 
         public UpdateFromKboTests(ITestOutputHelper helper) : base(helper)

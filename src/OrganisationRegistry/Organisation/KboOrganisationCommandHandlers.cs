@@ -185,6 +185,8 @@ namespace OrganisationRegistry.Organisation
 
             organisation.UpdateKboBankAccount(kboOrganisation.BankAccounts, message.ModificationTime);
 
+            organisation.MarkAsSynced(message.KboSyncItemId);
+
             Session.Commit();
         }
 

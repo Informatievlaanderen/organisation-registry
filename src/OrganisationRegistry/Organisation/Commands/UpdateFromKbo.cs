@@ -9,14 +9,18 @@ namespace OrganisationRegistry.Organisation.Commands
 
         public ClaimsPrincipal User { get; }
         public DateTime ModificationTime { get; }
+        public Guid KboSyncItemId { get; }
 
-        public UpdateFromKbo(OrganisationId organisationId,
+        public UpdateFromKbo(
+            OrganisationId organisationId,
             ClaimsPrincipal user,
-            DateTimeOffset modificationTime)
+            DateTimeOffset modificationTime,
+            Guid kboSyncItemId)
         {
             User = user;
             ModificationTime = modificationTime.Date;
             Id = organisationId;
+            KboSyncItemId = kboSyncItemId;
         }
     }
 }
