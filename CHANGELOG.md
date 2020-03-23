@@ -1,3 +1,16 @@
+# [1.28.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.27.0...v1.28.0) (2020-03-23)
+
+
+### Bug Fixes
+
+* handle legal form being removed after update ([5a9c80f](https://github.com/informatievlaanderen/organisation-registry/commit/5a9c80f2e551701a0c8819c74738e56e590ae2fd))
+
+
+### Features
+
+* don't publish info has changed when (short)name didn't change ([6c84103](https://github.com/informatievlaanderen/organisation-registry/commit/6c8410364b09ff8450df20665ebbe57dd1d81bf6))
+* use account number if no iban was provided ([e21e3b9](https://github.com/informatievlaanderen/organisation-registry/commit/e21e3b9de1583e2bb81665ef5616dfd3d18f2bbc))
+
 # [1.27.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.26.0...v1.27.0) (2020-03-20)
 
 
