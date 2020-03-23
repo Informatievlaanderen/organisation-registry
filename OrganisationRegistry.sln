@@ -74,6 +74,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganisationRegistry.KboMut
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganisationRegistry.KboMutations", "src\OrganisationRegistry.KboMutations\OrganisationRegistry.KboMutations.csproj", "{B13040BE-E1BD-47CC-95AD-7598CAD3B2A2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganisationRegistry.ElasticSearch.Tests", "test\OrganisationRegistry.ElasticSearch.Tests\OrganisationRegistry.ElasticSearch.Tests.csproj", "{0E92E5D1-83EA-423B-8DB6-C4D6214FB6EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -172,6 +174,10 @@ Global
 		{B13040BE-E1BD-47CC-95AD-7598CAD3B2A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B13040BE-E1BD-47CC-95AD-7598CAD3B2A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B13040BE-E1BD-47CC-95AD-7598CAD3B2A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E92E5D1-83EA-423B-8DB6-C4D6214FB6EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E92E5D1-83EA-423B-8DB6-C4D6214FB6EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E92E5D1-83EA-423B-8DB6-C4D6214FB6EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E92E5D1-83EA-423B-8DB6-C4D6214FB6EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -203,5 +209,6 @@ Global
 		{1251D40D-7EF7-4FB0-8923-398954595756} = {6DE8E902-CCF9-4158-8686-33816FC5EE44}
 		{9FB7EE1A-863F-4E0C-A373-53461C21507E} = {694835F2-9FEE-41C0-8989-44A574C6AF2E}
 		{B13040BE-E1BD-47CC-95AD-7598CAD3B2A2} = {6DE8E902-CCF9-4158-8686-33816FC5EE44}
+		{0E92E5D1-83EA-423B-8DB6-C4D6214FB6EA} = {694835F2-9FEE-41C0-8989-44A574C6AF2E}
 	EndGlobalSection
 EndGlobal
