@@ -43,7 +43,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         [EnvVarIgnoreFact]
         public void InitializeProjection_CreatesIndex()
         {
-            var scenario = new BodyScenarioBase(Guid.NewGuid());
+            var scenario = new BodyScenario(Guid.NewGuid());
 
             Handle(scenario.Create<InitialiseProjection>());
 
@@ -54,7 +54,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         [EnvVarIgnoreFact]
         public void BodyRegistered_CreatesDocument()
         {
-            var scenario = new BodyScenarioBase(Guid.NewGuid());
+            var scenario = new BodyScenario(Guid.NewGuid());
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
@@ -78,7 +78,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void LifecyclePhaseTypeUpdated_UpdatesExistingBodyLifecyclePhases()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new BodyScenarioBase(bodyId);
+            var scenario = new BodyScenario(bodyId);
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
@@ -104,7 +104,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void MultipleBodySeatAddeds_CreatesMultipleBodySeats()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new ScenarioBase(
+            var scenario = new ScenarioBase<BodyHandler>(
                 new ParameterNameArg("bodyId", bodyId));
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
@@ -129,7 +129,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void AssignedPersonToBodySeat_AddsMandateToBodySeat()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new BodyScenarioBase(bodyId);
+            var scenario = new BodyScenario(bodyId);
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
@@ -165,7 +165,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void ReassignedPersonToBodySeat_UpdatesMandate()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new BodyScenarioBase(bodyId);
+            var scenario = new BodyScenario(bodyId);
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
@@ -203,7 +203,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void ReassignedPersonToBodySeat_DoesNotUpdateOtherMandates()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new ScenarioBase(
+            var scenario = new ScenarioBase<BodyHandler>(
                 new ParameterNameArg("bodyId", bodyId),
                 new ParameterNameArg("lifecyclePhaseTypeId", Guid.NewGuid()),
                 new ParameterNameArg("bodySeatId", Guid.NewGuid()));
@@ -252,7 +252,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void MultipleAssignPersonToBodySeat_CreatesMultipleBodyMandates()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new ScenarioBase(
+            var scenario = new ScenarioBase<BodyHandler>(
                 new ParameterNameArg("bodyId", bodyId),
                 new ParameterNameArg("bodySeatId", Guid.NewGuid()));
 
@@ -282,7 +282,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void ReassignedOrganisationToBodySeat_UpdatesMandate()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new BodyScenarioBase(bodyId);
+            var scenario = new BodyScenario(bodyId);
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
@@ -320,7 +320,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void ReassignedFunctionTypeToBodySeat_UpdatesMandate()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new BodyScenarioBase(bodyId);
+            var scenario = new BodyScenario(bodyId);
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
@@ -358,7 +358,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void PersonAssignedToDelegation_AddsDelegation()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new BodyScenarioBase(bodyId);
+            var scenario = new BodyScenario(bodyId);
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
@@ -398,7 +398,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void PersonAssignedToDelegationUpdated_UpdatesDelegation()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new BodyScenarioBase(bodyId);
+            var scenario = new BodyScenario(bodyId);
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
@@ -440,7 +440,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void PersonAssignedToDelegationRemoved_RemovesDelegation()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new BodyScenarioBase(bodyId);
+            var scenario = new BodyScenario(bodyId);
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
@@ -474,7 +474,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void PersonRenamed_RenamesInBodySeat()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new BodyScenarioBase(bodyId);
+            var scenario = new BodyScenario(bodyId);
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
@@ -506,7 +506,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void OrganisationRenamed_RenamesInBodySeat()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new BodyScenarioBase(bodyId);
+            var scenario = new BodyScenario(bodyId);
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
@@ -538,7 +538,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void FunctionTypeRenamed_RenamesInBodySeat()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new BodyScenarioBase(bodyId);
+            var scenario = new BodyScenario(bodyId);
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
@@ -570,7 +570,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void FunctionTypeOrOrganisationOrPersonRenamed_DoesNotCrashBecauseNoDocumentsFound()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new BodyScenarioBase(bodyId);
+            var scenario = new BodyScenario(bodyId);
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
@@ -590,7 +590,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void SeatTypeUpdated_UpdatesBodySeatType()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new ScenarioBase(
+            var scenario = new ScenarioBase<BodyHandler>(
                 new ParameterNameArg("bodyId", bodyId));
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
@@ -623,7 +623,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         public void PersonUpdated_UpdatesDelegationsPersonName()
         {
             var bodyId = Guid.NewGuid();
-            var scenario = new BodyScenarioBase(bodyId);
+            var scenario = new BodyScenario(bodyId);
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
