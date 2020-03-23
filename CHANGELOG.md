@@ -1,3 +1,11 @@
+# [1.29.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.28.0...v1.29.0) (2020-03-23)
+
+
+### Features
+
+* make es tests dependant on env var ([e3a4140](https://github.com/informatievlaanderen/organisation-registry/commit/e3a41405c3a3e2901b0545bee9656727b8c6924e))
+* re-add es tests ([963fd6d](https://github.com/informatievlaanderen/organisation-registry/commit/963fd6d00ac94a6a74d90320df38aafb932f5851))
+
 # [1.28.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.27.0...v1.28.0) (2020-03-23)
 
 
