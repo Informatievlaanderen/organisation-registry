@@ -6,18 +6,36 @@ namespace OrganisationRegistry.Organisation
 
     public class BankAccountNumber
     {
+        public static BankAccountNumber CreateWithExpectedValidity(string bankAccountNumber, bool isValidIban)
+        {
+            var accountNumber = new BankAccountNumber(bankAccountNumber, isValidIban);
+
+            if (isValidIban)
+                accountNumber.ValidateIbanOrThrow();
+
+            return accountNumber;
+        }
+
+        public static BankAccountNumber CreateWithUnknownValidity(string bankAccountNumber)
+        {
+            var isValid = IbanUtils.IsValid(CleanBankAccountNumber(bankAccountNumber), out _);
+            return new BankAccountNumber(bankAccountNumber, isValid);
+        }
+
         public string Number { get; }
         public bool IsValidIban { get; }
 
-        public BankAccountNumber(
+        private BankAccountNumber(
             string bankAccountNumber,
             bool isValidIban)
         {
             IsValidIban = isValidIban;
-            Number = isValidIban ? CleanBankAccountNumber(bankAccountNumber) : bankAccountNumber;
+            Number = isValidIban ? CleanBankAccountNumber(bankAccountNumber) : bankAccountNumber ?? string.Empty;
+        }
 
-            if (isValidIban)
-                ValidateIbanOrThrow();
+        private BankAccountNumber(string bankAccountNumber)
+        {
+            Number = bankAccountNumber ?? string.Empty;
         }
 
         private static string CleanBankAccountNumber(string bankAccountNumber)

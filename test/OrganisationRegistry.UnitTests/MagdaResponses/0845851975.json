@@ -9,13 +9,13 @@
           "Bericht": {
             "Type": 1,
             "Tijdstip": {
-              "Datum": "2020-03-12",
-              "Tijd": "13:28:36.862"
+              "Datum": "2020-03-23",
+              "Tijd": "13:45:57.694"
             },
             "Afzender": {
               "Identificatie": "vip.vlaanderen.be",
               "Naam": "MagdaGateway",
-              "Referte": "a0a793cf-d725-4842-84b8-4228189af26f",
+              "Referte": "ddd5123c-892b-4060-885a-77e32583966b",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -23,7 +23,7 @@
             "Ontvanger": {
               "Identificatie": "kb.vlaanderen.be/aiv/organisatieregister-ond-aip",
               "Naam": null,
-              "Referte": "3ce16ea0-52bc-4de8-8d12-f8764c6b7b2a",
+              "Referte": "b1049654-a4ac-49cd-b600-00340621cfc6",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -33,10 +33,25 @@
         },
         "Antwoorden": {
           "Antwoord": {
-            "Referte": "3ce16ea0-52bc-4de8-8d12-f8764c6b7b2a",
+            "Referte": "b1049654-a4ac-49cd-b600-00340621cfc6",
             "Inhoud": {
               "Onderneming": {
-                "Rechtstoestanden": null,
+                "Rechtstoestanden": [
+                  {
+                    "InstrumenterendeOverheid": "845851975",
+                    "DatumBegin": "2012-05-04",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": null,
+                      "Value": "000"
+                    },
+                    "Omschrijving": {
+                      "Oorsprong": null,
+                      "TaalCode": null,
+                      "Value": "Normale toestand"
+                    }
+                  }
+                ],
                 "Vestigingen": [
                   {
                     "Vestigingsnummer": "2209846674",
@@ -131,7 +146,17 @@
                     "DatumEinde": null
                   }
                 ],
-                "Bankrekeningen": null,
+                "Bankrekeningen": [
+                  {
+                    "Rekeningnummer": "068 8950239 76",
+                    "Doel": "003",
+                    "IBAN": "BE91068895023976",
+                    "BIC": "GKCCBEBB",
+                    "NietSEPAnummer": null,
+                    "DatumBegin": "2012-05-10",
+                    "DatumEinde": null
+                  }
+                ],
                 "Functies": [
                   {
                     "FunctiehouderVan": "0845851975",
@@ -263,7 +288,32 @@
                     "DatumEinde": null
                   }
                 ],
-                "Activiteiten": null,
+                "Activiteiten": [
+                  {
+                    "Nace": {
+                      "Versie": "2008",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "70220"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Overige adviesbureaus op het gebied van bedrijfsbeheer; adviesbureaus  op het gebied van bedrijfsvoering"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Hoofdactiviteit",
+                        "Value": "P"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "001",
+                    "DatumBegin": "2012-05-04",
+                    "DatumEinde": null
+                  }
+                ],
                 "GerelateerdeOndernemingen": null,
                 "Hoedanigheden": [
                   {

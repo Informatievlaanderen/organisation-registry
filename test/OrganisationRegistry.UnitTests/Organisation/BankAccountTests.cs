@@ -9,7 +9,7 @@ namespace OrganisationRegistry.UnitTests.Organisation
         [Fact]
         public void TestWithBulgarianIban()
         {
-            new BankAccountNumber("BG72UNCR70001522734456", true).IsValidIban.Should().BeTrue();
+            BankAccountNumber.CreateWithExpectedValidity("BG72UNCR70001522734456", true).IsValidIban.Should().BeTrue();
         }
     }
 }

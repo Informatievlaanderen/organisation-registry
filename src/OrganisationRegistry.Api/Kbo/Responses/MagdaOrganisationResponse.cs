@@ -116,14 +116,17 @@ namespace OrganisationRegistry.Api.Kbo.Responses
 
         public class BankAccount : IMagdaBankAccount
         {
-            public string Iban { get; }
+            public string AccountNumber { get; }
             public string Bic { get; }
             public DateTime? ValidFrom { get; }
             public DateTime? ValidTo { get; }
 
             public BankAccount(BankrekeningType bankrekeningType)
             {
-                Iban = bankrekeningType.IBAN;
+                AccountNumber = !string.IsNullOrEmpty(bankrekeningType.IBAN)
+                    ? bankrekeningType.IBAN
+                    : bankrekeningType.Rekeningnummer;
+
                 Bic = bankrekeningType.BIC;
                 ValidFrom = ParseKboDate(bankrekeningType.DatumBegin);
                 ValidTo = ParseKboDate(bankrekeningType.DatumEinde);

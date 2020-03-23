@@ -9,13 +9,13 @@
           "Bericht": {
             "Type": 1,
             "Tijdstip": {
-              "Datum": "2020-03-17",
-              "Tijd": "09:36:31.030"
+              "Datum": "2020-03-23",
+              "Tijd": "13:45:52.362"
             },
             "Afzender": {
               "Identificatie": "vip.vlaanderen.be",
               "Naam": "MagdaGateway",
-              "Referte": "b7d2d1b9-6d89-40a4-8956-40223dc09b1b",
+              "Referte": "5657b895-6ef6-453c-99b6-0f94d42dd9c9",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -23,7 +23,7 @@
             "Ontvanger": {
               "Identificatie": "kb.vlaanderen.be/aiv/organisatieregister-ond-aip",
               "Naam": null,
-              "Referte": "129c7c91-9731-4012-8078-879a290c506b",
+              "Referte": "29a2e187-a6be-4e1c-a1d9-ea35de5e4807",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -33,10 +33,25 @@
         },
         "Antwoorden": {
           "Antwoord": {
-            "Referte": "129c7c91-9731-4012-8078-879a290c506b",
+            "Referte": "29a2e187-a6be-4e1c-a1d9-ea35de5e4807",
             "Inhoud": {
               "Onderneming": {
-                "Rechtstoestanden": null,
+                "Rechtstoestanden": [
+                  {
+                    "InstrumenterendeOverheid": "860325266",
+                    "DatumBegin": "2003-09-02",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": null,
+                      "Value": "000"
+                    },
+                    "Omschrijving": {
+                      "Oorsprong": null,
+                      "TaalCode": null,
+                      "Value": "Normale toestand"
+                    }
+                  }
+                ],
                 "Vestigingen": null,
                 "Bankrekeningen": null,
                 "Functies": [
@@ -104,7 +119,56 @@
                     "DatumEinde": null
                   }
                 ],
-                "Activiteiten": null,
+                "Activiteiten": [
+                  {
+                    "Nace": {
+                      "Versie": "2008",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "73110"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Reclamebureaus"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Hoofdactiviteit",
+                        "Value": "P"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "001",
+                    "DatumBegin": "2008-01-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Nace": {
+                      "Versie": "2003",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "74401"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Publiciteitsagentschappen"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Hoofdactiviteit",
+                        "Value": "P"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "001",
+                    "DatumBegin": "2006-01-01",
+                    "DatumEinde": "2007-12-31"
+                  }
+                ],
                 "GerelateerdeOndernemingen": null,
                 "Hoedanigheden": [
                   {

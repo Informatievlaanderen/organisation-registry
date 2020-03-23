@@ -158,15 +158,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                         {
                             new BankAccountStub
                             {
-                                Iban = "BE71 0961 2345 6769",
+                                AccountNumber = "BE71 0961 2345 6769",
                                 Bic = "GKCCBEBB",
                                 ValidFrom = new DateTime(2000, 1, 1),
                                 ValidTo = new DateTime(2001, 1, 1),
                             },
                             new BankAccountStub
                             {
-                                Iban = "BE88 8881 8888 6769",
-                                Bic = "GKCCBEBB",
+                                AccountNumber = "00300000123",
                                 ValidFrom = new DateTime(2000, 1, 1),
                                 ValidTo = new DateTime(2001, 1, 1),
                             }
@@ -326,10 +325,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 
             organisationBankAccountAdded.OrganisationId.Should().Be(_organisationId);
             organisationBankAccountAdded.OrganisationBankAccountId.Should().NotBeEmpty();
-            organisationBankAccountAdded.BankAccountNumber.Should().Be("BE88 8881 8888 6769");
-            organisationBankAccountAdded.Bic.Should().Be("GKCCBEBB");
-            organisationBankAccountAdded.IsIban.Should().Be(true);
-            organisationBankAccountAdded.IsBic.Should().Be(true);
+            organisationBankAccountAdded.BankAccountNumber.Should().Be("00300000123");
+            organisationBankAccountAdded.Bic.Should().Be("");
+            organisationBankAccountAdded.IsIban.Should().Be(false);
+            organisationBankAccountAdded.IsBic.Should().Be(false);
             organisationBankAccountAdded.ValidFrom.Should().Be(new ValidFrom(2000, 1, 1));
             organisationBankAccountAdded.ValidTo.Should().Be(new ValidTo(2001, 1, 1));
         }

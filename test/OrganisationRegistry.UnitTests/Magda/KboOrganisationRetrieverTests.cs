@@ -4,6 +4,7 @@ namespace OrganisationRegistry.UnitTests.Magda
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Api.Kbo;
+    using Api.Kbo.Responses;
     using FluentAssertions;
     using Moq;
     using OrganisationRegistry.Magda.Common;
@@ -39,6 +40,24 @@ namespace OrganisationRegistry.UnitTests.Magda
         }
 
         [Fact]
+        public async Task WhenBankAccountIsNonIban()
+        {
+            var kboNr = "0471693974";
+            var magdaResponse = await MagdaJsonLoader.Load(kboNr);
+            var sut = SetUpKboOrganisationRetriever(kboNr, magdaResponse);
+
+            var organisation = await sut.RetrieveOrganisation(new ClaimsPrincipal(), new KboNumber(kboNr));
+
+            organisation.Should().NotBeNull();
+
+            var bankAccount = organisation.BankAccounts[0];
+            bankAccount.Bic.Should().BeNull();
+            bankAccount.AccountNumber.Should().Be("310 0000000 00");
+            bankAccount.ValidFrom.Should().Be(new DateTime(2000, 06, 13));
+            bankAccount.ValidTo.Should().BeNull();
+        }
+
+        [Fact]
         public async Task WithoutShortName()
         {
             var kboNr = "0404055577";
@@ -59,7 +78,11 @@ namespace OrganisationRegistry.UnitTests.Magda
             organisation.LegalForm.ValidFrom.Should().Be(new DateTime(1998, 04, 08));
             organisation.LegalForm.ValidTo.Should().BeNull();
 
-            organisation.BankAccounts.Should().BeEmpty();
+            var bankAccount = organisation.BankAccounts[0];
+            bankAccount.Bic.Should().Be("JVBABE22");
+            bankAccount.AccountNumber.Should().Be("BE65645348992796");
+            bankAccount.ValidFrom.Should().Be(new DateTime(1930, 12, 01));
+            bankAccount.ValidTo.Should().BeNull();
 
             organisation.Address.City.Should().Be("Antwerpen");
             organisation.Address.Country.Should().Be("België");

@@ -183,7 +183,7 @@ namespace OrganisationRegistry.Organisation
                 guid => Session.Get<OrganisationClassification>(guid),
                 message.ModificationTime);
 
-            organisation.UpdateKboBankAccount(kboOrganisation.BankAccounts, message.ModificationTime);
+            organisation.UpdateKboBankAccount(kboOrganisation.BankAccounts);
 
             organisation.MarkAsSynced(message.KboSyncItemId);
 
@@ -292,8 +292,8 @@ namespace OrganisationRegistry.Organisation
             {
                 organisation.AddKboBankAccount(
                     Guid.NewGuid(),
-                    new BankAccountNumber(bankAccount.Iban, true),
-                    new BankAccountBic(bankAccount.Bic, true),
+                    BankAccountNumber.CreateWithUnknownValidity(bankAccount.AccountNumber),
+                    BankAccountBic.CreateWithUnknownValidity(bankAccount.Bic),
                     new Period(
                         new ValidFrom(bankAccount.ValidFrom),
                         new ValidTo(bankAccount.ValidTo)));

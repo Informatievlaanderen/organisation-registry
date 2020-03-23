@@ -5,15 +5,26 @@ namespace OrganisationRegistry.Organisation
 
     public class BankAccountBic
     {
+        public static BankAccountBic CreateWithExpectedValidity(string bic, bool isValidBic)
+        {
+            return new BankAccountBic(bic, isValidBic);
+        }
+
+        public static BankAccountBic CreateWithUnknownValidity(string bic)
+        {
+            var isValidBic = BicUtils.IsValid(bic, out _);
+            return new BankAccountBic(bic, isValidBic);
+        }
+
         public string Bic { get; }
         public bool IsValidBic { get; }
 
-        public BankAccountBic(
+        private BankAccountBic(
             string bic,
             bool isValidBic)
         {
             IsValidBic = isValidBic;
-            Bic = bic;
+            Bic = bic ?? string.Empty;
 
             if (isValidBic)
                 ValidateBicOrThrow();
