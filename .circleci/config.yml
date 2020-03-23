@@ -9,9 +9,6 @@ executors:
           ACCEPT_EULA: Y
           SA_PASSWORD: E@syP@ssw0rd
           MSSQL_TCP_PORT: 21433
-      - image: docker.elastic.co/elasticsearch/elasticsearch:6.2.3
-        environment:
-          discovery.type: single-node
 
 jobs:
   build:
