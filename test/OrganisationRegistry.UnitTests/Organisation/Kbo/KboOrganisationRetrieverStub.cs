@@ -31,7 +31,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 
     public class BankAccountStub : IMagdaBankAccount
     {
-        public string Iban { get; set; }
+        public string AccountNumber { get; set; }
         public string Bic { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }

@@ -10,12 +10,12 @@
             "Type": 1,
             "Tijdstip": {
               "Datum": "2020-03-23",
-              "Tijd": "13:46:02.993"
+              "Tijd": "13:46:00.507"
             },
             "Afzender": {
               "Identificatie": "vip.vlaanderen.be",
               "Naam": "MagdaGateway",
-              "Referte": "97bdb6e6-81ce-4c25-b93e-58087bc4bd9c",
+              "Referte": "ca79db5e-a466-4968-948f-317c2d5bfe00",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -23,7 +23,7 @@
             "Ontvanger": {
               "Identificatie": "kb.vlaanderen.be/aiv/organisatieregister-ond-aip",
               "Naam": null,
-              "Referte": "5babe916-a58d-4aa5-9ffb-43e4e067730b",
+              "Referte": "6e2370e0-96ec-4d36-a448-ec4fa631f7eb",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -33,13 +33,13 @@
         },
         "Antwoorden": {
           "Antwoord": {
-            "Referte": "5babe916-a58d-4aa5-9ffb-43e4e067730b",
+            "Referte": "6e2370e0-96ec-4d36-a448-ec4fa631f7eb",
             "Inhoud": {
               "Onderneming": {
                 "Rechtstoestanden": [
                   {
-                    "InstrumenterendeOverheid": "449091588",
-                    "DatumBegin": "1993-01-08",
+                    "InstrumenterendeOverheid": "471693974",
+                    "DatumBegin": "2000-04-13",
                     "DatumEinde": null,
                     "Code": {
                       "Beschrijving": null,
@@ -54,7 +54,7 @@
                 ],
                 "Vestigingen": [
                   {
-                    "Vestigingsnummer": "2060387292",
+                    "Vestigingsnummer": "2097388735",
                     "StatusKBO": {
                       "Code": {
                         "Beschrijving": null,
@@ -67,18 +67,7 @@
                       }
                     },
                     "MaatschappelijkeZetel": null,
-                    "Namen": {
-                      "MaatschappelijkeNamen": null,
-                      "AfgekorteNamen": null,
-                      "CommercieleNamen": [
-                        {
-                          "Naam": "D'HAESE OCTAAF EN ZOON BVBA",
-                          "Taalcode": "nl",
-                          "DatumBegin": "1993-01-20",
-                          "DatumEinde": null
-                        }
-                      ]
-                    },
+                    "Namen": null,
                     "Adressen": [
                       {
                         "Type": {
@@ -102,14 +91,14 @@
                               },
                               "Straat": {
                                 "Code": null,
-                                "Naam": "Grotekapellelaan"
+                                "Naam": "Bergense Steenweg"
                               },
                               "Huisnummer": null,
                               "Busnummer": null,
                               "Gemeente": {
                                 "NISCode": null,
                                 "PostCode": null,
-                                "Naam": "Lede"
+                                "Naam": "Anderlecht"
                               },
                               "Staat": null
                             },
@@ -119,7 +108,7 @@
                           }
                         ],
                         "Doorhalingen": null,
-                        "DatumBegin": "1993-01-20",
+                        "DatumBegin": "2006-10-01",
                         "DatumEinde": null,
                         "Land": {
                           "NISCode": "150",
@@ -127,14 +116,14 @@
                           "Naam": "BELGIE"
                         },
                         "Straat": {
-                          "Code": "1225",
+                          "Code": "0310",
                           "Naam": null
                         },
-                        "Huisnummer": "40",
+                        "Huisnummer": "679",
                         "Busnummer": null,
                         "Gemeente": {
-                          "NISCode": "41034",
-                          "PostCode": "9340",
+                          "NISCode": "21001",
+                          "PostCode": "1070",
                           "Naam": null
                         },
                         "Staat": null
@@ -142,34 +131,143 @@
                     ],
                     "Afsluiting": null,
                     "Stopzetting": null,
-                    "DatumBegin": "1993-01-20",
+                    "DatumBegin": "2000-06-13",
                     "DatumEinde": null
                   }
                 ],
                 "Bankrekeningen": [
                   {
-                    "Rekeningnummer": "293 2550004 26",
+                    "Rekeningnummer": "310 0000000 00",
                     "Doel": "003",
-                    "IBAN": "BE59293255000426",
-                    "BIC": "GEBABEBB",
+                    "IBAN": null,
+                    "BIC": null,
                     "NietSEPAnummer": null,
-                    "DatumBegin": "1993-01-20",
+                    "DatumBegin": "2000-06-13",
                     "DatumEinde": null
                   }
                 ],
-                "Functies": null,
+                "Functies": [
+                  {
+                    "FunctiehouderVan": "0471693974",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10006"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Zaakvoerder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2006-07-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0471693974",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": {
+                      "AanduidingVrijstelling": {
+                        "Beschrijving": null,
+                        "Value": 0
+                      },
+                      "GeenKMO": null,
+                      "Code": null,
+                      "Omschrijving": null
+                    },
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "20008"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Aannemer van schilderwerken"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2006-01-27",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0471693974",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": {
+                      "AanduidingVrijstelling": {
+                        "Beschrijving": null,
+                        "Value": 0
+                      },
+                      "GeenKMO": null,
+                      "Code": null,
+                      "Omschrijving": null
+                    },
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "20023"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Behanger-plaatser van wand- en vloerbekleding"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2006-01-27",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0471693974",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": {
+                      "AanduidingVrijstelling": {
+                        "Beschrijving": null,
+                        "Value": 0
+                      },
+                      "GeenKMO": null,
+                      "Code": null,
+                      "Omschrijving": null
+                    },
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "20090"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Basiskennis bedrijfsbeheer"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2000-05-16",
+                    "DatumEinde": null
+                  }
+                ],
                 "Activiteiten": [
                   {
                     "Nace": {
                       "Versie": "2008",
                       "Code": {
                         "Beschrijving": null,
-                        "Value": "25120"
+                        "Value": "43341"
                       },
                       "Omschrijving": {
                         "Oorsprong": null,
                         "TaalCode": null,
-                        "Value": "Vervaardiging van metalen deuren en vensters"
+                        "Value": "Schilderen van gebouwen"
                       }
                     },
                     "Type": {
@@ -188,12 +286,12 @@
                       "Versie": "2003",
                       "Code": {
                         "Beschrijving": null,
-                        "Value": "28120"
+                        "Value": "45441"
                       },
                       "Omschrijving": {
                         "Oorsprong": null,
                         "TaalCode": null,
-                        "Value": "Vervaardiging van metalen ramen, deuren, wanden en dergelijke"
+                        "Value": "Schilderen"
                       }
                     },
                     "Type": {
@@ -204,7 +302,7 @@
                       "Omschrijving": null
                     },
                     "Groep": "001",
-                    "DatumBegin": "1993-02-01",
+                    "DatumBegin": "2000-06-01",
                     "DatumEinde": "2007-12-31"
                   },
                   {
@@ -212,24 +310,48 @@
                       "Versie": "2008",
                       "Code": {
                         "Beschrijving": null,
-                        "Value": "43320"
+                        "Value": "43341"
                       },
                       "Omschrijving": {
                         "Oorsprong": null,
                         "TaalCode": null,
-                        "Value": "Schrijnwerk"
+                        "Value": "Schilderen van gebouwen"
                       }
                     },
                     "Type": {
                       "Code": {
-                        "Beschrijving": "Nevenactiviteit",
-                        "Value": "S"
+                        "Beschrijving": "Hoofdactiviteit",
+                        "Value": "P"
                       },
                       "Omschrijving": null
                     },
-                    "Groep": "001",
-                    "DatumBegin": "2008-04-16",
+                    "Groep": "006",
+                    "DatumBegin": "2008-01-01",
                     "DatumEinde": null
+                  },
+                  {
+                    "Nace": {
+                      "Versie": "2003",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "45441"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Schilderen"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Hoofdactiviteit",
+                        "Value": "P"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "006",
+                    "DatumBegin": "2001-08-01",
+                    "DatumEinde": "2007-12-31"
                   }
                 ],
                 "GerelateerdeOndernemingen": null,
@@ -248,7 +370,7 @@
                       "Omschrijving": null
                     },
                     "Beeindiging": null,
-                    "DatumBegin": "1993-02-01",
+                    "DatumBegin": "2000-06-01",
                     "DatumEinde": null,
                     "Code": {
                       "Beschrijving": "Onderneming onderworpen aan BTW",
@@ -259,7 +381,7 @@
                   {
                     "InstrumenterendeAdministratie": "OLK001",
                     "Inschrijving": {
-                      "Datum": "2003-01-25"
+                      "Datum": "2003-01-26"
                     },
                     "Duurtijd": "0.0",
                     "Fase": {
@@ -270,11 +392,33 @@
                       "Omschrijving": null
                     },
                     "Beeindiging": null,
-                    "DatumBegin": "1993-01-20",
+                    "DatumBegin": "2000-06-13",
                     "DatumEinde": null,
                     "Code": {
                       "Beschrijving": "Handelsonderneming",
                       "Value": "00293"
+                    },
+                    "Omschrijving": null
+                  },
+                  {
+                    "InstrumenterendeAdministratie": "RSZ001",
+                    "Inschrijving": {
+                      "Datum": "2003-01-21"
+                    },
+                    "Duurtijd": "0.0",
+                    "Fase": {
+                      "Code": {
+                        "Beschrijving": "hoedanigheid/Toelating verworven",
+                        "Value": "002"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Beeindiging": null,
+                    "DatumBegin": "2001-08-01",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": "Werkgever RSZ",
+                      "Value": "00070"
                     },
                     "Omschrijving": null
                   }
@@ -304,9 +448,9 @@
                 "Namen": {
                   "MaatschappelijkeNamen": [
                     {
-                      "Naam": "D'HAESE OCTAAF EN ZOON",
+                      "Naam": "E.P.A.D.",
                       "Taalcode": "nl",
-                      "DatumBegin": "1993-01-08",
+                      "DatumBegin": "2000-04-05",
                       "DatumEinde": null
                     }
                   ],
@@ -336,14 +480,14 @@
                           },
                           "Straat": {
                             "Code": null,
-                            "Naam": "Grotekapellelaan"
+                            "Naam": "Bergense Steenweg"
                           },
                           "Huisnummer": null,
                           "Busnummer": null,
                           "Gemeente": {
                             "NISCode": null,
                             "PostCode": null,
-                            "Naam": "Lede"
+                            "Naam": "Brussel"
                           },
                           "Staat": null
                         },
@@ -353,7 +497,7 @@
                       }
                     ],
                     "Doorhalingen": null,
-                    "DatumBegin": "1993-01-08",
+                    "DatumBegin": "2006-10-03",
                     "DatumEinde": null,
                     "Land": {
                       "NISCode": "150",
@@ -361,24 +505,24 @@
                       "Naam": "BELGIE"
                     },
                     "Straat": {
-                      "Code": "1225",
+                      "Code": "0310",
                       "Naam": null
                     },
-                    "Huisnummer": "40",
+                    "Huisnummer": "679",
                     "Busnummer": null,
                     "Gemeente": {
-                      "NISCode": "41034",
-                      "PostCode": "9340",
+                      "NISCode": "21004",
+                      "PostCode": "1070",
                       "Naam": null
                     },
                     "Staat": null
                   }
                 ],
                 "Start": {
-                  "Datum": "1993-01-08"
+                  "Datum": "2000-04-05"
                 },
                 "Inschrijving": {
-                  "Datum": "2003-01-18"
+                  "Datum": "2003-01-19"
                 },
                 "Duurtijd": null,
                 "Afsluiting": null,
@@ -386,7 +530,7 @@
                 "Rechtsvormen": [
                   {
                     "Afkorting": "BVBA",
-                    "DatumBegin": "1993-01-08",
+                    "DatumBegin": "2000-04-05",
                     "DatumEinde": null,
                     "Code": {
                       "Beschrijving": null,
@@ -399,7 +543,7 @@
                     }
                   }
                 ],
-                "Ondernemingsnummer": "0449091588",
+                "Ondernemingsnummer": "0471693974",
                 "AuthentiekBron": {
                   "Code": {
                     "Beschrijving": null,

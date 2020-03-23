@@ -570,8 +570,8 @@ namespace OrganisationRegistry.Organisation
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
-            var bankAccountNumber = new BankAccountNumber(message.BankAccountNumber, message.IsIban);
-            var bankAccountBic = new BankAccountBic(message.Bic, message.IsBic);
+            var bankAccountNumber = BankAccountNumber.CreateWithExpectedValidity(message.BankAccountNumber, message.IsIban);
+            var bankAccountBic = BankAccountBic.CreateWithExpectedValidity(message.Bic, message.IsBic);
 
             var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
 
@@ -588,8 +588,8 @@ namespace OrganisationRegistry.Organisation
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
-            var bankAccountNumber = new BankAccountNumber(message.BankAccountNumber, message.IsIban);
-            var bankAccountBic = new BankAccountBic(message.Bic, message.IsBic);
+            var bankAccountNumber = BankAccountNumber.CreateWithExpectedValidity(message.BankAccountNumber, message.IsIban);
+            var bankAccountBic = BankAccountBic.CreateWithExpectedValidity(message.Bic, message.IsBic);
 
             var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
 

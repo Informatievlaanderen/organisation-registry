@@ -1282,15 +1282,13 @@ namespace OrganisationRegistry.Organisation
                 validity.End));
         }
 
-        public void UpdateKboBankAccount(
-            List<IMagdaBankAccount> kboOrganisationBankAccounts,
-            DateTime messageModificationTime)
+        public void UpdateKboBankAccount(List<IMagdaBankAccount> kboOrganisationBankAccounts)
         {
             var events = new List<IEvent>();
             foreach (var kboBankAccount in _kboBankAccounts)
             {
                 if (!kboOrganisationBankAccounts.Any(x =>
-                    kboBankAccount.BankAccountNumber == x.Iban &&
+                    kboBankAccount.BankAccountNumber == x.AccountNumber &&
                     kboBankAccount.Bic == x.Bic &&
                     kboBankAccount.Validity.Start == x.ValidFrom &&
                     kboBankAccount.Validity.End == x.ValidTo))
@@ -1311,18 +1309,21 @@ namespace OrganisationRegistry.Organisation
             foreach (var magdaBankAccount in kboOrganisationBankAccounts)
             {
                 if (!_kboBankAccounts.Any(x =>
-                    magdaBankAccount.Iban == x.BankAccountNumber &&
+                    magdaBankAccount.AccountNumber == x.BankAccountNumber &&
                     magdaBankAccount.Bic == x.Bic &&
                     magdaBankAccount.ValidFrom == x.Validity.Start &&
                     magdaBankAccount.ValidTo == x.Validity.End))
                 {
+                    var bankAccountNr = BankAccountNumber.CreateWithUnknownValidity(magdaBankAccount.AccountNumber);
+                    var bankAccountBic = BankAccountBic.CreateWithUnknownValidity(magdaBankAccount.Bic);
+
                     events.Add(new KboOrganisationBankAccountAdded(
                         Id,
                         Guid.NewGuid(),
-                        magdaBankAccount.Iban,
-                        true,
-                        magdaBankAccount.Bic,
-                        true,
+                        bankAccountNr.Number,
+                        bankAccountNr.IsValidIban,
+                        bankAccountBic.Bic,
+                        bankAccountBic.IsValidBic,
                         magdaBankAccount.ValidFrom,
                         magdaBankAccount.ValidTo));
                 }

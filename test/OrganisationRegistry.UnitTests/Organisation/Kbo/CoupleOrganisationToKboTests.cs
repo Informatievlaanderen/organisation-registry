@@ -126,7 +126,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     {
                         new BankAccountStub
                         {
-                            Iban = "BE71 0961 2345 6769",
+                            AccountNumber = "BE71 0961 2345 6769",
                             Bic = "GKCCBEBB",
                             ValidFrom = new DateTime(2000, 1, 1),
                             ValidTo = new DateTime(2001, 1, 1),

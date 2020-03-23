@@ -21,7 +21,7 @@ namespace OrganisationRegistry.Organisation
 
     public interface IMagdaBankAccount
     {
-        string Iban { get; }
+        string AccountNumber { get; }
         string Bic { get; }
         DateTime? ValidFrom { get; }
         DateTime? ValidTo { get; }

@@ -10,12 +10,12 @@
             "Type": 1,
             "Tijdstip": {
               "Datum": "2020-03-23",
-              "Tijd": "13:46:05.879"
+              "Tijd": "13:45:54.980"
             },
             "Afzender": {
               "Identificatie": "vip.vlaanderen.be",
               "Naam": "MagdaGateway",
-              "Referte": "782ca90f-f28e-420b-86ab-573885e29a93",
+              "Referte": "ce7704d5-94d2-4d5b-8432-6f59a7097cbe",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -23,7 +23,7 @@
             "Ontvanger": {
               "Identificatie": "kb.vlaanderen.be/aiv/organisatieregister-ond-aip",
               "Naam": null,
-              "Referte": "12547e1a-29f5-4dc6-b8ca-161efad3c379",
+              "Referte": "6a5f674d-0ccd-4b7f-8e85-d66b26af8589",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -33,28 +33,28 @@
         },
         "Antwoorden": {
           "Antwoord": {
-            "Referte": "12547e1a-29f5-4dc6-b8ca-161efad3c379",
+            "Referte": "6a5f674d-0ccd-4b7f-8e85-d66b26af8589",
             "Inhoud": {
               "Onderneming": {
                 "Rechtstoestanden": [
                   {
-                    "InstrumenterendeOverheid": "863557445",
-                    "DatumBegin": "2004-02-20",
+                    "InstrumenterendeOverheid": "472225692",
+                    "DatumBegin": "2011-03-31",
                     "DatumEinde": null,
                     "Code": {
                       "Beschrijving": null,
-                      "Value": "000"
+                      "Value": "021"
                     },
                     "Omschrijving": {
                       "Oorsprong": null,
                       "TaalCode": null,
-                      "Value": "Normale toestand"
+                      "Value": "Fusie door overneming"
                     }
                   }
                 ],
                 "Vestigingen": [
                   {
-                    "Vestigingsnummer": "2136205561",
+                    "Vestigingsnummer": "2100933094",
                     "StatusKBO": {
                       "Code": {
                         "Beschrijving": null,
@@ -67,18 +67,7 @@
                       }
                     },
                     "MaatschappelijkeZetel": null,
-                    "Namen": {
-                      "MaatschappelijkeNamen": null,
-                      "AfgekorteNamen": null,
-                      "CommercieleNamen": [
-                        {
-                          "Naam": "ARKimedes Management",
-                          "Taalcode": "fr",
-                          "DatumBegin": "2004-03-30",
-                          "DatumEinde": null
-                        }
-                      ]
-                    },
+                    "Namen": null,
                     "Adressen": [
                       {
                         "Type": {
@@ -102,14 +91,14 @@
                               },
                               "Straat": {
                                 "Code": null,
-                                "Naam": "Oude Graanmarkt"
+                                "Naam": "Antwerpse Steenweg"
                               },
                               "Huisnummer": null,
                               "Busnummer": null,
                               "Gemeente": {
                                 "NISCode": null,
                                 "PostCode": null,
-                                "Naam": "Brussel"
+                                "Naam": "Lochristi"
                               },
                               "Staat": null
                             },
@@ -119,7 +108,7 @@
                           }
                         ],
                         "Doorhalingen": null,
-                        "DatumBegin": "2008-11-01",
+                        "DatumBegin": "2000-09-01",
                         "DatumEinde": null,
                         "Land": {
                           "NISCode": "150",
@@ -127,14 +116,14 @@
                           "Naam": "BELGIE"
                         },
                         "Straat": {
-                          "Code": "3172",
+                          "Code": "1020",
                           "Naam": null
                         },
-                        "Huisnummer": "63",
+                        "Huisnummer": "19",
                         "Busnummer": null,
                         "Gemeente": {
-                          "NISCode": "21004",
-                          "PostCode": "1000",
+                          "NISCode": "44034",
+                          "PostCode": "9080",
                           "Naam": null
                         },
                         "Staat": null
@@ -142,27 +131,68 @@
                     ],
                     "Afsluiting": null,
                     "Stopzetting": null,
-                    "DatumBegin": "2004-03-30",
+                    "DatumBegin": "2000-09-01",
                     "DatumEinde": null
                   }
                 ],
                 "Bankrekeningen": [
                   {
-                    "Rekeningnummer": "733 0185713 85",
+                    "Rekeningnummer": "446 9643121 06",
                     "Doel": "003",
-                    "IBAN": "BE89733018571385",
+                    "IBAN": "BE85446964312106",
                     "BIC": "KREDBEBB",
                     "NietSEPAnummer": null,
-                    "DatumBegin": "2004-02-20",
-                    "DatumEinde": null
+                    "DatumBegin": "2000-09-01",
+                    "DatumEinde": "2011-03-31"
                   }
                 ],
                 "Functies": [
                   {
-                    "FunctiehouderVan": "0863557445",
+                    "FunctiehouderVan": "0472225692",
                     "AanduidingPersoonOnderneming": null,
                     "Vrijstelling": null,
-                    "EindeFunctie": null,
+                    "EindeFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "021"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Fusie door overnemin"
+                      }
+                    },
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2009-08-31",
+                    "DatumEinde": "2011-03-31"
+                  },
+                  {
+                    "FunctiehouderVan": "0472225692",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "021"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Fusie door overnemin"
+                      }
+                    },
                     "AardFunctie": {
                       "Code": {
                         "Beschrijving": null,
@@ -176,22 +206,32 @@
                     },
                     "Persoon": null,
                     "Onderneming": {
-                      "Ondernemingsnummer": "0431367017",
+                      "Ondernemingsnummer": "0898873462",
                       "MaatschappelijkeNaam": {
-                        "Naam": "IMPEX INTER",
+                        "Naam": "TRIANGIS",
                         "Taalcode": "nl",
-                        "DatumBegin": "1987-06-12",
+                        "DatumBegin": "2011-03-30",
                         "DatumEinde": null
                       }
                     },
-                    "DatumBegin": "2010-08-26",
-                    "DatumEinde": null
+                    "DatumBegin": "2008-12-22",
+                    "DatumEinde": "2011-03-31"
                   },
                   {
-                    "FunctiehouderVan": "0863557445",
+                    "FunctiehouderVan": "0472225692",
                     "AanduidingPersoonOnderneming": null,
                     "Vrijstelling": null,
-                    "EindeFunctie": null,
+                    "EindeFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "021"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Fusie door overnemin"
+                      }
+                    },
                     "AardFunctie": {
                       "Code": {
                         "Beschrijving": null,
@@ -205,14 +245,24 @@
                     },
                     "Persoon": null,
                     "Onderneming": null,
-                    "DatumBegin": "2010-05-04",
-                    "DatumEinde": null
+                    "DatumBegin": "2008-01-07",
+                    "DatumEinde": "2011-03-31"
                   },
                   {
-                    "FunctiehouderVan": "0863557445",
+                    "FunctiehouderVan": "0472225692",
                     "AanduidingPersoonOnderneming": null,
                     "Vrijstelling": null,
-                    "EindeFunctie": null,
+                    "EindeFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "021"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Fusie door overnemin"
+                      }
+                    },
                     "AardFunctie": {
                       "Code": {
                         "Beschrijving": null,
@@ -226,14 +276,24 @@
                     },
                     "Persoon": null,
                     "Onderneming": null,
-                    "DatumBegin": "2010-05-04",
-                    "DatumEinde": null
+                    "DatumBegin": "2008-01-07",
+                    "DatumEinde": "2011-03-31"
                   },
                   {
-                    "FunctiehouderVan": "0863557445",
+                    "FunctiehouderVan": "0472225692",
                     "AanduidingPersoonOnderneming": null,
                     "Vrijstelling": null,
-                    "EindeFunctie": null,
+                    "EindeFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "021"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Fusie door overnemin"
+                      }
+                    },
                     "AardFunctie": {
                       "Code": {
                         "Beschrijving": null,
@@ -247,124 +307,89 @@
                     },
                     "Persoon": null,
                     "Onderneming": null,
-                    "DatumBegin": "2010-05-04",
-                    "DatumEinde": null
+                    "DatumBegin": "2008-01-07",
+                    "DatumEinde": "2011-03-31"
                   },
                   {
-                    "FunctiehouderVan": "0863557445",
+                    "FunctiehouderVan": "0472225692",
                     "AanduidingPersoonOnderneming": null,
                     "Vrijstelling": null,
-                    "EindeFunctie": null,
-                    "AardFunctie": {
+                    "EindeFunctie": {
                       "Code": {
                         "Beschrijving": null,
-                        "Value": "10002"
+                        "Value": "021"
                       },
                       "Omschrijving": {
                         "Oorsprong": null,
                         "TaalCode": null,
-                        "Value": "Bestuurder"
+                        "Value": "Fusie door overnemin"
                       }
                     },
-                    "Persoon": null,
-                    "Onderneming": null,
-                    "DatumBegin": "2004-07-01",
-                    "DatumEinde": null
-                  },
-                  {
-                    "FunctiehouderVan": "0863557445",
-                    "AanduidingPersoonOnderneming": null,
-                    "Vrijstelling": null,
-                    "EindeFunctie": null,
                     "AardFunctie": {
                       "Code": {
                         "Beschrijving": null,
-                        "Value": "10002"
+                        "Value": "10003"
                       },
                       "Omschrijving": {
                         "Oorsprong": null,
                         "TaalCode": null,
-                        "Value": "Bestuurder"
-                      }
-                    },
-                    "Persoon": null,
-                    "Onderneming": null,
-                    "DatumBegin": "2004-07-01",
-                    "DatumEinde": null
-                  },
-                  {
-                    "FunctiehouderVan": "0863557445",
-                    "AanduidingPersoonOnderneming": null,
-                    "Vrijstelling": null,
-                    "EindeFunctie": null,
-                    "AardFunctie": {
-                      "Code": {
-                        "Beschrijving": null,
-                        "Value": "10002"
-                      },
-                      "Omschrijving": {
-                        "Oorsprong": null,
-                        "TaalCode": null,
-                        "Value": "Bestuurder"
-                      }
-                    },
-                    "Persoon": null,
-                    "Onderneming": null,
-                    "DatumBegin": "2004-07-01",
-                    "DatumEinde": null
-                  },
-                  {
-                    "FunctiehouderVan": "0863557445",
-                    "AanduidingPersoonOnderneming": null,
-                    "Vrijstelling": null,
-                    "EindeFunctie": null,
-                    "AardFunctie": {
-                      "Code": {
-                        "Beschrijving": null,
-                        "Value": "10002"
-                      },
-                      "Omschrijving": {
-                        "Oorsprong": null,
-                        "TaalCode": null,
-                        "Value": "Bestuurder"
+                        "Value": "Vaste vertegenwoordiger"
                       }
                     },
                     "Persoon": null,
                     "Onderneming": {
-                      "Ondernemingsnummer": "0465565851",
+                      "Ondernemingsnummer": "0898873462",
                       "MaatschappelijkeNaam": {
-                        "Naam": "MANAGEMENT CONSULTANTS R. VERPOEST EN CO",
+                        "Naam": "TRIANGIS",
                         "Taalcode": "nl",
-                        "DatumBegin": "1999-02-24",
+                        "DatumBegin": "2011-03-30",
                         "DatumEinde": null
                       }
                     },
-                    "DatumBegin": "2004-07-01",
-                    "DatumEinde": null
+                    "DatumBegin": "2008-12-22",
+                    "DatumEinde": "2011-03-31"
                   },
                   {
-                    "FunctiehouderVan": "0863557445",
+                    "FunctiehouderVan": "0472225692",
                     "AanduidingPersoonOnderneming": null,
                     "Vrijstelling": null,
-                    "EindeFunctie": null,
-                    "AardFunctie": {
+                    "EindeFunctie": {
                       "Code": {
                         "Beschrijving": null,
-                        "Value": "10002"
+                        "Value": "021"
                       },
                       "Omschrijving": {
                         "Oorsprong": null,
                         "TaalCode": null,
-                        "Value": "Bestuurder"
+                        "Value": "Fusie door overnemin"
+                      }
+                    },
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10007"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Gedelegeerd bestuurder"
                       }
                     },
                     "Persoon": null,
-                    "Onderneming": null,
-                    "DatumBegin": "2004-02-20",
-                    "DatumEinde": null
+                    "Onderneming": {
+                      "Ondernemingsnummer": "0898873462",
+                      "MaatschappelijkeNaam": {
+                        "Naam": "TRIANGIS",
+                        "Taalcode": "nl",
+                        "DatumBegin": "2011-03-30",
+                        "DatumEinde": null
+                      }
+                    },
+                    "DatumBegin": "2008-12-22",
+                    "DatumEinde": "2011-03-31"
                   },
                   {
-                    "FunctiehouderVan": "0863557445",
+                    "FunctiehouderVan": "0472225692",
                     "AanduidingPersoonOnderneming": null,
                     "Vrijstelling": {
                       "AanduidingVrijstelling": {
@@ -375,7 +400,17 @@
                       "Code": null,
                       "Omschrijving": null
                     },
-                    "EindeFunctie": null,
+                    "EindeFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "021"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Fusie door overnemin"
+                      }
+                    },
                     "AardFunctie": {
                       "Code": {
                         "Beschrijving": null,
@@ -389,8 +424,8 @@
                     },
                     "Persoon": null,
                     "Onderneming": null,
-                    "DatumBegin": "2004-03-30",
-                    "DatumEinde": null
+                    "DatumBegin": "2000-09-01",
+                    "DatumEinde": "2011-03-31"
                   }
                 ],
                 "Activiteiten": [
@@ -399,12 +434,12 @@
                       "Versie": "2008",
                       "Code": {
                         "Beschrijving": null,
-                        "Value": "70220"
+                        "Value": "62010"
                       },
                       "Omschrijving": {
                         "Oorsprong": null,
                         "TaalCode": null,
-                        "Value": "Overige adviesbureaus op het gebied van bedrijfsbeheer; adviesbureaus  op het gebied van bedrijfsvoering"
+                        "Value": "Ontwerpen en programmeren van computerprogramma's"
                       }
                     },
                     "Type": {
@@ -416,19 +451,19 @@
                     },
                     "Groep": "001",
                     "DatumBegin": "2008-01-01",
-                    "DatumEinde": null
+                    "DatumEinde": "2011-03-31"
                   },
                   {
                     "Nace": {
                       "Versie": "2003",
                       "Code": {
                         "Beschrijving": null,
-                        "Value": "74142"
+                        "Value": "72220"
                       },
                       "Omschrijving": {
                         "Oorsprong": null,
                         "TaalCode": null,
-                        "Value": "Overige adviesbureaus op het gebied van bedrijfsvoering en beheer"
+                        "Value": "Overige advisering in verband met programmatuur en levering van programmatuur"
                       }
                     },
                     "Type": {
@@ -439,7 +474,7 @@
                       "Omschrijving": null
                     },
                     "Groep": "001",
-                    "DatumBegin": "2004-06-01",
+                    "DatumBegin": "2000-08-01",
                     "DatumEinde": "2007-12-31"
                   },
                   {
@@ -447,12 +482,108 @@
                       "Versie": "2008",
                       "Code": {
                         "Beschrijving": null,
-                        "Value": "70220"
+                        "Value": "47410"
                       },
                       "Omschrijving": {
                         "Oorsprong": null,
                         "TaalCode": null,
-                        "Value": "Overige adviesbureaus op het gebied van bedrijfsbeheer; adviesbureaus  op het gebied van bedrijfsvoering"
+                        "Value": "Detailhandel in computers, randapparatuur en software in gespecialiseerde winkels"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Nevenactiviteit",
+                        "Value": "S"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "001",
+                    "DatumBegin": "2008-01-01",
+                    "DatumEinde": "2011-03-31"
+                  },
+                  {
+                    "Nace": {
+                      "Versie": "2003",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "52487"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Gespecialiseerde detailhandel in kantoormachines en -meubelen, computers en standaardprogrammatuur en telecommunicatieapparatuur"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Nevenactiviteit",
+                        "Value": "S"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "001",
+                    "DatumBegin": "2000-08-01",
+                    "DatumEinde": "2007-12-31"
+                  },
+                  {
+                    "Nace": {
+                      "Versie": "2008",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "46660"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Groothandel in andere kantoormachines en kantoorbenodigdheden, met uitzondering van computers en randapparatuur"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Nevenactiviteit",
+                        "Value": "S"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "001",
+                    "DatumBegin": "2008-01-01",
+                    "DatumEinde": "2011-03-31"
+                  },
+                  {
+                    "Nace": {
+                      "Versie": "2003",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "51850"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Groothandel in overige kantoormachines en kantoorbenodigdheden"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Nevenactiviteit",
+                        "Value": "S"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "001",
+                    "DatumBegin": "2000-08-01",
+                    "DatumEinde": "2007-12-31"
+                  },
+                  {
+                    "Nace": {
+                      "Versie": "2008",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "62020"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Computerconsultancy-activiteiten"
                       }
                     },
                     "Type": {
@@ -464,19 +595,19 @@
                     },
                     "Groep": "006",
                     "DatumBegin": "2008-01-01",
-                    "DatumEinde": null
+                    "DatumEinde": "2011-03-31"
                   },
                   {
                     "Nace": {
                       "Versie": "2003",
                       "Code": {
                         "Beschrijving": null,
-                        "Value": "74142"
+                        "Value": "72100"
                       },
                       "Omschrijving": {
                         "Oorsprong": null,
                         "TaalCode": null,
-                        "Value": "Overige adviesbureaus op het gebied van bedrijfsvoering en beheer"
+                        "Value": "Computeradviesbureaus"
                       }
                     },
                     "Type": {
@@ -487,28 +618,54 @@
                       "Omschrijving": null
                     },
                     "Groep": "006",
-                    "DatumBegin": "2006-09-11",
+                    "DatumBegin": "2000-07-01",
                     "DatumEinde": "2007-12-31"
                   }
                 ],
-                "GerelateerdeOndernemingen": null,
+                "GerelateerdeOndernemingen": [
+                  {
+                    "Relatie": {
+                      "IsDochter": 0,
+                      "IsDochterSpecified": true,
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "003"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Is opgeslorpt door"
+                      }
+                    },
+                    "Ondernemingsnummer": "0473416418",
+                    "EindeRelatie": null,
+                    "DatumBegin": "2011-03-31",
+                    "DatumEinde": null
+                  }
+                ],
                 "Hoedanigheden": [
                   {
                     "InstrumenterendeAdministratie": "BTW001",
                     "Inschrijving": {
-                      "Datum": "2004-06-14"
+                      "Datum": "2003-01-19"
                     },
                     "Duurtijd": "0.0",
                     "Fase": {
                       "Code": {
-                        "Beschrijving": "hoedanigheid/Toelating verworven",
-                        "Value": "002"
+                        "Beschrijving": "Hoedanigheid/Toelating stopgezet",
+                        "Value": "003"
                       },
                       "Omschrijving": null
                     },
-                    "Beeindiging": null,
-                    "DatumBegin": "2004-06-01",
-                    "DatumEinde": null,
+                    "Beeindiging": {
+                      "Code": {
+                        "Beschrijving": "Afstand handelsfonds(BTW)",
+                        "Value": "B"
+                      },
+                      "Omschrijving": null
+                    },
+                    "DatumBegin": "2000-08-01",
+                    "DatumEinde": "2011-06-01",
                     "Code": {
                       "Beschrijving": "Onderneming onderworpen aan BTW",
                       "Value": "00084"
@@ -518,7 +675,7 @@
                   {
                     "InstrumenterendeAdministratie": "OLK001",
                     "Inschrijving": {
-                      "Datum": "2004-03-30"
+                      "Datum": "2003-01-26"
                     },
                     "Duurtijd": "0.0",
                     "Fase": {
@@ -529,7 +686,7 @@
                       "Omschrijving": null
                     },
                     "Beeindiging": null,
-                    "DatumBegin": "2004-03-30",
+                    "DatumBegin": "2000-09-01",
                     "DatumEinde": null,
                     "Code": {
                       "Beschrijving": "Handelsonderneming",
@@ -540,19 +697,25 @@
                   {
                     "InstrumenterendeAdministratie": "RSZ001",
                     "Inschrijving": {
-                      "Datum": "2006-10-03"
+                      "Datum": "2003-01-21"
                     },
                     "Duurtijd": "0.0",
                     "Fase": {
                       "Code": {
-                        "Beschrijving": "hoedanigheid/Toelating verworven",
-                        "Value": "002"
+                        "Beschrijving": "Hoedanigheid/Toelating stopgezet",
+                        "Value": "003"
                       },
                       "Omschrijving": null
                     },
-                    "Beeindiging": null,
-                    "DatumBegin": "2006-09-11",
-                    "DatumEinde": null,
+                    "Beeindiging": {
+                      "Code": {
+                        "Beschrijving": "Hoedanigheid/toelating stopgezet",
+                        "Value": "003"
+                      },
+                      "Omschrijving": null
+                    },
+                    "DatumBegin": "2000-07-01",
+                    "DatumEinde": "2011-03-31",
                     "Code": {
                       "Beschrijving": "Werkgever RSZ",
                       "Value": "00070"
@@ -566,12 +729,12 @@
                 "StatusKBO": {
                   "Code": {
                     "Beschrijving": null,
-                    "Value": "AC"
+                    "Value": "ST"
                   },
                   "Omschrijving": {
                     "Oorsprong": null,
                     "TaalCode": null,
-                    "Value": "Actief"
+                    "Value": "Stopgezet"
                   }
                 },
                 "SoortOnderneming": {
@@ -585,10 +748,10 @@
                 "Namen": {
                   "MaatschappelijkeNamen": [
                     {
-                      "Naam": "ARKIMEDES MANAGEMENT",
+                      "Naam": "HOSTBASKET",
                       "Taalcode": "nl",
-                      "DatumBegin": "2004-02-20",
-                      "DatumEinde": null
+                      "DatumBegin": "2003-12-16",
+                      "DatumEinde": "2011-03-31"
                     }
                   ],
                   "AfgekorteNamen": null,
@@ -617,14 +780,14 @@
                           },
                           "Straat": {
                             "Code": null,
-                            "Naam": "Oude Graanmarkt"
+                            "Naam": "Antwerpse Steenweg"
                           },
                           "Huisnummer": null,
                           "Busnummer": null,
                           "Gemeente": {
                             "NISCode": null,
                             "PostCode": null,
-                            "Naam": "Brussel"
+                            "Naam": "Lochristi"
                           },
                           "Staat": null
                         },
@@ -634,41 +797,48 @@
                       }
                     ],
                     "Doorhalingen": null,
-                    "DatumBegin": "2008-11-01",
-                    "DatumEinde": null,
+                    "DatumBegin": "2001-12-17",
+                    "DatumEinde": "2011-03-31",
                     "Land": {
                       "NISCode": "150",
                       "ISOCode": "BE",
                       "Naam": "BELGIE"
                     },
                     "Straat": {
-                      "Code": "3172",
+                      "Code": "1020",
                       "Naam": null
                     },
-                    "Huisnummer": "63",
+                    "Huisnummer": "19",
                     "Busnummer": null,
                     "Gemeente": {
-                      "NISCode": "21004",
-                      "PostCode": "1000",
+                      "NISCode": "44034",
+                      "PostCode": "9080",
                       "Naam": null
                     },
                     "Staat": null
                   }
                 ],
                 "Start": {
-                  "Datum": "2004-02-20"
+                  "Datum": "2000-06-15"
                 },
                 "Inschrijving": {
-                  "Datum": "2004-02-20"
+                  "Datum": "2003-01-19"
                 },
                 "Duurtijd": null,
                 "Afsluiting": null,
-                "Stopzetting": null,
+                "Stopzetting": {
+                  "Datum": "2011-03-31",
+                  "Code": {
+                    "Beschrijving": null,
+                    "Value": "021"
+                  },
+                  "Omschrijving": null
+                },
                 "Rechtsvormen": [
                   {
                     "Afkorting": "NV",
-                    "DatumBegin": "2004-02-20",
-                    "DatumEinde": null,
+                    "DatumBegin": "2000-06-15",
+                    "DatumEinde": "2011-03-31",
                     "Code": {
                       "Beschrijving": null,
                       "Value": "014"
@@ -680,7 +850,7 @@
                     }
                   }
                 ],
-                "Ondernemingsnummer": "0863557445",
+                "Ondernemingsnummer": "0472225692",
                 "AuthentiekBron": {
                   "Code": {
                     "Beschrijving": null,

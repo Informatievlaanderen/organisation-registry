@@ -76,6 +76,8 @@ namespace OrganisationRegistry.UnitTests.Magda
         // [InlineData("0859047440")] // if enabled, make sure to scrub personal data
         [InlineData("0860325266")]
         [InlineData("0449091588")]
+        [InlineData("0472225692")]
+        [InlineData("0471693974")]
         public async Task SerializeMagdaResponse(string kboNumber)
         {
             var magdaResponsesDir =
