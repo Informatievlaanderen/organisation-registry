@@ -57,6 +57,8 @@ namespace OrganisationRegistry.Organisation
         private readonly List<OrganisationBankAccount> _kboBankAccounts;
         public KboNumber KboNumber { get; private set; }
 
+        private bool HasKboNumber => KboNumber != null;
+
         private Organisation()
         {
             _organisationKeys = new List<OrganisationKey>();
@@ -200,7 +202,7 @@ namespace OrganisationRegistry.Organisation
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
 
-            if (KboNumber != null)
+            if (HasKboNumber)
             {
                 KboV2Guards.ThrowIfChanged(Name, name);
                 KboV2Guards.ThrowIfChanged(_shortName, shortName);
@@ -241,6 +243,10 @@ namespace OrganisationRegistry.Organisation
             string kboOrganisationName,
             string kboOrganisationShortName)
         {
+            if (kboOrganisationName == Name &&
+                kboOrganisationShortName == _shortName)
+                return;
+
             ApplyChange(new OrganisationInfoUpdatedFromKbo(
                 Id,
                 OvoNumber,
@@ -1438,7 +1444,7 @@ namespace OrganisationRegistry.Organisation
             KboNumber kboNumber,
             IDateTimeProvider dateTimeProvider)
         {
-            if (KboNumber != null)
+            if (HasKboNumber)
                 throw new OrganisationAlreadyCoupledWithKbo();
 
             ApplyChange(new OrganisationCoupledWithKbo(
