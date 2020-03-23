@@ -746,7 +746,10 @@ namespace OrganisationRegistry.Organisation
             Func<Guid, OrganisationClassification> getOrganisationClassification,
             DateTime modificationTime)
         {
-            var newLegalFormClassificationId = organisationClassificationRetriever.FetchOrganisationClassificationForLegalFormCode(newLegalForm.Code);
+            var newLegalFormClassificationId = newLegalForm == null
+                ? null
+                : organisationClassificationRetriever
+                    .FetchOrganisationClassificationForLegalFormCode(newLegalForm.Code);
 
             if (newLegalFormClassificationId == _kboLegalFormOrganisationClassification?.OrganisationClassificationId)
                 return;
