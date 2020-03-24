@@ -123,9 +123,14 @@ namespace OrganisationRegistry.Api.Kbo.Responses
 
             public BankAccount(BankrekeningType bankrekeningType)
             {
-                AccountNumber = !string.IsNullOrEmpty(bankrekeningType.IBAN)
-                    ? bankrekeningType.IBAN
-                    : bankrekeningType.Rekeningnummer;
+                var possibleAccountNumbers = new string[]
+                {
+                    bankrekeningType.IBAN,
+                    bankrekeningType.Rekeningnummer,
+                    bankrekeningType.NietSEPAnummer
+                };
+
+                AccountNumber = possibleAccountNumbers.First(x => !string.IsNullOrEmpty(x));
 
                 Bic = bankrekeningType.BIC;
                 ValidFrom = ParseKboDate(bankrekeningType.DatumBegin);

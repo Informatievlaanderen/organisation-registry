@@ -78,6 +78,7 @@ namespace OrganisationRegistry.UnitTests.Magda
         [InlineData("0449091588")]
         [InlineData("0472225692")]
         [InlineData("0471693974")]
+        [InlineData("0202239951")]
         public async Task SerializeMagdaResponse(string kboNumber)
         {
             var magdaResponsesDir =
