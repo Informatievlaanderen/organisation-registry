@@ -9,13 +9,13 @@
           "Bericht": {
             "Type": 1,
             "Tijdstip": {
-              "Datum": "2020-03-23",
-              "Tijd": "13:45:57.694"
+              "Datum": "2020-03-24",
+              "Tijd": "12:19:18.617"
             },
             "Afzender": {
               "Identificatie": "vip.vlaanderen.be",
               "Naam": "MagdaGateway",
-              "Referte": "ddd5123c-892b-4060-885a-77e32583966b",
+              "Referte": "c5e448bf-3fb8-4c07-832c-10c4cbb402b2",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -23,7 +23,7 @@
             "Ontvanger": {
               "Identificatie": "kb.vlaanderen.be/aiv/organisatieregister-ond-aip",
               "Naam": null,
-              "Referte": "b1049654-a4ac-49cd-b600-00340621cfc6",
+              "Referte": "7bca6456-15a1-4ce0-8e5a-233a0fb99b0d",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -33,7 +33,7 @@
         },
         "Antwoorden": {
           "Antwoord": {
-            "Referte": "b1049654-a4ac-49cd-b600-00340621cfc6",
+            "Referte": "7bca6456-15a1-4ce0-8e5a-233a0fb99b0d",
             "Inhoud": {
               "Onderneming": {
                 "Rechtstoestanden": [

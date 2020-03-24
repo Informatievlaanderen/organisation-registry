@@ -68,11 +68,13 @@ namespace OrganisationRegistry.Organisation
                 ? _ovoNumberGenerator.GenerateNumber()
                 : message.OvoNumber;
 
-            var kboOrganisation =
+            var kboOrganisationResult =
                 _kboOrganisationRetriever.RetrieveOrganisation(message.User, message.KboNumber).GetAwaiter().GetResult();
 
-            if (kboOrganisation == null)
+            if (kboOrganisationResult.HasErrors)
                 throw new KboOrganisationNotFoundException();
+
+            var kboOrganisation = kboOrganisationResult.Value;
 
             if (_uniqueKboValidator.IsKboNumberTaken(message.KboNumber, kboOrganisation.ValidFrom, message.ValidTo))
                 throw new KboNumberNotUniqueException();
@@ -119,11 +121,13 @@ namespace OrganisationRegistry.Organisation
 
             var legalFormOrganisationClassificationType = Session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration.KboV2LegalFormOrganisationClassificationTypeId);
 
-            var kboOrganisation =
+            var kboOrganisationResult =
                 _kboOrganisationRetriever.RetrieveOrganisation(message.User, message.KboNumber).GetAwaiter().GetResult();
 
-            if (kboOrganisation == null)
+            if (kboOrganisationResult.HasErrors)
                 throw new KboOrganisationNotFoundException();
+
+            var kboOrganisation = kboOrganisationResult.Value;
 
             if (_uniqueKboValidator.IsKboNumberTaken(message.KboNumber, kboOrganisation.ValidFrom, new ValidTo()))
                 throw new KboNumberNotUniqueException();
@@ -160,8 +164,13 @@ namespace OrganisationRegistry.Organisation
 
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
-            var kboOrganisation =
+            var kboOrganisationResult =
                 _kboOrganisationRetriever.RetrieveOrganisation(message.User, organisation.KboNumber).GetAwaiter().GetResult();
+
+            if (kboOrganisationResult.HasErrors)
+                throw new KboOrganisationNotFoundException();
+
+            var kboOrganisation = kboOrganisationResult.Value;
 
             var location = GetOrAddLocations(kboOrganisation.Address);
 

@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.Kbo
 {
     using System;
+    using System.Linq;
     using Configuration;
     using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ namespace OrganisationRegistry.Api.Kbo
     using Autofac.Features.OwnedInstances;
     using Infrastructure.Security;
     using Magda;
+    using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Organisation;
 
@@ -20,14 +22,17 @@ namespace OrganisationRegistry.Api.Kbo
     [OrganisationRegistryRoute("kbo")]
     public class KboController : OrganisationRegistryController
     {
+        private readonly ILogger<KboController> _logger;
         private readonly MagdaConfiguration _magdaConfiguration;
         private readonly ApiConfiguration _apiConfiguration;
 
         public KboController(
+            ILogger<KboController> logger,
             ICommandSender commandSender,
             IOptions<ApiConfiguration> apiOptions,
             MagdaConfiguration magdaConfiguration) : base(commandSender)
         {
+            _logger = logger;
             _magdaConfiguration = magdaConfiguration;
             _apiConfiguration = apiOptions.Value;
         }
@@ -61,12 +66,18 @@ namespace OrganisationRegistry.Api.Kbo
                 }
             }
 
-            var kboOrganisation = await kboOrganisationRetriever.RetrieveOrganisation(User, kboNumber);
+            var kboOrganisationResult = await kboOrganisationRetriever.RetrieveOrganisation(User, kboNumber);
 
-            if (kboOrganisation == null)
+            if (kboOrganisationResult.HasErrors)
+            {
+                kboOrganisationResult.ErrorMessages
+                    .ToList()
+                    .ForEach(x => _logger.LogWarning(x));
+
                 return NotFound();
+            }
 
-            return Ok(kboOrganisation);
+            return Ok(kboOrganisationResult.Value);
         }
     }
 }

@@ -10,12 +10,12 @@
             "Type": 1,
             "Tijdstip": {
               "Datum": "2020-03-24",
-              "Tijd": "12:19:10.705"
+              "Tijd": "12:19:34.586"
             },
             "Afzender": {
               "Identificatie": "vip.vlaanderen.be",
               "Naam": "MagdaGateway",
-              "Referte": "cee4046f-9331-4c80-a751-a893886c64be",
+              "Referte": "728e2c7d-f450-4445-bf59-a569f10ff5a3",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -23,7 +23,7 @@
             "Ontvanger": {
               "Identificatie": "kb.vlaanderen.be/aiv/organisatieregister-ond-aip",
               "Naam": null,
-              "Referte": "ce82f67d-9602-4d3f-91b7-47570d346b1d",
+              "Referte": "fca66394-a20e-414c-989c-3cafdb2853fa",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -33,19 +33,19 @@
         },
         "Antwoorden": {
           "Antwoord": {
-            "Referte": "ce82f67d-9602-4d3f-91b7-47570d346b1d",
+            "Referte": "fca66394-a20e-414c-989c-3cafdb2853fa",
             "Inhoud": null,
             "Uitzonderingen": [
               {
-                "Identificatie": "40046",
-                "Oorsprong": "MAGDA",
-                "Type": 2,
+                "Identificatie": "40033",
+                "Oorsprong": "KBO",
+                "Type": 0,
                 "Tijdstip": {
                   "Datum": "2020-03-24",
-                  "Tijd": "12:19:10.705"
+                  "Tijd": "12:19:34.586"
                 },
-                "Diagnose": "Gevraagde ondernemingsnummer bestaat niet in KBO",
-                "Omstandigheid": "Gevraagde ondernemingsnummer bestaat niet in KBO",
+                "Diagnose": "Interne fout bij verwerking door KBO",
+                "Omstandigheid": "Interne fout bij verwerking door KBO",
                 "Annotaties": null
               }
             ]

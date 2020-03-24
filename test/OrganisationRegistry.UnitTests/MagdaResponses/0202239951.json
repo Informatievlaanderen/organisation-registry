@@ -10,12 +10,12 @@
             "Type": 1,
             "Tijdstip": {
               "Datum": "2020-03-24",
-              "Tijd": "10:34:05.948"
+              "Tijd": "12:19:08.101"
             },
             "Afzender": {
               "Identificatie": "vip.vlaanderen.be",
               "Naam": "MagdaGateway",
-              "Referte": "eb9fa318-0e0e-4523-8625-1e1311d633e9",
+              "Referte": "25aad439-9d16-4e00-8304-9dedd6079874",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -23,7 +23,7 @@
             "Ontvanger": {
               "Identificatie": "kb.vlaanderen.be/aiv/organisatieregister-ond-aip",
               "Naam": null,
-              "Referte": "6edca426-7f1f-4b6b-8495-31eb48a38abf",
+              "Referte": "cf36299b-3b7a-448d-aef2-4039730c37cd",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -33,7 +33,7 @@
         },
         "Antwoorden": {
           "Antwoord": {
-            "Referte": "6edca426-7f1f-4b6b-8495-31eb48a38abf",
+            "Referte": "cf36299b-3b7a-448d-aef2-4039730c37cd",
             "Inhoud": {
               "Onderneming": {
                 "Rechtstoestanden": [
@@ -53,98 +53,6 @@
                   }
                 ],
                 "Vestigingen": [
-                  {
-                    "Vestigingsnummer": "2701113171",
-                    "StatusKBO": {
-                      "Code": {
-                        "Beschrijving": null,
-                        "Value": "AC"
-                      },
-                      "Omschrijving": {
-                        "Oorsprong": null,
-                        "TaalCode": null,
-                        "Value": "Actief"
-                      }
-                    },
-                    "MaatschappelijkeZetel": null,
-                    "Namen": {
-                      "MaatschappelijkeNamen": null,
-                      "AfgekorteNamen": null,
-                      "CommercieleNamen": [
-                        {
-                          "Naam": "sas augustus",
-                          "Taalcode": "nl",
-                          "DatumBegin": "2019-08-01",
-                          "DatumEinde": null
-                        }
-                      ]
-                    },
-                    "Adressen": [
-                      {
-                        "Type": {
-                          "Code": {
-                            "Beschrijving": null,
-                            "Value": "002"
-                          },
-                          "Omschrijving": {
-                            "Oorsprong": null,
-                            "TaalCode": null,
-                            "Value": "Vestigingseenheid adres"
-                          }
-                        },
-                        "Descripties": [
-                          {
-                            "Adres": {
-                              "Land": {
-                                "NISCode": "150",
-                                "ISOCode": null,
-                                "Naam": "België"
-                              },
-                              "Straat": {
-                                "Code": null,
-                                "Naam": "Zonnebloemlaan"
-                              },
-                              "Huisnummer": null,
-                              "Busnummer": null,
-                              "Gemeente": {
-                                "NISCode": null,
-                                "PostCode": null,
-                                "Naam": "Oostende"
-                              },
-                              "Staat": null
-                            },
-                            "Contact": null,
-                            "Taalcode": null,
-                            "Aanvulling": null
-                          }
-                        ],
-                        "Doorhalingen": null,
-                        "DatumBegin": "2019-08-01",
-                        "DatumEinde": null,
-                        "Land": {
-                          "NISCode": "150",
-                          "ISOCode": "BE",
-                          "Naam": "BELGIE"
-                        },
-                        "Straat": {
-                          "Code": "3128",
-                          "Naam": null
-                        },
-                        "Huisnummer": "45",
-                        "Busnummer": null,
-                        "Gemeente": {
-                          "NISCode": "35013",
-                          "PostCode": "8400",
-                          "Naam": null
-                        },
-                        "Staat": null
-                      }
-                    ],
-                    "Afsluiting": null,
-                    "Stopzetting": null,
-                    "DatumBegin": "2019-08-01",
-                    "DatumEinde": null
-                  },
                   {
                     "Vestigingsnummer": "2701112775",
                     "StatusKBO": {
@@ -223,87 +131,6 @@
                           "Naam": null
                         },
                         "Huisnummer": "520",
-                        "Busnummer": null,
-                        "Gemeente": {
-                          "NISCode": "31005",
-                          "PostCode": "8200",
-                          "Naam": null
-                        },
-                        "Staat": null
-                      }
-                    ],
-                    "Afsluiting": null,
-                    "Stopzetting": null,
-                    "DatumBegin": "2019-07-01",
-                    "DatumEinde": null
-                  },
-                  {
-                    "Vestigingsnummer": "2701112676",
-                    "StatusKBO": {
-                      "Code": {
-                        "Beschrijving": null,
-                        "Value": "AC"
-                      },
-                      "Omschrijving": {
-                        "Oorsprong": null,
-                        "TaalCode": null,
-                        "Value": "Actief"
-                      }
-                    },
-                    "MaatschappelijkeZetel": null,
-                    "Namen": null,
-                    "Adressen": [
-                      {
-                        "Type": {
-                          "Code": {
-                            "Beschrijving": null,
-                            "Value": "002"
-                          },
-                          "Omschrijving": {
-                            "Oorsprong": null,
-                            "TaalCode": null,
-                            "Value": "Vestigingseenheid adres"
-                          }
-                        },
-                        "Descripties": [
-                          {
-                            "Adres": {
-                              "Land": {
-                                "NISCode": "150",
-                                "ISOCode": null,
-                                "Naam": "België"
-                              },
-                              "Straat": {
-                                "Code": null,
-                                "Naam": "Karel de Wolfstraat"
-                              },
-                              "Huisnummer": null,
-                              "Busnummer": null,
-                              "Gemeente": {
-                                "NISCode": null,
-                                "PostCode": null,
-                                "Naam": "Brugge"
-                              },
-                              "Staat": null
-                            },
-                            "Contact": null,
-                            "Taalcode": null,
-                            "Aanvulling": null
-                          }
-                        ],
-                        "Doorhalingen": null,
-                        "DatumBegin": "2019-07-01",
-                        "DatumEinde": null,
-                        "Land": {
-                          "NISCode": "150",
-                          "ISOCode": "BE",
-                          "Naam": "BELGIE"
-                        },
-                        "Straat": {
-                          "Code": "7051",
-                          "Naam": null
-                        },
-                        "Huisnummer": "78",
                         "Busnummer": null,
                         "Gemeente": {
                           "NISCode": "31005",
@@ -408,6 +235,179 @@
                     "Afsluiting": null,
                     "Stopzetting": null,
                     "DatumBegin": "2019-07-08",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Vestigingsnummer": "2701113171",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": {
+                      "MaatschappelijkeNamen": null,
+                      "AfgekorteNamen": null,
+                      "CommercieleNamen": [
+                        {
+                          "Naam": "sas augustus",
+                          "Taalcode": "nl",
+                          "DatumBegin": "2019-08-01",
+                          "DatumEinde": null
+                        }
+                      ]
+                    },
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Zonnebloemlaan"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Oostende"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "2019-08-01",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "3128",
+                          "Naam": null
+                        },
+                        "Huisnummer": "45",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "35013",
+                          "PostCode": "8400",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "2019-08-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Vestigingsnummer": "2701112676",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": null,
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Karel de Wolfstraat"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Brugge"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "2019-07-01",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "7051",
+                          "Naam": null
+                        },
+                        "Huisnummer": "78",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "31005",
+                          "PostCode": "8200",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "2019-07-01",
                     "DatumEinde": null
                   }
                 ],

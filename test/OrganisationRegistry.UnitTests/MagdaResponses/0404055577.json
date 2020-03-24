@@ -9,13 +9,13 @@
           "Bericht": {
             "Type": 1,
             "Tijdstip": {
-              "Datum": "2020-03-23",
-              "Tijd": "13:46:09.522"
+              "Datum": "2020-03-24",
+              "Tijd": "12:19:38.010"
             },
             "Afzender": {
               "Identificatie": "vip.vlaanderen.be",
               "Naam": "MagdaGateway",
-              "Referte": "f48e7c4a-51be-4cbb-b638-6138c5866b55",
+              "Referte": "6c853f36-0e55-4f74-a643-daa791679843",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -23,7 +23,7 @@
             "Ontvanger": {
               "Identificatie": "kb.vlaanderen.be/aiv/organisatieregister-ond-aip",
               "Naam": null,
-              "Referte": "f4b04eeb-7c7d-4957-895f-7d53080b29cf",
+              "Referte": "48cdf6eb-7265-450c-ad34-aa7ead03d02c",
               "OrganisatieEenheid": null,
               "Hoedanigheid": null,
               "Gebruiker": null
@@ -33,7 +33,7 @@
         },
         "Antwoorden": {
           "Antwoord": {
-            "Referte": "f4b04eeb-7c7d-4957-895f-7d53080b29cf",
+            "Referte": "48cdf6eb-7265-450c-ad34-aa7ead03d02c",
             "Inhoud": {
               "Onderneming": {
                 "Rechtstoestanden": [
@@ -54,7 +54,99 @@
                 ],
                 "Vestigingen": [
                   {
-                    "Vestigingsnummer": "2105628092",
+                    "Vestigingsnummer": "2105627894",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": {
+                      "MaatschappelijkeNamen": null,
+                      "AfgekorteNamen": null,
+                      "CommercieleNamen": [
+                        {
+                          "Naam": "BANK J. VAN BREDA & CO",
+                          "Taalcode": "nl",
+                          "DatumBegin": "1990-08-21",
+                          "DatumEinde": null
+                        }
+                      ]
+                    },
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Koningin Astridlaan"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Brugge"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "1990-08-21",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "7060",
+                          "Naam": null
+                        },
+                        "Huisnummer": "29",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "31005",
+                          "PostCode": "8200",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "1990-08-21",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Vestigingsnummer": "2105627993",
                     "StatusKBO": {
                       "Code": {
                         "Beschrijving": null,
@@ -91,14 +183,14 @@
                               },
                               "Straat": {
                                 "Code": null,
-                                "Naam": "Vlaanderenstraat"
+                                "Naam": "Noordlaan (DEN)"
                               },
                               "Huisnummer": null,
                               "Busnummer": null,
                               "Gemeente": {
                                 "NISCode": null,
                                 "PostCode": null,
-                                "Naam": "Gent"
+                                "Naam": "Dendermonde"
                               },
                               "Staat": null
                             },
@@ -108,7 +200,7 @@
                           }
                         ],
                         "Doorhalingen": null,
-                        "DatumBegin": "1984-01-02",
+                        "DatumBegin": "1983-08-16",
                         "DatumEinde": null,
                         "Land": {
                           "NISCode": "150",
@@ -116,14 +208,14 @@
                           "Naam": "BELGIE"
                         },
                         "Straat": {
-                          "Code": "4806",
+                          "Code": "0465",
                           "Naam": null
                         },
-                        "Huisnummer": "53",
+                        "Huisnummer": "102",
                         "Busnummer": null,
                         "Gemeente": {
-                          "NISCode": "44021",
-                          "PostCode": "9000",
+                          "NISCode": "42006",
+                          "PostCode": "9200",
                           "Naam": null
                         },
                         "Staat": null
@@ -131,7 +223,99 @@
                     ],
                     "Afsluiting": null,
                     "Stopzetting": null,
-                    "DatumBegin": "1984-01-02",
+                    "DatumBegin": "1983-08-16",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Vestigingsnummer": "2105628488",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": {
+                      "MaatschappelijkeNamen": null,
+                      "AfgekorteNamen": null,
+                      "CommercieleNamen": [
+                        {
+                          "Naam": "BANK J. VAN BREDA & CO",
+                          "Taalcode": "nl",
+                          "DatumBegin": "1990-10-03",
+                          "DatumEinde": null
+                        }
+                      ]
+                    },
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Condédreef(Kor)"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Kortrijk"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "2012-01-20",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "0330",
+                          "Naam": null
+                        },
+                        "Huisnummer": "73",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "34022",
+                          "PostCode": "8500",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "1990-10-03",
                     "DatumEinde": null
                   },
                   {
@@ -216,6 +400,179 @@
                     "DatumEinde": null
                   },
                   {
+                    "Vestigingsnummer": "2105626312",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": {
+                      "MaatschappelijkeNamen": null,
+                      "AfgekorteNamen": null,
+                      "CommercieleNamen": [
+                        {
+                          "Naam": "BANK J. VAN BREDA & CO  NV",
+                          "Taalcode": "nl",
+                          "DatumBegin": "1990-09-27",
+                          "DatumEinde": null
+                        }
+                      ]
+                    },
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Hanssenslaan (Benoit)"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Vilvoorde"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "1990-09-27",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "1083",
+                          "Naam": null
+                        },
+                        "Huisnummer": "11",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "23088",
+                          "PostCode": "1800",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "1990-09-27",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Vestigingsnummer": "2105628092",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": null,
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Vlaanderenstraat"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Gent"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "1984-01-02",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "4806",
+                          "Naam": null
+                        },
+                        "Huisnummer": "53",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "44021",
+                          "PostCode": "9000",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "1984-01-02",
+                    "DatumEinde": null
+                  },
+                  {
                     "Vestigingsnummer": "2105626510",
                     "StatusKBO": {
                       "Code": {
@@ -297,7 +654,7 @@
                     "DatumEinde": null
                   },
                   {
-                    "Vestigingsnummer": "2105627993",
+                    "Vestigingsnummer": "2105627696",
                     "StatusKBO": {
                       "Code": {
                         "Beschrijving": null,
@@ -334,14 +691,14 @@
                               },
                               "Straat": {
                                 "Code": null,
-                                "Naam": "Noordlaan (DEN)"
+                                "Naam": "Antwerpsesteenweg"
                               },
                               "Huisnummer": null,
                               "Busnummer": null,
                               "Gemeente": {
                                 "NISCode": null,
                                 "PostCode": null,
-                                "Naam": "Dendermonde"
+                                "Naam": "Kapellen"
                               },
                               "Staat": null
                             },
@@ -351,7 +708,7 @@
                           }
                         ],
                         "Doorhalingen": null,
-                        "DatumBegin": "1983-08-16",
+                        "DatumBegin": "2011-05-30",
                         "DatumEinde": null,
                         "Land": {
                           "NISCode": "150",
@@ -359,14 +716,14 @@
                           "Naam": "BELGIE"
                         },
                         "Straat": {
-                          "Code": "0465",
+                          "Code": "8040",
                           "Naam": null
                         },
-                        "Huisnummer": "102",
+                        "Huisnummer": "329",
                         "Busnummer": null,
                         "Gemeente": {
-                          "NISCode": "42006",
-                          "PostCode": "9200",
+                          "NISCode": "11023",
+                          "PostCode": "2950",
                           "Naam": null
                         },
                         "Staat": null
@@ -374,7 +731,7 @@
                     ],
                     "Afsluiting": null,
                     "Stopzetting": null,
-                    "DatumBegin": "1983-08-16",
+                    "DatumBegin": "1950-06-01",
                     "DatumEinde": null
                   },
                   {
@@ -537,363 +894,6 @@
                     "Afsluiting": null,
                     "Stopzetting": null,
                     "DatumBegin": "1950-06-01",
-                    "DatumEinde": null
-                  },
-                  {
-                    "Vestigingsnummer": "2105627894",
-                    "StatusKBO": {
-                      "Code": {
-                        "Beschrijving": null,
-                        "Value": "AC"
-                      },
-                      "Omschrijving": {
-                        "Oorsprong": null,
-                        "TaalCode": null,
-                        "Value": "Actief"
-                      }
-                    },
-                    "MaatschappelijkeZetel": null,
-                    "Namen": {
-                      "MaatschappelijkeNamen": null,
-                      "AfgekorteNamen": null,
-                      "CommercieleNamen": [
-                        {
-                          "Naam": "BANK J. VAN BREDA & CO",
-                          "Taalcode": "nl",
-                          "DatumBegin": "1990-08-21",
-                          "DatumEinde": null
-                        }
-                      ]
-                    },
-                    "Adressen": [
-                      {
-                        "Type": {
-                          "Code": {
-                            "Beschrijving": null,
-                            "Value": "002"
-                          },
-                          "Omschrijving": {
-                            "Oorsprong": null,
-                            "TaalCode": null,
-                            "Value": "Vestigingseenheid adres"
-                          }
-                        },
-                        "Descripties": [
-                          {
-                            "Adres": {
-                              "Land": {
-                                "NISCode": "150",
-                                "ISOCode": null,
-                                "Naam": "België"
-                              },
-                              "Straat": {
-                                "Code": null,
-                                "Naam": "Koningin Astridlaan"
-                              },
-                              "Huisnummer": null,
-                              "Busnummer": null,
-                              "Gemeente": {
-                                "NISCode": null,
-                                "PostCode": null,
-                                "Naam": "Brugge"
-                              },
-                              "Staat": null
-                            },
-                            "Contact": null,
-                            "Taalcode": null,
-                            "Aanvulling": null
-                          }
-                        ],
-                        "Doorhalingen": null,
-                        "DatumBegin": "1990-08-21",
-                        "DatumEinde": null,
-                        "Land": {
-                          "NISCode": "150",
-                          "ISOCode": "BE",
-                          "Naam": "BELGIE"
-                        },
-                        "Straat": {
-                          "Code": "7060",
-                          "Naam": null
-                        },
-                        "Huisnummer": "29",
-                        "Busnummer": null,
-                        "Gemeente": {
-                          "NISCode": "31005",
-                          "PostCode": "8200",
-                          "Naam": null
-                        },
-                        "Staat": null
-                      }
-                    ],
-                    "Afsluiting": null,
-                    "Stopzetting": null,
-                    "DatumBegin": "1990-08-21",
-                    "DatumEinde": null
-                  },
-                  {
-                    "Vestigingsnummer": "2105627696",
-                    "StatusKBO": {
-                      "Code": {
-                        "Beschrijving": null,
-                        "Value": "AC"
-                      },
-                      "Omschrijving": {
-                        "Oorsprong": null,
-                        "TaalCode": null,
-                        "Value": "Actief"
-                      }
-                    },
-                    "MaatschappelijkeZetel": null,
-                    "Namen": null,
-                    "Adressen": [
-                      {
-                        "Type": {
-                          "Code": {
-                            "Beschrijving": null,
-                            "Value": "002"
-                          },
-                          "Omschrijving": {
-                            "Oorsprong": null,
-                            "TaalCode": null,
-                            "Value": "Vestigingseenheid adres"
-                          }
-                        },
-                        "Descripties": [
-                          {
-                            "Adres": {
-                              "Land": {
-                                "NISCode": "150",
-                                "ISOCode": null,
-                                "Naam": "België"
-                              },
-                              "Straat": {
-                                "Code": null,
-                                "Naam": "Antwerpsesteenweg"
-                              },
-                              "Huisnummer": null,
-                              "Busnummer": null,
-                              "Gemeente": {
-                                "NISCode": null,
-                                "PostCode": null,
-                                "Naam": "Kapellen"
-                              },
-                              "Staat": null
-                            },
-                            "Contact": null,
-                            "Taalcode": null,
-                            "Aanvulling": null
-                          }
-                        ],
-                        "Doorhalingen": null,
-                        "DatumBegin": "2011-05-30",
-                        "DatumEinde": null,
-                        "Land": {
-                          "NISCode": "150",
-                          "ISOCode": "BE",
-                          "Naam": "BELGIE"
-                        },
-                        "Straat": {
-                          "Code": "8040",
-                          "Naam": null
-                        },
-                        "Huisnummer": "329",
-                        "Busnummer": null,
-                        "Gemeente": {
-                          "NISCode": "11023",
-                          "PostCode": "2950",
-                          "Naam": null
-                        },
-                        "Staat": null
-                      }
-                    ],
-                    "Afsluiting": null,
-                    "Stopzetting": null,
-                    "DatumBegin": "1950-06-01",
-                    "DatumEinde": null
-                  },
-                  {
-                    "Vestigingsnummer": "2105628488",
-                    "StatusKBO": {
-                      "Code": {
-                        "Beschrijving": null,
-                        "Value": "AC"
-                      },
-                      "Omschrijving": {
-                        "Oorsprong": null,
-                        "TaalCode": null,
-                        "Value": "Actief"
-                      }
-                    },
-                    "MaatschappelijkeZetel": null,
-                    "Namen": {
-                      "MaatschappelijkeNamen": null,
-                      "AfgekorteNamen": null,
-                      "CommercieleNamen": [
-                        {
-                          "Naam": "BANK J. VAN BREDA & CO",
-                          "Taalcode": "nl",
-                          "DatumBegin": "1990-10-03",
-                          "DatumEinde": null
-                        }
-                      ]
-                    },
-                    "Adressen": [
-                      {
-                        "Type": {
-                          "Code": {
-                            "Beschrijving": null,
-                            "Value": "002"
-                          },
-                          "Omschrijving": {
-                            "Oorsprong": null,
-                            "TaalCode": null,
-                            "Value": "Vestigingseenheid adres"
-                          }
-                        },
-                        "Descripties": [
-                          {
-                            "Adres": {
-                              "Land": {
-                                "NISCode": "150",
-                                "ISOCode": null,
-                                "Naam": "België"
-                              },
-                              "Straat": {
-                                "Code": null,
-                                "Naam": "Condédreef(Kor)"
-                              },
-                              "Huisnummer": null,
-                              "Busnummer": null,
-                              "Gemeente": {
-                                "NISCode": null,
-                                "PostCode": null,
-                                "Naam": "Kortrijk"
-                              },
-                              "Staat": null
-                            },
-                            "Contact": null,
-                            "Taalcode": null,
-                            "Aanvulling": null
-                          }
-                        ],
-                        "Doorhalingen": null,
-                        "DatumBegin": "2012-01-20",
-                        "DatumEinde": null,
-                        "Land": {
-                          "NISCode": "150",
-                          "ISOCode": "BE",
-                          "Naam": "BELGIE"
-                        },
-                        "Straat": {
-                          "Code": "0330",
-                          "Naam": null
-                        },
-                        "Huisnummer": "73",
-                        "Busnummer": null,
-                        "Gemeente": {
-                          "NISCode": "34022",
-                          "PostCode": "8500",
-                          "Naam": null
-                        },
-                        "Staat": null
-                      }
-                    ],
-                    "Afsluiting": null,
-                    "Stopzetting": null,
-                    "DatumBegin": "1990-10-03",
-                    "DatumEinde": null
-                  },
-                  {
-                    "Vestigingsnummer": "2105626312",
-                    "StatusKBO": {
-                      "Code": {
-                        "Beschrijving": null,
-                        "Value": "AC"
-                      },
-                      "Omschrijving": {
-                        "Oorsprong": null,
-                        "TaalCode": null,
-                        "Value": "Actief"
-                      }
-                    },
-                    "MaatschappelijkeZetel": null,
-                    "Namen": {
-                      "MaatschappelijkeNamen": null,
-                      "AfgekorteNamen": null,
-                      "CommercieleNamen": [
-                        {
-                          "Naam": "BANK J. VAN BREDA & CO  NV",
-                          "Taalcode": "nl",
-                          "DatumBegin": "1990-09-27",
-                          "DatumEinde": null
-                        }
-                      ]
-                    },
-                    "Adressen": [
-                      {
-                        "Type": {
-                          "Code": {
-                            "Beschrijving": null,
-                            "Value": "002"
-                          },
-                          "Omschrijving": {
-                            "Oorsprong": null,
-                            "TaalCode": null,
-                            "Value": "Vestigingseenheid adres"
-                          }
-                        },
-                        "Descripties": [
-                          {
-                            "Adres": {
-                              "Land": {
-                                "NISCode": "150",
-                                "ISOCode": null,
-                                "Naam": "België"
-                              },
-                              "Straat": {
-                                "Code": null,
-                                "Naam": "Hanssenslaan (Benoit)"
-                              },
-                              "Huisnummer": null,
-                              "Busnummer": null,
-                              "Gemeente": {
-                                "NISCode": null,
-                                "PostCode": null,
-                                "Naam": "Vilvoorde"
-                              },
-                              "Staat": null
-                            },
-                            "Contact": null,
-                            "Taalcode": null,
-                            "Aanvulling": null
-                          }
-                        ],
-                        "Doorhalingen": null,
-                        "DatumBegin": "1990-09-27",
-                        "DatumEinde": null,
-                        "Land": {
-                          "NISCode": "150",
-                          "ISOCode": "BE",
-                          "Naam": "BELGIE"
-                        },
-                        "Straat": {
-                          "Code": "1083",
-                          "Naam": null
-                        },
-                        "Huisnummer": "11",
-                        "Busnummer": null,
-                        "Gemeente": {
-                          "NISCode": "23088",
-                          "PostCode": "1800",
-                          "Naam": null
-                        },
-                        "Staat": null
-                      }
-                    ],
-                    "Afsluiting": null,
-                    "Stopzetting": null,
-                    "DatumBegin": "1990-09-27",
                     "DatumEinde": null
                   },
                   {
@@ -1232,7 +1232,7 @@
                     "DatumEinde": null
                   },
                   {
-                    "Vestigingsnummer": "2105629874",
+                    "Vestigingsnummer": "2105628785",
                     "StatusKBO": {
                       "Code": {
                         "Beschrijving": null,
@@ -1269,14 +1269,14 @@
                               },
                               "Straat": {
                                 "Code": null,
-                                "Naam": "Markt"
+                                "Naam": "Hoogveldweg"
                               },
                               "Huisnummer": null,
                               "Busnummer": null,
                               "Gemeente": {
                                 "NISCode": null,
                                 "PostCode": null,
-                                "Naam": "Mol"
+                                "Naam": "Lier"
                               },
                               "Staat": null
                             },
@@ -1286,7 +1286,7 @@
                           }
                         ],
                         "Doorhalingen": null,
-                        "DatumBegin": "1975-03-01",
+                        "DatumBegin": "2009-01-09",
                         "DatumEinde": null,
                         "Land": {
                           "NISCode": "150",
@@ -1294,14 +1294,14 @@
                           "Naam": "BELGIE"
                         },
                         "Straat": {
-                          "Code": "8160",
+                          "Code": "0085",
                           "Naam": null
                         },
-                        "Huisnummer": "37",
+                        "Huisnummer": "151",
                         "Busnummer": null,
                         "Gemeente": {
-                          "NISCode": "13025",
-                          "PostCode": "2400",
+                          "NISCode": "12021",
+                          "PostCode": "2500",
                           "Naam": null
                         },
                         "Staat": null
@@ -1309,7 +1309,99 @@
                     ],
                     "Afsluiting": null,
                     "Stopzetting": null,
-                    "DatumBegin": "1975-03-01",
+                    "DatumBegin": "1930-12-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Vestigingsnummer": "2142780478",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": {
+                      "MaatschappelijkeNamen": null,
+                      "AfgekorteNamen": null,
+                      "CommercieleNamen": [
+                        {
+                          "Naam": "bank J. Van Breda en cie NV",
+                          "Taalcode": "nl",
+                          "DatumBegin": "2001-06-01",
+                          "DatumEinde": null
+                        }
+                      ]
+                    },
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Chaussée de Namur"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Waver"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "2001-06-01",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "1960",
+                          "Naam": null
+                        },
+                        "Huisnummer": "65",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "25112",
+                          "PostCode": "1300",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "2001-06-01",
                     "DatumEinde": null
                   },
                   {
@@ -1402,260 +1494,6 @@
                     "Afsluiting": null,
                     "Stopzetting": null,
                     "DatumBegin": "2000-12-18",
-                    "DatumEinde": null
-                  },
-                  {
-                    "Vestigingsnummer": "2142780379",
-                    "StatusKBO": {
-                      "Code": {
-                        "Beschrijving": null,
-                        "Value": "AC"
-                      },
-                      "Omschrijving": {
-                        "Oorsprong": null,
-                        "TaalCode": null,
-                        "Value": "Actief"
-                      }
-                    },
-                    "MaatschappelijkeZetel": null,
-                    "Namen": {
-                      "MaatschappelijkeNamen": null,
-                      "AfgekorteNamen": null,
-                      "CommercieleNamen": [
-                        {
-                          "Naam": "bank J. Van Breda en cie NV",
-                          "Taalcode": "nl",
-                          "DatumBegin": "2000-12-18",
-                          "DatumEinde": null
-                        }
-                      ]
-                    },
-                    "Adressen": [
-                      {
-                        "Type": {
-                          "Code": {
-                            "Beschrijving": null,
-                            "Value": "002"
-                          },
-                          "Omschrijving": {
-                            "Oorsprong": null,
-                            "TaalCode": null,
-                            "Value": "Vestigingseenheid adres"
-                          }
-                        },
-                        "Descripties": [
-                          {
-                            "Adres": {
-                              "Land": {
-                                "NISCode": "150",
-                                "ISOCode": null,
-                                "Naam": "België"
-                              },
-                              "Straat": {
-                                "Code": null,
-                                "Naam": "Tervurenlaan"
-                              },
-                              "Huisnummer": null,
-                              "Busnummer": null,
-                              "Gemeente": {
-                                "NISCode": null,
-                                "PostCode": null,
-                                "Naam": "Sint-Pieters-Woluwe"
-                              },
-                              "Staat": null
-                            },
-                            "Contact": null,
-                            "Taalcode": null,
-                            "Aanvulling": null
-                          }
-                        ],
-                        "Doorhalingen": null,
-                        "DatumBegin": "2000-12-18",
-                        "DatumEinde": null,
-                        "Land": {
-                          "NISCode": "150",
-                          "ISOCode": "BE",
-                          "Naam": "BELGIE"
-                        },
-                        "Straat": {
-                          "Code": "0227",
-                          "Naam": null
-                        },
-                        "Huisnummer": "153",
-                        "Busnummer": null,
-                        "Gemeente": {
-                          "NISCode": "21019",
-                          "PostCode": "1150",
-                          "Naam": null
-                        },
-                        "Staat": null
-                      }
-                    ],
-                    "Afsluiting": null,
-                    "Stopzetting": null,
-                    "DatumBegin": "2000-12-18",
-                    "DatumEinde": null
-                  },
-                  {
-                    "Vestigingsnummer": "2105628785",
-                    "StatusKBO": {
-                      "Code": {
-                        "Beschrijving": null,
-                        "Value": "AC"
-                      },
-                      "Omschrijving": {
-                        "Oorsprong": null,
-                        "TaalCode": null,
-                        "Value": "Actief"
-                      }
-                    },
-                    "MaatschappelijkeZetel": null,
-                    "Namen": null,
-                    "Adressen": [
-                      {
-                        "Type": {
-                          "Code": {
-                            "Beschrijving": null,
-                            "Value": "002"
-                          },
-                          "Omschrijving": {
-                            "Oorsprong": null,
-                            "TaalCode": null,
-                            "Value": "Vestigingseenheid adres"
-                          }
-                        },
-                        "Descripties": [
-                          {
-                            "Adres": {
-                              "Land": {
-                                "NISCode": "150",
-                                "ISOCode": null,
-                                "Naam": "België"
-                              },
-                              "Straat": {
-                                "Code": null,
-                                "Naam": "Hoogveldweg"
-                              },
-                              "Huisnummer": null,
-                              "Busnummer": null,
-                              "Gemeente": {
-                                "NISCode": null,
-                                "PostCode": null,
-                                "Naam": "Lier"
-                              },
-                              "Staat": null
-                            },
-                            "Contact": null,
-                            "Taalcode": null,
-                            "Aanvulling": null
-                          }
-                        ],
-                        "Doorhalingen": null,
-                        "DatumBegin": "2009-01-09",
-                        "DatumEinde": null,
-                        "Land": {
-                          "NISCode": "150",
-                          "ISOCode": "BE",
-                          "Naam": "BELGIE"
-                        },
-                        "Straat": {
-                          "Code": "0085",
-                          "Naam": null
-                        },
-                        "Huisnummer": "151",
-                        "Busnummer": null,
-                        "Gemeente": {
-                          "NISCode": "12021",
-                          "PostCode": "2500",
-                          "Naam": null
-                        },
-                        "Staat": null
-                      }
-                    ],
-                    "Afsluiting": null,
-                    "Stopzetting": null,
-                    "DatumBegin": "1930-12-01",
-                    "DatumEinde": null
-                  },
-                  {
-                    "Vestigingsnummer": "2105629577",
-                    "StatusKBO": {
-                      "Code": {
-                        "Beschrijving": null,
-                        "Value": "AC"
-                      },
-                      "Omschrijving": {
-                        "Oorsprong": null,
-                        "TaalCode": null,
-                        "Value": "Actief"
-                      }
-                    },
-                    "MaatschappelijkeZetel": null,
-                    "Namen": null,
-                    "Adressen": [
-                      {
-                        "Type": {
-                          "Code": {
-                            "Beschrijving": null,
-                            "Value": "002"
-                          },
-                          "Omschrijving": {
-                            "Oorsprong": null,
-                            "TaalCode": null,
-                            "Value": "Vestigingseenheid adres"
-                          }
-                        },
-                        "Descripties": [
-                          {
-                            "Adres": {
-                              "Land": {
-                                "NISCode": "150",
-                                "ISOCode": null,
-                                "Naam": "België"
-                              },
-                              "Straat": {
-                                "Code": null,
-                                "Naam": "Fraikinstraat(HRT)"
-                              },
-                              "Huisnummer": null,
-                              "Busnummer": null,
-                              "Gemeente": {
-                                "NISCode": null,
-                                "PostCode": null,
-                                "Naam": "Herentals"
-                              },
-                              "Staat": null
-                            },
-                            "Contact": null,
-                            "Taalcode": null,
-                            "Aanvulling": null
-                          }
-                        ],
-                        "Doorhalingen": null,
-                        "DatumBegin": "1975-03-01",
-                        "DatumEinde": null,
-                        "Land": {
-                          "NISCode": "150",
-                          "ISOCode": "BE",
-                          "Naam": "BELGIE"
-                        },
-                        "Straat": {
-                          "Code": "1119",
-                          "Naam": null
-                        },
-                        "Huisnummer": "43",
-                        "Busnummer": null,
-                        "Gemeente": {
-                          "NISCode": "13011",
-                          "PostCode": "2200",
-                          "Naam": null
-                        },
-                        "Staat": null
-                      }
-                    ],
-                    "Afsluiting": null,
-                    "Stopzetting": null,
-                    "DatumBegin": "1975-03-01",
                     "DatumEinde": null
                   },
                   {
@@ -1821,6 +1659,168 @@
                     "DatumEinde": null
                   },
                   {
+                    "Vestigingsnummer": "2105629874",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": null,
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Markt"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Mol"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "1975-03-01",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "8160",
+                          "Naam": null
+                        },
+                        "Huisnummer": "37",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "13025",
+                          "PostCode": "2400",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "1975-03-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Vestigingsnummer": "2105629577",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": null,
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Fraikinstraat(HRT)"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Herentals"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "1975-03-01",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "1119",
+                          "Naam": null
+                        },
+                        "Huisnummer": "43",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "13011",
+                          "PostCode": "2200",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "1975-03-01",
+                    "DatumEinde": null
+                  },
+                  {
                     "Vestigingsnummer": "2142780676",
                     "StatusKBO": {
                       "Code": {
@@ -1913,7 +1913,7 @@
                     "DatumEinde": null
                   },
                   {
-                    "Vestigingsnummer": "2142780775",
+                    "Vestigingsnummer": "2142780379",
                     "StatusKBO": {
                       "Code": {
                         "Beschrijving": null,
@@ -1933,7 +1933,7 @@
                         {
                           "Naam": "bank J. Van Breda en cie NV",
                           "Taalcode": "nl",
-                          "DatumBegin": "1999-05-01",
+                          "DatumBegin": "2000-12-18",
                           "DatumEinde": null
                         }
                       ]
@@ -1961,14 +1961,14 @@
                               },
                               "Straat": {
                                 "Code": null,
-                                "Naam": "Obberg"
+                                "Naam": "Tervurenlaan"
                               },
                               "Huisnummer": null,
                               "Busnummer": null,
                               "Gemeente": {
                                 "NISCode": null,
                                 "PostCode": null,
-                                "Naam": "Wemmel"
+                                "Naam": "Sint-Pieters-Woluwe"
                               },
                               "Staat": null
                             },
@@ -1978,7 +1978,7 @@
                           }
                         ],
                         "Doorhalingen": null,
-                        "DatumBegin": "1999-05-01",
+                        "DatumBegin": "2000-12-18",
                         "DatumEinde": null,
                         "Land": {
                           "NISCode": "150",
@@ -1986,14 +1986,14 @@
                           "Naam": "BELGIE"
                         },
                         "Straat": {
-                          "Code": "3070",
+                          "Code": "0227",
                           "Naam": null
                         },
-                        "Huisnummer": "1",
+                        "Huisnummer": "153",
                         "Busnummer": null,
                         "Gemeente": {
-                          "NISCode": "23102",
-                          "PostCode": "1780",
+                          "NISCode": "21019",
+                          "PostCode": "1150",
                           "Naam": null
                         },
                         "Staat": null
@@ -2001,7 +2001,7 @@
                     ],
                     "Afsluiting": null,
                     "Stopzetting": null,
-                    "DatumBegin": "1999-05-01",
+                    "DatumBegin": "2000-12-18",
                     "DatumEinde": null
                   },
                   {
@@ -2097,7 +2097,7 @@
                     "DatumEinde": null
                   },
                   {
-                    "Vestigingsnummer": "2142780577",
+                    "Vestigingsnummer": "2142781171",
                     "StatusKBO": {
                       "Code": {
                         "Beschrijving": null,
@@ -2117,7 +2117,7 @@
                         {
                           "Naam": "bank J. Van Breda en cie NV",
                           "Taalcode": "nl",
-                          "DatumBegin": "2001-11-05",
+                          "DatumBegin": "2004-08-23",
                           "DatumEinde": null
                         }
                       ]
@@ -2145,14 +2145,14 @@
                               },
                               "Straat": {
                                 "Code": null,
-                                "Naam": "Boulevard d'Avroy"
+                                "Naam": "Prins Boudewijnlaan"
                               },
                               "Huisnummer": null,
                               "Busnummer": null,
                               "Gemeente": {
                                 "NISCode": null,
                                 "PostCode": null,
-                                "Naam": "Luik"
+                                "Naam": "Kontich"
                               },
                               "Staat": null
                             },
@@ -2162,7 +2162,7 @@
                           }
                         ],
                         "Doorhalingen": null,
-                        "DatumBegin": "2001-11-05",
+                        "DatumBegin": "2004-08-23",
                         "DatumEinde": null,
                         "Land": {
                           "NISCode": "150",
@@ -2170,14 +2170,14 @@
                           "Naam": "BELGIE"
                         },
                         "Straat": {
-                          "Code": "3001",
+                          "Code": "1315",
                           "Naam": null
                         },
-                        "Huisnummer": "4",
+                        "Huisnummer": "1",
                         "Busnummer": null,
                         "Gemeente": {
-                          "NISCode": "62063",
-                          "PostCode": "4000",
+                          "NISCode": "11024",
+                          "PostCode": "2550",
                           "Naam": null
                         },
                         "Staat": null
@@ -2185,364 +2185,7 @@
                     ],
                     "Afsluiting": null,
                     "Stopzetting": null,
-                    "DatumBegin": "2001-11-05",
-                    "DatumEinde": null
-                  },
-                  {
-                    "Vestigingsnummer": "2142781072",
-                    "StatusKBO": {
-                      "Code": {
-                        "Beschrijving": null,
-                        "Value": "AC"
-                      },
-                      "Omschrijving": {
-                        "Oorsprong": null,
-                        "TaalCode": null,
-                        "Value": "Actief"
-                      }
-                    },
-                    "MaatschappelijkeZetel": null,
-                    "Namen": {
-                      "MaatschappelijkeNamen": null,
-                      "AfgekorteNamen": null,
-                      "CommercieleNamen": [
-                        {
-                          "Naam": "bank J. Van Breda en cie NV",
-                          "Taalcode": "nl",
-                          "DatumBegin": "2002-12-16",
-                          "DatumEinde": null
-                        }
-                      ]
-                    },
-                    "Adressen": [
-                      {
-                        "Type": {
-                          "Code": {
-                            "Beschrijving": null,
-                            "Value": "002"
-                          },
-                          "Omschrijving": {
-                            "Oorsprong": null,
-                            "TaalCode": null,
-                            "Value": "Vestigingseenheid adres"
-                          }
-                        },
-                        "Descripties": [
-                          {
-                            "Adres": {
-                              "Land": {
-                                "NISCode": "150",
-                                "ISOCode": null,
-                                "Naam": "België"
-                              },
-                              "Straat": {
-                                "Code": null,
-                                "Naam": "Boulevard Dolez"
-                              },
-                              "Huisnummer": null,
-                              "Busnummer": null,
-                              "Gemeente": {
-                                "NISCode": null,
-                                "PostCode": null,
-                                "Naam": "Bergen"
-                              },
-                              "Staat": null
-                            },
-                            "Contact": null,
-                            "Taalcode": null,
-                            "Aanvulling": null
-                          }
-                        ],
-                        "Doorhalingen": null,
-                        "DatumBegin": "2008-05-10",
-                        "DatumEinde": null,
-                        "Land": {
-                          "NISCode": "150",
-                          "ISOCode": "BE",
-                          "Naam": "BELGIE"
-                        },
-                        "Straat": {
-                          "Code": "0115",
-                          "Naam": null
-                        },
-                        "Huisnummer": "67",
-                        "Busnummer": null,
-                        "Gemeente": {
-                          "NISCode": "53053",
-                          "PostCode": "7000",
-                          "Naam": null
-                        },
-                        "Staat": null
-                      }
-                    ],
-                    "Afsluiting": null,
-                    "Stopzetting": null,
-                    "DatumBegin": "2002-12-16",
-                    "DatumEinde": null
-                  },
-                  {
-                    "Vestigingsnummer": "2145211022",
-                    "StatusKBO": {
-                      "Code": {
-                        "Beschrijving": null,
-                        "Value": "AC"
-                      },
-                      "Omschrijving": {
-                        "Oorsprong": null,
-                        "TaalCode": null,
-                        "Value": "Actief"
-                      }
-                    },
-                    "MaatschappelijkeZetel": null,
-                    "Namen": {
-                      "MaatschappelijkeNamen": null,
-                      "AfgekorteNamen": null,
-                      "CommercieleNamen": [
-                        {
-                          "Naam": "Bank J. Van Breda en Co",
-                          "Taalcode": "nl",
-                          "DatumBegin": "2004-12-10",
-                          "DatumEinde": null
-                        }
-                      ]
-                    },
-                    "Adressen": [
-                      {
-                        "Type": {
-                          "Code": {
-                            "Beschrijving": null,
-                            "Value": "002"
-                          },
-                          "Omschrijving": {
-                            "Oorsprong": null,
-                            "TaalCode": null,
-                            "Value": "Vestigingseenheid adres"
-                          }
-                        },
-                        "Descripties": [
-                          {
-                            "Adres": {
-                              "Land": {
-                                "NISCode": "150",
-                                "ISOCode": null,
-                                "Naam": "België"
-                              },
-                              "Straat": {
-                                "Code": null,
-                                "Naam": "Gillès de Pélichylei"
-                              },
-                              "Huisnummer": null,
-                              "Busnummer": null,
-                              "Gemeente": {
-                                "NISCode": null,
-                                "PostCode": null,
-                                "Naam": "Schilde"
-                              },
-                              "Staat": null
-                            },
-                            "Contact": null,
-                            "Taalcode": null,
-                            "Aanvulling": null
-                          }
-                        ],
-                        "Doorhalingen": null,
-                        "DatumBegin": "2004-12-10",
-                        "DatumEinde": null,
-                        "Land": {
-                          "NISCode": "150",
-                          "ISOCode": "BE",
-                          "Naam": "BELGIE"
-                        },
-                        "Straat": {
-                          "Code": "2360",
-                          "Naam": null
-                        },
-                        "Huisnummer": "23",
-                        "Busnummer": null,
-                        "Gemeente": {
-                          "NISCode": "11039",
-                          "PostCode": "2970",
-                          "Naam": null
-                        },
-                        "Staat": null
-                      }
-                    ],
-                    "Afsluiting": null,
-                    "Stopzetting": null,
-                    "DatumBegin": "2004-12-10",
-                    "DatumEinde": null
-                  },
-                  {
-                    "Vestigingsnummer": "2158977696",
-                    "StatusKBO": {
-                      "Code": {
-                        "Beschrijving": null,
-                        "Value": "AC"
-                      },
-                      "Omschrijving": {
-                        "Oorsprong": null,
-                        "TaalCode": null,
-                        "Value": "Actief"
-                      }
-                    },
-                    "MaatschappelijkeZetel": null,
-                    "Namen": {
-                      "MaatschappelijkeNamen": null,
-                      "AfgekorteNamen": null,
-                      "CommercieleNamen": [
-                        {
-                          "Naam": "Bank J. Van Breda en Co NV",
-                          "Taalcode": "nl",
-                          "DatumBegin": "2006-12-11",
-                          "DatumEinde": null
-                        }
-                      ]
-                    },
-                    "Adressen": [
-                      {
-                        "Type": {
-                          "Code": {
-                            "Beschrijving": null,
-                            "Value": "002"
-                          },
-                          "Omschrijving": {
-                            "Oorsprong": null,
-                            "TaalCode": null,
-                            "Value": "Vestigingseenheid adres"
-                          }
-                        },
-                        "Descripties": [
-                          {
-                            "Adres": {
-                              "Land": {
-                                "NISCode": "150",
-                                "ISOCode": null,
-                                "Naam": "België"
-                              },
-                              "Straat": {
-                                "Code": null,
-                                "Naam": "Ledeganckkaai"
-                              },
-                              "Huisnummer": null,
-                              "Busnummer": null,
-                              "Gemeente": {
-                                "NISCode": null,
-                                "PostCode": null,
-                                "Naam": "Antwerpen"
-                              },
-                              "Staat": null
-                            },
-                            "Contact": null,
-                            "Taalcode": null,
-                            "Aanvulling": null
-                          }
-                        ],
-                        "Doorhalingen": null,
-                        "DatumBegin": "2006-12-11",
-                        "DatumEinde": null,
-                        "Land": {
-                          "NISCode": "150",
-                          "ISOCode": "BE",
-                          "Naam": "BELGIE"
-                        },
-                        "Straat": {
-                          "Code": "3134",
-                          "Naam": null
-                        },
-                        "Huisnummer": "7",
-                        "Busnummer": null,
-                        "Gemeente": {
-                          "NISCode": "11002",
-                          "PostCode": "2000",
-                          "Naam": null
-                        },
-                        "Staat": null
-                      }
-                    ],
-                    "Afsluiting": null,
-                    "Stopzetting": null,
-                    "DatumBegin": "2006-12-11",
-                    "DatumEinde": null
-                  },
-                  {
-                    "Vestigingsnummer": "2200309990",
-                    "StatusKBO": {
-                      "Code": {
-                        "Beschrijving": null,
-                        "Value": "AC"
-                      },
-                      "Omschrijving": {
-                        "Oorsprong": null,
-                        "TaalCode": null,
-                        "Value": "Actief"
-                      }
-                    },
-                    "MaatschappelijkeZetel": null,
-                    "Namen": null,
-                    "Adressen": [
-                      {
-                        "Type": {
-                          "Code": {
-                            "Beschrijving": null,
-                            "Value": "002"
-                          },
-                          "Omschrijving": {
-                            "Oorsprong": null,
-                            "TaalCode": null,
-                            "Value": "Vestigingseenheid adres"
-                          }
-                        },
-                        "Descripties": [
-                          {
-                            "Adres": {
-                              "Land": {
-                                "NISCode": "150",
-                                "ISOCode": null,
-                                "Naam": "België"
-                              },
-                              "Straat": {
-                                "Code": null,
-                                "Naam": "Rue de la Grande Couture(MAR)"
-                              },
-                              "Huisnummer": null,
-                              "Busnummer": null,
-                              "Gemeente": {
-                                "NISCode": null,
-                                "PostCode": null,
-                                "Naam": "Doornik"
-                              },
-                              "Staat": null
-                            },
-                            "Contact": null,
-                            "Taalcode": null,
-                            "Aanvulling": null
-                          }
-                        ],
-                        "Doorhalingen": null,
-                        "DatumBegin": "2011-06-26",
-                        "DatumEinde": null,
-                        "Land": {
-                          "NISCode": "150",
-                          "ISOCode": "BE",
-                          "Naam": "BELGIE"
-                        },
-                        "Straat": {
-                          "Code": "8658",
-                          "Naam": null
-                        },
-                        "Huisnummer": "2",
-                        "Busnummer": null,
-                        "Gemeente": {
-                          "NISCode": "57081",
-                          "PostCode": "7522",
-                          "Naam": null
-                        },
-                        "Staat": null
-                      }
-                    ],
-                    "Afsluiting": null,
-                    "Stopzetting": null,
-                    "DatumBegin": "2011-06-26",
+                    "DatumBegin": "2004-08-23",
                     "DatumEinde": null
                   },
                   {
@@ -2638,7 +2281,7 @@
                     "DatumEinde": null
                   },
                   {
-                    "Vestigingsnummer": "2142781171",
+                    "Vestigingsnummer": "2142780577",
                     "StatusKBO": {
                       "Code": {
                         "Beschrijving": null,
@@ -2658,7 +2301,7 @@
                         {
                           "Naam": "bank J. Van Breda en cie NV",
                           "Taalcode": "nl",
-                          "DatumBegin": "2004-08-23",
+                          "DatumBegin": "2001-11-05",
                           "DatumEinde": null
                         }
                       ]
@@ -2686,14 +2329,14 @@
                               },
                               "Straat": {
                                 "Code": null,
-                                "Naam": "Prins Boudewijnlaan"
+                                "Naam": "Boulevard d'Avroy"
                               },
                               "Huisnummer": null,
                               "Busnummer": null,
                               "Gemeente": {
                                 "NISCode": null,
                                 "PostCode": null,
-                                "Naam": "Kontich"
+                                "Naam": "Luik"
                               },
                               "Staat": null
                             },
@@ -2703,7 +2346,7 @@
                           }
                         ],
                         "Doorhalingen": null,
-                        "DatumBegin": "2004-08-23",
+                        "DatumBegin": "2001-11-05",
                         "DatumEinde": null,
                         "Land": {
                           "NISCode": "150",
@@ -2711,14 +2354,106 @@
                           "Naam": "BELGIE"
                         },
                         "Straat": {
-                          "Code": "1315",
+                          "Code": "3001",
+                          "Naam": null
+                        },
+                        "Huisnummer": "4",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "62063",
+                          "PostCode": "4000",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "2001-11-05",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Vestigingsnummer": "2142780775",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": {
+                      "MaatschappelijkeNamen": null,
+                      "AfgekorteNamen": null,
+                      "CommercieleNamen": [
+                        {
+                          "Naam": "bank J. Van Breda en cie NV",
+                          "Taalcode": "nl",
+                          "DatumBegin": "1999-05-01",
+                          "DatumEinde": null
+                        }
+                      ]
+                    },
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Obberg"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Wemmel"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "1999-05-01",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "3070",
                           "Naam": null
                         },
                         "Huisnummer": "1",
                         "Busnummer": null,
                         "Gemeente": {
-                          "NISCode": "11024",
-                          "PostCode": "2550",
+                          "NISCode": "23102",
+                          "PostCode": "1780",
                           "Naam": null
                         },
                         "Staat": null
@@ -2726,11 +2461,11 @@
                     ],
                     "Afsluiting": null,
                     "Stopzetting": null,
-                    "DatumBegin": "2004-08-23",
+                    "DatumBegin": "1999-05-01",
                     "DatumEinde": null
                   },
                   {
-                    "Vestigingsnummer": "2142780478",
+                    "Vestigingsnummer": "2158977696",
                     "StatusKBO": {
                       "Code": {
                         "Beschrijving": null,
@@ -2748,9 +2483,9 @@
                       "AfgekorteNamen": null,
                       "CommercieleNamen": [
                         {
-                          "Naam": "bank J. Van Breda en cie NV",
+                          "Naam": "Bank J. Van Breda en Co NV",
                           "Taalcode": "nl",
-                          "DatumBegin": "2001-06-01",
+                          "DatumBegin": "2006-12-11",
                           "DatumEinde": null
                         }
                       ]
@@ -2778,14 +2513,14 @@
                               },
                               "Straat": {
                                 "Code": null,
-                                "Naam": "Chaussée de Namur"
+                                "Naam": "Ledeganckkaai"
                               },
                               "Huisnummer": null,
                               "Busnummer": null,
                               "Gemeente": {
                                 "NISCode": null,
                                 "PostCode": null,
-                                "Naam": "Waver"
+                                "Naam": "Antwerpen"
                               },
                               "Staat": null
                             },
@@ -2795,7 +2530,7 @@
                           }
                         ],
                         "Doorhalingen": null,
-                        "DatumBegin": "2001-06-01",
+                        "DatumBegin": "2006-12-11",
                         "DatumEinde": null,
                         "Land": {
                           "NISCode": "150",
@@ -2803,14 +2538,14 @@
                           "Naam": "BELGIE"
                         },
                         "Straat": {
-                          "Code": "1960",
+                          "Code": "3134",
                           "Naam": null
                         },
-                        "Huisnummer": "65",
+                        "Huisnummer": "7",
                         "Busnummer": null,
                         "Gemeente": {
-                          "NISCode": "25112",
-                          "PostCode": "1300",
+                          "NISCode": "11002",
+                          "PostCode": "2000",
                           "Naam": null
                         },
                         "Staat": null
@@ -2818,7 +2553,272 @@
                     ],
                     "Afsluiting": null,
                     "Stopzetting": null,
-                    "DatumBegin": "2001-06-01",
+                    "DatumBegin": "2006-12-11",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Vestigingsnummer": "2142781072",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": {
+                      "MaatschappelijkeNamen": null,
+                      "AfgekorteNamen": null,
+                      "CommercieleNamen": [
+                        {
+                          "Naam": "bank J. Van Breda en cie NV",
+                          "Taalcode": "nl",
+                          "DatumBegin": "2002-12-16",
+                          "DatumEinde": null
+                        }
+                      ]
+                    },
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Boulevard Dolez"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Bergen"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "2008-05-10",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "0115",
+                          "Naam": null
+                        },
+                        "Huisnummer": "67",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "53053",
+                          "PostCode": "7000",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "2002-12-16",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Vestigingsnummer": "2200309990",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": null,
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Rue de la Grande Couture(MAR)"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Doornik"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "2011-06-26",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "8658",
+                          "Naam": null
+                        },
+                        "Huisnummer": "2",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "57081",
+                          "PostCode": "7522",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "2011-06-26",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Vestigingsnummer": "2145211022",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": {
+                      "MaatschappelijkeNamen": null,
+                      "AfgekorteNamen": null,
+                      "CommercieleNamen": [
+                        {
+                          "Naam": "Bank J. Van Breda en Co",
+                          "Taalcode": "nl",
+                          "DatumBegin": "2004-12-10",
+                          "DatumEinde": null
+                        }
+                      ]
+                    },
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Gillès de Pélichylei"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Schilde"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "2004-12-10",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "2360",
+                          "Naam": null
+                        },
+                        "Huisnummer": "23",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "11039",
+                          "PostCode": "2970",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "2004-12-10",
                     "DatumEinde": null
                   }
                 ],

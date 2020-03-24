@@ -34,9 +34,10 @@ namespace OrganisationRegistry.UnitTests.Magda
             var magdaResponse = await MagdaJsonLoader.Load(kboNr);
             var sut = SetUpKboOrganisationRetriever(kboNr, magdaResponse);
 
-            var organisation = await sut.RetrieveOrganisation(new ClaimsPrincipal(), new KboNumber(kboNr));
+            var organisationResult = await sut.RetrieveOrganisation(new ClaimsPrincipal(), new KboNumber(kboNr));
 
-            organisation.Should().BeNull();
+            organisationResult.ErrorMessages.Should()
+                .BeEquivalentTo("Gevraagde ondernemingsnummer bestaat niet in KBO");
         }
 
         [Fact]
@@ -46,7 +47,9 @@ namespace OrganisationRegistry.UnitTests.Magda
             var magdaResponse = await MagdaJsonLoader.Load(kboNr);
             var sut = SetUpKboOrganisationRetriever(kboNr, magdaResponse);
 
-            var organisation = await sut.RetrieveOrganisation(new ClaimsPrincipal(), new KboNumber(kboNr));
+            var organisationResult = await sut.RetrieveOrganisation(new ClaimsPrincipal(), new KboNumber(kboNr));
+
+            var organisation = organisationResult.Value;
 
             organisation.Should().NotBeNull();
 
@@ -64,7 +67,9 @@ namespace OrganisationRegistry.UnitTests.Magda
             var magdaResponse = await MagdaJsonLoader.Load(kboNr);
             var sut = SetUpKboOrganisationRetriever(kboNr, magdaResponse);
 
-            var organisation = await sut.RetrieveOrganisation(new ClaimsPrincipal(), new KboNumber(kboNr));
+            var organisationResult = await sut.RetrieveOrganisation(new ClaimsPrincipal(), new KboNumber(kboNr));
+
+            var organisation = organisationResult.Value;
 
             organisation.Should().NotBeNull();
 
@@ -82,7 +87,9 @@ namespace OrganisationRegistry.UnitTests.Magda
             var magdaResponse = await MagdaJsonLoader.Load(kboNr);
             var sut = SetUpKboOrganisationRetriever(kboNr, magdaResponse);
 
-            var organisation = await sut.RetrieveOrganisation(new ClaimsPrincipal(), new KboNumber(kboNr));
+            var organisationResult = await sut.RetrieveOrganisation(new ClaimsPrincipal(), new KboNumber(kboNr));
+
+            var organisation = organisationResult.Value;
 
             organisation.Should().NotBeNull();
 
@@ -119,7 +126,9 @@ namespace OrganisationRegistry.UnitTests.Magda
             var magdaResponse = await MagdaJsonLoader.Load(kboNr);
             var sut = SetUpKboOrganisationRetriever(kboNr, magdaResponse);
 
-            var organisation = await sut.RetrieveOrganisation(new ClaimsPrincipal(), new KboNumber(kboNr));
+            var organisationResult = await sut.RetrieveOrganisation(new ClaimsPrincipal(), new KboNumber(kboNr));
+
+            var organisation = organisationResult.Value;
 
             organisation.Should().NotBeNull();
 
@@ -133,7 +142,9 @@ namespace OrganisationRegistry.UnitTests.Magda
             var magdaResponse = await MagdaJsonLoader.Load(kboNr);
             var sut = SetUpKboOrganisationRetriever(kboNr, magdaResponse);
 
-            var organisation = await sut.RetrieveOrganisation(new ClaimsPrincipal(), new KboNumber(kboNr));
+            var organisationResult = await sut.RetrieveOrganisation(new ClaimsPrincipal(), new KboNumber(kboNr));
+
+            var organisation = organisationResult.Value;
 
             organisation.Should().NotBeNull();
 
