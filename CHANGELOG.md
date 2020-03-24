@@ -1,3 +1,12 @@
+# [1.30.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.29.0...v1.30.0) (2020-03-24)
+
+
+### Features
+
+* make magda exceptions more visible ([c695e74](https://github.com/informatievlaanderen/organisation-registry/commit/c695e745ff789bd8f8795bcb1c3def29d02c9116))
+* show kbo error message in exceptionz ([f150267](https://github.com/informatievlaanderen/organisation-registry/commit/f150267a6c847222f6fab9d5f20a9f15a57b3271))
+* take non-sepa nr when iban and accountnr are null ([a980d33](https://github.com/informatievlaanderen/organisation-registry/commit/a980d33e993add1869f4c28f7ce8563295a001b7))
+
 # [1.29.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.28.0...v1.29.0) (2020-03-23)
 
 
