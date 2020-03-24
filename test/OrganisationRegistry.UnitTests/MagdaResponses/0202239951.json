@@ -1,0 +1,2241 @@
+{
+  "Header": {},
+  "Body": {
+    "GeefOndernemingResponse": {
+      "Repliek": {
+        "Context": {
+          "Naam": "GeefOnderneming",
+          "Versie": "02.00.0000",
+          "Bericht": {
+            "Type": 1,
+            "Tijdstip": {
+              "Datum": "2020-03-24",
+              "Tijd": "10:34:05.948"
+            },
+            "Afzender": {
+              "Identificatie": "vip.vlaanderen.be",
+              "Naam": "MagdaGateway",
+              "Referte": "eb9fa318-0e0e-4523-8625-1e1311d633e9",
+              "OrganisatieEenheid": null,
+              "Hoedanigheid": null,
+              "Gebruiker": null
+            },
+            "Ontvanger": {
+              "Identificatie": "kb.vlaanderen.be/aiv/organisatieregister-ond-aip",
+              "Naam": null,
+              "Referte": "6edca426-7f1f-4b6b-8495-31eb48a38abf",
+              "OrganisatieEenheid": null,
+              "Hoedanigheid": null,
+              "Gebruiker": null
+            }
+          },
+          "Annotaties": null
+        },
+        "Antwoorden": {
+          "Antwoord": {
+            "Referte": "6edca426-7f1f-4b6b-8495-31eb48a38abf",
+            "Inhoud": {
+              "Onderneming": {
+                "Rechtstoestanden": [
+                  {
+                    "InstrumenterendeOverheid": "202239951",
+                    "DatumBegin": "1930-07-19",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": null,
+                      "Value": "000"
+                    },
+                    "Omschrijving": {
+                      "Oorsprong": null,
+                      "TaalCode": null,
+                      "Value": "Normale toestand"
+                    }
+                  }
+                ],
+                "Vestigingen": [
+                  {
+                    "Vestigingsnummer": "2701113171",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": {
+                      "MaatschappelijkeNamen": null,
+                      "AfgekorteNamen": null,
+                      "CommercieleNamen": [
+                        {
+                          "Naam": "sas augustus",
+                          "Taalcode": "nl",
+                          "DatumBegin": "2019-08-01",
+                          "DatumEinde": null
+                        }
+                      ]
+                    },
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Zonnebloemlaan"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Oostende"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "2019-08-01",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "3128",
+                          "Naam": null
+                        },
+                        "Huisnummer": "45",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "35013",
+                          "PostCode": "8400",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "2019-08-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Vestigingsnummer": "2701112775",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": {
+                      "MaatschappelijkeNamen": null,
+                      "AfgekorteNamen": null,
+                      "CommercieleNamen": [
+                        {
+                          "Naam": "EV Sas",
+                          "Taalcode": "nl",
+                          "DatumBegin": "2019-07-01",
+                          "DatumEinde": null
+                        }
+                      ]
+                    },
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Canadastraat"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Brugge"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "2019-07-01",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "7017",
+                          "Naam": null
+                        },
+                        "Huisnummer": "520",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "31005",
+                          "PostCode": "8200",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "2019-07-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Vestigingsnummer": "2701112676",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": null,
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Karel de Wolfstraat"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Brugge"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "2019-07-01",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "7051",
+                          "Naam": null
+                        },
+                        "Huisnummer": "78",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "31005",
+                          "PostCode": "8200",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "2019-07-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Vestigingsnummer": "2701112874",
+                    "StatusKBO": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "AC"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Actief"
+                      }
+                    },
+                    "MaatschappelijkeZetel": null,
+                    "Namen": {
+                      "MaatschappelijkeNamen": null,
+                      "AfgekorteNamen": null,
+                      "CommercieleNamen": [
+                        {
+                          "Naam": "EV Sas juli",
+                          "Taalcode": "nl",
+                          "DatumBegin": "2019-07-08",
+                          "DatumEinde": null
+                        }
+                      ]
+                    },
+                    "Adressen": [
+                      {
+                        "Type": {
+                          "Code": {
+                            "Beschrijving": null,
+                            "Value": "002"
+                          },
+                          "Omschrijving": {
+                            "Oorsprong": null,
+                            "TaalCode": null,
+                            "Value": "Vestigingseenheid adres"
+                          }
+                        },
+                        "Descripties": [
+                          {
+                            "Adres": {
+                              "Land": {
+                                "NISCode": "150",
+                                "ISOCode": null,
+                                "Naam": "België"
+                              },
+                              "Straat": {
+                                "Code": null,
+                                "Naam": "Volksplein(Kor)"
+                              },
+                              "Huisnummer": null,
+                              "Busnummer": null,
+                              "Gemeente": {
+                                "NISCode": null,
+                                "PostCode": null,
+                                "Naam": "Kortrijk"
+                              },
+                              "Staat": null
+                            },
+                            "Contact": null,
+                            "Taalcode": null,
+                            "Aanvulling": null
+                          }
+                        ],
+                        "Doorhalingen": null,
+                        "DatumBegin": "2019-07-08",
+                        "DatumEinde": null,
+                        "Land": {
+                          "NISCode": "150",
+                          "ISOCode": "BE",
+                          "Naam": "BELGIE"
+                        },
+                        "Straat": {
+                          "Code": "2235",
+                          "Naam": null
+                        },
+                        "Huisnummer": "9",
+                        "Busnummer": null,
+                        "Gemeente": {
+                          "NISCode": "34022",
+                          "PostCode": "8500",
+                          "Naam": null
+                        },
+                        "Staat": null
+                      }
+                    ],
+                    "Afsluiting": null,
+                    "Stopzetting": null,
+                    "DatumBegin": "2019-07-08",
+                    "DatumEinde": null
+                  }
+                ],
+                "Bankrekeningen": [
+                  {
+                    "Rekeningnummer": null,
+                    "Doel": "003",
+                    "IBAN": null,
+                    "BIC": "ABOCCNBJ220",
+                    "NietSEPAnummer": "CH7897654654564465",
+                    "DatumBegin": "2016-07-31",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Rekeningnummer": "789 5821632 01",
+                    "Doel": "010",
+                    "IBAN": "BE43789582163201",
+                    "BIC": "GKCCBEBB",
+                    "NietSEPAnummer": null,
+                    "DatumBegin": "2012-10-10",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Rekeningnummer": "789 5719324 28",
+                    "Doel": "010",
+                    "IBAN": "BE37789571932428",
+                    "BIC": "GKCCBEBB",
+                    "NietSEPAnummer": null,
+                    "DatumBegin": "2012-11-02",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Rekeningnummer": "000 0000001 01",
+                    "Doel": "010",
+                    "IBAN": "BE43000000000101",
+                    "BIC": "BPOTBEB1",
+                    "NietSEPAnummer": null,
+                    "DatumBegin": "2012-11-03",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Rekeningnummer": "789 5719325 29",
+                    "Doel": "010",
+                    "IBAN": "BE26789571932529",
+                    "BIC": "GKCCBEBB",
+                    "NietSEPAnummer": null,
+                    "DatumBegin": "2012-11-14",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Rekeningnummer": "405 0504611 48",
+                    "Doel": "010",
+                    "IBAN": "BE11405050461148",
+                    "BIC": "KREDBEBB",
+                    "NietSEPAnummer": null,
+                    "DatumBegin": "2013-11-01",
+                    "DatumEinde": null
+                  }
+                ],
+                "Functies": [
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2018-10-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-07-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-07-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-17",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2012-10-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2011-04-13",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2009-04-08",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2007-10-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2007-04-11",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2007-01-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2006-12-23",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2006-12-23",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2004-04-02",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2004-03-20",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2004-03-20",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2003-03-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "1994-12-23",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "1994-12-23",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10002"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "1994-12-23",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10003"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Vaste vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2019-03-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10006"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Zaakvoerder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-05-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10006"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Zaakvoerder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2014-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10007"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Gedelegeerd bestuurder"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2003-03-18",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10031"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Wettelijk vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10031"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Wettelijk vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10031"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Wettelijk vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10031"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Wettelijk vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10031"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Wettelijk vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10031"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Wettelijk vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10031"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Wettelijk vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10031"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Wettelijk vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10031"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Wettelijk vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10031"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Wettelijk vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10031"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Wettelijk vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10031"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Wettelijk vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10031"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Wettelijk vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10031"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Wettelijk vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10031"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Wettelijk vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "10031"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Wettelijk vertegenwoordiger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2017-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "11000"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Notaris-plaatsvervanger"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2014-04-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": null,
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "30000"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Werkende vennoot"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2018-03-06",
+                    "DatumEinde": null
+                  },
+                  {
+                    "FunctiehouderVan": "0201309939",
+                    "AanduidingPersoonOnderneming": null,
+                    "Vrijstelling": {
+                      "AanduidingVrijstelling": {
+                        "Beschrijving": null,
+                        "Value": 0
+                      },
+                      "GeenKMO": null,
+                      "Code": null,
+                      "Omschrijving": null
+                    },
+                    "EindeFunctie": null,
+                    "AardFunctie": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "20045"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Beenhouwer-spekslager"
+                      }
+                    },
+                    "Persoon": null,
+                    "Onderneming": null,
+                    "DatumBegin": "2018-03-06",
+                    "DatumEinde": null
+                  }
+                ],
+                "Activiteiten": [
+                  {
+                    "Nace": {
+                      "Versie": "2008",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "01140"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Teelt van suikerriet"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Hulpactiviteit",
+                        "Value": "H"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "001",
+                    "DatumBegin": "2012-11-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Nace": {
+                      "Versie": "2008",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "26300"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Vervaardiging van communicatieapparatuur"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Nevenactiviteit",
+                        "Value": "S"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "001",
+                    "DatumBegin": "2008-01-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Nace": {
+                      "Versie": "2003",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "32202"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Vervaardiging van zendtoestellen voor radiotelefonie en apparatuur voor lijntelefonie of lijntelegrafie"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Nevenactiviteit",
+                        "Value": "S"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "001",
+                    "DatumBegin": "1971-01-01",
+                    "DatumEinde": "2007-12-31"
+                  },
+                  {
+                    "Nace": {
+                      "Versie": "2008",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "41101"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Ontwikkeling van residentiële bouwprojecten"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Hoofdactiviteit",
+                        "Value": "P"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "002",
+                    "DatumBegin": "2008-01-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Nace": {
+                      "Versie": "2008",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "61200"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Draadloze telecommunicatie"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Hoofdactiviteit",
+                        "Value": "P"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": null,
+                    "DatumBegin": "2008-01-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Nace": {
+                      "Versie": "2008",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "61100"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Draadgebonden telecommunicatie"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Hoofdactiviteit",
+                        "Value": "P"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "006",
+                    "DatumBegin": "2008-01-01",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Nace": {
+                      "Versie": "2003",
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "64200"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Telecommunicatie"
+                      }
+                    },
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": "Hoofdactiviteit",
+                        "Value": "P"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Groep": "006",
+                    "DatumBegin": "2002-07-01",
+                    "DatumEinde": "2007-12-31"
+                  }
+                ],
+                "GerelateerdeOndernemingen": [
+                  {
+                    "Relatie": {
+                      "IsDochter": 0,
+                      "IsDochterSpecified": true,
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "006"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "onbekende relatie"
+                      }
+                    },
+                    "Ondernemingsnummer": "0460078819",
+                    "EindeRelatie": null,
+                    "DatumBegin": "2001-12-18",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Relatie": {
+                      "IsDochter": 1,
+                      "IsDochterSpecified": true,
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "004"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Is vervangen door (enkel bij dubbels)"
+                      }
+                    },
+                    "Ondernemingsnummer": "0206694528",
+                    "EindeRelatie": null,
+                    "DatumBegin": "2019-03-29",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Relatie": {
+                      "IsDochter": 1,
+                      "IsDochterSpecified": true,
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "003"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Is opgeslorpt door"
+                      }
+                    },
+                    "Ondernemingsnummer": "0422674035",
+                    "EindeRelatie": null,
+                    "DatumBegin": "2012-04-18",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Relatie": {
+                      "IsDochter": 1,
+                      "IsDochterSpecified": true,
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "003"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Is opgeslorpt door"
+                      }
+                    },
+                    "Ondernemingsnummer": "0442257642",
+                    "EindeRelatie": null,
+                    "DatumBegin": "2010-01-04",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Relatie": {
+                      "IsDochter": 1,
+                      "IsDochterSpecified": true,
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "003"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Is opgeslorpt door"
+                      }
+                    },
+                    "Ondernemingsnummer": "0453918428",
+                    "EindeRelatie": null,
+                    "DatumBegin": "2010-01-04",
+                    "DatumEinde": null
+                  },
+                  {
+                    "Relatie": {
+                      "IsDochter": 1,
+                      "IsDochterSpecified": true,
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "006"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "onbekende relatie"
+                      }
+                    },
+                    "Ondernemingsnummer": "0460078819",
+                    "EindeRelatie": null,
+                    "DatumBegin": "2001-12-18",
+                    "DatumEinde": null
+                  }
+                ],
+                "Hoedanigheden": [
+                  {
+                    "InstrumenterendeAdministratie": "RSZ001",
+                    "Inschrijving": {
+                      "Datum": "2003-01-20"
+                    },
+                    "Duurtijd": "0.0",
+                    "Fase": {
+                      "Code": {
+                        "Beschrijving": "hoedanigheid/Toelating verworven",
+                        "Value": "002"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Beeindiging": null,
+                    "DatumBegin": "1988-12-31",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": "Werkgever RSZ",
+                      "Value": "00070"
+                    },
+                    "Omschrijving": null
+                  },
+                  {
+                    "InstrumenterendeAdministratie": "OLK001",
+                    "Inschrijving": {
+                      "Datum": "2019-06-27"
+                    },
+                    "Duurtijd": "0.0",
+                    "Fase": {
+                      "Code": {
+                        "Beschrijving": "hoedanigheid/Toelating verworven",
+                        "Value": "002"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Beeindiging": null,
+                    "DatumBegin": "2018-03-06",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": "Sectorale beroepsbekwaamheid van brood- en banketbakker",
+                      "Value": "50101"
+                    },
+                    "Omschrijving": null
+                  },
+                  {
+                    "InstrumenterendeAdministratie": "OLK001",
+                    "Inschrijving": {
+                      "Datum": "2019-06-27"
+                    },
+                    "Duurtijd": "0.0",
+                    "Fase": {
+                      "Code": {
+                        "Beschrijving": "hoedanigheid/Toelating verworven",
+                        "Value": "002"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Beeindiging": null,
+                    "DatumBegin": "2018-03-06",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": "Beroepsbekwaamheid slager-groothandelaar",
+                      "Value": "50145"
+                    },
+                    "Omschrijving": null
+                  },
+                  {
+                    "InstrumenterendeAdministratie": "OLK001",
+                    "Inschrijving": {
+                      "Datum": "2019-06-28"
+                    },
+                    "Duurtijd": "0.0",
+                    "Fase": {
+                      "Code": {
+                        "Beschrijving": "hoedanigheid/Toelating verworven",
+                        "Value": "002"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Beeindiging": null,
+                    "DatumBegin": "2019-06-28",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": "Basiskennis van het bedrijfsbeheer",
+                      "Value": "50519"
+                    },
+                    "Omschrijving": null
+                  },
+                  {
+                    "InstrumenterendeAdministratie": "VAL001",
+                    "Inschrijving": {
+                      "Datum": "2014-06-24"
+                    },
+                    "Duurtijd": "0.0",
+                    "Fase": {
+                      "Code": {
+                        "Beschrijving": "hoedanigheid/Toelating verworven",
+                        "Value": "002"
+                      },
+                      "Omschrijving": null
+                    },
+                    "Beeindiging": null,
+                    "DatumBegin": "2012-03-02",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": "Beroepsbekwaamheid algemeen aannemer in de bouwsector",
+                      "Value": "50122"
+                    },
+                    "Omschrijving": null
+                  }
+                ],
+                "ExterneIdentificaties": null,
+                "Bijhuis": null,
+                "AmbtshalveDoorhalingen": null,
+                "StatusKBO": {
+                  "Code": {
+                    "Beschrijving": null,
+                    "Value": "AC"
+                  },
+                  "Omschrijving": {
+                    "Oorsprong": null,
+                    "TaalCode": null,
+                    "Value": "Actief"
+                  }
+                },
+                "SoortOnderneming": {
+                  "Code": {
+                    "Beschrijving": "Rechtspersoon",
+                    "Value": "2"
+                  },
+                  "Omschrijving": null
+                },
+                "MaatschappelijkeZetel": null,
+                "Namen": {
+                  "MaatschappelijkeNamen": [
+                    {
+                      "Naam": "BELGACOM",
+                      "Taalcode": "nl",
+                      "DatumBegin": "1991-03-21",
+                      "DatumEinde": null
+                    },
+                    {
+                      "Naam": "Belgacom",
+                      "Taalcode": "xx",
+                      "DatumBegin": "2012-11-01",
+                      "DatumEinde": null
+                    }
+                  ],
+                  "AfgekorteNamen": [
+                    {
+                      "Naam": "bcom",
+                      "Taalcode": "xx",
+                      "DatumBegin": "2012-11-01",
+                      "DatumEinde": null
+                    },
+                    {
+                      "Naam": "name en",
+                      "Taalcode": "en",
+                      "DatumBegin": "2013-01-01",
+                      "DatumEinde": null
+                    }
+                  ],
+                  "CommercieleNamen": null
+                },
+                "Adressen": [
+                  {
+                    "Type": {
+                      "Code": {
+                        "Beschrijving": null,
+                        "Value": "001"
+                      },
+                      "Omschrijving": {
+                        "Oorsprong": null,
+                        "TaalCode": null,
+                        "Value": "Zetel"
+                      }
+                    },
+                    "Descripties": [
+                      {
+                        "Adres": {
+                          "Land": {
+                            "NISCode": "150",
+                            "ISOCode": null,
+                            "Naam": "België"
+                          },
+                          "Straat": {
+                            "Code": null,
+                            "Naam": "Koning AlbertII laan"
+                          },
+                          "Huisnummer": null,
+                          "Busnummer": null,
+                          "Gemeente": {
+                            "NISCode": null,
+                            "PostCode": null,
+                            "Naam": "Schaarbeek"
+                          },
+                          "Staat": null
+                        },
+                        "Contact": null,
+                        "Taalcode": null,
+                        "Aanvulling": null
+                      }
+                    ],
+                    "Doorhalingen": null,
+                    "DatumBegin": "2012-11-02",
+                    "DatumEinde": null,
+                    "Land": {
+                      "NISCode": "150",
+                      "ISOCode": "BE",
+                      "Naam": "BELGIE"
+                    },
+                    "Straat": {
+                      "Code": "2177",
+                      "Naam": null
+                    },
+                    "Huisnummer": "26",
+                    "Busnummer": null,
+                    "Gemeente": {
+                      "NISCode": "21015",
+                      "PostCode": "1030",
+                      "Naam": null
+                    },
+                    "Staat": null
+                  }
+                ],
+                "Start": {
+                  "Datum": "1930-07-19"
+                },
+                "Inschrijving": {
+                  "Datum": "2003-01-18"
+                },
+                "Duurtijd": null,
+                "Afsluiting": null,
+                "Stopzetting": null,
+                "Rechtsvormen": [
+                  {
+                    "Afkorting": "NV PR",
+                    "DatumBegin": "1994-12-16",
+                    "DatumEinde": null,
+                    "Code": {
+                      "Beschrijving": null,
+                      "Value": "114"
+                    },
+                    "Omschrijving": {
+                      "Oorsprong": null,
+                      "TaalCode": null,
+                      "Value": "Naamloze vennootschap van publiek recht"
+                    }
+                  }
+                ],
+                "Ondernemingsnummer": "0201309939",
+                "AuthentiekBron": {
+                  "Code": {
+                    "Beschrijving": null,
+                    "Value": "03"
+                  },
+                  "Omschrijving": {
+                    "Oorsprong": null,
+                    "TaalCode": null,
+                    "Value": "KBO"
+                  }
+                },
+                "OndernemingOfVestiging": {
+                  "Code": {
+                    "Beschrijving": "Onderneming",
+                    "Value": "1"
+                  }
+                }
+              }
+            },
+            "Uitzonderingen": null
+          }
+        },
+        "Uitzonderingen": null
+      }
+    }
+  }
+}

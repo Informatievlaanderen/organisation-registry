@@ -58,6 +58,24 @@ namespace OrganisationRegistry.UnitTests.Magda
         }
 
         [Fact]
+        public async Task WhenBankAccountOnlyHasNonSepaNr()
+        {
+            var kboNr = "0202239951";
+            var magdaResponse = await MagdaJsonLoader.Load(kboNr);
+            var sut = SetUpKboOrganisationRetriever(kboNr, magdaResponse);
+
+            var organisation = await sut.RetrieveOrganisation(new ClaimsPrincipal(), new KboNumber(kboNr));
+
+            organisation.Should().NotBeNull();
+
+            var bankAccount = organisation.BankAccounts[0];
+            bankAccount.Bic.Should().Be("ABOCCNBJ220");
+            bankAccount.AccountNumber.Should().Be("CH7897654654564465");
+            bankAccount.ValidFrom.Should().Be(new DateTime(2016, 07, 31));
+            bankAccount.ValidTo.Should().BeNull();
+        }
+
+        [Fact]
         public async Task WithoutShortName()
         {
             var kboNr = "0404055577";
