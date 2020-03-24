@@ -27,12 +27,12 @@ namespace OrganisationRegistry.Api.OrganisationClassification
 
             using (var context = _contextFactory().Value)
             {
-                var keys =
+                var organisations =
                     context.OrganisationDetail
                         .Where(item => item.KboNumber == dotFormat || item.KboNumber == digitsOnly)
                         .ToList();
 
-                return keys.Any(item => period.OverlapsWith(
+                return organisations.Any(item => period.OverlapsWith(
                     new Period(
                         new ValidFrom(item.ValidFrom),
                         new ValidTo(item.ValidTo))));

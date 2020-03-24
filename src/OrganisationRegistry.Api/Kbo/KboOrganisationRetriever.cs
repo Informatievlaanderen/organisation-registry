@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace OrganisationRegistry.Api.Kbo
 {
+    using System;
     using System.Security.Claims;
     using Configuration;
     using Microsoft.AspNetCore.Hosting;
@@ -23,7 +24,8 @@ namespace OrganisationRegistry.Api.Kbo
             _geefOndernemingQuery = geefOndernemingQuery;
         }
 
-        public async Task<IMagdaOrganisationResponse> RetrieveOrganisation(ClaimsPrincipal user, KboNumber kboNumber)
+        public async Task<Result<IMagdaOrganisationResponse>> RetrieveOrganisation(ClaimsPrincipal user,
+            KboNumber kboNumber)
         {
             var kboOrganisation = await _geefOndernemingQuery.Execute(user, kboNumber.ToDigitsOnly());
 
@@ -31,10 +33,15 @@ namespace OrganisationRegistry.Api.Kbo
                 return null;
 
             var response = kboOrganisation.Body?.GeefOndernemingResponse?.Repliek?.Antwoorden?.Antwoord;
-            if (response == null || response.Uitzonderingen != null && response.Uitzonderingen.Any())
-                return null;
+            if (response == null)
+                throw new Exception("Geen antwoord van kbo gekregen.");
 
-            return new MagdaOrganisationResponse(response.Inhoud?.Onderneming, _dateTimeProvider);
+            if (response.Uitzonderingen != null && response.Uitzonderingen.Any())
+                return Result<IMagdaOrganisationResponse>.Fail(
+                    response.Uitzonderingen.Select(type => type.Diagnose).ToArray());
+
+            return Result<IMagdaOrganisationResponse>.Success(
+                new MagdaOrganisationResponse(response.Inhoud?.Onderneming, _dateTimeProvider));
         }
     }
 }

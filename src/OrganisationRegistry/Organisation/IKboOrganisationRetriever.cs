@@ -5,6 +5,6 @@ namespace OrganisationRegistry.Organisation
 
     public interface IKboOrganisationRetriever
     {
-        Task<IMagdaOrganisationResponse> RetrieveOrganisation(ClaimsPrincipal user, KboNumber kboNumber);
+        Task<Result<IMagdaOrganisationResponse>> RetrieveOrganisation(ClaimsPrincipal user, KboNumber kboNumber);
     }
 }
