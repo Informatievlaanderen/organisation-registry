@@ -72,7 +72,7 @@ namespace OrganisationRegistry.Organisation
                 _kboOrganisationRetriever.RetrieveOrganisation(message.User, message.KboNumber).GetAwaiter().GetResult();
 
             if (kboOrganisationResult.HasErrors)
-                throw new KboOrganisationNotFoundException();
+                throw new KboOrganisationNotFoundException(kboOrganisationResult.ErrorMessages);
 
             var kboOrganisation = kboOrganisationResult.Value;
 
@@ -125,7 +125,7 @@ namespace OrganisationRegistry.Organisation
                 _kboOrganisationRetriever.RetrieveOrganisation(message.User, message.KboNumber).GetAwaiter().GetResult();
 
             if (kboOrganisationResult.HasErrors)
-                throw new KboOrganisationNotFoundException();
+                throw new KboOrganisationNotFoundException(kboOrganisationResult.ErrorMessages);
 
             var kboOrganisation = kboOrganisationResult.Value;
 
@@ -168,7 +168,7 @@ namespace OrganisationRegistry.Organisation
                 _kboOrganisationRetriever.RetrieveOrganisation(message.User, organisation.KboNumber).GetAwaiter().GetResult();
 
             if (kboOrganisationResult.HasErrors)
-                throw new KboOrganisationNotFoundException();
+                throw new KboOrganisationNotFoundException(kboOrganisationResult.ErrorMessages);
 
             var kboOrganisation = kboOrganisationResult.Value;
 
