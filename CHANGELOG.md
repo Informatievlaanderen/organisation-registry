@@ -1,3 +1,10 @@
+# [1.31.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.30.1...v1.31.0) (2020-03-25)
+
+
+### Features
+
+* refactor and add organisation tests ([d38a92d](https://github.com/informatievlaanderen/organisation-registry/commit/d38a92d5f45442c9461d361b1615bc1483388c62))
+
 ## [1.30.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.30.0...v1.30.1) (2020-03-24)
 
 
