@@ -96,7 +96,6 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var kboOrganisationBankAccountAdded = scenario.Create<KboOrganisationBankAccountAdded>();
             var kboOrganisationBankAccountAdded2 = scenario.Create<KboOrganisationBankAccountAdded>();
 
-
             Handle(
                 initialiseProjection,
                 organisationCreated,
