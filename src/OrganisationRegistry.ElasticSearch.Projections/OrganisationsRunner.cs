@@ -15,7 +15,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
         private static readonly string ProjectionFullName = typeof(Organisation).FullName;
         private new const string ProjectionName = nameof(Organisation);
 
-        private new static readonly Type[] EventHandlers =
+        public new static readonly Type[] EventHandlers =
         {
             typeof(MemoryCachesMaintainer),
             typeof(Organisation),

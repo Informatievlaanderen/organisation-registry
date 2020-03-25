@@ -1,7 +1,5 @@
 namespace OrganisationRegistry.ElasticSearch.Tests
 {
-    using Bodies;
-    using Body.Events;
     using FluentAssertions;
     using Infrastructure.Events;
     using Microsoft.Extensions.Logging;
@@ -9,24 +7,54 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using Scenario;
     using Xunit;
     using System;
+    using Common;
+    using Infrastructure.Bus;
+    using Infrastructure.Config;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Organisation.Events;
     using Organisations;
+    using Projections;
     using Projections.Organisations;
+    using SqlServer.Infrastructure;
 
     [Collection(nameof(ElasticSearchFixture))]
     public class OrganisationHandlerTests
     {
         private readonly ElasticSearchFixture _fixture;
-        private readonly Organisation _handler;
+        private readonly InProcessBus _inProcessBus;
 
         public OrganisationHandlerTests(ElasticSearchFixture fixture)
         {
             _fixture = fixture;
-            _handler = new Organisation(
+
+            var context = new OrganisationRegistryContext(
+                new DbContextOptionsBuilder<OrganisationRegistryContext>()
+                    .UseInMemoryDatabase(
+                        $"org-es-test-{Guid.NewGuid()}",
+                        builder => { }).Options);
+
+            var organisationHandler = new Organisation(
                 logger: _fixture.LoggerFactory.CreateLogger<Organisation>(),
                 elastic: _fixture.Elastic,
                 elasticSearchOptions: _fixture.ElasticSearchOptions);
+
+            var organisationBankAccountHandler = new OrganisationBankAccount(
+                logger: _fixture.LoggerFactory.CreateLogger<OrganisationBankAccount>(),
+                elastic: _fixture.Elastic);
+
+            var serviceProvider = new ServiceCollection()
+                .AddSingleton(organisationHandler)
+                .AddSingleton(organisationBankAccountHandler)
+                .AddSingleton(new MemoryCachesMaintainer(new MemoryCaches(context)))
+                .BuildServiceProvider();
+
+            _inProcessBus = new InProcessBus(new NullLogger<InProcessBus>());
+            var registrar = new BusRegistrar(new NullLogger<BusRegistrar>(), _inProcessBus, () => serviceProvider);
+            registrar.RegisterEventHandlers(OrganisationsRunner.EventHandlers);
         }
+
 
         [EnvVarIgnoreFact]
         public void InitializeProjection_CreatesIndex()
@@ -58,11 +86,85 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             organisation.Source.Description.Should().Be(organisationCreated.Description);
         }
 
+        [EnvVarIgnoreFact]
+        public void OrganisationKboBankAccountAdded_AddsBankAccount()
+        {
+            var scenario = new BodyScenario(Guid.NewGuid());
+
+            var initialiseProjection = scenario.Create<InitialiseProjection>();
+            var organisationCreated = scenario.Create<OrganisationCreated>();
+            var kboOrganisationBankAccountAdded = scenario.Create<KboOrganisationBankAccountAdded>();
+            var kboOrganisationBankAccountAdded2 = scenario.Create<KboOrganisationBankAccountAdded>();
+
+
+            Handle(
+                initialiseProjection,
+                organisationCreated,
+                kboOrganisationBankAccountAdded,
+                kboOrganisationBankAccountAdded2);
+
+            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(kboOrganisationBankAccountAdded.OrganisationId);
+
+            organisation.Source.BankAccounts.Should().BeEquivalentTo(
+                new OrganisationDocument.OrganisationBankAccount(
+                    kboOrganisationBankAccountAdded.OrganisationBankAccountId,
+                    kboOrganisationBankAccountAdded.BankAccountNumber,
+                    kboOrganisationBankAccountAdded.IsIban,
+                    kboOrganisationBankAccountAdded.Bic,
+                    kboOrganisationBankAccountAdded.IsBic,
+                    new Period(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo)),
+                new OrganisationDocument.OrganisationBankAccount(
+                    kboOrganisationBankAccountAdded2.OrganisationBankAccountId,
+                    kboOrganisationBankAccountAdded2.BankAccountNumber,
+                    kboOrganisationBankAccountAdded2.IsIban,
+                    kboOrganisationBankAccountAdded2.Bic,
+                    kboOrganisationBankAccountAdded2.IsBic,
+                    new Period(kboOrganisationBankAccountAdded2.ValidFrom, kboOrganisationBankAccountAdded2.ValidTo)));
+        }
+
+        [EnvVarIgnoreFact]
+        public void OrganisationKboBankAccountRemoved_RemovesBankAccount()
+        {
+            var scenario = new BodyScenario(Guid.NewGuid());
+
+            var initialiseProjection = scenario.Create<InitialiseProjection>();
+            var organisationCreated = scenario.Create<OrganisationCreated>();
+            var kboOrganisationBankAccountAdded = scenario.Create<KboOrganisationBankAccountAdded>();
+            var kboOrganisationBankAccountToRemoveAdded = scenario.Create<KboOrganisationBankAccountAdded>();
+            var kboOrganisationBankAccountRemoved = new KboOrganisationBankAccountRemoved(
+                kboOrganisationBankAccountToRemoveAdded.OrganisationId,
+                kboOrganisationBankAccountToRemoveAdded.OrganisationBankAccountId,
+                kboOrganisationBankAccountToRemoveAdded.BankAccountNumber,
+                kboOrganisationBankAccountToRemoveAdded.IsIban,
+                kboOrganisationBankAccountToRemoveAdded.Bic,
+                kboOrganisationBankAccountToRemoveAdded.IsBic,
+                kboOrganisationBankAccountToRemoveAdded.ValidFrom,
+                kboOrganisationBankAccountToRemoveAdded.ValidTo);
+
+            Handle(
+                initialiseProjection,
+                organisationCreated,
+                kboOrganisationBankAccountAdded,
+                kboOrganisationBankAccountToRemoveAdded,
+                kboOrganisationBankAccountRemoved);
+
+            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(kboOrganisationBankAccountAdded.OrganisationId);
+
+            organisation.Source.BankAccounts.Should().BeEquivalentTo(
+                new OrganisationDocument.OrganisationBankAccount(
+                    kboOrganisationBankAccountAdded.OrganisationBankAccountId,
+                    kboOrganisationBankAccountAdded.BankAccountNumber,
+                    kboOrganisationBankAccountAdded.IsIban,
+                    kboOrganisationBankAccountAdded.Bic,
+                    kboOrganisationBankAccountAdded.IsBic,
+                    new Period(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo)));
+        }
+
         private void Handle(params IEvent[] envelopes)
         {
             foreach (var envelope in envelopes)
             {
-                _handler.Handle(null, null, (dynamic)envelope.ToEnvelope());
+                _inProcessBus.Publish(null, null, (dynamic)envelope.ToEnvelope());
             }
         }
     }
