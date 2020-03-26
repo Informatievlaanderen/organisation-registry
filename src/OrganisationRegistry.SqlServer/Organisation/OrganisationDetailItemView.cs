@@ -31,7 +31,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public string? KboNumber { get; set; }
 
         public string Name { get; set; }
-        public string ShortName { get; set; }
+        public string? ShortName { get; set; }
 
         public string? ParentOrganisation { get; set; }
         public Guid? ParentOrganisationId { get; set; }
