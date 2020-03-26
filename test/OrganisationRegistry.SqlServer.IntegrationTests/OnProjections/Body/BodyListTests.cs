@@ -22,26 +22,13 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
 
             var body1Registered = new BodyRegisteredTestDataBuilder(sequentialBodyNumberGenerator).Build();
             var body2Registered = new BodyRegisteredTestDataBuilder(sequentialBodyNumberGenerator).Build();
+
             HandleEvents(
                 body1Registered,
                 body2Registered);
 
             AssertBodyListItem(body1Registered);
             AssertBodyListItem(body2Registered);
-        }
-
-        private void AssertBodyListItem(BodyRegistered bodyRegistered)
-        {
-            var bodyListItem = Context.BodyList.SingleOrDefault(item => item.Id == bodyRegistered.BodyId);
-
-            bodyListItem.Should().NotBeNull();
-
-            bodyListItem.Id.Should().Be(bodyRegistered.BodyId);
-            bodyListItem.Name.Should().Be(bodyRegistered.Name);
-            bodyListItem.ShortName.Should().Be(bodyRegistered.ShortName);
-
-            bodyListItem.Organisation.Should().BeNullOrEmpty();
-            bodyListItem.OrganisationId.Should().BeNull();
         }
 
         [Fact]
@@ -66,6 +53,20 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
                 bodyAssignedToOrganisation);
 
             AssertBodyListItem(bodyRegistered.Build(), bodyAssignedToOrganisation);
+        }
+
+        private void AssertBodyListItem(BodyRegistered bodyRegistered)
+        {
+            var bodyListItem = Context.BodyList.SingleOrDefault(item => item.Id == bodyRegistered.BodyId);
+
+            bodyListItem.Should().NotBeNull();
+
+            bodyListItem.Id.Should().Be(bodyRegistered.BodyId);
+            bodyListItem.Name.Should().Be(bodyRegistered.Name);
+            bodyListItem.ShortName.Should().Be(bodyRegistered.ShortName);
+
+            bodyListItem.Organisation.Should().BeNullOrEmpty();
+            bodyListItem.OrganisationId.Should().BeNull();
         }
 
         private void AssertBodyListItem(BodyRegistered bodyRegistered, BodyAssignedToOrganisation bodyAssignedToOrganisation)

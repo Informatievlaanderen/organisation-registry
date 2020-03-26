@@ -22,7 +22,7 @@
         public string Name { get; set; }
         public string ShortName { get; set; }
 
-        public string Organisation { get; set; }
+        public string? Organisation { get; set; }
         public Guid? OrganisationId { get; set; }
 
         public List<BodyLifecyclePhaseValidity> BodyLifecyclePhaseValidities { get; set; } = new List<BodyLifecyclePhaseValidity>();

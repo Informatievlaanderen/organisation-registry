@@ -28,12 +28,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public string OvoNumber { get; set; }
 
-        public string KboNumber { get; set; }
+        public string? KboNumber { get; set; }
 
         public string Name { get; set; }
         public string ShortName { get; set; }
 
-        public string ParentOrganisation { get; set; }
+        public string? ParentOrganisation { get; set; }
         public Guid? ParentOrganisationId { get; set; }
 
         /// <summary>
@@ -47,10 +47,10 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public string Description { get; set; }
 
         public Guid? MainBuildingId { get; set; }
-        public string MainBuildingName { get; set; }
+        public string? MainBuildingName { get; set; }
 
         public Guid? MainLocationId { get; set; }
-        public string MainLocationName { get; set; }
+        public string? MainLocationName { get; set; }
 
         public string PurposeIds { get; set; }
         public string PurposeNames { get; set; }
@@ -152,8 +152,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ShortName = message.Body.ShortName,
                 OvoNumber = message.Body.OvoNumber,
                 Description = message.Body.Description,
-                PurposeIds = ToSeparatedListExtension.ToSeparatedList(message.Body.Purposes, "|", x => x.Id.ToString()),
-                PurposeNames = ToSeparatedListExtension.ToSeparatedList(message.Body.Purposes.OrderBy(x => x.Name), "|", x => x.Name),
+                PurposeIds = message.Body.Purposes.ToSeparatedList("|", x => x.Id.ToString()),
+                PurposeNames = message.Body.Purposes.OrderBy(x => x.Name).ToSeparatedList("|", x => x.Name),
                 ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites,
                 ValidFrom = message.Body.ValidFrom,
                 ValidTo = message.Body.ValidTo
@@ -175,8 +175,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ShortName = message.Body.ShortName,
                 OvoNumber = message.Body.OvoNumber,
                 Description = message.Body.Description,
-                PurposeIds = ToSeparatedListExtension.ToSeparatedList(message.Body.Purposes, "|", x => x.Id.ToString()),
-                PurposeNames = ToSeparatedListExtension.ToSeparatedList(message.Body.Purposes.OrderBy(x => x.Name), "|", x => x.Name),
+                PurposeIds = message.Body.Purposes.ToSeparatedList("|", x => x.Id.ToString()),
+                PurposeNames = message.Body.Purposes.OrderBy(x => x.Name).ToSeparatedList("|", x => x.Name),
                 ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites,
                 ValidFrom = message.Body.ValidFrom,
                 ValidTo = message.Body.ValidTo
@@ -214,8 +214,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 organisationListItem.Description = message.Body.Description;
                 organisationListItem.ValidFrom = message.Body.ValidFrom;
                 organisationListItem.ValidTo = message.Body.ValidTo;
-                organisationListItem.PurposeIds = ToSeparatedListExtension.ToSeparatedList(message.Body.Purposes, "|", x => x.Id.ToString());
-                organisationListItem.PurposeNames = ToSeparatedListExtension.ToSeparatedList(message.Body.Purposes.OrderBy(x => x.Name), "|", x => x.Name);
+                organisationListItem.PurposeIds = message.Body.Purposes.ToSeparatedList("|", x => x.Id.ToString());
+                organisationListItem.PurposeNames = message.Body.Purposes.OrderBy(x => x.Name).ToSeparatedList("|", x => x.Name);
                 organisationListItem.ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites;
 
                 foreach (var child in context.OrganisationDetail.Where(item => item.ParentOrganisationId == message.Body.OrganisationId))
@@ -257,7 +257,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     currentNames.Remove(previousPurposeName);
                     currentNames.Add(message.Body.Name);
 
-                    organisationListItem.PurposeNames = ToSeparatedListExtension.ToSeparatedList(currentNames.OrderBy(x => x), "|", x => x);
+                    organisationListItem.PurposeNames = currentNames.OrderBy(x => x).ToSeparatedList("|", x => x);
                 }
 
                 context.SaveChanges();

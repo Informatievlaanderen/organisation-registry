@@ -30,13 +30,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public string CapacityName { get; set; }
 
         public Guid? PersonId { get; set; }
-        public string PersonName { get; set; }
+        public string? PersonName { get; set; }
 
         public Guid? FunctionId { get; set; }
-        public string FunctionName { get; set; }
+        public string? FunctionName { get; set; }
 
         public Guid? LocationId { get; set; }
-        public string LocationName { get; set; }
+        public string? LocationName { get; set; }
 
         public string ContactsJson { get; set; }
 

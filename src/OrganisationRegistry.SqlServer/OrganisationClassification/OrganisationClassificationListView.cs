@@ -20,7 +20,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
 
         public int Order { get; set; }
 
-        public string ExternalKey { get; set; }
+        public string? ExternalKey { get; set; }
 
         public bool Active { get; set; }
 

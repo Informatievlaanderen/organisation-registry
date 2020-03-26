@@ -16,13 +16,13 @@
         public string OrganisationName { get; set; }
 
         public Guid? FunctionTypeId { get; set; } // Functietype die nodig is voor het mandaat uit te voeren
-        public string FunctionTypeName { get; set; }
+        public string? FunctionTypeName { get; set; }
 
         public Guid BodyId { get; set; } // Het orgaan zelf
         public string BodyName { get; set; }
 
         public Guid? BodyOrganisationId { get; set; } // Organisatie aan wie het orgaan behoort (DayPassed)
-        public string BodyOrganisationName { get; set; }
+        public string? BodyOrganisationName { get; set; }
 
         public Guid BodySeatId { get; set; } // Het postje die ingevuld wordt
         public string BodySeatName { get; set; }

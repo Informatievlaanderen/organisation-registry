@@ -24,14 +24,14 @@ namespace OrganisationRegistry.SqlServer.Body
         public DateTime? FormalValidFrom { get; set; }
         public DateTime? FormalValidTo { get; set; }
 
-        public string Organisation { get; set; }
+        public string? Organisation { get; set; }
         public Guid? OrganisationId { get; set; }
 
         public bool IsLifecycleValid { get; set; }
 
         public bool IsBalancedParticipationObligatory { get; set; }
-        public string BalancedParticipationExtraRemark { get; set; }
-        public string BalancedParticipationExceptionMeasure { get; set; }
+        public string? BalancedParticipationExtraRemark { get; set; }
+        public string? BalancedParticipationExceptionMeasure { get; set; }
     }
 
     public class BodyDetailConfiguration : EntityMappingConfiguration<BodyDetail>

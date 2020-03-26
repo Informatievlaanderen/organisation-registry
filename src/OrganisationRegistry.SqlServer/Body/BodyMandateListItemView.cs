@@ -32,17 +32,17 @@ namespace OrganisationRegistry.SqlServer.Body
         public string BodySeatName { get; set; }
 
         public Guid? BodySeatTypeId { get; set; }
-        public string BodySeatTypeName { get; set; }
+        public string? BodySeatTypeName { get; set; }
         public int? BodySeatTypeOrder { get; set; }
 
         public Guid DelegatorId { get; set; }
         public string DelegatorName { get; set; }
 
         public Guid? DelegatedId { get; set; }
-        public string DelegatedName { get; set; }
+        public string? DelegatedName { get; set; }
 
         public Guid? AssignedToId { get; set; }
-        public string AssignedToName { get; set; }
+        public string? AssignedToName { get; set; }
 
         public string ContactsJson { get; set; }
 

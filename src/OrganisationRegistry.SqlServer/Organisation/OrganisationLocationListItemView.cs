@@ -22,11 +22,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public Guid LocationId { get; set; }
         public string LocationName { get; set; }
         public Guid? LocationTypeId { get; set; }
-        public string LocationTypeName { get; set; }
+        public string? LocationTypeName { get; set; }
         public bool IsMainLocation { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
-        public string Source { get; set; }
+        public string? Source { get; set; }
 
         public bool IsEditable => Source != Sources.Kbo;
 

@@ -25,9 +25,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public string Name { get; set; }
         public string ShortName { get; set; }
 
-        public string ParentOrganisation { get; set; }
+        public string? ParentOrganisation { get; set; }
         public Guid? ParentOrganisationId { get; set; }
-        public string ParentOrganisationOvoNumber { get; set; }
+        public string? ParentOrganisationOvoNumber { get; set; }
 
         /// <summary>
         /// The relationship the ParentOrganisation is in. This can be either an OrganisationOrganisationId or an OrganisationFormalFrameworkId.

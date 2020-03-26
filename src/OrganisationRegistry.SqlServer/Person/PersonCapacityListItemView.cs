@@ -30,7 +30,7 @@ namespace OrganisationRegistry.SqlServer.Person
         public Guid? PersonId { get; set; }
 
         public Guid? FunctionId { get; set; }
-        public string FunctionName { get; set; }
+        public string? FunctionName { get; set; }
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }

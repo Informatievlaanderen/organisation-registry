@@ -15,7 +15,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
 
         // Organisation
         public Guid? OrganisationId { get; set; }
-        public string OrganisationName { get; set; }
+        public string? OrganisationName { get; set; }
         public bool OrganisationIsActive { get; set; }
 
         public ICollection<BodySeatGenderRatioBodyLifecyclePhaseValidityItem> LifecyclePhaseValidities { get; set; }
