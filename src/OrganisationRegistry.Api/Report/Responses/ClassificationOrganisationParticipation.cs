@@ -120,17 +120,22 @@ namespace OrganisationRegistry.Api.Report.Responses
                         .Where(mandate => mandate.BodyId == bodyId)
                         .Where(mandate => activeSeatIds.Contains(mandate.BodySeatId))
                         .Where(mandate =>
-                            (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= DateTime.Today) &&
-                            (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= DateTime.Today));
+                            (!mandate.BodyMandateValidFrom.HasValue ||
+                             mandate.BodyMandateValidFrom <= DateTime.Today) &&
+                            (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= DateTime.Today))
+                        .ToList();  // need to include tolist here for now, otherwise causes
+                                    // System.InvalidOperationException: 'Client projection contains reference to constant expression of type: Microsoft.EntityFrameworkCore.Metadata.IPropertyBase. This could potentially cause memory leak.'
+                                    // See also:
+                                    // https://github.com/StefH/System.Linq.Dynamic.Core/issues/317,
+                                    // https://github.com/dotnet/efcore/issues/17623,
+                                    // https://github.com/dotnet/efcore/issues/18051
+
 
                 var activeAssignments =
                     activeMandates
-                        .GroupBy(mandate => new
-                        {
-                            mandate.BodySeatTypeId
-                        })
+                        .GroupBy(mandate => mandate.BodySeatTypeId)
                         .ToDictionary(
-                            x => x.Key.BodySeatTypeId,
+                            x => x.Key,
                             x => x
                                 .SelectMany(mandate => mandate.Assignments)
                                 .Where(assignment =>
