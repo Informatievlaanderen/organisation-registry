@@ -30,7 +30,7 @@
         {
             b.ToTable(nameof(LifecyclePhaseTypeListView.ProjectionTables.LifecyclePhaseTypeList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Name)
                 .HasMaxLength(NameLength)
@@ -39,7 +39,7 @@
             b.Property(x => x.RepresentsActivePhase);
             b.Property(x => x.IsDefaultPhase);
 
-            b.HasIndex(x => x.Name).IsUnique().ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsUnique().IsClustered();
             b.HasIndex(x => new { x.RepresentsActivePhase, x.IsDefaultPhase });
         }
     }

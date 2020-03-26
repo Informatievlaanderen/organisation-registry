@@ -67,7 +67,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             b.ToTable(nameof(OrganisationDetailItemView.ProjectionTables.OrganisationDetail), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OvoNumber).HasMaxLength(OrganisationListConfiguration.OvoNumberLength).IsRequired();
 
@@ -96,7 +96,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             b.Property(p => p.ValidTo);
 
             b.HasIndex(x => x.OvoNumber).IsUnique();
-            b.HasIndex(x => x.Name).ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsClustered();
             b.HasIndex(x => x.ParentOrganisation);
         }
     }

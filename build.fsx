@@ -1,7 +1,16 @@
+#r "paket:
+version 5.241.6
+framework: netstandard20
+source https://api.nuget.org/v3/index.json
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 3.3.1 //"
+
 #load "packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/build-generic.fsx"
 
-open Fake
-open Fake.NpmHelper
+open Fake.Core
+open Fake.Core.TargetOperators
+open Fake.IO
+open Fake.IO.FileSystemOperators
+open Fake.JavaScript
 open ``Build-generic``
 
 // The buildserver passes in `BITBUCKET_BUILD_NUMBER` as an integer to version the results
@@ -62,38 +71,35 @@ let pack = pack nugetVersionNumber
 let containerize = containerize dockerRepository
 let push = push dockerRepository
 
-Target "CleanAll" (fun _ ->
-  CleanDir buildDir
-  CleanDir ("src" @@ "OrganisationRegistry.UI" @@ "wwwroot")
+Target.create "CleanAll" (fun _ ->
+  Shell.cleanDir buildDir
+  Shell.cleanDir ("src" @@ "OrganisationRegistry.UI" @@ "wwwroot")
 )
 
 // Solution -----------------------------------------------------------------------
 
-Target "Restore_Solution" (fun _ -> restore "OrganisationRegistry")
+Target.create "Restore_Solution" (fun _ -> restore "OrganisationRegistry")
 
-Target "Build_Solution" (fun _ ->
+Target.create "Build_Solution" (fun _ ->
   setVersions "SolutionInfo.cs"
   build "OrganisationRegistry")
 
-Target "Site_Build" (fun _ ->
-  Npm (fun p ->
-    { p with
-        Command = (Run "build")
-    })
+Target.create "Site_Build" (fun _ ->
+  Npm.exec "build" id
 
   let dist = (buildDir @@ "OrganisationRegistry.UI" @@ "linux")
   let source = "src" @@ "OrganisationRegistry.UI"
 
-  CopyDir (dist @@ "wwwroot") (source @@ "wwwroot") (fun _ -> true)
-  CopyFile dist (source @@ "Dockerfile")
-  CopyFile dist (source @@ "default.conf")
-  CopyFile dist (source @@ "config.js")
-  CopyFile dist (source @@ "init.sh")
+  Shell.copyDir (dist @@ "wwwroot") (source @@ "wwwroot") (fun _ -> true)
+  Shell.copyFile dist (source @@ "Dockerfile")
+  Shell.copyFile dist (source @@ "default.conf")
+  Shell.copyFile dist (source @@ "config.js")
+  Shell.copyFile dist (source @@ "init.sh")
 )
 
-Target "Test_Solution" (fun _ -> test "OrganisationRegistry")
+Target.create "Test_Solution" (fun _ -> test "OrganisationRegistry")
 
-Target "Publish_Solution" (fun _ ->
+Target.create "Publish_Solution" (fun _ ->
   [
     "OrganisationRegistry.Api"
     "OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump"
@@ -111,13 +117,13 @@ Target "Publish_Solution" (fun _ ->
   CopyFile dist (source @@ "Dockerfile")
 )
 
-Target "Pack_Solution" (fun _ ->
+Target.create "Pack_Solution" (fun _ ->
   [
     "OrganisationRegistry.Api"
   ] |> List.iter pack)
 
-Target "Containerize_Api" (fun _ -> containerize "OrganisationRegistry.Api" "api")
-Target "PushContainer_Api" (fun _ -> push "api")
+Target.create "Containerize_Api" (fun _ -> containerize "OrganisationRegistry.Api" "api")
+Target.create "PushContainer_Api" (fun _ -> push "api")
 
 Target "Containerize_AgentschapZorgEnGezondheid" (fun _ -> containerize "OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump" "batch-agentschapzorgengezondheidftpdump")
 Target "PushContainer_AgentschapZorgEnGezondheid" (fun _ -> push "batch-agentschapzorgengezondheidftpdump")
@@ -145,53 +151,49 @@ Target "PushContainer_Scheduler" (fun _ -> push "scheduler")
 
 // --------------------------------------------------------------------------------
 
-Target "Build" DoNothing
-Target "Test" DoNothing
-Target "Publish" DoNothing
-Target "Pack" DoNothing
-Target "Containerize" DoNothing
-Target "Push" DoNothing
+Target.create "Build" DoNothing
+Target.create "Test" DoNothing
+Target.create "Publish" DoNothing
+Target.create "Pack" DoNothing
+Target.create "Containerize" DoNothing
+Target.create "Push" DoNothing
 
-"NpmInstall"         ==> "Build"
-"DotNetCli"          ==> "Build"
-"CleanAll"           ==> "Build"
-"Restore_Solution"   ==> "Build"
-"Build_Solution"     ==> "Build"
+"NpmInstall"
+ // ==> "DotNetCli"
+  ==> "CleanAll"
+  ==> "Restore_Solution"
+  ==> "Build_Solution"
+  ==> "Build"
 
-"Build"              ==> "Test"
-"Site_Build"         ==> "Test"
-// "Test_Solution"      ==> "Test"
+"Build"
+  ==> "Site_Build"
+  ==> "Test_Solution"
+  ==> "Test"
 
-"Test"               ==> "Publish"
-"Publish_Solution"   ==> "Publish"
+"Test"
+  ==> "Publish_Solution"
+  ==> "Publish"
 
-"Publish"            ==> "Pack"
-"Pack_Solution"      ==> "Pack"
+"Publish"
+  ==> "Pack_Solution"
+  ==> "Pack"
 
-"Pack"                                    ==> "Containerize"
-"Containerize_Api"                        ==> "Containerize"
-"Containerize_AgentschapZorgEnGezondheid" ==> "Containerize"
-"Containerize_VlaanderenBeNotifier"       ==> "Containerize"
-"Containerize_ElasticSearch"              ==> "Containerize"
-"Containerize_Delegations"                ==> "Containerize"
-"Containerize_Reporting"                  ==> "Containerize"
-"Containerize_KboMutations"               ==> "Containerize"
-"Containerize_Site"                       ==> "Containerize"
-"Containerize_Scheduler"                  ==> "Containerize"
+"Pack"
+  ==> "Containerize_ApiBackoffice"
+  ==> "Containerize_Projections"
+  ==> "Containerize_OrafinUpload"
+  ==> "Containerize_Site"
+  ==> "Containerize"
 // Possibly add more projects to containerize here
 
-"Containerize"                             ==> "Push"
-"DockerLogin"                              ==> "Push"
-"PushContainer_Api"                        ==> "Push"
-"PushContainer_AgentschapZorgEnGezondheid" ==> "Push"
-"PushContainer_VlaanderenBeNotifier"       ==> "Push"
-"PushContainer_ElasticSearch"              ==> "Push"
-"PushContainer_Delegations"                ==> "Push"
-"PushContainer_Reporting"                  ==> "Push"
-"PushContainer_KboMutations"               ==> "Push"
-"PushContainer_Site"                       ==> "Push"
-"PushContainer_Scheduler"                  ==> "Push"
+"Containerize"
+  ==> "DockerLogin"
+  ==> "PushContainer_ApiBackoffice"
+  ==> "PushContainer_Projections"
+  ==> "PushContainer_OrafinUpload"
+  ==> "PushContainer_Site"
+  ==> "Push"
 // Possibly add more projects to push here
 
 // By default we build & test
-RunTargetOrDefault "Test"
+Target.runOrDefault "Test"

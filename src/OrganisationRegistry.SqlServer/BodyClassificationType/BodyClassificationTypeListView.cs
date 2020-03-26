@@ -25,13 +25,13 @@ namespace OrganisationRegistry.SqlServer.BodyClassificationType
         {
             b.ToTable(nameof(BodyClassificationTypeListView.ProjectionTables.BodyClassificationTypeList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Name)
                 .HasMaxLength(NameLength)
                 .IsRequired();
 
-            b.HasIndex(x => x.Name).IsUnique().ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsUnique().IsClustered();
         }
     }
 

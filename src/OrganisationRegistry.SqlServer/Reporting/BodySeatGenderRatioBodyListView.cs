@@ -36,7 +36,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
         {
             b.ToTable(TableName, "OrganisationRegistry")
                 .HasKey(p => p.BodyId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.BodyName).HasMaxLength(BodyListConfiguration.NameLength);
 

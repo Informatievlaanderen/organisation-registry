@@ -23,7 +23,7 @@ namespace OrganisationRegistry.KboMutations
         private readonly ILogger<KboMutationsFetcher> _logger;
         private readonly IFtpClientFactory _ftpClientFactory;
         private readonly KboMutationsConfiguration _kboMutationsConfiguration;
-        private readonly CsvHelper.Configuration.Configuration _csvFileConfiguration;
+        private readonly CsvHelper.Configuration.CsvConfiguration _csvFileConfiguration;
 
         public KboMutationsFetcher(ILogger<KboMutationsFetcher> logger,
             IOptions<KboMutationsConfiguration> kboMutationsConfiguration,
@@ -33,12 +33,11 @@ namespace OrganisationRegistry.KboMutations
             _ftpClientFactory = ftpClientFactory;
             _kboMutationsConfiguration = kboMutationsConfiguration.Value;
 
-            _csvFileConfiguration = new CsvHelper.Configuration.Configuration(CultureInfo.InvariantCulture)
+            _csvFileConfiguration = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 Delimiter = ";",
                 HasHeaderRecord = false
             };
-
         }
 
         public IEnumerable<MutationsFile> GetKboMutationFiles()

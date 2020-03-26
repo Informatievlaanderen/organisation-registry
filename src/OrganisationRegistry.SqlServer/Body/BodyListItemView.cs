@@ -46,7 +46,7 @@
         {
             b.ToTable(nameof(BodyListView.ProjectionTables.BodyList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.BodyNumber)
                 .HasMaxLength(BodyNumberLength);
@@ -62,7 +62,7 @@
 
             b.HasMany(p => p.BodyLifecyclePhaseValidities).WithOne().OnDelete(DeleteBehavior.Cascade);
 
-            b.HasIndex(x => x.Name).ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsClustered();
             b.HasIndex(x => x.ShortName);
             b.HasIndex(x => x.Organisation);
             b.HasIndex(x => x.BodyNumber);
@@ -75,14 +75,14 @@
         {
             b.ToTable(nameof(BodyListView.ProjectionTables.BodyLifecyclePhaseValidity), "OrganisationRegistry")
                 .HasKey(p => p.BodyLifecyclePhaseId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.BodyId);
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
             b.Property(p => p.RepresentsActivePhase);
 
-            b.HasIndex(p => p.BodyId).ForSqlServerIsClustered();
+            b.HasIndex(p => p.BodyId).IsClustered();
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
             b.HasIndex(x => x.RepresentsActivePhase);

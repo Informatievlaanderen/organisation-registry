@@ -1,19 +1,12 @@
 // Only the target frameworks that are used in projects.
 // If you change the target framework of the projects then you need to run paket install again.
-framework: netstandard20, netcoreapp22, net472
+framework: netcoreapp31
 
 // When doing development as a non-employee, uncomment this to use the public NuGet feed
 source https://api.nuget.org/v3/index.json
 
 // When doing development as an employee, uncomment this to use the private NuGet proxy
 // source https://informatievlaanderen.myget.org/F/nuget-mirror/api/v3/index.json username: "%MYGET_FEED_USER%" password: "%MYGET_FEED_PASS%" authtype: "basic"
-
-// DOTNETCORE ISSUES
-nuget Microsoft.NETCore.App 2.2.6
-nuget Microsoft.NETCore.DotNetAppHost 2.2.6
-nuget Microsoft.NETCore.DotNetHostResolver 2.2.6
-nuget Microsoft.NETCore.DotNetHostPolicy 2.2.6
-nuget NETStandard.Library 2.0.3
 
 nuget System.Reflection.TypeExtensions 4.6.0
 nuget System.Dynamic.Runtime 4.3.0
@@ -25,8 +18,8 @@ nuget System.ServiceModel.Http 4.6.0
 nuget System.ServiceModel.NetTcp 4.6.0
 nuget System.ServiceModel.Security 4.6.0
 
-nuget System.IdentityModel.Tokens.Jwt 5.3.0
-nuget Microsoft.IdentityModel.Tokens 5.3.0
+nuget System.IdentityModel.Tokens.Jwt 5.5.0
+nuget Microsoft.IdentityModel.Tokens 5.5.0
 
 nuget Microsoft.AspNetCore.Mvc.Formatters.Xml 2.2.0
 nuget Microsoft.AspNetCore.ResponseCompression 2.2.0
@@ -36,10 +29,10 @@ nuget Microsoft.AspNetCore.Server.IISIntegration 2.2.0
 nuget Microsoft.AspNetCore.Server.Kestrel 2.2.0
 nuget Microsoft.AspNetCore.Server.Kestrel.Https 2.2.0
 nuget Microsoft.AspNetCore.Cors 2.2.0
-nuget Microsoft.AspNetCore.Authentication.JwtBearer 2.2.0
-nuget Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore 2.2.1
+nuget Microsoft.AspNetCore.Authentication.JwtBearer 3.1.1
+nuget Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore 3.1.0
 nuget Microsoft.AspNetCore.AzureAppServicesIntegration 2.2.0
-nuget Microsoft.AspNetCore.Mvc.Versioning 3.1.6
+nuget Microsoft.AspNetCore.Mvc.Versioning 4.1.1
 nuget Microsoft.AspNetCore.Mvc.Razor.Extensions 2.2.0
 nuget Microsoft.AspNetCore.Authorization 2.2.0
 nuget Microsoft.AspNetCore.Connections.Abstractions 2.2.0
@@ -47,92 +40,83 @@ nuget Microsoft.AspNetCore.DataProtection 2.2.0
 nuget Microsoft.AspNetCore.Cryptography.Internal 2.2.0
 nuget Microsoft.AspNetCore.DataProtection.Abstractions 2.2.0
 nuget Microsoft.AspNetCore.Http.Features 2.2.0
-nuget Microsoft.AspNetCore.Razor.Language 2.2.0
-nuget Microsoft.AspNetCore.JsonPatch 2.2.0
+nuget Microsoft.AspNetCore.Razor.Language 3.1.0
+nuget Microsoft.AspNetCore.JsonPatch 3.1.0
 
-nuget Microsoft.CodeAnalysis.Razor 2.2.0
+nuget Microsoft.CodeAnalysis.Razor 3.1.0
 
-nuget Microsoft.EntityFrameworkCore.SqlServer 2.2.6
-nuget Microsoft.EntityFrameworkCore.Relational 2.2.6
-nuget Microsoft.EntityFrameworkCore 2.2.6
-nuget Microsoft.EntityFrameworkCore.Abstractions 2.2.6
-nuget Microsoft.EntityFrameworkCore.Analyzers 2.2.6
+nuget Microsoft.EntityFrameworkCore.SqlServer 3.1.3
+nuget Microsoft.EntityFrameworkCore.Relational 3.1.3
+nuget Microsoft.EntityFrameworkCore 3.1.3
+nuget Microsoft.EntityFrameworkCore.Abstractions 3.1.3
+nuget Microsoft.EntityFrameworkCore.Analyzers 3.1.3
 
-nuget Microsoft.Extensions.Caching.Abstractions 2.2.0
-nuget Microsoft.Extensions.Configuration 2.2.0
-nuget Microsoft.Extensions.Configuration.Abstractions 2.2.0
-nuget Microsoft.Extensions.Configuration.Binder 2.2.0
-nuget Microsoft.Extensions.Configuration.CommandLine 2.2.0
-nuget Microsoft.Extensions.Configuration.EnvironmentVariables 2.2.4
-nuget Microsoft.Extensions.Configuration.FileExtensions 2.2.0
-nuget Microsoft.Extensions.Configuration.Json 2.2.0
-nuget Microsoft.Extensions.DependencyInjection 2.2.0
-nuget Microsoft.Extensions.DependencyInjection.Abstractions 2.2.0
-nuget Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore 2.2.0
-nuget Microsoft.Extensions.DependencyModel 2.1.0
-nuget Microsoft.Extensions.Logging.Abstractions 2.2.0
-nuget Microsoft.Extensions.Http 2.2.0
+nuget Microsoft.Extensions.Caching.Abstractions 3.1.3
+nuget Microsoft.Extensions.Configuration 3.1.3
+nuget Microsoft.Extensions.Configuration.Abstractions 3.1.3
+nuget Microsoft.Extensions.Configuration.Binder 3.1.3
+nuget Microsoft.Extensions.Configuration.CommandLine 3.1.3
+nuget Microsoft.Extensions.Configuration.EnvironmentVariables 3.1.3
+nuget Microsoft.Extensions.Configuration.FileExtensions 3.1.3
+nuget Microsoft.Extensions.Configuration.Json 3.1.3
+nuget Microsoft.Extensions.DependencyInjection 3.1.3
+nuget Microsoft.Extensions.DependencyInjection.Abstractions 3.1.3
+nuget Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore 3.1.3
+nuget Microsoft.Extensions.DependencyModel 3.1.3
+nuget Microsoft.Extensions.Logging.Abstractions 3.1.3
+nuget Microsoft.Extensions.Http 3.1.3
 
 nuget Microsoft.Rest.ClientRuntime 2.3.10 // TODO: Can we remove this if AutoRest depends on it?
 nuget Microsoft.DotNet.InternalAbstractions 1.0.0
 
-// TODO: App Metrics can be removed eventually
-nuget App.Metrics.Extensions.Mvc 1.2.1
-nuget App.Metrics.Extensions.Reporting.Graphite 1.3.0
-nuget App.Metrics.Formatters.Graphite 1.1.0
-nuget App.Metrics.Formatters.InfluxDB 1.0.0
-nuget App.Metrics.Formatters.Json 1.2.0
-
-nuget AspNetCore.HealthChecks.SqlServer 2.2.1
+nuget AspNetCore.HealthChecks.SqlServer 3.0.0
 
 nuget NEST 6.0.2 // TODO: Update to 7.3.1
-nuget FluentFTP 27.1.0
+nuget FluentFTP 32.2.2
 nuget Dapper 1.50.4
 nuget AutoRest 0.17.3
-nuget RestSharp 106.3.1
+nuget RestSharp 106.10.1
 nuget BrotliSharpLib 0.2.1
 nuget IdentityModel 3.10.10
-nuget EPPlus.Core 1.5.4
+nuget EPPlus 5.0.4
 
 nuget Serilog.Sinks.Literate 3.0.0 // TODO: This can be removed eventually
 nuget Serilog.Sinks.ElasticSearch 6.1.0 // TODO: Update to 8.0.0
 
-nuget Microsoft.EntityFrameworkCore.Design 2.2.6
+nuget Microsoft.EntityFrameworkCore.Design 3.1.0
 
 // Kbo Mutations
-nuget CsvHelper 12.1.2
+nuget CsvHelper 15.0.3
 nuget Optional 4.0.0
 
 // Mutex
-nuget AWSSDK.DynamoDBv2 3.3.102"
+nuget AWSSDK.DynamoDBv2 3.3.104.13
 
 // BASE REGISTRIES STUFF
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline ~> 1.11
-nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events ~> 1.1 content: true, copy_content_to_output_dir: always, copy_local: true
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 3.2.0
+nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 2.1.0 content: true, copy_content_to_output_dir: always, copy_local: true
 
-nuget Be.Vlaanderen.Basisregisters.AggregateSource ~> 3.2
+nuget Be.Vlaanderen.Basisregisters.AggregateSource 4.1.0
 
-nuget Be.Vlaanderen.Basisregisters.Api ~> 7.9
+nuget Be.Vlaanderen.Basisregisters.Api 10.2.0
 
-nuget Be.Vlaanderen.Basisregisters.Converters.TrimString ~> 1.1 // TODO: Remove this eventually
+nuget Be.Vlaanderen.Basisregisters.Converters.TrimString 2.2.1 // TODO: Remove this eventually
 
-//nuget Be.Vlaanderen.Basisregisters.Projector ~> 4.2
-
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac ~> 3.9
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql ~> 3.9
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 4.1.0
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql 4.1.0
 
 // TEST STUFF
-nuget Microsoft.NET.Test.Sdk 16.2.0
-nuget Microsoft.EntityFrameworkCore.InMemory 2.2.6
-nuget Microsoft.AspNetCore.TestHost 2.2.0
+nuget Microsoft.NET.Test.Sdk 16.5.0
+nuget Microsoft.EntityFrameworkCore.InMemory 3.1.0
+nuget Microsoft.AspNetCore.TestHost 3.1.0
 nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.1
 nuget xunit.categories 2.0.4
 nuget xunit.assert.source 2.4.1
 nuget AutoFixture 4.11.0
 nuget AutoFixture.Xunit2 4.11.0
-nuget FluentAssertions 5.9.0
-nuget Moq 4.8.1
+nuget FluentAssertions 5.10.0
+nuget Moq 4.13.1
 
 // BUILD STUFF
 nuget FAKE 4.64.17 // Don't update to v5!

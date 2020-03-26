@@ -31,7 +31,7 @@
         {
             b.ToTable(nameof(BodyFormalFrameworkListView.ProjectionTables.BodyFormalFrameworkList), "OrganisationRegistry")
                 .HasKey(p => p.BodyFormalFrameworkId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.BodyId).IsRequired();
 
@@ -41,7 +41,7 @@
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.FormalFrameworkName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.FormalFrameworkName).IsClustered();
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
         }

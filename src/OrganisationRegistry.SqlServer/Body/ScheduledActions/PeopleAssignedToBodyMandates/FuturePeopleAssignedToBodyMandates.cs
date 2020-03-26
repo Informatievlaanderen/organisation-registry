@@ -41,7 +41,7 @@
         {
             b.ToTable(nameof(FuturePeopleAssignedToBodyMandatesListView.ProjectionTables.FuturePeopleAssignedToBodyMandatesList), "OrganisationRegistry")
                 .HasKey(p => p.DelegationAssignmentId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.PersonId).IsRequired();
 

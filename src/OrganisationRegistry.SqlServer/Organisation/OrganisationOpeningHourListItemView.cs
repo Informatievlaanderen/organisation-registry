@@ -55,7 +55,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             b.ToTable(nameof(OrganisationOpeningHourListItemView.ProjectionTables.OrganisationOpeningHourList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationOpeningHourId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 

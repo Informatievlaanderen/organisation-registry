@@ -27,7 +27,7 @@
         {
             b.ToTable(nameof(BuildingListView.ProjectionTables.BuildingList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Name)
                 .HasMaxLength(NameLength)
@@ -35,7 +35,7 @@
 
             b.Property(p => p.VimId);
 
-            b.HasIndex(x => x.Name).IsUnique().ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsUnique().IsClustered();
             b.HasIndex(x => x.VimId);
         }
     }

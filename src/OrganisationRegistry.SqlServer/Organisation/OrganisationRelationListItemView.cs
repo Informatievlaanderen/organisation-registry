@@ -35,7 +35,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             b.ToTable(nameof(OrganisationRelationListView.ProjectionTables.OrganisationRelationList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationRelationId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 

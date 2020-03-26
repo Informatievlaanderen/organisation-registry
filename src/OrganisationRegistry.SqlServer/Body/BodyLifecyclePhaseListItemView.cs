@@ -33,7 +33,7 @@
         {
             b.ToTable(nameof(BodyLifecyclePhaseListView.ProjectionTables.BodyLifecyclePhaseList), "OrganisationRegistry")
                 .HasKey(p => p.BodyLifecyclePhaseId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.BodyId).IsRequired();
 
@@ -45,7 +45,7 @@
 
             b.Property(p => p.HasAdjacentGaps);
 
-            b.HasIndex(x => x.LifecyclePhaseTypeName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.LifecyclePhaseTypeName).IsClustered();
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
         }

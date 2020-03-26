@@ -59,7 +59,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             b.ToTable(nameof(OrganisationBankAccountListView.ProjectionTables.OrganisationBankAccountList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationBankAccountId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 

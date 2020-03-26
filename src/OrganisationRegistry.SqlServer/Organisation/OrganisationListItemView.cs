@@ -70,7 +70,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             b.ToTable(nameof(OrganisationListItemView.ProjectionTables.OrganisationList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Id).UseSqlServerIdentityColumn();
             b.Property(p => p.OrganisationId).IsRequired();
@@ -96,7 +96,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             b.HasMany(p => p.OrganisationClassificationValidities).WithOne().OnDelete(DeleteBehavior.Cascade);
 
             b.HasIndex(x => x.OvoNumber);
-            b.HasIndex(x => x.Name).ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsClustered();
             b.HasIndex(x => x.ShortName);
             b.HasIndex(x => x.ParentOrganisation);
             b.HasIndex(x => x.FormalFrameworkId);
@@ -111,7 +111,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             b.ToTable(nameof(OrganisationListItemView.ProjectionTables.OrganisationFormalFrameworkValidity), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered();
+                .IsClustered();
 
             b.Property(p => p.Id).UseSqlServerIdentityColumn();
 
@@ -130,7 +130,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             b.ToTable(nameof(OrganisationListItemView.ProjectionTables.OrganisationClassificationValidity), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Id).UseSqlServerIdentityColumn();
 

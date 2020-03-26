@@ -36,7 +36,7 @@ namespace OrganisationRegistry.SqlServer.Person
         {
             b.ToTable(nameof(PersonListView.ProjectionTables.PersonList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.FirstName)
                 .HasMaxLength(FirstNameLength)
@@ -53,7 +53,7 @@ namespace OrganisationRegistry.SqlServer.Person
             b.Property(p => p.Sex);
             b.Property(p => p.DateOfBirth);
 
-            b.HasIndex(x => x.Name).ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsClustered();
             b.HasIndex(x => x.FirstName);
             b.HasIndex(x => x.FullName);
         }

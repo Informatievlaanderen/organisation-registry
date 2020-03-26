@@ -19,7 +19,7 @@ namespace OrganisationRegistry.SqlServer.ElasticSearchProjections
         {
             b.ToTable(TableName, "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.ShowOnVlaamseOverheidSites).IsRequired();
         }

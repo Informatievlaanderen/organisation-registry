@@ -41,7 +41,7 @@ namespace OrganisationRegistry.SqlServer.Body
         {
             b.ToTable(nameof(BodySeatListView.ProjectionTables.BodySeatList), "OrganisationRegistry")
                 .HasKey(p => p.BodySeatId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.BodySeatNumber)
                 .HasMaxLength(SeatNumberLength);
@@ -62,7 +62,7 @@ namespace OrganisationRegistry.SqlServer.Body
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.Name).ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsClustered();
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
         }

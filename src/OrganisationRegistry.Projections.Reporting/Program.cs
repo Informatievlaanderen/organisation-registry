@@ -93,7 +93,7 @@ namespace OrganisationRegistry.Projections.Reporting
                     LeasePeriod = TimeSpan.FromMinutes(reportingRunnerOptions.LockLeasePeriodInMinutes),
                     ThrowOnFailedRenew = true,
                     TerminateApplicationOnFailedRenew = true
-                });
+                }, logger);
 
             bool acquiredLock = false;
             try

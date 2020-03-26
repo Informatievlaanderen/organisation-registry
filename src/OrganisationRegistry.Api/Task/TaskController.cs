@@ -128,7 +128,7 @@ namespace OrganisationRegistry.Api.Task
         private void CompensatingAction20171124FixBodyMandates(OrganisationRegistryContext context)
         {
             var mandatesInNeedOfFixing = context.BodyMandateList
-                .FromSql(@"
+                .FromSqlRaw(@"
                     SELECT A.*
                     FROM [OrganisationRegistry].[BodyMandateList] A
 	                    INNER JOIN [OrganisationRegistry].[BodyMandateList] B

@@ -36,7 +36,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
         {
             b.ToTable(nameof(OrganisationClassificationListView.ProjectionTables.OrganisationClassificationList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Name)
                 .HasMaxLength(NameLength)
@@ -53,7 +53,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
                 .HasMaxLength(OrganisationClassificationTypeListConfiguration.NameLength)
                 .IsRequired();
 
-            b.HasIndex(x => x.Name).ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsClustered();
             b.HasIndex(x => x.OrganisationClassificationTypeName);
             b.HasIndex(x => x.Order);
             b.HasIndex(x => x.Active);

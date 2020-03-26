@@ -34,7 +34,7 @@ namespace OrganisationRegistry.SqlServer.FormalFramework
         {
             b.ToTable(nameof(FormalFrameworkListView.ProjectionTables.FormalFrameworkList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Name)
                 .HasMaxLength(NameLength)
@@ -51,7 +51,7 @@ namespace OrganisationRegistry.SqlServer.FormalFramework
                 .HasMaxLength(FormalFrameworkCategoryNameLength)
                 .IsRequired();
 
-            b.HasIndex(x => x.Name).ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsClustered();
             b.HasIndex(x => x.Code);
             b.HasIndex(x => x.FormalFrameworkCategoryName);
 

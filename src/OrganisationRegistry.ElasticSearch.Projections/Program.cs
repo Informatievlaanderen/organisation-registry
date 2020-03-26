@@ -95,7 +95,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     LeasePeriod = TimeSpan.FromMinutes(elasticSearchOptions.LockLeasePeriodInMinutes),
                     ThrowOnFailedRenew = true,
                     TerminateApplicationOnFailedRenew = true
-                });
+                }, logger);
 
             var acquiredLock = false;
             try

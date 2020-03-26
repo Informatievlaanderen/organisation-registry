@@ -20,7 +20,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
         {
             b.ToTable(TableName, "OrganisationRegistry")
                 .HasKey(p => p.OrganisationId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
             b.Property(p => p.OrganisationName).IsRequired();

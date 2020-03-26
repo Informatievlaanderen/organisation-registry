@@ -47,7 +47,7 @@
         {
             b.ToTable(TableName, "OrganisationRegistry")
                 .HasKey(p => p.PersonMandateId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.DelegationAssignmentId).IsRequired(false);
 
@@ -76,7 +76,7 @@
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.BodyName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.BodyName).IsClustered();
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
         }

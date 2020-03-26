@@ -89,7 +89,7 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
                     LeasePeriod = TimeSpan.FromMinutes(options.LockLeasePeriodInMinutes),
                     ThrowOnFailedRenew = true,
                     TerminateApplicationOnFailedRenew = true
-                });
+                }, logger);
 
             var acquiredLock = false;
             try

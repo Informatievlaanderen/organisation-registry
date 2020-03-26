@@ -27,7 +27,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationRelationType
         {
             b.ToTable(nameof(OrganisationRelationTypeListView.ProjectionTables.OrganisationRelationTypeList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Name)
                 .HasMaxLength(NameLength)
@@ -37,7 +37,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationRelationType
                 .HasMaxLength(NameLength)
                 .IsRequired();
 
-            b.HasIndex(x => x.Name).IsUnique().ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsUnique().IsClustered();
         }
     }
 

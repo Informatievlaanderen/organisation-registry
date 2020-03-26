@@ -25,7 +25,7 @@
         {
             b.ToTable("Configuration", "OrganisationRegistry")
                 .HasKey(p => p.Key)
-                .ForSqlServerIsClustered();
+                .IsClustered();
 
             b.Property(p => p.Description);
             b.Property(p => p.Value);

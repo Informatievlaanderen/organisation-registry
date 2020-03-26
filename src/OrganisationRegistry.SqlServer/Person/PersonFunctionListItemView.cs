@@ -37,7 +37,7 @@ namespace OrganisationRegistry.SqlServer.Person
         {
             b.ToTable(nameof(PersonFunctionListView.ProjectionTables.PersonFunctionList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationFunctionId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
             b.Property(p => p.OrganisationName).HasMaxLength(OrganisationListConfiguration.NameLength).IsRequired();
@@ -50,7 +50,7 @@ namespace OrganisationRegistry.SqlServer.Person
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.OrganisationName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.OrganisationName).IsClustered();
             b.HasIndex(x => x.FunctionName);
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);

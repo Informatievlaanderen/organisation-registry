@@ -25,12 +25,13 @@ namespace OrganisationRegistry.Api.Infrastructure
     using SqlServer.Configuration;
     using OrganisationRegistry.Infrastructure.Configuration;
     using Microsoft.Extensions.Diagnostics.HealthChecks;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Net.Http.Headers;
+    using Microsoft.OpenApi.Models;
     using Newtonsoft.Json;
     using SqlServer.Infrastructure;
-    using Swashbuckle.AspNetCore.Swagger;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
-    using JsonSerializerSettingsProvider = Microsoft.AspNetCore.Mvc.Formatters.JsonSerializerSettingsProvider;
+    using IContainer = Autofac.IContainer;
 
     public class Startup
     {
@@ -107,16 +108,16 @@ namespace OrganisationRegistry.Api.Infrastructure
                         },
                         Swagger =
                         {
-                            ApiInfo = (provider, description) => new Info
+                            ApiInfo = (provider, description) => new OpenApiInfo
                             {
                                 Version = description.ApiVersion.ToString(),
                                 Title = "Basisregisters Vlaanderen Organisation Registry API",
                                 Description = GetApiLeadingText(description),
-                                Contact = new Contact
+                                Contact = new OpenApiContact
                                 {
                                     Name = "Informatie Vlaanderen",
                                     Email = "informatie.vlaanderen@vlaanderen.be",
-                                    Url = "https://legacy.basisregisters.vlaanderen"
+                                    Url = new Uri("https://legacy.basisregisters.vlaanderen")
                                 }
                             },
                             XmlCommentPaths = new[] {typeof(Startup).GetTypeInfo().Assembly.GetName().Name}
@@ -165,8 +166,8 @@ namespace OrganisationRegistry.Api.Infrastructure
         public void Configure(
             IServiceProvider serviceProvider,
             IApplicationBuilder app,
-            IHostingEnvironment env,
-            IApplicationLifetime appLifetime,
+            IWebHostEnvironment env,
+            IHostApplicationLifetime appLifetime,
             ILoggerFactory loggerFactory,
             IApiVersionDescriptionProvider apiVersionProvider,
             ApiDataDogToggle datadogToggle,

@@ -43,7 +43,7 @@
         {
             b.ToTable(TableName, "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId);
             b.Property(p => p.OrganisationName).HasMaxLength(OrganisationListConfiguration.NameLength);
@@ -65,7 +65,7 @@
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.OrganisationName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.OrganisationName).IsClustered();
             b.HasIndex(x => x.BodyName);
             b.HasIndex(x => x.BodySeatName);
             b.HasIndex(x => x.BodySeatNumber);

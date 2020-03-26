@@ -36,7 +36,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
         {
             b.ToTable(TableName, "OrganisationRegistry")
                 .HasKey(p => p.BodyMandateId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.BodyMandateValidFrom);
             b.Property(p => p.BodyMandateValidTo);

@@ -27,7 +27,7 @@
         {
             b.ToTable(nameof(OrganisationBodyListItemView.ProjectionTables.OrganisationBodyList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationBodyId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 
@@ -37,7 +37,7 @@
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.BodyName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.BodyName).IsClustered();
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
         }

@@ -35,7 +35,7 @@
         {
             b.ToTable(nameof(ActiveOrganisationFormalFrameworkListView.ProjectionTables.ActiveOrganisationFormalFrameworkList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationFormalFrameworkId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 

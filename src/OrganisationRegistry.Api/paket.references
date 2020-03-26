@@ -25,7 +25,6 @@ Microsoft.AspNetCore.Server.Kestrel.Https
 Microsoft.AspNetCore.Cors
 Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore
 Microsoft.AspNetCore.Mvc.Versioning
-Microsoft.AspNetCore.Diagnostics
 Microsoft.AspNetCore.Authentication.JwtBearer
 Microsoft.AspNetCore.Mvc.Razor.Extensions
 Microsoft.AspNetCore.Authorization
@@ -35,15 +34,9 @@ Microsoft.EntityFrameworkCore
 Microsoft.EntityFrameworkCore.InMemory
 Microsoft.EntityFrameworkCore.SqlServer
 
-App.Metrics.Extensions.Mvc
-App.Metrics.Extensions.Reporting.Graphite
-App.Metrics.Formatters.Graphite
-App.Metrics.Formatters.InfluxDB
-App.Metrics.Formatters.Json
-
 BrotliSharpLib
 IdentityModel
-EPPlus.Core
+EPPlus
 FluentValidation.AspNetCore
 
 Autofac.Extensions.DependencyInjection

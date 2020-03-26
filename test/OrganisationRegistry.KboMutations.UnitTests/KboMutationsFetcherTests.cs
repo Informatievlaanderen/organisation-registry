@@ -127,7 +127,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                     new FtpClientFile("mutations2.csv", mutationsCsv));
 
                 ftpClient.Setup(x =>
-                        x.Download(It.IsAny<Stream>(), "mutations.csv", It.IsAny<long>(), It.IsAny<IProgress<FtpProgress>>()))
+                        x.Download(It.IsAny<Stream>(), "mutations.csv", It.IsAny<long>(), It.IsAny<Action<FtpProgress>>()))
                     .Returns(false);
 
                 var kboFtpClient = new KboMutationsFetcher(
@@ -214,8 +214,8 @@ namespace OrganisationRegistry.KboMutations.UnitTests
             foreach (var file in files)
             {
                 ftpClient.Setup(x =>
-                        x.Download(It.IsAny<Stream>(), file.Name, It.IsAny<long>(), It.IsAny<IProgress<FtpProgress>>()))
-                    .Callback<Stream, string, long, IProgress<FtpProgress>>((stream, s, arg3, arg4) => file.Stream.CopyTo(stream))
+                        x.Download(It.IsAny<Stream>(), file.Name, It.IsAny<long>(), It.IsAny<Action<FtpProgress>>()))
+                    .Callback<Stream, string, long, Action<FtpProgress>>((stream, s, arg3, arg4) => file.Stream.CopyTo(stream))
                     .Returns(true);
             }
         }

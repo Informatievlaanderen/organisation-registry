@@ -34,7 +34,7 @@
         {
             b.ToTable(nameof(ActiveOrganisationParentListView.ProjectionTables.ActiveOrganisationParentList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationOrganisationParentId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 

@@ -22,7 +22,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
         {
             b.ToTable(TableName, "OrganisationRegistry")
                 .HasKey(p => p.LifecyclePhaseId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.BodyId).IsRequired();
             b.Property(p => p.ValidFrom);

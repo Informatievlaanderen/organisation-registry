@@ -31,7 +31,7 @@
         {
             b.ToTable(nameof(OrganisationContactListView.ProjectionTables.OrganisationContactList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationContactId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 
@@ -43,7 +43,7 @@
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.ContactTypeName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.ContactTypeName).IsClustered();
             b.HasIndex(x => x.ContactValue);
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);

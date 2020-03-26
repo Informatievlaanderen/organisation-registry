@@ -40,7 +40,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             b.ToTable(nameof(OrganisationOrganisationClassificationListView.ProjectionTables.OrganisationOrganisationClassificationList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationOrganisationClassificationId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 
@@ -55,7 +55,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             b.Property(p => p.Source);
 
-            b.HasIndex(x => x.OrganisationClassificationTypeName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.OrganisationClassificationTypeName).IsClustered();
             b.HasIndex(x => x.OrganisationClassificationName);
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);

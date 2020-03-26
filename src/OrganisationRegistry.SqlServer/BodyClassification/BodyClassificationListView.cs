@@ -34,7 +34,7 @@ namespace OrganisationRegistry.SqlServer.BodyClassification
         {
             b.ToTable(nameof(BodyClassificationListView.ProjectionTables.BodyClassificationList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Name)
                 .HasMaxLength(NameLength)
@@ -49,7 +49,7 @@ namespace OrganisationRegistry.SqlServer.BodyClassification
                 .HasMaxLength(BodyClassificationTypeListConfiguration.NameLength)
                 .IsRequired();
 
-            b.HasIndex(x => x.Name).ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsClustered();
             b.HasIndex(x => x.BodyClassificationTypeName);
             b.HasIndex(x => x.Order);
             b.HasIndex(x => x.Active);

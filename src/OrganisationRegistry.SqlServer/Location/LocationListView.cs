@@ -35,7 +35,7 @@
         {
             b.ToTable(nameof(LocationListView.ProjectionTables.LocationList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.CrabLocationId);
 
@@ -60,7 +60,7 @@
 
             b.Property(p => p.HasCrabLocation);
 
-            b.HasIndex(x => x.FormattedAddress).ForSqlServerIsClustered();
+            b.HasIndex(x => x.FormattedAddress).IsClustered();
             b.HasIndex(x => x.Street);
             b.HasIndex(x => x.ZipCode);
             b.HasIndex(x => x.City);
