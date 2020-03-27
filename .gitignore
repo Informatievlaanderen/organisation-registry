@@ -10,6 +10,8 @@ wwwroot/
 .ionide/
 .paket/
 
+**/*/mono_crash.*
+
 [Pp]ackages/
 [Pp]aket-files/
 [Dd]ebug/
