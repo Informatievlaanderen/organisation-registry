@@ -98,7 +98,8 @@ namespace OrganisationRegistry.Api.Report.Responses
                     .Where(mandate => activeSeatIds.Contains(mandate.BodySeatId))
                     .Where(mandate =>
                         (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= DateTime.Today) &&
-                        (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= DateTime.Today));
+                        (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= DateTime.Today))
+                    .ToList();
 
             var activeAssignments =
                 activeMandates
