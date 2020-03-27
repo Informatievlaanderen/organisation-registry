@@ -9,6 +9,8 @@ namespace OrganisationRegistry.SqlServer.Reporting
     {
         public Guid LifecyclePhaseId { get; set; }
         public Guid BodyId { get; set; }
+        public BodySeatGenderRatioBodyItem Body { get; set; }
+
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
         public bool RepresentsActivePhase { get; set; }
@@ -28,6 +30,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
             b.Property(p => p.RepresentsActivePhase);
+            b.HasOne(p => p.Body);
         }
     }
 }
