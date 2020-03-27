@@ -62,9 +62,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<KboFormalNameLabelAdded>,
         IEventHandler<KboFormalNameLabelRemoved>,
         IEventHandler<OrganisationLabelUpdated>,
+        IEventHandler<OrganisationCoupledWithKbo>,
         IEventHandler<LabelTypeUpdated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+
+        public static readonly Guid ArchivedNameLabelTypeId = Guid.Parse("00000000-0000-4000-0000-AAA0BBB0CCC0");
+        public const string ArchivedNameLabelTypeName = "Gearchiveerde naam uit organisatieregister";
 
         public enum ProjectionTables
         {
@@ -126,6 +130,28 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 LabelTypeName = message.Body.LabelTypeName,
                 ValidFrom = message.Body.ValidFrom,
                 ValidTo = message.Body.ValidTo
+            };
+
+            organisationLabelListItem.Source = Sources.Kbo;
+
+            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            {
+                context.OrganisationLabelList.Add(organisationLabelListItem);
+                context.SaveChanges();
+            }
+        }
+
+        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCoupledWithKbo> message)
+        {
+            var organisationLabelListItem = new OrganisationLabelListItem
+            {
+                OrganisationLabelId = message.Body.OrganisationId,
+                OrganisationId = message.Body.OrganisationId,
+                LabelTypeId = ArchivedNameLabelTypeId,
+                LabelValue = message.Body.Name,
+                LabelTypeName = ArchivedNameLabelTypeName,
+                ValidFrom = message.Body.ValidFrom,
+                ValidTo = null
             };
 
             organisationLabelListItem.Source = Sources.Kbo;
