@@ -11,6 +11,8 @@
         public Guid Id { get; set; }
 
         public Guid BodyMandateId { get; set; }
+        public BodySeatGenderRatioBodyMandateItem BodyMandate { get; set; }
+
 
         public Guid? DelegationAssignmentId { get; set; }
 
@@ -40,6 +42,8 @@
 
             b.Property(p => p.PersonId).IsRequired();
             b.Property(p => p.Sex);
+
+            b.HasOne(p => p.BodyMandate);
         }
     }
 }
