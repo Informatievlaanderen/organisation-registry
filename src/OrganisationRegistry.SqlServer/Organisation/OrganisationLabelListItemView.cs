@@ -89,7 +89,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     return;
 
                 foreach (var organisationLable in organisationLabels)
-                    organisationLable.LabelTypeName = message.Name;
+                    organisationLable.LabelTypeName = message.Body.Name;
 
                 context.SaveChanges();
             }
