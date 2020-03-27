@@ -113,8 +113,8 @@ Target.create "Publish_Solution" (fun _ ->
   let dist = (buildDir @@ "OrganisationRegistry.Scheduler" @@ "linux")
   let source = "src" @@ "OrganisationRegistry.Scheduler"
 
-  CreateDir dist
-  CopyFile dist (source @@ "Dockerfile")
+  Shell.mkdir dist
+  Shell.copyFile dist (source @@ "Dockerfile")
 )
 
 Target.create "Pack_Solution" (fun _ ->
@@ -125,38 +125,38 @@ Target.create "Pack_Solution" (fun _ ->
 Target.create "Containerize_Api" (fun _ -> containerize "OrganisationRegistry.Api" "api")
 Target.create "PushContainer_Api" (fun _ -> push "api")
 
-Target "Containerize_AgentschapZorgEnGezondheid" (fun _ -> containerize "OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump" "batch-agentschapzorgengezondheidftpdump")
-Target "PushContainer_AgentschapZorgEnGezondheid" (fun _ -> push "batch-agentschapzorgengezondheidftpdump")
+Target.create "Containerize_AgentschapZorgEnGezondheid" (fun _ -> containerize "OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump" "batch-agentschapzorgengezondheidftpdump")
+Target.create "PushContainer_AgentschapZorgEnGezondheid" (fun _ -> push "batch-agentschapzorgengezondheidftpdump")
 
-Target "Containerize_VlaanderenBeNotifier" (fun _ -> containerize "OrganisationRegistry.VlaanderenBeNotifier" "batch-vlaanderenbe")
-Target "PushContainer_VlaanderenBeNotifier" (fun _ -> push "batch-vlaanderenbe")
+Target.create "Containerize_VlaanderenBeNotifier" (fun _ -> containerize "OrganisationRegistry.VlaanderenBeNotifier" "batch-vlaanderenbe")
+Target.create "PushContainer_VlaanderenBeNotifier" (fun _ -> push "batch-vlaanderenbe")
 
-Target "Containerize_ElasticSearch" (fun _ -> containerize "OrganisationRegistry.ElasticSearch.Projections" "projections-elasticsearch")
-Target "PushContainer_ElasticSearch" (fun _ -> push "projections-elasticsearch")
+Target.create "Containerize_ElasticSearch" (fun _ -> containerize "OrganisationRegistry.ElasticSearch.Projections" "projections-elasticsearch")
+Target.create "PushContainer_ElasticSearch" (fun _ -> push "projections-elasticsearch")
 
-Target "Containerize_Delegations" (fun _ -> containerize "OrganisationRegistry.Projections.Delegations" "projections-delegations")
-Target "PushContainer_Delegations" (fun _ -> push "projections-delegations")
+Target.create "Containerize_Delegations" (fun _ -> containerize "OrganisationRegistry.Projections.Delegations" "projections-delegations")
+Target.create "PushContainer_Delegations" (fun _ -> push "projections-delegations")
 
-Target "Containerize_Reporting" (fun _ -> containerize "OrganisationRegistry.Projections.Reporting" "projections-reporting")
-Target "PushContainer_Reporting" (fun _ -> push "projections-reporting")
+Target.create "Containerize_Reporting" (fun _ -> containerize "OrganisationRegistry.Projections.Reporting" "projections-reporting")
+Target.create "PushContainer_Reporting" (fun _ -> push "projections-reporting")
 
-Target "Containerize_KboMutations" (fun _ -> containerize "OrganisationRegistry.KboMutations" "kbo-mutations")
-Target "PushContainer_KboMutations" (fun _ -> push "kbo-mutations")
+Target.create "Containerize_KboMutations" (fun _ -> containerize "OrganisationRegistry.KboMutations" "kbo-mutations")
+Target.create "PushContainer_KboMutations" (fun _ -> push "kbo-mutations")
 
-Target "Containerize_Site" (fun _ -> containerize "OrganisationRegistry.UI" "ui")
-Target "PushContainer_Site" (fun _ -> push "ui")
+Target.create "Containerize_Site" (fun _ -> containerize "OrganisationRegistry.UI" "ui")
+Target.create "PushContainer_Site" (fun _ -> push "ui")
 
-Target "Containerize_Scheduler" (fun _ -> containerize "OrganisationRegistry.Scheduler" "scheduler")
-Target "PushContainer_Scheduler" (fun _ -> push "scheduler")
+Target.create "Containerize_Scheduler" (fun _ -> containerize "OrganisationRegistry.Scheduler" "scheduler")
+Target.create "PushContainer_Scheduler" (fun _ -> push "scheduler")
 
 // --------------------------------------------------------------------------------
 
-Target.create "Build" DoNothing
-Target.create "Test" DoNothing
-Target.create "Publish" DoNothing
-Target.create "Pack" DoNothing
-Target.create "Containerize" DoNothing
-Target.create "Push" DoNothing
+Target.create "Build" ignore
+Target.create "Test" ignore
+Target.create "Publish" ignore
+Target.create "Pack" ignore
+Target.create "Containerize" ignore
+Target.create "Push" ignore
 
 "NpmInstall"
  // ==> "DotNetCli"
@@ -179,19 +179,29 @@ Target.create "Push" DoNothing
   ==> "Pack"
 
 "Pack"
-  ==> "Containerize_ApiBackoffice"
-  ==> "Containerize_Projections"
-  ==> "Containerize_OrafinUpload"
+  ==> "Containerize_Api"
+  ==> "Containerize_AgentschapZorgEnGezondheid"
+  ==> "Containerize_VlaanderenBeNotifier"
+  ==> "Containerize_ElasticSearch"
+  ==> "Containerize_Delegations"
+  ==> "Containerize_Reporting"
+  ==> "Containerize_KboMutations"
   ==> "Containerize_Site"
+  ==> "Containerize_Scheduler"
   ==> "Containerize"
 // Possibly add more projects to containerize here
 
 "Containerize"
   ==> "DockerLogin"
-  ==> "PushContainer_ApiBackoffice"
-  ==> "PushContainer_Projections"
-  ==> "PushContainer_OrafinUpload"
+  ==> "PushContainer_Api"
+  ==> "PushContainer_AgentschapZorgEnGezondheid"
+  ==> "PushContainer_VlaanderenBeNotifier"
+  ==> "PushContainer_ElasticSearch"
+  ==> "PushContainer_Delegations"
+  ==> "PushContainer_Reporting"
+  ==> "PushContainer_KboMutations"
   ==> "PushContainer_Site"
+  ==> "PushContainer_Scheduler"
   ==> "Push"
 // Possibly add more projects to push here
 
