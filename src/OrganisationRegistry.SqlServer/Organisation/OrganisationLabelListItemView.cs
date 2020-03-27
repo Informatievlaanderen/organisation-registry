@@ -22,7 +22,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
 
-        public string Source { get; set; }
+        public string? Source { get; set; }
 
         public bool IsEditable => Source != Sources.Kbo;
     }
