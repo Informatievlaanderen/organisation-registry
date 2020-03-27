@@ -1,3 +1,10 @@
+# [1.32.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.31.0...v1.32.0) (2020-03-27)
+
+
+### Features
+
+* show previous org name in label list after coupling with kbo ([15a8d8f](https://github.com/informatievlaanderen/organisation-registry/commit/15a8d8f7caeb6b8addf9984544f516eb903b92b1))
+
 # [1.31.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.30.1...v1.31.0) (2020-03-25)
 
 
