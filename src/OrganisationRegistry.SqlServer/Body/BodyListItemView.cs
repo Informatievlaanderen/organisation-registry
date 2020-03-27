@@ -77,6 +77,8 @@
                 .HasKey(p => p.BodyLifecyclePhaseId)
                 .IsClustered(false);
 
+            b.Property(p => p.BodyLifecyclePhaseId).ValueGeneratedNever();
+
             b.Property(p => p.BodyId);
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
