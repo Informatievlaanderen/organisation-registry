@@ -26,6 +26,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
                 .HasKey(p => p.LifecyclePhaseId)
                 .IsClustered(false);
 
+            b.Property(p => p.LifecyclePhaseId).ValueGeneratedNever();
             b.Property(p => p.BodyId).IsRequired();
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
