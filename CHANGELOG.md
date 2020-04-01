@@ -1,3 +1,10 @@
+## [1.33.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.33.0...v1.33.1) (2020-04-01)
+
+
+### Bug Fixes
+
+* don't trim spaces when deserializing events ([6b875f0](https://github.com/informatievlaanderen/organisation-registry/commit/6b875f0fed845f5883b817b228d3d1e931d66b2f))
+
 # [1.33.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.32.0...v1.33.0) (2020-04-01)
 
 
