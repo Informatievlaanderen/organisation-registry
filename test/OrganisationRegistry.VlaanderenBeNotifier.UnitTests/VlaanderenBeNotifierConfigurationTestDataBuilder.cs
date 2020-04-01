@@ -20,9 +20,9 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.UnitTests
             _fromAddress = "me@null.null";
             _fromName = "Me";
             _organisationTo = "you@null.null";
-            _organisationUriTemplate = "http://localhost:3000/#/organisation/{0}";
+            _organisationUriTemplate = "http://localhost/#/organisation/{0}";
             _bodyTo = "you@null.null";
-            _bodyUriTemplate = "http://localhost:3000/#/bodies/{0}";
+            _bodyUriTemplate = "http://localhost/#/bodies/{0}";
         }
 
         public VlaanderenBeNotifierConfiguration Build()
