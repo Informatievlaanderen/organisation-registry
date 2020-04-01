@@ -15,6 +15,7 @@
   <ItemGroup>
     <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
     <Content Include="MagdaResponses\*.json" CopyToOutputDirectory="Always" />
+    <Content Include="EventStore\*.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>
