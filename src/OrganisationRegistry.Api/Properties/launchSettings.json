@@ -17,12 +17,12 @@
     },
     "OrganisationRegistry.Api": {
       "commandName": "Project",
-      "launchUrl": "https://api.organisatie.dev-basisregisters.vlaanderen:2443",
+      "launchUrl": "https://api.organisatie.dev-vlaanderen.local:2443",
       "environmentVariables": {
-        "ASPNETCORE_URLS": "https://api.organisatie.dev-basisregisters.vlaanderen:2443",
+        "ASPNETCORE_URLS": "https://api.organisatie.dev-vlaanderen.local:2443",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://api.organisatie.dev-basisregisters.vlaanderen:2443"
+      "applicationUrl": "https://api.organisatie.dev-vlaanderen.local:2443"
     }
   }
 }

@@ -20,8 +20,8 @@ const NamedModulesPlugin = require('webpack/lib/NamedModulesPlugin');
  * Webpack Constants
  */
 const ENV = process.env.ENV = process.env.NODE_ENV = 'development';
-const HOST = process.env.HOST || 'organisatie.dev-basisregisters.vlaanderen';
-const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || 'organisatie.dev-vlaanderen.local';
+const PORT = process.env.PORT || 443;
 const HMR = helpers.hasProcessFlag('hot');
 const METADATA = webpackMerge(commonConfig({env: ENV}).metadata, {
   host: HOST,
