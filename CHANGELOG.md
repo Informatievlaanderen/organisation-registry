@@ -1,3 +1,15 @@
+# [1.33.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.32.0...v1.33.0) (2020-04-01)
+
+
+### Bug Fixes
+
+* use form to include disabled fields ([880d905](https://github.com/informatievlaanderen/organisation-registry/commit/880d90599bdb00cd2f268cd2115adad7f83d1295))
+
+
+### Features
+
+* update uris to acm changes of 2020-03-12 ([f896dd1](https://github.com/informatievlaanderen/organisation-registry/commit/f896dd1cd0ba8f54f56414c725ecb898229d36ec))
+
 # [1.32.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.31.0...v1.32.0) (2020-03-27)
 
 
