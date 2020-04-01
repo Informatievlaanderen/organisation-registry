@@ -7,6 +7,8 @@ Microsoft.Extensions.Options.ConfigurationExtensions
 Microsoft.Extensions.Logging
 Microsoft.Extensions.DependencyInjection
 
+Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
+
 Autofac.Extensions.DependencyInjection
 Newtonsoft.Json
 Destructurama.JsonNet
