@@ -1,3 +1,11 @@
+# [1.34.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.33.1...v1.34.0) (2020-04-02)
+
+
+### Features
+
+* commit updated package-lock after revert ([d6957ed](https://github.com/informatievlaanderen/organisation-registry/commit/d6957ed616b253dd0051c4addc8156a19c64f560))
+* lock versions with shrinkwrap ([7a57672](https://github.com/informatievlaanderen/organisation-registry/commit/7a576724ccd926cef80d927cfa69b58ce3a6c9d8))
+
 ## [1.33.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.33.0...v1.33.1) (2020-04-01)
 
 
