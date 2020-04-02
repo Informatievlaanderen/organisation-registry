@@ -94,7 +94,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     TableName = elasticSearchOptions.LockTableName,
                     LeasePeriod = TimeSpan.FromMinutes(elasticSearchOptions.LockLeasePeriodInMinutes),
                     ThrowOnFailedRenew = true,
-                    TerminateApplicationOnFailedRenew = true
+                    TerminateApplicationOnFailedRenew = true,
+                    Enabled = elasticSearchOptions.LockEnabled,
                 }, logger);
 
             var acquiredLock = false;

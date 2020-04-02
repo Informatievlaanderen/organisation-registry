@@ -92,7 +92,8 @@ namespace OrganisationRegistry.Projections.Reporting
                     TableName = reportingRunnerOptions.LockTableName,
                     LeasePeriod = TimeSpan.FromMinutes(reportingRunnerOptions.LockLeasePeriodInMinutes),
                     ThrowOnFailedRenew = true,
-                    TerminateApplicationOnFailedRenew = true
+                    TerminateApplicationOnFailedRenew = true,
+                    Enabled = reportingRunnerOptions.LockEnabled
                 }, logger);
 
             bool acquiredLock = false;

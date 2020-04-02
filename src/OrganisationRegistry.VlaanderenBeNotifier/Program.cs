@@ -90,7 +90,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     TableName = options.LockTableName,
                     LeasePeriod = TimeSpan.FromMinutes(options.LockLeasePeriodInMinutes),
                     ThrowOnFailedRenew = true,
-                    TerminateApplicationOnFailedRenew = true
+                    TerminateApplicationOnFailedRenew = true,
+                    Enabled = options.LockEnabled
                 }, logger);
 
             var acquiredLock = false;

@@ -46,6 +46,7 @@ namespace OrganisationRegistry.ElasticSearch.Configuration
         public string LockAccessKeySecret { get; set; }
         public string LockTableName { get; set; }
         public int LockLeasePeriodInMinutes { get; set; }
+        public bool LockEnabled { get; set; }
 
         public int MaxRetryAttempts { get; set; }
         public int BatchSize { get; set; }
