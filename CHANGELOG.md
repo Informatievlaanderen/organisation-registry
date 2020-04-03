@@ -1,3 +1,10 @@
+# [1.35.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.34.0...v1.35.0) (2020-04-03)
+
+
+### Features
+
+* update packages according to npm audit ([ec6dd0a](https://github.com/informatievlaanderen/organisation-registry/commit/ec6dd0a1fc9f29ddc47b48c7a0a0e6897fc44593))
+
 # [1.34.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.33.1...v1.34.0) (2020-04-02)
 
 
