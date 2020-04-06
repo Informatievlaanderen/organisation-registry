@@ -13,9 +13,8 @@ namespace OrganisationRegistry.Infrastructure.EventStore
     using System.Security.Claims;
     using AppSpecific;
     using Configuration;
+    using Infrastructure.Json;
     using Microsoft.Extensions.Options;
-
-    // TODO: We probably need to upgrade namespaces from Wegwijs to OrganisationRegistry and double check ExcludedEventTypes!
 
     // Scoped as SingleInstance()
     public class SqlServerEventStore : IEventStore
@@ -27,8 +26,11 @@ namespace OrganisationRegistry.Infrastructure.EventStore
         public const int UserIdLength = 100;
 
         private readonly IEventPublisher _publisher;
+        private readonly IEventDataReader _eventDataReader;
         private readonly string _connectionString;
         private readonly string _administrationConnectionString;
+
+        private readonly JsonSerializerSettings _jsonSerializerSettings;
 
         private static readonly string[] ExcludedEventTypes =
         {
@@ -45,13 +47,16 @@ namespace OrganisationRegistry.Infrastructure.EventStore
             return new SqlConnection(_administrationConnectionString);
         }
 
-        public SqlServerEventStore(IOptions<InfrastructureConfiguration> infrastructureOptions, IEventPublisher publisher)
+        public SqlServerEventStore(IOptions<InfrastructureConfiguration> infrastructureOptions, IEventPublisher publisher, IEventDataReader eventDataReader = null)
         {
             var options = infrastructureOptions.Value;
 
             _connectionString = options.EventStoreConnectionString;
             _administrationConnectionString = options.EventStoreAdministrationConnectionString;
             _publisher = publisher;
+
+            _jsonSerializerSettings = new JsonSerializerSettings().ConfigureForOrganisationRegistryEventStore();
+            _eventDataReader = eventDataReader ?? new SqlServerEventReader(GetConnection);
 
             SqlMapper.Settings.CommandTimeout = options.EventStoreCommandTimeout;
         }
@@ -134,7 +139,7 @@ SELECT CAST(SCOPE_IDENTITY() as int)",
                                     Version = envelope.Version,
                                     Name = envelope.Body.GetType().FullName,
                                     Timestamp = envelope.Timestamp,
-                                    Data = JsonConvert.SerializeObject(envelope.Body),
+                                    Data = JsonConvert.SerializeObject(envelope.Body, _jsonSerializerSettings),
                                     Ip = envelope.Ip ?? string.Empty,
                                     LastName = envelope.LastName ?? string.Empty,
                                     FirstName = envelope.FirstName ?? string.Empty,
@@ -168,24 +173,7 @@ SELECT CAST(SCOPE_IDENTITY() as int)",
 
         public IEnumerable<IEvent> Get<T>(Guid aggregateId, int fromVersion)
         {
-            List<EventData> events;
-
-            using (var db = GetConnection())
-            {
-                db.Open();
-
-                events = db.Query<EventData>(
-@"SELECT [Id], [Version], [Name], [Timestamp], [Data], [Ip], [LastName], [FirstName], [UserId]
-FROM [OrganisationRegistry].[Events]
-WHERE [Id] = @Id
-AND [Version] > @Version
-ORDER BY Version ASC",
-                    new
-                    {
-                        Id = aggregateId,
-                        Version = fromVersion
-                    }).ToList();
-            }
+            var events = _eventDataReader.Get(aggregateId, fromVersion);
 
             return events
                 .Select(e =>
@@ -193,7 +181,7 @@ ORDER BY Version ASC",
                     try
                     {
                         var eventType = e.Name.ToEventType();
-                        return (IEvent)JsonConvert.DeserializeObject(e.Data, eventType);
+                        return (IEvent)JsonConvert.DeserializeObject(e.Data, eventType, _jsonSerializerSettings);
                     }
                     catch (InvalidCastException ex)
                     {
@@ -204,84 +192,36 @@ ORDER BY Version ASC",
 
         public int GetEventEnvelopeCount(DateTimeOffset? dateTimeOffset = null)
         {
-            using (var db = GetConnection())
-            {
-                db.Open();
-
-                return db.ExecuteScalar<int>(
-                    @"SELECT count(*)
-FROM [OrganisationRegistry].[Events]
-WHERE [Timestamp] > @DateTime",
-                    new
-                    {
-                        DateTime = dateTimeOffset ?? DateTimeOffset.MinValue
-                    });
-            }
+            return _eventDataReader.GetEventEnvelopeCount(dateTimeOffset);
         }
 
         public IEnumerable<IEnvelope> GetEventEnvelopes(params Type[] eventTypes)
         {
-            List<EventData> events;
+            var events = _eventDataReader.GetEventEnvelopes(eventTypes);
 
-            using (var db = GetConnection())
-            {
-                db.Open();
-
-                events = db.Query<EventData>(
-@"SELECT [Id], [Number], [Version], [Name], [Timestamp], [Data], [Ip], [LastName], [FirstName], [UserId]
-FROM [OrganisationRegistry].[Events]
-WHERE [Name] IN @EventTypes
-ORDER BY [Number] ASC",
-                    new
-                    {
-                        EventTypes = eventTypes.GetEventTypeNames()
-                    }).ToList();
-            }
-
-            return ParseEventsIntoEnvelopes(events);
+            return ParseEventsIntoEnvelopes(events, _jsonSerializerSettings);
         }
 
         public IEnumerable<IEnvelope> GetEventEnvelopesAfter(int eventNumber)
         {
-            List<EventData> events;
+            var events = _eventDataReader.GetEventEnvelopesAfter(eventNumber);
 
-            using (var db = GetConnection())
-            {
-                db.Open();
-
-                events = SelectEvents(eventNumber, db);
-            }
-
-            return ParseEventsIntoEnvelopes(events);
+            return ParseEventsIntoEnvelopes(events, _jsonSerializerSettings);
         }
 
         public IEnumerable<IEnvelope> GetEventEnvelopesAfter(int eventNumber, int maxEvents, params Type[] eventTypesToInclude)
         {
-            List<EventData> events;
+            var events = _eventDataReader.GetEventEnvelopesAfter(eventNumber, maxEvents, eventTypesToInclude);
 
-            using (var db = GetConnection())
-            {
-                db.Open();
-
-                events = eventTypesToInclude.Any()
-                    ? SelectMaxEvents(eventNumber, maxEvents, db, eventTypesToInclude)
-                    : SelectMaxEvents(eventNumber, maxEvents, db);
-            }
-
-            return ParseEventsIntoEnvelopes(events);
+            return ParseEventsIntoEnvelopes(events, _jsonSerializerSettings);
         }
 
         public int GetLastEvent()
         {
-            using (var db = GetConnection())
-            {
-                db.Open();
-
-                return db.ExecuteScalar<int>(@"SELECT Max(Number) FROM [OrganisationRegistry].[Events]");
-            }
+            return _eventDataReader.GetLastEvent();
         }
 
-        private static IEnumerable<IEnvelope> ParseEventsIntoEnvelopes(IEnumerable<EventData> events)
+        private static IEnumerable<IEnvelope> ParseEventsIntoEnvelopes(IEnumerable<EventData> events, JsonSerializerSettings settings)
         {
             return events
                 .Select(e =>
@@ -289,7 +229,7 @@ ORDER BY [Number] ASC",
                     try
                     {
                         var eventType = e.Name.ToEventType();
-                        var @event = (IEvent)JsonConvert.DeserializeObject(e.Data, eventType);
+                        var @event = (IEvent)JsonConvert.DeserializeObject(e.Data, eventType, settings);
                         return @event.ToEnvelope(e.Number, e.Ip, e.LastName, e.FirstName, e.UserId);
                     }
                     catch (InvalidCastException ex)
@@ -297,49 +237,6 @@ ORDER BY [Number] ASC",
                         throw new InvalidCastException($"Failed to cast '{e.Name}' with body: {e.Data}", ex);
                     }
                 });
-        }
-
-        private static List<EventData> SelectEvents(int eventNumber, IDbConnection db)
-        {
-            return db.Query<EventData>(
-                @"SELECT [Id], [Number], [Version], [Name], [Timestamp], [Data], [Ip], [LastName], [FirstName], [UserId]
-FROM [OrganisationRegistry].[Events]
-WHERE [Number] > @Number
-ORDER BY [Number] ASC",
-                new
-                {
-                    Number = eventNumber
-                }).ToList();
-        }
-
-        private static List<EventData> SelectMaxEvents(int eventNumber, int maxEvents, IDbConnection db)
-        {
-            return db.Query<EventData>(
-                @"SELECT TOP(@MaxEvents) [Id], [Number], [Version], [Name], [Timestamp], [Data], [Ip], [LastName], [FirstName], [UserId]
-FROM [OrganisationRegistry].[Events]
-WHERE [Number] > @Number
-ORDER BY [Number] ASC",
-                new
-                {
-                    MaxEvents = maxEvents,
-                    Number = eventNumber
-                }).ToList();
-        }
-
-        private static List<EventData> SelectMaxEvents(int eventNumber, int maxEvents, IDbConnection db, IEnumerable<Type> eventTypesToInclude)
-        {
-            return db.Query<EventData>(
-@"SELECT TOP(@MaxEvents) [Id], [Number], [Version], [Name], [Timestamp], [Data], [Ip], [LastName], [FirstName], [UserId]
-FROM [OrganisationRegistry].[Events]
-WHERE [Number] > @Number
-AND [Name] IN @EventTypesToInclude
-ORDER BY [Number] ASC",
-                new
-                {
-                    MaxEvents = maxEvents,
-                    Number = eventNumber,
-                    EventTypesToInclude = eventTypesToInclude.GetEventTypeNames()
-                }).ToList();
         }
     }
 }

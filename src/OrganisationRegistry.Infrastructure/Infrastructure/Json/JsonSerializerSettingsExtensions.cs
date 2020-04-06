@@ -30,5 +30,23 @@ namespace OrganisationRegistry.Infrastructure.Infrastructure.Json
 
             return source;
         }
+
+        public static JsonSerializerSettings ConfigureForOrganisationRegistryEventStore(this JsonSerializerSettings source)
+        {
+            var wegwijsSettings = JsonSerializerSettingsProvider.CreateSerializerSettings();
+
+            source.ContractResolver = wegwijsSettings.ContractResolver;
+
+            var resolver = source.ContractResolver as DefaultContractResolver;
+            if (resolver != null)
+                resolver.NamingStrategy.ProcessDictionaryKeys = false;
+
+            source.DateFormatHandling = DateFormatHandling.IsoDateFormat;
+            source.DateFormatString = "yyyy-MM-dd";
+            source.Converters.Add(new StringEnumConverter { CamelCaseText = true });
+            source.Converters.Add(new GuidConverter());
+
+            return source;
+        }
     }
 }

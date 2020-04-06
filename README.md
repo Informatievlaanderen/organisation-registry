@@ -36,7 +36,7 @@ To start the projections for the first time:
 ```bash
 npm install
 npm run start:hmr
-# browse to http://localhost:3000
+# browse to https://localhost
 ```
 
 #### To add a migration:

@@ -97,10 +97,10 @@ export class OrganisationInfoEditComponent implements OnInit {
     return this.form.enabled && this.form.valid;
   }
 
-  edit(value: UpdateOrganisationRequest) {
+  edit() {
     this.form.disable();
 
-    this.organisationService.update(this.organisationId, value)
+    this.organisationService.update(this.organisationId, this.form.value)
       .finally(() => this.enableForm())
       .subscribe(
         result => {

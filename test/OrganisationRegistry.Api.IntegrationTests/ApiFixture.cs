@@ -56,7 +56,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
                         server.AddServerHeader = false;
                         server.Listen(IPAddress.Any, 2443, listenOptions => listenOptions.UseHttps(cert));
                     })
-                    .UseUrls("https://api.organisatie.dev-basisregisters.vlaanderen:2443");
+                    .UseUrls("https://api.organisatie.dev-vlaanderen.local:2443");
             }
             else
             {

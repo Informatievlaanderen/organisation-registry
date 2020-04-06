@@ -1,3 +1,51 @@
+# [1.35.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.34.0...v1.35.0) (2020-04-03)
+
+
+### Features
+
+* update packages according to npm audit ([ec6dd0a](https://github.com/informatievlaanderen/organisation-registry/commit/ec6dd0a1fc9f29ddc47b48c7a0a0e6897fc44593))
+
+# [1.34.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.33.1...v1.34.0) (2020-04-02)
+
+
+### Features
+
+* commit updated package-lock after revert ([d6957ed](https://github.com/informatievlaanderen/organisation-registry/commit/d6957ed616b253dd0051c4addc8156a19c64f560))
+* lock versions with shrinkwrap ([7a57672](https://github.com/informatievlaanderen/organisation-registry/commit/7a576724ccd926cef80d927cfa69b58ce3a6c9d8))
+
+## [1.33.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.33.0...v1.33.1) (2020-04-01)
+
+
+### Bug Fixes
+
+* don't trim spaces when deserializing events ([6b875f0](https://github.com/informatievlaanderen/organisation-registry/commit/6b875f0fed845f5883b817b228d3d1e931d66b2f))
+
+# [1.33.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.32.0...v1.33.0) (2020-04-01)
+
+
+### Bug Fixes
+
+* use form to include disabled fields ([880d905](https://github.com/informatievlaanderen/organisation-registry/commit/880d90599bdb00cd2f268cd2115adad7f83d1295))
+
+
+### Features
+
+* update uris to acm changes of 2020-03-12 ([f896dd1](https://github.com/informatievlaanderen/organisation-registry/commit/f896dd1cd0ba8f54f56414c725ecb898229d36ec))
+
+# [1.32.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.31.0...v1.32.0) (2020-03-27)
+
+
+### Features
+
+* show previous org name in label list after coupling with kbo ([15a8d8f](https://github.com/informatievlaanderen/organisation-registry/commit/15a8d8f7caeb6b8addf9984544f516eb903b92b1))
+
+# [1.31.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.30.1...v1.31.0) (2020-03-25)
+
+
+### Features
+
+* refactor and add organisation tests ([d38a92d](https://github.com/informatievlaanderen/organisation-registry/commit/d38a92d5f45442c9461d361b1615bc1483388c62))
+
 ## [1.30.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.30.0...v1.30.1) (2020-03-24)
 
 
