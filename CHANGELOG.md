@@ -1,3 +1,10 @@
+## [1.36.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.36.0...v1.36.1) (2020-04-06)
+
+
+### Bug Fixes
+
+* copy kbo mutations dockerfile in csproj ([152d27b](https://github.com/informatievlaanderen/organisation-registry/commit/152d27b5ee57a2756a8550332d6aa28836c7fd61))
+
 # [1.36.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.35.0...v1.36.0) (2020-04-06)
 
 
