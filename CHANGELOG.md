@@ -1,3 +1,10 @@
+# [1.36.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.35.0...v1.36.0) (2020-04-06)
+
+
+### Features
+
+* add docker and init file ([55a6233](https://github.com/informatievlaanderen/organisation-registry/commit/55a623395c5c9f2bcf834d035d045cfc81b20b1d))
+
 # [1.35.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.34.0...v1.35.0) (2020-04-03)
 
 
