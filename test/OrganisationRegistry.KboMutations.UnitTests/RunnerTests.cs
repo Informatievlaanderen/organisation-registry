@@ -2,8 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
+    using Api.Status;
     using Configuration;
     using FluentAssertions;
+    using Infrastructure;
     using Infrastructure.Configuration;
     using Infrastructure.Events;
     using Microsoft.Extensions.Logging;
@@ -34,7 +36,8 @@
                     togglesConfiguration,
                     kboMutationsConfiguration,
                     Mock.Of<IKboMutationsFetcher>(),
-                    Mock.Of<IKboMutationsPersister>());
+                    Mock.Of<IKboMutationsPersister>(),
+                    Mock.Of<IExternalIpFetcher>());
 
             runner.Run().Should().BeFalse();
         }
@@ -51,7 +54,8 @@
                     togglesConfiguration,
                     kboMutationsConfiguration,
                     Mock.Of<IKboMutationsFetcher>(),
-                    Mock.Of<IKboMutationsPersister>());
+                    Mock.Of<IKboMutationsPersister>(),
+                    Mock.Of<IExternalIpFetcher>());
 
             runner.Run().Should().BeTrue();
         }
@@ -76,7 +80,8 @@
                 togglesConfiguration,
                 kboMutationsConfiguration,
                 kboFtpClientMock.Object,
-                Mock.Of<IKboMutationsPersister>());
+                Mock.Of<IKboMutationsPersister>(),
+                Mock.Of<IExternalIpFetcher>());
 
             runner.Run().Should().BeTrue();
         }
@@ -104,7 +109,8 @@
                     togglesConfiguration,
                     kboMutationsConfiguration,
                     kboFtpClientMock.Object,
-                    Mock.Of<IKboMutationsPersister>());
+                    Mock.Of<IKboMutationsPersister>(),
+                    Mock.Of<IExternalIpFetcher>());
 
             runner.Run();
 
@@ -148,7 +154,8 @@
                     togglesConfiguration,
                     kboMutationsConfiguration,
                     kboFtpClientMock.Object,
-                    kboMutationsPersisterMock.Object);
+                    kboMutationsPersisterMock.Object,
+                    Mock.Of<IExternalIpFetcher>());
 
             runner.Run();
 
