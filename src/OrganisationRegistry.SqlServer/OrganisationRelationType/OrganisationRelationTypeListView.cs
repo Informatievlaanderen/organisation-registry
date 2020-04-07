@@ -57,14 +57,15 @@ namespace OrganisationRegistry.SqlServer.OrganisationRelationType
 
         public OrganisationRelationTypeListView(
             ILogger<OrganisationRelationTypeListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationTypeCreated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationRelationType = new OrganisationRelationTypeListItem
                 {
@@ -80,7 +81,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationRelationType
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationRelationType = context.OrganisationRelationTypeList.SingleOrDefault(x => x.Id == message.Body.OrganisationRelationTypeId);
                 if (organisationRelationType == null)

@@ -77,8 +77,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public OrganisationOpeningHourListItemView(
             ILogger<OrganisationOpeningHourListItemView> logger,
-            IEventStore eventStore)
-            : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory)
+            : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
@@ -114,7 +115,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.OrganisationOpeningHourList.Add(openingHourListItem);
                 context.SaveChanges();
@@ -126,7 +127,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             DbTransaction dbTransaction,
             IEnvelope<OrganisationOpeningHourUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var label = context.OrganisationOpeningHourList.SingleOrDefault(item => item.OrganisationOpeningHourId == message.Body.OrganisationOpeningHourId);
 

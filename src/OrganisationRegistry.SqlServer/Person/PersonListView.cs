@@ -65,8 +65,6 @@ namespace OrganisationRegistry.SqlServer.Person
         IEventHandler<PersonUpdated>
     {
         private readonly IEventStore _eventStore;
-        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
-
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
         public enum ProjectionTables
@@ -77,16 +75,14 @@ namespace OrganisationRegistry.SqlServer.Person
         public PersonListView(
             ILogger<PersonListView> logger,
             IEventStore eventStore,
-            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
-            _contextFactory = contextFactory ?? ((connection, transaction) =>
-                new OrganisationRegistryTransactionalContext(connection, transaction));
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonCreated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var person = new PersonListItem
                 {
@@ -105,7 +101,7 @@ namespace OrganisationRegistry.SqlServer.Person
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var person = context.PersonList.SingleOrDefault(x => x.Id == message.Body.PersonId);
                 if (person == null)

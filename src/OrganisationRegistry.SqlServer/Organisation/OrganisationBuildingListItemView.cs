@@ -81,14 +81,15 @@
 
         public OrganisationBuildingListView(
             ILogger<OrganisationBuildingListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BuildingUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationBuildings = context.OrganisationBuildingList.Where(x => x.BuildingId == message.Body.BuildingId);
                 if (!organisationBuildings.Any())
@@ -112,7 +113,7 @@
                 message.Body.ValidFrom,
                 message.Body.ValidTo);
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.OrganisationBuildingList.Add(organisationBuildingListItem);
                 context.SaveChanges();
@@ -121,7 +122,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationBuildingListItem = context.OrganisationBuildingList.Single(b => b.OrganisationBuildingId == message.Body.OrganisationBuildingId);
 

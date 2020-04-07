@@ -60,14 +60,15 @@
 
         public LifecyclePhaseTypeListView(
             ILogger<LifecyclePhaseTypeListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LifecyclePhaseTypeCreated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var lifecyclePhaseType = new LifecyclePhaseTypeListItem
                 {
@@ -84,7 +85,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LifecyclePhaseTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var lifecyclePhaseType = context.LifecyclePhaseTypeList.SingleOrDefault(x => x.Id == message.Body.LifecyclePhaseTypeId);
                 if (lifecyclePhaseType == null)

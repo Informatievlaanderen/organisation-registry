@@ -53,8 +53,6 @@ namespace OrganisationRegistry.SqlServer.Security
 
         private readonly IMemoryCaches _memoryCaches;
         private readonly IEventStore _eventStore;
-        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
-
         private ITree<OvoNumber> _tree;
 
         private class OvoNumber : INodeValue
@@ -71,12 +69,10 @@ namespace OrganisationRegistry.SqlServer.Security
             ILogger<OrganisationTreeView> logger,
             IMemoryCaches memoryCaches,
             IEventStore eventStore,
-            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _memoryCaches = memoryCaches;
             _eventStore = eventStore;
-            _contextFactory = contextFactory ?? ((connection, transaction) =>
-                new OrganisationRegistryTransactionalContext(connection, transaction));
 
             Initialise();
         }
@@ -107,7 +103,7 @@ namespace OrganisationRegistry.SqlServer.Security
             var changes = _tree.GetChanges().ToList();
             _tree.AcceptChanges();
 
-            UpdateChanges(dbConnection, dbTransaction, _contextFactory, changes);
+            UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreatedFromKbo> message)
@@ -116,7 +112,7 @@ namespace OrganisationRegistry.SqlServer.Security
             var changes = _tree.GetChanges().ToList();
             _tree.AcceptChanges();
 
-            UpdateChanges(dbConnection, dbTransaction, _contextFactory, changes);
+            UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentAssignedToOrganisation> message)
@@ -128,7 +124,7 @@ namespace OrganisationRegistry.SqlServer.Security
             var changes = _tree.GetChanges().ToList();
             _tree.AcceptChanges();
 
-            UpdateChanges(dbConnection, dbTransaction, _contextFactory, changes);
+            UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentClearedFromOrganisation> message)
@@ -139,16 +135,16 @@ namespace OrganisationRegistry.SqlServer.Security
             var changes = _tree.GetChanges().ToList();
             _tree.AcceptChanges();
 
-            UpdateChanges(dbConnection, dbTransaction, _contextFactory, changes);
+            UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
         }
 
         private static void UpdateChanges(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
-            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory,
+            IContextFactory contextFactory,
             IEnumerable<INode<OvoNumber>> changes)
         {
-            using (var context = contextFactory(dbConnection, dbTransaction))
+            using (var context = contextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 foreach (var change in changes)
                 {

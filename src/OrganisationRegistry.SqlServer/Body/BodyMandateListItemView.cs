@@ -135,16 +135,12 @@ namespace OrganisationRegistry.SqlServer.Body
         }
 
         private readonly IEventStore _eventStore;
-        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
-
         public BodyMandateListView(
             ILogger<BodyMandateListView> logger,
             IEventStore eventStore,
-            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
-            _contextFactory = contextFactory ?? ((connection, transaction) =>
-                new OrganisationRegistryTransactionalContext(connection, transaction));
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonToBodySeat> message)
@@ -174,7 +170,7 @@ namespace OrganisationRegistry.SqlServer.Body
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.BodyMandateList.Add(bodyMandateListItem);
                 context.SaveChanges();
@@ -206,7 +202,7 @@ namespace OrganisationRegistry.SqlServer.Body
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.BodyMandateList.Add(bodyMandateListItem);
                 context.SaveChanges();
@@ -238,7 +234,7 @@ namespace OrganisationRegistry.SqlServer.Body
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.BodyMandateList.Add(bodyMandateListItem);
                 context.SaveChanges();
@@ -247,7 +243,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedPersonToBodySeat> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandateListItem = context.BodyMandateList.Single(item => item.BodyMandateId == message.Body.BodyMandateId);
 
@@ -274,7 +270,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedFunctionTypeToBodySeat> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandateListItem = context.BodyMandateList.Single(item => item.BodyMandateId == message.Body.BodyMandateId);
 
@@ -300,7 +296,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedOrganisationToBodySeat> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandateListItem = context.BodyMandateList.Single(item => item.BodyMandateId == message.Body.BodyMandateId);
 
@@ -326,7 +322,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonAssignedToBodyMandate> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandateListItem = context.BodyMandateList.Single(item => item.BodyMandateId == message.Body.BodyMandateId);
 
@@ -339,7 +335,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonClearedFromBodyMandate> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandateListItem = context.BodyMandateList.Single(item => item.BodyMandateId == message.Body.BodyMandateId);
 
@@ -352,7 +348,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandates = context
                     .BodyMandateList
@@ -374,7 +370,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandates = context
                     .BodyMandateList
@@ -389,22 +385,22 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
-            UpdateDelegatorName(dbConnection, dbTransaction, _contextFactory, message.Body.OrganisationId, message.Body.Name);
+            UpdateDelegatorName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
-            UpdateDelegatorName(dbConnection, dbTransaction, _contextFactory, message.Body.OrganisationId, message.Body.Name);
+            UpdateDelegatorName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
         }
 
         private static void UpdateDelegatorName(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
-            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory,
+            IContextFactory contextFactory,
             Guid organisationId,
             string delegatorName)
         {
-            using (var context = contextFactory(dbConnection, dbTransaction))
+            using (var context = contextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandates = context
                     .BodyMandateList
@@ -422,7 +418,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandates = context
                     .BodyMandateList
@@ -442,7 +438,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeUpdated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandates = context
                     .BodyMandateList
@@ -461,7 +457,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatNumberAssigned> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandates = context
                     .BodyMandateList

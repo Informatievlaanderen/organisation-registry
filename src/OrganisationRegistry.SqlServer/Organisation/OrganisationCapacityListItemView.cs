@@ -97,21 +97,17 @@ namespace OrganisationRegistry.SqlServer.Organisation
         }
 
         private readonly IEventStore _eventStore;
-        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
-
         public OrganisationCapacityListView(
             ILogger<OrganisationCapacityListView> logger,
             IEventStore eventStore,
-            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
+            IContextFactory contextFactory = null) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
-            _contextFactory = contextFactory ?? ((connection, transaction) =>
-                new OrganisationRegistryTransactionalContext(connection, transaction));
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<CapacityUpdated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationCapacities = context.OrganisationCapacityList.Where(x => x.CapacityId == message.Body.CapacityId);
                 if (!organisationCapacities.Any())
@@ -126,7 +122,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationCapacities = context.OrganisationCapacityList.Where(x => x.FunctionId == message.Body.FunctionId);
                 if (!organisationCapacities.Any())
@@ -141,7 +137,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationCapacities = context.OrganisationCapacityList.Where(x => x.PersonId == message.Body.PersonId);
                 if (!organisationCapacities.Any())
@@ -156,7 +152,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LocationUpdated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationCapacities = context.OrganisationCapacityList.Where(x => x.LocationId == message.Body.LocationId);
                 if (!organisationCapacities.Any())
@@ -188,7 +184,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.OrganisationCapacityList.Add(organisationCapacityListItem);
                 context.SaveChanges();
@@ -197,7 +193,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var key = context.OrganisationCapacityList.SingleOrDefault(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
 

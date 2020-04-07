@@ -73,14 +73,15 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public BodyBodyClassificationListView(
             ILogger<BodyBodyClassificationListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyBodyClassifications =
                     context.BodyBodyClassificationList
@@ -98,7 +99,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyBodyClassifications =
                     context.BodyBodyClassificationList.Where(x =>
@@ -132,7 +133,7 @@ namespace OrganisationRegistry.SqlServer.Body
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.BodyBodyClassificationList.Add(bodyBodyClassificationListItem);
                 context.SaveChanges();
@@ -141,7 +142,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyBodyClassificationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var key = context.BodyBodyClassificationList.SingleOrDefault(item => item.BodyBodyClassificationId == message.Body.BodyBodyClassificationId);
 

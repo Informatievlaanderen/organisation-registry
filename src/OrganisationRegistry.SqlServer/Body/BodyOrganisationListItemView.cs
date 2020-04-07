@@ -61,36 +61,32 @@ namespace OrganisationRegistry.SqlServer.Body
         }
 
         private readonly IEventStore _eventStore;
-        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
-
         public BodyOrganisationListView(
             ILogger<BodyOrganisationListView> logger,
             IEventStore eventStore,
-            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
-            _contextFactory = contextFactory ?? ((connection, transaction) =>
-                new OrganisationRegistryTransactionalContext(connection, transaction));
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
-            UpdateOrganisationName(dbConnection, dbTransaction, _contextFactory, message.Body.OrganisationId, message.Body.Name);
+            UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
-            UpdateOrganisationName(dbConnection, dbTransaction, _contextFactory, message.Body.OrganisationId, message.Body.Name);
+            UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
         }
 
         private static void UpdateOrganisationName(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
-            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory,
+            IContextFactory contextFactory,
             Guid organisationId,
             string organisationName)
         {
-            using (var context = contextFactory(dbConnection, dbTransaction))
+            using (var context = contextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisations = context.BodyOrganisationList.Where(x => x.OrganisationId == organisationId);
                 if (!organisations.Any())
@@ -115,7 +111,7 @@ namespace OrganisationRegistry.SqlServer.Body
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.BodyOrganisationList.Add(organisationParentListItem);
                 context.SaveChanges();
@@ -124,7 +120,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisation = context.BodyOrganisationList.SingleOrDefault(item => item.BodyOrganisationId == message.Body.BodyOrganisationId);
 

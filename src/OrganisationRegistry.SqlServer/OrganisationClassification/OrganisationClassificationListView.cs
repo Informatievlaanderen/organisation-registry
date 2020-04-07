@@ -79,14 +79,15 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
 
         public OrganisationClassificationListView(
             ILogger<OrganisationClassificationListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationCreated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationClassification = new OrganisationClassificationListItem
                 {
@@ -106,7 +107,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationClassification = context.OrganisationClassificationList.SingleOrDefault(x => x.Id == message.Body.OrganisationClassificationId);
                 if (organisationClassification == null)
@@ -125,7 +126,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationClassifications = context.OrganisationClassificationList.Where(x => x.OrganisationClassificationTypeId == message.Body.OrganisationClassificationTypeId);
                 if (!organisationClassifications.Any())

@@ -55,14 +55,15 @@ namespace OrganisationRegistry.SqlServer.SeatType
 
         public SeatTypeListView(
             ILogger<SeatTypeListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeCreated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var seatType = new SeatTypeListItem
                 {
@@ -78,7 +79,7 @@ namespace OrganisationRegistry.SqlServer.SeatType
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var seatType = context.SeatTypeList.SingleOrDefault(x => x.Id == message.Body.SeatTypeId);
                 if (seatType == null)

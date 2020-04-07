@@ -3,9 +3,7 @@
 namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
 {
     using System;
-    using System.Collections.Generic;
     using System.Data.Common;
-    using System.Data.SqlClient;
     using System.IO;
     using System.Reflection;
     using Autofac;
@@ -21,19 +19,11 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
     using OrganisationRegistry.Infrastructure.Bus;
     using OrganisationRegistry.Infrastructure.Config;
     using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Infrastructure.EventStore;
 
     public abstract class ListViewTestBase
     {
-        private readonly SqlServerFixture _fixture;
-        private readonly SqlConnection _sqlConnection;
-        private readonly SqlTransaction _transaction;
-        private readonly ServiceCollection _serviceCollection;
         private InProcessBus _inProcessBus;
-        private readonly ServiceProvider _serviceProvider;
-        private SqlServerEventStore _sqlServerEventStore;
-        private List<Func<IEventStore, object>> _handlers;
-        private OrganisationRegistryContext _context;
+
         public DbContextOptions<OrganisationRegistryContext> ContextOptions { get; }
         protected OrganisationRegistryContext Context => new OrganisationRegistryContext(ContextOptions);
 
@@ -52,20 +42,12 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
                     $"org-es-test-{Guid.NewGuid()}",
                     builder => { }).Options;
 
-            _context = new OrganisationRegistryContext(ContextOptions);
-
-            RunProgram(configuration);
-        }
-
-        private void RunProgram(IConfiguration configuration)
-        {
             var services = new ServiceCollection();
 
             var app = ConfigureServices(services, configuration, ContextOptions);
             UseOrganisationRegistryEventSourcing(app);
 
             _inProcessBus = app.GetService<InProcessBus>();
-
         }
 
         private static IServiceProvider ConfigureServices(IServiceCollection services,
@@ -73,8 +55,6 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
             DbContextOptions<OrganisationRegistryContext> dbContextOptions)
         {
             services.AddOptions();
-
-            var serviceProvider = services.BuildServiceProvider();
 
             var builder = new ContainerBuilder();
             builder.RegisterModule(new TestRunnerModule(configuration, services, new NullLoggerFactory(), dbContextOptions));
@@ -127,8 +107,9 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
                 .AsClosedTypesOf(typeof(IEventHandler<>))
                 .SingleInstance();
 
-            builder.RegisterInstance<Func<DbConnection, DbTransaction, OrganisationRegistryContext>>(
-                (dbConn, dbTrans) => new OrganisationRegistryContext(_dbContextOptions));
+            builder.RegisterInstance<IContextFactory>(
+                    new TestContextFactory(_dbContextOptions))
+                .SingleInstance();
 
             builder.Populate(_services);
         }

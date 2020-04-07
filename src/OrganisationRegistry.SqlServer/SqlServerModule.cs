@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.SqlServer
 {
     using System;
+    using System.Data.Common;
     using System.Data.SqlClient;
     using System.Reflection;
     using Autofac;
@@ -87,6 +88,10 @@ namespace OrganisationRegistry.SqlServer
             builder.RegisterType<MemoryCaches>()
                 .As<MemoryCaches>()
                 .As<IMemoryCaches>()
+                .SingleInstance();
+
+            builder.RegisterType<ContextFactory>()
+                .As<IContextFactory>()
                 .SingleInstance();
 
             builder.RegisterAssemblyTypes(typeof(OrganisationRegistrySqlServerAssemblyTokenClass).GetTypeInfo().Assembly)

@@ -51,14 +51,15 @@ namespace OrganisationRegistry.SqlServer.BodyClassificationType
 
         public BodyClassificationTypeListView(
             ILogger<BodyClassificationTypeListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationTypeCreated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyClassificationType = new BodyClassificationTypeListItem
                 {
@@ -73,7 +74,7 @@ namespace OrganisationRegistry.SqlServer.BodyClassificationType
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyClassificationType = context.BodyClassificationTypeList.SingleOrDefault(x => x.Id == message.Body.BodyClassificationTypeId);
                 if (bodyClassificationType == null)

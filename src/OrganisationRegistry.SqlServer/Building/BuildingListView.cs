@@ -56,7 +56,8 @@
 
         public BuildingListView(
             ILogger<BuildingListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
@@ -70,7 +71,7 @@
                 VimId = message.Body.VimId
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.BuildingList.Add(building);
                 context.SaveChanges();
@@ -79,7 +80,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BuildingUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var building = context.BuildingList.SingleOrDefault(x => x.Id == message.Body.BuildingId);
                 if (building == null)

@@ -54,23 +54,16 @@
         IEventHandler<FormalFrameworkAssignedToOrganisation>,
         IReactionHandler<DayHasPassed>
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _reactionContextFactory;
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
-        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
-
         public FutureActiveOrganisationFormalFrameworkListView(
             ILogger<FutureActiveOrganisationFormalFrameworkListView> logger,
-            Func<Owned<OrganisationRegistryContext>> reactionContextFactory,
             IEventStore eventStore,
             IDateTimeProvider dateTimeProvider,
-            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
-            _reactionContextFactory = reactionContextFactory;
             _eventStore = eventStore;
             _dateTimeProvider = dateTimeProvider;
-            _contextFactory = contextFactory ?? ((connection, transaction) =>
-                new OrganisationRegistryTransactionalContext(connection, transaction));
 
         }
 
@@ -87,13 +80,13 @@
             if (validFrom.IsInPastOf(_dateTimeProvider.Today, true))
                 return;
 
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
                 InsertFutureActiveOrganisationFormalFramework(context, message);
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkUpdated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var validFrom = new ValidFrom(message.Body.ValidFrom);
                 if (validFrom.IsInPastOf(_dateTimeProvider.Today, true))
@@ -109,13 +102,13 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkAssignedToOrganisation> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
                 DeleteFutureActiveOrganisationFormalFramework(context, message.Body.OrganisationFormalFrameworkId);
         }
 
         public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = _reactionContextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var contextFutureActiveOrganisationFormalFrameworkList = context.FutureActiveOrganisationFormalFrameworkList.ToList();
                 return contextFutureActiveOrganisationFormalFrameworkList

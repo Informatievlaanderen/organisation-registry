@@ -70,35 +70,31 @@ namespace OrganisationRegistry.SqlServer.Organisation
         }
 
         private readonly IEventStore _eventStore;
-        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
-
         public OrganisationFormalFrameworkListView(
             ILogger<OrganisationFormalFrameworkListView> logger,
             IEventStore eventStore,
-            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
-            _contextFactory = contextFactory ?? ((connection, transaction) =>
-                new OrganisationRegistryTransactionalContext(connection, transaction));
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
-            UpdateParentOrganisationName(dbConnection, dbTransaction, _contextFactory, message.Body.OrganisationId, message.Body.Name);
+            UpdateParentOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
-            UpdateParentOrganisationName(dbConnection, dbTransaction, _contextFactory, message.Body.OrganisationId, message.Body.Name);
+            UpdateParentOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
         }
 
         private static void UpdateParentOrganisationName(DbConnection dbConnection,
             DbTransaction dbTransaction,
-            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory,
+            IContextFactory contextFactory,
             Guid organisationId,
             string organisationName)
         {
-            using (var context = contextFactory(dbConnection, dbTransaction))
+            using (var context = contextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.OrganisationFormalFrameworkList
                     .Where(x => x.ParentOrganisationId == organisationId)
@@ -111,7 +107,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkUpdated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationFormalFrameworks = context.OrganisationFormalFrameworkList.Where(x => x.FormalFrameworkId == message.Body.FormalFrameworkId);
                 if (!organisationFormalFrameworks.Any())
@@ -138,7 +134,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.OrganisationFormalFrameworkList.Add(organisationFormalFrameworkListItem);
                 context.SaveChanges();
@@ -147,7 +143,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkUpdated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationFormalFramework = context.OrganisationFormalFrameworkList.SingleOrDefault(item => item.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
 

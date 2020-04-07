@@ -73,16 +73,12 @@ namespace OrganisationRegistry.SqlServer.FormalFramework
         }
 
         private readonly IEventStore _eventStore;
-        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
-
         public FormalFrameworkListView(
             ILogger<FormalFrameworkListView> logger,
             IEventStore eventStore,
-            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
-            _contextFactory = contextFactory ?? ((connection, transaction) =>
-                new OrganisationRegistryTransactionalContext(connection, transaction));
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkCreated> message)
@@ -96,7 +92,7 @@ namespace OrganisationRegistry.SqlServer.FormalFramework
                 FormalFrameworkCategoryName = message.Body.FormalFrameworkCategoryName
             };
 
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.FormalFrameworkList.Add(formalFramework);
                 context.SaveChanges();
@@ -105,7 +101,7 @@ namespace OrganisationRegistry.SqlServer.FormalFramework
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkUpdated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var formalFramework = context.FormalFrameworkList.SingleOrDefault(x => x.Id == message.Body.FormalFrameworkId);
                 if (formalFramework == null)
@@ -122,7 +118,7 @@ namespace OrganisationRegistry.SqlServer.FormalFramework
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkCategoryUpdated> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var formalFrameworks = context.FormalFrameworkList.Where(x => x.FormalFrameworkCategoryId == message.Body.FormalFrameworkCategoryId);
                 if (!formalFrameworks.Any())

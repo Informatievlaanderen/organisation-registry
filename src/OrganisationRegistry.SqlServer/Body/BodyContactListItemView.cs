@@ -67,14 +67,15 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public BodyContactListView(
             ILogger<BodyContactListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyContacts = context.BodyContactList.Where(x => x.ContactTypeId == message.Body.ContactTypeId);
                 if (!bodyContacts.Any())
@@ -100,7 +101,7 @@ namespace OrganisationRegistry.SqlServer.Body
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.BodyContactList.Add(organisationContactListItem);
                 context.SaveChanges();
@@ -109,7 +110,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyContactUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var contact = context.BodyContactList.SingleOrDefault(item => item.BodyContactId == message.Body.BodyContactId);
 

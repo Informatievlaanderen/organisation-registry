@@ -75,14 +75,15 @@ namespace OrganisationRegistry.SqlServer.BodyClassification
 
         public BodyClassificationListView(
             ILogger<BodyClassificationListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationCreated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyClassification = new BodyClassificationListItem
                 {
@@ -101,7 +102,7 @@ namespace OrganisationRegistry.SqlServer.BodyClassification
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyClassification = context.BodyClassificationList.SingleOrDefault(x => x.Id == message.Body.BodyClassificationId);
                 if (bodyClassification == null)
@@ -119,7 +120,7 @@ namespace OrganisationRegistry.SqlServer.BodyClassification
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyClassifications = context.BodyClassificationList.Where(x => x.BodyClassificationTypeId == message.Body.BodyClassificationTypeId);
                 if (!bodyClassifications.Any())

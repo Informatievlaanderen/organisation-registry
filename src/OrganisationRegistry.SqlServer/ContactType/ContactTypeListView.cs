@@ -51,16 +51,19 @@
 
         public ContactTypeListView(
             ILogger<ContactTypeListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public ContactTypeListView(ILogger<ContactTypeListView> logger) : base(logger) { }
+        public ContactTypeListView(
+            ILogger<ContactTypeListView> logger,
+            IContextFactory contextFactory) : base(logger, contextFactory) { }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeCreated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var contactType = new ContactTypeListItem
                 {
@@ -75,7 +78,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var contactType = context.ContactTypeList.SingleOrDefault(x => x.Id == message.Body.ContactTypeId);
                 if (contactType == null)

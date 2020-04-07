@@ -2,9 +2,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
 {
     using System;
     using System.Collections.Generic;
-    using Autofac.Features.OwnedInstances;
     using Day.Events;
-    using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Organisation.ScheduledActions.Parent;
@@ -22,18 +20,18 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
         private OrganisationCreatedTestDataBuilder _organisationCreated;
         private OrganisationCreatedTestDataBuilder _parentOrganisationCreated;
 
-        public WhenACurrentOrganisationParentsLastDayHasNotPassed(SqlServerFixture fixture) : base(fixture)
+        public WhenACurrentOrganisationParentsLastDayHasNotPassed(SqlServerFixture fixture) : base()
         {
         }
 
-        protected override ActiveOrganisationParentListView BuildReactionHandler(Func<OrganisationRegistryContext> context)
+        protected override ActiveOrganisationParentListView BuildReactionHandler(IContextFactory contextFactory)
         {
             return new ActiveOrganisationParentListView(
                 new Mock<ILogger<ActiveOrganisationParentListView>>().Object,
-                () => new Owned<OrganisationRegistryContext>(context(), this),
                 null,
                 new DateTimeProvider(),
-                (connection, transaction) => context());}
+                contextFactory);
+        }
 
         protected override IEnumerable<IEvent> Given()
         {

@@ -26,9 +26,13 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
     public abstract class Projection<T> : BaseProjection<T>, IProjectionMarker, IEventHandler<RebuildProjection>
     {
+        protected readonly IContextFactory ContextFactory;
         public abstract string[] ProjectionTableNames { get; }
 
-        protected Projection(ILogger<T> logger) : base(logger) { }
+        protected Projection(ILogger<T> logger, IContextFactory contextFactory) : base(logger)
+        {
+            ContextFactory = contextFactory;
+        }
 
         private const int BatchSize = 5000;
 
@@ -39,7 +43,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
             RebuildProjection(eventStore, dbConnection, dbTransaction, message, _ => { });
         }
 
-        public void RebuildProjection(IEventStore eventStore, DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message, Action<OrganisationRegistryTransactionalContext> customResetLogic)
+        public void RebuildProjection(IEventStore eventStore, DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message, Action<OrganisationRegistryContext> customResetLogic)
         {
             if (message.Body.ProjectionName != typeof(T).FullName)
                 return;
@@ -55,7 +59,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
             Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} started.", ProjectionTableNames, message.Body.ProjectionName);
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 customResetLogic(context);
 

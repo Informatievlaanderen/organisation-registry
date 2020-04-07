@@ -15,6 +15,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
     using System.Data.Common;
     using System.Linq;
     using OrganisationRegistry.Infrastructure.Events;
+    using SqlServer;
 
     public class BodySeatGenderRatioProjection :
         Projection<BodySeatGenderRatioProjection>,
@@ -62,13 +63,10 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
         IEventHandler<InitialiseProjection>
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
-
         public BodySeatGenderRatioProjection(
             ILogger<BodySeatGenderRatioProjection> logger,
-            Func<Owned<OrganisationRegistryContext>> contextFactory) : base(logger)
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
-            _contextFactory = contextFactory;
         }
 
         public override string[] ProjectionTableNames =>
@@ -101,7 +99,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
         private void CacheOrganisationName(Guid organisationId, string organisationName)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 //organisation cache
 
@@ -133,7 +131,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// </summary>
         private void UpdateOrganisationName(Guid organisationId, string organisationName)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 context
                     .BodySeatGenderRatioOrganisationList
@@ -159,7 +157,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBecameActive> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 context.BodySeatGenderRatioOrganisationList
                     .Where(item => item.OrganisationId == message.Body.OrganisationId)
@@ -191,7 +189,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBecameInactive> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 context.BodySeatGenderRatioOrganisationList
                     .Where(item => item.OrganisationId == message.Body.OrganisationId)
@@ -226,7 +224,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// </summary>
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonCreated> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var person = new BodySeatGenderRatioPersonListItem
                 {
@@ -245,7 +243,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// </summary>
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var person =
                     context
@@ -271,7 +269,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyRegistered> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var organisation = GetOrganisationForBodyFromCache(context, message.Body.BodyId);
 
@@ -301,7 +299,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// </summary>
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 context
                     .BodySeatGenderRatioBodyList
@@ -318,7 +316,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecyclePhaseAdded> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var items = context
                     .BodySeatGenderRatioBodyList
@@ -356,7 +354,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecyclePhaseUpdated> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var bodySeatGenderRatioBodyItem = context
                     .BodySeatGenderRatioBodyList
@@ -382,7 +380,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// </summary>
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatAdded> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var body =
                     context.BodySeatGenderRatioBodyList
@@ -412,7 +410,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// </summary>
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var postsPerType = context
                     .BodySeatGenderRatioBodyList
@@ -448,7 +446,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// </summary>
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonToBodySeat> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var bodySeatTypeId =
                     context
@@ -503,7 +501,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedPersonToBodySeat> message)
         {
             //called on update mandate
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var bodyMandate =
                     context
@@ -544,7 +542,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// </summary>
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedOrganisationToBodySeat> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var bodySeatTypeId =
                     context
@@ -582,7 +580,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// </summary>
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedOrganisationToBodySeat> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var item =
                     context
@@ -616,7 +614,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// </summary>
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedFunctionTypeToBodySeat> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var bodySeatTypeId =
                     context
@@ -653,7 +651,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// </summary>
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedFunctionTypeToBodySeat> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var item =
                     context
@@ -687,7 +685,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// </summary>
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var bodyMandate =
                     context
@@ -718,7 +716,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// </summary>
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var bodyMandate =
                     context
@@ -746,7 +744,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// </summary>
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var item = context
                     .BodySeatGenderRatioBodyMandateList
@@ -770,7 +768,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// </summary>
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var cachedOrganisation = GetOrganisationFromCache(context, message.Body.OrganisationId);
 
@@ -805,7 +803,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// </summary>
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var body = context
                     .BodySeatGenderRatioOrganisationPerBodyList
@@ -842,7 +840,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
         private void AddOrganisationClassification(Guid organisationOrganisationClassificationId, Guid organisationId, Guid organisationClassificationId, Guid organisationClassificationTypeId, DateTime? validFrom, DateTime? validTo)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 context.BodySeatGenderRatioOrganisationClassificationList.Add(
                     new BodySeatGenderRatioOrganisationClassificationItem
@@ -863,7 +861,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationRemoved> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var item = context.BodySeatGenderRatioOrganisationClassificationList.Single(x =>
                     x.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId);
@@ -876,7 +874,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationUpdated> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var item = context.BodySeatGenderRatioOrganisationClassificationList.Single(x =>
                     x.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId);
@@ -899,7 +897,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
             Logger.LogInformation("Clearing tables for {ProjectionName}.", message.Body.ProjectionName);
 
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
                 context.Database.ExecuteSqlCommand(
                     string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [OrganisationRegistry].[{tableName}];")));
         }

@@ -2,10 +2,8 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
 {
     using System;
     using System.Collections.Generic;
-    using Autofac.Features.OwnedInstances;
     using Day.Events;
     using FluentAssertions;
-    using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Organisation.ScheduledActions.Location;
@@ -31,19 +29,18 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
         private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
         private DateTimeProviderStub _dateTimeProviderStub;
 
-        public GivenAMainOrganisationLocationsLastDayHasPassed(SqlServerFixture fixture) : base(fixture)
+        public GivenAMainOrganisationLocationsLastDayHasPassed(SqlServerFixture fixture) : base()
         {
         }
 
-        protected override ActiveOrganisationLocationListView BuildReactionHandler(Func<OrganisationRegistryContext> context)
+        protected override ActiveOrganisationLocationListView BuildReactionHandler(IContextFactory contextFactory)
         {
             _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today.AddDays(-1));
             return new ActiveOrganisationLocationListView(
                 new Mock<ILogger<ActiveOrganisationLocationListView>>().Object,
-                () => new Owned<OrganisationRegistryContext>(context(), this),
                 null,
                 _dateTimeProviderStub,
-                (connection, transaction) => context());
+                contextFactory);
         }
 
         protected override IEnumerable<IEvent> Given()

@@ -68,14 +68,15 @@
 
         public BodyLifecyclePhaseListView(
             ILogger<BodyLifecyclePhaseListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LifecyclePhaseTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyLifecyclePhases = context.BodyLifecyclePhaseList.Where(x => x.LifecyclePhaseTypeId == message.Body.LifecyclePhaseTypeId);
                 if (!bodyLifecyclePhases.Any())
@@ -100,7 +101,7 @@
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.BodyLifecyclePhaseList.Add(bodyLifecyclePhaseListItem);
                 context.SaveChanges();
@@ -111,7 +112,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecyclePhaseUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyLifecyclePhase = context.BodyLifecyclePhaseList.SingleOrDefault(item => item.BodyLifecyclePhaseId == message.Body.BodyLifecyclePhaseId);
 
@@ -135,7 +136,7 @@
 
         private void UpdateLifecyclePhaseGaps(DbConnection dbConnection, DbTransaction dbTransaction, Guid bodyId)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var sortedLifecyclePhases = context
                     .BodyLifecyclePhaseList

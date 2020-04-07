@@ -64,14 +64,15 @@
 
         public BodyFormalFrameworkListView(
             ILogger<BodyFormalFrameworkListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyFormalFrameworks = context.BodyFormalFrameworkList.Where(x => x.FormalFrameworkId == message.Body.FormalFrameworkId);
                 if (!bodyFormalFrameworks.Any())
@@ -96,7 +97,7 @@
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.BodyFormalFrameworkList.Add(bodyFormalFrameworkListItem);
                 context.SaveChanges();
@@ -105,7 +106,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyFormalFramework = context.BodyFormalFrameworkList.SingleOrDefault(item => item.BodyFormalFrameworkId == message.Body.BodyFormalFrameworkId);
 

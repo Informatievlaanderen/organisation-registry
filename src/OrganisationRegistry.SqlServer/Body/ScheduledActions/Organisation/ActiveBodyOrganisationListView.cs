@@ -54,26 +54,19 @@
         IEventHandler<BodyClearedFromOrganisation>,
         IReactionHandler<DayHasPassed>
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _reactionContextFactory;
         private readonly Dictionary<Guid, ValidTo> _endDatePerBodyOrganisationId;
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
-        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
-
         public ActiveBodyOrganisationListView(
             ILogger<ActiveBodyOrganisationListView> logger,
-            Func<Owned<OrganisationRegistryContext>> reactionContextFactory,
             IEventStore eventStore,
             IDateTimeProvider dateTimeProvider,
-            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
-            _reactionContextFactory = reactionContextFactory;
             _eventStore = eventStore;
             _dateTimeProvider = dateTimeProvider;
-            _contextFactory = contextFactory ?? ((connection, transaction) =>
-                new OrganisationRegistryTransactionalContext(connection, transaction));
 
-            using (var context = reactionContextFactory().Value)
+            using (var context = contextFactory.Create())
             {
                 _endDatePerBodyOrganisationId =
                     context.BodyOrganisationList
@@ -108,7 +101,7 @@
             if (validTo.IsInPastOf(_dateTimeProvider.Today))
                 return;
 
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var activeBodyOrganisation =
                     context.ActiveBodyOrganisationList.SingleOrDefault(item => item.BodyOrganisationId == message.Body.BodyOrganisationId);
@@ -140,7 +133,7 @@
                 ValidTo = validTo
             };
 
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.ActiveBodyOrganisationList.Add(activeBodyOrganisationListItem);
                 context.SaveChanges();
@@ -149,7 +142,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
-            using (var context = _contextFactory(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var activeBodyOrganisationListItem =
                     context.ActiveBodyOrganisationList
@@ -168,7 +161,7 @@
 
         public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = _reactionContextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 return context.ActiveBodyOrganisationList
                     .Where(item => item.ValidTo.HasValue)

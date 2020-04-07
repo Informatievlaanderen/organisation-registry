@@ -78,12 +78,15 @@
 
         public DelegationAssignmentListView(
             ILogger<DelegationAssignmentListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public DelegationAssignmentListView(ILogger<DelegationAssignmentListView> logger) : base(logger) { }
+        public DelegationAssignmentListView(
+            ILogger<DelegationAssignmentListView> logger,
+            IContextFactory contextFactory) : base(logger, contextFactory) { }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
         {
@@ -101,7 +104,7 @@
 
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.DelegationAssignmentList.Add(delegationAssignment);
                 context.SaveChanges();
@@ -110,7 +113,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var delegationAssignment =
                     context.DelegationAssignmentList.Single(item => item.Id == message.Body.DelegationAssignmentId);
@@ -127,7 +130,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var delegationAssignment =
                     context.DelegationAssignmentList.Single(item => item.Id == message.Body.DelegationAssignmentId);

@@ -85,7 +85,8 @@
 
         public LocationListView(
             ILogger<LocationListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
@@ -104,7 +105,7 @@
                 HasCrabLocation = !string.IsNullOrWhiteSpace(message.Body.CrabLocationId)
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 context.LocationList.Add(location);
                 context.SaveChanges();
@@ -113,7 +114,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LocationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var location = context.LocationList.SingleOrDefault(x => x.Id == message.Body.LocationId);
                 if (location == null)
