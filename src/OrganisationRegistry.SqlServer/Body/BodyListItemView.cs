@@ -111,12 +111,16 @@
         }
 
         private readonly IEventStore _eventStore;
+        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
 
         public BodyListView(
             ILogger<BodyListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
         {
             _eventStore = eventStore;
+            _contextFactory = contextFactory ?? ((connection, transaction) =>
+                new OrganisationRegistryTransactionalContext(connection, transaction));
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyRegistered> message)
@@ -129,7 +133,7 @@
                 BodyNumber = message.Body.BodyNumber
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.BodyList.Add(bodyListItem);
                 context.SaveChanges();
@@ -138,7 +142,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyNumberAssigned> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var bodyListItem = context.BodyList.Single(item => item.Id == message.Body.BodyId);
 
@@ -150,7 +154,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var bodyListItem = context.BodyList.Single(item => item.Id == message.Body.BodyId);
 
@@ -163,7 +167,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var bodyListItem = context.BodyList.Single(item => item.Id == message.Body.BodyId);
 
@@ -176,7 +180,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyList.Single(item => item.Id == message.Body.BodyId);
 
@@ -189,7 +193,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var bodyListItem = context.BodyList.Single(item => item.Id == message.Body.BodyId);
 
@@ -211,7 +215,7 @@
                 RepresentsActivePhase = message.Body.LifecyclePhaseTypeIsRepresentativeFor == LifecyclePhaseTypeIsRepresentativeFor.ActivePhase
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var bodyListItem = context.BodyList.Single(item => item.Id == message.Body.BodyId);
 
@@ -223,7 +227,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecyclePhaseUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var bodyListItem = context
                     .BodyList

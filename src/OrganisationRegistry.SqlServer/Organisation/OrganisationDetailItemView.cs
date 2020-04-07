@@ -122,8 +122,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
 
         private readonly IMemoryCaches _memoryCaches;
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
+        private readonly Func<Owned<OrganisationRegistryContext>> _reactionContextFactory;
         private readonly IEventStore _eventStore;
+        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
 
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -135,12 +136,15 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public OrganisationDetailItemView(
             ILogger<OrganisationDetailItemView> logger,
             IMemoryCaches memoryCaches,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
-            IEventStore eventStore) : base(logger)
+            Func<Owned<OrganisationRegistryContext>> reactionContextFactory,
+            IEventStore eventStore,
+            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
         {
             _memoryCaches = memoryCaches;
-            _contextFactory = contextFactory;
+            _reactionContextFactory = reactionContextFactory;
             _eventStore = eventStore;
+            _contextFactory = contextFactory ?? ((connection, transaction) =>
+                new OrganisationRegistryTransactionalContext(connection, transaction));
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreated> message)
@@ -159,7 +163,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.OrganisationDetail.Add(organisationListItem);
                 context.SaveChanges();
@@ -184,7 +188,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             organisationListItem.KboNumber = message.Body.KboNumber;
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.OrganisationDetail.Add(organisationListItem);
                 context.SaveChanges();
@@ -193,7 +197,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCoupledWithKbo> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
 
@@ -205,7 +209,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
 
@@ -227,7 +231,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
 
@@ -243,7 +247,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PurposeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationListItems = context.OrganisationDetail.Where(item => item.PurposeIds.Contains(message.Body.PurposeId.ToString()));
 
@@ -269,7 +273,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             if (!message.Body.PreviousParentOrganisationId.HasValue)
                 return;
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
 
@@ -286,7 +290,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentAssignedToOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
 
@@ -300,7 +304,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentClearedFromOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
 
@@ -314,7 +318,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BuildingUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisations = context.OrganisationDetail.Where(x => x.MainBuildingId == message.Body.BuildingId);
                 if (!organisations.Any())
@@ -329,7 +333,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainBuildingAssignedToOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisation = context.OrganisationDetail.Single(o => o.Id == message.Body.OrganisationId);
                 organisation.MainBuildingId = message.Body.MainBuildingId;
@@ -341,7 +345,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainBuildingClearedFromOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisation = context.OrganisationDetail.Single(o => o.Id == message.Body.OrganisationId);
                 organisation.MainBuildingId = null;
@@ -353,7 +357,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LocationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisations = context.OrganisationDetail.Where(x => x.MainLocationId == message.Body.LocationId);
                 if (!organisations.Any())
@@ -368,7 +372,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainLocationAssignedToOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisation = context.OrganisationDetail.Single(o => o.Id == message.Body.OrganisationId);
                 organisation.MainLocationId = message.Body.MainLocationId;
@@ -380,7 +384,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainLocationClearedFromOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisation = context.OrganisationDetail.Single(o => o.Id == message.Body.OrganisationId);
                 organisation.MainLocationId = null;
@@ -397,7 +401,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = _reactionContextFactory().Value)
             {
                 var organisationDetails = context.OrganisationDetail.ToList();
                 return organisationDetails

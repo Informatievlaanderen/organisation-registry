@@ -48,12 +48,16 @@
         }
 
         private readonly IEventStore _eventStore;
+        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
 
         public FormalFrameworkCategoryListView(
             ILogger<FormalFrameworkCategoryListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
         {
             _eventStore = eventStore;
+            _contextFactory = contextFactory ?? ((connection, transaction) =>
+                new OrganisationRegistryTransactionalContext(connection, transaction));
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkCategoryCreated> message)
@@ -64,7 +68,7 @@
                 Name = message.Body.Name,
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.FormalFrameworkCategoryList.Add(formalFrameworkCategory);
                 context.SaveChanges();
@@ -73,7 +77,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkCategoryUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var formalFrameworkCategory = context.FormalFrameworkCategoryList.SingleOrDefault(x => x.Id == message.Body.FormalFrameworkCategoryId);
                 if (formalFrameworkCategory == null)

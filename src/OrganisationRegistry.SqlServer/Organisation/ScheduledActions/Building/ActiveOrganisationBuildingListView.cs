@@ -54,23 +54,27 @@
         IEventHandler<MainBuildingClearedFromOrganisation>,
         IReactionHandler<DayHasPassed>
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
+        private readonly Func<Owned<OrganisationRegistryContext>> _reactionContextFactory;
         private readonly Dictionary<Guid, ValidTo> _endDatePerOrganisationBuildingId;
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
 
         public ActiveOrganisationBuildingListView(
             ILogger<ActiveOrganisationBuildingListView> logger,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
+            Func<Owned<OrganisationRegistryContext>> reactionContextFactory,
             IEventStore eventStore,
-            IDateTimeProvider dateTimeProvider
+            IDateTimeProvider dateTimeProvider,
+            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory
         ) : base(logger)
         {
-            _contextFactory = contextFactory;
+            _reactionContextFactory = reactionContextFactory;
             _eventStore = eventStore;
             _dateTimeProvider = dateTimeProvider;
+            _contextFactory = contextFactory ?? ((connection, transaction) =>
+                new OrganisationRegistryTransactionalContext(connection, transaction));
 
-            using (var context = contextFactory().Value)
+            using (var context = reactionContextFactory().Value)
             {
                 _endDatePerOrganisationBuildingId =
                     context.OrganisationBuildingList
@@ -105,7 +109,7 @@
             if (validTo.IsInPastOf(_dateTimeProvider.Today))
                 return;
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var activeOrganisationBuilding =
                     context.ActiveOrganisationBuildingList.SingleOrDefault(item => item.OrganisationBuildingId == message.Body.OrganisationBuildingId);
@@ -137,7 +141,7 @@
                 ValidTo = _endDatePerOrganisationBuildingId[message.Body.OrganisationBuildingId]
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.ActiveOrganisationBuildingList.Add(activeOrganisationBuildingListItem);
                 context.SaveChanges();
@@ -146,7 +150,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainBuildingClearedFromOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var activeOrganisationBuildingListItem =
                     context.ActiveOrganisationBuildingList
@@ -165,7 +169,7 @@
 
         public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = _reactionContextFactory().Value)
             {
                 return context.ActiveOrganisationBuildingList
                     .Where(item => item.ValidTo.HasValue)

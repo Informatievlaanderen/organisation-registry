@@ -7,12 +7,12 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
     using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using OnEventStore;
     using Organisation.ScheduledActions.FormalFramework;
     using TestBases;
     using Tests.Shared;
     using Tests.Shared.TestDataBuilders;
     using OrganisationRegistry.Infrastructure.Events;
+    using UnitTests;
     using Xunit;
 
     [Collection(SqlServerTestsCollection.Name)]
@@ -26,13 +26,15 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
 
         }
 
-        protected override ActiveOrganisationFormalFrameworkListView BuildReactionHandler()
+        protected override ActiveOrganisationFormalFrameworkListView BuildReactionHandler(Func<OrganisationRegistryContext> context)
         {
             _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today.AddDays(-1));
             return new ActiveOrganisationFormalFrameworkListView(
                 Mock.Of<ILogger<ActiveOrganisationFormalFrameworkListView>>(),
-                () => new Owned<OrganisationRegistryContext>(new OrganisationRegistryTransactionalContext(SqlConnection, Transaction), this),
-                null, _dateTimeProviderStub);
+                () => new Owned<OrganisationRegistryContext>(context(), this),
+                null,
+                _dateTimeProviderStub,
+                (connection, transaction) => context());
         }
 
         protected override IEnumerable<IEvent> Given()

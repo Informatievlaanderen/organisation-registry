@@ -78,20 +78,23 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         private readonly IEventStore _eventStore;
         private readonly IMemoryCaches _memoryCaches;
+        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
 
         public OrganisationChildListView(
             ILogger<OrganisationChildListView> logger,
             IEventStore eventStore,
-            IMemoryCaches memoryCaches) : base(logger)
+            IMemoryCaches memoryCaches,
+            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
         {
             _eventStore = eventStore;
             _memoryCaches = memoryCaches;
-
+            _contextFactory = contextFactory ?? ((connection, transaction) =>
+                                  new OrganisationRegistryTransactionalContext(connection, transaction));
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisations = context.OrganisationChildrenList.Where(x => x.Id == message.Body.OrganisationId);
                 if (!organisations.Any())
@@ -111,7 +114,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisations = context.OrganisationChildrenList.Where(x => x.Id == message.Body.OrganisationId);
                 if (!organisations.Any())
@@ -141,7 +144,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 OrganisationValidTo = _memoryCaches.OrganisationValidTos[message.Body.OrganisationId]
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.OrganisationChildrenList.Add(organisationParentListItem);
                 context.SaveChanges();
@@ -150,7 +153,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationParentUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var key = context.OrganisationChildrenList.SingleOrDefault(item => item.OrganisationOrganisationParentId == message.Body.OrganisationOrganisationParentId);
 

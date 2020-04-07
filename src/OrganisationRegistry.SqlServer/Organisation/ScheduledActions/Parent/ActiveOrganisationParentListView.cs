@@ -54,23 +54,29 @@
         IEventHandler<ParentClearedFromOrganisation>,
         IReactionHandler<DayHasPassed>
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
+        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
+        private readonly Func<Owned<OrganisationRegistryContext>> _reactionContextFactory;
         private readonly Dictionary<Guid, ValidTo> _endDatePerOrganisationOrganisationParentId;
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
 
+
         public ActiveOrganisationParentListView(
             ILogger<ActiveOrganisationParentListView> logger,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
+            Func<Owned<OrganisationRegistryContext>> reactionContextFactory,
             IEventStore eventStore,
-            IDateTimeProvider dateTimeProvider
-        ) : base(logger)
+            IDateTimeProvider dateTimeProvider,
+            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
         {
-            _contextFactory = contextFactory;
+            _reactionContextFactory = reactionContextFactory;
             _eventStore = eventStore;
             _dateTimeProvider = dateTimeProvider;
 
-            using (var context = contextFactory().Value)
+            _contextFactory = contextFactory ?? ((connection, transaction) =>
+                new OrganisationRegistryTransactionalContext(connection, transaction));
+
+
+            using (var context = reactionContextFactory().Value)
             {
                 _endDatePerOrganisationOrganisationParentId =
                     context.OrganisationParentList
@@ -105,7 +111,7 @@
             if (validTo.IsInPastOf(_dateTimeProvider.Today))
                 return;
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var activeOrganisationParent =
                     context.ActiveOrganisationParentList.SingleOrDefault(item => item.OrganisationOrganisationParentId == message.Body.OrganisationOrganisationParentId);
@@ -137,7 +143,7 @@
                 ValidTo = validTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.ActiveOrganisationParentList.Add(activeOrganisationParentListItem);
                 context.SaveChanges();
@@ -146,7 +152,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentClearedFromOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var activeOrganisationParentListItem =
                     context.ActiveOrganisationParentList
@@ -165,7 +171,7 @@
 
         public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = _reactionContextFactory().Value)
             {
                 return context.ActiveOrganisationParentList
                     .Where(item => item.ValidTo.HasValue)

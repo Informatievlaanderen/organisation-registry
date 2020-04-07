@@ -77,17 +77,21 @@
         }
 
         private readonly IEventStore _eventStore;
+        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
 
         public OrganisationFunctionListView(
             ILogger<OrganisationFunctionListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
         {
             _eventStore = eventStore;
+            _contextFactory = contextFactory ?? ((connection, transaction) =>
+                new OrganisationRegistryTransactionalContext(connection, transaction));
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationFunctions = context.OrganisationFunctionList.Where(x => x.FunctionId == message.Body.FunctionId);
                 if (!organisationFunctions.Any())
@@ -102,7 +106,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationFunctions = context.OrganisationFunctionList.Where(x => x.PersonId == message.Body.PersonId);
                 if (!organisationFunctions.Any())
@@ -130,7 +134,7 @@
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.OrganisationFunctionList.Add(organisationFunctionListItem);
                 context.SaveChanges();
@@ -139,7 +143,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var key = context.OrganisationFunctionList.SingleOrDefault(item => item.OrganisationFunctionId == message.Body.OrganisationFunctionId);
 

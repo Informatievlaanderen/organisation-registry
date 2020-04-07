@@ -2,12 +2,17 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
 {
     using System;
     using System.Collections.Generic;
+    using Autofac.Features.OwnedInstances;
     using Day.Events;
+    using Infrastructure;
+    using Microsoft.Extensions.Logging;
+    using Moq;
     using Organisation.ScheduledActions.FormalFramework;
     using TestBases;
     using Tests.Shared;
     using Tests.Shared.TestDataBuilders;
     using OrganisationRegistry.Infrastructure.Events;
+    using UnitTests;
     using Xunit;
 
     [Collection(SqlServerTestsCollection.Name)]
@@ -20,9 +25,14 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
             Guid.NewGuid();
         }
 
-        protected override ActiveOrganisationFormalFrameworkListView BuildReactionHandler()
+        protected override ActiveOrganisationFormalFrameworkListView BuildReactionHandler(Func<OrganisationRegistryContext> context)
         {
-            return (ActiveOrganisationFormalFrameworkListView)FixtureServiceProvider.GetService(typeof(ActiveOrganisationFormalFrameworkListView));
+            return new ActiveOrganisationFormalFrameworkListView(
+                Mock.Of<ILogger<ActiveOrganisationFormalFrameworkListView>>(),
+                () => new Owned<OrganisationRegistryContext>(context(), this),
+                null,
+                new DateTimeProviderStub(DateTime.Now),
+                (connection, transaction) => context());
         }
 
         protected override IEnumerable<IEvent> Given()

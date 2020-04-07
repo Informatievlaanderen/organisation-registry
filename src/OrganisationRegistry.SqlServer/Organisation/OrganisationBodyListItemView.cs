@@ -57,17 +57,20 @@
         }
 
         private readonly IEventStore _eventStore;
+        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
 
         public OrganisationBodyListItemView(
             ILogger<OrganisationBodyListItemView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
         {
             _eventStore = eventStore;
+            _contextFactory = contextFactory ?? ((connection, transaction) =>
+                new OrganisationRegistryTransactionalContext(connection, transaction));
         }
-
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationBodies = context.OrganisationBodyList.Where(x => x.BodyId == message.Body.BodyId);
                 if (!organisationBodies.Any())
@@ -92,7 +95,7 @@
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.OrganisationBodyList.Add(organisationBodyListItem);
                 context.SaveChanges();
@@ -101,7 +104,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisation = context.OrganisationBodyList.SingleOrDefault(item => item.OrganisationBodyId == message.Body.BodyOrganisationId);
 

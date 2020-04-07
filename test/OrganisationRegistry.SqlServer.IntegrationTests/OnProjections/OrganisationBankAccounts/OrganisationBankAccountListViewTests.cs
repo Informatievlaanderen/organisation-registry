@@ -3,6 +3,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
     using System;
     using System.Collections.Generic;
     using FluentAssertions;
+    using Infrastructure;
     using Organisation;
     using OrganisationRegistry.Organisation.Events;
     using TestBases;
@@ -11,7 +12,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
     [Collection(SqlServerTestsCollection.Name)]
     public class OrganisationBankAccountListViewTests : ListViewTestBase
     {
-        public OrganisationBankAccountListViewTests(SqlServerFixture fixture) : base(fixture)
+        public OrganisationBankAccountListViewTests()
         {
         }
 
@@ -30,7 +31,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
                 organisationBankAccountAdded1,
                 organisationBankAccountAdded2);
 
-            Context.OrganisationBankAccountList.Should().BeEquivalentTo(new List<OrganisationBankAccountListItem>
+            new OrganisationRegistryContext(ContextOptions).OrganisationBankAccountList.Should().BeEquivalentTo(new List<OrganisationBankAccountListItem>
             {
                 new OrganisationBankAccountListItem(
                     organisationBankAccountAdded1.OrganisationBankAccountId,
@@ -70,7 +71,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
                 kboOrganisationBankAccountAdded1,
                 kboOrganisationBankAccountAdded2);
 
-            Context.OrganisationBankAccountList.Should().BeEquivalentTo(new List<OrganisationBankAccountListItem>
+            new OrganisationRegistryContext(ContextOptions).OrganisationBankAccountList.Should().BeEquivalentTo(new List<OrganisationBankAccountListItem>
             {
                 new OrganisationBankAccountListItem(
                     kboOrganisationBankAccountAdded1.OrganisationBankAccountId,
@@ -121,7 +122,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
                 kboOrganisationBankAccountAdded2,
                 kboOrganisationBankAccountRemoved);
 
-            Context.OrganisationBankAccountList.Should().BeEquivalentTo(new List<OrganisationBankAccountListItem>
+            new OrganisationRegistryContext(ContextOptions).OrganisationBankAccountList.Should().BeEquivalentTo(new List<OrganisationBankAccountListItem>
             {
                 new OrganisationBankAccountListItem(
                     kboOrganisationBankAccountAdded2.OrganisationBankAccountId,

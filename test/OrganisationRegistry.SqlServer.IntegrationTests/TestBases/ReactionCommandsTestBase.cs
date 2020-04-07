@@ -2,12 +2,15 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.Data.Common;
     using System.Data.SqlClient;
+    using System.IO;
     using System.Linq;
+    using System.Reflection;
     using FluentAssertions;
     using Infrastructure;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
     using OnProjections;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Events;
@@ -24,6 +27,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
     {
         public IServiceProvider FixtureServiceProvider;
         public MemoryCaches MemoryCaches;
+        private OrganisationRegistryContext _context;
         public string FixtureConnectionString { get; }
         public SqlConnection SqlConnection { get; }
         public DbTransaction Transaction { get; }
@@ -32,30 +36,46 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
 
         protected abstract IEnumerable<IEvent> Given();
         protected abstract TEvent When();
-        protected abstract TReactionHandler BuildReactionHandler();
+        protected abstract TReactionHandler BuildReactionHandler(Func<OrganisationRegistryContext> context);
         protected abstract int ExpectedNumberOfCommands { get; }
 
         protected IList<ICommand> Commands { get; }
 
         protected ReactionCommandsTestBase(SqlServerFixture fixture)
         {
-            FixtureConnectionString = fixture.ConnectionString;
-            FixtureServiceProvider = fixture.ServiceProvider;
+            // FixtureConnectionString = fixture.ConnectionString;
+            // FixtureServiceProvider = fixture.ServiceProvider;
+            //
+            // SqlConnection = new SqlConnection(FixtureConnectionString);
+            // SqlConnection.Open();
+            // Transaction = SqlConnection.BeginTransaction(IsolationLevel.Serializable);
+            // Context = new OrganisationRegistryTransactionalContext(SqlConnection, Transaction);
 
-            SqlConnection = new SqlConnection(FixtureConnectionString);
-            SqlConnection.Open();
-            Transaction = SqlConnection.BeginTransaction(IsolationLevel.Serializable);
-            Context = new OrganisationRegistryTransactionalContext(SqlConnection, Transaction);
+            Directory.SetCurrentDirectory(Directory.GetParent(typeof(SqlServerFixture).GetTypeInfo().Assembly.Location).Parent.Parent.Parent.FullName);
 
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
+                .Build();
 
-            MemoryCaches = new MemoryCaches(Context);
+            ContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
+                .UseInMemoryDatabase(
+                    $"org-es-test-{Guid.NewGuid()}",
+                    builder => { }).Options;
+
+            _context = new OrganisationRegistryContext(ContextOptions);
+
+            MemoryCaches = new MemoryCaches(_context);
             var memoryCachesMaintainer = new MemoryCachesMaintainer(MemoryCaches);
-            var reactionHandler = BuildReactionHandler();
+            var reactionHandler = BuildReactionHandler(() => new OrganisationRegistryContext(ContextOptions));
 
             HandleEvents(reactionHandler, memoryCachesMaintainer, Given().ToArray());
 
             Commands = reactionHandler.Handle((dynamic)When().ToEnvelope());
         }
+
+        public DbContextOptions<OrganisationRegistryContext> ContextOptions { get; set; }
 
         private void HandleEvents(object reactionHandler, MemoryCachesMaintainer memoryCaches, params IEvent[] events)
         {
@@ -82,8 +102,6 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
 
         public void Dispose()
         {
-            Transaction.Rollback();
-            Context.Dispose();
         }
     }
 }

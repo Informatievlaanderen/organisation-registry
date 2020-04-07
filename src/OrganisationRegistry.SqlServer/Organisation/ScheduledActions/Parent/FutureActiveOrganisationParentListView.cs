@@ -53,20 +53,24 @@
         IEventHandler<ParentAssignedToOrganisation>,
         IReactionHandler<DayHasPassed>
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
+        private readonly Func<Owned<OrganisationRegistryContext>> _reactionContextFactory;
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
 
         public FutureActiveOrganisationParentListView(
             ILogger<FutureActiveOrganisationParentListView> logger,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
+            Func<Owned<OrganisationRegistryContext>> reactionContextFactory,
             IEventStore eventStore,
-            IDateTimeProvider dateTimeProvider
+            IDateTimeProvider dateTimeProvider,
+            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory
         ) : base(logger)
         {
-            _contextFactory = contextFactory;
+            _reactionContextFactory = reactionContextFactory;
             _eventStore = eventStore;
             _dateTimeProvider = dateTimeProvider;
+            _contextFactory = contextFactory ?? ((connection, transaction) =>
+                new OrganisationRegistryTransactionalContext(connection, transaction));
         }
 
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
@@ -82,13 +86,13 @@
             if (validFrom.IsInPastOf(_dateTimeProvider.Today, true))
                 return;
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
                 InsertFutureActiveOrganisationParent(context, message);
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationParentUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var validFrom = new ValidFrom(message.Body.ValidFrom);
                 if (validFrom.IsInPastOf(_dateTimeProvider.Today, true))
@@ -104,13 +108,13 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentAssignedToOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
                 DeleteFutureActiveOrganisationParent(context, message.Body.OrganisationOrganisationParentId);
         }
 
         public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = _reactionContextFactory().Value)
             {
                 var contextFutureActiveOrganisationParentList = context.FutureActiveOrganisationParentList.ToList();
                 return contextFutureActiveOrganisationParentList

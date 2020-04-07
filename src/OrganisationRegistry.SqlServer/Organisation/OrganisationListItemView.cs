@@ -176,12 +176,16 @@ namespace OrganisationRegistry.SqlServer.Organisation
         }
 
         private readonly IEventStore _eventStore;
+        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
 
         public OrganisationListItemView(
             ILogger<OrganisationListItemView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
         {
             _eventStore = eventStore;
+            _contextFactory = contextFactory ?? ((connection, transaction) =>
+                new OrganisationRegistryTransactionalContext(connection, transaction));
         }
 
         private static OrganisationListItem GetParentOrganisation(OrganisationRegistryContext context, Guid parentOrganisationId)
@@ -201,7 +205,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.OrganisationList.Add(organisationListItem);
                 context.SaveChanges();
@@ -220,7 +224,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.OrganisationList.Add(organisationListItem);
                 context.SaveChanges();
@@ -229,7 +233,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 foreach (var organisationListItem in context.OrganisationList.Where(item => item.OrganisationId == message.Body.OrganisationId))
                 {
@@ -251,7 +255,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 foreach (var organisationListItem in context.OrganisationList.Where(item => item.OrganisationId == message.Body.OrganisationId))
                 {
@@ -273,7 +277,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             if (!message.Body.PreviousParentOrganisationId.HasValue)
                 return;
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationListItem = context.OrganisationList.SingleOrDefault(item =>
                     item.OrganisationId == message.Body.OrganisationId &&
@@ -295,7 +299,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentAssignedToOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationListItem = context.OrganisationList.Single(item =>
                     item.OrganisationId == message.Body.OrganisationId &&
@@ -313,7 +317,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentClearedFromOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationListItem = context.OrganisationList.Single(item =>
                     item.OrganisationId == message.Body.OrganisationId &&
@@ -330,7 +334,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkAssignedToOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationListItem = context.OrganisationList.Single(item =>
                     item.FormalFrameworkId == message.Body.FormalFrameworkId &&
@@ -348,7 +352,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkClearedFromOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationListItem = context.OrganisationList.Single(item =>
                     item.FormalFrameworkId == message.Body.FormalFrameworkId &&
@@ -365,7 +369,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkAdded> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 // CHILD STUFF
                 if (!OrganisationExistsForFormalFramework(context, message.Body.OrganisationId, message.Body.FormalFrameworkId))
@@ -488,7 +492,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 // CHILD STUFF
                 var organisationListItem =
@@ -615,17 +619,26 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationAdded> message)
         {
-            AddOrganisationClassification(dbConnection, dbTransaction, message.Body.OrganisationId, message.Body.OrganisationOrganisationClassificationId, message.Body.OrganisationClassificationId, message.Body.OrganisationClassificationTypeId, message.Body.ValidFrom, message.Body.ValidTo);
+            AddOrganisationClassification(dbConnection, dbTransaction, _contextFactory, message.Body.OrganisationId, message.Body.OrganisationOrganisationClassificationId, message.Body.OrganisationClassificationId, message.Body.OrganisationClassificationTypeId, message.Body.ValidFrom, message.Body.ValidTo);
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationAdded> message)
         {
-            AddOrganisationClassification(dbConnection, dbTransaction, message.Body.OrganisationId, message.Body.OrganisationOrganisationClassificationId, message.Body.OrganisationClassificationId, message.Body.OrganisationClassificationTypeId, message.Body.ValidFrom, message.Body.ValidTo);
+            AddOrganisationClassification(dbConnection, dbTransaction, _contextFactory, message.Body.OrganisationId, message.Body.OrganisationOrganisationClassificationId, message.Body.OrganisationClassificationId, message.Body.OrganisationClassificationTypeId, message.Body.ValidFrom, message.Body.ValidTo);
         }
 
-        private static void AddOrganisationClassification(DbConnection dbConnection, DbTransaction dbTransaction, Guid organisationId, Guid organisationOrganisationClassificationId, Guid organisationClassificationId, Guid organisationClassificationTypeId, DateTime? validFrom, DateTime? validTo)
+        private static void AddOrganisationClassification(
+            DbConnection dbConnection,
+            DbTransaction dbTransaction,
+            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory,
+            Guid organisationId,
+            Guid organisationOrganisationClassificationId,
+            Guid organisationClassificationId,
+            Guid organisationClassificationTypeId,
+            DateTime? validFrom,
+            DateTime? validTo)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = contextFactory(dbConnection, dbTransaction))
             {
                 context.OrganisationList
                     .Include(item => item.OrganisationClassificationValidities)
@@ -649,7 +662,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationRemoved> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.OrganisationList
                     .Include(item => item.OrganisationClassificationValidities)
@@ -672,7 +685,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.OrganisationList
                     .Include(item => item.OrganisationClassificationValidities)
@@ -712,7 +725,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var validities = context.OrganisationClassificationValidities
                     .Where(validity => validity.OrganisationClassificationId == message.Body.OrganisationClassificationId);

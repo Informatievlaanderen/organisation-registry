@@ -33,13 +33,14 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
         {
         }
 
-        protected override ActiveOrganisationBuildingListView BuildReactionHandler()
+        protected override ActiveOrganisationBuildingListView BuildReactionHandler(Func<OrganisationRegistryContext> context)
         {
             return new ActiveOrganisationBuildingListView(
                 new Mock<ILogger<ActiveOrganisationBuildingListView>>().Object,
-                () => new Owned<OrganisationRegistryContext>(new OrganisationRegistryTransactionalContext(SqlConnection, Transaction), this),
+                () => new Owned<OrganisationRegistryContext>(context(), this),
                 null,
-                new DateTimeProvider());
+                new DateTimeProvider(),
+                (connection, transaction) => context());
         }
 
         protected override IEnumerable<IEvent> Given()

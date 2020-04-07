@@ -94,12 +94,16 @@ namespace OrganisationRegistry.SqlServer.Organisation
         }
 
         private readonly IEventStore _eventStore;
+        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
 
         public OrganisationBankAccountListView(
             ILogger<OrganisationBankAccountListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
         {
             _eventStore = eventStore;
+            _contextFactory = contextFactory ?? ((connection, transaction) =>
+                new OrganisationRegistryTransactionalContext(connection, transaction));
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountAdded> message)
@@ -114,7 +118,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 message.Body.ValidFrom,
                 message.Body.ValidTo);
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.OrganisationBankAccountList.Add(organisationBankAccountListItem);
                 context.SaveChanges();
@@ -134,7 +138,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 message.Body.ValidTo,
                 Sources.Kbo);
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.OrganisationBankAccountList.Add(organisationBankAccountListItem);
                 context.SaveChanges();
@@ -143,7 +147,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountRemoved> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationBankAccountListItem = context.OrganisationBankAccountList.Single(b => b.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
 
@@ -155,7 +159,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var organisationBankAccountListItem = context.OrganisationBankAccountList.Single(b => b.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
 

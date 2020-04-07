@@ -12,10 +12,6 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Person
     [Collection(SqlServerTestsCollection.Name)]
     public class OrganisationLabelListViewTests : ListViewTestBase
     {
-        public OrganisationLabelListViewTests(SqlServerFixture fixture) : base(fixture)
-        {
-        }
-
         [Fact]
         public void OrganisationLabelAdded()
         {

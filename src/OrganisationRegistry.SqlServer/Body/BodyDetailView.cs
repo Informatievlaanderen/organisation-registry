@@ -93,12 +93,16 @@ namespace OrganisationRegistry.SqlServer.Body
         }
 
         private readonly IEventStore _eventStore;
+        private Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
 
         public BodyDetailView(
             ILogger<BodyDetailView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
         {
             _eventStore = eventStore;
+            _contextFactory = contextFactory ?? ((connection, transaction) =>
+                new OrganisationRegistryTransactionalContext(connection, transaction));
         }
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyRegistered> message)
@@ -114,7 +118,7 @@ namespace OrganisationRegistry.SqlServer.Body
                 FormalValidTo = message.Body.FormalValidTo,
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.BodyDetail.Add(bodyDetailItem);
                 context.SaveChanges();
@@ -123,7 +127,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyNumberAssigned> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
@@ -135,7 +139,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
@@ -148,7 +152,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
@@ -161,7 +165,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
@@ -174,7 +178,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
@@ -188,7 +192,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalValidityChanged> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
@@ -201,7 +205,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecycleBecameValid> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
@@ -213,7 +217,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecycleBecameInvalid> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
@@ -225,7 +229,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyBalancedParticipationChanged> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 

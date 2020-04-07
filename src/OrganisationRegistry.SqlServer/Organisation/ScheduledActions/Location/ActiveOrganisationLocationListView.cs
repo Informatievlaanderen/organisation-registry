@@ -54,23 +54,26 @@
         IEventHandler<MainLocationClearedFromOrganisation>,
         IReactionHandler<DayHasPassed>
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
+        private readonly Func<Owned<OrganisationRegistryContext>> _reactionContextFactory;
         private readonly Dictionary<Guid, ValidTo> _endDatePerOrganisationLocationId;
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
 
         public ActiveOrganisationLocationListView(
             ILogger<ActiveOrganisationLocationListView> logger,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
+            Func<Owned<OrganisationRegistryContext>> reactionContextFactory,
             IEventStore eventStore,
-            IDateTimeProvider dateTimeProvider
-        ) : base(logger)
+            IDateTimeProvider dateTimeProvider,
+            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory) : base(logger)
         {
-            _contextFactory = contextFactory;
+            _reactionContextFactory = reactionContextFactory;
             _eventStore = eventStore;
             _dateTimeProvider = dateTimeProvider;
+            _contextFactory = contextFactory ?? ((connection, transaction) =>
+                new OrganisationRegistryTransactionalContext(connection, transaction));
 
-            using (var context = contextFactory().Value)
+            using (var context = reactionContextFactory().Value)
             {
                 _endDatePerOrganisationLocationId =
                     context.OrganisationLocationList
@@ -105,7 +108,7 @@
             if (validTo.IsInPastOf(_dateTimeProvider.Today))
                 return;
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var activeOrganisationLocation =
                     context.ActiveOrganisationLocationList.SingleOrDefault(item => item.OrganisationLocationId == message.Body.OrganisationLocationId);
@@ -137,7 +140,7 @@
                 ValidTo = _endDatePerOrganisationLocationId[message.Body.OrganisationLocationId]
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.ActiveOrganisationLocationList.Add(activeOrganisationLocationListItem);
                 context.SaveChanges();
@@ -146,7 +149,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainLocationClearedFromOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var activeOrganisationLocationListItem =
                     context.ActiveOrganisationLocationList.SingleOrDefault(item =>
@@ -164,7 +167,7 @@
 
         public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = _reactionContextFactory().Value)
             {
                 return context.ActiveOrganisationLocationList
                     .Where(item => item.ValidTo.HasValue)

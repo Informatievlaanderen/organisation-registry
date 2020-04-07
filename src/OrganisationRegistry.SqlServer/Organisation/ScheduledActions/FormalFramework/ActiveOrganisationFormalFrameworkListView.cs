@@ -55,23 +55,26 @@
         IEventHandler<FormalFrameworkClearedFromOrganisation>,
         IReactionHandler<DayHasPassed>
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
+        private readonly Func<Owned<OrganisationRegistryContext>> _reactioncontextFactory;
         private readonly Dictionary<Guid, ValidTo> _endDatePerOrganisationFormalFrameworkId;
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly Func<DbConnection, DbTransaction, OrganisationRegistryContext> _contextFactory;
 
         public ActiveOrganisationFormalFrameworkListView(
             ILogger<ActiveOrganisationFormalFrameworkListView> logger,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
+            Func<Owned<OrganisationRegistryContext>> reactioncontextFactory,
             IEventStore eventStore,
-            IDateTimeProvider dateTimeProvider
-        ) : base(logger)
+            IDateTimeProvider dateTimeProvider,
+            Func<DbConnection, DbTransaction, OrganisationRegistryContext> contextFactory = null) : base(logger)
         {
-            _contextFactory = contextFactory;
+            _reactioncontextFactory = reactioncontextFactory;
             _eventStore = eventStore;
             _dateTimeProvider = dateTimeProvider;
+            _contextFactory = contextFactory ?? ((connection, transaction) =>
+                new OrganisationRegistryTransactionalContext(connection, transaction));
 
-            using (var context = contextFactory().Value)
+            using (var context = reactioncontextFactory().Value)
             {
                 _endDatePerOrganisationFormalFrameworkId =
                     context.OrganisationFormalFrameworkList
@@ -106,7 +109,7 @@
             if (validTo.IsInPastOf(_dateTimeProvider.Today))
                 return;
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var activeOrganisationFormalFramework =
                     context.ActiveOrganisationFormalFrameworkList.SingleOrDefault(item => item.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
@@ -138,7 +141,7 @@
                 ValidTo = validTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 context.ActiveOrganisationFormalFrameworkList.Add(activeOrganisationFormalFrameworkListItem);
                 context.SaveChanges();
@@ -147,7 +150,7 @@
 
         public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkClearedFromOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = _contextFactory(dbConnection, dbTransaction))
             {
                 var activeOrganisationFormalFramework =
                     context.ActiveOrganisationFormalFrameworkList
@@ -165,7 +168,7 @@
 
         public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = _reactioncontextFactory().Value)
             {
                 var contextActiveOrganisationFormalFrameworkList = context.ActiveOrganisationFormalFrameworkList.ToList();
                 return contextActiveOrganisationFormalFrameworkList
