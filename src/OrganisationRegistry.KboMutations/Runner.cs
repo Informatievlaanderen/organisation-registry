@@ -2,6 +2,7 @@ namespace OrganisationRegistry.KboMutations
 {
     using Configuration;
     using Info;
+    using Infrastructure;
     using Infrastructure.Configuration;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
@@ -11,6 +12,7 @@ namespace OrganisationRegistry.KboMutations
         private readonly ILogger<Runner> _logger;
         private readonly IKboMutationsFetcher _kboMutationsFetcher;
         private readonly IKboMutationsPersister _kboMutationsPersister;
+        private readonly IExternalIpFetcher _externalIpFetcher;
         private readonly TogglesConfiguration _togglesConfiguration;
         private readonly KboMutationsConfiguration _kboMutationsConfiguration;
 
@@ -18,18 +20,20 @@ namespace OrganisationRegistry.KboMutations
             IOptions<TogglesConfiguration> togglesConfigurationOptions,
             IOptions<KboMutationsConfiguration> kboMutationsConfigurationOptions,
             IKboMutationsFetcher kboMutationsFetcher,
-            IKboMutationsPersister kboMutationsPersister)
+            IKboMutationsPersister kboMutationsPersister,
+            IExternalIpFetcher externalIpFetcher)
         {
             _logger = logger;
             _kboMutationsFetcher = kboMutationsFetcher;
             _kboMutationsPersister = kboMutationsPersister;
+            _externalIpFetcher = externalIpFetcher;
             _kboMutationsConfiguration = kboMutationsConfigurationOptions.Value;
             _togglesConfiguration = togglesConfigurationOptions.Value;
         }
 
         public bool Run()
         {
-            _logger.LogInformation(ProgramInformation.Build(_kboMutationsConfiguration));
+            _logger.LogInformation(ProgramInformation.Build(_kboMutationsConfiguration, _externalIpFetcher.Fetch().GetAwaiter().GetResult()));
 
             if (!_togglesConfiguration.KboMutationsAvailable)
                 return false;

@@ -8,6 +8,7 @@ Microsoft.Extensions.Options.ConfigurationExtensions
 Microsoft.Extensions.DependencyInjection
 Microsoft.Extensions.Configuration.Abstractions
 Microsoft.Extensions.Logging
+Microsoft.Extensions.Http
 
 Be.Vlaanderen.Basisregisters.Converters.TrimString
 
