@@ -1,3 +1,10 @@
+# [1.39.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.38.0...v1.39.0) (2020-04-10)
+
+
+### Features
+
+* log exception when kbo call fails ([68ddcb1](https://github.com/informatievlaanderen/organisation-registry/commit/68ddcb1b8be976ad6fc1a122b2d82268ce214b5b))
+
 # [1.38.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.37.0...v1.38.0) (2020-04-10)
 
 
