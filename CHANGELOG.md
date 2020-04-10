@@ -1,3 +1,10 @@
+# [1.38.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.37.0...v1.38.0) (2020-04-10)
+
+
+### Features
+
+* provide better exception for already coupled orgs ([5a746f2](https://github.com/informatievlaanderen/organisation-registry/commit/5a746f2945ed0ba47637b8749c63bae7c413520b))
+
 # [1.37.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.36.1...v1.37.0) (2020-04-07)
 
 
