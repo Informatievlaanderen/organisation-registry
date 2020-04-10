@@ -21,6 +21,7 @@ namespace OrganisationRegistry.Api.Kbo
     using Magda.Helpers;
     using Magda.Requests;
     using Magda.Responses;
+    using Microsoft.Extensions.Logging;
     using SqlServer.Infrastructure;
     using SqlServer.Magda;
 
@@ -34,15 +35,18 @@ namespace OrganisationRegistry.Api.Kbo
         private readonly MagdaConfiguration _configuration;
         private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ILogger<GeefOndernemingQuery> _logger;
 
         public GeefOndernemingQuery(
             MagdaConfiguration configuration,
             Func<Owned<OrganisationRegistryContext>> contextFactory,
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory,
+            ILogger<GeefOndernemingQuery> logger)
         {
             _configuration = configuration;
             _contextFactory = contextFactory;
             _httpClientFactory = httpClientFactory;
+            _logger = logger;
         }
 
         public async Task<Envelope<GeefOndernemingResponseBody>> Execute(ClaimsPrincipal user, string kboNumberDotLess)
@@ -85,9 +89,9 @@ namespace OrganisationRegistry.Api.Kbo
                         }
                     }
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // ignored
+                    _logger.LogError(ex, ex.Message);
                 }
             }
 

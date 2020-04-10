@@ -30,7 +30,7 @@ namespace OrganisationRegistry.Api.Kbo
             var kboOrganisation = await _geefOndernemingQuery.Execute(user, kboNumber.ToDigitsOnly());
 
             if (kboOrganisation == null)
-                return null;
+                throw new Exception("Geen antwoord van kbo gekregen.");
 
             var response = kboOrganisation.Body?.GeefOndernemingResponse?.Repliek?.Antwoorden?.Antwoord;
             if (response == null)

@@ -13,6 +13,7 @@ namespace OrganisationRegistry.UnitTests.Magda
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using Newtonsoft.Json;
     using OrganisationRegistry.Magda;
@@ -62,7 +63,8 @@ namespace OrganisationRegistry.UnitTests.Magda
                                 "org-magda-test",
                                 builder => { })
                             .Options), new Disposable()),
-                httpClientFactory: httpClientFactoryMock.Object);
+                httpClientFactory: httpClientFactoryMock.Object,
+                new NullLogger<GeefOndernemingQuery>());
         }
 
         // [Theory]
