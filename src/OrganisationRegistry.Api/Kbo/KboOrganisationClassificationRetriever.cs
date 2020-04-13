@@ -26,14 +26,10 @@ namespace OrganisationRegistry.Api.Kbo
         {
             using (var context = _contextFactory.Create())
                 return context.OrganisationClassificationList
-                    .FirstOrDefault(o => MatchesLegalFormCode(legalFormCode, o))
+                    .FirstOrDefault(o =>
+                        o.OrganisationClassificationTypeId == _organisationRegistryConfiguration.KboV2LegalFormOrganisationClassificationTypeId &&
+                        o.ExternalKey == legalFormCode)
                     ?.Id;
-        }
-
-        private bool MatchesLegalFormCode(string legalFormCode, OrganisationClassificationListItem o)
-        {
-            return o.OrganisationClassificationTypeId == _organisationRegistryConfiguration.KboV2LegalFormOrganisationClassificationTypeId &&
-                   o.ExternalKey == legalFormCode;
         }
     }
 }
