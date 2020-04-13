@@ -134,6 +134,7 @@ namespace OrganisationRegistry.KboMutations
         private static IServiceProvider ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
             services.AddOptions();
+            services.AddHttpClient();
 
             var serviceProvider = services.BuildServiceProvider();
 

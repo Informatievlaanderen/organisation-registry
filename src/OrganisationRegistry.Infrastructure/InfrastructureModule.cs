@@ -73,6 +73,10 @@ namespace OrganisationRegistry.Infrastructure
                         (info, context) => info.Name == "requestScopedServiceProvider",
                         (info, context) => _scopedServiceProvider(context)))
                 .SingleInstance();
+
+            builder.RegisterType<ExternalIpFetcher>()
+                .As<IExternalIpFetcher>()
+                .SingleInstance();
         }
     }
 }

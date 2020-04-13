@@ -15,6 +15,8 @@ namespace OrganisationRegistry.Infrastructure.Configuration
         public string EventStoreAdministrationConnectionString { get; set; }
         public int EventStoreCommandTimeout { get; set; }
 
+        public string ExternalIpServiceUri { get; set; }
+
         public InfrastructureConfiguration Obfuscate()
             => new InfrastructureConfiguration
             {

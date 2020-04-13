@@ -1,3 +1,32 @@
+# [1.38.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.37.0...v1.38.0) (2020-04-10)
+
+
+### Features
+
+* provide better exception for already coupled orgs ([5a746f2](https://github.com/informatievlaanderen/organisation-registry/commit/5a746f2945ed0ba47637b8749c63bae7c413520b))
+
+# [1.37.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.36.1...v1.37.0) (2020-04-07)
+
+
+### Features
+
+* log external ip when running kbo mutations ([9cd083e](https://github.com/informatievlaanderen/organisation-registry/commit/9cd083e571cecbeb40d53edbb91837035aba62de))
+* set better defaults for logging ([80ea5ac](https://github.com/informatievlaanderen/organisation-registry/commit/80ea5ac591a12e6fc4d887422d1b8afa375b89a1))
+
+## [1.36.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.36.0...v1.36.1) (2020-04-06)
+
+
+### Bug Fixes
+
+* copy kbo mutations dockerfile in csproj ([152d27b](https://github.com/informatievlaanderen/organisation-registry/commit/152d27b5ee57a2756a8550332d6aa28836c7fd61))
+
+# [1.36.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.35.0...v1.36.0) (2020-04-06)
+
+
+### Features
+
+* add docker and init file ([55a6233](https://github.com/informatievlaanderen/organisation-registry/commit/55a623395c5c9f2bcf834d035d045cfc81b20b1d))
+
 # [1.35.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.34.0...v1.35.0) (2020-04-03)
 
 

@@ -76,7 +76,7 @@ namespace OrganisationRegistry.Organisation
 
             var kboOrganisation = kboOrganisationResult.Value;
 
-            if (_uniqueKboValidator.IsKboNumberTaken(message.KboNumber, kboOrganisation.ValidFrom, message.ValidTo))
+            if (_uniqueKboValidator.IsKboNumberTaken(message.KboNumber))
                 throw new KboNumberNotUniqueException();
 
             var parentOrganisation =
@@ -129,16 +129,14 @@ namespace OrganisationRegistry.Organisation
 
             var kboOrganisation = kboOrganisationResult.Value;
 
-            if (_uniqueKboValidator.IsKboNumberTaken(message.KboNumber, kboOrganisation.ValidFrom, new ValidTo()))
-                throw new KboNumberNotUniqueException();
-
             var location = GetOrAddLocations(kboOrganisation.Address);
-
-            Session.Commit();
 
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             organisation.CoupleToKbo(message.KboNumber, _dateTimeProvider);
+
+            if (_uniqueKboValidator.IsKboNumberTaken(message.KboNumber))
+                throw new KboNumberNotUniqueException();
 
             organisation.UpdateInfoFromKbo(kboOrganisation.FormalName.Value, kboOrganisation.ShortName.Value);
 

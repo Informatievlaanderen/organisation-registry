@@ -1,11 +1,8 @@
 namespace OrganisationRegistry.Api.Status
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
-    using System.Net.Http;
-    using System.Net.Http.Headers;
     using Configuration;
     using ElasticSearch.Configuration;
     using Infrastructure;
@@ -18,6 +15,7 @@ namespace OrganisationRegistry.Api.Status
     using Security;
     using SqlServer.Configuration;
     using OrganisationRegistry.Configuration.Database.Configuration;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
 
@@ -50,15 +48,10 @@ namespace OrganisationRegistry.Api.Status
         [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
         public async System.Threading.Tasks.Task<IActionResult> GetConfiguration(
             [FromServices] IConfiguration configuration,
-            [FromServices] IHttpClientFactory httpClientFactory)
+            [FromServices] IExternalIpFetcher externalIpFetcher)
         {
             var apiConfiguration = configuration.GetSection(ApiConfiguration.Section).Get<ApiConfiguration>();
 
-            var httpClient = httpClientFactory.CreateClient();
-            httpClient.BaseAddress = new Uri(apiConfiguration.ExternalIpServiceUri);
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            var httpResponseMessage = await httpClient.GetAsync("");
             var summary = new
             {
                 Api = apiConfiguration,
@@ -69,7 +62,7 @@ namespace OrganisationRegistry.Api.Status
                 Serilog = PrintConfig(configuration.GetSection("Serilog")),
                 SqlServer = configuration.GetSection(SqlServerConfiguration.Section).Get<SqlServerConfiguration>().Obfuscate(),
                 Toggles = configuration.GetSection(TogglesConfiguration.Section).Get<TogglesConfiguration>(),
-                Ip = await httpResponseMessage.Content.ReadAsStringAsync()
+                Ip = await externalIpFetcher.Fetch()
             };
 
             var jsonSerializerSettings = JsonConvert.DefaultSettings();

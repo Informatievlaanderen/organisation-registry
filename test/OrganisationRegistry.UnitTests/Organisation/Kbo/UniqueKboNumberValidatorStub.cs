@@ -1,6 +1,5 @@
 namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 {
-    using System;
     using OrganisationRegistry.Organisation;
 
     public class UniqueKboNumberValidatorStub : IUniqueKboValidator
@@ -10,7 +9,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         public UniqueKboNumberValidatorStub(bool returnValue)
             => _returnValue = returnValue;
 
-        public bool IsKboNumberTaken(KboNumber kboNumber, DateTime? messageValidFrom, DateTime? messageValidTo)
+        public bool IsKboNumberTaken(KboNumber kboNumber)
             => _returnValue;
     }
 }
