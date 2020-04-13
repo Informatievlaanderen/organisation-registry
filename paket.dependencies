@@ -30,7 +30,7 @@ nuget Microsoft.AspNetCore.Server.Kestrel 2.2.0
 nuget Microsoft.AspNetCore.Server.Kestrel.Https 2.2.0
 nuget Microsoft.AspNetCore.Cors 2.2.0
 nuget Microsoft.AspNetCore.Authentication.JwtBearer 3.1.1
-nuget Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore 3.1.0
+nuget Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore 3.1.2
 nuget Microsoft.AspNetCore.AzureAppServicesIntegration 2.2.0
 nuget Microsoft.AspNetCore.Mvc.Versioning 4.1.1
 nuget Microsoft.AspNetCore.Mvc.Razor.Extensions 2.2.0
@@ -41,7 +41,7 @@ nuget Microsoft.AspNetCore.Cryptography.Internal 2.2.0
 nuget Microsoft.AspNetCore.DataProtection.Abstractions 2.2.0
 nuget Microsoft.AspNetCore.Http.Features 2.2.0
 nuget Microsoft.AspNetCore.Razor.Language 3.1.0
-nuget Microsoft.AspNetCore.JsonPatch 3.1.0
+nuget Microsoft.AspNetCore.JsonPatch 3.1.2
 
 nuget Microsoft.CodeAnalysis.Razor 3.1.0
 
@@ -90,20 +90,20 @@ nuget CsvHelper 15.0.3
 nuget Optional 4.0.0
 
 // Mutex
-nuget AWSSDK.DynamoDBv2 3.3.104.13
+nuget AWSSDK.DynamoDBv2 3.3.105.5
 
 // BASE REGISTRIES STUFF
 nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 3.2.0
 nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 2.1.0 content: true, copy_content_to_output_dir: always, copy_local: true
 
-nuget Be.Vlaanderen.Basisregisters.AggregateSource 4.1.0
+nuget Be.Vlaanderen.Basisregisters.AggregateSource 4.2.2
 
-nuget Be.Vlaanderen.Basisregisters.Api 10.2.0
+nuget Be.Vlaanderen.Basisregisters.Api 11.1.6
 
 nuget Be.Vlaanderen.Basisregisters.Converters.TrimString 2.2.1 // TODO: Remove this eventually
 
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 4.1.0
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql 4.1.0
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 4.4.1
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql 4.4.1
 
 // TEST STUFF
 nuget Microsoft.NET.Test.Sdk 16.5.0
