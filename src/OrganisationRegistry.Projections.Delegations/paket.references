@@ -17,7 +17,6 @@ Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
 Autofac.Extensions.DependencyInjection
 Newtonsoft.Json
-Destructurama.JsonNet
 
 Serilog
 Serilog.Extensions.Logging

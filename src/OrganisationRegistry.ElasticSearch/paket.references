@@ -9,7 +9,6 @@ Autofac.Extensions.DependencyInjection
 Polly
 NEST
 Newtonsoft.Json
-// Destructurama.JsonNet
 
 Serilog
 // Serilog.Extensions.Logging

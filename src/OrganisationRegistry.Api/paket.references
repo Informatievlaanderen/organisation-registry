@@ -42,7 +42,6 @@ FluentValidation.AspNetCore
 Autofac.Extensions.DependencyInjection
 
 Newtonsoft.Json
-Destructurama.JsonNet
 
 Serilog
 Serilog.Extensions.Logging
