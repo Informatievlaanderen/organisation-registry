@@ -55,7 +55,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             registrar.RegisterEventHandlers(OrganisationsRunner.EventHandlers);
         }
 
-        [Fact]
+        [EnvVarIgnoreFact]
         public void InitializeProjection_CreatesIndex()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -66,7 +66,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             indices.Should().NotBeEmpty();
         }
 
-        [Fact]
+        [EnvVarIgnoreFact]
         public void OrganisationCreated_CreatesDocument()
         {
             var scenario = new BodyScenario(Guid.NewGuid());
@@ -85,7 +85,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             organisation.Source.Description.Should().Be(organisationCreated.Description);
         }
 
-        [Fact]
+        [EnvVarIgnoreFact]
         public void OrganisationKboBankAccountAdded_AddsBankAccount()
         {
             var scenario = new BodyScenario(Guid.NewGuid());
@@ -120,7 +120,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                     new Period(kboOrganisationBankAccountAdded2.ValidFrom, kboOrganisationBankAccountAdded2.ValidTo)));
         }
 
-        [Fact]
+        [EnvVarIgnoreFact]
         public void OrganisationKboBankAccountRemoved_RemovesBankAccount()
         {
             var scenario = new BodyScenario(Guid.NewGuid());
