@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Day.Events;
     using Infrastructure;
@@ -84,14 +85,14 @@
             ActiveBodyOrganisationList
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationAdded> message)
         {
             // cache ValidTo for the OrganisationParent,
             // because we will need it when BodyAssignedToOrganisation is published, which does not contain the ValidTo.
             _endDatePerBodyOrganisationId.UpdateMemoryCache(message.Body.BodyOrganisationId, new ValidTo(message.Body.ValidTo));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
             // cache ValidTo for the OrganisationParent,
             // because we will need it when BodyAssignedToOrganisation is published, which does not contain the ValidTo.
@@ -114,11 +115,11 @@
                 activeBodyOrganisation.BodyId = message.Body.BodyId;
                 activeBodyOrganisation.ValidTo = validTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
             var validTo = _endDatePerBodyOrganisationId[message.Body.BodyOrganisationId];
 
@@ -135,12 +136,12 @@
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.ActiveBodyOrganisationList.Add(activeBodyOrganisationListItem);
-                context.SaveChanges();
+                await context.ActiveBodyOrganisationList.AddAsync(activeBodyOrganisationListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -155,7 +156,7 @@
 
                 context.ActiveBodyOrganisationList.Remove(activeBodyOrganisationListItem);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
@@ -172,9 +173,9 @@
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

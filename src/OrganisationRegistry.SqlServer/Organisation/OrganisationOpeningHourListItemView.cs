@@ -7,6 +7,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
 
@@ -91,16 +92,15 @@ namespace OrganisationRegistry.SqlServer.Organisation
             OrganisationOpeningHourList
         }
 
-        public override void Handle(
+        public override async Task Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
 
-        public void Handle(
-            DbConnection dbConnection,
+        public async Task Handle(DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationOpeningHourAdded> message)
         {
@@ -117,13 +117,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationOpeningHourList.Add(openingHourListItem);
-                context.SaveChanges();
+                await context.OrganisationOpeningHourList.AddAsync(openingHourListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(
-            DbConnection dbConnection,
+        public async Task Handle(DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationOpeningHourUpdated> message)
         {
@@ -139,7 +138,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 label.ValidFrom = message.Body.ValidFrom;
                 label.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
     }

@@ -27,24 +27,24 @@ namespace OrganisationRegistry.Api.Security
         private readonly ILogger<SecurityController> _logger;
 
         public SecurityController(
-            IOptions<OpenIdConnectConfiguration> openIdConnectConfiguration,            
+            IOptions<OpenIdConnectConfiguration> openIdConnectConfiguration,
             ICommandSender commandSender,
             ILogger<SecurityController> logger)
             : base(commandSender)
         {
-            _openIdConnectConfiguration = openIdConnectConfiguration.Value;            
+            _openIdConnectConfiguration = openIdConnectConfiguration.Value;
             _logger = logger;
         }
 
         [HttpGet]
         [OrganisationRegistryAuthorize]
-        public IActionResult Get([FromServices] ISecurityService securityService)
+        public async Task<IActionResult> Get([FromServices] ISecurityService securityService)
         {
             return Ok(securityService.GetSecurityInformation(User));
         }
 
         [HttpGet("info")]
-        public IActionResult Info()
+        public async Task<IActionResult> Info()
         {
             return Ok(new OidcClientConfiguration(_openIdConnectConfiguration));
         }

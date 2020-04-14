@@ -20,6 +20,7 @@ namespace OrganisationRegistry.Organisation
     using Purpose;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     public class OrganisationCommandHandlers :
         BaseCommandHandler<OrganisationCommandHandlers>,
@@ -76,7 +77,7 @@ namespace OrganisationRegistry.Organisation
             _organisationRegistryConfiguration = organisationRegistryConfiguration;
         }
 
-        public void Handle(CreateOrganisation message)
+        public async Task Handle(CreateOrganisation message)
         {
             if (_uniqueOvoNumberValidator.IsOvoNumberTaken(message.OvoNumber))
                 throw new OvoNumberNotUniqueException();
@@ -108,10 +109,10 @@ namespace OrganisationRegistry.Organisation
                 _dateTimeProvider);
 
             Session.Add(organisation);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationInfo message)
+        public async Task Handle(UpdateOrganisationInfo message)
         {
             var purposes = message
                 .Purposes
@@ -129,10 +130,10 @@ namespace OrganisationRegistry.Organisation
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
                 _dateTimeProvider);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddOrganisationParent message)
+        public async Task Handle(AddOrganisationParent message)
         {
             var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
@@ -148,10 +149,10 @@ namespace OrganisationRegistry.Organisation
                 validity,
                 _dateTimeProvider);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationParent message)
+        public async Task Handle(UpdateOrganisationParent message)
         {
             var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
@@ -167,10 +168,10 @@ namespace OrganisationRegistry.Organisation
                 validity,
                 _dateTimeProvider);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddOrganisationFormalFramework message)
+        public async Task Handle(AddOrganisationFormalFramework message)
         {
             var formalFramework = Session.Get<FormalFramework>(message.FormalFrameworkId);
             var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
@@ -188,10 +189,10 @@ namespace OrganisationRegistry.Organisation
                 validity,
                 _dateTimeProvider);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationFormalFramework message)
+        public async Task Handle(UpdateOrganisationFormalFramework message)
         {
             var formalFramework = Session.Get<FormalFramework>(message.FormalFrameworkId);
             var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
@@ -209,7 +210,7 @@ namespace OrganisationRegistry.Organisation
                 validity,
                 _dateTimeProvider);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
         private bool ParentTreeHasOrganisationInIt(
@@ -249,7 +250,7 @@ namespace OrganisationRegistry.Organisation
                 .Any(organisation1 => FormalFrameworkTreeHasOrganisationInIt(organisation, formalFramework, validity, organisation1, alreadyCheckedOrganisations.Concat(new List<Organisation> { parentOrganisation }).ToList()));
         }
 
-        public void Handle(AddOrganisationKey message)
+        public async Task Handle(AddOrganisationKey message)
         {
             var keyType = Session.Get<KeyType>(message.KeyTypeId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
@@ -260,10 +261,10 @@ namespace OrganisationRegistry.Organisation
                 message.KeyValue,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationKey message)
+        public async Task Handle(UpdateOrganisationKey message)
         {
             var keyType = Session.Get<KeyType>(message.KeyTypeId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
@@ -274,10 +275,10 @@ namespace OrganisationRegistry.Organisation
                 message.Value,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddOrganisationCapacity message)
+        public async Task Handle(AddOrganisationCapacity message)
         {
             var capacity = Session.Get<Capacity>(message.CapacityId);
             var person = message.PersonId != null ? Session.Get<Person>(message.PersonId) : null;
@@ -301,10 +302,10 @@ namespace OrganisationRegistry.Organisation
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
                 _dateTimeProvider);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationCapacity message)
+        public async Task Handle(UpdateOrganisationCapacity message)
         {
             var capacity = Session.Get<Capacity>(message.CapacityId);
             var person = message.PersonId != null ? Session.Get<Person>(message.PersonId) : null;
@@ -328,10 +329,10 @@ namespace OrganisationRegistry.Organisation
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
                 _dateTimeProvider);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddOrganisationFunction message)
+        public async Task Handle(AddOrganisationFunction message)
         {
             var person = Session.Get<Person>(message.PersonId);
             var function = Session.Get<FunctionType>(message.FunctionTypeId);
@@ -350,10 +351,10 @@ namespace OrganisationRegistry.Organisation
                 contacts,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationFunction message)
+        public async Task Handle(UpdateOrganisationFunction message)
         {
             var person = Session.Get<Person>(message.PersonId);
             var function = Session.Get<FunctionType>(message.FunctionTypeId);
@@ -372,10 +373,10 @@ namespace OrganisationRegistry.Organisation
                 contacts,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddOrganisationRelation message)
+        public async Task Handle(AddOrganisationRelation message)
         {
             var relatedOrganisation = Session.Get<Organisation>(message.RelatedOrganisationId);
             var relation = Session.Get<OrganisationRelationType>(message.RelationTypeId);
@@ -387,10 +388,10 @@ namespace OrganisationRegistry.Organisation
                 relatedOrganisation,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationRelation message)
+        public async Task Handle(UpdateOrganisationRelation message)
         {
             var relatedOrganisation = Session.Get<Organisation>(message.RelatedOrganisationId);
             var relation = Session.Get<OrganisationRelationType>(message.RelationTypeId);
@@ -402,10 +403,10 @@ namespace OrganisationRegistry.Organisation
                 relatedOrganisation,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddOrganisationBuilding message)
+        public async Task Handle(AddOrganisationBuilding message)
         {
             var building = Session.Get<Building>(message.BuildingId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
@@ -417,10 +418,10 @@ namespace OrganisationRegistry.Organisation
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
                 _dateTimeProvider);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationBuilding message)
+        public async Task Handle(UpdateOrganisationBuilding message)
         {
             var building = Session.Get<Building>(message.BuildingId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
@@ -432,10 +433,10 @@ namespace OrganisationRegistry.Organisation
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
                 _dateTimeProvider);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddOrganisationLocation message)
+        public async Task Handle(AddOrganisationLocation message)
         {
             var location = Session.Get<Location>(message.LocationId);
             var locationType = message.LocationTypeId != null ? Session.Get<LocationType>(message.LocationTypeId) : null;
@@ -451,10 +452,10 @@ namespace OrganisationRegistry.Organisation
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
                 _dateTimeProvider);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationLocation message)
+        public async Task Handle(UpdateOrganisationLocation message)
         {
             var location = Session.Get<Location>(message.LocationId);
             var locationType = message.LocationTypeId != null ? Session.Get<LocationType>(message.LocationTypeId) : null;
@@ -470,10 +471,10 @@ namespace OrganisationRegistry.Organisation
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
                 _dateTimeProvider);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddOrganisationContact message)
+        public async Task Handle(AddOrganisationContact message)
         {
             var contactType = Session.Get<ContactType>(message.ContactTypeId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
@@ -484,10 +485,10 @@ namespace OrganisationRegistry.Organisation
                 message.ContactValue,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationContact message)
+        public async Task Handle(UpdateOrganisationContact message)
         {
             var contactType = Session.Get<ContactType>(message.ContactTypeId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
@@ -498,10 +499,10 @@ namespace OrganisationRegistry.Organisation
                 message.Value,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddOrganisationLabel message)
+        public async Task Handle(AddOrganisationLabel message)
         {
             var labelType = Session.Get<LabelType>(message.LabelTypeId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
@@ -514,10 +515,10 @@ namespace OrganisationRegistry.Organisation
                 message.LabelValue,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationLabel message)
+        public async Task Handle(UpdateOrganisationLabel message)
         {
             var labelType = Session.Get<LabelType>(message.LabelTypeId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
@@ -530,10 +531,10 @@ namespace OrganisationRegistry.Organisation
                 message.Value,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddOrganisationOrganisationClassification message)
+        public async Task Handle(AddOrganisationOrganisationClassification message)
         {
             var organisationClassification = Session.Get<OrganisationClassification>(message.OrganisationClassificationId);
             var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
@@ -546,10 +547,10 @@ namespace OrganisationRegistry.Organisation
                 organisationClassification,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationOrganisationClassification message)
+        public async Task Handle(UpdateOrganisationOrganisationClassification message)
         {
             var organisationClassification = Session.Get<OrganisationClassification>(message.OrganisationClassificationId);
             var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
@@ -563,10 +564,10 @@ namespace OrganisationRegistry.Organisation
                 organisationClassification,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddOrganisationBankAccount message)
+        public async Task Handle(AddOrganisationBankAccount message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
@@ -581,10 +582,10 @@ namespace OrganisationRegistry.Organisation
                 bankAccountBic,
                 validity);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationBankAccount message)
+        public async Task Handle(UpdateOrganisationBankAccount message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
@@ -599,50 +600,50 @@ namespace OrganisationRegistry.Organisation
                 bankAccountBic,
                 validity);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateMainBuilding message)
+        public async Task Handle(UpdateMainBuilding message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
             organisation.UpdateMainBuilding(_dateTimeProvider.Today);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateMainLocation message)
+        public async Task Handle(UpdateMainLocation message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
             organisation.UpdateMainLocation(_dateTimeProvider.Today);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationFormalFrameworkParents message)
+        public async Task Handle(UpdateOrganisationFormalFrameworkParents message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
             organisation.UpdateOrganisationFormalFrameworkParent(_dateTimeProvider.Today, message.FormalFrameworkId);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateCurrentOrganisationParent message)
+        public async Task Handle(UpdateCurrentOrganisationParent message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
             organisation.UpdateCurrentOrganisationParent(_dateTimeProvider.Today);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateRelationshipValidities message)
+        public async Task Handle(UpdateRelationshipValidities message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
             organisation.UpdateRelationshipValidities(message.Date);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddOrganisationOpeningHour message)
+        public async Task Handle(AddOrganisationOpeningHour message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
@@ -653,10 +654,10 @@ namespace OrganisationRegistry.Organisation
                 message.DayOfWeek,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationOpeningHour message)
+        public async Task Handle(UpdateOrganisationOpeningHour message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
@@ -667,7 +668,7 @@ namespace OrganisationRegistry.Organisation
                 message.DayOfWeek,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

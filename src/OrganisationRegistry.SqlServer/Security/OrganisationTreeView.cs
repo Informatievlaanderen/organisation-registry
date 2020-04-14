@@ -5,6 +5,7 @@ namespace OrganisationRegistry.SqlServer.Security
     using System.Collections.ObjectModel;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -97,7 +98,7 @@ namespace OrganisationRegistry.SqlServer.Security
             return tree;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreated> message)
         {
             _tree.AddNode(new OvoNumber(message.Body.OvoNumber));
             var changes = _tree.GetChanges().ToList();
@@ -106,7 +107,7 @@ namespace OrganisationRegistry.SqlServer.Security
             UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreatedFromKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreatedFromKbo> message)
         {
             _tree.AddNode(new OvoNumber(message.Body.OvoNumber));
             var changes = _tree.GetChanges().ToList();
@@ -115,7 +116,7 @@ namespace OrganisationRegistry.SqlServer.Security
             UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentAssignedToOrganisation> message)
         {
             var ovoNumber = _memoryCaches.OvoNumbers[message.Body.OrganisationId];
             var parentOvoNumber = _memoryCaches.OvoNumbers[message.Body.ParentOrganisationId];
@@ -127,7 +128,7 @@ namespace OrganisationRegistry.SqlServer.Security
             UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentClearedFromOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentClearedFromOrganisation> message)
         {
             var ovoNumber = _memoryCaches.OvoNumbers[message.Body.OrganisationId];
 
@@ -167,7 +168,7 @@ namespace OrganisationRegistry.SqlServer.Security
             }
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<Rollback> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<Rollback> message)
         {
             // Something went wrong, check if any of the events actually matter to us
             var anyInterestingEvents = message.Body.Events.Any(x =>
@@ -179,9 +180,9 @@ namespace OrganisationRegistry.SqlServer.Security
                 Initialise();
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message, _ => _tree = new Tree<OvoNumber>());
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message, _ => _tree = new Tree<OvoNumber>());
         }
     }
 }

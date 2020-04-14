@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Body.Events;
     using OrganisationRegistry.Infrastructure.Events;
@@ -55,7 +56,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             _memoryCaches = memoryCaches;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedFunctionTypeToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedFunctionTypeToBodySeat> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -92,7 +93,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedOrganisationToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedOrganisationToBodySeat> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -129,7 +130,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedFunctionTypeToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedFunctionTypeToBodySeat> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -160,7 +161,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedOrganisationToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedOrganisationToBodySeat> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -188,7 +189,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -201,7 +202,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -214,12 +215,12 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
             UpdateOrganisationName(message.Body.OrganisationId, message.Body.Name);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             UpdateOrganisationName(message.Body.OrganisationId, message.Body.Name);
         }
@@ -244,7 +245,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -257,7 +258,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatNumberAssigned> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatNumberAssigned> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -270,7 +271,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -283,7 +284,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -307,7 +308,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -330,7 +331,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
             if (message.Body.OrganisationId == message.Body.PreviousOrganisationId)
                 return;
@@ -359,7 +360,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<InitialiseProjection> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<InitialiseProjection> message)
         {
             if (message.Body.ProjectionName != typeof(DelegationListProjection).FullName)
                 return;
@@ -371,7 +372,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
                     string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [OrganisationRegistry].[{tableName}];")));
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
             RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }

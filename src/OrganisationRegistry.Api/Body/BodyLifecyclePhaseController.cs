@@ -66,7 +66,7 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] AddBodyLifecyclePhaseRequest message)
+        public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] AddBodyLifecyclePhaseRequest message)
         {
             var internalMessage = new AddBodyLifecyclePhaseInternalRequest(bodyId, message);
 
@@ -76,7 +76,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(AddBodyLifecyclePhaseRequestMapping.Map(internalMessage));
+            await CommandSender.Send(AddBodyLifecyclePhaseRequestMapping.Map(internalMessage));
 
             return Created(Url.Action(nameof(Get), new { id = message.BodyLifecyclePhaseId }), null);
         }
@@ -88,7 +88,7 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] UpdateBodyLifecyclePhaseRequest message)
+        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] UpdateBodyLifecyclePhaseRequest message)
         {
             var internalMessage = new UpdateBodyLifecyclePhaseInternalRequest(bodyId, message);
 
@@ -98,7 +98,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateBodyLifecyclePhaseRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateBodyLifecyclePhaseRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.BodyId }));
         }

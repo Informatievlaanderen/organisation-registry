@@ -6,6 +6,7 @@ namespace OrganisationRegistry.Infrastructure.Snapshots
     using Events;
     using Infrastructure;
     using System.Linq;
+    using System.Threading.Tasks;
 
     public class SnapshotRepository : IRepository
     {
@@ -26,10 +27,10 @@ namespace OrganisationRegistry.Infrastructure.Snapshots
             _eventStore = eventStore ?? throw new ArgumentNullException(nameof(eventStore));
         }
 
-        public void Save<T>(T aggregate, int? expectedVersion = null) where T : AggregateRoot
+        public async Task Save<T>(T aggregate, int? expectedVersion = null) where T : AggregateRoot
         {
             TryMakeSnapshot(aggregate);
-            _repository.Save(aggregate, expectedVersion);
+            await _repository.Save(aggregate, expectedVersion);
         }
 
         public T Get<T>(Guid aggregateId) where T : AggregateRoot

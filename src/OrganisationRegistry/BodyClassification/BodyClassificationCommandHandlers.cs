@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.BodyClassification
 {
+    using System.Threading.Tasks;
     using BodyClassificationType;
     using Commands;
     using Infrastructure.Commands;
@@ -21,7 +22,7 @@ namespace OrganisationRegistry.BodyClassification
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public void Handle(CreateBodyClassification message)
+        public async Task Handle(CreateBodyClassification message)
         {
             var bodyClassificationType = Session.Get<BodyClassificationType>(message.BodyClassificationTypeId);
 
@@ -30,10 +31,10 @@ namespace OrganisationRegistry.BodyClassification
 
             var bodyClassification = new BodyClassification(message.BodyClassificationId, message.Name, message.Order, message.Active, bodyClassificationType);
             Session.Add(bodyClassification);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateBodyClassification message)
+        public async Task Handle(UpdateBodyClassification message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.BodyClassificationId, message.Name, message.BodyClassificationTypeId))
                 throw new NameNotUniqueWithinTypeException();
@@ -41,7 +42,7 @@ namespace OrganisationRegistry.BodyClassification
             var bodyClassificationType = Session.Get<BodyClassificationType>(message.BodyClassificationTypeId);
             var bodyClassification = Session.Get<BodyClassification>(message.BodyClassificationId);
             bodyClassification.Update(message.Name, message.Order, message.Active, bodyClassificationType);
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

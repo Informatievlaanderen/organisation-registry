@@ -66,12 +66,12 @@
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromBody] CreateLifecyclePhaseTypeRequest message)
+        public async Task<IActionResult> Post([FromBody] CreateLifecyclePhaseTypeRequest message)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            CommandSender.Send(CreateLifecyclePhaseTypeRequestMapping.Map(message));
+            await CommandSender.Send(CreateLifecyclePhaseTypeRequestMapping.Map(message));
 
             return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
         }
@@ -83,14 +83,14 @@
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromRoute] Guid id, [FromBody] UpdateLifecyclePhaseTypeRequest message)
+        public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateLifecyclePhaseTypeRequest message)
         {
             var internalMessage = new UpdateLifecyclePhaseTypeInternalRequest(id, message);
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateLifecyclePhaseTypeRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateLifecyclePhaseTypeRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.LifecyclePhaseTypeId }));
         }

@@ -11,6 +11,7 @@ namespace OrganisationRegistry.Infrastructure.EventStore
     using Events;
     using Newtonsoft.Json;
     using System.Security.Claims;
+    using System.Threading.Tasks;
     using AppSpecific;
     using Configuration;
     using Infrastructure.Json;
@@ -95,7 +96,7 @@ IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Events_Number' AND obj
             }
         }
 
-        public void Save<T>(IEnumerable<IEvent> events)
+        public async Task Save<T>(IEnumerable<IEvent> events)
         {
             var eventsToSave = events.ToList();
             if (eventsToSave.Count == 0)
@@ -115,8 +116,8 @@ IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Events_Number' AND obj
             // Events are stored atomically
             using (var db = GetConnection())
             {
-                db.Open();
-                using (var tx = db.BeginTransaction(IsolationLevel.Serializable))
+                await db.OpenAsync();
+                using (var tx = await db.BeginTransactionAsync(IsolationLevel.Serializable))
                 {
                     try
                     {
@@ -127,7 +128,7 @@ IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Events_Number' AND obj
                                 continue;
 
                             // These are the fields of EventData
-                            var number = db.Query<int>(
+                            var number = (await db.QueryAsync<int>(
 @"INSERT INTO [OrganisationRegistry].[Events]
 ([Id], [Version], [Name], [Timestamp], [Data], [Ip], [LastName], [FirstName], [UserId])
 VALUES
@@ -144,23 +145,23 @@ SELECT CAST(SCOPE_IDENTITY() as int)",
                                     LastName = envelope.LastName ?? string.Empty,
                                     FirstName = envelope.FirstName ?? string.Empty,
                                     UserId = envelope.UserId ?? string.Empty,
-                                }, tx).Single();
+                                }, tx)).Single();
 
                             envelope.Number = number;
                         }
 
                         foreach (var envelope in envelopes)
-                            _publisher.Publish(db, tx, (dynamic)envelope);
+                            await _publisher.Publish(db, tx, (dynamic)envelope);
 
-                        tx.Commit();
+                        await tx.CommitAsync();
                     }
                     catch
                     {
-                        tx.Rollback();
+                        await tx.RollbackAsync();
 
                         var eventsInRollback = envelopes.Select(envelope => envelope.Body).ToList();
-                        _publisher.Publish(null, null, new ResetMemoryCache(eventsInRollback).ToTypedEnvelope(ip, lastName, firstName, userId));
-                        _publisher.Publish(null, null, new Rollback(eventsInRollback).ToTypedEnvelope(ip, lastName, firstName, userId));
+                        await _publisher.Publish(null, null, new ResetMemoryCache(eventsInRollback).ToTypedEnvelope(ip, lastName, firstName, userId));
+                        await _publisher.Publish(null, null, new Rollback(eventsInRollback).ToTypedEnvelope(ip, lastName, firstName, userId));
 
                         throw;
                     }

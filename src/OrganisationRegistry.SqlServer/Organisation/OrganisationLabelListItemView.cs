@@ -8,6 +8,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
     using System.Linq;
+    using System.Threading.Tasks;
     using LabelType;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.LabelType.Events;
@@ -84,7 +85,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LabelTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LabelTypeUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -95,11 +96,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 foreach (var organisationLable in organisationLabels)
                     organisationLable.LabelTypeName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLabelAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLabelAdded> message)
         {
             var organisationLabelListItem = new OrganisationLabelListItem
             {
@@ -114,12 +115,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationLabelList.Add(organisationLabelListItem);
-                context.SaveChanges();
+                await context.OrganisationLabelList.AddAsync(organisationLabelListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboFormalNameLabelAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboFormalNameLabelAdded> message)
         {
             var organisationLabelListItem = new OrganisationLabelListItem
             {
@@ -136,12 +137,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationLabelList.Add(organisationLabelListItem);
-                context.SaveChanges();
+                await context.OrganisationLabelList.AddAsync(organisationLabelListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCoupledWithKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCoupledWithKbo> message)
         {
             var organisationLabelListItem = new OrganisationLabelListItem
             {
@@ -158,12 +159,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationLabelList.Add(organisationLabelListItem);
-                context.SaveChanges();
+                await context.OrganisationLabelList.AddAsync(organisationLabelListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboFormalNameLabelRemoved> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboFormalNameLabelRemoved> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -171,11 +172,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
                 context.OrganisationLabelList.Remove(label);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLabelUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLabelUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -189,13 +190,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 label.ValidFrom = message.Body.ValidFrom;
                 label.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

@@ -8,6 +8,7 @@ namespace OrganisationRegistry.SqlServer.Body
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Body.Events;
     using System.Linq;
+    using System.Threading.Tasks;
     using ContactType;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.ContactType.Events;
@@ -73,7 +74,7 @@ namespace OrganisationRegistry.SqlServer.Body
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -84,11 +85,11 @@ namespace OrganisationRegistry.SqlServer.Body
                 foreach (var organisationContact in bodyContacts)
                     organisationContact.ContactTypeName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyContactAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyContactAdded> message)
         {
             var organisationContactListItem = new BodyContactListItem
             {
@@ -103,12 +104,12 @@ namespace OrganisationRegistry.SqlServer.Body
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.BodyContactList.Add(organisationContactListItem);
-                context.SaveChanges();
+                await context.BodyContactList.AddAsync(organisationContactListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyContactUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyContactUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -122,13 +123,13 @@ namespace OrganisationRegistry.SqlServer.Body
                 contact.ValidFrom = message.Body.ValidFrom;
                 contact.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

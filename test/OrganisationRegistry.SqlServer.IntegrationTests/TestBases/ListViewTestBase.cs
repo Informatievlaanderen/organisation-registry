@@ -6,6 +6,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
     using System.Data.Common;
     using System.IO;
     using System.Reflection;
+    using System.Threading.Tasks;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Infrastructure;
@@ -70,7 +71,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
         }
 
 
-        public void HandleEvents(params IEvent[] envelopes)
+        public async Task HandleEvents(params IEvent[] envelopes)
         {
             foreach (var envelope in envelopes)
             {

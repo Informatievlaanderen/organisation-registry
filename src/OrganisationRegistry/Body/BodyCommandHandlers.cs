@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Body
 {
     using System.Linq;
+    using System.Threading.Tasks;
     using BodyClassification;
     using BodyClassificationType;
     using Commands;
@@ -66,7 +67,7 @@ namespace OrganisationRegistry.Body
             _bodySeatNumberGenerator = bodySeatNumberGenerator;
         }
 
-        public void Handle(RegisterBody message)
+        public async Task Handle(RegisterBody message)
         {
             if (_uniqueBodyNumberValidator.IsBodyNumberTaken(message.BodyNumber))
                 throw new BodyNumberNotUniqueException();
@@ -103,10 +104,10 @@ namespace OrganisationRegistry.Body
                 inActiveLifecyclePhaseType);
 
             Session.Add(body);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateBodyInfo message)
+        public async Task Handle(UpdateBodyInfo message)
         {
             var body = Session.Get<Body>(message.BodyId);
 
@@ -115,10 +116,10 @@ namespace OrganisationRegistry.Body
                 message.ShortName,
                 message.Description);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateBodyValidity message)
+        public async Task Handle(UpdateBodyValidity message)
         {
             var body = Session.Get<Body>(message.BodyId);
 
@@ -126,10 +127,10 @@ namespace OrganisationRegistry.Body
                 message.FormalValidity,
                 _dateTimeProvider);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateBodyBalancedParticipation message)
+        public async Task Handle(UpdateBodyBalancedParticipation message)
         {
             var body = Session.Get<Body>(message.BodyId);
 
@@ -138,10 +139,10 @@ namespace OrganisationRegistry.Body
                 message.BalancedParticipationExtraRemark,
                 message.BalancedParticipationExceptionMeasure);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddBodyFormalFramework message)
+        public async Task Handle(AddBodyFormalFramework message)
         {
             var formalFramework = Session.Get<FormalFramework>(message.FormalFrameworkId);
             var body = Session.Get<Body>(message.BodyId);
@@ -151,10 +152,10 @@ namespace OrganisationRegistry.Body
                 formalFramework,
                 message.Validity);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateBodyFormalFramework message)
+        public async Task Handle(UpdateBodyFormalFramework message)
         {
             var formalFramework = Session.Get<FormalFramework>(message.FormalFrameworkId);
             var body = Session.Get<Body>(message.BodyId);
@@ -164,10 +165,10 @@ namespace OrganisationRegistry.Body
                 formalFramework,
                 message.Validity);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddBodyOrganisation message)
+        public async Task Handle(AddBodyOrganisation message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
             var body = Session.Get<Body>(message.BodyId);
@@ -178,10 +179,10 @@ namespace OrganisationRegistry.Body
                 message.Validity,
                 _dateTimeProvider);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateBodyOrganisation message)
+        public async Task Handle(UpdateBodyOrganisation message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
             var body = Session.Get<Body>(message.BodyId);
@@ -192,18 +193,18 @@ namespace OrganisationRegistry.Body
                 message.Validity,
                 _dateTimeProvider);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateCurrentBodyOrganisation message)
+        public async Task Handle(UpdateCurrentBodyOrganisation message)
         {
             var body = Session.Get<Body>(message.BodyId);
             body.UpdateCurrentOrganisation(_dateTimeProvider.Today);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddBodyLifecyclePhase message)
+        public async Task Handle(AddBodyLifecyclePhase message)
         {
             var lifecyclePhaseType = Session.Get<LifecyclePhaseType>(message.LifecyclePhaseTypeId);
             var body = Session.Get<Body>(message.BodyId);
@@ -213,10 +214,10 @@ namespace OrganisationRegistry.Body
                 lifecyclePhaseType,
                 message.Validity);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateBodyLifecyclePhase message)
+        public async Task Handle(UpdateBodyLifecyclePhase message)
         {
             var lifecyclePhaseType = Session.Get<LifecyclePhaseType>(message.LifecyclePhaseTypeId);
             var body = Session.Get<Body>(message.BodyId);
@@ -226,10 +227,10 @@ namespace OrganisationRegistry.Body
                 lifecyclePhaseType,
                 message.Validity);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddBodySeat message)
+        public async Task Handle(AddBodySeat message)
         {
             var body = Session.Get<Body>(message.BodyId);
             var seatType = Session.Get<SeatType>(message.SeatTypeId);
@@ -244,10 +245,10 @@ namespace OrganisationRegistry.Body
                 message.EntitledToVote,
                 message.Validity);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateBodySeat message)
+        public async Task Handle(UpdateBodySeat message)
         {
             var body = Session.Get<Body>(message.BodyId);
             var seatType = Session.Get<SeatType>(message.SeatTypeId);
@@ -260,19 +261,19 @@ namespace OrganisationRegistry.Body
                 message.EntitledToVote,
                 message.Validity);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AssignBodyNumber message)
+        public async Task Handle(AssignBodyNumber message)
         {
             var body = Session.Get<Body>(message.BodyId);
 
             body.AssignBodyNumber(_bodyNumberGenerator.GenerateNumber());
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AssignBodySeatNumber message)
+        public async Task Handle(AssignBodySeatNumber message)
         {
             var body = Session.Get<Body>(message.BodyId);
             var bodySeatNumber = _bodySeatNumberGenerator.GenerateNumber();
@@ -281,10 +282,10 @@ namespace OrganisationRegistry.Body
                 message.BodySeatId,
                 bodySeatNumber);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AssignPersonToBodySeat message)
+        public async Task Handle(AssignPersonToBodySeat message)
         {
             var body = Session.Get<Body>(message.BodyId);
             var person = Session.Get<Person>(message.PersonId);
@@ -302,10 +303,10 @@ namespace OrganisationRegistry.Body
                 contacts,
                 message.Validity);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AssignFunctionTypeToBodySeat message)
+        public async Task Handle(AssignFunctionTypeToBodySeat message)
         {
             var body = Session.Get<Body>(message.BodyId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
@@ -318,10 +319,10 @@ namespace OrganisationRegistry.Body
                 message.BodySeatId,
                 message.Validity);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AssignOrganisationToBodySeat message)
+        public async Task Handle(AssignOrganisationToBodySeat message)
         {
             var body = Session.Get<Body>(message.BodyId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
@@ -332,10 +333,10 @@ namespace OrganisationRegistry.Body
                 message.BodySeatId,
                 message.Validity);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(ReassignPersonToBodySeat message)
+        public async Task Handle(ReassignPersonToBodySeat message)
         {
             var body = Session.Get<Body>(message.BodyId);
             var person = Session.Get<Person>(message.PersonId);
@@ -353,10 +354,10 @@ namespace OrganisationRegistry.Body
                 contacts,
                 message.Validity);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(ReassignFunctionTypeToBodySeat message)
+        public async Task Handle(ReassignFunctionTypeToBodySeat message)
         {
             var body = Session.Get<Body>(message.BodyId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
@@ -369,10 +370,10 @@ namespace OrganisationRegistry.Body
                 message.BodySeatId,
                 message.Validity);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(ReassignOrganisationToBodySeat message)
+        public async Task Handle(ReassignOrganisationToBodySeat message)
         {
             var body = Session.Get<Body>(message.BodyId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
@@ -383,10 +384,10 @@ namespace OrganisationRegistry.Body
                 message.BodySeatId,
                 message.Validity);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddDelegationAssignment message)
+        public async Task Handle(AddDelegationAssignment message)
         {
             var body = Session.Get<Body>(message.BodyId);
             var person = Session.Get<Person>(message.PersonId);
@@ -406,10 +407,10 @@ namespace OrganisationRegistry.Body
                 message.Validity,
                 _dateTimeProvider.Today);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateDelegationAssignment message)
+        public async Task Handle(UpdateDelegationAssignment message)
         {
             var body = Session.Get<Body>(message.BodyId);
             var person = Session.Get<Person>(message.PersonId);
@@ -429,10 +430,10 @@ namespace OrganisationRegistry.Body
                 message.Validity,
                 _dateTimeProvider.Today);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateCurrentPersonAssignedToBodyMandate message)
+        public async Task Handle(UpdateCurrentPersonAssignedToBodyMandate message)
         {
             var body = Session.Get<Body>(message.BodyId);
 
@@ -441,10 +442,10 @@ namespace OrganisationRegistry.Body
                 message.BodyMandateId,
                 _dateTimeProvider.Today);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(RemoveDelegationAssignment message)
+        public async Task Handle(RemoveDelegationAssignment message)
         {
             var body = Session.Get<Body>(message.BodyId);
 
@@ -454,10 +455,10 @@ namespace OrganisationRegistry.Body
                 message.DelegationAssignmentId,
                 _dateTimeProvider.Today);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddBodyContact message)
+        public async Task Handle(AddBodyContact message)
         {
             var contactType = Session.Get<ContactType>(message.ContactTypeId);
             var body = Session.Get<Body>(message.BodyId);
@@ -468,10 +469,10 @@ namespace OrganisationRegistry.Body
                 message.ContactValue,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateBodyContact message)
+        public async Task Handle(UpdateBodyContact message)
         {
             var contactType = Session.Get<ContactType>(message.ContactTypeId);
             var body = Session.Get<Body>(message.BodyId);
@@ -482,10 +483,10 @@ namespace OrganisationRegistry.Body
                 message.Value,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(AddBodyBodyClassification message)
+        public async Task Handle(AddBodyBodyClassification message)
         {
             var bodyClassification = Session.Get<BodyClassification>(message.BodyClassificationId);
             var bodyClassificationType = Session.Get<BodyClassificationType>(message.BodyClassificationTypeId);
@@ -497,10 +498,10 @@ namespace OrganisationRegistry.Body
                 bodyClassification,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateBodyBodyClassification message)
+        public async Task Handle(UpdateBodyBodyClassification message)
         {
             var bodyClassification = Session.Get<BodyClassification>(message.BodyClassificationId);
             var bodyClassificationType = Session.Get<BodyClassificationType>(message.BodyClassificationTypeId);
@@ -512,7 +513,7 @@ namespace OrganisationRegistry.Body
                 bodyClassification,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

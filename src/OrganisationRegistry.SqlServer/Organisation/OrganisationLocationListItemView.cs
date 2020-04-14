@@ -9,6 +9,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using OrganisationRegistry.Organisation.Events;
 
     using System.Linq;
+    using System.Threading.Tasks;
     using Location;
     using LocationType;
     using Microsoft.Extensions.Logging;
@@ -113,7 +114,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LocationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LocationUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -124,11 +125,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 foreach (var organisationLocation in organisationLocations)
                     organisationLocation.LocationName = message.Body.FormattedAddress;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LocationTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LocationTypeUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -139,11 +140,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 foreach (var organisationLocation in organisationLocations)
                     organisationLocation.LocationTypeName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationAdded> message)
         {
             var organisationLocationListItem = new OrganisationLocationListItem(
                 message.Body.OrganisationLocationId,
@@ -158,12 +159,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationLocationList.Add(organisationLocationListItem);
-                context.SaveChanges();
+                await context.OrganisationLocationList.AddAsync(organisationLocationListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationAdded> message)
         {
             var organisationLocationListItem = new OrganisationLocationListItem(
                 message.Body.OrganisationLocationId,
@@ -180,13 +181,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationLocationList.Add(organisationLocationListItem);
-                context.SaveChanges();
+                await context.OrganisationLocationList.AddAsync(organisationLocationListItem);
+                await context.SaveChangesAsync();
             }
         }
 
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationRemoved> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationRemoved> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -195,11 +196,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
                 context.OrganisationLocationList.Remove(organisationLocationListItem);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -213,13 +214,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 organisationLocationListItem.ValidFrom = message.Body.ValidFrom;
                 organisationLocationListItem.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

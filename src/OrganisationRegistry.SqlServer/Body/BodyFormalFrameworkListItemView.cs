@@ -9,6 +9,7 @@
     using OrganisationRegistry.Body.Events;
 
     using System.Linq;
+    using System.Threading.Tasks;
     using FormalFramework;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.FormalFramework.Events;
@@ -70,7 +71,7 @@
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -81,11 +82,11 @@
                 foreach (var bodyFormalFramework in bodyFormalFrameworks)
                     bodyFormalFramework.FormalFrameworkName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkAdded> message)
         {
             var bodyFormalFrameworkListItem = new BodyFormalFrameworkListItem
             {
@@ -99,12 +100,12 @@
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.BodyFormalFrameworkList.Add(bodyFormalFrameworkListItem);
-                context.SaveChanges();
+                await context.BodyFormalFrameworkList.AddAsync(bodyFormalFrameworkListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -117,13 +118,13 @@
                 bodyFormalFramework.ValidFrom = message.Body.ValidFrom;
                 bodyFormalFramework.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

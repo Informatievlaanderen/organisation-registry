@@ -66,7 +66,7 @@ namespace OrganisationRegistry.Api.Organisation
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationRelationRequest message)
+        public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationRelationRequest message)
         {
             var internalMessage = new AddOrganisationRelationInternalRequest(organisationId, message);
 
@@ -76,7 +76,7 @@ namespace OrganisationRegistry.Api.Organisation
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(AddOrganisationRelationRequestMapping.Map(internalMessage));
+            await CommandSender.Send(AddOrganisationRelationRequestMapping.Map(internalMessage));
 
             return Created(Url.Action(nameof(Get), new { id = message.OrganisationRelationId }), null);
         }
@@ -88,7 +88,7 @@ namespace OrganisationRegistry.Api.Organisation
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationRelationRequest message)
+        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationRelationRequest message)
         {
             var internalMessage = new UpdateOrganisationRelationInternalRequest(organisationId, message);
 
@@ -98,7 +98,7 @@ namespace OrganisationRegistry.Api.Organisation
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateOrganisationRelationRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateOrganisationRelationRequestMapping.Map(internalMessage));
 
             return Ok();
         }

@@ -5,6 +5,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
     using System.Data.Common;
     using System.Linq;
     using System.Text;
+    using System.Threading.Tasks;
     using Configuration;
     using Infrastructure.AppSpecific;
     using Infrastructure.Configuration;
@@ -43,7 +44,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             _organisationUriTemplate = _configuration.OrganisationUriTemplate;
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationCreated> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationCreated> message)
         {
             var subject = $"OrganisationRegistry: ORGANISATIE TOEGEVOEGD {message.Body.OvoNumber}";
             var body =
@@ -59,7 +60,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             SendMails(new Mail(subject, body));
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationCreatedFromKbo> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationCreatedFromKbo> message)
         {
             var subject = $"OrganisationRegistry: ORGANISATIE TOEGEVOEGD {message.Body.OvoNumber}";
             var body =
@@ -75,7 +76,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             SendMails(new Mail(subject, body));
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationBecameActive> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationBecameActive> message)
         {
             var subject = $"OrganisationRegistry: ORGANISATIE WERD ACTIEF {_memoryCaches.OvoNumbers[message.Body.OrganisationId]}";
             var body =
@@ -88,7 +89,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             SendMails(new Mail(subject, body));
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationBecameInactive> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationBecameInactive> message)
         {
             var subject = $"OrganisationRegistry: ORGANISATIE WERD INACTIEF {_memoryCaches.OvoNumbers[message.Body.OrganisationId]}";
             var body =
@@ -101,7 +102,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             SendMails(new Mail(subject, body));
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationInfoUpdated> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationInfoUpdated> message)
         {
             var mails = new List<Mail>();
 
@@ -122,7 +123,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             SendMails(mails.ToArray());
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             var mails = new List<Mail>();
 

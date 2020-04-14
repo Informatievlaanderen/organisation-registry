@@ -7,6 +7,7 @@ namespace OrganisationRegistry.Infrastructure.Config
     using Bus;
     using Commands;
     using System.Linq;
+    using System.Threading.Tasks;
     using Events;
     using Microsoft.Extensions.Logging;
 
@@ -51,13 +52,13 @@ namespace OrganisationRegistry.Infrastructure.Config
                 @interface,
                 executorType,
                 nameof(IHandlerRegistrar.RegisterCommandHandler),
-                new Action<dynamic>(x =>
+                new Func<dynamic, Task>(async x =>
                 {
                     LoggerExtensions.LogTrace(_logger, "Executing inner command handler for {CommandName} - {@Command} using {ExecutorType}.", x.GetType(), x, executorType);
 
                     var serviceProvider = _requestScopedServiceProvider();
                     dynamic handler = serviceProvider.GetService(executorType);
-                    handler.Handle(x);
+                    await handler.Handle(x);
 
                     LoggerExtensions.LogTrace(_logger, "Finished executing inner command handler for {CommandName} - {@Command}.", x.GetType(), x);
                 }));
@@ -67,13 +68,13 @@ namespace OrganisationRegistry.Infrastructure.Config
                 @interface,
                 executorType,
                 nameof(IHandlerRegistrar.RegisterEventHandler),
-                new Action<DbConnection, DbTransaction, dynamic>((dbConnection, dbTransaction, envelope) =>
+                new Func<DbConnection, DbTransaction, dynamic, Task>(async (dbConnection, dbTransaction, envelope) =>
                 {
                     LoggerExtensions.LogTrace(_logger, "Executing inner event handler for {EventName} - {@Event} using {ExecutorType}.", envelope.GetType(), envelope, executorType);
 
                     var serviceProvider = _requestScopedServiceProvider();
                     dynamic handler = serviceProvider.GetService(executorType);
-                    handler.Handle(dbConnection, dbTransaction, envelope);
+                    await handler.Handle(dbConnection, dbTransaction, envelope);
 
                     LoggerExtensions.LogTrace(_logger, "Finished executing inner event handler for {EventName} - {@Event}.", envelope.GetType(), envelope);
                 }));

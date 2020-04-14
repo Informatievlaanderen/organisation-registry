@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Day.Events;
     using Infrastructure;
@@ -84,14 +85,14 @@
             ActiveOrganisationLocationList
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationAdded> message)
         {
             // cache ValidTo for the OrganisationLocationId,
             // because we will need it when MainLocationAssignedToOrganisation is published, which does not contain the ValidTo.
             _endDatePerOrganisationLocationId.UpdateMemoryCache(message.Body.OrganisationLocationId, new ValidTo(message.Body.ValidTo));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationUpdated> message)
         {
             // cache ValidTo for the OrganisationFormalFrameworkId,
             // because we will need it when FormalFrameworkAssignedToOrganisation is published, which does not contain the ValidTo.
@@ -114,11 +115,11 @@
                 activeOrganisationLocation.LocationId = message.Body.LocationId;
                 activeOrganisationLocation.ValidTo = validTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainLocationAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainLocationAssignedToOrganisation> message)
         {
             var validTo = _endDatePerOrganisationLocationId[message.Body.OrganisationLocationId];
 
@@ -135,12 +136,12 @@
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.ActiveOrganisationLocationList.Add(activeOrganisationLocationListItem);
-                context.SaveChanges();
+                await context.ActiveOrganisationLocationList.AddAsync(activeOrganisationLocationListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainLocationClearedFromOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainLocationClearedFromOrganisation> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -154,7 +155,7 @@
 
                 context.ActiveOrganisationLocationList.Remove(activeOrganisationLocationListItem);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
@@ -171,9 +172,9 @@
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

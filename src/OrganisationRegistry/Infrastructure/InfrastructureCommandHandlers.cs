@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.Infrastructure
 {
+    using System.Threading.Tasks;
     using Commands;
     using Domain;
     using Domain.Exception;
@@ -14,7 +15,7 @@
             ISession session) : base(logger, session)
         { }
 
-        public void Handle(RebuildProjection message)
+        public async Task Handle(RebuildProjection message)
         {
             try
             {
@@ -29,7 +30,7 @@
                 projection.RebuildProjection(message.ProjectionName);
             }
 
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

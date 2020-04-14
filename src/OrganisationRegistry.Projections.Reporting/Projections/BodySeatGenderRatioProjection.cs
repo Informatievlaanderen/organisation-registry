@@ -14,6 +14,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using OrganisationRegistry.Infrastructure.Events;
     using SqlServer;
 
@@ -83,16 +84,16 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
                 BodySeatGenderRatioPostsPerTypeListConfiguration.TableName
             };
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreated> message)
         {
             CacheOrganisationName(message.Body.OrganisationId, message.Body.Name);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreatedFromKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreatedFromKbo> message)
         {
             CacheOrganisationName(message.Body.OrganisationId, message.Body.Name);
         }
@@ -116,12 +117,12 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         }
 
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
             UpdateOrganisationName(message.Body.OrganisationId, message.Body.Name);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             UpdateOrganisationName(message.Body.OrganisationId, message.Body.Name);
         }
@@ -155,7 +156,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBecameActive> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBecameActive> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -187,7 +188,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBecameInactive> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBecameInactive> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -222,7 +223,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// <summary>
         /// Cache person (person id, person fullname, person sex)
         /// </summary>
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonCreated> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -241,7 +242,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// <summary>
         /// Update person cache and affected records in projection (person fullname, person sex)
         /// </summary>
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -267,7 +268,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyRegistered> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyRegistered> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -297,7 +298,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// <summary>
         /// Update affected records in projection (body name)
         /// </summary>
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -314,7 +315,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecyclePhaseAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecyclePhaseAdded> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -352,7 +353,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecyclePhaseUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecyclePhaseUpdated> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -378,7 +379,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// <summary>
         /// Create new projection record (body, bodyseat, bodyseattype, entitledtovote)
         /// </summary>
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatAdded> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -408,7 +409,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// <summary>
         /// Update affected records in projection (bodyseat status, bodyseattype, entitledtovote)
         /// </summary>
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -444,7 +445,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// <summary>
         /// Update affected records in projection (person id, person fullname, person sex, person assigned status + assigned status + refresh person from cached data)
         /// </summary>
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonToBodySeat> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -498,7 +499,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// <summary>
         /// Update affected records in projection (person id, person fullname, person sex, person assigned statusassigned status +  + refresh person from cached data)
         /// </summary>
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedPersonToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedPersonToBodySeat> message)
         {
             //called on update mandate
             using (var context = ContextFactory.Create())
@@ -540,7 +541,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// <summary>
         /// Update affected records in projection (organisation assigned status + assigned status + refresh organisation from cached data)
         /// </summary>
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedOrganisationToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedOrganisationToBodySeat> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -578,7 +579,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// <summary>
         /// Update affected records in projection (organisation assigned status + assigned status + refresh organisation from cached data)
         /// </summary>
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedOrganisationToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedOrganisationToBodySeat> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -612,7 +613,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// <summary>
         /// Update affected records in projection (function assigned status + assigned status + refresh organisation from cached data)
         /// </summary>
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedFunctionTypeToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedFunctionTypeToBodySeat> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -649,7 +650,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// <summary>
         /// Update affected records in projection (function assigned status + assigned status + refresh organisation from cached data)
         /// </summary>
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedFunctionTypeToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedFunctionTypeToBodySeat> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -683,7 +684,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// <summary>
         /// Update affected records in projection (person id, person fullname, person sex, person assigned status + assigned status)
         /// </summary>
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -714,7 +715,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// <summary>
         /// Update affected records in projection (person id, person fullname, person sex, person assigned status + assigned status)
         /// </summary>
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -742,7 +743,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// <summary>
         /// Update affected records in projection (person assigned status + assigned status)
         /// </summary>
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -766,7 +767,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// <summary>
         /// Update affected records in projection (organisation id, organisation name, organisation assigned status) + assigned status
         /// </summary>
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -801,7 +802,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         /// <summary>
         /// Update affected records in projection organisation assigned status + assigned status
         /// </summary>
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -828,12 +829,12 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationAdded> message)
         {
             AddOrganisationClassification(message.Body.OrganisationOrganisationClassificationId, message.Body.OrganisationId, message.Body.OrganisationClassificationId, message.Body.OrganisationClassificationTypeId, message.Body.ValidFrom, message.Body.ValidTo);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationAdded> message)
         {
             AddOrganisationClassification(message.Body.OrganisationOrganisationClassificationId, message.Body.OrganisationId, message.Body.OrganisationClassificationId, message.Body.OrganisationClassificationTypeId, message.Body.ValidFrom, message.Body.ValidTo);
         }
@@ -859,7 +860,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationRemoved> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationRemoved> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -872,7 +873,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationUpdated> message)
         {
             using (var context = ContextFactory.Create())
             {
@@ -890,7 +891,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<InitialiseProjection> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<InitialiseProjection> message)
         {
             if (message.Body.ProjectionName != typeof(BodySeatGenderRatioProjection).FullName)
                 return;

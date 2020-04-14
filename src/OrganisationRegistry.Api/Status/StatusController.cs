@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Api.Status
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using System.Threading.Tasks;
     using Configuration;
     using ElasticSearch.Configuration;
     using Infrastructure;
@@ -29,7 +30,7 @@ namespace OrganisationRegistry.Api.Status
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             return Ok("I'm ok!");
         }
@@ -38,7 +39,7 @@ namespace OrganisationRegistry.Api.Status
         [Route("toggles")]
         //[OrganisationRegistryAuthorize(Roles = Roles.Developer)] // don't authorize here, we use this one to determine UI functionalities.
         [ProducesResponseType(typeof(TogglesConfiguration), (int)HttpStatusCode.OK)]
-        public IActionResult GetToggles([FromServices] IOptions<TogglesConfiguration> toggles)
+        public async Task<IActionResult> GetToggles([FromServices] IOptions<TogglesConfiguration> toggles)
         {
             return Ok(toggles.Value);
         }
@@ -46,7 +47,7 @@ namespace OrganisationRegistry.Api.Status
         [HttpGet]
         [Route("configuration")]
         [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
-        public async System.Threading.Tasks.Task<IActionResult> GetConfiguration(
+        public async Task<IActionResult> GetConfiguration(
             [FromServices] IConfiguration configuration,
             [FromServices] IExternalIpFetcher externalIpFetcher)
         {

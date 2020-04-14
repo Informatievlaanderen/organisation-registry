@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.Person
 {
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -15,18 +16,18 @@
             ISession session) : base(logger, session)
         { }
 
-        public void Handle(CreatePerson message)
+        public async Task Handle(CreatePerson message)
         {
             var person = new Person(message.PersonId, message.FirstName, message.Name, message.Sex, message.DateOfBirth);
             Session.Add(person);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdatePerson message)
+        public async Task Handle(UpdatePerson message)
         {
             var person = Session.Get<Person>(message.PersonId);
             person.Update(message.FirstName, message.Name, message.Sex, message.DateOfBirth);
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

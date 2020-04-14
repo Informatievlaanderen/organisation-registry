@@ -4,6 +4,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Client;
     using Configuration;
@@ -50,7 +51,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             PrepareIndex(elastic.WriteClient, false);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonCreated> message)
         {
             var personDocument = new PersonDocument
             {
@@ -64,7 +65,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(personDocument).ThrowOnFailure());
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
             var personDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PersonId).ThrowOnFailure().Source);
 
@@ -77,7 +78,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(personDocument).ThrowOnFailure());
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<InitialiseProjection> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<InitialiseProjection> message)
         {
             if (message.Body.ProjectionName != typeof(Person).FullName)
                 return;

@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.OrganisationClassificationType
 {
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -20,24 +21,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public void Handle(CreateOrganisationClassificationType message)
+        public async Task Handle(CreateOrganisationClassificationType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
                 throw new NameNotUniqueException();
 
             var organisationClassificationType = new OrganisationClassificationType(message.OrganisationClassificationTypeId, message.Name);
             Session.Add(organisationClassificationType);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationClassificationType message)
+        public async Task Handle(UpdateOrganisationClassificationType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.OrganisationClassificationTypeId, message.Name))
                 throw new NameNotUniqueException();
 
             var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
             organisationClassificationType.Update(message.Name);
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

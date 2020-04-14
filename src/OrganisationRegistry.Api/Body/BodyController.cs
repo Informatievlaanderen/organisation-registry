@@ -84,7 +84,7 @@ namespace OrganisationRegistry.Api.Body
             if (authInfo.Principal == null || !authInfo.Principal.IsInRole(Roles.Developer))
                 message.BodyNumber = string.Empty;
 
-            CommandSender.Send(
+            await CommandSender.Send(
                 RegisterBodyRequestMapping.Map(
                     message,
                     context.LifecyclePhaseTypeList.SingleOrDefault(x => x.RepresentsActivePhase && x.IsDefaultPhase),

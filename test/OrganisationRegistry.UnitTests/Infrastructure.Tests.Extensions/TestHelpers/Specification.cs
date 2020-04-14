@@ -3,6 +3,7 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -51,17 +52,17 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
             {
             }
 
-            HandleEvents();
+            HandleEvents().GetAwaiter().GetResult();
 
             Snapshot = snapshotstorage.Snapshot;
             PublishedEvents = eventpublisher.PublishedEvents;
             EventDescriptors = eventstorage.Events;
         }
 
-        protected virtual void HandleEvents()
+        protected virtual async Task HandleEvents()
         {
             var handler = BuildHandler();
-            handler.Handle(When());
+            await handler.Handle(When());
         }
 
         protected IEnumerable<IEvent> NumberTheEvents(IEnumerable<IEvent> toList)

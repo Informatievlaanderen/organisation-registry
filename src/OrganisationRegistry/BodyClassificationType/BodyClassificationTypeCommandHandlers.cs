@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.BodyClassificationType
 {
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -20,24 +21,24 @@ namespace OrganisationRegistry.BodyClassificationType
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public void Handle(CreateBodyClassificationType message)
+        public async Task Handle(CreateBodyClassificationType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
                 throw new NameNotUniqueException();
 
             var bodyClassificationType = new BodyClassificationType(message.BodyClassificationTypeId, message.Name);
             Session.Add(bodyClassificationType);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateBodyClassificationType message)
+        public async Task Handle(UpdateBodyClassificationType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.BodyClassificationTypeId, message.Name))
                 throw new NameNotUniqueException();
 
             var bodyClassificationType = Session.Get<BodyClassificationType>(message.BodyClassificationTypeId);
             bodyClassificationType.Update(message.Name);
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

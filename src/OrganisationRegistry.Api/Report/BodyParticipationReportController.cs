@@ -4,6 +4,7 @@ namespace OrganisationRegistry.Api.Report
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Pagination;
@@ -33,7 +34,7 @@ namespace OrganisationRegistry.Api.Report
         [ProducesResponseType(typeof(IEnumerable<BodyParticipation>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult GetBodyParticipation(
+        public async Task<IActionResult> GetBodyParticipation(
             [FromServices] OrganisationRegistryContext context,
             [FromRoute] Guid bodyId)
         {
@@ -83,7 +84,7 @@ namespace OrganisationRegistry.Api.Report
         [ProducesResponseType(typeof(BodyParticipationTotals), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult GetBodyParticipationTotals(
+        public async Task<IActionResult> GetBodyParticipationTotals(
             [FromServices] OrganisationRegistryContext context,
             [FromRoute] Guid bodyId)
         {

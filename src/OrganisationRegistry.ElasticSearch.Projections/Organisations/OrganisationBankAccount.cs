@@ -8,6 +8,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using Microsoft.Extensions.Logging;
     using System.Collections.Generic;
     using System.Data.Common;
+    using System.Threading.Tasks;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
 
@@ -28,17 +29,17 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             _elastic = elastic;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountAdded> message)
         {
             AddBankAccount(message.Body.OrganisationId, message.Body.OrganisationBankAccountId, message.Body.BankAccountNumber, message.Body.IsIban, message.Body.Bic, message.Body.IsBic, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountAdded> message)
         {
             AddBankAccount(message.Body.OrganisationId, message.Body.OrganisationBankAccountId, message.Body.BankAccountNumber, message.Body.IsIban, message.Body.Bic, message.Body.IsBic, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountRemoved> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountRemoved> message)
         {
             RemoveBankAccount(message.Body.OrganisationId, message.Body.OrganisationBankAccountId, message.Number, message.Timestamp);
         }
@@ -53,7 +54,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             if (organisationDocument.BankAccounts == null)
                 organisationDocument.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
-                
+
             organisationDocument.BankAccounts.RemoveExistingListItems(x =>
                 x.OrganisationBankAccountId == organisationBankAccountId);
 
@@ -79,14 +80,14 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             if (organisationDocument.BankAccounts == null)
                 organisationDocument.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
-                
+
             organisationDocument.BankAccounts.RemoveExistingListItems(x =>
                 x.OrganisationBankAccountId == organisationBankAccountId);
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountUpdated> message)
         {
             var organisationDocument =
                 _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
@@ -96,7 +97,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             if (organisationDocument.BankAccounts == null)
                 organisationDocument.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
-                
+
             organisationDocument.BankAccounts.RemoveExistingListItems(x => x.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
 
             organisationDocument.BankAccounts.Add(

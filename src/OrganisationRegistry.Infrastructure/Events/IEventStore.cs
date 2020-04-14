@@ -2,10 +2,11 @@ namespace OrganisationRegistry.Infrastructure.Events
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
 
     public interface IEventStore
     {
-        void Save<T>(IEnumerable<IEvent> events);
+        Task Save<T>(IEnumerable<IEvent> events);
 
         IEnumerable<IEvent> Get<T>(Guid aggregateId, int fromVersion);
 

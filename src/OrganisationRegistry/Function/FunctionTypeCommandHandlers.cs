@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.Function
 {
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -20,7 +21,7 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public void Handle(CreateFunctionType message)
+        public async Task Handle(CreateFunctionType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
                 throw new NameNotUniqueException();
@@ -28,10 +29,10 @@
             var functionType = new FunctionType(message.FunctionTypeId, message.Name);
 
             Session.Add(functionType);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateFunctionType message)
+        public async Task Handle(UpdateFunctionType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.FunctionTypeId, message.Name))
                 throw new NameNotUniqueException();
@@ -39,7 +40,7 @@
             var functionType = Session.Get<FunctionType>(message.FunctionTypeId);
 
             functionType.Update(message.Name);
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

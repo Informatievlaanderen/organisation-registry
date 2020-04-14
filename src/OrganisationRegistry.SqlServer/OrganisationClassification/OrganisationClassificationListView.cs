@@ -3,6 +3,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
     using System;
     using System.Linq;
     using System.Data.Common;
+    using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Infrastructure;
@@ -85,7 +86,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationCreated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -100,12 +101,12 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
                     OrganisationClassificationTypeName = message.Body.OrganisationClassificationTypeName
                 };
 
-                context.OrganisationClassificationList.Add(organisationClassification);
-                context.SaveChanges();
+                await context.OrganisationClassificationList.AddAsync(organisationClassification);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -120,11 +121,11 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
                 organisationClassification.OrganisationClassificationTypeId = message.Body.OrganisationClassificationTypeId;
                 organisationClassification.OrganisationClassificationTypeName = message.Body.OrganisationClassificationTypeName;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationTypeUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -135,13 +136,13 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
                 foreach (var organisationClassification in organisationClassifications)
                     organisationClassification.OrganisationClassificationTypeName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

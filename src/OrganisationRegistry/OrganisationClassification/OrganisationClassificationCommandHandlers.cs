@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.OrganisationClassification
 {
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -24,7 +25,7 @@ namespace OrganisationRegistry.OrganisationClassification
             _uniqueExternalKeyValidator = uniqueExternalKeyValidator;
         }
 
-        public void Handle(CreateOrganisationClassification message)
+        public async Task Handle(CreateOrganisationClassification message)
         {
             var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
 
@@ -44,10 +45,10 @@ namespace OrganisationRegistry.OrganisationClassification
                     organisationClassificationType);
 
             Session.Add(organisationClassification);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationClassification message)
+        public async Task Handle(UpdateOrganisationClassification message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.OrganisationClassificationId, message.Name, message.OrganisationClassificationTypeId))
                 throw new NameNotUniqueWithinTypeException();
@@ -59,7 +60,7 @@ namespace OrganisationRegistry.OrganisationClassification
             var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
             var organisationClassification = Session.Get<OrganisationClassification>(message.OrganisationClassificationId);
             organisationClassification.Update(message.Name, message.Order, message.ExternalKey, message.Active, organisationClassificationType);
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

@@ -68,7 +68,7 @@
         [HttpPost]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromServices] ConfigurationContext context, [FromBody] CreateConfigurationValueRequest message)
+        public async Task<IActionResult> Post([FromServices] ConfigurationContext context, [FromBody] CreateConfigurationValueRequest message)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -85,7 +85,7 @@
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromServices] ConfigurationContext context, [FromRoute] string id, [FromBody] UpdateConfigurationValueRequest message)
+        public async Task<IActionResult> Put([FromServices] ConfigurationContext context, [FromRoute] string id, [FromBody] UpdateConfigurationValueRequest message)
         {
             var internalMessage = new UpdateConfigurationValueInternalRequest(id, message);
 

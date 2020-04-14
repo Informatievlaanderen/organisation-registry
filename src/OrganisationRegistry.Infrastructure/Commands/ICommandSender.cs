@@ -1,7 +1,9 @@
 ﻿namespace OrganisationRegistry.Infrastructure.Commands
 {
+    using System.Threading.Tasks;
+
     public interface ICommandSender
     {
-        void Send<T>(T command) where T : ICommand;
+        Task Send<T>(T command) where T : ICommand;
     }
 }

@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Api.Task
     using System;
     using System.Linq;
     using System.Net;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Configuration;
     using Day.Commands;
@@ -38,7 +39,7 @@ namespace OrganisationRegistry.Api.Task
         [OrganisationRegistryAuthorize(Roles = Roles.AutomatedTask + "," + Roles.Developer)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post(
+        public async Task<IActionResult> Post(
             [FromServices] Func<Owned<OrganisationRegistryContext>> contextFactory,
             [FromServices] IKboSync kboSync,
             [FromBody] TaskRequest task)
@@ -49,7 +50,7 @@ namespace OrganisationRegistry.Api.Task
             switch (task.Type)
             {
                 case TaskType.CheckIfDayHasPassed:
-                    CommandSender.Send(new CheckIfDayHasPassed());
+                    await CommandSender.Send(new CheckIfDayHasPassed());
                     break;
 
                 case TaskType.RebuildProjection:
@@ -57,7 +58,7 @@ namespace OrganisationRegistry.Api.Task
                         throw new RebuildProjectionRequiresANameException();
 
                     _logger.LogInformation("Projection Rebuild for {ProjectionName} requested.", task.Params[0]);
-                    CommandSender.Send(new RebuildProjection(task.Params[0]));
+                    await CommandSender.Send(new RebuildProjection(task.Params[0]));
                     break;
 
                 case TaskType.CompensatingAction:
@@ -100,7 +101,7 @@ namespace OrganisationRegistry.Api.Task
             return Ok();
         }
 
-        private void CompensatingAction20170518FixBodies(OrganisationRegistryContext context)
+        private async Task CompensatingAction20170518FixBodies(OrganisationRegistryContext context)
         {
             var bodiesInNeedOfFixing = context
                 .BodyDetail
@@ -110,10 +111,10 @@ namespace OrganisationRegistry.Api.Task
 
             _logger.LogInformation("Fixing {NumberOfBodies} bodies.", bodiesInNeedOfFixing.Count);
             foreach (var bodyId in bodiesInNeedOfFixing)
-                CommandSender.Send(new AssignBodyNumber(new BodyId(bodyId)));
+                await CommandSender.Send(new AssignBodyNumber(new BodyId(bodyId)));
         }
 
-        private void CompensatingAction20170518FixBodySeats(OrganisationRegistryContext context)
+        private async Task CompensatingAction20170518FixBodySeats(OrganisationRegistryContext context)
         {
             var seatsInNeedOfFixing = context
                 .BodySeatList
@@ -122,7 +123,7 @@ namespace OrganisationRegistry.Api.Task
 
             _logger.LogInformation("Fixing {NumberOfBodySeats} body seats.", seatsInNeedOfFixing.Count);
             foreach (var bodySeat in seatsInNeedOfFixing)
-                CommandSender.Send(new AssignBodySeatNumber(new BodyId(bodySeat.BodyId), new BodySeatId(bodySeat.BodySeatId)));
+                await CommandSender.Send(new AssignBodySeatNumber(new BodyId(bodySeat.BodyId), new BodySeatId(bodySeat.BodySeatId)));
         }
 
         private void CompensatingAction20171124FixBodyMandates(OrganisationRegistryContext context)

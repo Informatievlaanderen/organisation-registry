@@ -8,6 +8,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.OrganisationClassification.Events;
@@ -189,7 +190,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             return context.OrganisationList.Single(item => item.OrganisationId == parentOrganisationId && item.FormalFrameworkId == null);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreated> message)
         {
             var organisationListItem = new OrganisationListItem
             {
@@ -203,12 +204,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationList.Add(organisationListItem);
-                context.SaveChanges();
+                await context.OrganisationList.AddAsync(organisationListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreatedFromKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreatedFromKbo> message)
         {
             var organisationListItem = new OrganisationListItem
             {
@@ -222,12 +223,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationList.Add(organisationListItem);
-                context.SaveChanges();
+                await context.OrganisationList.AddAsync(organisationListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -245,11 +246,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     child.ParentOrganisationOvoNumber = message.Body.OvoNumber;
                 }
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -264,11 +265,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     child.ParentOrganisation = message.Body.Name;
                 }
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationParentUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationParentUpdated> message)
         {
             if (!message.Body.PreviousParentOrganisationId.HasValue)
                 return;
@@ -289,11 +290,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 organisationListItem.ParentOrganisationOvoNumber = parentOrganisation.OvoNumber;
                 organisationListItem.ParentOrganisationsRelationshipId = message.Body.OrganisationOrganisationParentId;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentAssignedToOrganisation> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -307,11 +308,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 organisationListItem.ParentOrganisationOvoNumber = parentOrganisation.OvoNumber;
                 organisationListItem.ParentOrganisationsRelationshipId = message.Body.OrganisationOrganisationParentId;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentClearedFromOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentClearedFromOrganisation> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -324,11 +325,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 organisationListItem.ParentOrganisationOvoNumber = null;
                 organisationListItem.ParentOrganisationsRelationshipId = null;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkAssignedToOrganisation> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -342,11 +343,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 organisationListItem.ParentOrganisationOvoNumber = parentOrganisation.OvoNumber;
                 organisationListItem.ParentOrganisationsRelationshipId = message.Body.OrganisationFormalFrameworkId;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkClearedFromOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkClearedFromOrganisation> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -359,11 +360,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 organisationListItem.ParentOrganisationOvoNumber = null;
                 organisationListItem.ParentOrganisationsRelationshipId = null;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkAdded> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -399,7 +400,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                         }
                     };
 
-                    context.OrganisationList.Add(organisationListItemForFormalFramework);
+                    await context.OrganisationList.AddAsync(organisationListItemForFormalFramework);
                 }
                 else
                 {
@@ -463,7 +464,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                         }
                     };
 
-                    context.OrganisationList.Add(parentListItemForFormalFramework);
+                    await context.OrganisationList.AddAsync(parentListItemForFormalFramework);
                 }
                 else
                 {
@@ -482,11 +483,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
                         });
                 }
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -561,7 +562,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                         ParentOrganisationsRelationshipId = null
                     };
 
-                    context.OrganisationList.Add(parentListItemForFormalFramework);
+                    await context.OrganisationList.AddAsync(parentListItemForFormalFramework);
                 }
                 else
                 {
@@ -593,7 +594,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                             });
                     }
                 }
-                context.SaveChanges();
+                await context.SaveChangesAsync();
 
                 // OLD PARENT STUFF
                 if (!OrganisationHasChildrenForFormalFramework(context, message.Body.PreviousParentOrganisationId, message.Body.FormalFrameworkId) &&
@@ -602,7 +603,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     RemoveOrganisationFromFormalFramework(context, message.Body.PreviousParentOrganisationId, message.Body.FormalFrameworkId);
                 }
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
@@ -613,12 +614,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 item.OrganisationId == organisationId);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationAdded> message)
         {
             AddOrganisationClassification(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.OrganisationOrganisationClassificationId, message.Body.OrganisationClassificationId, message.Body.OrganisationClassificationTypeId, message.Body.ValidFrom, message.Body.ValidTo);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationAdded> message)
         {
             AddOrganisationClassification(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.OrganisationOrganisationClassificationId, message.Body.OrganisationClassificationId, message.Body.OrganisationClassificationTypeId, message.Body.ValidFrom, message.Body.ValidTo);
         }
@@ -656,7 +657,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationRemoved> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationRemoved> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -675,11 +676,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
                         context.OrganisationClassificationValidities.RemoveRange(organisationClassificationValidities);
                     });
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -703,7 +704,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                             });
                     });
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
@@ -719,7 +720,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             };
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -730,7 +731,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 {
                     validity.OrganisationClassificationTypeId = message.Body.OrganisationClassificationTypeId;
                 }
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
@@ -762,9 +763,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
             context.OrganisationList.Remove(organisationListItem);
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

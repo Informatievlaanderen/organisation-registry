@@ -6,6 +6,7 @@ namespace OrganisationRegistry.Api.Management
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
+    using System.Threading.Tasks;
     using OrganisationRegistry.Infrastructure.Commands;
 
     [ApiVersion("1.0")]
@@ -19,7 +20,7 @@ namespace OrganisationRegistry.Api.Management
         }
 
         [HttpGet("days")]
-        public IActionResult GetDayNames()
+        public async Task<IActionResult> GetDayNames()
         {
             var days = new List<Day>();
 
@@ -36,7 +37,7 @@ namespace OrganisationRegistry.Api.Management
         }
 
         [HttpGet("hours")]
-        public IActionResult GetHours()
+        public async Task<IActionResult> GetHours()
         {
             var hours = new List<Hour>();
 

@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Api.Task
     using System;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading.Tasks;
     using Configuration;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
@@ -13,8 +14,7 @@ namespace OrganisationRegistry.Api.Task
 
     public interface IKboSync
     {
-        void SyncFromKbo(
-            ICommandSender commandSender,
+        Task SyncFromKbo(ICommandSender commandSender,
             OrganisationRegistryContext context,
             ClaimsPrincipal claimsPrincipal);
     }
@@ -40,8 +40,7 @@ namespace OrganisationRegistry.Api.Task
             _syncFromKboBatchSize = apiOptions.Value.SyncFromKboBatchSize;
         }
 
-        public void SyncFromKbo(
-            ICommandSender commandSender,
+        public async Task SyncFromKbo(ICommandSender commandSender,
             OrganisationRegistryContext context,
             ClaimsPrincipal claimsPrincipal)
         {
@@ -72,7 +71,7 @@ namespace OrganisationRegistry.Api.Task
                         continue;
                     }
 
-                    commandSender.Send(new UpdateFromKbo(
+                    await commandSender.Send(new UpdateFromKbo(
                         new OrganisationId(organisationDetailItem.Id),
                         claimsPrincipal,
                         _dateTimeProvider.Today,

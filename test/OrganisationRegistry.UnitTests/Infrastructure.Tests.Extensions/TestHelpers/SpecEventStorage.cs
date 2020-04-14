@@ -3,6 +3,7 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using OrganisationRegistry.Infrastructure.Events;
 
     internal class SpecEventStorage : IEventStore
@@ -17,7 +18,7 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
             Events = events;
         }
 
-        public void Save<T>(IEnumerable<IEvent> events)
+        public async Task Save<T>(IEnumerable<IEvent> events)
         {
             var eventList = events as IList<IEvent> ?? events.ToList();
             Events.AddRange(eventList);

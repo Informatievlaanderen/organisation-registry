@@ -4,6 +4,7 @@ namespace OrganisationRegistry.Api.Body.Queries
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;

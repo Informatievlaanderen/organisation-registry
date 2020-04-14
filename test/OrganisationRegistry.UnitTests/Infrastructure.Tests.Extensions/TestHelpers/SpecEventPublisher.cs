@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
 {
     using System.Collections.Generic;
     using System.Data.Common;
+    using System.Threading.Tasks;
     using OrganisationRegistry.Infrastructure.Events;
 
     internal class SpecEventPublisher : IEventPublisher
@@ -11,7 +12,7 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
         public SpecEventPublisher()
             => PublishedEvents = new List<IEnvelope>();
 
-        public void Publish<T>(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<T> envelope) where T : IEvent<T>
+        public async Task Publish<T>(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<T> envelope) where T : IEvent<T>
             => PublishedEvents.Add(envelope);
 
         public void ProcessReactions<T>(IEnvelope<T> envelope) where T : IEvent<T> { }

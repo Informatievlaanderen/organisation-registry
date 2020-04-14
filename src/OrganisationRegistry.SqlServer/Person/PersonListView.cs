@@ -3,6 +3,7 @@ namespace OrganisationRegistry.SqlServer.Person
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.EntityFrameworkCore;
     using Infrastructure;
@@ -80,7 +81,7 @@ namespace OrganisationRegistry.SqlServer.Person
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonCreated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -94,12 +95,12 @@ namespace OrganisationRegistry.SqlServer.Person
                     DateOfBirth = message.Body.DateOfBirth
                 };
 
-                context.PersonList.Add(person);
-                context.SaveChanges();
+                await context.PersonList.AddAsync(person);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -112,13 +113,13 @@ namespace OrganisationRegistry.SqlServer.Person
                 person.FullName = $"{message.Body.FirstName} {message.Body.Name}";
                 person.Sex = (Sex?) message.Body.Sex;
                 person.DateOfBirth = message.Body.DateOfBirth;
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

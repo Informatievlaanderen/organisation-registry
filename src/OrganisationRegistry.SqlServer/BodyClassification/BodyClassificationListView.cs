@@ -8,6 +8,7 @@ namespace OrganisationRegistry.SqlServer.BodyClassification
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using OrganisationRegistry.BodyClassification.Events;
     using OrganisationRegistry.BodyClassificationType.Events;
     using OrganisationRegistry.Infrastructure.Events;
@@ -81,7 +82,7 @@ namespace OrganisationRegistry.SqlServer.BodyClassification
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationCreated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -95,12 +96,12 @@ namespace OrganisationRegistry.SqlServer.BodyClassification
                     BodyClassificationTypeName = message.Body.BodyClassificationTypeName
                 };
 
-                context.BodyClassificationList.Add(bodyClassification);
-                context.SaveChanges();
+                await context.BodyClassificationList.AddAsync(bodyClassification);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -114,11 +115,11 @@ namespace OrganisationRegistry.SqlServer.BodyClassification
                 bodyClassification.BodyClassificationTypeId = message.Body.BodyClassificationTypeId;
                 bodyClassification.BodyClassificationTypeName = message.Body.BodyClassificationTypeName;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationTypeUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -129,13 +130,13 @@ namespace OrganisationRegistry.SqlServer.BodyClassification
                 foreach (var bodyClassification in bodyClassifications)
                     bodyClassification.BodyClassificationTypeName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

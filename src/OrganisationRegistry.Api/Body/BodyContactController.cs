@@ -66,7 +66,7 @@ namespace OrganisationRegistry.Api.Body
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] AddBodyContactRequest message)
+        public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] AddBodyContactRequest message)
         {
             var internalMessage = new AddBodyContactInternalRequest(bodyId, message);
 
@@ -76,7 +76,7 @@ namespace OrganisationRegistry.Api.Body
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(AddBodyContactRequestMapping.Map(internalMessage));
+            await CommandSender.Send(AddBodyContactRequestMapping.Map(internalMessage));
 
             return Created(Url.Action(nameof(Get), new { id = message.BodyContactId }), null);
         }
@@ -88,7 +88,7 @@ namespace OrganisationRegistry.Api.Body
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] UpdateBodyContactRequest message)
+        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] UpdateBodyContactRequest message)
         {
             var internalMessage = new UpdateBodyContactInternalRequest(bodyId, message);
 
@@ -98,7 +98,7 @@ namespace OrganisationRegistry.Api.Body
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateBodyContactRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateBodyContactRequestMapping.Map(internalMessage));
 
             return Ok();
         }
