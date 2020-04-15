@@ -80,6 +80,7 @@ namespace OrganisationRegistry.Api.Task
 
                     kboSyncQueueItem.SyncCompletedAt = _dateTimeProvider.UtcNow;
                     kboSyncQueueItem.SyncStatus = SyncStatusSuccess;
+                    kboSyncQueueItem.SyncInfo = string.Empty;
 
                     _logger.LogInformation("Kbo sync for kbo number {KboNumber} completed.", kboSyncQueueItem.SourceOrganisationKboNumber);
                 }
