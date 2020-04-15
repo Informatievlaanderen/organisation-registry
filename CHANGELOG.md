@@ -1,3 +1,11 @@
+# [1.40.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.39.0...v1.40.0) (2020-04-15)
+
+
+### Features
+
+* clear sync info on success ([5ae2cae](https://github.com/informatievlaanderen/organisation-registry/commit/5ae2caeadbf3a07453db380bd8632a7c1f1fc04b))
+* log ftp events ([0ea23bb](https://github.com/informatievlaanderen/organisation-registry/commit/0ea23bb05067600b19890e45fc0b0ba88b0d633f))
+
 # [1.39.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.38.0...v1.39.0) (2020-04-10)
 
 
