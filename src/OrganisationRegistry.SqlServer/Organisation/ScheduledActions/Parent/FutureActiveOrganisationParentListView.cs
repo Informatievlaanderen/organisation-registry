@@ -106,7 +106,7 @@
                 DeleteFutureActiveOrganisationParent(context, message.Body.OrganisationOrganisationParentId);
         }
 
-        public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
+        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
         {
             using (var context = ContextFactory.Create())
             {

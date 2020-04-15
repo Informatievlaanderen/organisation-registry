@@ -12,6 +12,6 @@
     {
         void RegisterCommandHandler<T>(Func<T, Task> handler) where T : IMessage;
         void RegisterEventHandler<T>(Func<DbConnection, DbTransaction, IEnvelope<T>, Task> handler) where T : IEvent<T>;
-        void RegisterReaction<T>(Func<IEnvelope<T>, List<ICommand>> handler) where T : IEvent<T>;
+        void RegisterReaction<T>(Func<IEnvelope<T>, Task<List<ICommand>>> handler) where T : IEvent<T>;
     }
 }

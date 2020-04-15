@@ -45,7 +45,7 @@ namespace OrganisationRegistry.SqlServer.Body
         public Guid? AssignedToId { get; set; }
         public string? AssignedToName { get; set; }
 
-        public string ContactsJson { get; set; }
+        public string? ContactsJson { get; set; }
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }

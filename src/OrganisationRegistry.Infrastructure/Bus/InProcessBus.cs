@@ -14,7 +14,7 @@ namespace OrganisationRegistry.Infrastructure.Bus
     {
         private readonly ILogger<InProcessBus> _logger;
         private readonly Dictionary<Type, List<Func<DbConnection, DbTransaction, IMessage, Task>>> _eventRoutes = new Dictionary<Type, List<Func<DbConnection, DbTransaction, IMessage, Task>>>();
-        private readonly Dictionary<Type, List<Func<IMessage, List<ICommand>>>> _reactionRoutes = new Dictionary<Type, List<Func<IMessage, List<ICommand>>>>();
+        private readonly Dictionary<Type, List<Func<IMessage, Task<List<ICommand>>>>> _reactionRoutes = new Dictionary<Type, List<Func<IMessage, Task<List<ICommand>>>>>();
         private readonly Dictionary<Type, List<Func<IMessage, Task>>> _commandRoutes = new Dictionary<Type, List<Func<IMessage, Task>>>();
 
         public InProcessBus(ILogger<InProcessBus> logger)
@@ -34,15 +34,15 @@ namespace OrganisationRegistry.Infrastructure.Bus
             handlers.Add(async (dbConnection, dbTransaction, @event) => await handler(dbConnection, dbTransaction, (IEnvelope<T>)@event));
         }
 
-        public void RegisterReaction<T>(Func<IEnvelope<T>, List<ICommand>> handler) where T : IEvent<T>
+        public void RegisterReaction<T>(Func<IEnvelope<T>, Task<List<ICommand>>> handler) where T : IEvent<T>
         {
             if (!_reactionRoutes.TryGetValue(typeof(T), out var handlers))
             {
-                handlers = new List<Func<IMessage, List<ICommand>>>();
+                handlers = new List<Func<IMessage, Task<List<ICommand>>>>();
                 _reactionRoutes.Add(typeof(T), handlers);
             }
 
-            handlers.Add(envelope => handler((IEnvelope<T>)envelope));
+            handlers.Add(async envelope => await handler((IEnvelope<T>)envelope));
         }
 
         public void RegisterCommandHandler<T>(Func<T, Task> handler) where T : IMessage
@@ -90,22 +90,24 @@ namespace OrganisationRegistry.Infrastructure.Bus
                 await handler(dbConnection, dbTransaction, envelope);
         }
 
-        public void ProcessReactions<T>(IEnvelope<T> envelope) where T : IEvent<T>
+        public async Task ProcessReactions<T>(IEnvelope<T> envelope) where T : IEvent<T>
         {
             if (!_reactionRoutes.TryGetValue(envelope.Body.GetType(), out var reactions))
-                reactions = new List<Func<IMessage, List<ICommand>>>();
+                reactions = new List<Func<IMessage, Task<List<ICommand>>>>();
 
             _logger.LogDebug(
                 $"Publishing event {{@Event}} to {{NumberOfReactionHandlers}} reaction {(reactions.Count == 1 ? "handler" : "handlers")}.",
                 envelope,
                 reactions.Count);
 
-            Task.Run(() =>
+            // do not await!
+            Task.Factory.StartNew(() =>
             {
                 try
                 {
-                    reactions.ForEach(reaction =>
-                        reaction(envelope).ForEach(async command => await Send(command)));
+                    reactions
+                        .ForEach(async reaction => (await reaction(envelope))
+                            .ForEach(async command => await Send(command)));
 
                     if (reactions.Count > 0)
                         _logger.LogInformation("Processed all reactions.");

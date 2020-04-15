@@ -84,13 +84,13 @@ namespace OrganisationRegistry.Infrastructure.Config
                 @interface,
                 executorType,
                 nameof(IHandlerRegistrar.RegisterReaction),
-                new Func<dynamic, List<ICommand>>(envelope =>
+                new Func<dynamic, Task<List<ICommand>>>(async envelope =>
                 {
                     LoggerExtensions.LogTrace(_logger, "Executing inner reaction handler for {ReactionName} - {@Event} using {ExecutorType}.", envelope.GetType(), envelope, executorType);
 
                     var serviceProvider = _requestScopedServiceProvider();
                     dynamic handler = serviceProvider.GetService(executorType);
-                    var commands = handler.Handle(envelope);
+                    var commands = await handler.Handle(envelope);
 
                     LoggerExtensions.LogTrace(_logger, "Finished executing inner reaction handler for {ReactionName} - {@Event}, resulting in {@Commands}.", envelope.GetType(), envelope, commands);
 

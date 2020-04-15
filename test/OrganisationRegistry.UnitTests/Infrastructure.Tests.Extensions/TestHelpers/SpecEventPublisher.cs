@@ -15,6 +15,6 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
         public async Task Publish<T>(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<T> envelope) where T : IEvent<T>
             => PublishedEvents.Add(envelope);
 
-        public void ProcessReactions<T>(IEnvelope<T> envelope) where T : IEvent<T> { }
+        public async Task ProcessReactions<T>(IEnvelope<T> envelope) where T : IEvent<T> { }
     }
 }

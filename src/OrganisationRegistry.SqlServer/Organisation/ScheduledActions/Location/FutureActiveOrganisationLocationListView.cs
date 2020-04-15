@@ -107,7 +107,7 @@
                 DeleteFutureActiveOrganisationLocation(context, message.Body.OrganisationLocationId);
         }
 
-        public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
+        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
         {
             using (var context = ContextFactory.Create())
             {

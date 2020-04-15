@@ -6,6 +6,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
@@ -54,26 +55,31 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
 
             HandleEvents(reactionHandler, memoryCachesMaintainer, Given().ToArray());
 
-            Commands = reactionHandler.Handle((dynamic)When().ToEnvelope());
+            var envelope = (dynamic)When().ToEnvelope();
+            Commands = reactionHandler.Handle(envelope).GetAwaiter().GetResult();
         }
 
         public DbContextOptions<OrganisationRegistryContext> ContextOptions { get; set; }
 
-        private void HandleEvents(object reactionHandler, MemoryCachesMaintainer memoryCaches, params IEvent[] events)
+        private async Task HandleEvents(object reactionHandler, MemoryCachesMaintainer memoryCaches, params IEvent[] events)
         {
             foreach (var @event in events)
             {
-                Publish(memoryCaches, @event);
-                Publish(reactionHandler, @event);
+                await Publish(memoryCaches, @event);
+                await Publish(reactionHandler, @event);
             }
         }
 
-        private void Publish(object eventHandler, IEvent @event)
+        private async Task Publish(object eventHandler, IEvent @event)
         {
             var type = eventHandler.GetType();
             var envelope = @event.ToEnvelope();
+            var taskType = Type.MakeGenericSignatureType(typeof(Task), typeof(DbConnection), typeof(DbTransaction), envelope.GetType());
+
             var methodInfo = type.GetMethod("Handle", new[] {typeof(DbConnection), typeof(DbTransaction), envelope.GetType()});
-            methodInfo?.Invoke(eventHandler, new object[] {null, null, envelope});
+            var task = (Task)methodInfo?.Invoke(eventHandler, new object[] {null, null, envelope});
+            if (task != null)
+                await task;
         }
 
         [Fact]

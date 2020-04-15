@@ -12,6 +12,6 @@ namespace OrganisationRegistry.Infrastructure.Bus
             return Task.CompletedTask;
         }
 
-        public void ProcessReactions<T>(IEnvelope<T> envelope) where T : IEvent<T> { }
+        public async Task ProcessReactions<T>(IEnvelope<T> envelope) where T : IEvent<T> { }
     }
 }

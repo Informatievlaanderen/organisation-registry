@@ -392,7 +392,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
 
-        public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
+        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
         {
             using (var context = ContextFactory.Create())
             {
