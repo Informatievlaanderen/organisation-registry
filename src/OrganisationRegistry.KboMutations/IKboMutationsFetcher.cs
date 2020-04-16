@@ -42,8 +42,10 @@ namespace OrganisationRegistry.KboMutations
 
         public IEnumerable<MutationsFile> GetKboMutationFiles()
         {
+            _logger.LogInformation("Fetching mutation files from folder {SourcePath}.", _kboMutationsConfiguration.SourcePath);
+
             var mutationFiles = new List<MutationsFile>();
-            using (var ftpClient = _ftpClientFactory.CreateFtpClient(_kboMutationsConfiguration))
+            using (var ftpClient = _ftpClientFactory.CreateFtpClient(_kboMutationsConfiguration, _logger))
             {
                 ftpClient.Connect();
 
@@ -55,6 +57,8 @@ namespace OrganisationRegistry.KboMutations
 
                 ftpClient.Disconnect();
             }
+
+            _logger.LogInformation("Found {NumberOfMutationFiles} mutation files to process.", mutationFiles.Count);
 
             return mutationFiles;
         }
@@ -99,7 +103,9 @@ namespace OrganisationRegistry.KboMutations
 
         public void Archive(MutationsFile file)
         {
-            using (var ftpClient = _ftpClientFactory.CreateFtpClient(_kboMutationsConfiguration))
+            _logger.LogInformation("Archiving {FileName} to {ArchivePath}", file, _kboMutationsConfiguration.CachePath);
+
+            using (var ftpClient = _ftpClientFactory.CreateFtpClient(_kboMutationsConfiguration, _logger))
             {
                 ftpClient.Connect();
 

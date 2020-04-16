@@ -62,7 +62,8 @@ namespace OrganisationRegistry.UnitTests
                     SourceOrganisationKboNumber = kboSyncQueueItem.SourceOrganisationKboNumber,
                     SourceOrganisationModifiedAt = kboSyncQueueItem.SourceOrganisationModifiedAt,
                     SyncCompletedAt = _dateTimeProviderStub.UtcNow,
-                    SyncStatus = KboSync.SyncStatusSuccess
+                    SyncStatus = KboSync.SyncStatusSuccess,
+                    SyncInfo = string.Empty,
                 },
                 new KboSyncQueueItem
                 {
@@ -73,7 +74,8 @@ namespace OrganisationRegistry.UnitTests
                     SourceOrganisationKboNumber = kboSyncQueueItem2.SourceOrganisationKboNumber,
                     SourceOrganisationModifiedAt = kboSyncQueueItem2.SourceOrganisationModifiedAt,
                     SyncCompletedAt = _dateTimeProviderStub.UtcNow,
-                    SyncStatus = KboSync.SyncStatusSuccess
+                    SyncStatus = KboSync.SyncStatusSuccess,
+                    SyncInfo = string.Empty
                 });
         }
 

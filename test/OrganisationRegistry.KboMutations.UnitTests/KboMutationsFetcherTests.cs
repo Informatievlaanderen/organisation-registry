@@ -9,6 +9,8 @@ namespace OrganisationRegistry.KboMutations.UnitTests
     using Configuration;
     using FluentAssertions;
     using FluentFTP;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Microsoft.Extensions.Options;
     using Moq;
     using Xunit;
@@ -31,7 +33,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                     new FtpClientFile("mutations2.csv", mutationsCsv));
 
                 var kboFtpClient = new KboMutationsFetcher(
-                    null,
+                    new NullLogger<KboMutationsFetcher>(),
                     new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
                     new FtpClientFactoryStub(ftpClient.Object));
 
@@ -56,7 +58,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                     new FtpClientFile("abc.csv", mutationsCsv));
 
                 var kboFtpClient = new KboMutationsFetcher(
-                    null,
+                    new NullLogger<KboMutationsFetcher>(),
                     new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
                     new FtpClientFactoryStub(ftpClient.Object));
 
@@ -81,7 +83,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                     new FtpClientFile("mutations2.csv", mutationsCsv, 0));
 
                 var kboFtpClient = new KboMutationsFetcher(
-                    null,
+                    new NullLogger<KboMutationsFetcher>(),
                     new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
                     new FtpClientFactoryStub(ftpClient.Object));
 
@@ -105,7 +107,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                     new FtpClientFile("mutations.csv", mutationsCsv, 0));
 
                 var kboFtpClient = new KboMutationsFetcher(
-                    null,
+                    new NullLogger<KboMutationsFetcher>(),
                     new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
                     new FtpClientFactoryStub(ftpClient.Object));
 
@@ -131,7 +133,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                     .Returns(false);
 
                 var kboFtpClient = new KboMutationsFetcher(
-                    null,
+                    new NullLogger<KboMutationsFetcher>(),
                     new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
                     new FtpClientFactoryStub(ftpClient.Object));
 
@@ -157,7 +159,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                     new FtpClientFile("mutations2.csv", mutationsCsv));
 
                 var kboFtpClient = new KboMutationsFetcher(
-                    null,
+                    new NullLogger<KboMutationsFetcher>(),
                     new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
                     new FtpClientFactoryStub(ftpClient.Object));
 
@@ -181,7 +183,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                     new FtpClientFile("mutations.csv", mutationsCsv));
 
                 var kboFtpClient = new KboMutationsFetcher(
-                    null,
+                    new NullLogger<KboMutationsFetcher>(),
                     new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
                     new FtpClientFactoryStub(ftpClient.Object));
 
@@ -197,7 +199,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
             var ftpClient = new Mock<IFtpClient>();
 
             var kboFtpClient = new KboMutationsFetcher(
-                null,
+                new NullLogger<KboMutationsFetcher>(),
                 new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
                 new FtpClientFactoryStub(ftpClient.Object));
 
@@ -248,7 +250,8 @@ namespace OrganisationRegistry.KboMutations.UnitTests
             _ftpClient = ftpClient;
         }
 
-        public IFtpClient CreateFtpClient(KboMutationsConfiguration kboMutationsConfiguration)
+        public IFtpClient CreateFtpClient(KboMutationsConfiguration kboMutationsConfiguration,
+            ILogger logger)
         {
             return _ftpClient;
         }
