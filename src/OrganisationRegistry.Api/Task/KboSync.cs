@@ -14,7 +14,8 @@ namespace OrganisationRegistry.Api.Task
 
     public interface IKboSync
     {
-        Task SyncFromKbo(ICommandSender commandSender,
+        Task SyncFromKbo(
+            ICommandSender commandSender,
             OrganisationRegistryContext context,
             ClaimsPrincipal claimsPrincipal);
     }
@@ -40,7 +41,8 @@ namespace OrganisationRegistry.Api.Task
             _syncFromKboBatchSize = apiOptions.Value.SyncFromKboBatchSize;
         }
 
-        public async Task SyncFromKbo(ICommandSender commandSender,
+        public async Task SyncFromKbo(
+            ICommandSender commandSender,
             OrganisationRegistryContext context,
             ClaimsPrincipal claimsPrincipal)
         {
