@@ -77,7 +77,7 @@
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var function = context.FunctionTypeList.SingleOrDefault(x => x.Id == message.Body.FunctionId);
+                var function = await context.FunctionTypeList.SingleOrDefaultAsync(x => x.Id == message.Body.FunctionId);
                 if (function == null)
                     return; // TODO: Error?
 

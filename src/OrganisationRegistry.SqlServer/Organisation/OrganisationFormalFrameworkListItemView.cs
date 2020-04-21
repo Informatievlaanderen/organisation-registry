@@ -20,10 +20,10 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public Guid OrganisationId { get; set; }
 
         public Guid FormalFrameworkId { get; set; }
-        public string FormalFrameworkName { get; set; }
+        public string? FormalFrameworkName { get; set; }
 
         public Guid ParentOrganisationId { get; set; }
-        public string ParentOrganisationName { get; set; }
+        public string? ParentOrganisationName { get; set; }
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }

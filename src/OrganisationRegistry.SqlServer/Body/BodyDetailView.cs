@@ -16,7 +16,7 @@ namespace OrganisationRegistry.SqlServer.Body
     {
         public Guid Id { get; set; }
 
-        public string BodyNumber { get; set; }
+        public string? BodyNumber { get; set; }
 
         public string Name { get; set; }
         public string ShortName { get; set; }

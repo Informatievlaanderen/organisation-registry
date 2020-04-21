@@ -45,7 +45,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public Guid? FormalFrameworkId { get; set; }
         public Guid? OrganisationClassificationId { get; set; }
         public Guid? OrganisationClassificationTypeId { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         public Guid? MainBuildingId { get; set; }
         public string? MainBuildingName { get; set; }
@@ -53,8 +53,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public Guid? MainLocationId { get; set; }
         public string? MainLocationName { get; set; }
 
-        public string PurposeIds { get; set; }
-        public string PurposeNames { get; set; }
+        public string? PurposeIds { get; set; }
+        public string? PurposeNames { get; set; }
 
         public bool ShowOnVlaamseOverheidSites { get; set; }
 
