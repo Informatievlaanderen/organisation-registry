@@ -78,7 +78,7 @@ nuget AutoRest 0.17.3
 nuget RestSharp 106.10.1
 nuget BrotliSharpLib 0.3.3
 nuget IdentityModel 3.10.10
-nuget EPPlus 5.0.4
+nuget EPPlus 5.1.0
 
 nuget Serilog.Sinks.Literate 3.0.0 // TODO: This can be removed eventually
 nuget Serilog.Sinks.ElasticSearch 6.1.0 // TODO: Update to 8.0.0
