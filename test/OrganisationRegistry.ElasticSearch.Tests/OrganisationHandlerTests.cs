@@ -29,11 +29,12 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         {
             _fixture = fixture;
 
+            var dbContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
+                .UseInMemoryDatabase(
+                    $"org-es-test-{Guid.NewGuid()}",
+                    builder => { }).Options;
             var context = new OrganisationRegistryContext(
-                new DbContextOptionsBuilder<OrganisationRegistryContext>()
-                    .UseInMemoryDatabase(
-                        $"org-es-test-{Guid.NewGuid()}",
-                        builder => { }).Options);
+                dbContextOptions);
 
             var organisationHandler = new Organisation(
                 logger: _fixture.LoggerFactory.CreateLogger<Organisation>(),
@@ -44,10 +45,11 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 logger: _fixture.LoggerFactory.CreateLogger<OrganisationBankAccount>(),
                 elastic: _fixture.Elastic);
 
+            var testContextFactory = new TestContextFactory(dbContextOptions);
             var serviceProvider = new ServiceCollection()
                 .AddSingleton(organisationHandler)
                 .AddSingleton(organisationBankAccountHandler)
-                .AddSingleton(new MemoryCachesMaintainer(new MemoryCaches(context)))
+                .AddSingleton(new MemoryCachesMaintainer(new MemoryCaches(testContextFactory), testContextFactory))
                 .BuildServiceProvider();
 
             _inProcessBus = new InProcessBus(new NullLogger<InProcessBus>());

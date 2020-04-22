@@ -49,8 +49,9 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
 
             var context = new OrganisationRegistryContext(ContextOptions);
 
-            var memoryCaches = new MemoryCaches(context);
-            var memoryCachesMaintainer = new MemoryCachesMaintainer(memoryCaches);
+            var testContextFactory = new TestContextFactory(ContextOptions);
+            var memoryCaches = new MemoryCaches(testContextFactory);
+            var memoryCachesMaintainer = new MemoryCachesMaintainer(memoryCaches, testContextFactory);
             var reactionHandler = BuildReactionHandler(new TestContextFactory(ContextOptions));
 
             HandleEvents(reactionHandler, memoryCachesMaintainer, Given().ToArray());
