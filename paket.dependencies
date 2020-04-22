@@ -72,7 +72,7 @@ nuget Microsoft.DotNet.InternalAbstractions 1.0.0
 nuget AspNetCore.HealthChecks.SqlServer 3.1.1
 
 nuget NEST 6.0.2 // TODO: Update to 7.3.1
-nuget FluentFTP 32.2.2
+nuget FluentFTP 32.3.3
 nuget Dapper 1.50.4
 nuget AutoRest 0.17.3
 nuget RestSharp 106.10.1
