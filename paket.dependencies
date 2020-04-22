@@ -25,7 +25,7 @@ nuget Microsoft.AspNetCore.Mvc.Formatters.Xml 2.2.0
 nuget Microsoft.AspNetCore.ResponseCompression 2.2.0
 nuget Microsoft.AspNetCore.Mvc 2.2.0
 nuget Microsoft.AspNetCore.Routing 2.2.2
-nuget Microsoft.AspNetCore.Server.IISIntegration 2.2.0
+nuget Microsoft.AspNetCore.Server.IISIntegration 2.2.1
 nuget Microsoft.AspNetCore.Server.Kestrel 2.2.0
 nuget Microsoft.AspNetCore.Server.Kestrel.Https 2.2.0
 nuget Microsoft.AspNetCore.Cors 2.2.0
