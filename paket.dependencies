@@ -31,16 +31,16 @@ nuget Microsoft.AspNetCore.Server.Kestrel.Https 2.2.0
 nuget Microsoft.AspNetCore.Cors 2.2.0
 nuget Microsoft.AspNetCore.Authentication.JwtBearer 3.1.1
 nuget Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore 3.1.2
-nuget Microsoft.AspNetCore.AzureAppServicesIntegration 2.2.0
+nuget Microsoft.AspNetCore.AzureAppServicesIntegration 3.1.2
 nuget Microsoft.AspNetCore.Mvc.Versioning 4.1.1
-nuget Microsoft.AspNetCore.Mvc.Razor.Extensions 2.2.0
-nuget Microsoft.AspNetCore.Authorization 2.2.0
-nuget Microsoft.AspNetCore.Connections.Abstractions 2.2.0
-nuget Microsoft.AspNetCore.DataProtection 2.2.0
-nuget Microsoft.AspNetCore.Cryptography.Internal 2.2.0
-nuget Microsoft.AspNetCore.DataProtection.Abstractions 2.2.0
-nuget Microsoft.AspNetCore.Http.Features 2.2.0
-nuget Microsoft.AspNetCore.Razor.Language 3.1.0
+nuget Microsoft.AspNetCore.Mvc.Razor.Extensions 3.1.2
+nuget Microsoft.AspNetCore.Authorization 3.1.2
+nuget Microsoft.AspNetCore.Connections.Abstractions 3.1.2
+nuget Microsoft.AspNetCore.DataProtection 3.1.2
+nuget Microsoft.AspNetCore.Cryptography.Internal 3.1.2
+nuget Microsoft.AspNetCore.DataProtection.Abstractions 3.1.2
+nuget Microsoft.AspNetCore.Http.Features 3.1.2
+nuget Microsoft.AspNetCore.Razor.Language 3.1.2
 nuget Microsoft.AspNetCore.JsonPatch 3.1.2
 
 nuget Microsoft.CodeAnalysis.Razor 3.1.0
