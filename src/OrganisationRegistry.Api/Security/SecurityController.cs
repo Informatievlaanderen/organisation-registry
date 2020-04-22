@@ -1,11 +1,12 @@
 namespace OrganisationRegistry.Api.Security
 {
     using System;
-    using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
+    using System.Net.Http;
     using System.Security.Claims;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using IdentityModel;
     using IdentityModel.Client;
@@ -50,19 +51,23 @@ namespace OrganisationRegistry.Api.Security
         }
 
         [HttpGet("exchange")]
-        public async Task<IActionResult> ExchangeCode(string code)
+        public async Task<IActionResult> ExchangeCode(
+            [FromServices] IHttpClientFactory httpClientFactory,
+            string code,
+            CancellationToken cancellationToken)
         {
-            var tokenEndpointAddress = $"{_openIdConnectConfiguration.Authority}{_openIdConnectConfiguration.TokenEndPoint}";
-            var tokenClient = new TokenClient(
-                tokenEndpointAddress,
-                _openIdConnectConfiguration.ClientId,
-                _openIdConnectConfiguration.ClientSecret);
+            using var httpClient = httpClientFactory.CreateClient();
 
-            var tokenResponse = await tokenClient.RequestAuthorizationCodeAsync(
-                code,
-                new Uri(
-                    _openIdConnectConfiguration.AuthorizationRedirectUri,
-                    UriKind.RelativeOrAbsolute).ToString());
+            var tokenEndpointAddress = $"{_openIdConnectConfiguration.Authority}{_openIdConnectConfiguration.TokenEndPoint}";
+
+            var tokenResponse = await httpClient.RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest
+            {
+                ClientId = _openIdConnectConfiguration.ClientId,
+                ClientSecret = _openIdConnectConfiguration.ClientSecret,
+                RedirectUri = _openIdConnectConfiguration.AuthorizationRedirectUri,
+                Address = tokenEndpointAddress,
+                Code = code,
+            }, cancellationToken);
 
             if (tokenResponse.IsError)
             {
