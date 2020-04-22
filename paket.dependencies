@@ -76,7 +76,7 @@ nuget FluentFTP 32.2.2
 nuget Dapper 1.50.4
 nuget AutoRest 0.17.3
 nuget RestSharp 106.10.1
-nuget BrotliSharpLib 0.2.1
+nuget BrotliSharpLib 0.3.3
 nuget IdentityModel 3.10.10
 nuget EPPlus 5.0.4
 
