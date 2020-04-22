@@ -39,8 +39,6 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     // Scoped as SingleInstance()
     public class MemoryCaches : IMemoryCaches
     {
-        private readonly OrganisationRegistryContext _context;
-
         private Dictionary<Guid, string> _ovoNumbers;
         private Dictionary<Guid, string> _organisationNames;
         private Dictionary<Guid, string> _organisationShortNames;
@@ -58,6 +56,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         private Dictionary<Guid, string> _contactTypeNames;
 
         private Dictionary<Guid, bool> _isSeatPaid;
+        private readonly IContextFactory _contextFactory;
 
         public IReadOnlyDictionary<Guid, string> OvoNumbers =>
             ToReadOnlyDictionary(GetCache<string>(MemoryCacheType.OvoNumbers));
@@ -101,12 +100,12 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         public IReadOnlyDictionary<Guid, bool> IsSeatPaid =>
             ToReadOnlyDictionary(GetCache<bool>(MemoryCacheType.IsSeatPaid));
 
-        public MemoryCaches(OrganisationRegistryContext context)
+        public MemoryCaches(IContextFactory contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
 
             foreach (MemoryCacheType memoryCacheType in Enum.GetValues(typeof(MemoryCacheType)))
-                ResetCache(memoryCacheType);
+                ResetCache(memoryCacheType, _contextFactory.Create());
         }
 
         internal Dictionary<Guid, T> GetCache<T>(MemoryCacheType cacheType)
@@ -160,64 +159,64 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
             }
         }
 
-        internal void ResetCache(MemoryCacheType cacheType)
+        internal void ResetCache(MemoryCacheType cacheType, OrganisationRegistryContext context)
         {
             switch (cacheType)
             {
                 case MemoryCacheType.OvoNumbers:
-                    _ovoNumbers = _context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.OvoNumber);
+                    _ovoNumbers = context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.OvoNumber);
                     break;
 
                 case MemoryCacheType.OrganisationNames:
-                    _organisationNames = _context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.Name);
+                    _organisationNames = context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.Name);
                     break;
 
                 case MemoryCacheType.OrganisationShortNames:
-                    _organisationShortNames = _context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ShortName);
+                    _organisationShortNames = context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ShortName);
                     break;
 
                 case MemoryCacheType.OrganisationParents:
-                    _organisationParents = _context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ParentOrganisationId);
+                    _organisationParents = context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ParentOrganisationId);
                     break;
 
                 case MemoryCacheType.OrganisationValidFroms:
-                    _organisationValidFroms = _context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ValidFrom);
+                    _organisationValidFroms = context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ValidFrom);
                     break;
 
                 case MemoryCacheType.OrganisationValidTos:
-                    _organisationValidTos = _context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ValidTo);
+                    _organisationValidTos = context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ValidTo);
                     break;
 
                 case MemoryCacheType.BodyNames:
-                    _bodyNames = _context.BodyDetail.BuildMemoryCache(item => item.Id, item => item.Name);
+                    _bodyNames = context.BodyDetail.BuildMemoryCache(item => item.Id, item => item.Name);
                     break;
 
                 case MemoryCacheType.BodySeatNames:
-                    _bodySeatNames = _context.BodySeatList.BuildMemoryCache(item => item.BodySeatId, item => item.Name);
+                    _bodySeatNames = context.BodySeatList.BuildMemoryCache(item => item.BodySeatId, item => item.Name);
                     break;
 
                 case MemoryCacheType.BodySeatNumbers:
-                    _bodySeatNumbers = _context.BodySeatList.BuildMemoryCache(item => item.BodySeatId, item => item.BodySeatNumber);
+                    _bodySeatNumbers = context.BodySeatList.BuildMemoryCache(item => item.BodySeatId, item => item.BodySeatNumber);
                     break;
 
                 case MemoryCacheType.LabelTypeNames:
-                    _labelTypeNames = _context.LabelTypeList.BuildMemoryCache(item => item.Id, item => item.Name);
+                    _labelTypeNames = context.LabelTypeList.BuildMemoryCache(item => item.Id, item => item.Name);
                     break;
 
                 case MemoryCacheType.BuildingNames:
-                    _buildingNames = _context.BuildingList.BuildMemoryCache(item => item.Id, item => item.Name);
+                    _buildingNames = context.BuildingList.BuildMemoryCache(item => item.Id, item => item.Name);
                     break;
 
                 case MemoryCacheType.LocationNames:
-                    _locationNames = _context.LocationList.BuildMemoryCache(item => item.Id, item => item.FormattedAddress);
+                    _locationNames = context.LocationList.BuildMemoryCache(item => item.Id, item => item.FormattedAddress);
                     break;
 
                 case MemoryCacheType.ContactTypeNames:
-                    _contactTypeNames = _context.ContactTypeList.BuildMemoryCache(item => item.Id, item => item.Name);
+                    _contactTypeNames = context.ContactTypeList.BuildMemoryCache(item => item.Id, item => item.Name);
                     break;
 
                 case MemoryCacheType.IsSeatPaid:
-                    _isSeatPaid = _context.BodySeatList.BuildMemoryCache(item => item.BodySeatId, item => item.PaidSeat);
+                    _isSeatPaid = context.BodySeatList.BuildMemoryCache(item => item.BodySeatId, item => item.PaidSeat);
                     break;
 
                 default:
@@ -258,10 +257,12 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     public class MemoryCachesMaintainer : IMemoryCachesMaintainer
     {
         private readonly MemoryCaches _memoryCaches;
+        private readonly IContextFactory _contextFactory;
 
-        public MemoryCachesMaintainer(MemoryCaches memoryCaches)
+        public MemoryCachesMaintainer(MemoryCaches memoryCaches, IContextFactory contextFactory)
         {
             _memoryCaches = memoryCaches;
+            _contextFactory = contextFactory;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<BodyRegistered> message)
@@ -476,9 +477,12 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         private void CheckResetCache(IEnumerable<IEvent> events, Type[] eventTypes, IEnumerable<MemoryCacheType> memoryCacheTypes)
         {
-            if (events.Any(x => eventTypes.Contains(x.GetType())))
-                foreach (var memoryCacheType in memoryCacheTypes)
-                    _memoryCaches.ResetCache(memoryCacheType);
+            using (var context = _contextFactory.Create())
+            {
+                if (events.Any(x => eventTypes.Contains(x.GetType())))
+                    foreach (var memoryCacheType in memoryCacheTypes)
+                        _memoryCaches.ResetCache(memoryCacheType, context);
+            }
         }
     }
 }
