@@ -12,7 +12,7 @@ nuget System.Reflection.TypeExtensions 4.6.0
 nuget System.Dynamic.Runtime 4.3.0
 nuget System.Interactive.Async 3.2.0
 
-nuget System.Security.Cryptography.Xml 4.6.0
+nuget System.Security.Cryptography.Xml 4.7.0
 nuget System.ServiceModel.Duplex 4.6.0
 nuget System.ServiceModel.Http 4.6.0
 nuget System.ServiceModel.NetTcp 4.6.0
