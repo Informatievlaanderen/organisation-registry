@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Day.Events;
     using Infrastructure;
@@ -41,7 +42,7 @@
         {
             b.ToTable(nameof(FuturePeopleAssignedToBodyMandatesListView.ProjectionTables.FuturePeopleAssignedToBodyMandatesList), "OrganisationRegistry")
                 .HasKey(p => p.DelegationAssignmentId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.PersonId).IsRequired();
 
@@ -67,18 +68,16 @@
         IEventHandler<AssignedPersonAssignedToBodyMandate>,
         IReactionHandler<DayHasPassed>
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
 
         public FuturePeopleAssignedToBodyMandatesListView(
             ILogger<FuturePeopleAssignedToBodyMandatesListView> logger,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
             IEventStore eventStore,
-            IDateTimeProvider dateTimeProvider
-        ) : base(logger)
+            IDateTimeProvider dateTimeProvider,
+            IContextFactory contextFactory
+        ) : base(logger, contextFactory)
         {
-            _contextFactory = contextFactory;
             _eventStore = eventStore;
             _dateTimeProvider = dateTimeProvider;
         }
@@ -90,19 +89,19 @@
             FuturePeopleAssignedToBodyMandatesList
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
         {
             var validFrom = new ValidFrom(message.Body.ValidFrom);
             if (validFrom.IsInPastOf(_dateTimeProvider.Today, true))
                 return;
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
                 InsertFutureActivePerson(context, message);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var validFrom = new ValidFrom(message.Body.ValidFrom);
                 if (validFrom.IsInPastOf(_dateTimeProvider.Today, true))
@@ -116,9 +115,9 @@
             }
         }
 
-        public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
+        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var futureActivePeople = context.FuturePeopleAssignedToBodyMandatesList.ToList();
                 return futureActivePeople
@@ -134,21 +133,21 @@
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonAssignedToBodyMandate> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonAssignedToBodyMandate> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
                 DeleteFutureActivePerson(context, message.Body.DelegationAssignmentId);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
                 DeleteFutureActivePerson(context, message.Body.DelegationAssignmentId);
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
 
         private static void InsertFutureActivePerson(

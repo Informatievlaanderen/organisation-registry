@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.FormalFrameworkCategory
 {
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -20,24 +21,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public void Handle(CreateFormalFrameworkCategory message)
+        public async Task Handle(CreateFormalFrameworkCategory message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
                 throw new NameNotUniqueException();
 
             var formalFrameworkCategory = new FormalFrameworkCategory(message.FormalFrameworkCategoryId, message.Name);
             Session.Add(formalFrameworkCategory);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateFormalFrameworkCategory message)
+        public async Task Handle(UpdateFormalFrameworkCategory message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.FormalFrameworkCategoryId, message.Name))
                 throw new NameNotUniqueException();
 
             var formalFrameworkCategory = Session.Get<FormalFrameworkCategory>(message.FormalFrameworkCategoryId);
             formalFrameworkCategory.Update(message.Name);
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

@@ -3,6 +3,7 @@
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.EntityFrameworkCore;
     using Infrastructure;
@@ -25,13 +26,13 @@
         {
             b.ToTable(nameof(ContactTypeListView.ProjectionTables.ContactTypeList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Name)
                 .HasMaxLength(NameLength)
                 .IsRequired();
 
-            b.HasIndex(x => x.Name).IsUnique().ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsUnique().IsClustered();
         }
     }
 
@@ -51,16 +52,19 @@
 
         public ContactTypeListView(
             ILogger<ContactTypeListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public ContactTypeListView(ILogger<ContactTypeListView> logger) : base(logger) { }
+        public ContactTypeListView(
+            ILogger<ContactTypeListView> logger,
+            IContextFactory contextFactory) : base(logger, contextFactory) { }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeCreated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var contactType = new ContactTypeListItem
                 {
@@ -68,27 +72,27 @@
                     Name = message.Body.Name,
                 };
 
-                context.ContactTypeList.Add(contactType);
-                context.SaveChanges();
+                await context.ContactTypeList.AddAsync(contactType);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var contactType = context.ContactTypeList.SingleOrDefault(x => x.Id == message.Body.ContactTypeId);
                 if (contactType == null)
                     return; // TODO: Error?
 
                 contactType.Name = message.Body.Name;
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

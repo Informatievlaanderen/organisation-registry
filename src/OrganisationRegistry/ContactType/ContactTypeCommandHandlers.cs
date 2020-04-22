@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.ContactType
 {
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -20,24 +21,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public void Handle(CreateContactType message)
+        public async Task Handle(CreateContactType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
                 throw new NameNotUniqueException();
 
             var contactType = new ContactType(message.ContactTypeId, message.Name);
             Session.Add(contactType);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateContactType message)
+        public async Task Handle(UpdateContactType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.ContactTypeId, message.Name))
                 throw new NameNotUniqueException();
 
             var contactType = Session.Get<ContactType>(message.ContactTypeId);
             contactType.Update(message.Name);
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

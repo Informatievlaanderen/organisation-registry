@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Day.Events;
     using Infrastructure;
@@ -41,7 +42,7 @@
         {
             b.ToTable(nameof(ActivePeopleAssignedToBodyMandatesListView.ProjectionTables.ActivePeopleAssignedToBodyMandatesList), "OrganisationRegistry")
                 .HasKey(p => p.DelegationAssignmentId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.PersonId).IsRequired();
 
@@ -66,18 +67,16 @@
         IEventHandler<AssignedPersonClearedFromBodyMandate>,
         IReactionHandler<DayHasPassed>
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
 
         public ActivePeopleAssignedToBodyMandatesListView(
             ILogger<ActivePeopleAssignedToBodyMandatesListView> logger,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
             IEventStore eventStore,
-            IDateTimeProvider dateTimeProvider
-        ) : base(logger)
+            IDateTimeProvider dateTimeProvider,
+            IContextFactory contextFactory
+        ) : base(logger, contextFactory)
         {
-            _contextFactory = contextFactory;
             _eventStore = eventStore;
             _dateTimeProvider = dateTimeProvider;
         }
@@ -89,14 +88,14 @@
             ActivePeopleAssignedToBodyMandatesList
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
         {
             var validTo = new ValidTo(message.Body.ValidTo);
 
             if (validTo.IsInPastOf(_dateTimeProvider.Today))
                 return;
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var activePerson =
                     context.ActivePeopleAssignedToBodyMandatesList
@@ -109,11 +108,11 @@
                 activePerson.PersonFullName = message.Body.PersonFullName;
                 activePerson.ValidTo = validTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonAssignedToBodyMandate> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonAssignedToBodyMandate> message)
         {
             var validTo = new ValidTo(message.Body.ValidTo);
 
@@ -131,16 +130,16 @@
                 ValidTo = validTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.ActivePeopleAssignedToBodyMandatesList.Add(activePersonListItem);
-                context.SaveChanges();
+                await context.ActivePeopleAssignedToBodyMandatesList.AddAsync(activePersonListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonClearedFromBodyMandate> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonClearedFromBodyMandate> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var activePersonListItem =
                     context.ActivePeopleAssignedToBodyMandatesList
@@ -153,13 +152,13 @@
 
                 context.ActivePeopleAssignedToBodyMandatesList.Remove(activePersonListItem);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
+        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 return context.ActivePeopleAssignedToBodyMandatesList
                     .Where(item => item.ValidTo.HasValue)
@@ -174,9 +173,9 @@
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

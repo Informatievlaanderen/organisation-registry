@@ -10,6 +10,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using OrganisationRegistry.Organisation.Events;
 
     using System.Linq;
+    using System.Threading.Tasks;
     using Capacity;
     using FunctionType;
     using Location;
@@ -30,13 +31,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public string CapacityName { get; set; }
 
         public Guid? PersonId { get; set; }
-        public string PersonName { get; set; }
+        public string? PersonName { get; set; }
 
         public Guid? FunctionId { get; set; }
-        public string FunctionName { get; set; }
+        public string? FunctionName { get; set; }
 
         public Guid? LocationId { get; set; }
-        public string LocationName { get; set; }
+        public string? LocationName { get; set; }
 
         public string ContactsJson { get; set; }
 
@@ -50,7 +51,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             b.ToTable(nameof(OrganisationCapacityListView.ProjectionTables.OrganisationCapacityList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationCapacityId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 
@@ -71,7 +72,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.CapacityName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.CapacityName).IsClustered();
             b.HasIndex(x => x.PersonName);
             b.HasIndex(x => x.FunctionName);
             b.HasIndex(x => x.LocationName);
@@ -97,17 +98,17 @@ namespace OrganisationRegistry.SqlServer.Organisation
         }
 
         private readonly IEventStore _eventStore;
-
         public OrganisationCapacityListView(
             ILogger<OrganisationCapacityListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory = null) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<CapacityUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<CapacityUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationCapacities = context.OrganisationCapacityList.Where(x => x.CapacityId == message.Body.CapacityId);
                 if (!organisationCapacities.Any())
@@ -116,13 +117,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 foreach (var organisationCapacity in organisationCapacities)
                     organisationCapacity.CapacityName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationCapacities = context.OrganisationCapacityList.Where(x => x.FunctionId == message.Body.FunctionId);
                 if (!organisationCapacities.Any())
@@ -131,13 +132,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 foreach (var organisationCapacity in organisationCapacities)
                     organisationCapacity.FunctionName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationCapacities = context.OrganisationCapacityList.Where(x => x.PersonId == message.Body.PersonId);
                 if (!organisationCapacities.Any())
@@ -146,13 +147,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 foreach (var organisationCapacity in organisationCapacities)
                     organisationCapacity.PersonName = $"{message.Body.FirstName} {message.Body.Name}";
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LocationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LocationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationCapacities = context.OrganisationCapacityList.Where(x => x.LocationId == message.Body.LocationId);
                 if (!organisationCapacities.Any())
@@ -161,11 +162,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 foreach (var organisationCapacity in organisationCapacities)
                     organisationCapacity.LocationName = message.Body.FormattedAddress;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityAdded> message)
         {
             var organisationCapacityListItem = new OrganisationCapacityListItem
             {
@@ -184,16 +185,16 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationCapacityList.Add(organisationCapacityListItem);
-                context.SaveChanges();
+                await context.OrganisationCapacityList.AddAsync(organisationCapacityListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var key = context.OrganisationCapacityList.SingleOrDefault(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
 
@@ -211,13 +212,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 key.ValidFrom = message.Body.ValidFrom;
                 key.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

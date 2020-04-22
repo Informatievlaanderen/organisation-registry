@@ -9,6 +9,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using OrganisationRegistry.Organisation.Events;
 
     using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using OrganisationClassification;
     using OrganisationClassificationType;
@@ -29,7 +30,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
 
-        public string Source { get; set; }
+        public string? Source { get; set; }
 
         public bool IsEditable => Source != Sources.Kbo;
     }
@@ -40,7 +41,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             b.ToTable(nameof(OrganisationOrganisationClassificationListView.ProjectionTables.OrganisationOrganisationClassificationList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationOrganisationClassificationId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 
@@ -55,7 +56,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             b.Property(p => p.Source);
 
-            b.HasIndex(x => x.OrganisationClassificationTypeName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.OrganisationClassificationTypeName).IsClustered();
             b.HasIndex(x => x.OrganisationClassificationName);
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
@@ -82,14 +83,15 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public OrganisationOrganisationClassificationListView(
             ILogger<OrganisationOrganisationClassificationListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationOrganisationClassifications =
                     context.OrganisationOrganisationClassificationList
@@ -101,13 +103,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 foreach (var organisationOrganisationClassification in organisationOrganisationClassifications)
                     organisationOrganisationClassification.OrganisationClassificationTypeName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationOrganisationClassifications =
                     context.OrganisationOrganisationClassificationList.Where(x =>
@@ -123,11 +125,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     organisationOrganisationClassification.OrganisationClassificationName = message.Body.Name;
                 }
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationAdded> message)
         {
             var organisationOrganisationClassificationListItem = new OrganisationOrganisationClassificationListItem
             {
@@ -141,14 +143,14 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationOrganisationClassificationList.Add(organisationOrganisationClassificationListItem);
-                context.SaveChanges();
+                await context.OrganisationOrganisationClassificationList.AddAsync(organisationOrganisationClassificationListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationAdded> message)
         {
             var organisationOrganisationClassificationListItem = new OrganisationOrganisationClassificationListItem
             {
@@ -164,28 +166,28 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             organisationOrganisationClassificationListItem.Source = Sources.Kbo;
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationOrganisationClassificationList.Add(organisationOrganisationClassificationListItem);
-                context.SaveChanges();
+                await context.OrganisationOrganisationClassificationList.AddAsync(organisationOrganisationClassificationListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationRemoved> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationRemoved> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var key = context.OrganisationOrganisationClassificationList.Single(item => item.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId);
 
                 context.OrganisationOrganisationClassificationList.Remove(key);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var key = context.OrganisationOrganisationClassificationList.SingleOrDefault(item => item.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId);
 
@@ -198,13 +200,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 key.ValidFrom = message.Body.ValidFrom;
                 key.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

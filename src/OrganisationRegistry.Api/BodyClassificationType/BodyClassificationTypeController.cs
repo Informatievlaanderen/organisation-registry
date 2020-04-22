@@ -66,12 +66,12 @@ namespace OrganisationRegistry.Api.BodyClassificationType
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromBody] CreateBodyClassificationTypeRequest message)
+        public async Task<IActionResult> Post([FromBody] CreateBodyClassificationTypeRequest message)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            CommandSender.Send(CreateBodyClassificationTypeRequestMapping.Map(message));
+            await CommandSender.Send(CreateBodyClassificationTypeRequestMapping.Map(message));
 
             return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
         }
@@ -83,14 +83,14 @@ namespace OrganisationRegistry.Api.BodyClassificationType
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromRoute] Guid id, [FromBody] UpdateBodyClassificationTypeRequest message)
+        public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateBodyClassificationTypeRequest message)
         {
             var internalMessage = new UpdateBodyClassificationTypeInternalRequest(id, message);
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateBodyClassificationTypeRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateBodyClassificationTypeRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.BodyClassificationTypeId }));
         }

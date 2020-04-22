@@ -3,6 +3,7 @@
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Infrastructure;
     using KeyTypes.Events;
     using Microsoft.EntityFrameworkCore;
@@ -25,13 +26,13 @@
         {
             b.ToTable(nameof(KeyTypeListView.ProjectionTables.KeyTypeList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Name)
                 .HasMaxLength(NameLength)
                 .IsRequired();
 
-            b.HasIndex(x => x.Name).IsUnique().ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsUnique().IsClustered();
         }
     }
 
@@ -51,12 +52,13 @@
 
         public KeyTypeListView(
             ILogger<KeyTypeListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KeyTypeCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KeyTypeCreated> message)
         {
             var keyType = new KeyTypeListItem
             {
@@ -64,29 +66,29 @@
                 Name = message.Body.Name,
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.KeyTypeList.Add(keyType);
-                context.SaveChanges();
+                await context.KeyTypeList.AddAsync(keyType);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KeyTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KeyTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var keyType = context.KeyTypeList.SingleOrDefault(x => x.Id == message.Body.KeyTypeId);
                 if (keyType == null)
                     return; // TODO: Error?
 
                 keyType.Name = message.Body.Name;
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

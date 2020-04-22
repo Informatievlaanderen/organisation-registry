@@ -10,6 +10,7 @@ namespace OrganisationRegistry.SqlServer.Body
     using SeatType;
 
     using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
 
     public class BodySeatListItem
@@ -41,7 +42,7 @@ namespace OrganisationRegistry.SqlServer.Body
         {
             b.ToTable(nameof(BodySeatListView.ProjectionTables.BodySeatList), "OrganisationRegistry")
                 .HasKey(p => p.BodySeatId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.BodySeatNumber)
                 .HasMaxLength(SeatNumberLength);
@@ -62,7 +63,7 @@ namespace OrganisationRegistry.SqlServer.Body
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.Name).ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsClustered();
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
         }
@@ -85,12 +86,13 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public BodySeatListView(
             ILogger<BodySeatListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatAdded> message)
         {
             var bodySeatListItem = new BodySeatListItem
             {
@@ -106,16 +108,16 @@ namespace OrganisationRegistry.SqlServer.Body
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.BodySeatList.Add(bodySeatListItem);
-                context.SaveChanges();
+                await context.BodySeatList.AddAsync(bodySeatListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodySeat = context.BodySeatList.SingleOrDefault(item => item.BodySeatId == message.Body.BodySeatId);
 
@@ -129,25 +131,25 @@ namespace OrganisationRegistry.SqlServer.Body
                 bodySeat.ValidFrom = message.Body.ValidFrom;
                 bodySeat.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatNumberAssigned> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatNumberAssigned> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodySeat = context.BodySeatList.SingleOrDefault(item => item.BodySeatId == message.Body.BodySeatId);
 
                 bodySeat.BodySeatNumber = message.Body.BodySeatNumber;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

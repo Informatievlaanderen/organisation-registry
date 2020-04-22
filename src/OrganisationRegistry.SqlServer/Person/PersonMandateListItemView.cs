@@ -19,7 +19,7 @@
         public string BodyName { get; set; }
 
         public Guid? BodyOrganisationId { get; set; } // Organisatie aan wie het orgaan behoort (DayPassed)
-        public string BodyOrganisationName { get; set; }
+        public string? BodyOrganisationName { get; set; }
 
         public Guid BodySeatId { get; set; }
         public string BodySeatName { get; set; }
@@ -28,10 +28,10 @@
         public bool PaidSeat { get; set; }
 
         public Guid? OrganisationId { get; set; } // Organisatie aan wie het mandaat is toegekend
-        public string OrganisationName { get; set; }
+        public string? OrganisationName { get; set; }
 
         public Guid? FunctionTypeId { get; set; } // Functietype die nodig is voor het mandaat uit te voeren
-        public string FunctionTypeName { get; set; }
+        public string? FunctionTypeName { get; set; }
 
         public Guid PersonId { get; set; }
 
@@ -47,7 +47,7 @@
         {
             b.ToTable(TableName, "OrganisationRegistry")
                 .HasKey(p => p.PersonMandateId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.DelegationAssignmentId).IsRequired(false);
 
@@ -76,7 +76,7 @@
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.BodyName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.BodyName).IsClustered();
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
         }

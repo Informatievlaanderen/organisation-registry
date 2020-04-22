@@ -66,12 +66,12 @@
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromBody] CreateOrganisationRelationTypeRequest message)
+        public async Task<IActionResult> Post([FromBody] CreateOrganisationRelationTypeRequest message)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            CommandSender.Send(CreateOrganisationRelationTypeRequestMapping.Map(message));
+            await CommandSender.Send(CreateOrganisationRelationTypeRequestMapping.Map(message));
 
             return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
         }
@@ -83,14 +83,14 @@
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromRoute] Guid id, [FromBody] UpdateOrganisationRelationTypeRequest message)
+        public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateOrganisationRelationTypeRequest message)
         {
             var internalMessage = new UpdateOrganisationRelationTypeInternalRequest(id, message);
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateOrganisationRelationTypeRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateOrganisationRelationTypeRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.OrganisationRelationTypeId }));
         }

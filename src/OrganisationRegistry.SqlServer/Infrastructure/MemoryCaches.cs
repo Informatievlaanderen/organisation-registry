@@ -5,6 +5,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     using System.Collections.ObjectModel;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using OrganisationRegistry.Body.Events;
     using OrganisationRegistry.Building.Events;
     using OrganisationRegistry.ContactType.Events;
@@ -263,19 +264,19 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
             _memoryCaches = memoryCaches;
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<BodyRegistered> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<BodyRegistered> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.BodyNames)
                 .UpdateMemoryCache(message.Body.BodyId, message.Body.Name);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<BodyInfoChanged> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<BodyInfoChanged> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.BodyNames)
                 .UpdateMemoryCache(message.Body.BodyId, message.Body.Name);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<BodySeatAdded> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<BodySeatAdded> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.BodySeatNames)
                 .UpdateMemoryCache(message.Body.BodyId, message.Body.Name);
@@ -287,7 +288,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                 .UpdateMemoryCache(message.Body.BodySeatId, message.Body.PaidSeat);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<BodySeatUpdated> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<BodySeatUpdated> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.BodySeatNames)
                 .UpdateMemoryCache(message.Body.BodyId, message.Body.Name);
@@ -296,55 +297,55 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                 .UpdateMemoryCache(message.Body.BodySeatId, message.Body.PaidSeat);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<LabelTypeCreated> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<LabelTypeCreated> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.LabelTypeNames)
                 .UpdateMemoryCache(message.Body.LabelTypeId, message.Body.Name);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<LabelTypeUpdated> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<LabelTypeUpdated> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.LabelTypeNames)
                 .UpdateMemoryCache(message.Body.LabelTypeId, message.Body.Name);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<BuildingCreated> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<BuildingCreated> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.BuildingNames)
                 .UpdateMemoryCache(message.Body.BuildingId, message.Body.Name);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<BuildingUpdated> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<BuildingUpdated> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.BuildingNames)
                 .UpdateMemoryCache(message.Body.BuildingId, message.Body.Name);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<LocationCreated> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<LocationCreated> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.LocationNames)
                 .UpdateMemoryCache(message.Body.LocationId, message.Body.FormattedAddress);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<LocationUpdated> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<LocationUpdated> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.LocationNames)
                 .UpdateMemoryCache(message.Body.LocationId, message.Body.FormattedAddress);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<ContactTypeCreated> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<ContactTypeCreated> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.ContactTypeNames)
                 .UpdateMemoryCache(message.Body.ContactTypeId, message.Body.Name);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<ContactTypeUpdated> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<ContactTypeUpdated> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.ContactTypeNames)
                 .UpdateMemoryCache(message.Body.ContactTypeId, message.Body.Name);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationCreated> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationCreated> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.OvoNumbers)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.OvoNumber);
@@ -362,7 +363,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ValidTo);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationCreatedFromKbo> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationCreatedFromKbo> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.OvoNumbers)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.OvoNumber);
@@ -380,7 +381,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ValidTo);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationInfoUpdated> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationInfoUpdated> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.OvoNumbers)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.OvoNumber);
@@ -398,7 +399,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ValidTo);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationNames)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.Name);
@@ -407,25 +408,25 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ShortName);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<ParentAssignedToOrganisation> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<ParentAssignedToOrganisation> message)
         {
             _memoryCaches.GetCache<Guid?>(MemoryCacheType.OrganisationParents)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ParentOrganisationId);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationParentUpdated> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationParentUpdated> message)
         {
             _memoryCaches.GetCache<Guid?>(MemoryCacheType.OrganisationParents)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ParentOrganisationId);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<ParentClearedFromOrganisation> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<ParentClearedFromOrganisation> message)
         {
             _memoryCaches.GetCache<Guid?>(MemoryCacheType.OrganisationParents)
                 .UpdateMemoryCache(message.Body.OrganisationId, null);
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<ResetMemoryCache> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<ResetMemoryCache> message)
         {
             CheckResetCache(message.Body.Events, new[] { typeof(LabelTypeCreated), typeof(LabelTypeUpdated) }, new[] { MemoryCacheType.LabelTypeNames });
 

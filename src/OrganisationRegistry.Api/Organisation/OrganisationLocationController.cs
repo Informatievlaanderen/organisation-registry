@@ -66,7 +66,7 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationLocationRequest message)
+        public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationLocationRequest message)
         {
             var internalMessage = new AddOrganisationLocationInternalRequest(organisationId, message);
 
@@ -76,7 +76,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(AddOrganisationLocationRequestMapping.Map(internalMessage));
+            await CommandSender.Send(AddOrganisationLocationRequestMapping.Map(internalMessage));
 
             return Created(Url.Action(nameof(Get), new { id = message.OrganisationLocationId }), null);
         }
@@ -88,7 +88,7 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationLocationRequest message)
+        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationLocationRequest message)
         {
             var internalMessage = new UpdateOrganisationLocationInternalRequest(organisationId, message);
 
@@ -98,7 +98,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateOrganisationLocationRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateOrganisationLocationRequestMapping.Map(internalMessage));
 
             return Ok();
         }

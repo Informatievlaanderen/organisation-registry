@@ -66,7 +66,7 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationOrganisationClassificationRequest message)
+        public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationOrganisationClassificationRequest message)
         {
             var internalMessage = new AddOrganisationOrganisationClassificationInternalRequest(organisationId, message);
 
@@ -76,7 +76,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(AddOrganisationOrganisationClassificationRequestMapping.Map(internalMessage));
+            await CommandSender.Send(AddOrganisationOrganisationClassificationRequestMapping.Map(internalMessage));
 
             return Created(Url.Action(nameof(Get), new { id = message.OrganisationOrganisationClassificationId }), null);
         }
@@ -88,7 +88,7 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationOrganisationClassificationRequest message)
+        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationOrganisationClassificationRequest message)
         {
             var internalMessage = new UpdateOrganisationOrganisationClassificationInternalRequest(organisationId, message);
 
@@ -98,7 +98,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateOrganisationOrganisationClassificationRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateOrganisationOrganisationClassificationRequestMapping.Map(internalMessage));
 
             return Ok();
         }

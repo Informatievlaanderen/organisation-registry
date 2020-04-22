@@ -8,6 +8,7 @@
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
     using System.Linq;
+    using System.Threading.Tasks;
     using ContactType;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.ContactType.Events;
@@ -31,7 +32,7 @@
         {
             b.ToTable(nameof(OrganisationContactListView.ProjectionTables.OrganisationContactList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationContactId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 
@@ -43,7 +44,7 @@
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.ContactTypeName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.ContactTypeName).IsClustered();
             b.HasIndex(x => x.ContactValue);
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
@@ -67,14 +68,15 @@
 
         public OrganisationContactListView(
             ILogger<OrganisationContactListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationContacts = context.OrganisationContactList.Where(x => x.ContactTypeId == message.Body.ContactTypeId);
                 if (!organisationContacts.Any())
@@ -83,11 +85,11 @@
                 foreach (var organisationContact in organisationContacts)
                     organisationContact.ContactTypeName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationContactAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationContactAdded> message)
         {
             var organisationContactListItem = new OrganisationContactListItem
             {
@@ -100,16 +102,16 @@
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationContactList.Add(organisationContactListItem);
-                context.SaveChanges();
+                await context.OrganisationContactList.AddAsync(organisationContactListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationContactUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationContactUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var contact = context.OrganisationContactList.SingleOrDefault(item => item.OrganisationContactId == message.Body.OrganisationContactId);
 
@@ -121,13 +123,13 @@
                 contact.ValidFrom = message.Body.ValidFrom;
                 contact.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

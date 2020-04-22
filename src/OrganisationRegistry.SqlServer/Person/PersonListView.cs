@@ -3,6 +3,7 @@ namespace OrganisationRegistry.SqlServer.Person
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.EntityFrameworkCore;
     using Infrastructure;
@@ -36,7 +37,7 @@ namespace OrganisationRegistry.SqlServer.Person
         {
             b.ToTable(nameof(PersonListView.ProjectionTables.PersonList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.FirstName)
                 .HasMaxLength(FirstNameLength)
@@ -53,7 +54,7 @@ namespace OrganisationRegistry.SqlServer.Person
             b.Property(p => p.Sex);
             b.Property(p => p.DateOfBirth);
 
-            b.HasIndex(x => x.Name).ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsClustered();
             b.HasIndex(x => x.FirstName);
             b.HasIndex(x => x.FullName);
         }
@@ -65,7 +66,6 @@ namespace OrganisationRegistry.SqlServer.Person
         IEventHandler<PersonUpdated>
     {
         private readonly IEventStore _eventStore;
-
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
         public enum ProjectionTables
@@ -75,14 +75,15 @@ namespace OrganisationRegistry.SqlServer.Person
 
         public PersonListView(
             ILogger<PersonListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonCreated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var person = new PersonListItem
                 {
@@ -94,14 +95,14 @@ namespace OrganisationRegistry.SqlServer.Person
                     DateOfBirth = message.Body.DateOfBirth
                 };
 
-                context.PersonList.Add(person);
-                context.SaveChanges();
+                await context.PersonList.AddAsync(person);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var person = context.PersonList.SingleOrDefault(x => x.Id == message.Body.PersonId);
                 if (person == null)
@@ -112,13 +113,13 @@ namespace OrganisationRegistry.SqlServer.Person
                 person.FullName = $"{message.Body.FirstName} {message.Body.Name}";
                 person.Sex = (Sex?) message.Body.Sex;
                 person.DateOfBirth = message.Body.DateOfBirth;
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

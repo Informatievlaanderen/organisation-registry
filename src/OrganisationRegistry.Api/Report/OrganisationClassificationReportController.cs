@@ -161,7 +161,7 @@ namespace OrganisationRegistry.Api.Report
         [ProducesResponseType(typeof(IEnumerable<ClassificationOrganisationParticipation>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult GetClassificationOrganisationParticipation(
+        public async Task<IActionResult> GetClassificationOrganisationParticipation(
             [FromServices] OrganisationRegistryContext context,
             [FromServices] IDateTimeProvider dateTimeProvider,
             [FromRoute] Guid classificationOrganisationId)

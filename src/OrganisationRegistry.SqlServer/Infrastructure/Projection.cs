@@ -5,6 +5,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     using System.Data.Common;
     using System.Linq;
     using System.Reflection;
+    using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Events;
@@ -26,20 +27,24 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
     public abstract class Projection<T> : BaseProjection<T>, IProjectionMarker, IEventHandler<RebuildProjection>
     {
+        protected readonly IContextFactory ContextFactory;
         public abstract string[] ProjectionTableNames { get; }
 
-        protected Projection(ILogger<T> logger) : base(logger) { }
+        protected Projection(ILogger<T> logger, IContextFactory contextFactory) : base(logger)
+        {
+            ContextFactory = contextFactory;
+        }
 
         private const int BatchSize = 5000;
 
-        public abstract void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message);
+        public abstract Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message);
 
-        public void RebuildProjection(IEventStore eventStore, DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public async Task RebuildProjection(IEventStore eventStore, DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(eventStore, dbConnection, dbTransaction, message, _ => { });
+            await RebuildProjection(eventStore, dbConnection, dbTransaction, message, _ => { });
         }
 
-        public void RebuildProjection(IEventStore eventStore, DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message, Action<OrganisationRegistryTransactionalContext> customResetLogic)
+        public async Task RebuildProjection(IEventStore eventStore, DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message, Action<OrganisationRegistryContext> customResetLogic)
         {
             if (message.Body.ProjectionName != typeof(T).FullName)
                 return;
@@ -55,7 +60,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
             Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} started.", ProjectionTableNames, message.Body.ProjectionName);
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 customResetLogic(context);
 
@@ -81,7 +86,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
                 foreach (var envelope in envelopes)
                 {
-                    ((dynamic)this).Handle(dbConnection, dbTransaction, (dynamic)envelope);
+                    await ((dynamic)this).Handle(dbConnection, dbTransaction, (dynamic)envelope);
 
                     lastProcessed = envelope.Number;
                 }

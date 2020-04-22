@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.OrganisationRelationType
 {
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -20,24 +21,24 @@ namespace OrganisationRegistry.OrganisationRelationType
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public void Handle(CreateOrganisationRelationType message)
+        public async Task Handle(CreateOrganisationRelationType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
                 throw new NameNotUniqueException();
 
             var organisationRelationType = new OrganisationRelationType(message.OrganisationRelationTypeId, message.Name, message.InverseName);
             Session.Add(organisationRelationType);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateOrganisationRelationType message)
+        public async Task Handle(UpdateOrganisationRelationType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.OrganisationRelationTypeId, message.Name))
                 throw new NameNotUniqueException();
 
             var organisationRelationType = Session.Get<OrganisationRelationType>(message.OrganisationRelationTypeId);
             organisationRelationType.Update(message.Name, message.InverseName);
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

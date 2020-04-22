@@ -19,7 +19,7 @@ namespace OrganisationRegistry.SqlServer.ElasticSearchProjections
         {
             b.ToTable(TableName, "OrganisationRegistry")
                 .HasKey(p => p.OrganisationCapacityId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.IsActive).IsRequired();
         }

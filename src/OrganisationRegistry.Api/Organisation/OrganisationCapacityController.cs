@@ -67,7 +67,7 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationCapacityRequest message)
+        public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationCapacityRequest message)
         {
             var internalMessage = new AddOrganisationCapacityInternalRequest(organisationId, message);
 
@@ -77,7 +77,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(AddOrganisationCapacityRequestMapping.Map(internalMessage));
+            await CommandSender.Send(AddOrganisationCapacityRequestMapping.Map(internalMessage));
 
             return Created(Url.Action(nameof(Get), new { id = message.OrganisationCapacityId }), null);
         }
@@ -89,7 +89,7 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationCapacityRequest message)
+        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationCapacityRequest message)
         {
             var internalMessage = new UpdateOrganisationCapacityInternalRequest(organisationId, message);
 
@@ -99,7 +99,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateOrganisationCapacityRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateOrganisationCapacityRequestMapping.Map(internalMessage));
 
             return Ok();
         }

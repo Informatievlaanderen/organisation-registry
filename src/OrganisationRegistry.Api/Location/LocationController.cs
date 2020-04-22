@@ -66,12 +66,12 @@
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromBody] CreateLocationRequest message)
+        public async Task<IActionResult> Post([FromBody] CreateLocationRequest message)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            CommandSender.Send(CreateLocationRequestMapping.Map(message));
+            await CommandSender.Send(CreateLocationRequestMapping.Map(message));
 
             return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
         }
@@ -83,14 +83,14 @@
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromRoute] Guid id, [FromBody] UpdateLocationRequest message)
+        public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateLocationRequest message)
         {
             var internalMessage = new UpdateLocationInternalRequest(id, message);
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateLocationRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateLocationRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.LocationId }));
         }

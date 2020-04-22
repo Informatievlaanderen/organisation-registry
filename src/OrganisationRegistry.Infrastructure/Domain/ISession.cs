@@ -1,6 +1,7 @@
 ﻿namespace OrganisationRegistry.Infrastructure.Domain
 {
     using System;
+    using System.Threading.Tasks;
 
     public interface ISession
     {
@@ -8,6 +9,6 @@
 
         T Get<T>(Guid id, int? expectedVersion = null) where T : AggregateRoot;
 
-        void Commit();
+        Task Commit();
     }
 }

@@ -3,6 +3,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
     using System;
     using System.Linq;
     using System.Data.Common;
+    using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Infrastructure;
@@ -20,7 +21,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
 
         public int Order { get; set; }
 
-        public string ExternalKey { get; set; }
+        public string? ExternalKey { get; set; }
 
         public bool Active { get; set; }
 
@@ -36,7 +37,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
         {
             b.ToTable(nameof(OrganisationClassificationListView.ProjectionTables.OrganisationClassificationList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Name)
                 .HasMaxLength(NameLength)
@@ -53,7 +54,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
                 .HasMaxLength(OrganisationClassificationTypeListConfiguration.NameLength)
                 .IsRequired();
 
-            b.HasIndex(x => x.Name).ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsClustered();
             b.HasIndex(x => x.OrganisationClassificationTypeName);
             b.HasIndex(x => x.Order);
             b.HasIndex(x => x.Active);
@@ -79,14 +80,15 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
 
         public OrganisationClassificationListView(
             ILogger<OrganisationClassificationListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationCreated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationClassification = new OrganisationClassificationListItem
                 {
@@ -99,14 +101,14 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
                     OrganisationClassificationTypeName = message.Body.OrganisationClassificationTypeName
                 };
 
-                context.OrganisationClassificationList.Add(organisationClassification);
-                context.SaveChanges();
+                await context.OrganisationClassificationList.AddAsync(organisationClassification);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationClassification = context.OrganisationClassificationList.SingleOrDefault(x => x.Id == message.Body.OrganisationClassificationId);
                 if (organisationClassification == null)
@@ -119,13 +121,13 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
                 organisationClassification.OrganisationClassificationTypeId = message.Body.OrganisationClassificationTypeId;
                 organisationClassification.OrganisationClassificationTypeName = message.Body.OrganisationClassificationTypeName;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationClassifications = context.OrganisationClassificationList.Where(x => x.OrganisationClassificationTypeId == message.Body.OrganisationClassificationTypeId);
                 if (!organisationClassifications.Any())
@@ -134,13 +136,13 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
                 foreach (var organisationClassification in organisationClassifications)
                     organisationClassification.OrganisationClassificationTypeName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

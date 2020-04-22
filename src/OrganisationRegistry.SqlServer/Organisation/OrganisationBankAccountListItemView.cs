@@ -3,6 +3,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -22,7 +23,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
 
-        public string Source { get; set; }
+        public string? Source { get; set; }
 
         public bool IsEditable => Source != Sources.Kbo;
 
@@ -59,7 +60,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             b.ToTable(nameof(OrganisationBankAccountListView.ProjectionTables.OrganisationBankAccountList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationBankAccountId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 
@@ -94,15 +95,15 @@ namespace OrganisationRegistry.SqlServer.Organisation
         }
 
         private readonly IEventStore _eventStore;
-
         public OrganisationBankAccountListView(
             ILogger<OrganisationBankAccountListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountAdded> message)
         {
             var organisationBankAccountListItem = new OrganisationBankAccountListItem(
                 message.Body.OrganisationBankAccountId,
@@ -114,14 +115,14 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 message.Body.ValidFrom,
                 message.Body.ValidTo);
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationBankAccountList.Add(organisationBankAccountListItem);
-                context.SaveChanges();
+                await context.OrganisationBankAccountList.AddAsync(organisationBankAccountListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountAdded> message)
         {
             var organisationBankAccountListItem = new OrganisationBankAccountListItem(
                 message.Body.OrganisationBankAccountId,
@@ -134,28 +135,28 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 message.Body.ValidTo,
                 Sources.Kbo);
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationBankAccountList.Add(organisationBankAccountListItem);
-                context.SaveChanges();
+                await context.OrganisationBankAccountList.AddAsync(organisationBankAccountListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountRemoved> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountRemoved> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var organisationBankAccountListItem = context.OrganisationBankAccountList.Single(b => b.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
+                var organisationBankAccountListItem = await context.OrganisationBankAccountList.SingleAsync(b => b.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
 
                 context.OrganisationBankAccountList.Remove(organisationBankAccountListItem);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationBankAccountListItem = context.OrganisationBankAccountList.Single(b => b.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
 
@@ -166,13 +167,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 organisationBankAccountListItem.ValidFrom = message.Body.ValidFrom;
                 organisationBankAccountListItem.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

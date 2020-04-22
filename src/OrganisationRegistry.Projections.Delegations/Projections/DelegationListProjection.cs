@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Body.Events;
     using OrganisationRegistry.Infrastructure.Events;
@@ -14,6 +15,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
     using SqlServer.Infrastructure;
     using SqlServer.Person;
     using OrganisationRegistry.Infrastructure.AppSpecific;
+    using SqlServer;
 
     public class DelegationListProjection :
         Projection<DelegationListProjection>,
@@ -42,23 +44,21 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             };
 
         private readonly IEventStore _eventStore;
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
         private readonly IMemoryCaches _memoryCaches;
 
         public DelegationListProjection(
             ILogger<DelegationListProjection> logger,
             IEventStore eventStore,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
-            IMemoryCaches memoryCaches) : base(logger)
+            IMemoryCaches memoryCaches,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
-            _contextFactory = contextFactory;
             _memoryCaches = memoryCaches;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedFunctionTypeToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedFunctionTypeToBodySeat> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var organisationForBody = GetOrganisationForBodyFromCache(context, message.Body.BodyId);
 
@@ -93,9 +93,9 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedOrganisationToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedOrganisationToBodySeat> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var organisationForBody = GetOrganisationForBodyFromCache(context, message.Body.BodyId);
 
@@ -130,9 +130,9 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedFunctionTypeToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedFunctionTypeToBodySeat> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var organisationForBody = GetOrganisationForBodyFromCache(context, message.Body.BodyId);
 
@@ -161,9 +161,9 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedOrganisationToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedOrganisationToBodySeat> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var organisationForBody = GetOrganisationForBodyFromCache(context, message.Body.BodyId);
 
@@ -189,9 +189,9 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var delegationListItem = context.DelegationList.SingleOrDefault(item => item.Id == message.Body.BodyMandateId);
 
@@ -202,9 +202,9 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var delegationListItem = context.DelegationList.SingleOrDefault(item => item.Id == message.Body.BodyMandateId);
 
@@ -215,19 +215,19 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
             UpdateOrganisationName(message.Body.OrganisationId, message.Body.Name);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             UpdateOrganisationName(message.Body.OrganisationId, message.Body.Name);
         }
 
         private void UpdateOrganisationName(Guid organisationId, string organisationName)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var organisationNames =
                     context.DelegationList.Where(item => item.OrganisationId == organisationId);
@@ -245,9 +245,9 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var delegationListItems = context.DelegationList.Where(item => item.BodyId == message.Body.BodyId);
 
@@ -258,9 +258,9 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatNumberAssigned> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatNumberAssigned> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var delegationListItems = context.DelegationList.Where(item => item.BodySeatId == message.Body.BodySeatId);
 
@@ -271,9 +271,9 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var delegationListItems = context.DelegationList.Where(item => item.BodySeatId == message.Body.BodySeatId);
 
@@ -284,9 +284,9 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var body = new OrganisationPerBody
                 {
@@ -308,9 +308,9 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var body = context
                     .OrganisationPerBodyList
@@ -331,12 +331,12 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
             if (message.Body.OrganisationId == message.Body.PreviousOrganisationId)
                 return;
 
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var body = context
                     .OrganisationPerBodyList
@@ -360,19 +360,19 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<InitialiseProjection> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<InitialiseProjection> message)
         {
             if (message.Body.ProjectionName != typeof(DelegationListProjection).FullName)
                 return;
 
             Logger.LogInformation("Clearing tables for {ProjectionName}.", message.Body.ProjectionName);
 
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
                 context.Database.ExecuteSqlCommand(
                     string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [OrganisationRegistry].[{tableName}];")));
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
             RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }

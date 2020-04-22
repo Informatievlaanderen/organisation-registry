@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.SeatType
 {
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -20,24 +21,24 @@ namespace OrganisationRegistry.SeatType
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public void Handle(CreateSeatType message)
+        public async Task Handle(CreateSeatType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
                 throw new NameNotUniqueException();
 
             var seatType = new SeatType(message.SeatTypeId, message.Name, message.Order);
             Session.Add(seatType);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateSeatType message)
+        public async Task Handle(UpdateSeatType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.SeatTypeId, message.Name))
                 throw new NameNotUniqueException();
 
             var seatType = Session.Get<SeatType>(message.SeatTypeId);
             seatType.Update(message.Name, message.Order);
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

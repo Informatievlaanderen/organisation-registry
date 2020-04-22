@@ -67,7 +67,7 @@
         [HttpPost]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationBankAccountRequest message)
+        public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationBankAccountRequest message)
         {
             var internalMessage = new AddOrganisationBankAccountInternalRequest(organisationId, message);
 
@@ -77,7 +77,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(AddOrganisationBankAccountRequestMapping.Map(internalMessage));
+            await CommandSender.Send(AddOrganisationBankAccountRequestMapping.Map(internalMessage));
 
             return Created(Url.Action(nameof(Get), new { id = message.OrganisationBankAccountId }), null);
         }
@@ -88,7 +88,7 @@
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationBankAccountRequest message)
+        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationBankAccountRequest message)
         {
             var internalMessage = new UpdateOrganisationBankAccountInternalRequest(organisationId, message);
 
@@ -98,7 +98,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateOrganisationBankAccountRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateOrganisationBankAccountRequestMapping.Map(internalMessage));
 
             return Ok();
         }

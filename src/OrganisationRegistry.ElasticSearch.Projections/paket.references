@@ -14,8 +14,9 @@ Microsoft.Extensions.Logging
 
 Autofac.Extensions.DependencyInjection
 
+Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
+
 Newtonsoft.Json
-Destructurama.JsonNet
 
 NEST
 

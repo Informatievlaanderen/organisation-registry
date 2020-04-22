@@ -4,6 +4,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
     using System.Data.Common;
     using System.Linq;
     using System.Text;
+    using System.Threading.Tasks;
     using Body.Events;
     using Configuration;
     using Infrastructure.AppSpecific;
@@ -39,7 +40,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             _bodyFormalFrameworkUriTemplate = _configuration.BodyFormalFrameworkUriTemplate;
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<BodyRegistered> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<BodyRegistered> message)
         {
             var subject = $"OrganisationRegistry: ORGAAN TOEGEVOEGD {message.Body.BodyNumber}";
             var body =
@@ -53,7 +54,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             SendMails(new Mail(subject, body));
         }
 
-        public void Handle(DbConnection _, DbTransaction __, IEnvelope<BodyAssignedToOrganisation> message)
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<BodyAssignedToOrganisation> message)
         {
             var subject = $"OrganisationRegistry: ORGAAN {_memoryCaches.BodyNames[message.Body.BodyId]} GEKOPPELD AAN ORGANISATIE {_memoryCaches.OvoNumbers[message.Body.OrganisationId]}";
             var body =
@@ -66,7 +67,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             SendMails(new Mail(subject, body));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkAdded> message)
         {
             if (_configuration.MepFormalFrameworkId != message.Body.FormalFrameworkId)
                 return;
@@ -83,7 +84,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             SendMails(new Mail(subject, body));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkUpdated> message)
         {
             if (_configuration.MepFormalFrameworkId != message.Body.FormalFrameworkId)
                 return;

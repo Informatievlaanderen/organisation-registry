@@ -3,6 +3,7 @@
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Microsoft.Extensions.Logging;
     using SqlServer.ElasticSearchProjections;
@@ -29,7 +30,7 @@
             _memoryCaches = memoryCaches;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
             using (var context = _contextFactory().Value)
             {
@@ -49,7 +50,7 @@
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
             using (var context = _contextFactory().Value)
             {
@@ -66,7 +67,7 @@
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
             using (var context = _contextFactory().Value)
             {

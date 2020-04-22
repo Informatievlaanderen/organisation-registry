@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Day
 {
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -20,7 +21,7 @@ namespace OrganisationRegistry.Day
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public void Handle(CheckIfDayHasPassed message)
+        public async Task Handle(CheckIfDayHasPassed message)
         {
             try
             {
@@ -33,7 +34,7 @@ namespace OrganisationRegistry.Day
                 Session.Add(day);
             }
 
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

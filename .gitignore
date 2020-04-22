@@ -8,6 +8,9 @@ wwwroot/
 .fake/
 .idea/
 .ionide/
+.paket/
+
+**/*/mono_crash.*
 
 [Pp]ackages/
 [Pp]aket-files/

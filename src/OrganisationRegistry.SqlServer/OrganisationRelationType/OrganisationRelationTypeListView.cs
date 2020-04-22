@@ -3,6 +3,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationRelationType
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.EntityFrameworkCore;
     using Infrastructure;
@@ -27,7 +28,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationRelationType
         {
             b.ToTable(nameof(OrganisationRelationTypeListView.ProjectionTables.OrganisationRelationTypeList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Name)
                 .HasMaxLength(NameLength)
@@ -37,7 +38,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationRelationType
                 .HasMaxLength(NameLength)
                 .IsRequired();
 
-            b.HasIndex(x => x.Name).IsUnique().ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsUnique().IsClustered();
         }
     }
 
@@ -57,14 +58,15 @@ namespace OrganisationRegistry.SqlServer.OrganisationRelationType
 
         public OrganisationRelationTypeListView(
             ILogger<OrganisationRelationTypeListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationTypeCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationTypeCreated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationRelationType = new OrganisationRelationTypeListItem
                 {
@@ -73,14 +75,14 @@ namespace OrganisationRegistry.SqlServer.OrganisationRelationType
                     InverseName = message.Body.InverseName
                 };
 
-                context.OrganisationRelationTypeList.Add(organisationRelationType);
-                context.SaveChanges();
+                await context.OrganisationRelationTypeList.AddAsync(organisationRelationType);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationRelationType = context.OrganisationRelationTypeList.SingleOrDefault(x => x.Id == message.Body.OrganisationRelationTypeId);
                 if (organisationRelationType == null)
@@ -89,13 +91,13 @@ namespace OrganisationRegistry.SqlServer.OrganisationRelationType
                 organisationRelationType.Name = message.Body.Name;
                 organisationRelationType.InverseName = message.Body.InverseName;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

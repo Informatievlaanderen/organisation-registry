@@ -11,10 +11,6 @@
     [Collection(SqlServerTestsCollection.Name)]
     public class PersonListViewTests : ListViewTestBase
     {
-        public PersonListViewTests(SqlServerFixture fixture) : base(fixture)
-        {
-        }
-
         [Fact]
         public void PersonCreated()
         {

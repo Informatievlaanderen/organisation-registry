@@ -66,7 +66,7 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationFormalFrameworkRequest message)
+        public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationFormalFrameworkRequest message)
         {
             var internalMessage = new AddOrganisationFormalFrameworkInternalRequest(organisationId, message);
 
@@ -76,7 +76,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(AddOrganisationFormalFrameworkRequestMapping.Map(internalMessage));
+            await CommandSender.Send(AddOrganisationFormalFrameworkRequestMapping.Map(internalMessage));
 
             return Created(Url.Action(nameof(Get), new { id = message.OrganisationFormalFrameworkId }), null);
         }
@@ -88,7 +88,7 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationFormalFrameworkRequest message)
+        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationFormalFrameworkRequest message)
         {
             var internalMessage = new UpdateOrganisationFormalFrameworkInternalRequest(organisationId, message);
 
@@ -98,7 +98,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateOrganisationFormalFrameworkRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateOrganisationFormalFrameworkRequestMapping.Map(internalMessage));
 
             return Ok();
         }

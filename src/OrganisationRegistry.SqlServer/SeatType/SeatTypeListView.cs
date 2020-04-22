@@ -3,6 +3,7 @@ namespace OrganisationRegistry.SqlServer.SeatType
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.EntityFrameworkCore;
     using Infrastructure;
@@ -27,7 +28,7 @@ namespace OrganisationRegistry.SqlServer.SeatType
         {
             b.ToTable(nameof(SeatTypeListView.ProjectionTables.SeatTypeList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Name)
                 .HasMaxLength(NameLength)
@@ -35,7 +36,7 @@ namespace OrganisationRegistry.SqlServer.SeatType
 
             b.Property(p => p.Order);
 
-            b.HasIndex(x => x.Name).IsUnique().ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsUnique().IsClustered();
         }
     }
 
@@ -55,14 +56,15 @@ namespace OrganisationRegistry.SqlServer.SeatType
 
         public SeatTypeListView(
             ILogger<SeatTypeListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeCreated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var seatType = new SeatTypeListItem
                 {
@@ -71,14 +73,14 @@ namespace OrganisationRegistry.SqlServer.SeatType
                     Order=message.Body.Order
                 };
 
-                context.SeatTypeList.Add(seatType);
-                context.SaveChanges();
+                await context.SeatTypeList.AddAsync(seatType);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var seatType = context.SeatTypeList.SingleOrDefault(x => x.Id == message.Body.SeatTypeId);
                 if (seatType == null)
@@ -86,13 +88,13 @@ namespace OrganisationRegistry.SqlServer.SeatType
 
                 seatType.Name = message.Body.Name;
                 seatType.Order = message.Body.Order;
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

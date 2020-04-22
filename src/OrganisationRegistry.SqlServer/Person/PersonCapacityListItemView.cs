@@ -9,6 +9,7 @@ namespace OrganisationRegistry.SqlServer.Person
     using OrganisationRegistry.Organisation.Events;
 
     using System.Linq;
+    using System.Threading.Tasks;
     using Capacity;
     using FunctionType;
     using Microsoft.Extensions.Logging;
@@ -30,7 +31,7 @@ namespace OrganisationRegistry.SqlServer.Person
         public Guid? PersonId { get; set; }
 
         public Guid? FunctionId { get; set; }
-        public string FunctionName { get; set; }
+        public string? FunctionName { get; set; }
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
@@ -42,7 +43,7 @@ namespace OrganisationRegistry.SqlServer.Person
         {
             b.ToTable(nameof(PersonCapacityListView.ProjectionTables.PersonCapacityList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationCapacityId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
             b.Property(p => p.OrganisationName).HasMaxLength(OrganisationListConfiguration.NameLength).IsRequired();
@@ -58,7 +59,7 @@ namespace OrganisationRegistry.SqlServer.Person
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.OrganisationName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.OrganisationName).IsClustered();
             b.HasIndex(x => x.CapacityName);
             b.HasIndex(x => x.FunctionName);
             b.HasIndex(x => x.ValidFrom);
@@ -88,25 +89,31 @@ namespace OrganisationRegistry.SqlServer.Person
         public PersonCapacityListView(
             ILogger<PersonCapacityListView> logger,
             IEventStore eventStore,
-            IMemoryCaches memoryCaches) : base(logger)
+            IMemoryCaches memoryCaches,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
             _memoryCaches = memoryCaches;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
-            UpdateOrganisationName(dbConnection, dbTransaction, message.Body.OrganisationId, message.Body.Name);
+            UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
-            UpdateOrganisationName(dbConnection, dbTransaction, message.Body.OrganisationId, message.Body.Name);
+            UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
         }
 
-        private static void UpdateOrganisationName(DbConnection dbConnection, DbTransaction dbTransaction, Guid organisationId, string organisationName)
+        private static void UpdateOrganisationName(
+            DbConnection dbConnection,
+            DbTransaction dbTransaction,
+            IContextFactory contextFactory,
+            Guid organisationId,
+            string organisationName)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = contextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var personCapacities = context.PersonCapacityList.Where(x => x.OrganisationId == organisationId);
                 if (!personCapacities.Any())
@@ -119,9 +126,9 @@ namespace OrganisationRegistry.SqlServer.Person
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<CapacityUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<CapacityUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var personCapacities = context.PersonCapacityList.Where(x => x.CapacityId == message.Body.CapacityId);
                 if (!personCapacities.Any())
@@ -130,13 +137,13 @@ namespace OrganisationRegistry.SqlServer.Person
                 foreach (var personCapacity in personCapacities)
                     personCapacity.CapacityName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var personCapacities = context.PersonCapacityList.Where(x => x.FunctionId == message.Body.FunctionId);
                 if (!personCapacities.Any())
@@ -145,11 +152,11 @@ namespace OrganisationRegistry.SqlServer.Person
                 foreach (var personCapacity in personCapacities)
                     personCapacity.FunctionName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityAdded> message)
         {
             if (!message.Body.PersonId.HasValue)
                 return;
@@ -168,14 +175,14 @@ namespace OrganisationRegistry.SqlServer.Person
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.PersonCapacityList.Add(personCapacityListItem);
-                context.SaveChanges();
+                await context.PersonCapacityList.AddAsync(personCapacityListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
         {
             if (message.Body.PersonId.HasValue)
             {
@@ -187,14 +194,14 @@ namespace OrganisationRegistry.SqlServer.Person
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
 
         private void AddOrUpdatePersonCapacity(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var personCapacityListItem = context.PersonCapacityList.SingleOrDefault(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
 
@@ -221,7 +228,7 @@ namespace OrganisationRegistry.SqlServer.Person
 
         private void RemovePersonCapacity(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var personCapacityListItem = context.PersonCapacityList.SingleOrDefault(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
 

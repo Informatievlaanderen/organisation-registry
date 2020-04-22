@@ -2,10 +2,8 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
 {
     using System;
     using System.Collections.Generic;
-    using Autofac.Features.OwnedInstances;
     using Day.Events;
     using FluentAssertions;
-    using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Organisation.ScheduledActions.Building;
@@ -29,17 +27,17 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
         private Guid _organisationBuildingBId;
         private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
 
-        public GivenMultipleMainOrganisationBuildingsLastDayHavePassed(SqlServerFixture fixture) : base(fixture)
+        public GivenMultipleMainOrganisationBuildingsLastDayHavePassed(SqlServerFixture fixture) : base()
         {
         }
 
-        protected override ActiveOrganisationBuildingListView BuildReactionHandler()
+        protected override ActiveOrganisationBuildingListView BuildReactionHandler(IContextFactory contextFactory)
         {
             return new ActiveOrganisationBuildingListView(
                 new Mock<ILogger<ActiveOrganisationBuildingListView>>().Object,
-                () => new Owned<OrganisationRegistryContext>(new OrganisationRegistryTransactionalContext(SqlConnection, Transaction), this),
                 null,
-                new DateTimeProvider());
+                new DateTimeProvider(),
+                contextFactory);
         }
 
         protected override IEnumerable<IEvent> Given()

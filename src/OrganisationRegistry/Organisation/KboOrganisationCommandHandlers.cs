@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Organisation
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -53,7 +54,7 @@ namespace OrganisationRegistry.Organisation
             _locationRetriever = locationRetriever;
         }
 
-        public void Handle(CreateKboOrganisation message)
+        public async Task Handle(CreateKboOrganisation message)
         {
             var registeredOfficeLocationType =
                 Session.Get<LocationType>(_organisationRegistryConfiguration.KboV2RegisteredOfficeLocationTypeId);
@@ -91,7 +92,7 @@ namespace OrganisationRegistry.Organisation
 
             var location = GetOrAddLocations(kboOrganisation.Address);
 
-            Session.Commit();
+            await Session.Commit();
 
             var organisation = Organisation.CreateFromKbo(
                 message,
@@ -111,10 +112,10 @@ namespace OrganisationRegistry.Organisation
 
             AddLabel(organisation, kboOrganisation);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(CoupleOrganisationToKbo message)
+        public async Task Handle(CoupleOrganisationToKbo message)
         {
             var registeredOfficeLocationType =
                 Session.Get<LocationType>(_organisationRegistryConfiguration.KboV2RegisteredOfficeLocationTypeId);
@@ -148,10 +149,10 @@ namespace OrganisationRegistry.Organisation
 
             AddLabel(organisation, kboOrganisation);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateFromKbo message)
+        public async Task Handle(UpdateFromKbo message)
         {
             var registeredOfficeLocationType =
                 Session.Get<LocationType>(_organisationRegistryConfiguration.KboV2RegisteredOfficeLocationTypeId);
@@ -172,7 +173,7 @@ namespace OrganisationRegistry.Organisation
 
             var location = GetOrAddLocations(kboOrganisation.Address);
 
-            Session.Commit();
+            await Session.Commit();
 
             // IMPORTANT: Need to re-Get the organisation, otherwise the Session will not properly handle the events.
             organisation = Session.Get<Organisation>(message.OrganisationId);
@@ -194,7 +195,7 @@ namespace OrganisationRegistry.Organisation
 
             organisation.MarkAsSynced(message.KboSyncItemId);
 
-            Session.Commit();
+            await Session.Commit();
         }
 
         private KboRegisteredOffice GetOrAddLocations(IMagdaAddress address)

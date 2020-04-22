@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.Building
 {
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -20,24 +21,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public void Handle(CreateBuilding message)
+        public async Task Handle(CreateBuilding message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
                 throw new NameNotUniqueException();
 
             var building = new Building(message.BuildingId, message.Name, message.VimId);
             Session.Add(building);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateBuilding message)
+        public async Task Handle(UpdateBuilding message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.BuildingId, message.Name))
                 throw new NameNotUniqueException();
 
             var building = Session.Get<Building>(message.BuildingId);
             building.Update(message.Name, message.VimId);
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

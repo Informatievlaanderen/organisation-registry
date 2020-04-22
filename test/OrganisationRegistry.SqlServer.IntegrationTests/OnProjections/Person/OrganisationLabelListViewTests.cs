@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Person
 {
     using System;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using Organisation;
     using OrganisationRegistry.Organisation.Events;
@@ -12,12 +13,8 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Person
     [Collection(SqlServerTestsCollection.Name)]
     public class OrganisationLabelListViewTests : ListViewTestBase
     {
-        public OrganisationLabelListViewTests(SqlServerFixture fixture) : base(fixture)
-        {
-        }
-
         [Fact]
-        public void OrganisationLabelAdded()
+        public async Task OrganisationLabelAdded()
         {
             var organisationCreated = new OrganisationCreatedTestDataBuilder(new SequentialOvoNumberGenerator()).Build();
             var organisationCoupledWithKbo = new OrganisationCoupledWithKbo(
@@ -27,7 +24,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Person
                 ovoNumber: organisationCreated.OvoNumber,
                 validFrom: DateTime.Today);
 
-            HandleEvents(
+            await HandleEvents(
                 organisationCreated,
                 organisationCoupledWithKbo);
 

@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Day.Events;
     using Infrastructure;
@@ -34,7 +35,7 @@
         {
             b.ToTable(nameof(ActiveBodyOrganisationListView.ProjectionTables.ActiveBodyOrganisationList), "OrganisationRegistry")
                 .HasKey(p => p.BodyOrganisationId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 
@@ -54,23 +55,19 @@
         IEventHandler<BodyClearedFromOrganisation>,
         IReactionHandler<DayHasPassed>
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
         private readonly Dictionary<Guid, ValidTo> _endDatePerBodyOrganisationId;
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
-
         public ActiveBodyOrganisationListView(
             ILogger<ActiveBodyOrganisationListView> logger,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
             IEventStore eventStore,
-            IDateTimeProvider dateTimeProvider
-        ) : base(logger)
+            IDateTimeProvider dateTimeProvider,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
-            _contextFactory = contextFactory;
             _eventStore = eventStore;
             _dateTimeProvider = dateTimeProvider;
 
-            using (var context = contextFactory().Value)
+            using (var context = contextFactory.Create())
             {
                 _endDatePerBodyOrganisationId =
                     context.BodyOrganisationList
@@ -88,14 +85,14 @@
             ActiveBodyOrganisationList
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationAdded> message)
         {
             // cache ValidTo for the OrganisationParent,
             // because we will need it when BodyAssignedToOrganisation is published, which does not contain the ValidTo.
             _endDatePerBodyOrganisationId.UpdateMemoryCache(message.Body.BodyOrganisationId, new ValidTo(message.Body.ValidTo));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
             // cache ValidTo for the OrganisationParent,
             // because we will need it when BodyAssignedToOrganisation is published, which does not contain the ValidTo.
@@ -105,7 +102,7 @@
             if (validTo.IsInPastOf(_dateTimeProvider.Today))
                 return;
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var activeBodyOrganisation =
                     context.ActiveBodyOrganisationList.SingleOrDefault(item => item.BodyOrganisationId == message.Body.BodyOrganisationId);
@@ -118,11 +115,11 @@
                 activeBodyOrganisation.BodyId = message.Body.BodyId;
                 activeBodyOrganisation.ValidTo = validTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
             var validTo = _endDatePerBodyOrganisationId[message.Body.BodyOrganisationId];
 
@@ -137,16 +134,16 @@
                 ValidTo = validTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.ActiveBodyOrganisationList.Add(activeBodyOrganisationListItem);
-                context.SaveChanges();
+                await context.ActiveBodyOrganisationList.AddAsync(activeBodyOrganisationListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var activeBodyOrganisationListItem =
                     context.ActiveBodyOrganisationList
@@ -159,13 +156,13 @@
 
                 context.ActiveBodyOrganisationList.Remove(activeBodyOrganisationListItem);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
+        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 return context.ActiveBodyOrganisationList
                     .Where(item => item.ValidTo.HasValue)
@@ -176,9 +173,9 @@
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

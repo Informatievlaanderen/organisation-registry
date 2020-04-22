@@ -36,7 +36,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
         {
             b.ToTable(TableName, "OrganisationRegistry")
                 .HasKey(p => p.BodyMandateId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.BodyMandateValidFrom);
             b.Property(p => p.BodyMandateValidTo);
@@ -47,7 +47,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
 
             b.Property(p => p.BodySeatTypeId);
 
-            b.HasMany(p => p.Assignments);
+            b.HasMany(p => p.Assignments).WithOne(p => p.BodyMandate).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

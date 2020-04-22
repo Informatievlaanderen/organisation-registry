@@ -2,14 +2,10 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
 {
     using System;
     using System.Collections.Generic;
-    using Autofac.Features.OwnedInstances;
     using Day.Events;
     using FluentAssertions;
-    using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using OnEventStore;
-    using Organisation;
     using Organisation.ScheduledActions.Location;
     using TestBases;
     using Tests.Shared;
@@ -18,6 +14,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using UnitTests;
     using Xunit;
 
     [Collection(SqlServerTestsCollection.Name)]
@@ -32,18 +29,18 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
         private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
         private DateTimeProviderStub _dateTimeProviderStub;
 
-        public GivenAMainOrganisationLocationsLastDayHasPassed(SqlServerFixture fixture) : base(fixture)
+        public GivenAMainOrganisationLocationsLastDayHasPassed(SqlServerFixture fixture) : base()
         {
         }
 
-        protected override ActiveOrganisationLocationListView BuildReactionHandler()
+        protected override ActiveOrganisationLocationListView BuildReactionHandler(IContextFactory contextFactory)
         {
             _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today.AddDays(-1));
             return new ActiveOrganisationLocationListView(
                 new Mock<ILogger<ActiveOrganisationLocationListView>>().Object,
-                () => new Owned<OrganisationRegistryContext>(new OrganisationRegistryTransactionalContext(SqlConnection, Transaction), this),
                 null,
-                _dateTimeProviderStub);
+                _dateTimeProviderStub,
+                contextFactory);
         }
 
         protected override IEnumerable<IEvent> Given()

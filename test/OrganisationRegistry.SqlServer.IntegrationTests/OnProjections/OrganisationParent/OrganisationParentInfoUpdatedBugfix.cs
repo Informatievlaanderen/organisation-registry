@@ -14,10 +14,6 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
     {
         private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
 
-        public OrganisationParentInfoUpdatedBugfix(SqlServerFixture fixture) : base(fixture)
-        {
-        }
-
         [Fact]
         public void UpdateOrganisationInfoThatIsNotTheParent_DoesNotInfluenceTheCurrentParentInTheDetail()
         {

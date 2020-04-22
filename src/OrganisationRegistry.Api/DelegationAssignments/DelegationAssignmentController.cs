@@ -111,7 +111,7 @@ namespace OrganisationRegistry.Api.DelegationAssignments
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(AddDelegationAssignmentRequestMapping.Map(internalMessage));
+            await CommandSender.Send(AddDelegationAssignmentRequestMapping.Map(internalMessage));
 
             return Created(Url.Action(nameof(Get), new { delegationId = delegationId, id = message.DelegationAssignmentId }), null);
         }
@@ -144,7 +144,7 @@ namespace OrganisationRegistry.Api.DelegationAssignments
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateDelegationAssignmentRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateDelegationAssignmentRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { delegationId = delegationId, id = id }));
         }
@@ -185,7 +185,7 @@ namespace OrganisationRegistry.Api.DelegationAssignments
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(RemoveDelegationAssignmentRequestMapping.Map(internalMessage));
+            await CommandSender.Send(RemoveDelegationAssignmentRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { delegationId = delegationId, id = delegationAssignmentId }));
         }

@@ -7,16 +7,15 @@
 
     public class ProjectionStates : IProjectionStates
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
-
-        public ProjectionStates(Func<Owned<OrganisationRegistryContext>> contextFactory)
+        private readonly IContextFactory _contextFactory;
+        public ProjectionStates(IContextFactory contextFactory)
         {
             _contextFactory = contextFactory;
         }
 
         public int GetLastProcessedEventNumber(string projectionName)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = _contextFactory.Create())
             {
                 var state =
                     context.ProjectionStates
@@ -34,7 +33,7 @@
 
         public void UpdateProjectionState(string projectionName, int lastEventNumber)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = _contextFactory.Create())
             {
                 var state =
                     context.ProjectionStates

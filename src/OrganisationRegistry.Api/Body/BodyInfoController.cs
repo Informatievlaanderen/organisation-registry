@@ -46,7 +46,7 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromServices] ISecurityService securityService, [FromRoute] Guid id, [FromBody] UpdateBodyInfoRequest message)
+        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid id, [FromBody] UpdateBodyInfoRequest message)
         {
             var internalMessage = new UpdateBodyInfoInternalRequest(id, message);
 
@@ -56,7 +56,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateBodyInfoRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateBodyInfoRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.BodyId }));
         }

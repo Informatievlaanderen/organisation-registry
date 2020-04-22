@@ -66,12 +66,12 @@
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromBody] CreatePurposeRequest message)
+        public async Task<IActionResult> Post([FromBody] CreatePurposeRequest message)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            CommandSender.Send(CreatePurposeRequestMapping.Map(message));
+            await CommandSender.Send(CreatePurposeRequestMapping.Map(message));
 
             return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
         }
@@ -83,14 +83,14 @@
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromRoute] Guid id, [FromBody] UpdatePurposeRequest message)
+        public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdatePurposeRequest message)
         {
             var internalMessage = new UpdatePurposeInternalRequest(id, message);
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdatePurposeRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdatePurposeRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.PurposeId }));
         }

@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.MandateRoleType
 {
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -20,24 +21,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public void Handle(CreateMandateRoleType message)
+        public async Task Handle(CreateMandateRoleType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
                 throw new NameNotUniqueException();
 
             var mandateRoleType = new MandateRoleType(message.MandateRoleTypeId, message.Name);
             Session.Add(mandateRoleType);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateMandateRoleType message)
+        public async Task Handle(UpdateMandateRoleType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.MandateRoleTypeId, message.Name))
                 throw new NameNotUniqueException();
 
             var mandateRoleType = Session.Get<MandateRoleType>(message.MandateRoleTypeId);
             mandateRoleType.Update(message.Name);
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

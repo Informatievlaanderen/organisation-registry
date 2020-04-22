@@ -63,7 +63,7 @@ namespace OrganisationRegistry.Api.Organisation
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post(
+        public async Task<IActionResult> Post(
             [FromServices] ISecurityService securityService,
             [FromRoute] Guid organisationId,
             [FromBody] AddOrganisationOpeningHourRequest message)
@@ -76,7 +76,7 @@ namespace OrganisationRegistry.Api.Organisation
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(AddOrganisationOpeningHourRequestMapping.Map(internalMessage));
+            await CommandSender.Send(AddOrganisationOpeningHourRequestMapping.Map(internalMessage));
 
             return Created(Url.Action(nameof(Get), new { id = message.OrganisationOpeningHourId }), null);
         }
@@ -85,7 +85,7 @@ namespace OrganisationRegistry.Api.Organisation
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put(
+        public async Task<IActionResult> Put(
             [FromServices] ISecurityService securityService,
             [FromRoute] Guid organisationId,
             [FromBody] UpdateOrganisationOpeningHourRequest message)
@@ -98,7 +98,7 @@ namespace OrganisationRegistry.Api.Organisation
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateOrganisationOpeningHourRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateOrganisationOpeningHourRequestMapping.Map(internalMessage));
 
             return Ok();
         }

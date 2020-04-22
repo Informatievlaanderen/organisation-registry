@@ -55,7 +55,6 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             registrar.RegisterEventHandlers(OrganisationsRunner.EventHandlers);
         }
 
-
         [EnvVarIgnoreFact]
         public void InitializeProjection_CreatesIndex()
         {

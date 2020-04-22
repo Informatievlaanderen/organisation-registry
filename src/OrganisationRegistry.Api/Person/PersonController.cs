@@ -70,12 +70,12 @@ namespace OrganisationRegistry.Api.Person
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromBody] CreatePersonRequest message)
+        public async Task<IActionResult> Post([FromBody] CreatePersonRequest message)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            CommandSender.Send(CreatePersonRequestMapping.Map(message));
+            await CommandSender.Send(CreatePersonRequestMapping.Map(message));
 
             return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
         }
@@ -87,14 +87,14 @@ namespace OrganisationRegistry.Api.Person
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromRoute] Guid id, [FromBody] UpdatePersonRequest message)
+        public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdatePersonRequest message)
         {
             var internalMessage = new UpdatePersonInternalRequest(id, message);
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdatePersonRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdatePersonRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.PersonId }));
         }

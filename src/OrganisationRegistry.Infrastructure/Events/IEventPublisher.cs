@@ -1,11 +1,12 @@
 ﻿namespace OrganisationRegistry.Infrastructure.Events
 {
     using System.Data.Common;
+    using System.Threading.Tasks;
 
     public interface IEventPublisher
     {
-        void Publish<T>(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<T> envelope) where T : IEvent<T>;
+        Task Publish<T>(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<T> envelope) where T : IEvent<T>;
 
-        void ProcessReactions<T>(IEnvelope<T> envelope) where T : IEvent<T>;
+        Task ProcessReactions<T>(IEnvelope<T> envelope) where T : IEvent<T>;
     }
 }

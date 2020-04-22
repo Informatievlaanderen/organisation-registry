@@ -4,6 +4,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Bodies;
     using Client;
@@ -113,7 +114,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             return $"{firstName} {name}";
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<InitialiseProjection> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<InitialiseProjection> message)
         {
             if (message.Body.ProjectionName != typeof(BodyHandler).FullName)
                 return;
@@ -129,7 +130,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                     string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [OrganisationRegistry].[{tableName}];")));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyRegistered> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyRegistered> message)
         {
             _elasticWriter
                 .Create(message)
@@ -146,7 +147,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -158,7 +159,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecyclePhaseAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecyclePhaseAdded> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -174,7 +175,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecyclePhaseUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecyclePhaseUpdated> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -190,7 +191,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LifecyclePhaseTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LifecyclePhaseTypeUpdated> message)
         {
             _elastic.Try(() => _elastic.WriteClient
                 .MassUpdateBody(
@@ -201,7 +202,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                     message.Timestamp));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkAdded> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -217,7 +218,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkUpdated> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -233,7 +234,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationAdded> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -249,7 +250,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -265,7 +266,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatAdded> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -285,7 +286,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -302,7 +303,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonToBodySeat> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -325,7 +326,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedPersonToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedPersonToBodySeat> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -348,7 +349,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedOrganisationToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedOrganisationToBodySeat> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -371,7 +372,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedOrganisationToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedOrganisationToBodySeat> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -394,30 +395,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedFunctionTypeToBodySeat> message)
-        {
-            _elasticWriter
-                .Update(message.Body.BodyId, message)
-                .CommitDocument(document =>
-                {
-                    var bodySeat = document.Seats.Single(
-                        x => x.BodySeatId == message.Body.BodySeatId);
-
-                    bodySeat.Mandates.RemoveAndAdd(
-                        x => x.BodyMandateId == message.Body.BodyMandateId,
-                        new BodyDocument.BodyMandate(
-                            message.Body.BodyMandateId,
-                            message.Body.OrganisationId,
-                            message.Body.OrganisationName,
-                            message.Body.FunctionTypeId,
-                            message.Body.FunctionTypeName,
-                            null,
-                            null,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-                });
-        }
-
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedFunctionTypeToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedFunctionTypeToBodySeat> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -440,7 +418,30 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedFunctionTypeToBodySeat> message)
+        {
+            _elasticWriter
+                .Update(message.Body.BodyId, message)
+                .CommitDocument(document =>
+                {
+                    var bodySeat = document.Seats.Single(
+                        x => x.BodySeatId == message.Body.BodySeatId);
+
+                    bodySeat.Mandates.RemoveAndAdd(
+                        x => x.BodyMandateId == message.Body.BodyMandateId,
+                        new BodyDocument.BodyMandate(
+                            message.Body.BodyMandateId,
+                            message.Body.OrganisationId,
+                            message.Body.OrganisationName,
+                            message.Body.FunctionTypeId,
+                            message.Body.FunctionTypeName,
+                            null,
+                            null,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                });
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -466,7 +467,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -492,7 +493,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
         {
             _elasticWriter
                 .Update(message.Body.BodyId, message)
@@ -509,7 +510,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 });
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
             UpdatePersonForMandates(message);
             UpdatePersonForDelegations(message);
@@ -578,13 +579,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             _elastic.Try(() => _elastic.WriteClient.IndexMany(bodyDocumentsForDelegations).ThrowOnFailure());
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
             UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name);
 
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name);
         }
@@ -618,7 +619,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             _elastic.Try(() => _elastic.WriteClient.IndexMany(bodyDocuments).ThrowOnFailure());
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
         {
             _elastic.WriteClient.Refresh(Indices.All);
             var results =
@@ -647,7 +648,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             _elastic.Try(() => _elastic.WriteClient.IndexMany(bodyDocuments).ThrowOnFailure());
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeUpdated> message)
         {
             _elastic.Try(() => _elastic.WriteClient
                 .MassUpdateBody(

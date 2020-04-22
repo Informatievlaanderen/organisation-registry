@@ -4,6 +4,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Capacity.Events;
     using Client;
@@ -48,7 +49,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             _memoryCaches = memoryCaches;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<CapacityUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<CapacityUpdated> message)
         {
             // Update all which use this type, and put the changeId on them too!
             _elastic.Try(() => _elastic.WriteClient
@@ -60,7 +61,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     message.Timestamp));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
         {
             // Update all which use this type, and put the changeId on them too!
             _elastic.Try(() => _elastic.WriteClient
@@ -72,17 +73,17 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     message.Timestamp));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreated> message)
         {
             AddCacheShowOnVlaamseOverheidSites(message.Body.OrganisationId, message.Body.ShowOnVlaamseOverheidSites);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreatedFromKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreatedFromKbo> message)
         {
             AddCacheShowOnVlaamseOverheidSites(message.Body.OrganisationId, false);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
             MassUpdateOrganisationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
 
@@ -120,7 +121,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             MassUpdateOrganisationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
         }
@@ -137,7 +138,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     timestamp));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityAdded> message)
         {
             // Person is optional
             if (!message.Body.PersonId.HasValue)
@@ -170,7 +171,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(personDocument).ThrowOnFailure());
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
         {
             // If previous and current person are null, we dont care
             if (!message.Body.PreviousPersonId.HasValue && !message.Body.PersonId.HasValue)
@@ -224,13 +225,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(personDocument).ThrowOnFailure());
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityBecameActive> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityBecameActive> message)
         {
             UpdateIsActivePerOrganisationCapacity(message.Body.OrganisationCapacityId, true);
             UpdateShouldBeShownOnVlaamseOverheidSites(message.Body.PersonId);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityBecameInactive> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityBecameInactive> message)
         {
             UpdateIsActivePerOrganisationCapacity(message.Body.OrganisationCapacityId, false);
             UpdateShouldBeShownOnVlaamseOverheidSites(message.Body.PersonId);

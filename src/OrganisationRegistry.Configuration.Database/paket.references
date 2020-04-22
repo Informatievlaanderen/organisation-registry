@@ -1,8 +1,6 @@
 System.Reflection.TypeExtensions
 
 Microsoft.Extensions.Options.ConfigurationExtensions
-// Microsoft.Extensions.Configuration
-// Microsoft.Extensions.Configuration.Abstractions
 
 Microsoft.EntityFrameworkCore
 Microsoft.EntityFrameworkCore.Relational

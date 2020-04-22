@@ -1,7 +1,16 @@
+#r "paket:
+version 5.241.6
+framework: netstandard20
+source https://api.nuget.org/v3/index.json
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 4.0.5 //"
+
 #load "packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/build-generic.fsx"
 
-open Fake
-open Fake.NpmHelper
+open Fake.Core
+open Fake.Core.TargetOperators
+open Fake.IO
+open Fake.IO.FileSystemOperators
+open Fake.JavaScript
 open ``Build-generic``
 
 // The buildserver passes in `BITBUCKET_BUILD_NUMBER` as an integer to version the results
@@ -62,38 +71,35 @@ let pack = pack nugetVersionNumber
 let containerize = containerize dockerRepository
 let push = push dockerRepository
 
-Target "CleanAll" (fun _ ->
-  CleanDir buildDir
-  CleanDir ("src" @@ "OrganisationRegistry.UI" @@ "wwwroot")
+Target.create "CleanAll" (fun _ ->
+  Shell.cleanDir buildDir
+  Shell.cleanDir ("src" @@ "OrganisationRegistry.UI" @@ "wwwroot")
 )
 
 // Solution -----------------------------------------------------------------------
 
-Target "Restore_Solution" (fun _ -> restore "OrganisationRegistry")
+Target.create "Restore_Solution" (fun _ -> restore "OrganisationRegistry")
 
-Target "Build_Solution" (fun _ ->
+Target.create "Build_Solution" (fun _ ->
   setVersions "SolutionInfo.cs"
   build "OrganisationRegistry")
 
-Target "Site_Build" (fun _ ->
-  Npm (fun p ->
-    { p with
-        Command = (Run "build")
-    })
+Target.create "Site_Build" (fun _ ->
+  Npm.exec "build" id
 
   let dist = (buildDir @@ "OrganisationRegistry.UI" @@ "linux")
   let source = "src" @@ "OrganisationRegistry.UI"
 
-  CopyDir (dist @@ "wwwroot") (source @@ "wwwroot") (fun _ -> true)
-  CopyFile dist (source @@ "Dockerfile")
-  CopyFile dist (source @@ "default.conf")
-  CopyFile dist (source @@ "config.js")
-  CopyFile dist (source @@ "init.sh")
+  Shell.copyDir (dist @@ "wwwroot") (source @@ "wwwroot") (fun _ -> true)
+  Shell.copyFile dist (source @@ "Dockerfile")
+  Shell.copyFile dist (source @@ "default.conf")
+  Shell.copyFile dist (source @@ "config.js")
+  Shell.copyFile dist (source @@ "init.sh")
 )
 
-Target "Test_Solution" (fun _ -> test "OrganisationRegistry")
+Target.create "Test_Solution" (fun _ -> test "OrganisationRegistry")
 
-Target "Publish_Solution" (fun _ ->
+Target.create "Publish_Solution" (fun _ ->
   [
     "OrganisationRegistry.Api"
     "OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump"
@@ -107,91 +113,97 @@ Target "Publish_Solution" (fun _ ->
   let dist = (buildDir @@ "OrganisationRegistry.Scheduler" @@ "linux")
   let source = "src" @@ "OrganisationRegistry.Scheduler"
 
-  CreateDir dist
-  CopyFile dist (source @@ "Dockerfile")
+  Shell.mkdir dist
+  Shell.copyFile dist (source @@ "Dockerfile")
 )
 
-Target "Pack_Solution" (fun _ ->
+Target.create "Pack_Solution" (fun _ ->
   [
     "OrganisationRegistry.Api"
   ] |> List.iter pack)
 
-Target "Containerize_Api" (fun _ -> containerize "OrganisationRegistry.Api" "api")
-Target "PushContainer_Api" (fun _ -> push "api")
+Target.create "Containerize_Api" (fun _ -> containerize "OrganisationRegistry.Api" "api")
+Target.create "PushContainer_Api" (fun _ -> push "api")
 
-Target "Containerize_AgentschapZorgEnGezondheid" (fun _ -> containerize "OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump" "batch-agentschapzorgengezondheidftpdump")
-Target "PushContainer_AgentschapZorgEnGezondheid" (fun _ -> push "batch-agentschapzorgengezondheidftpdump")
+Target.create "Containerize_AgentschapZorgEnGezondheid" (fun _ -> containerize "OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump" "batch-agentschapzorgengezondheidftpdump")
+Target.create "PushContainer_AgentschapZorgEnGezondheid" (fun _ -> push "batch-agentschapzorgengezondheidftpdump")
 
-Target "Containerize_VlaanderenBeNotifier" (fun _ -> containerize "OrganisationRegistry.VlaanderenBeNotifier" "batch-vlaanderenbe")
-Target "PushContainer_VlaanderenBeNotifier" (fun _ -> push "batch-vlaanderenbe")
+Target.create "Containerize_VlaanderenBeNotifier" (fun _ -> containerize "OrganisationRegistry.VlaanderenBeNotifier" "batch-vlaanderenbe")
+Target.create "PushContainer_VlaanderenBeNotifier" (fun _ -> push "batch-vlaanderenbe")
 
-Target "Containerize_ElasticSearch" (fun _ -> containerize "OrganisationRegistry.ElasticSearch.Projections" "projections-elasticsearch")
-Target "PushContainer_ElasticSearch" (fun _ -> push "projections-elasticsearch")
+Target.create "Containerize_ElasticSearch" (fun _ -> containerize "OrganisationRegistry.ElasticSearch.Projections" "projections-elasticsearch")
+Target.create "PushContainer_ElasticSearch" (fun _ -> push "projections-elasticsearch")
 
-Target "Containerize_Delegations" (fun _ -> containerize "OrganisationRegistry.Projections.Delegations" "projections-delegations")
-Target "PushContainer_Delegations" (fun _ -> push "projections-delegations")
+Target.create "Containerize_Delegations" (fun _ -> containerize "OrganisationRegistry.Projections.Delegations" "projections-delegations")
+Target.create "PushContainer_Delegations" (fun _ -> push "projections-delegations")
 
-Target "Containerize_Reporting" (fun _ -> containerize "OrganisationRegistry.Projections.Reporting" "projections-reporting")
-Target "PushContainer_Reporting" (fun _ -> push "projections-reporting")
+Target.create "Containerize_Reporting" (fun _ -> containerize "OrganisationRegistry.Projections.Reporting" "projections-reporting")
+Target.create "PushContainer_Reporting" (fun _ -> push "projections-reporting")
 
-Target "Containerize_KboMutations" (fun _ -> containerize "OrganisationRegistry.KboMutations" "kbo-mutations")
-Target "PushContainer_KboMutations" (fun _ -> push "kbo-mutations")
+Target.create "Containerize_KboMutations" (fun _ -> containerize "OrganisationRegistry.KboMutations" "kbo-mutations")
+Target.create "PushContainer_KboMutations" (fun _ -> push "kbo-mutations")
 
-Target "Containerize_Site" (fun _ -> containerize "OrganisationRegistry.UI" "ui")
-Target "PushContainer_Site" (fun _ -> push "ui")
+Target.create "Containerize_Site" (fun _ -> containerize "OrganisationRegistry.UI" "ui")
+Target.create "PushContainer_Site" (fun _ -> push "ui")
 
-Target "Containerize_Scheduler" (fun _ -> containerize "OrganisationRegistry.Scheduler" "scheduler")
-Target "PushContainer_Scheduler" (fun _ -> push "scheduler")
+Target.create "Containerize_Scheduler" (fun _ -> containerize "OrganisationRegistry.Scheduler" "scheduler")
+Target.create "PushContainer_Scheduler" (fun _ -> push "scheduler")
 
 // --------------------------------------------------------------------------------
 
-Target "Build" DoNothing
-Target "Test" DoNothing
-Target "Publish" DoNothing
-Target "Pack" DoNothing
-Target "Containerize" DoNothing
-Target "Push" DoNothing
+Target.create "Build" ignore
+Target.create "Test" ignore
+Target.create "Publish" ignore
+Target.create "Pack" ignore
+Target.create "Containerize" ignore
+Target.create "Push" ignore
 
-"NpmInstall"         ==> "Build"
-"DotNetCli"          ==> "Build"
-"CleanAll"           ==> "Build"
-"Restore_Solution"   ==> "Build"
-"Build_Solution"     ==> "Build"
+"NpmInstall"
+ // ==> "DotNetCli"
+  ==> "CleanAll"
+  ==> "Restore_Solution"
+  ==> "Build_Solution"
+  ==> "Build"
 
-"Build"              ==> "Test"
-"Site_Build"         ==> "Test"
-// "Test_Solution"      ==> "Test"
+"Build"
+  ==> "Site_Build"
+  ==> "Test_Solution"
+  ==> "Test"
 
-"Test"               ==> "Publish"
-"Publish_Solution"   ==> "Publish"
+"Test"
+  ==> "Publish_Solution"
+  ==> "Publish"
 
-"Publish"            ==> "Pack"
-"Pack_Solution"      ==> "Pack"
+"Publish"
+  ==> "Pack_Solution"
+  ==> "Pack"
 
-"Pack"                                    ==> "Containerize"
-"Containerize_Api"                        ==> "Containerize"
-"Containerize_AgentschapZorgEnGezondheid" ==> "Containerize"
-"Containerize_VlaanderenBeNotifier"       ==> "Containerize"
-"Containerize_ElasticSearch"              ==> "Containerize"
-"Containerize_Delegations"                ==> "Containerize"
-"Containerize_Reporting"                  ==> "Containerize"
-"Containerize_KboMutations"               ==> "Containerize"
-"Containerize_Site"                       ==> "Containerize"
-"Containerize_Scheduler"                  ==> "Containerize"
+"Pack"
+  ==> "Containerize_Api"
+  ==> "Containerize_AgentschapZorgEnGezondheid"
+  ==> "Containerize_VlaanderenBeNotifier"
+  ==> "Containerize_ElasticSearch"
+  ==> "Containerize_Delegations"
+  ==> "Containerize_Reporting"
+  ==> "Containerize_KboMutations"
+  ==> "Containerize_Site"
+  ==> "Containerize_Scheduler"
+  ==> "Containerize"
 // Possibly add more projects to containerize here
 
-"Containerize"                             ==> "Push"
-"DockerLogin"                              ==> "Push"
-"PushContainer_Api"                        ==> "Push"
-"PushContainer_AgentschapZorgEnGezondheid" ==> "Push"
-"PushContainer_VlaanderenBeNotifier"       ==> "Push"
-"PushContainer_ElasticSearch"              ==> "Push"
-"PushContainer_Delegations"                ==> "Push"
-"PushContainer_Reporting"                  ==> "Push"
-"PushContainer_KboMutations"               ==> "Push"
-"PushContainer_Site"                       ==> "Push"
-"PushContainer_Scheduler"                  ==> "Push"
+"Containerize"
+  ==> "DockerLogin"
+  ==> "PushContainer_Api"
+  ==> "PushContainer_AgentschapZorgEnGezondheid"
+  ==> "PushContainer_VlaanderenBeNotifier"
+  ==> "PushContainer_ElasticSearch"
+  ==> "PushContainer_Delegations"
+  ==> "PushContainer_Reporting"
+  ==> "PushContainer_KboMutations"
+  ==> "PushContainer_Site"
+  ==> "PushContainer_Scheduler"
+  ==> "Push"
 // Possibly add more projects to push here
 
 // By default we build & test
-RunTargetOrDefault "Test"
+Target.runOrDefault "Test"

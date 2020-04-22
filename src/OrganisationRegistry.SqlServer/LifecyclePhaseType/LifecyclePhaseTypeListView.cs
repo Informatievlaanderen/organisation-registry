@@ -3,6 +3,7 @@
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -30,7 +31,7 @@
         {
             b.ToTable(nameof(LifecyclePhaseTypeListView.ProjectionTables.LifecyclePhaseTypeList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Name)
                 .HasMaxLength(NameLength)
@@ -39,7 +40,7 @@
             b.Property(x => x.RepresentsActivePhase);
             b.Property(x => x.IsDefaultPhase);
 
-            b.HasIndex(x => x.Name).IsUnique().ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsUnique().IsClustered();
             b.HasIndex(x => new { x.RepresentsActivePhase, x.IsDefaultPhase });
         }
     }
@@ -60,14 +61,15 @@
 
         public LifecyclePhaseTypeListView(
             ILogger<LifecyclePhaseTypeListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LifecyclePhaseTypeCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LifecyclePhaseTypeCreated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var lifecyclePhaseType = new LifecyclePhaseTypeListItem
                 {
@@ -77,14 +79,14 @@
                     IsDefaultPhase = message.Body.Status == LifecyclePhaseTypeStatus.Default
                 };
 
-                context.LifecyclePhaseTypeList.Add(lifecyclePhaseType);
-                context.SaveChanges();
+                await context.LifecyclePhaseTypeList.AddAsync(lifecyclePhaseType);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LifecyclePhaseTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LifecyclePhaseTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var lifecyclePhaseType = context.LifecyclePhaseTypeList.SingleOrDefault(x => x.Id == message.Body.LifecyclePhaseTypeId);
                 if (lifecyclePhaseType == null)
@@ -93,13 +95,13 @@
                 lifecyclePhaseType.Name = message.Body.Name;
                 lifecyclePhaseType.RepresentsActivePhase = message.Body.LifecyclePhaseTypeIsRepresentativeFor == LifecyclePhaseTypeIsRepresentativeFor.ActivePhase;
                 lifecyclePhaseType.IsDefaultPhase = message.Body.Status == LifecyclePhaseTypeStatus.Default;
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

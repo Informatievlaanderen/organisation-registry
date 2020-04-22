@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Day.Events;
     using Infrastructure;
@@ -34,7 +35,7 @@
         {
             b.ToTable(nameof(FutureActiveOrganisationBuildingListView.ProjectionTables.FutureActiveOrganisationBuildingList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationBuildingId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 
@@ -53,18 +54,16 @@
         IEventHandler<MainBuildingAssignedToOrganisation>,
         IReactionHandler<DayHasPassed>
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
 
         public FutureActiveOrganisationBuildingListView(
             ILogger<FutureActiveOrganisationBuildingListView> logger,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
             IEventStore eventStore,
-            IDateTimeProvider dateTimeProvider
-        ) : base(logger)
+            IDateTimeProvider dateTimeProvider,
+            IContextFactory contextFactory
+        ) : base(logger, contextFactory)
         {
-            _contextFactory = contextFactory;
             _eventStore = eventStore;
             _dateTimeProvider = dateTimeProvider;
         }
@@ -76,19 +75,19 @@
             FutureActiveOrganisationBuildingList
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingAdded> message)
         {
             var validFrom = new ValidFrom(message.Body.ValidFrom);
             if (validFrom.IsInPastOf(_dateTimeProvider.Today, true))
                 return;
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
                 InsertFutureActiveOrganisationBuilding(context, message);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var validFrom = new ValidFrom(message.Body.ValidFrom);
                 if (validFrom.IsInPastOf(_dateTimeProvider.Today, true))
@@ -102,15 +101,15 @@
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainBuildingAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainBuildingAssignedToOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
                 DeleteFutureActiveOrganisationBuilding(context, message.Body.OrganisationBuildingId);
         }
 
-        public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
+        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var contextFutureActiveOrganisationBuildingList = context.FutureActiveOrganisationBuildingList.ToList();
                 return contextFutureActiveOrganisationBuildingList
@@ -122,9 +121,9 @@
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
 
         private static void InsertFutureActiveOrganisationBuilding(

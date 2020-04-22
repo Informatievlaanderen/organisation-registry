@@ -67,7 +67,7 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] AddBodyMandateRequest message)
+        public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] AddBodyMandateRequest message)
         {
             var internalMessage = new AddBodyMandateInternalRequest(bodyId, message);
 
@@ -83,13 +83,13 @@
             switch (internalMessage.Body.BodyMandateType.Value)
             {
                 case BodyMandateType.Person:
-                    CommandSender.Send(AddBodyMandateRequestMapping.MapForPerson(internalMessage));
+                    await CommandSender.Send(AddBodyMandateRequestMapping.MapForPerson(internalMessage));
                     break;
                 case BodyMandateType.FunctionType:
-                    CommandSender.Send(AddBodyMandateRequestMapping.MapForFunctionType(internalMessage));
+                    await CommandSender.Send(AddBodyMandateRequestMapping.MapForFunctionType(internalMessage));
                     break;
                 case BodyMandateType.Organisation:
-                    CommandSender.Send(AddBodyMandateRequestMapping.MapForOrganisation(internalMessage));
+                    await CommandSender.Send(AddBodyMandateRequestMapping.MapForOrganisation(internalMessage));
                     break;
             }
 
@@ -103,7 +103,7 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] UpdateBodyMandateRequest message)
+        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] UpdateBodyMandateRequest message)
         {
             var internalMessage = new UpdateBodyMandateInternalRequest(bodyId, message);
 
@@ -119,13 +119,13 @@
             switch (internalMessage.Body.BodyMandateType.Value)
             {
                 case BodyMandateType.Person:
-                    CommandSender.Send(UpdateBodyMandateRequestMapping.MapForPerson(internalMessage));
+                    await CommandSender.Send(UpdateBodyMandateRequestMapping.MapForPerson(internalMessage));
                     break;
                 case BodyMandateType.FunctionType:
-                    CommandSender.Send(UpdateBodyMandateRequestMapping.MapForFunctionType(internalMessage));
+                    await CommandSender.Send(UpdateBodyMandateRequestMapping.MapForFunctionType(internalMessage));
                     break;
                 case BodyMandateType.Organisation:
-                    CommandSender.Send(UpdateBodyMandateRequestMapping.MapForOrganisation(internalMessage));
+                    await CommandSender.Send(UpdateBodyMandateRequestMapping.MapForOrganisation(internalMessage));
                     break;
             }
 

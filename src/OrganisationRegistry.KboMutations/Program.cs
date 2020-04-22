@@ -84,8 +84,9 @@ namespace OrganisationRegistry.KboMutations
                     TableName = kboMutationsConfiguration.LockTableName,
                     LeasePeriod = TimeSpan.FromMinutes(kboMutationsConfiguration.LockLeasePeriodInMinutes),
                     ThrowOnFailedRenew = true,
-                    TerminateApplicationOnFailedRenew = true
-                });
+                    TerminateApplicationOnFailedRenew = true,
+                    Enabled = kboMutationsConfiguration.LockEnabled
+                }, logger);
 
             var acquiredLock = false;
             try

@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Day.Events;
     using Infrastructure;
@@ -34,7 +35,7 @@
         {
             b.ToTable(nameof(ActiveOrganisationBuildingListView.ProjectionTables.ActiveOrganisationBuildingList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationBuildingId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 
@@ -54,23 +55,20 @@
         IEventHandler<MainBuildingClearedFromOrganisation>,
         IReactionHandler<DayHasPassed>
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
         private readonly Dictionary<Guid, ValidTo> _endDatePerOrganisationBuildingId;
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
-
         public ActiveOrganisationBuildingListView(
             ILogger<ActiveOrganisationBuildingListView> logger,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
             IEventStore eventStore,
-            IDateTimeProvider dateTimeProvider
-        ) : base(logger)
+            IDateTimeProvider dateTimeProvider,
+            IContextFactory contextFactory
+        ) : base(logger, contextFactory)
         {
-            _contextFactory = contextFactory;
             _eventStore = eventStore;
             _dateTimeProvider = dateTimeProvider;
 
-            using (var context = contextFactory().Value)
+            using (var context = contextFactory.Create())
             {
                 _endDatePerOrganisationBuildingId =
                     context.OrganisationBuildingList
@@ -88,14 +86,14 @@
             ActiveOrganisationBuildingList
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingAdded> message)
         {
             // cache ValidTo for the OrganisationBuildingId,
             // because we will need it when MainBuildingAssignedToOrganisation is published, which does not contain the ValidTo.
             _endDatePerOrganisationBuildingId.UpdateMemoryCache(message.Body.OrganisationBuildingId, new ValidTo(message.Body.ValidTo));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingUpdated> message)
         {
             // cache ValidTo for the OrganisationFormalFrameworkId,
             // because we will need it when FormalFrameworkAssignedToOrganisation is published, which does not contain the ValidTo.
@@ -105,7 +103,7 @@
             if (validTo.IsInPastOf(_dateTimeProvider.Today))
                 return;
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var activeOrganisationBuilding =
                     context.ActiveOrganisationBuildingList.SingleOrDefault(item => item.OrganisationBuildingId == message.Body.OrganisationBuildingId);
@@ -118,11 +116,11 @@
                 activeOrganisationBuilding.BuildingId = message.Body.BuildingId;
                 activeOrganisationBuilding.ValidTo = validTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainBuildingAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainBuildingAssignedToOrganisation> message)
         {
             var validTo = _endDatePerOrganisationBuildingId[message.Body.OrganisationBuildingId];
 
@@ -137,16 +135,16 @@
                 ValidTo = _endDatePerOrganisationBuildingId[message.Body.OrganisationBuildingId]
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.ActiveOrganisationBuildingList.Add(activeOrganisationBuildingListItem);
-                context.SaveChanges();
+                await context.ActiveOrganisationBuildingList.AddAsync(activeOrganisationBuildingListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainBuildingClearedFromOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainBuildingClearedFromOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var activeOrganisationBuildingListItem =
                     context.ActiveOrganisationBuildingList
@@ -159,13 +157,13 @@
 
                 context.ActiveOrganisationBuildingList.Remove(activeOrganisationBuildingListItem);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
+        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 return context.ActiveOrganisationBuildingList
                     .Where(item => item.ValidTo.HasValue)
@@ -176,9 +174,9 @@
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

@@ -9,6 +9,7 @@
     using OrganisationRegistry.Body.Events;
 
     using System.Linq;
+    using System.Threading.Tasks;
     using FormalFramework;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.FormalFramework.Events;
@@ -31,7 +32,7 @@
         {
             b.ToTable(nameof(BodyFormalFrameworkListView.ProjectionTables.BodyFormalFrameworkList), "OrganisationRegistry")
                 .HasKey(p => p.BodyFormalFrameworkId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.BodyId).IsRequired();
 
@@ -41,7 +42,7 @@
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.FormalFrameworkName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.FormalFrameworkName).IsClustered();
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
         }
@@ -64,14 +65,15 @@
 
         public BodyFormalFrameworkListView(
             ILogger<BodyFormalFrameworkListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyFormalFrameworks = context.BodyFormalFrameworkList.Where(x => x.FormalFrameworkId == message.Body.FormalFrameworkId);
                 if (!bodyFormalFrameworks.Any())
@@ -80,11 +82,11 @@
                 foreach (var bodyFormalFramework in bodyFormalFrameworks)
                     bodyFormalFramework.FormalFrameworkName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkAdded> message)
         {
             var bodyFormalFrameworkListItem = new BodyFormalFrameworkListItem
             {
@@ -96,16 +98,16 @@
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.BodyFormalFrameworkList.Add(bodyFormalFrameworkListItem);
-                context.SaveChanges();
+                await context.BodyFormalFrameworkList.AddAsync(bodyFormalFrameworkListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyFormalFramework = context.BodyFormalFrameworkList.SingleOrDefault(item => item.BodyFormalFrameworkId == message.Body.BodyFormalFrameworkId);
 
@@ -116,13 +118,13 @@
                 bodyFormalFramework.ValidFrom = message.Body.ValidFrom;
                 bodyFormalFramework.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

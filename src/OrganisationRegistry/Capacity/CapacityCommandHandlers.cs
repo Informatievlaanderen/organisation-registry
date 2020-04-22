@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.Capacity
 {
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -20,24 +21,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public void Handle(CreateCapacity message)
+        public async Task Handle(CreateCapacity message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
                 throw new NameNotUniqueException();
 
             var capacity = new Capacity(message.CapacityId, message.Name);
             Session.Add(capacity);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateCapacity message)
+        public async Task Handle(UpdateCapacity message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.CapacityId, message.Name))
                 throw new NameNotUniqueException();
 
             var capacity = Session.Get<Capacity>(message.CapacityId);
             capacity.Update(message.Name);
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

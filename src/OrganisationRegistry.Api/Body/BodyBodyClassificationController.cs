@@ -66,7 +66,7 @@ namespace OrganisationRegistry.Api.Body
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] AddBodyBodyClassificationRequest message)
+        public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] AddBodyBodyClassificationRequest message)
         {
             var internalMessage = new AddBodyBodyClassificationInternalRequest(bodyId, message);
 
@@ -76,7 +76,7 @@ namespace OrganisationRegistry.Api.Body
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(AddBodyBodyClassificationRequestMapping.Map(internalMessage));
+            await CommandSender.Send(AddBodyBodyClassificationRequestMapping.Map(internalMessage));
 
             return Created(Url.Action(nameof(Get), new { id = message.BodyBodyClassificationId }), null);
         }
@@ -88,7 +88,7 @@ namespace OrganisationRegistry.Api.Body
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] UpdateBodyBodyClassificationRequest message)
+        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] UpdateBodyBodyClassificationRequest message)
         {
             var internalMessage = new UpdateBodyBodyClassificationInternalRequest(bodyId, message);
 
@@ -98,7 +98,7 @@ namespace OrganisationRegistry.Api.Body
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateBodyBodyClassificationRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateBodyBodyClassificationRequestMapping.Map(internalMessage));
 
             return Ok();
         }

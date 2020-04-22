@@ -3,6 +3,7 @@ namespace OrganisationRegistry.SqlServer.FormalFramework
     using System;
     using System.Linq;
     using System.Data.Common;
+    using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Infrastructure;
@@ -34,7 +35,7 @@ namespace OrganisationRegistry.SqlServer.FormalFramework
         {
             b.ToTable(nameof(FormalFrameworkListView.ProjectionTables.FormalFrameworkList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Name)
                 .HasMaxLength(NameLength)
@@ -51,7 +52,7 @@ namespace OrganisationRegistry.SqlServer.FormalFramework
                 .HasMaxLength(FormalFrameworkCategoryNameLength)
                 .IsRequired();
 
-            b.HasIndex(x => x.Name).ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsClustered();
             b.HasIndex(x => x.Code);
             b.HasIndex(x => x.FormalFrameworkCategoryName);
 
@@ -73,15 +74,15 @@ namespace OrganisationRegistry.SqlServer.FormalFramework
         }
 
         private readonly IEventStore _eventStore;
-
         public FormalFrameworkListView(
             ILogger<FormalFrameworkListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkCreated> message)
         {
             var formalFramework = new FormalFrameworkListItem
             {
@@ -92,16 +93,16 @@ namespace OrganisationRegistry.SqlServer.FormalFramework
                 FormalFrameworkCategoryName = message.Body.FormalFrameworkCategoryName
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.FormalFrameworkList.Add(formalFramework);
-                context.SaveChanges();
+                await context.FormalFrameworkList.AddAsync(formalFramework);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var formalFramework = context.FormalFrameworkList.SingleOrDefault(x => x.Id == message.Body.FormalFrameworkId);
                 if (formalFramework == null)
@@ -112,13 +113,13 @@ namespace OrganisationRegistry.SqlServer.FormalFramework
                 formalFramework.FormalFrameworkCategoryId = message.Body.FormalFrameworkCategoryId;
                 formalFramework.FormalFrameworkCategoryName = message.Body.FormalFrameworkCategoryName;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkCategoryUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkCategoryUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var formalFrameworks = context.FormalFrameworkList.Where(x => x.FormalFrameworkCategoryId == message.Body.FormalFrameworkCategoryId);
                 if (!formalFrameworks.Any())
@@ -127,13 +128,13 @@ namespace OrganisationRegistry.SqlServer.FormalFramework
                 foreach (var formalFramework in formalFrameworks)
                     formalFramework.FormalFrameworkCategoryName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

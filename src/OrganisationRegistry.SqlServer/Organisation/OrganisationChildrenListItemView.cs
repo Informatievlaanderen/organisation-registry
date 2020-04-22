@@ -3,6 +3,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -36,7 +37,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             b.ToTable(nameof(OrganisationChildListView.ProjectionTables.OrganisationChildList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationOrganisationParentId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.Id).IsRequired();
 
@@ -52,7 +53,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             b.Property(p => p.OrganisationValidFrom);
             b.Property(p => p.OrganisationValidTo);
 
-            b.HasIndex(x => x.Name).ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsClustered();
             b.HasIndex(x => x.OvoNumber);
 
             b.HasIndex(x => x.ValidFrom);
@@ -78,20 +79,19 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         private readonly IEventStore _eventStore;
         private readonly IMemoryCaches _memoryCaches;
-
         public OrganisationChildListView(
             ILogger<OrganisationChildListView> logger,
             IEventStore eventStore,
-            IMemoryCaches memoryCaches) : base(logger)
+            IMemoryCaches memoryCaches,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
             _memoryCaches = memoryCaches;
-
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisations = context.OrganisationChildrenList.Where(x => x.Id == message.Body.OrganisationId);
                 if (!organisations.Any())
@@ -105,13 +105,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     organisation.OrganisationValidTo = message.Body.ValidTo;
                 }
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisations = context.OrganisationChildrenList.Where(x => x.Id == message.Body.OrganisationId);
                 if (!organisations.Any())
@@ -122,11 +122,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     organisation.Name = message.Body.Name;
                 }
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationParentAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationParentAdded> message)
         {
             var organisationParentListItem = new OrganisationChildListItem
             {
@@ -141,16 +141,16 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 OrganisationValidTo = _memoryCaches.OrganisationValidTos[message.Body.OrganisationId]
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationChildrenList.Add(organisationParentListItem);
-                context.SaveChanges();
+                await context.OrganisationChildrenList.AddAsync(organisationParentListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationParentUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationParentUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var key = context.OrganisationChildrenList.SingleOrDefault(item => item.OrganisationOrganisationParentId == message.Body.OrganisationOrganisationParentId);
 
@@ -164,13 +164,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 key.OrganisationValidFrom = _memoryCaches.OrganisationValidFroms[message.Body.OrganisationId];
                 key.OrganisationValidTo = _memoryCaches.OrganisationValidTos[message.Body.OrganisationId];
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

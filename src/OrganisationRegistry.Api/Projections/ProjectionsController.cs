@@ -31,7 +31,7 @@ namespace OrganisationRegistry.Api.Projections
         [HttpGet]
         [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
         [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             var projections = typeof(OrganisationRegistrySqlServerAssemblyTokenClass)
                 .GetTypeInfo()

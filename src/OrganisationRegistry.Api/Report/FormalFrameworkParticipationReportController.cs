@@ -4,6 +4,7 @@ namespace OrganisationRegistry.Api.Report
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
+    using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
@@ -32,7 +33,7 @@ namespace OrganisationRegistry.Api.Report
         [ProducesResponseType(typeof(IEnumerable<FormalFrameworkParticipation>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult GetFormalFrameworkParticipation(
+        public async Task<IActionResult> GetFormalFrameworkParticipation(
             [FromServices] OrganisationRegistryContext context,
             [FromRoute] Guid formalFrameworkId)
         {

@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.KeyTypes
 {
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -20,24 +21,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public void Handle(CreateKeyType message)
+        public async Task Handle(CreateKeyType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
                 throw new NameNotUniqueException();
 
             var keyType = new KeyType(message.KeyTypeId, message.Name);
             Session.Add(keyType);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateKeyType message)
+        public async Task Handle(UpdateKeyType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.KeyTypeId, message.Name))
                 throw new NameNotUniqueException();
 
             var keyType = Session.Get<KeyType>(message.KeyTypeId);
             keyType.Update(message.Name);
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

@@ -88,8 +88,9 @@ namespace OrganisationRegistry.Projections.Delegations
                     TableName = delegationsRunnerOptions.LockTableName,
                     LeasePeriod = TimeSpan.FromMinutes(delegationsRunnerOptions.LockLeasePeriodInMinutes),
                     ThrowOnFailedRenew = true,
-                    TerminateApplicationOnFailedRenew = true
-                });
+                    TerminateApplicationOnFailedRenew = true,
+                    Enabled = delegationsRunnerOptions.LockEnabled
+                }, logger);
 
             bool acquiredLock = false;
             try

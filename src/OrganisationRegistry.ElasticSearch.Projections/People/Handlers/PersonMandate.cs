@@ -4,6 +4,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Cache;
     using Client;
@@ -48,7 +49,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         }
 
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonToBodySeat> message)
         {
             var personDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PersonId).ThrowOnFailure().Source);
 
@@ -83,7 +84,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(personDocument).ThrowOnFailure());
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedPersonToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedPersonToBodySeat> message)
         {
             // If previous exists and current is different, we need to delete and add
             if (message.Body.PreviousPersonId != message.Body.PersonId)
@@ -135,7 +136,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(personDocument).ThrowOnFailure());
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
         {
             // Update all which use this type, and put the changeId on them too!
             _elastic.Try(() => _elastic.WriteClient
@@ -147,7 +148,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     message.Timestamp));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
             _elastic.Try(() => _elastic.WriteClient
                 .MassUpdatePerson(
@@ -166,7 +167,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     message.Timestamp));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
         {
             _elastic.Try(() => _elastic.WriteClient
                 .MassUpdatePerson(
@@ -185,12 +186,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     message.Timestamp));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
             MassUpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             MassUpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
         }
@@ -207,7 +208,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     timestamp));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
         {
             var personDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PersonId).ThrowOnFailure().Source);
 
@@ -242,7 +243,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(personDocument).ThrowOnFailure());
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
         {
                         // If previous exists and current is different, we need to delete and add
             if (message.Body.PreviousPersonId != message.Body.PersonId)
@@ -294,7 +295,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(personDocument).ThrowOnFailure());
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
         {
             var previousPersonDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PreviousPersonId).ThrowOnFailure().Source);
 
@@ -316,7 +317,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                 x.DelegationAssignmentId == delegationAssignmentId);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
             _elastic.Try(() => _elastic.WriteClient
                 .MassUpdatePerson(
@@ -335,7 +336,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     message.Timestamp));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
             _elastic.Try(() => _elastic.WriteClient
                 .MassUpdatePerson(

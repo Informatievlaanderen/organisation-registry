@@ -15,10 +15,6 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
         private readonly DateTime _yesterday = DateTime.Today.AddDays(-1);
         private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
 
-        public OrganisationFormalFrameworkListViewTests(SqlServerFixture fixture) : base(fixture)
-        {
-        }
-
         [Fact]
         public void WhenAssigningAFormalFramework()
         {

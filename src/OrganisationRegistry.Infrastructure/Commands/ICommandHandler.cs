@@ -1,9 +1,10 @@
 ﻿namespace OrganisationRegistry.Infrastructure.Commands
 {
+    using System.Threading.Tasks;
     using Messages;
 
     public interface ICommandHandler<in T> : IHandler<T> where T : ICommand
     {
-        void Handle(T message);
+        Task Handle(T message);
     }
 }

@@ -98,12 +98,12 @@ namespace OrganisationRegistry.Api.FormalFramework
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromBody] CreateFormalFrameworkRequest message)
+        public async Task<IActionResult> Post([FromBody] CreateFormalFrameworkRequest message)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            CommandSender.Send(CreateFormalFrameworkRequestMapping.Map(message));
+            await CommandSender.Send(CreateFormalFrameworkRequestMapping.Map(message));
 
             return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
         }
@@ -115,14 +115,14 @@ namespace OrganisationRegistry.Api.FormalFramework
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromRoute] Guid id, [FromBody] UpdateFormalFrameworkRequest message)
+        public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateFormalFrameworkRequest message)
         {
             var internalMessage = new UpdateFormalFrameworkInternalRequest(id, message);
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateFormalFrameworkRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateFormalFrameworkRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.FormalFrameworkId }));
         }

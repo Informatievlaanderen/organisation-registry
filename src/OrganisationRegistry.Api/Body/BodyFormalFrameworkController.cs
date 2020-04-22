@@ -66,7 +66,7 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] AddBodyFormalFrameworkRequest message)
+        public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] AddBodyFormalFrameworkRequest message)
         {
             var internalMessage = new AddBodyFormalFrameworkInternalRequest(bodyId, message);
 
@@ -76,7 +76,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(AddBodyFormalFrameworkRequestMapping.Map(internalMessage));
+            await CommandSender.Send(AddBodyFormalFrameworkRequestMapping.Map(internalMessage));
 
             return Created(Url.Action(nameof(Get), new { id = message.BodyFormalFrameworkId }), null);
         }
@@ -88,7 +88,7 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] UpdateBodyFormalFrameworkRequest message)
+        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] UpdateBodyFormalFrameworkRequest message)
         {
             var internalMessage = new UpdateBodyFormalFrameworkInternalRequest(bodyId, message);
 
@@ -98,7 +98,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateBodyFormalFrameworkRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateBodyFormalFrameworkRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.BodyId }));
         }

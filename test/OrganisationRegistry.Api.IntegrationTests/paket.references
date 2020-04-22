@@ -6,7 +6,6 @@ Microsoft.AspNetCore.TestHost
 Microsoft.Extensions.Options.ConfigurationExtensions
 
 Newtonsoft.Json
-Destructurama.JsonNet
 
 Serilog
 Serilog.Extensions.Logging

@@ -10,6 +10,7 @@
     using OrganisationRegistry.Organisation.Events;
 
     using System.Linq;
+    using System.Threading.Tasks;
     using FunctionType;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
@@ -40,7 +41,7 @@
         {
             b.ToTable(nameof(OrganisationFunctionListView.ProjectionTables.OrganisationFunctionList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationFunctionId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 
@@ -55,7 +56,7 @@
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.PersonName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.PersonName).IsClustered();
             b.HasIndex(x => x.FunctionName);
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
@@ -77,17 +78,17 @@
         }
 
         private readonly IEventStore _eventStore;
-
         public OrganisationFunctionListView(
             ILogger<OrganisationFunctionListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationFunctions = context.OrganisationFunctionList.Where(x => x.FunctionId == message.Body.FunctionId);
                 if (!organisationFunctions.Any())
@@ -96,13 +97,13 @@
                 foreach (var organisationFunction in organisationFunctions)
                     organisationFunction.FunctionName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationFunctions = context.OrganisationFunctionList.Where(x => x.PersonId == message.Body.PersonId);
                 if (!organisationFunctions.Any())
@@ -111,11 +112,11 @@
                 foreach (var organisationFunction in organisationFunctions)
                     organisationFunction.PersonName = $"{message.Body.FirstName} {message.Body.Name}";
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionAdded> message)
         {
             var organisationFunctionListItem = new OrganisationFunctionListItem
             {
@@ -130,16 +131,16 @@
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationFunctionList.Add(organisationFunctionListItem);
-                context.SaveChanges();
+                await context.OrganisationFunctionList.AddAsync(organisationFunctionListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var key = context.OrganisationFunctionList.SingleOrDefault(item => item.OrganisationFunctionId == message.Body.OrganisationFunctionId);
 
@@ -153,13 +154,13 @@
                 key.ValidFrom = message.Body.ValidFrom;
                 key.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

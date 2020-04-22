@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Day.Events;
     using Infrastructure;
@@ -34,7 +35,7 @@
         {
             b.ToTable(nameof(ActiveOrganisationLocationListView.ProjectionTables.ActiveOrganisationLocationList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationLocationId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 
@@ -54,23 +55,19 @@
         IEventHandler<MainLocationClearedFromOrganisation>,
         IReactionHandler<DayHasPassed>
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
         private readonly Dictionary<Guid, ValidTo> _endDatePerOrganisationLocationId;
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
-
         public ActiveOrganisationLocationListView(
             ILogger<ActiveOrganisationLocationListView> logger,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
             IEventStore eventStore,
-            IDateTimeProvider dateTimeProvider
-        ) : base(logger)
+            IDateTimeProvider dateTimeProvider,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
-            _contextFactory = contextFactory;
             _eventStore = eventStore;
             _dateTimeProvider = dateTimeProvider;
 
-            using (var context = contextFactory().Value)
+            using (var context = contextFactory.Create())
             {
                 _endDatePerOrganisationLocationId =
                     context.OrganisationLocationList
@@ -88,14 +85,14 @@
             ActiveOrganisationLocationList
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationAdded> message)
         {
             // cache ValidTo for the OrganisationLocationId,
             // because we will need it when MainLocationAssignedToOrganisation is published, which does not contain the ValidTo.
             _endDatePerOrganisationLocationId.UpdateMemoryCache(message.Body.OrganisationLocationId, new ValidTo(message.Body.ValidTo));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationUpdated> message)
         {
             // cache ValidTo for the OrganisationFormalFrameworkId,
             // because we will need it when FormalFrameworkAssignedToOrganisation is published, which does not contain the ValidTo.
@@ -105,7 +102,7 @@
             if (validTo.IsInPastOf(_dateTimeProvider.Today))
                 return;
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var activeOrganisationLocation =
                     context.ActiveOrganisationLocationList.SingleOrDefault(item => item.OrganisationLocationId == message.Body.OrganisationLocationId);
@@ -118,11 +115,11 @@
                 activeOrganisationLocation.LocationId = message.Body.LocationId;
                 activeOrganisationLocation.ValidTo = validTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainLocationAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainLocationAssignedToOrganisation> message)
         {
             var validTo = _endDatePerOrganisationLocationId[message.Body.OrganisationLocationId];
 
@@ -137,16 +134,16 @@
                 ValidTo = _endDatePerOrganisationLocationId[message.Body.OrganisationLocationId]
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.ActiveOrganisationLocationList.Add(activeOrganisationLocationListItem);
-                context.SaveChanges();
+                await context.ActiveOrganisationLocationList.AddAsync(activeOrganisationLocationListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainLocationClearedFromOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainLocationClearedFromOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var activeOrganisationLocationListItem =
                     context.ActiveOrganisationLocationList.SingleOrDefault(item =>
@@ -158,13 +155,13 @@
 
                 context.ActiveOrganisationLocationList.Remove(activeOrganisationLocationListItem);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
+        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 return context.ActiveOrganisationLocationList
                     .Where(item => item.ValidTo.HasValue)
@@ -175,9 +172,9 @@
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

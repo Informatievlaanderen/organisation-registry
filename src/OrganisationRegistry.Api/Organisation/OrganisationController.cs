@@ -101,10 +101,10 @@ namespace OrganisationRegistry.Api.Organisation
 
             if (!string.IsNullOrWhiteSpace(message.KboNumber))
             {
-                CommandSender.Send(CreateOrganisationRequestMapping.MapToCreateKboOrganisation(message, User));
+                await CommandSender.Send(CreateOrganisationRequestMapping.MapToCreateKboOrganisation(message, User));
             }
             else
-                CommandSender.Send(CreateOrganisationRequestMapping.Map(message));
+                await CommandSender.Send(CreateOrganisationRequestMapping.Map(message));
 
             return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
         }
@@ -116,7 +116,7 @@ namespace OrganisationRegistry.Api.Organisation
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromServices] ISecurityService securityService, [FromRoute] Guid id, [FromBody] UpdateOrganisationInfoRequest message)
+        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid id, [FromBody] UpdateOrganisationInfoRequest message)
         {
             var internalMessage = new UpdateOrganisationInfoInternalRequest(id, message);
 
@@ -126,7 +126,7 @@ namespace OrganisationRegistry.Api.Organisation
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateOrganisationInfoRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateOrganisationInfoRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.OrganisationId }));
         }
@@ -136,7 +136,7 @@ namespace OrganisationRegistry.Api.Organisation
         [HttpPut("{id}/kboNumber/{kboNumber}")]
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        public IActionResult CoupleToKboNumber(
+        public async Task<IActionResult> CoupleToKboNumber(
             [FromServices] ISecurityService securityService,
             [FromRoute] Guid id,
             [FromRoute] string kboNumber)
@@ -144,7 +144,7 @@ namespace OrganisationRegistry.Api.Organisation
             if (!securityService.CanEditOrganisation(User, id))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
-            CommandSender.Send(
+            await CommandSender.Send(
                 new CoupleOrganisationToKbo(
                     new OrganisationId(id),
                     new KboNumber(kboNumber),

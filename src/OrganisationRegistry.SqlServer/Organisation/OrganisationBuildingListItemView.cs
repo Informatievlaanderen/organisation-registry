@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
     using System.Data.Common;
+    using System.Threading.Tasks;
     using Building;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -45,7 +46,7 @@
         {
             b.ToTable(nameof(OrganisationBuildingListView.ProjectionTables.OrganisationBuildingList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationBuildingId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 
@@ -57,7 +58,7 @@
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.BuildingName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.BuildingName).IsClustered();
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
             b.HasIndex(x => x.IsMainBuilding);
@@ -81,14 +82,15 @@
 
         public OrganisationBuildingListView(
             ILogger<OrganisationBuildingListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BuildingUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BuildingUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationBuildings = context.OrganisationBuildingList.Where(x => x.BuildingId == message.Body.BuildingId);
                 if (!organisationBuildings.Any())
@@ -97,11 +99,11 @@
                 foreach (var organisationBuilding in organisationBuildings)
                     organisationBuilding.BuildingName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingAdded> message)
         {
             var organisationBuildingListItem = new OrganisationBuildingListItem(
                 message.Body.OrganisationBuildingId,
@@ -112,16 +114,16 @@
                 message.Body.ValidFrom,
                 message.Body.ValidTo);
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationBuildingList.Add(organisationBuildingListItem);
-                context.SaveChanges();
+                await context.OrganisationBuildingList.AddAsync(organisationBuildingListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationBuildingListItem = context.OrganisationBuildingList.Single(b => b.OrganisationBuildingId == message.Body.OrganisationBuildingId);
 
@@ -131,13 +133,13 @@
                 organisationBuildingListItem.ValidFrom = message.Body.ValidFrom;
                 organisationBuildingListItem.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

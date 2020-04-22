@@ -5,6 +5,7 @@
     <ProjectReference Include="..\..\src\OrganisationRegistry.SqlServer\OrganisationRegistry.SqlServer.csproj" />
     <ProjectReference Include="..\..\src\OrganisationRegistry.Api\OrganisationRegistry.Api.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.Tests.Shared\OrganisationRegistry.Tests.Shared.csproj" />
+    <ProjectReference Include="..\OrganisationRegistry.UnitTests\OrganisationRegistry.UnitTests.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers
 {
     using System;
+    using System.Threading.Tasks;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Domain;
     using Xunit.Abstractions;
@@ -12,11 +13,11 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
     {
         protected Exception Exception { get; set; }
 
-        protected override void HandleEvents()
+        protected override async Task HandleEvents()
         {
             try
             {
-                base.HandleEvents();
+                await base.HandleEvents();
             }
             catch (Exception ex)
             {

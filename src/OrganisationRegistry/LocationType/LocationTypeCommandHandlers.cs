@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.LocationType
 {
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -20,24 +21,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public void Handle(CreateLocationType message)
+        public async Task Handle(CreateLocationType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
                 throw new NameNotUniqueException();
 
             var locationType = new LocationType(message.LocationTypeId, message.Name);
             Session.Add(locationType);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateLocationType message)
+        public async Task Handle(UpdateLocationType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.LocationTypeId, message.Name))
                 throw new NameNotUniqueException();
 
             var locationType = Session.Get<LocationType>(message.LocationTypeId);
             locationType.Update(message.Name);
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

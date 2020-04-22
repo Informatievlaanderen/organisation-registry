@@ -69,12 +69,12 @@
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromBody] CreateLabelTypeRequest message)
+        public async Task<IActionResult> Post([FromBody] CreateLabelTypeRequest message)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            CommandSender.Send(CreateLabelTypeRequestMapping.Map(message));
+            await CommandSender.Send(CreateLabelTypeRequestMapping.Map(message));
 
             return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
         }
@@ -86,14 +86,14 @@
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromRoute] Guid id, [FromBody] UpdateLabelTypeRequest message)
+        public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateLabelTypeRequest message)
         {
             var internalMessage = new UpdateLabelTypeInternalRequest(id, message);
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateLabelTypeRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateLabelTypeRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.LabelTypeId }));
         }

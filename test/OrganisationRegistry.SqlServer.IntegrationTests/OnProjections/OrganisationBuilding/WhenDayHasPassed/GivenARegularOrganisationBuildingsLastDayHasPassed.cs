@@ -2,9 +2,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
 {
     using System;
     using System.Collections.Generic;
-    using Autofac.Features.OwnedInstances;
     using Day.Events;
-    using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Moq;
     using Organisation.ScheduledActions.Building;
@@ -19,17 +17,17 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
     public class GivenARegularOrganisationBuildingsLastDayHasPassed : ReactionCommandsTestBase<ActiveOrganisationBuildingListView, DayHasPassed>
     {
         private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
-        public GivenARegularOrganisationBuildingsLastDayHasPassed(SqlServerFixture fixture) : base(fixture)
+        public GivenARegularOrganisationBuildingsLastDayHasPassed(SqlServerFixture fixture) : base()
         {
         }
 
-        protected override ActiveOrganisationBuildingListView BuildReactionHandler()
+        protected override ActiveOrganisationBuildingListView BuildReactionHandler(IContextFactory contextFactory)
         {
             return new ActiveOrganisationBuildingListView(
                 new Mock<ILogger<ActiveOrganisationBuildingListView>>().Object,
-                () => new Owned<OrganisationRegistryContext>(new OrganisationRegistryTransactionalContext(SqlConnection, Transaction), this),
                 null,
-                new DateTimeProvider());
+                new DateTimeProvider(),
+                contextFactory);
         }
 
         protected override IEnumerable<IEvent> Given()

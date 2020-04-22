@@ -3,6 +3,7 @@ namespace OrganisationRegistry.SqlServer.Body
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.EntityFrameworkCore;
     using Infrastructure;
@@ -15,7 +16,7 @@ namespace OrganisationRegistry.SqlServer.Body
     {
         public Guid Id { get; set; }
 
-        public string BodyNumber { get; set; }
+        public string? BodyNumber { get; set; }
 
         public string Name { get; set; }
         public string ShortName { get; set; }
@@ -24,14 +25,14 @@ namespace OrganisationRegistry.SqlServer.Body
         public DateTime? FormalValidFrom { get; set; }
         public DateTime? FormalValidTo { get; set; }
 
-        public string Organisation { get; set; }
+        public string? Organisation { get; set; }
         public Guid? OrganisationId { get; set; }
 
         public bool IsLifecycleValid { get; set; }
 
         public bool IsBalancedParticipationObligatory { get; set; }
-        public string BalancedParticipationExtraRemark { get; set; }
-        public string BalancedParticipationExceptionMeasure { get; set; }
+        public string? BalancedParticipationExtraRemark { get; set; }
+        public string? BalancedParticipationExceptionMeasure { get; set; }
     }
 
     public class BodyDetailConfiguration : EntityMappingConfiguration<BodyDetail>
@@ -40,7 +41,7 @@ namespace OrganisationRegistry.SqlServer.Body
         {
             b.ToTable(nameof(BodyDetailView.ProjectionTables.BodyDetail), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.BodyNumber)
                 .HasMaxLength(BodyListConfiguration.BodyNumberLength);
@@ -64,7 +65,7 @@ namespace OrganisationRegistry.SqlServer.Body
             b.Property(p => p.BalancedParticipationExtraRemark);
             b.Property(p => p.BalancedParticipationExceptionMeasure);
 
-            b.HasIndex(x => x.Name).ForSqlServerIsClustered();
+            b.HasIndex(x => x.Name).IsClustered();
             b.HasIndex(x => x.ShortName);
             b.HasIndex(x => x.FormalValidFrom);
             b.HasIndex(x => x.FormalValidTo);
@@ -93,15 +94,15 @@ namespace OrganisationRegistry.SqlServer.Body
         }
 
         private readonly IEventStore _eventStore;
-
         public BodyDetailView(
             ILogger<BodyDetailView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyRegistered> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyRegistered> message)
         {
             var bodyDetailItem = new BodyDetail
             {
@@ -114,67 +115,67 @@ namespace OrganisationRegistry.SqlServer.Body
                 FormalValidTo = message.Body.FormalValidTo,
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.BodyDetail.Add(bodyDetailItem);
-                context.SaveChanges();
+                await context.BodyDetail.AddAsync(bodyDetailItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyNumberAssigned> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyNumberAssigned> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
                 bodyDetailItem.BodyNumber = message.Body.BodyNumber;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
                 bodyDetailItem.OrganisationId = message.Body.OrganisationId;
                 bodyDetailItem.Organisation = message.Body.OrganisationName;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
                 bodyDetailItem.OrganisationId = null;
                 bodyDetailItem.Organisation = null;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
                 bodyDetailItem.OrganisationId = message.Body.OrganisationId;
                 bodyDetailItem.Organisation = message.Body.OrganisationName;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
@@ -182,50 +183,50 @@ namespace OrganisationRegistry.SqlServer.Body
                 bodyDetailItem.ShortName = message.Body.ShortName;
                 bodyDetailItem.Description = message.Body.Description;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalValidityChanged> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalValidityChanged> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
                 bodyDetailItem.FormalValidFrom = message.Body.FormalValidFrom;
                 bodyDetailItem.FormalValidTo = message.Body.FormalValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecycleBecameValid> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecycleBecameValid> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
                 bodyDetailItem.IsLifecycleValid = true;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecycleBecameInvalid> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecycleBecameInvalid> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
                 bodyDetailItem.IsLifecycleValid = false;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyBalancedParticipationChanged> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyBalancedParticipationChanged> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
@@ -233,13 +234,13 @@ namespace OrganisationRegistry.SqlServer.Body
                 bodyDetailItem.BalancedParticipationExtraRemark = message.Body.BalancedParticipationExtraRemark;
                 bodyDetailItem.BalancedParticipationExceptionMeasure = message.Body.BalancedParticipationExceptionMeasure;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

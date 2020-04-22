@@ -1,12 +1,17 @@
 namespace OrganisationRegistry.Infrastructure.Bus
 {
     using System.Data.Common;
+    using System.Threading.Tasks;
     using Events;
 
     public class NullPublisher : IEventPublisher
     {
-        public void Publish<T>(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<T> envelope) where T : IEvent<T> { }
+        public Task Publish<T>(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<T> envelope)
+            where T : IEvent<T>
+        {
+            return Task.CompletedTask;
+        }
 
-        public void ProcessReactions<T>(IEnvelope<T> envelope) where T : IEvent<T> { }
+        public async Task ProcessReactions<T>(IEnvelope<T> envelope) where T : IEvent<T> { }
     }
 }

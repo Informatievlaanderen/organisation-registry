@@ -7,6 +7,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
 
@@ -55,7 +56,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             b.ToTable(nameof(OrganisationOpeningHourListItemView.ProjectionTables.OrganisationOpeningHourList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationOpeningHourId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 
@@ -77,8 +78,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public OrganisationOpeningHourListItemView(
             ILogger<OrganisationOpeningHourListItemView> logger,
-            IEventStore eventStore)
-            : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory)
+            : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
@@ -90,16 +92,15 @@ namespace OrganisationRegistry.SqlServer.Organisation
             OrganisationOpeningHourList
         }
 
-        public override void Handle(
+        public override async Task Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
 
-        public void Handle(
-            DbConnection dbConnection,
+        public async Task Handle(DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationOpeningHourAdded> message)
         {
@@ -114,19 +115,18 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.OrganisationOpeningHourList.Add(openingHourListItem);
-                context.SaveChanges();
+                await context.OrganisationOpeningHourList.AddAsync(openingHourListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(
-            DbConnection dbConnection,
+        public async Task Handle(DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationOpeningHourUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var label = context.OrganisationOpeningHourList.SingleOrDefault(item => item.OrganisationOpeningHourId == message.Body.OrganisationOpeningHourId);
 
@@ -138,7 +138,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 label.ValidFrom = message.Body.ValidFrom;
                 label.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
     }

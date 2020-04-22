@@ -15,7 +15,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
 
         // Organisation
         public Guid? OrganisationId { get; set; }
-        public string OrganisationName { get; set; }
+        public string? OrganisationName { get; set; }
         public bool OrganisationIsActive { get; set; }
 
         public ICollection<BodySeatGenderRatioBodyLifecyclePhaseValidityItem> LifecyclePhaseValidities { get; set; }
@@ -36,7 +36,9 @@ namespace OrganisationRegistry.SqlServer.Reporting
         {
             b.ToTable(TableName, "OrganisationRegistry")
                 .HasKey(p => p.BodyId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
+
+            b.Property(p => p.BodyId).HasColumnName("BodyId");
 
             b.Property(p => p.BodyName).HasMaxLength(BodyListConfiguration.NameLength);
 
@@ -44,7 +46,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
             b.Property(p => p.OrganisationName).HasMaxLength(OrganisationListConfiguration.NameLength);
             b.Property(p => p.OrganisationIsActive);
 
-            b.HasMany(p => p.LifecyclePhaseValidities);
+            b.HasMany(p => p.LifecyclePhaseValidities).WithOne(p => p.Body).HasForeignKey(p => p.BodyId);
             b.HasMany(p => p.PostsPerType).WithOne(p => p.Body).HasForeignKey(p => p.BodyId);
         }
     }

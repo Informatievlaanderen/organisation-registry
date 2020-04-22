@@ -73,12 +73,12 @@ namespace OrganisationRegistry.Api.OrganisationClassification
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromBody] CreateOrganisationClassificationRequest message)
+        public async Task<IActionResult> Post([FromBody] CreateOrganisationClassificationRequest message)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            CommandSender.Send(CreateOrganisationClassificationRequestMapping.Map(message));
+            await CommandSender.Send(CreateOrganisationClassificationRequestMapping.Map(message));
 
             return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
         }
@@ -90,14 +90,14 @@ namespace OrganisationRegistry.Api.OrganisationClassification
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromRoute] Guid id, [FromBody] UpdateOrganisationClassificationRequest message)
+        public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateOrganisationClassificationRequest message)
         {
             var internalMessage = new UpdateOrganisationClassificationInternalRequest(id, message);
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateOrganisationClassificationRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateOrganisationClassificationRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.OrganisationClassificationId }));
         }

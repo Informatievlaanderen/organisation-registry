@@ -14,6 +14,7 @@ namespace OrganisationRegistry.SqlServer.Body
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Events;
     using OrganisationRegistry.Infrastructure.Events;
@@ -32,19 +33,19 @@ namespace OrganisationRegistry.SqlServer.Body
         public string BodySeatName { get; set; }
 
         public Guid? BodySeatTypeId { get; set; }
-        public string BodySeatTypeName { get; set; }
+        public string? BodySeatTypeName { get; set; }
         public int? BodySeatTypeOrder { get; set; }
 
         public Guid DelegatorId { get; set; }
         public string DelegatorName { get; set; }
 
         public Guid? DelegatedId { get; set; }
-        public string DelegatedName { get; set; }
+        public string? DelegatedName { get; set; }
 
         public Guid? AssignedToId { get; set; }
-        public string AssignedToName { get; set; }
+        public string? AssignedToName { get; set; }
 
-        public string ContactsJson { get; set; }
+        public string? ContactsJson { get; set; }
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
@@ -62,7 +63,7 @@ namespace OrganisationRegistry.SqlServer.Body
         {
             b.ToTable(nameof(BodyMandateListView.ProjectionTables.BodyMandateList), "OrganisationRegistry")
                 .HasKey(p => p.BodyMandateId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.BodyMandateType).IsRequired();
 
@@ -102,7 +103,7 @@ namespace OrganisationRegistry.SqlServer.Body
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.DelegatorName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.DelegatorName).IsClustered();
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
             b.HasIndex(x => x.BodySeatName);
@@ -135,15 +136,15 @@ namespace OrganisationRegistry.SqlServer.Body
         }
 
         private readonly IEventStore _eventStore;
-
         public BodyMandateListView(
             ILogger<BodyMandateListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonToBodySeat> message)
         {
             var bodyMandateListItem = new BodyMandateListItem
             {
@@ -170,14 +171,14 @@ namespace OrganisationRegistry.SqlServer.Body
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.BodyMandateList.Add(bodyMandateListItem);
-                context.SaveChanges();
+                await context.BodyMandateList.AddAsync(bodyMandateListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedFunctionTypeToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedFunctionTypeToBodySeat> message)
         {
             var bodyMandateListItem = new BodyMandateListItem
             {
@@ -202,14 +203,14 @@ namespace OrganisationRegistry.SqlServer.Body
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.BodyMandateList.Add(bodyMandateListItem);
-                context.SaveChanges();
+                await context.BodyMandateList.AddAsync(bodyMandateListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedOrganisationToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedOrganisationToBodySeat> message)
         {
             var bodyMandateListItem = new BodyMandateListItem
             {
@@ -234,16 +235,16 @@ namespace OrganisationRegistry.SqlServer.Body
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.BodyMandateList.Add(bodyMandateListItem);
-                context.SaveChanges();
+                await context.BodyMandateList.AddAsync(bodyMandateListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedPersonToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedPersonToBodySeat> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandateListItem = context.BodyMandateList.Single(item => item.BodyMandateId == message.Body.BodyMandateId);
 
@@ -264,13 +265,13 @@ namespace OrganisationRegistry.SqlServer.Body
                 bodyMandateListItem.ValidFrom = message.Body.ValidFrom;
                 bodyMandateListItem.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedFunctionTypeToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedFunctionTypeToBodySeat> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandateListItem = context.BodyMandateList.Single(item => item.BodyMandateId == message.Body.BodyMandateId);
 
@@ -290,13 +291,13 @@ namespace OrganisationRegistry.SqlServer.Body
                 bodyMandateListItem.ValidFrom = message.Body.ValidFrom;
                 bodyMandateListItem.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedOrganisationToBodySeat> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedOrganisationToBodySeat> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandateListItem = context.BodyMandateList.Single(item => item.BodyMandateId == message.Body.BodyMandateId);
 
@@ -316,39 +317,39 @@ namespace OrganisationRegistry.SqlServer.Body
                 bodyMandateListItem.ValidFrom = message.Body.ValidFrom;
                 bodyMandateListItem.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonAssignedToBodyMandate> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonAssignedToBodyMandate> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandateListItem = context.BodyMandateList.Single(item => item.BodyMandateId == message.Body.BodyMandateId);
 
                 bodyMandateListItem.AssignedToId = message.Body.PersonId;
                 bodyMandateListItem.AssignedToName = message.Body.PersonFullName;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonClearedFromBodyMandate> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonClearedFromBodyMandate> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandateListItem = context.BodyMandateList.Single(item => item.BodyMandateId == message.Body.BodyMandateId);
 
                 bodyMandateListItem.AssignedToId = null;
                 bodyMandateListItem.AssignedToName = string.Empty;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandates = context
                     .BodyMandateList
@@ -364,13 +365,13 @@ namespace OrganisationRegistry.SqlServer.Body
                 foreach (var bodyDelegationAssignment in bodyDelegationAssignments)
                     bodyDelegationAssignment.AssignedToName = FormatPersonName(message.Body.FirstName, message.Body.Name);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandates = context
                     .BodyMandateList
@@ -379,23 +380,28 @@ namespace OrganisationRegistry.SqlServer.Body
                 foreach (var bodyMandateListItem in bodyMandates)
                     bodyMandateListItem.DelegatedName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
-            UpdateDelegatorName(dbConnection, dbTransaction, message.Body.OrganisationId, message.Body.Name);
+            UpdateDelegatorName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
-            UpdateDelegatorName(dbConnection, dbTransaction, message.Body.OrganisationId, message.Body.Name);
+            UpdateDelegatorName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
         }
 
-        private static void UpdateDelegatorName(DbConnection dbConnection, DbTransaction dbTransaction, Guid organisationId, string delegatorName)
+        private static void UpdateDelegatorName(
+            DbConnection dbConnection,
+            DbTransaction dbTransaction,
+            IContextFactory contextFactory,
+            Guid organisationId,
+            string delegatorName)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = contextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandates = context
                     .BodyMandateList
@@ -411,9 +417,9 @@ namespace OrganisationRegistry.SqlServer.Body
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandates = context
                     .BodyMandateList
@@ -427,13 +433,13 @@ namespace OrganisationRegistry.SqlServer.Body
                     bodyMandateListItem.BodySeatTypeOrder = message.Body.SeatTypeOrder ?? int.MaxValue;
                 }
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandates = context
                     .BodyMandateList
@@ -446,13 +452,13 @@ namespace OrganisationRegistry.SqlServer.Body
                     bodyMandateListItem.BodySeatTypeOrder = message.Body.Order ?? int.MaxValue;
                 }
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatNumberAssigned> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatNumberAssigned> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandates = context
                     .BodyMandateList
@@ -461,13 +467,13 @@ namespace OrganisationRegistry.SqlServer.Body
                 foreach (var bodyMandateListItem in bodyMandates)
                     bodyMandateListItem.BodySeatNumber = message.Body.BodySeatNumber;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
 
         private static string FormatPersonName(string firstName, string name)

@@ -11,6 +11,7 @@
     using OrganisationRegistry.LifecyclePhaseType.Events;
 
     using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
 
     public class BodyLifecyclePhaseListItem
@@ -33,7 +34,7 @@
         {
             b.ToTable(nameof(BodyLifecyclePhaseListView.ProjectionTables.BodyLifecyclePhaseList), "OrganisationRegistry")
                 .HasKey(p => p.BodyLifecyclePhaseId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.BodyId).IsRequired();
 
@@ -45,7 +46,7 @@
 
             b.Property(p => p.HasAdjacentGaps);
 
-            b.HasIndex(x => x.LifecyclePhaseTypeName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.LifecyclePhaseTypeName).IsClustered();
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
         }
@@ -68,14 +69,15 @@
 
         public BodyLifecyclePhaseListView(
             ILogger<BodyLifecyclePhaseListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LifecyclePhaseTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LifecyclePhaseTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyLifecyclePhases = context.BodyLifecyclePhaseList.Where(x => x.LifecyclePhaseTypeId == message.Body.LifecyclePhaseTypeId);
                 if (!bodyLifecyclePhases.Any())
@@ -84,11 +86,11 @@
                 foreach (var bodyLifecyclePhase in bodyLifecyclePhases)
                     bodyLifecyclePhase.LifecyclePhaseTypeName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecyclePhaseAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecyclePhaseAdded> message)
         {
             var bodyLifecyclePhaseListItem = new BodyLifecyclePhaseListItem
             {
@@ -100,18 +102,18 @@
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.BodyLifecyclePhaseList.Add(bodyLifecyclePhaseListItem);
-                context.SaveChanges();
+                await context.BodyLifecyclePhaseList.AddAsync(bodyLifecyclePhaseListItem);
+                await context.SaveChangesAsync();
             }
 
             UpdateLifecyclePhaseGaps(dbConnection, dbTransaction, message.Body.BodyId);
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecyclePhaseUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecyclePhaseUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyLifecyclePhase = context.BodyLifecyclePhaseList.SingleOrDefault(item => item.BodyLifecyclePhaseId == message.Body.BodyLifecyclePhaseId);
 
@@ -122,20 +124,20 @@
                 bodyLifecyclePhase.ValidFrom = message.Body.ValidFrom;
                 bodyLifecyclePhase.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
 
             UpdateLifecyclePhaseGaps(dbConnection, dbTransaction, message.Body.BodyId);
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
 
         private void UpdateLifecyclePhaseGaps(DbConnection dbConnection, DbTransaction dbTransaction, Guid bodyId)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var sortedLifecyclePhases = context
                     .BodyLifecyclePhaseList

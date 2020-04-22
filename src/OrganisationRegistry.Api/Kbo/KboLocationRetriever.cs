@@ -5,19 +5,19 @@ namespace OrganisationRegistry.Api.Kbo
     using Autofac.Features.OwnedInstances;
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Organisation;
+    using SqlServer;
 
     public class KboLocationRetriever : IKboLocationRetriever
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
-
-        public KboLocationRetriever(Func<Owned<OrganisationRegistryContext>> contextFactory)
+        private readonly IContextFactory _contextFactory;
+        public KboLocationRetriever(IContextFactory contextFactory)
         {
             _contextFactory = contextFactory;
         }
 
         public Guid? RetrieveLocation(IMagdaAddress address)
         {
-            using(var context = _contextFactory().Value)
+            using(var context = _contextFactory.Create())
                 return context.LocationList
                     .FirstOrDefault(l => l.Country == address.Country &&
                                          l.City == address.City &&

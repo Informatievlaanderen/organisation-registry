@@ -27,7 +27,7 @@
         {
             b.ToTable(TableName, "OrganisationRegistry")
                 .HasKey(p => p.BodyId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.BodyOrganisationId).IsRequired();
             b.Property(p => p.OrganisationId).IsRequired();

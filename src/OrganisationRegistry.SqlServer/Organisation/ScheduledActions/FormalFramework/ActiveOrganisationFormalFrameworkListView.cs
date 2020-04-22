@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Day.Events;
     using Infrastructure;
@@ -35,7 +36,7 @@
         {
             b.ToTable(nameof(ActiveOrganisationFormalFrameworkListView.ProjectionTables.ActiveOrganisationFormalFrameworkList), "OrganisationRegistry")
                 .HasKey(p => p.OrganisationFormalFrameworkId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.OrganisationId).IsRequired();
 
@@ -55,23 +56,19 @@
         IEventHandler<FormalFrameworkClearedFromOrganisation>,
         IReactionHandler<DayHasPassed>
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
         private readonly Dictionary<Guid, ValidTo> _endDatePerOrganisationFormalFrameworkId;
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
-
         public ActiveOrganisationFormalFrameworkListView(
             ILogger<ActiveOrganisationFormalFrameworkListView> logger,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
             IEventStore eventStore,
-            IDateTimeProvider dateTimeProvider
-        ) : base(logger)
+            IDateTimeProvider dateTimeProvider,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
-            _contextFactory = contextFactory;
             _eventStore = eventStore;
             _dateTimeProvider = dateTimeProvider;
 
-            using (var context = contextFactory().Value)
+            using (var context = contextFactory.Create())
             {
                 _endDatePerOrganisationFormalFrameworkId =
                     context.OrganisationFormalFrameworkList
@@ -89,14 +86,14 @@
             ActiveOrganisationFormalFrameworkList
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkAdded> message)
         {
             // cache ValidTo for the OrganisationFormalFrameworkId,
             // because we will need it when FormalFrameworkAssignedToOrganisation is published, which does not contain the ValidTo.
             _endDatePerOrganisationFormalFrameworkId.UpdateMemoryCache(message.Body.OrganisationFormalFrameworkId, new ValidTo(message.Body.ValidTo));
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkUpdated> message)
         {
             // cache ValidTo for the OrganisationFormalFrameworkId,
             // because we will need it when FormalFrameworkAssignedToOrganisation is published, which does not contain the ValidTo.
@@ -106,7 +103,7 @@
             if (validTo.IsInPastOf(_dateTimeProvider.Today))
                 return;
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var activeOrganisationFormalFramework =
                     context.ActiveOrganisationFormalFrameworkList.SingleOrDefault(item => item.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
@@ -119,11 +116,11 @@
                 activeOrganisationFormalFramework.FormalFrameworkId = message.Body.FormalFrameworkId;
                 activeOrganisationFormalFramework.ValidTo = validTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkAssignedToOrganisation> message)
         {
             var validTo = _endDatePerOrganisationFormalFrameworkId[message.Body.OrganisationFormalFrameworkId];
 
@@ -138,16 +135,16 @@
                 ValidTo = validTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.ActiveOrganisationFormalFrameworkList.Add(activeOrganisationFormalFrameworkListItem);
-                context.SaveChanges();
+                await context.ActiveOrganisationFormalFrameworkList.AddAsync(activeOrganisationFormalFrameworkListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkClearedFromOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkClearedFromOrganisation> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var activeOrganisationFormalFramework =
                     context.ActiveOrganisationFormalFrameworkList
@@ -159,13 +156,13 @@
 
                 context.ActiveOrganisationFormalFrameworkList.Remove(activeOrganisationFormalFramework);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public List<ICommand> Handle(IEnvelope<DayHasPassed> message)
+        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = ContextFactory.Create())
             {
                 var contextActiveOrganisationFormalFrameworkList = context.ActiveOrganisationFormalFrameworkList.ToList();
                 return contextActiveOrganisationFormalFrameworkList
@@ -177,9 +174,9 @@
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

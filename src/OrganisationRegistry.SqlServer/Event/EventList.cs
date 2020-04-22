@@ -26,7 +26,7 @@
         {
             b.ToTable("Events", "OrganisationRegistry")
                 .HasKey(p => new { p.Id, p.Version })
-                .ForSqlServerIsClustered();
+                .IsClustered();
 
             b.Property(p => p.Number)
                 .IsRequired()

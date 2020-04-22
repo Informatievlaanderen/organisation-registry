@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.LifecyclePhaseType
 {
+    using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -23,7 +24,7 @@
             _onlyOneDefaultLifecyclePhaseTypeValidator = onlyOneDefaultLifecyclePhaseTypeValidator;
         }
 
-        public void Handle(CreateLifecyclePhaseType message)
+        public async Task Handle(CreateLifecyclePhaseType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
                 throw new NameNotUniqueException();
@@ -38,10 +39,10 @@
                 message.Status);
 
             Session.Add(lifecyclePhaseType);
-            Session.Commit();
+            await Session.Commit();
         }
 
-        public void Handle(UpdateLifecyclePhaseType message)
+        public async Task Handle(UpdateLifecyclePhaseType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.LifecyclePhaseTypeId, message.Name))
                 throw new NameNotUniqueException();
@@ -56,7 +57,7 @@
                 message.LifecyclePhaseTypeIsRepresentativeFor,
                 message.Status);
 
-            Session.Commit();
+            await Session.Commit();
         }
     }
 }

@@ -3,6 +3,7 @@
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.EntityFrameworkCore;
     using Infrastructure;
@@ -14,7 +15,7 @@
     {
         public Guid Id { get; set; }
 
-        public string CrabLocationId { get; set; }
+        public string? CrabLocationId { get; set; }
         public string FormattedAddress { get; set; }
         public string Street { get; set; }
         public string ZipCode { get; set; }
@@ -35,7 +36,7 @@
         {
             b.ToTable(nameof(LocationListView.ProjectionTables.LocationList), "OrganisationRegistry")
                 .HasKey(p => p.Id)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.CrabLocationId);
 
@@ -60,7 +61,7 @@
 
             b.Property(p => p.HasCrabLocation);
 
-            b.HasIndex(x => x.FormattedAddress).ForSqlServerIsClustered();
+            b.HasIndex(x => x.FormattedAddress).IsClustered();
             b.HasIndex(x => x.Street);
             b.HasIndex(x => x.ZipCode);
             b.HasIndex(x => x.City);
@@ -85,12 +86,13 @@
 
         public LocationListView(
             ILogger<LocationListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LocationCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LocationCreated> message)
         {
             var location = new LocationListItem
             {
@@ -104,16 +106,16 @@
                 HasCrabLocation = !string.IsNullOrWhiteSpace(message.Body.CrabLocationId)
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.LocationList.Add(location);
-                context.SaveChanges();
+                await context.LocationList.AddAsync(location);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LocationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LocationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var location = context.LocationList.SingleOrDefault(x => x.Id == message.Body.LocationId);
                 if (location == null)
@@ -126,13 +128,13 @@
                 location.City = message.Body.City;
                 location.Country = message.Body.Country;
                 location.HasCrabLocation = !string.IsNullOrWhiteSpace(message.Body.CrabLocationId);
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

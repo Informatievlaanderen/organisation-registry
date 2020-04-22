@@ -46,14 +46,14 @@ namespace OrganisationRegistry.Api.Body
         [HttpPut("{id}/balancedparticipation")]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromRoute] Guid id, [FromBody] UpdateBodyBalancedParticipationRequest message)
+        public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateBodyBalancedParticipationRequest message)
         {
             var internalMessage = new UpdateBodyBalancedParticipationInternalRequest(id, message);
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateBodyBalancedParticipationRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateBodyBalancedParticipationRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.BodyId }));
         }

@@ -10,10 +10,6 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
     [Collection(SqlServerTestsCollection.Name)]
     public class BodyOrganisationListTests : ListViewTestBase
     {
-        public BodyOrganisationListTests(SqlServerFixture fixture) : base(fixture)
-        {
-        }
-
         [Fact]
         public void BodyOrganisationAdded()
         {

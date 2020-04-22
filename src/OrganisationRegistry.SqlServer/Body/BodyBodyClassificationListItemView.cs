@@ -9,6 +9,7 @@ namespace OrganisationRegistry.SqlServer.Body
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Threading.Tasks;
     using OrganisationRegistry.Body.Events;
     using OrganisationRegistry.BodyClassification.Events;
     using OrganisationRegistry.BodyClassificationType.Events;
@@ -35,7 +36,7 @@ namespace OrganisationRegistry.SqlServer.Body
         {
             b.ToTable(nameof(BodyBodyClassificationListView.ProjectionTables.BodyBodyClassificationList), "OrganisationRegistry")
                 .HasKey(p => p.BodyBodyClassificationId)
-                .ForSqlServerIsClustered(false);
+                .IsClustered(false);
 
             b.Property(p => p.BodyId).IsRequired();
 
@@ -48,7 +49,7 @@ namespace OrganisationRegistry.SqlServer.Body
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.BodyClassificationTypeName).ForSqlServerIsClustered();
+            b.HasIndex(x => x.BodyClassificationTypeName).IsClustered();
             b.HasIndex(x => x.BodyClassificationName);
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
@@ -73,14 +74,15 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public BodyBodyClassificationListView(
             ILogger<BodyBodyClassificationListView> logger,
-            IEventStore eventStore) : base(logger)
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationTypeUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyBodyClassifications =
                     context.BodyBodyClassificationList
@@ -92,13 +94,13 @@ namespace OrganisationRegistry.SqlServer.Body
                 foreach (var bodyBodyClassification in bodyBodyClassifications)
                     bodyBodyClassification.BodyClassificationTypeName = message.Body.Name;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClassificationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyBodyClassifications =
                     context.BodyBodyClassificationList.Where(x =>
@@ -114,11 +116,11 @@ namespace OrganisationRegistry.SqlServer.Body
                     bodyBodyClassification.BodyClassificationName = message.Body.Name;
                 }
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyBodyClassificationAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyBodyClassificationAdded> message)
         {
             var bodyBodyClassificationListItem = new BodyBodyClassificationListItem
             {
@@ -132,16 +134,16 @@ namespace OrganisationRegistry.SqlServer.Body
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                context.BodyBodyClassificationList.Add(bodyBodyClassificationListItem);
-                context.SaveChanges();
+                await context.BodyBodyClassificationList.AddAsync(bodyBodyClassificationListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyBodyClassificationUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyBodyClassificationUpdated> message)
         {
-            using (var context = new OrganisationRegistryTransactionalContext(dbConnection, dbTransaction))
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var key = context.BodyBodyClassificationList.SingleOrDefault(item => item.BodyBodyClassificationId == message.Body.BodyBodyClassificationId);
 
@@ -154,13 +156,13 @@ namespace OrganisationRegistry.SqlServer.Body
                 key.ValidFrom = message.Body.ValidFrom;
                 key.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 
-        public override void Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
     }
 }

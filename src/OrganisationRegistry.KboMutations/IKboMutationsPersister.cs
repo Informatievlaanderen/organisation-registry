@@ -4,6 +4,7 @@ namespace OrganisationRegistry.KboMutations
     using System.Collections.Generic;
     using System.Linq;
     using Autofac.Features.OwnedInstances;
+    using SqlServer;
     using Microsoft.Extensions.Logging;
     using SqlServer.Infrastructure;
     using SqlServer.KboSyncQueue;
@@ -15,11 +16,11 @@ namespace OrganisationRegistry.KboMutations
 
     class KboMutationsPersister : IKboMutationsPersister
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
+        private readonly IContextFactory _contextFactory;
         private readonly ILogger<KboMutationsPersister> _logger;
 
         public KboMutationsPersister(
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
+            IContextFactory contextFactory,
             ILogger<KboMutationsPersister> logger)
         {
             _contextFactory = contextFactory;
@@ -35,7 +36,7 @@ namespace OrganisationRegistry.KboMutations
                 fileName,
                 mutationsLines.Count);
 
-            using (var context = _contextFactory().Value)
+            using (var context = _contextFactory.Create())
             {
                 foreach (var mutation in mutationsLines)
                 {

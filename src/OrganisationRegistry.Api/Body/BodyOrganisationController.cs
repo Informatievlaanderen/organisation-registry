@@ -68,7 +68,7 @@
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.OrgaanBeheerder)]
         [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Post([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] AddBodyOrganisationRequest message)
+        public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] AddBodyOrganisationRequest message)
         {
             var internalMessage = new AddBodyOrganisationInternalRequest(bodyId, message);
 
@@ -78,7 +78,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(AddBodyOrganisationRequestMapping.Map(internalMessage));
+            await CommandSender.Send(AddBodyOrganisationRequestMapping.Map(internalMessage));
 
             return Created(Url.Action(nameof(Get), new { id = message.BodyOrganisationId }), null);
         }
@@ -90,7 +90,7 @@
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.OrgaanBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public IActionResult Put([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] UpdateBodyOrganisationRequest message)
+        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] UpdateBodyOrganisationRequest message)
         {
             var internalMessage = new UpdateBodyOrganisationInternalRequest(bodyId, message);
 
@@ -100,7 +100,7 @@
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            CommandSender.Send(UpdateBodyOrganisationRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateBodyOrganisationRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.BodyId }));
         }

@@ -2,12 +2,15 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.Data.Common;
-    using System.Data.SqlClient;
+    using System.IO;
     using System.Linq;
+    using System.Reflection;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using Infrastructure;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
     using OnProjections;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Events;
@@ -22,56 +25,61 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
         where TReactionHandler : class, IReactionHandler<TEvent>
         where TEvent : IEvent<TEvent>
     {
-        public IServiceProvider FixtureServiceProvider;
-        public MemoryCaches MemoryCaches;
-        public string FixtureConnectionString { get; }
-        public SqlConnection SqlConnection { get; }
-        public DbTransaction Transaction { get; }
-        protected OrganisationRegistryContext Context { get; }
-
-
         protected abstract IEnumerable<IEvent> Given();
         protected abstract TEvent When();
-        protected abstract TReactionHandler BuildReactionHandler();
+        protected abstract TReactionHandler BuildReactionHandler(IContextFactory contextFactory);
         protected abstract int ExpectedNumberOfCommands { get; }
 
         protected IList<ICommand> Commands { get; }
 
-        protected ReactionCommandsTestBase(SqlServerFixture fixture)
+        protected ReactionCommandsTestBase()
         {
-            FixtureConnectionString = fixture.ConnectionString;
-            FixtureServiceProvider = fixture.ServiceProvider;
+            Directory.SetCurrentDirectory(Directory.GetParent(typeof(SqlServerFixture).GetTypeInfo().Assembly.Location).Parent.Parent.Parent.FullName);
 
-            SqlConnection = new SqlConnection(FixtureConnectionString);
-            SqlConnection.Open();
-            Transaction = SqlConnection.BeginTransaction(IsolationLevel.Serializable);
-            Context = new OrganisationRegistryTransactionalContext(SqlConnection, Transaction);
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
+                .Build();
 
+            ContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
+                .UseInMemoryDatabase(
+                    $"org-es-test-{Guid.NewGuid()}",
+                    builder => { }).Options;
 
-            MemoryCaches = new MemoryCaches(Context);
-            var memoryCachesMaintainer = new MemoryCachesMaintainer(MemoryCaches);
-            var reactionHandler = BuildReactionHandler();
+            var context = new OrganisationRegistryContext(ContextOptions);
+
+            var memoryCaches = new MemoryCaches(context);
+            var memoryCachesMaintainer = new MemoryCachesMaintainer(memoryCaches);
+            var reactionHandler = BuildReactionHandler(new TestContextFactory(ContextOptions));
 
             HandleEvents(reactionHandler, memoryCachesMaintainer, Given().ToArray());
 
-            Commands = reactionHandler.Handle((dynamic)When().ToEnvelope());
+            var envelope = (dynamic)When().ToEnvelope();
+            Commands = reactionHandler.Handle(envelope).GetAwaiter().GetResult();
         }
 
-        private void HandleEvents(object reactionHandler, MemoryCachesMaintainer memoryCaches, params IEvent[] events)
+        public DbContextOptions<OrganisationRegistryContext> ContextOptions { get; set; }
+
+        private async Task HandleEvents(object reactionHandler, MemoryCachesMaintainer memoryCaches, params IEvent[] events)
         {
             foreach (var @event in events)
             {
-                Publish(memoryCaches, @event);
-                Publish(reactionHandler, @event);
+                await Publish(memoryCaches, @event);
+                await Publish(reactionHandler, @event);
             }
         }
 
-        private void Publish(object eventHandler, IEvent @event)
+        private async Task Publish(object eventHandler, IEvent @event)
         {
             var type = eventHandler.GetType();
             var envelope = @event.ToEnvelope();
+            var taskType = Type.MakeGenericSignatureType(typeof(Task), typeof(DbConnection), typeof(DbTransaction), envelope.GetType());
+
             var methodInfo = type.GetMethod("Handle", new[] {typeof(DbConnection), typeof(DbTransaction), envelope.GetType()});
-            methodInfo?.Invoke(eventHandler, new object[] {SqlConnection, Transaction, envelope});
+            var task = (Task)methodInfo?.Invoke(eventHandler, new object[] {null, null, envelope});
+            if (task != null)
+                await task;
         }
 
         [Fact]
@@ -82,8 +90,6 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
 
         public void Dispose()
         {
-            Transaction.Rollback();
-            Context.Dispose();
         }
     }
 }
