@@ -29,7 +29,7 @@ nuget Microsoft.AspNetCore.Server.IISIntegration 2.2.0
 nuget Microsoft.AspNetCore.Server.Kestrel 2.2.0
 nuget Microsoft.AspNetCore.Server.Kestrel.Https 2.2.0
 nuget Microsoft.AspNetCore.Cors 2.2.0
-nuget Microsoft.AspNetCore.Authentication.JwtBearer 3.1.1
+nuget Microsoft.AspNetCore.Authentication.JwtBearer 3.1.2
 nuget Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore 3.1.2
 nuget Microsoft.AspNetCore.AzureAppServicesIntegration 3.1.2
 nuget Microsoft.AspNetCore.Mvc.Versioning 4.1.1
