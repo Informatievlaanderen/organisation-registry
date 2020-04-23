@@ -71,6 +71,8 @@ let pack = pack nugetVersionNumber
 let containerize = containerize dockerRepository
 let push = push dockerRepository
 
+supportedRuntimeIdentifiers <- [ "linux-x64" ]
+
 Target.create "CleanAll" (fun _ ->
   Shell.cleanDir buildDir
   Shell.cleanDir ("src" @@ "OrganisationRegistry.UI" @@ "wwwroot")
