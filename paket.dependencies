@@ -21,14 +21,6 @@ nuget System.ServiceModel.Security 4.7.0
 nuget System.IdentityModel.Tokens.Jwt 6.5.0
 nuget Microsoft.IdentityModel.Tokens 6.5.0
 
-nuget Microsoft.AspNetCore.Mvc.Formatters.Xml 2.2.0
-nuget Microsoft.AspNetCore.ResponseCompression 2.2.0
-nuget Microsoft.AspNetCore.Mvc 2.2.0
-nuget Microsoft.AspNetCore.Routing 2.2.2
-nuget Microsoft.AspNetCore.Server.IISIntegration 2.2.1
-nuget Microsoft.AspNetCore.Server.Kestrel 2.2.0
-nuget Microsoft.AspNetCore.Server.Kestrel.Https 2.2.0
-nuget Microsoft.AspNetCore.Cors 2.2.0
 nuget Microsoft.AspNetCore.Authentication.JwtBearer 3.1.2
 nuget Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore 3.1.2
 nuget Microsoft.AspNetCore.AzureAppServicesIntegration 3.1.2
@@ -99,8 +91,6 @@ nuget Be.Vlaanderen.Basisregisters.AggregateSource 5.0.1
 
 nuget Be.Vlaanderen.Basisregisters.Api 11.1.7
 
-nuget Be.Vlaanderen.Basisregisters.Converters.TrimString 2.2.1 // TODO: Remove this eventually
-
 nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 4.4.1
 nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql 4.4.1
 
@@ -118,6 +108,5 @@ nuget FluentAssertions 5.10.3
 nuget Moq 4.13.1
 
 // BUILD STUFF
-nuget FAKE 4.64.17 // Don't update to v5!
 nuget SourceLink.Embed.AllSourceFiles 2.8.3 copy_local: true
 nuget SourceLink.Copy.PdbFiles 2.8.3 copy_local: true

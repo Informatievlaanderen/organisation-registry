@@ -15,14 +15,6 @@ Microsoft.Extensions.Logging
 
 Microsoft.Extensions.Http
 
-Microsoft.AspNetCore.Mvc.Formatters.Xml
-Microsoft.AspNetCore.ResponseCompression
-Microsoft.AspNetCore.Mvc
-Microsoft.AspNetCore.Mvc.Core
-Microsoft.AspNetCore.Routing
-Microsoft.AspNetCore.Server.Kestrel
-Microsoft.AspNetCore.Server.Kestrel.Https
-Microsoft.AspNetCore.Cors
 Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore
 Microsoft.AspNetCore.Mvc.Versioning
 Microsoft.AspNetCore.Authentication.JwtBearer
