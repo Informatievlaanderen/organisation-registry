@@ -1,8 +1,0 @@
-Microsoft.NETCore.App
-
-Microsoft.NET.Test.Sdk
-Microsoft.DotNet.InternalAbstractions
-
-xunit
-xunit.runner.visualstudio
-xunit.categories
