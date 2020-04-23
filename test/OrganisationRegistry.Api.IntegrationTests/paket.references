@@ -1,5 +1,3 @@
-Microsoft.NETCore.App
-
 Microsoft.NET.Test.Sdk
 Microsoft.DotNet.InternalAbstractions
 Microsoft.AspNetCore.TestHost

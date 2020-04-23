@@ -34,7 +34,6 @@ Microsoft.EntityFrameworkCore
 Microsoft.EntityFrameworkCore.InMemory
 Microsoft.EntityFrameworkCore.SqlServer
 
-BrotliSharpLib
 IdentityModel
 EPPlus
 FluentValidation.AspNetCore
