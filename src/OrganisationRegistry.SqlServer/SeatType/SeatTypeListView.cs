@@ -38,7 +38,9 @@ namespace OrganisationRegistry.SqlServer.SeatType
 
             b.Property(p => p.Order);
 
-            b.Property(p => p.IsEffective).IsRequired().HasDefaultValue(true);
+            b.Property(p => p.IsEffective)
+                .HasDefaultValue(true)
+                .ValueGeneratedNever();
 
             b.HasIndex(x => x.Name).IsUnique().IsClustered();
         }
@@ -87,12 +89,11 @@ namespace OrganisationRegistry.SqlServer.SeatType
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var seatType = context.SeatTypeList.SingleOrDefault(x => x.Id == message.Body.SeatTypeId);
-                if (seatType == null)
-                    return; // TODO: Error?
+                var seatType = context.SeatTypeList.Single(x => x.Id == message.Body.SeatTypeId);
 
                 seatType.Name = message.Body.Name;
                 seatType.Order = message.Body.Order;
+                seatType.IsEffective = message.Body.IsEffective ?? true;
                 await context.SaveChangesAsync();
             }
         }

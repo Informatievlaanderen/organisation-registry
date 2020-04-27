@@ -10,7 +10,7 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 namespace OrganisationRegistry.SqlServer.Migrations
 {
     [DbContext(typeof(OrganisationRegistryContext))]
-    [Migration("20200427131048_AddIsEffectiveColumnToSeatType")]
+    [Migration("20200427135526_AddIsEffectiveColumnToSeatType")]
     partial class AddIsEffectiveColumnToSeatType
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

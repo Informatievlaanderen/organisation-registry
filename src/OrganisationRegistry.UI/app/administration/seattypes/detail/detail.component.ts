@@ -1,11 +1,11 @@
-﻿import { Component, ElementRef, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup} from '@angular/forms';
 
 import { AlertService } from 'core/alert';
 import { CreateAlertMessages, UpdateAlertMessages } from 'core/alertmessages';
 import { Create, ICrud, Update } from 'core/crud';
-import { optionalNumber, required } from 'core/validation';
+import { required } from 'core/validation';
 
 import { SeatType, SeatTypeService } from 'services/seattypes';
 
@@ -35,7 +35,8 @@ export class SeatTypeDetailComponent implements OnInit {
     this.form = formBuilder.group({
       id: [ '', required ],
       name: [ '', required ],
-      order: [ 1 ]
+      order: [ 1 ],
+      isEffective: [ false ]
     });
   }
 
