@@ -8,7 +8,7 @@ namespace OrganisationRegistry.SqlServer.Magda
     public class MagdaCallReference
     {
         public Guid Reference { get; set; }
-        public string UserClaims { get; set; }
+        public string? UserClaims { get; set; }
         public DateTimeOffset CalledAt { get; set; }
     }
 

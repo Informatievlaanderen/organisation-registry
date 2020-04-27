@@ -23,9 +23,9 @@
         public Guid BodyMandateId { get; set; }
 
         public Guid PersonId { get; set; }
-        public string PersonName { get; set; }
+        public string? PersonName { get; set; }
 
-        public string ContactsJson { get; set; }
+        public string? ContactsJson { get; set; }
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }

@@ -8,14 +8,14 @@ namespace OrganisationRegistry.SqlServer.KboSyncQueue
     public class KboSyncQueueItem
     {
         public Guid Id { get; set; }
-        public string SourceFileName { get; set; }
-        public string SourceOrganisationKboNumber { get; set; }
-        public string SourceOrganisationName { get; set; }
+        public string? SourceFileName { get; set; }
+        public string? SourceOrganisationKboNumber { get; set; }
+        public string? SourceOrganisationName { get; set; }
         public DateTimeOffset SourceOrganisationModifiedAt { get; set; }
         public DateTimeOffset MutationReadAt { get; set; }
         public DateTimeOffset? SyncCompletedAt { get; set; }
-        public string SyncStatus { get; set; }
-        public string SyncInfo { get; set; }
+        public string? SyncStatus { get; set; }
+        public string? SyncInfo { get; set; }
     }
 
     public class KboSyncQueueItemConfiguration : EntityMappingConfiguration<KboSyncQueueItem>

@@ -21,7 +21,7 @@ namespace OrganisationRegistry.SqlServer.Security
     {
         public string OvoNumber { get; set; }
 
-        public string OrganisationTree { get; set; }
+        public string? OrganisationTree { get; set; }
     }
 
     public class OrganisationTreeListConfiguration : EntityMappingConfiguration<OrganisationTreeItem>

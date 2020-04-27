@@ -20,7 +20,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public string Name { get; set; }
 
-        public string BodySeatNumber { get; set; }
+        public string? BodySeatNumber { get; set; }
 
         public bool PaidSeat { get; set; }
 

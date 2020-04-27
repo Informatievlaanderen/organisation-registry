@@ -13,20 +13,20 @@
         public Guid Id { get; set; }
 
         public Guid OrganisationId { get; set; } // Organisatie aan wie het mandaat is toegekend
-        public string OrganisationName { get; set; }
+        public string? OrganisationName { get; set; }
 
         public Guid? FunctionTypeId { get; set; } // Functietype die nodig is voor het mandaat uit te voeren
         public string? FunctionTypeName { get; set; }
 
         public Guid BodyId { get; set; } // Het orgaan zelf
-        public string BodyName { get; set; }
+        public string? BodyName { get; set; }
 
         public Guid? BodyOrganisationId { get; set; } // Organisatie aan wie het orgaan behoort (DayPassed)
         public string? BodyOrganisationName { get; set; }
 
         public Guid BodySeatId { get; set; } // Het postje die ingevuld wordt
-        public string BodySeatName { get; set; }
-        public string BodySeatNumber { get; set; }
+        public string? BodySeatName { get; set; }
+        public string? BodySeatNumber { get; set; }
 
         public bool IsDelegated { get; set; }
         public int NumberOfDelegationAssignments { get; set; }

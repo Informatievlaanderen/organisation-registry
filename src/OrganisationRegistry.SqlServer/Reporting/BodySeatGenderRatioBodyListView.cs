@@ -11,7 +11,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
     public class BodySeatGenderRatioBodyItem
     {
         public Guid BodyId { get; set; }
-        public string BodyName { get; set; }
+        public string? BodyName { get; set; }
 
         // Organisation
         public Guid? OrganisationId { get; set; }

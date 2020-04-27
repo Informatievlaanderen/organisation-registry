@@ -16,14 +16,14 @@
         public Guid? DelegationAssignmentId { get; set; }
 
         public Guid BodyId { get; set; } // Het orgaan zelf
-        public string BodyName { get; set; }
+        public string? BodyName { get; set; }
 
         public Guid? BodyOrganisationId { get; set; } // Organisatie aan wie het orgaan behoort (DayPassed)
         public string? BodyOrganisationName { get; set; }
 
         public Guid BodySeatId { get; set; }
-        public string BodySeatName { get; set; }
-        public string BodySeatNumber { get; set; }
+        public string? BodySeatName { get; set; }
+        public string? BodySeatNumber { get; set; }
 
         public bool PaidSeat { get; set; }
 

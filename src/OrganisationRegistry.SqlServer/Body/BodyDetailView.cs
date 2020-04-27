@@ -19,8 +19,8 @@ namespace OrganisationRegistry.SqlServer.Body
         public string? BodyNumber { get; set; }
 
         public string Name { get; set; }
-        public string ShortName { get; set; }
-        public string Description { get; set; }
+        public string? ShortName { get; set; }
+        public string? Description { get; set; }
 
         public DateTime? FormalValidFrom { get; set; }
         public DateTime? FormalValidTo { get; set; }
@@ -30,7 +30,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public bool IsLifecycleValid { get; set; }
 
-        public bool IsBalancedParticipationObligatory { get; set; }
+        public bool? IsBalancedParticipationObligatory { get; set; }
         public string? BalancedParticipationExtraRemark { get; set; }
         public string? BalancedParticipationExceptionMeasure { get; set; }
     }

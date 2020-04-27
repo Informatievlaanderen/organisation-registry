@@ -16,7 +16,7 @@
         public Guid Id { get; set; }
 
         public string? CrabLocationId { get; set; }
-        public string FormattedAddress { get; set; }
+        public string? FormattedAddress { get; set; }
         public string Street { get; set; }
         public string ZipCode { get; set; }
         public string City { get; set; }
