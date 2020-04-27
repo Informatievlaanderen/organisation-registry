@@ -25,7 +25,14 @@
             [control]="form.get('order')"
             [placeholder]="'Volgnummer'"
             [name]="'Volgnummer'">
-          </ww-form-group-textbox>          
+          </ww-form-group-textbox>
+
+          <ww-form-group-toggle
+            [id]="'isEffective'"
+            [label]="'Is effectief?'"
+            [control]="form.get('isEffective')"
+            [name]="'Is effectief?'">
+          </ww-form-group-toggle>
 
           <div class="form__row">
             <div class="form__buttons">
