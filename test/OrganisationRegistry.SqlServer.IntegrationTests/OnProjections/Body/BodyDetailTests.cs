@@ -1,6 +1,5 @@
 namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
 {
-    using System;
     using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
@@ -38,7 +37,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
                     IsLifecycleValid = false,
                     BalancedParticipationExceptionMeasure = null,
                     BalancedParticipationExtraRemark = null,
-                    IsBalancedParticipationObligatory = false,
+                    IsBalancedParticipationObligatory = null,
                 });
         }
 

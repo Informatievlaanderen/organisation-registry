@@ -39,7 +39,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public Guid? LocationId { get; set; }
         public string? LocationName { get; set; }
 
-        public string ContactsJson { get; set; }
+        public string? ContactsJson { get; set; }
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }

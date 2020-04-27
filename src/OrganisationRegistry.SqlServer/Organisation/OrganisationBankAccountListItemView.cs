@@ -18,7 +18,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public Guid OrganisationId { get; set; }
         public string BankAccountNumber { get; set; }
         public bool IsIban { get; set; }
-        public string Bic { get; set; }
+        public string? Bic { get; set; }
         public bool IsBic { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }

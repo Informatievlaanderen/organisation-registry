@@ -21,7 +21,7 @@
 
         public string? BodyNumber { get; set; }
         public string Name { get; set; }
-        public string ShortName { get; set; }
+        public string? ShortName { get; set; }
 
         public string? Organisation { get; set; }
         public Guid? OrganisationId { get; set; }

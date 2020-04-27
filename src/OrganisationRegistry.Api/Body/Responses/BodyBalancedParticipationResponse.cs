@@ -7,9 +7,9 @@ namespace OrganisationRegistry.Api.Body.Responses
     {
         public Guid Id { get; }
 
-        public bool Obligatory { get; }
-        public string ExtraRemark { get; }
-        public string ExceptionMeasure { get; }
+        public bool? Obligatory { get; }
+        public string? ExtraRemark { get; }
+        public string? ExceptionMeasure { get; }
 
         public BodyBalancedParticipationResponse(BodyDetail projectionItem)
         {

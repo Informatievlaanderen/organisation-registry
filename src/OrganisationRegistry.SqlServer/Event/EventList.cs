@@ -14,10 +14,10 @@
         public string Name { get; set; }
         public DateTime Timestamp { get; set; }
         public string Data { get; set; }
-        public string Ip { get; set; }
-        public string LastName { get; set; }
-        public string FirstName { get; set; }
-        public string UserId { get; set; }
+        public string? Ip { get; set; }
+        public string? LastName { get; set; }
+        public string? FirstName { get; set; }
+        public string? UserId { get; set; }
     }
 
     public class EventListConfiguration : EntityMappingConfiguration<EventListItem>
