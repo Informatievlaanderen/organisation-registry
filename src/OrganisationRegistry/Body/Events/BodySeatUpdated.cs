@@ -19,6 +19,8 @@ namespace OrganisationRegistry.Body.Events
 
         public int? SeatTypeOrder { get; }
         public int? PreviousSeatTypeOrder { get;  }
+        public bool? SeatTypeIsEffective { get; }
+        public bool PreviousSeatTypeWasEffective { get; }
 
         public bool PaidSeat { get; }
         public bool PreviouslyPaidSeat { get; }
@@ -32,6 +34,7 @@ namespace OrganisationRegistry.Body.Events
         public DateTime? ValidTo { get; }
         public DateTime? PreviouslyValidTo { get; }
 
+
         public BodySeatUpdated(
             Guid bodyId,
             Guid bodySeatId,
@@ -39,6 +42,7 @@ namespace OrganisationRegistry.Body.Events
             Guid seatTypeId,
             string seatTypeName,
             int? seatTypeOrder,
+            bool? seatTypeIsEffective,
             bool paidSeat,
             bool entitledToVote,
             DateTime? validFrom,
@@ -47,6 +51,7 @@ namespace OrganisationRegistry.Body.Events
             Guid previousSeatTypeId,
             string previousSeatTypeName,
             int? previousSeatTypeOrder,
+            bool previousSeatTypeWasEffective,
             bool previouslyPaidSeat,
             bool previouslyEntitledToVote,
             DateTime? previouslyValidFrom,
@@ -59,6 +64,7 @@ namespace OrganisationRegistry.Body.Events
             SeatTypeId = seatTypeId;
             SeatTypeName = seatTypeName;
             SeatTypeOrder = seatTypeOrder;
+            SeatTypeIsEffective = seatTypeIsEffective;
             PaidSeat = paidSeat;
             EntitledToVote = entitledToVote;
             ValidFrom = validFrom;
@@ -68,6 +74,7 @@ namespace OrganisationRegistry.Body.Events
             PreviousSeatTypeId = previousSeatTypeId;
             PreviousSeatTypeName = previousSeatTypeName;
             PreviousSeatTypeOrder = previousSeatTypeOrder;
+            PreviousSeatTypeWasEffective = previousSeatTypeWasEffective;
             PreviouslyPaidSeat = previouslyPaidSeat;
             PreviouslyEntitledToVote = previouslyEntitledToVote;
             PreviouslyValidFrom = previouslyValidFrom;

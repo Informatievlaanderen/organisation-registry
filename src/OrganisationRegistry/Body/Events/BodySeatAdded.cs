@@ -16,6 +16,7 @@ namespace OrganisationRegistry.Body.Events
         public bool EntitledToVote { get; }
         public DateTime? ValidFrom { get; }
         public DateTime? ValidTo { get; }
+        public bool? SeatTypeIsEffective { get; }
 
         public BodySeatAdded(
             Guid bodyId,
@@ -25,6 +26,7 @@ namespace OrganisationRegistry.Body.Events
             Guid seatTypeId,
             string seatTypeName,
             int? seatTypeOrder,
+            bool? seatTypeIsEffective,
             bool paidSeat,
             bool entitledToVote,
             DateTime? validFrom,
@@ -38,6 +40,7 @@ namespace OrganisationRegistry.Body.Events
             SeatTypeId = seatTypeId;
             SeatTypeName = seatTypeName;
             SeatTypeOrder = seatTypeOrder;
+            SeatTypeIsEffective = seatTypeIsEffective;
             PaidSeat = paidSeat;
             EntitledToVote = entitledToVote;
             ValidFrom = validFrom;

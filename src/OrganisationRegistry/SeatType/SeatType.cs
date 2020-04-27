@@ -8,28 +8,34 @@ namespace OrganisationRegistry.SeatType
         public SeatTypeName Name { get; private set; }
 
         public int? Order { get; private set; }
+        public bool IsEffective { get; private set; }
 
         private SeatType() { }
 
         public SeatType(
             SeatTypeId id,
             SeatTypeName name,
-            int? order)
+            int? order,
+            bool isEffective)
         {
             ApplyChange(new SeatTypeCreated(
                 id,
                 name,
-                order));
+                order,
+                isEffective));
         }
 
-        public void Update(SeatTypeName name, int? order)
+        public void Update(SeatTypeName name, int? order, bool isEffective)
         {
             ApplyChange(new SeatTypeUpdated(
                 Id,
                 name,
                 order,
+                isEffective,
                 Name,
-                Order));
+                Order,
+                IsEffective
+            ));
         }
 
         private void Apply(SeatTypeCreated @event)
@@ -37,12 +43,14 @@ namespace OrganisationRegistry.SeatType
             Id = @event.SeatTypeId;
             Name = new SeatTypeName(@event.Name);
             Order = @event.Order;
+            IsEffective = @event.IsEffective ?? true;
         }
 
         private void Apply(SeatTypeUpdated @event)
         {
             Name = new SeatTypeName(@event.Name);
             Order = @event.Order;
+            IsEffective = @event.IsEffective ?? true;
         }
     }
 }

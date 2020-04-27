@@ -330,6 +330,7 @@ namespace OrganisationRegistry.Body
                 seatType.Id,
                 seatType.Name,
                 seatType.Order,
+                seatType.IsEffective,
                 paidSeat,
                 entitledToVote,
                 validity.Start,
@@ -353,6 +354,7 @@ namespace OrganisationRegistry.Body
                 seatType.Id,
                 seatType.Name,
                 seatType.Order,
+                seatType.IsEffective,
                 paidSeat,
                 entitledToVote,
                 validity.Start,
@@ -361,6 +363,7 @@ namespace OrganisationRegistry.Body
                 previousBodySeat.SeatType.Id,
                 previousBodySeat.SeatType.Name,
                 previousBodySeat.SeatType.Order,
+                previousBodySeat.SeatType.IsEffective,
                 previousBodySeat.PaidSeat,
                 previousBodySeat.EntitledToVote,
                 previousBodySeat.Validity.Start,
@@ -1185,7 +1188,8 @@ namespace OrganisationRegistry.Body
                     new SeatType(
                         new SeatTypeId(@event.SeatTypeId),
                         new SeatTypeName(@event.SeatTypeName),
-                        @event.SeatTypeOrder),
+                        @event.SeatTypeOrder,
+                        @event.SeatTypeIsEffective ?? true),
                     @event.PaidSeat,
                     @event.EntitledToVote,
                     new Period(
@@ -1205,7 +1209,8 @@ namespace OrganisationRegistry.Body
                     new SeatType(
                         new SeatTypeId(@event.SeatTypeId),
                         new SeatTypeName(@event.SeatTypeName),
-                        @event.SeatTypeOrder),
+                        @event.SeatTypeOrder,
+                        @event.SeatTypeIsEffective ?? true),
                     @event.PaidSeat,
                     @event.EntitledToVote,
                     new Period(

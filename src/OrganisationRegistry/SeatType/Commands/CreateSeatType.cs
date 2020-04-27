@@ -6,16 +6,19 @@ namespace OrganisationRegistry.SeatType.Commands
 
         public SeatTypeName Name { get; }
         public int? Order { get; }
+        public bool IsEffective { get; }
 
         public CreateSeatType(
             SeatTypeId seatTypeId,
             SeatTypeName name,
-            int? order)
+            int? order,
+            bool isEffective)
         {
             Id = seatTypeId;
 
             Name = name;
             Order = order;
+            IsEffective = isEffective;
         }
     }
 }
