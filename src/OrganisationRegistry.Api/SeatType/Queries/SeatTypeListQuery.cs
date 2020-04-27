@@ -38,7 +38,8 @@ namespace OrganisationRegistry.Api.SeatType.Queries
             public IEnumerable<string> SortableFields { get; } = new[]
             {
                 nameof(SeatTypeListItem.Name),
-                nameof(SeatTypeListItem.Order)
+                nameof(SeatTypeListItem.Order),
+                nameof(SeatTypeListItem.IsEffective)
             };
 
             public SortingHeader DefaultSortingHeader { get; } =
