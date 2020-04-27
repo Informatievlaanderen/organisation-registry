@@ -20,7 +20,7 @@
     <table id="addressTable" class="data-table">
       <thead>
         <tr class="data-table__header">
-          <th class="data-table__header-title" style="width: 70%">
+          <th class="data-table__header-title" style="width: 50%">
             <a class="data-table__header-title--sortable"
                [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('name')}"
                (click)="sortBy('name')">
@@ -28,8 +28,8 @@
               <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
                  [ngClass]="{'vi-u-180deg': isSortedByDescending('name')}"></i>
               </a>
-          </th>          
-          
+          </th>
+
           <th class="data-table__header-title" style="width: 20%">
             <a class="data-table__header-title--sortable"
                [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('order')}"
@@ -40,21 +40,36 @@
               </a>
           </th>
 
+          <th class="data-table__header-title" style="width: 20%">
+            <a class="data-table__header-title--sortable"
+               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('isEffective')}"
+               (click)="sortBy('isEffective')">
+              Is effectief?
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                 [ngClass]="{'vi-u-180deg': isSortedByDescending('isEffective')}"></i>
+            </a>
+          </th>
+
 
         </tr>
       </thead>
       <tbody>
         <template [ngIf]="isBusy">
-          <tr><td colspan="1">Bezig met laden...</td></tr>
+          <tr><td colspan="3">Bezig met laden...</td></tr>
         </template>
 
         <template [ngIf]="!isBusy">
           <tr *ngIf="!hasData(data)">
-            <td colspan="1">Geen data beschikbaar...</td>
+            <td colspan="3">Geen data beschikbaar...</td>
           </tr>
           <tr *ngFor="let seatType of data">
             <td class="data-table__body-title"><a [routerLink]="['./', seatType.id]" title="{{seatType.name}}">{{seatType.name}}</a></td>
             <td>{{seatType.order}}</td>
+            <td class="data-table__body-title">
+              <i aria-label="Is effectief?"
+                 [ngClass]="{'vi vi-u-badge vi-u-badge--green vi-u-badge--xxsmall vi-check': seatType.isEffective}">
+              </i>
+            </td>
           </tr>
         </template>
       </tbody>
