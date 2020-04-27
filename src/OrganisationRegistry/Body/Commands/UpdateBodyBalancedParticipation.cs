@@ -4,15 +4,15 @@ namespace OrganisationRegistry.Body.Commands
     {
         public BodyId BodyId => Id;
 
-        public bool BalancedParticipationObligatory { get; }
-        public string BalancedParticipationExtraRemark { get; }
-        public string BalancedParticipationExceptionMeasure { get; }
+        public bool? BalancedParticipationObligatory { get; }
+        public string? BalancedParticipationExtraRemark { get; }
+        public string? BalancedParticipationExceptionMeasure { get; }
 
         public UpdateBodyBalancedParticipation(
             BodyId bodyId,
-            bool balancedParticipationObligatory,
-            string balancedParticipationExtraRemark,
-            string balancedParticipationExceptionMeasure)
+            bool? balancedParticipationObligatory,
+            string? balancedParticipationExtraRemark,
+            string? balancedParticipationExceptionMeasure)
         {
             Id = bodyId;
 

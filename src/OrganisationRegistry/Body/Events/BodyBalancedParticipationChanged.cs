@@ -8,23 +8,23 @@ namespace OrganisationRegistry.Body.Events
         public Guid BodyId => Id;
 
         public bool BalancedParticipationObligatory { get; }
-        public bool PreviousBalancedParticipationObligatory { get; }
+        public bool? PreviousBalancedParticipationObligatory { get; }
 
-        public string BalancedParticipationExtraRemark { get; }
-        public string PreviousBalancedParticipationExtraRemark { get; }
+        public string? BalancedParticipationExtraRemark { get; }
+        public string? PreviousBalancedParticipationExtraRemark { get; }
 
-        public string BalancedParticipationExceptionMeasure { get; }
-        public string PreviousBalancedParticipationExceptionMeasure { get; }
+        public string? BalancedParticipationExceptionMeasure { get; }
+        public string? PreviousBalancedParticipationExceptionMeasure { get; }
 
         [JsonConstructor]
         public BodyBalancedParticipationChanged(
             Guid bodyId,
             bool balancedParticipationObligatory,
-            string balancedParticipationExtraRemark,
-            string balancedParticipationExceptionMeasure,
-            bool previousBalancedParticipationObligatory,
-            string previousBalancedParticipationExtraRemark,
-            string previousBalancedParticipationExceptionMeasure)
+            string? balancedParticipationExtraRemark,
+            string? balancedParticipationExceptionMeasure,
+            bool? previousBalancedParticipationObligatory,
+            string? previousBalancedParticipationExtraRemark,
+            string? previousBalancedParticipationExceptionMeasure)
         {
             Id = bodyId;
 

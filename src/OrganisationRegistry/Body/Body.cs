@@ -24,9 +24,9 @@ namespace OrganisationRegistry.Body
         private string _description;
         private bool _isLifecycleValid;
 
-        private bool _balancedParticipationObligatory;
-        private string _balancedParticipationExtraRemark;
-        private string _balancedParticipationExceptionMeasure;
+        private bool? _balancedParticipationObligatory;
+        private string? _balancedParticipationExtraRemark;
+        private string? _balancedParticipationExceptionMeasure;
 
         private Period _formalValidity;
 
@@ -200,13 +200,13 @@ namespace OrganisationRegistry.Body
         }
 
         public void UpdateBalancedParticipation(
-            bool balancedParticipationObligatory,
-            string balancedParticipationExtraRemark,
-            string balancedParticipationExceptionMeasure)
+            bool? balancedParticipationObligatory,
+            string? balancedParticipationExtraRemark,
+            string? balancedParticipationExceptionMeasure)
         {
             ApplyChange(new BodyBalancedParticipationChanged(
                 Id,
-                balancedParticipationObligatory,
+                balancedParticipationObligatory ?? false,
                 balancedParticipationExtraRemark,
                 balancedParticipationExceptionMeasure,
                 _balancedParticipationObligatory,
