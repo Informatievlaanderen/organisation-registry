@@ -19,11 +19,11 @@ namespace OrganisationRegistry.Api.Body.Requests
 
     public class UpdateBodyBalancedParticipationRequest
     {
-        public bool Obligatory { get; set; }
+        public bool? Obligatory { get; set; }
 
-        public string ExtraRemark { get; set; }
+        public string? ExtraRemark { get; set; }
 
-        public string ExceptionMeasure { get; set; }
+        public string? ExceptionMeasure { get; set; }
 
     }
 
