@@ -26,7 +26,7 @@ namespace OrganisationRegistry.SeatType
             if (_uniqueNameValidator.IsNameTaken(message.Name))
                 throw new NameNotUniqueException();
 
-            var seatType = new SeatType(message.SeatTypeId, message.Name, message.Order);
+            var seatType = new SeatType(message.SeatTypeId, message.Name, message.Order, message.IsEffective);
             Session.Add(seatType);
             await Session.Commit();
         }
@@ -37,7 +37,7 @@ namespace OrganisationRegistry.SeatType
                 throw new NameNotUniqueException();
 
             var seatType = Session.Get<SeatType>(message.SeatTypeId);
-            seatType.Update(message.Name, message.Order);
+            seatType.Update(message.Name, message.Order, message.IsEffective);
             await Session.Commit();
         }
     }

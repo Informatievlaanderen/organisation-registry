@@ -23,6 +23,8 @@ namespace OrganisationRegistry.Api.SeatType.Requests
         public string Name { get; set; }
 
         public int? Order { get; set; }
+
+        public bool IsEffective { get; set; }
     }
 
     public class UpdateSeatTypeRequestValidator : AbstractValidator<UpdateSeatTypeInternalRequest>
@@ -37,6 +39,10 @@ namespace OrganisationRegistry.Api.SeatType.Requests
                 .NotEmpty()
                 .WithMessage("Name is required.");
 
+            RuleFor(x => x.Body.IsEffective)
+                .NotEmpty()
+                .WithMessage("IsEffective is required.");
+
             RuleFor(x => x.Body.Name)
                 .Length(0, SeatTypeListConfiguration.NameLength)
                 .WithMessage($"Name cannot be longer than {SeatTypeListConfiguration.NameLength}.");
@@ -49,6 +55,7 @@ namespace OrganisationRegistry.Api.SeatType.Requests
             => new UpdateSeatType(
                 new SeatTypeId(message.SeatTypeId),
                 new SeatTypeName(message.Body.Name),
-                message.Body.Order);
+                message.Body.Order,
+                message.Body.IsEffective);
     }
 }

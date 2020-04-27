@@ -13,6 +13,8 @@ namespace OrganisationRegistry.Api.SeatType.Requests
         public string Name { get; set; }
 
         public int? Order { get; set; }
+
+        public bool IsEffective { get; set; }
     }
 
     public class CreateSeatTypeRequestValidator : AbstractValidator<CreateSeatTypeRequest>
@@ -39,6 +41,7 @@ namespace OrganisationRegistry.Api.SeatType.Requests
             => new CreateSeatType(
                 new SeatTypeId(message.Id),
                 new SeatTypeName(message.Name),
-                message.Order);
+                message.Order,
+                message.IsEffective);
     }
 }

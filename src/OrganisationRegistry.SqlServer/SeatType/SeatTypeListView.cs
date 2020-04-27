@@ -18,6 +18,8 @@ namespace OrganisationRegistry.SqlServer.SeatType
         public string Name { get; set; }
 
         public int? Order { get; set; }
+
+        public bool IsEffective { get; set; }
     }
 
     public class SeatTypeListConfiguration : EntityMappingConfiguration<SeatTypeListItem>
@@ -35,6 +37,8 @@ namespace OrganisationRegistry.SqlServer.SeatType
                 .IsRequired();
 
             b.Property(p => p.Order);
+
+            b.Property(p => p.IsEffective).IsRequired().HasDefaultValue(true);
 
             b.HasIndex(x => x.Name).IsUnique().IsClustered();
         }
@@ -70,7 +74,8 @@ namespace OrganisationRegistry.SqlServer.SeatType
                 {
                     Id = message.Body.SeatTypeId,
                     Name = message.Body.Name,
-                    Order=message.Body.Order
+                    Order= message.Body.Order,
+                    IsEffective =  message.Body.IsEffective ?? true
                 };
 
                 await context.SeatTypeList.AddAsync(seatType);

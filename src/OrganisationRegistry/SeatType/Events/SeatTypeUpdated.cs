@@ -9,16 +9,21 @@ namespace OrganisationRegistry.SeatType.Events
 
         public string Name { get; }
         public string PreviousName { get; }
+        public bool? IsEffective { get; }
 
         public int? Order { get; }
         public int? PreviousOrder { get; }
+
+        public bool? WasPreviouslyEffective { get; }
 
         public SeatTypeUpdated(
             SeatTypeId seatTypeId,
             SeatTypeName name,
             int? order,
+            bool? isEffective,
             SeatTypeName previousName,
-            int? previousOrder)
+            int? previousOrder,
+            bool wasPreviouslyEffective)
         {
             Id = seatTypeId;
 
@@ -27,6 +32,8 @@ namespace OrganisationRegistry.SeatType.Events
 
             PreviousName = previousName;
             PreviousOrder = previousOrder;
+            IsEffective = isEffective;
+            WasPreviouslyEffective = wasPreviouslyEffective;
         }
 
         [JsonConstructor]
@@ -34,13 +41,19 @@ namespace OrganisationRegistry.SeatType.Events
             Guid seatTypeId,
             string name,
             int? order,
+            bool? isEffective,
             string previousName,
-            int? previousOrder)
+            int? previousOrder,
+            bool wasPreviouslyEffective)
             : this(
                 new SeatTypeId(seatTypeId),
                 new SeatTypeName(name),
                 order,
+                isEffective,
                 new SeatTypeName(previousName),
-                previousOrder) { }
+                previousOrder,
+                wasPreviouslyEffective)
+        {
+        }
     }
 }

@@ -5,7 +5,7 @@ namespace OrganisationRegistry.UnitTests.Body.Serialization
     using OrganisationRegistry.Body.Events;
     using Xunit;
 
-    public class BodyParticipationChanged
+    public class BodyBalancedParticipationChangedSerialization
     {
         [Fact]
         public void CanDeserializeWithTrue()
