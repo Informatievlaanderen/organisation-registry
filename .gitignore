@@ -9,6 +9,7 @@ wwwroot/
 .idea/
 .ionide/
 .paket/
+coverage/
 
 **/*/mono_crash.*
 
