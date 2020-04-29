@@ -1,3 +1,67 @@
+# [1.41.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.40.0...v1.41.0) (2020-04-29)
+
+
+### Bug Fixes
+
+* build website with npm run build ([89f2240](https://github.com/informatievlaanderen/organisation-registry/commit/89f2240e9cd27b5002e18646d9bd6f6effe44b42))
+* don't generate manually supplied guid ([9967baa](https://github.com/informatievlaanderen/organisation-registry/commit/9967baabf452b97c8becd8f8336dad483d46ad70))
+* don't generate manually supplied guid ([5ed071f](https://github.com/informatievlaanderen/organisation-registry/commit/5ed071fd744423db22d65145598ac1219fd277b8))
+* ef no longer evaluates linq queries client side ([6db2264](https://github.com/informatievlaanderen/organisation-registry/commit/6db226404647e8a440e9a1799282ec1888492fdd))
+* inline query to make ef support it ([117a098](https://github.com/informatievlaanderen/organisation-registry/commit/117a0985c6a1069178a2e66b9d491bde9852be49))
+* make more fields nullable ([7e046f2](https://github.com/informatievlaanderen/organisation-registry/commit/7e046f2960fcb50a36e12f2223602b150de36102))
+* make query inmemory to bypass current efcore limitations ([7a2bb38](https://github.com/informatievlaanderen/organisation-registry/commit/7a2bb388984ebb0c94c2136c79a4f9af6fa2b6a2))
+* make source nullable ([dd8f8e5](https://github.com/informatievlaanderen/organisation-registry/commit/dd8f8e56e10c593f7e9cd10b2760dfadaf33176d))
+* move to gh actions ([ea8dbf6](https://github.com/informatievlaanderen/organisation-registry/commit/ea8dbf67312426169a0a84ad4436c82b3f6a0516))
+* paket.lock out of date ([2a6957e](https://github.com/informatievlaanderen/organisation-registry/commit/2a6957e0b234bac4c98f9817d7614df4a4c8ba81))
+* pass build number correctly ([8b7f00f](https://github.com/informatievlaanderen/organisation-registry/commit/8b7f00f47882f0adff38ff0ec5838201a1ad6060))
+* prevent wrong generation of column name by making FK more explicit ([b457eb0](https://github.com/informatievlaanderen/organisation-registry/commit/b457eb0e5b36a28701ff25a6d3dd7dd96731f798))
+* prevent wrong generation of column name by making FK more explicit ([84b216d](https://github.com/informatievlaanderen/organisation-registry/commit/84b216dae0867135ce04c1a80a853c64a283e1dd))
+* remove ambiguity for ef linq statements ([d03f373](https://github.com/informatievlaanderen/organisation-registry/commit/d03f3731417be167e861869e8f30440de675c0a3))
+* remove npm test ([2ec20f3](https://github.com/informatievlaanderen/organisation-registry/commit/2ec20f320ba58c6483fdf90e8eeb3438f769065f))
+* remove npm version which builds the site ([15a7da0](https://github.com/informatievlaanderen/organisation-registry/commit/15a7da0ec524ffd2b18871d62ef6872ed7d73b06))
+* use correct name property ([cb09cf5](https://github.com/informatievlaanderen/organisation-registry/commit/cb09cf584f6517cc61005742b021a3ecb8b63418))
+
+
+### Features
+
+* allow enabling/disabling of lock via config ([75222b5](https://github.com/informatievlaanderen/organisation-registry/commit/75222b5e5f25c4233a5eecfabedeabb4feb26dd2))
+* commit paket.lock ([058936f](https://github.com/informatievlaanderen/organisation-registry/commit/058936f6df8dbd5b62b624366348c742f499f3fd))
+* fix build script ([f2904b6](https://github.com/informatievlaanderen/organisation-registry/commit/f2904b637f519babbcf477c991f34ca692e3955b))
+* make commands and events async ([59e9f99](https://github.com/informatievlaanderen/organisation-registry/commit/59e9f99b2ff53117af069719c5f20eac18cae6be))
+* make db-nullable fields dotnet-nullable ([175af2e](https://github.com/informatievlaanderen/organisation-registry/commit/175af2e8070bc7192674e035cb21ebe01e31e7eb))
+* make db-nullable fields dotnet-nullable ([6e621bb](https://github.com/informatievlaanderen/organisation-registry/commit/6e621bb680d7f004afc80a82e333e1dbec05fa87))
+* make processing reactions async ([278ddc2](https://github.com/informatievlaanderen/organisation-registry/commit/278ddc2267fd9085156c312a67941cb2397014d7))
+* replace distributedmutex with pkg (WIP) ([d50afda](https://github.com/informatievlaanderen/organisation-registry/commit/d50afda24900924492c5fc22ee056203a5fb98f0))
+* update packages to fix problemdetails exception ([204051f](https://github.com/informatievlaanderen/organisation-registry/commit/204051f15d8a6167f7eb31651fef0d1a70ddd438))
+* upgrade aspnetcore packages ([7e65f8d](https://github.com/informatievlaanderen/organisation-registry/commit/7e65f8db32415f5a2ddb9af786540f2cf1a501ba))
+* upgrade basisregisters packages ([86f4080](https://github.com/informatievlaanderen/organisation-registry/commit/86f40806590e6e979c20f14f73575cdb062f5efa))
+* upgrade brotli package ([50da1c4](https://github.com/informatievlaanderen/organisation-registry/commit/50da1c42f85518dcf13b9ff6fef625e26eeac239))
+* upgrade build.pipeline to 4.0.5 ([df962a5](https://github.com/informatievlaanderen/organisation-registry/commit/df962a5afed551513ffa571e426e9007634c0180))
+* upgrade code analysis package ([ca9d6d2](https://github.com/informatievlaanderen/organisation-registry/commit/ca9d6d2ee4dd947f9dcf1c53db0125d47a1ebeb0))
+* upgrade crypto package ([d124ef9](https://github.com/informatievlaanderen/organisation-registry/commit/d124ef9559548150fc6f9dd9609baaa9f6e134b0))
+* upgrade csvhelper package ([fff559c](https://github.com/informatievlaanderen/organisation-registry/commit/fff559ca1400b33800380277cde1b97916b65b1b))
+* upgrade dockerfile runtime to 3.1.2 ([b09fd7c](https://github.com/informatievlaanderen/organisation-registry/commit/b09fd7c58e64d926d09ef79b67f07272e272bce9))
+* upgrade epplus package ([b9f97a5](https://github.com/informatievlaanderen/organisation-registry/commit/b9f97a5825fbfe13eeba1535bb8615887b37669a))
+* upgrade fluentassertions package ([610dfa9](https://github.com/informatievlaanderen/organisation-registry/commit/610dfa903b5e8d4f3c8e39dbe76330702a6736f8))
+* upgrade fluentftp package ([ea194e3](https://github.com/informatievlaanderen/organisation-registry/commit/ea194e34cdae089cb67f631bc6b15597d3fecbc9))
+* upgrade healthchecks package ([4a86a21](https://github.com/informatievlaanderen/organisation-registry/commit/4a86a21ed6fae23f12b2109bd41afd51e18bc2b4))
+* upgrade identitymodel packages ([728f5bc](https://github.com/informatievlaanderen/organisation-registry/commit/728f5bc456a50b56d6d9a6afb3b4b4c84ff8cbbc))
+* upgrade iisintegration package ([3decebb](https://github.com/informatievlaanderen/organisation-registry/commit/3decebbdf3e3f8917a2fe045d8f443480b067f92))
+* upgrade jwt bearer package ([d4fd4ca](https://github.com/informatievlaanderen/organisation-registry/commit/d4fd4ca95be543d15b70ba11f851d7e73006620b))
+* upgrade main identitymodel package ([e096e7a](https://github.com/informatievlaanderen/organisation-registry/commit/e096e7a44cad0d40cac0e619be0589648aaee486))
+* upgrade packages and projects to net3.1 ([d557dd6](https://github.com/informatievlaanderen/organisation-registry/commit/d557dd6d67918250498770e40e59cfb0e77a6d7f))
+* upgrade sdk version ([10f18f1](https://github.com/informatievlaanderen/organisation-registry/commit/10f18f187c624454c389d2ac5d772be1a88008b2))
+* upgrade serilog ES package ([858bca6](https://github.com/informatievlaanderen/organisation-registry/commit/858bca60feb5603062fd5be4ce043bfdc06d72f3))
+* upgrade servicemodel packages ([5975597](https://github.com/informatievlaanderen/organisation-registry/commit/59755974885e46ef0fbb48285693fc827aa6fea5))
+* upgrade testhost and ef packages ([e1155ab](https://github.com/informatievlaanderen/organisation-registry/commit/e1155ab408e4186daa2d762fd2007347d26c1799))
+* use IContextFactory in memory cache ([df6a871](https://github.com/informatievlaanderen/organisation-registry/commit/df6a8714ed8920e6eb5219cb8734cd459c6b872c))
+
+
+### Reverts
+
+* Revert "feat: upgrade brotli package" ([96e91da](https://github.com/informatievlaanderen/organisation-registry/commit/96e91da64eba584eb97cb36abd158c85ab94c33c))
+* Revert "feat: upgrade serilog ES package" ([53749e0](https://github.com/informatievlaanderen/organisation-registry/commit/53749e0a464a7a1344f7509ae3d54f08b9a8ab48))
+
 # [1.40.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.39.0...v1.40.0) (2020-04-15)
 
 
