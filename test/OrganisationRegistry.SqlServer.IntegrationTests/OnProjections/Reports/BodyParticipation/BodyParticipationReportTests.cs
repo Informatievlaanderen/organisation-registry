@@ -23,6 +23,8 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
         private readonly string _bodySeatType1Name;
         private readonly Guid _bodySeatType2Id;
         private readonly string _bodySeatType2Name;
+        private readonly Guid _bodySeatType3Id;
+        private readonly string _bodySeatType3Name;
 
         public BodyParticipationReportTests()
         {
@@ -30,7 +32,9 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
             _bodySeatType1Id = Guid.NewGuid();
             _bodySeatType1Name = "Effectief lid";
             _bodySeatType2Id = Guid.NewGuid();
-            _bodySeatType2Name = "Voorzitter";
+            _bodySeatType2Name = "Ondervoorzitter";
+            _bodySeatType3Id = Guid.NewGuid();
+            _bodySeatType3Name = "Voorzitter";
 
             var dbContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
                 .UseInMemoryDatabase(
@@ -63,8 +67,11 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
             AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, Sex.Female);
             AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, Sex.Female);
             AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, Sex.Male);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, Sex.Female);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, Sex.Male);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, Sex.Male);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, Sex.Male);
             AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType2Id, _bodySeatType2Name, Sex.Female);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType3Id, _bodySeatType3Name, Sex.Male);
 
             _context.SaveChanges();
 
@@ -139,15 +146,15 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
                     new BodyParticipation
                     {
                         BodyId = _bodyId,
-                        AssignedCount = 5,
+                        AssignedCount = 7,
                         BodyName = "Ad-hoc adviescommissie impulssubsidies",
                         BodySeatTypeId = _bodySeatType1Id,
                         BodySeatTypeName = _bodySeatType1Name,
-                        FemaleCount = 4,
-                        FemalePercentage = new decimal(0.8),
-                        MaleCount = 1,
-                        MalePercentage = new decimal(0.2),
-                        TotalCount = 5,
+                        FemaleCount = 3,
+                        FemalePercentage = new decimal(0.43),
+                        MaleCount = 4,
+                        MalePercentage = new decimal(0.57),
+                        TotalCount = 7,
                         UnassignedCount = 0,
                         UnknownCount = 0,
                         UnknownPercentage = 0,
@@ -163,6 +170,22 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
                         FemalePercentage = 1,
                         MaleCount = 0,
                         MalePercentage = 0,
+                        TotalCount = 1,
+                        UnassignedCount = 0,
+                        UnknownCount = 0,
+                        UnknownPercentage = 0,
+                    },
+                    new BodyParticipation
+                    {
+                        AssignedCount = 1,
+                        BodyId = _bodyId,
+                        BodyName = "Ad-hoc adviescommissie impulssubsidies",
+                        BodySeatTypeId = _bodySeatType3Id,
+                        BodySeatTypeName = _bodySeatType3Name,
+                        FemaleCount = 0,
+                        FemalePercentage = 0,
+                        MaleCount = 1,
+                        MalePercentage = 1,
                         TotalCount = 1,
                         UnassignedCount = 0,
                         UnknownCount = 0,
@@ -185,12 +208,12 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
             participationTotals.Should().BeEquivalentTo(
                 new BodyParticipationTotals
                 {
-                    AssignedCount = 6,
-                    FemaleCount = 5,
-                    FemalePercentage = new decimal(0.83),
-                    MaleCount = 1,
-                    MalePercentage = new decimal(0.17),
-                    TotalCount = 6,
+                    AssignedCount = 9,
+                    FemaleCount = 4,
+                    FemalePercentage = new decimal(0.44),
+                    MaleCount = 5,
+                    MalePercentage = new decimal(0.56),
+                    TotalCount = 9,
                     UnassignedCount = 0,
                     UnknownCount = 0,
                     UnknownPercentage = 0,
