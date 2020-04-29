@@ -250,7 +250,7 @@
       },
       {
         "path": "@semantic-release/exec",
-        "cmd": "BITBUCKET_BUILD_NUMBER=${nextRelease.version} ./build.sh Containerize"
+        "cmd": "CI_BUILD_NUMBER=${nextRelease.version} ./build.sh Containerize"
       },
       {
         "path": "@semantic-release/git",
