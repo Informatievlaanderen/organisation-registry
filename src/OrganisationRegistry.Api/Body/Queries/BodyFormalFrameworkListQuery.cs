@@ -58,7 +58,9 @@
 
         protected override IQueryable<BodyFormalFrameworkListItem> Filter(FilteringHeader<BodyFormalFrameworkListItemFilter> filtering)
         {
-            var bodyFormalFrameworks = _context.BodyFormalFrameworkList.Where(x => x.BodyId == _bodyId).AsQueryable();
+            var bodyFormalFrameworks = _context.BodyFormalFrameworkList
+                .AsQueryable()
+                .Where(x => x.BodyId == _bodyId).AsQueryable();
 
             if (!filtering.ShouldFilter)
                 return bodyFormalFrameworks;

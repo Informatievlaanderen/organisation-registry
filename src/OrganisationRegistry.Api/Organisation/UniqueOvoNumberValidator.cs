@@ -21,6 +21,7 @@
         public bool IsOvoNumberTaken(Guid id, string ovoNumber)
         {
             return _context.OrganisationDetail
+                .AsQueryable()
                 .Where(item => item.Id != id)
                 .Any(item => item.OvoNumber == ovoNumber);
         }

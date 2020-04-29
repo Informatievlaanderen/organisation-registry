@@ -22,6 +22,7 @@ namespace OrganisationRegistry.Api.BodynClassificationType
         public bool IsNameTaken(Guid id, string name)
         {
             return _context.BodyClassificationTypeList
+                .AsQueryable()
                 .Where(item => item.Id != id)
                 .Any(item => item.Name == name);
         }

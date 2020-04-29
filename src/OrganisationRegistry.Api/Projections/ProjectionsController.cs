@@ -57,7 +57,9 @@ namespace OrganisationRegistry.Api.Projections
         [ProducesResponseType(typeof(IEnumerable<ProjectionStateItem>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
         {
-            return Ok(await context.ProjectionStates.ToListAsync());
+            return Ok(await context.ProjectionStates
+                .AsQueryable()
+                .ToListAsync());
         }
 
         /// <summary>Get a projection state by its id.</summary>
@@ -66,7 +68,9 @@ namespace OrganisationRegistry.Api.Projections
         [ProducesResponseType(typeof(ProjectionStateItem), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, Guid id)
         {
-            var state = await context.ProjectionStates.FirstOrDefaultAsync(x => x.Id == id);
+            var state = await context.ProjectionStates
+                .AsQueryable()
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (state == null)
                 return NotFound();
 
@@ -79,7 +83,9 @@ namespace OrganisationRegistry.Api.Projections
         [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> LastEvent([FromServices] OrganisationRegistryContext context)
         {
-            return Ok(await context.Events.MaxAsync(x => x.Number));
+            return Ok(await context.Events
+                .AsQueryable()
+                .MaxAsync(x => x.Number));
         }
 
         [HttpPut("states/{id}")]
@@ -88,7 +94,10 @@ namespace OrganisationRegistry.Api.Projections
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Put([FromServices] OrganisationRegistryContext context, Guid id, [FromBody] UpdateProjectionStateRequest message)
         {
-            var state = await context.ProjectionStates.FirstOrDefaultAsync(x => x.Id == id);
+            var state = await context.ProjectionStates
+                .AsQueryable()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (state == null)
                 return NotFound();
 

@@ -18,6 +18,7 @@ namespace OrganisationRegistry.Api.BodyClassification
         {
             return
                 _context.BodyClassificationList
+                    .AsQueryable()
                     .Where(item => item.BodyClassificationTypeId == typeId)
                     .Any(item => item.Name == name);
         }
@@ -26,6 +27,7 @@ namespace OrganisationRegistry.Api.BodyClassification
         {
             return
                 _context.BodyClassificationList
+                    .AsQueryable()
                     .Where(item => item.Id != id)
                     .Where(item => item.BodyClassificationTypeId == typeId)
                     .Any(item => item.Name == name);

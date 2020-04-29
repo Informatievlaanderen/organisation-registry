@@ -54,7 +54,10 @@
         [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Get([FromServices] ConfigurationContext context, [FromRoute] string id)
         {
-            var configurationValue = await context.Configuration.FirstOrDefaultAsync(x => x.Key == id);
+            var configurationValue =
+                await context.Configuration
+                    .AsQueryable()
+                    .FirstOrDefaultAsync(x => x.Key == id);
 
             if (configurationValue == null)
                 return NotFound();

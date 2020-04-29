@@ -49,6 +49,7 @@ namespace OrganisationRegistry.Api.Task
             _logger.LogInformation("Kbo sync started.");
 
             var itemsInQueue = context.KboSyncQueue
+                .AsQueryable()
                 .Where(item => item.SyncCompletedAt == null)
                 .OrderBy(item => item.MutationReadAt)
                 .ThenBy(item => item.SourceOrganisationKboNumber)

@@ -29,6 +29,7 @@
                 return false;
 
             return _context.LifecyclePhaseTypeList
+                .AsQueryable()
                 .Where(item => item.Id != lifecyclePhaseTypeId)
                 .Any(item =>
                     item.RepresentsActivePhase == (lifecyclePhaseTypeIsRepresentativeFor == LifecyclePhaseTypeIsRepresentativeFor.ActivePhase) &&

@@ -42,7 +42,11 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
                 parentAssignedToChild.Build()
             );
 
-            var organisationsForFormalFrameworkA = Context.OrganisationList.Where(item => item.FormalFrameworkId == formalFrameworkACreated.Id);
+            var organisationsForFormalFrameworkA =
+                Context.OrganisationList
+                    .AsQueryable()
+                    .Where(item => item.FormalFrameworkId == formalFrameworkACreated.Id);
+
             organisationsForFormalFrameworkA.Should().HaveCount(2);
 
             var parent = organisationsForFormalFrameworkA.SingleOrDefault(item => item.Name == parentOrganisationACreated.Name);
@@ -111,10 +115,17 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
                 formalFrameworkClearedForChildA
             );
 
-            var organisationsForFormalFrameworkA = Context.OrganisationList.Where(item => item.FormalFrameworkId == formalFrameworkACreated.Id);
+            var organisationsForFormalFrameworkA =
+                Context.OrganisationList
+                    .AsQueryable()
+                    .Where(item => item.FormalFrameworkId == formalFrameworkACreated.Id);
+
             organisationsForFormalFrameworkA.Should().HaveCount(2);
 
-            var organisationsForFormalFrameworkB = Context.OrganisationList.Where(item => item.FormalFrameworkId == formalFrameworkBCreated.Id);
+            var organisationsForFormalFrameworkB = Context.OrganisationList
+                .AsQueryable()
+                .Where(item => item.FormalFrameworkId == formalFrameworkBCreated.Id);
+
             organisationsForFormalFrameworkB.Should().HaveCount(2);
         }
     }

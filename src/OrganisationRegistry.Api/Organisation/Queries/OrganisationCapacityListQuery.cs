@@ -68,7 +68,9 @@
 
         protected override IQueryable<OrganisationCapacityListItem> Filter(FilteringHeader<OrganisationCapacityListItemFilter> filtering)
         {
-            var organisationCapacities = _context.OrganisationCapacityList.Where(x => x.OrganisationId == _organisationId).AsQueryable();
+            var organisationCapacities = _context.OrganisationCapacityList
+                .AsQueryable()
+                .Where(x => x.OrganisationId == _organisationId).AsQueryable();
 
             if (!filtering.ShouldFilter)
                 return organisationCapacities;

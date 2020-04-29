@@ -60,7 +60,9 @@ namespace OrganisationRegistry.Api.Person.Queries
 
         protected override IQueryable<PersonFunctionListItem> Filter(FilteringHeader<PersonFunctionListItem> filtering)
         {
-            var personFunctions = _context.PersonFunctionList.Where(x => x.PersonId == _personId).AsQueryable();
+            var personFunctions = _context.PersonFunctionList
+                .AsQueryable()
+                .Where(x => x.PersonId == _personId).AsQueryable();
 
             if (!filtering.ShouldFilter)
                 return personFunctions;

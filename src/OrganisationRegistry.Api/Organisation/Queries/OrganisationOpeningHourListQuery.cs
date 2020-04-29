@@ -62,7 +62,9 @@ namespace OrganisationRegistry.Api.Organisation.Queries
 
         protected override IQueryable<OrganisationOpeningHourListItem> Filter(FilteringHeader<OrganisationOpeningHourListItemFilter> filtering)
         {
-            var organisationOpeningHours = _context.OrganisationOpeningHourList.Where(x => x.OrganisationId == _organisationId).AsQueryable();
+            var organisationOpeningHours = _context.OrganisationOpeningHourList
+                .AsQueryable()
+                .Where(x => x.OrganisationId == _organisationId).AsQueryable();
 
             if (!filtering.ShouldFilter)
                 return organisationOpeningHours;

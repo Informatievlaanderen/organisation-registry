@@ -18,6 +18,7 @@ namespace OrganisationRegistry.Api.OrganisationClassification
         {
             return
                 _context.OrganisationClassificationList
+                    .AsQueryable()
                     .Where(item => item.OrganisationClassificationTypeId == typeId)
                     .Any(item => item.Name == name);
         }
@@ -26,6 +27,7 @@ namespace OrganisationRegistry.Api.OrganisationClassification
         {
             return
                 _context.OrganisationClassificationList
+                    .AsQueryable()
                     .Where(item => item.Id != id)
                     .Where(item => item.OrganisationClassificationTypeId == typeId)
                     .Any(item => item.Name == name);

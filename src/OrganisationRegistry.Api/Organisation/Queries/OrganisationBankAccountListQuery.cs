@@ -73,7 +73,9 @@
 
         protected override IQueryable<OrganisationBankAccountListItem> Filter(FilteringHeader<OrganisationBankAccountListItemFilter> filtering)
         {
-            var organisationBankAccounts = _context.OrganisationBankAccountList.Where(x => x.OrganisationId == _organisationId).AsQueryable();
+            var organisationBankAccounts = _context.OrganisationBankAccountList
+                .AsQueryable()
+                .Where(x => x.OrganisationId == _organisationId).AsQueryable();
 
             if (!filtering.ShouldFilter)
                 return organisationBankAccounts;

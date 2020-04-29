@@ -76,7 +76,9 @@ namespace OrganisationRegistry.Api.Body.Queries
 
         protected override IQueryable<BodySeatListItem> Filter(FilteringHeader<BodySeatListItemFilter> filtering)
         {
-            var bodySeats = _context.BodySeatList.Where(x => x.BodyId == _bodyId).AsQueryable();
+            var bodySeats = _context.BodySeatList
+                .AsQueryable()
+                .Where(x => x.BodyId == _bodyId).AsQueryable();
 
             if (!filtering.ShouldFilter)
                 return bodySeats;

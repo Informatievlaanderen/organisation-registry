@@ -5,7 +5,6 @@ namespace OrganisationRegistry.Api.Task
     using System.Net;
     using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
-    using Configuration;
     using Day.Commands;
     using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
@@ -13,7 +12,6 @@ namespace OrganisationRegistry.Api.Task
     using Infrastructure.Security;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
     using Requests;
     using Security;
     using SqlServer.Infrastructure;
@@ -105,6 +103,7 @@ namespace OrganisationRegistry.Api.Task
         {
             var bodiesInNeedOfFixing = context
                 .BodyDetail
+                .AsQueryable()
                 .Where(x => x.BodyNumber == null || x.BodyNumber == "")
                 .Select(x => x.Id)
                 .ToList();
@@ -118,6 +117,7 @@ namespace OrganisationRegistry.Api.Task
         {
             var seatsInNeedOfFixing = context
                 .BodySeatList
+                .AsQueryable()
                 .Where(x => x.BodySeatNumber == null || x.BodySeatNumber == "")
                 .ToList();
 

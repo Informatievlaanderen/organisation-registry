@@ -55,7 +55,11 @@ namespace OrganisationRegistry.Api.Body
         [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)
         {
-            var body = await context.BodyDetail.FirstOrDefaultAsync(x => x.Id == id);
+            var body =
+                await context.BodyDetail
+                    .AsQueryable()
+                    .FirstOrDefaultAsync(x => x.Id == id);
+
             if (body == null)
                 return NotFound();
 

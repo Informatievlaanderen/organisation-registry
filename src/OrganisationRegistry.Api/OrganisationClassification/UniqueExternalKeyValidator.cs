@@ -18,6 +18,7 @@ namespace OrganisationRegistry.Api.OrganisationClassification
         {
             return !string.IsNullOrEmpty(externalKey) &&
                 _context.OrganisationClassificationList
+                    .AsQueryable()
                     .Where(item => item.OrganisationClassificationTypeId == typeId)
                     .Any(item => item.ExternalKey == externalKey);
         }
@@ -26,6 +27,7 @@ namespace OrganisationRegistry.Api.OrganisationClassification
         {
             return !string.IsNullOrEmpty(externalKey) &&
                 _context.OrganisationClassificationList
+                    .AsQueryable()
                     .Where(item => item.Id != id)
                     .Where(item => item.OrganisationClassificationTypeId == typeId)
                     .Any(item => item.ExternalKey == externalKey);

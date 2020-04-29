@@ -56,7 +56,9 @@
 
         protected override IQueryable<OrganisationParentListItem> Filter(FilteringHeader<OrganisationParentListItem> filtering)
         {
-            var organisationParents = _context.OrganisationParentList.Where(x => x.OrganisationId == _organisationId).AsQueryable();
+            var organisationParents = _context.OrganisationParentList
+                .AsQueryable()
+                .Where(x => x.OrganisationId == _organisationId).AsQueryable();
 
             if (!filtering.ShouldFilter)
                 return organisationParents;

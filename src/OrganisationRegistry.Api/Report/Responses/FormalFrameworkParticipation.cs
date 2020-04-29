@@ -47,6 +47,7 @@ namespace OrganisationRegistry.Api.Report.Responses
         {
             var bodiesForFormalFramework = context
                 .BodyFormalFrameworkList
+                .AsQueryable()
                 .Where(x => x.FormalFrameworkId == formalFrameworkId &&
                             (!x.ValidFrom.HasValue || x.ValidFrom.Value <= DateTime.Now) &&
                             (!x.ValidTo.HasValue || x.ValidTo.Value >= DateTime.Now))

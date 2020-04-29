@@ -95,7 +95,9 @@ namespace OrganisationRegistry.Api.Body.Queries
 
         protected override IQueryable<BodyMandateListItem> Filter(FilteringHeader<BodyMandateListItemFilter> filtering)
         {
-            var bodyMandates = _context.BodyMandateList.Where(x => x.BodyId == _bodyId).AsQueryable();
+            var bodyMandates = _context.BodyMandateList
+                .AsQueryable()
+                .Where(x => x.BodyId == _bodyId).AsQueryable();
 
             if (!filtering.ShouldFilter)
                 return bodyMandates;

@@ -24,6 +24,7 @@
         public bool IsCodeTaken(Guid id, string name)
         {
             return _context.FormalFrameworkList
+                .AsQueryable()
                 .Where(item => item.Id != id)
                 .Any(item => item.Code == name);
         }
