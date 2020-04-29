@@ -1,4 +1,4 @@
-# Organisation Registry
+# Organisation Registry [![Build Status](https://github.com/Informatievlaanderen/organisation-registry/workflows/CI/badge.svg)](https://github.com/Informatievlaanderen/organisation-registry/actions)
 
 ## Goal
 
@@ -12,22 +12,6 @@
 * Run `build.sh` to make sure everything still compiles and all tests are still passing.
 * When built, you'll find the binaries in `./dist` which you can then test with locally, to ensure the bug or feature has been successfully implemented.
 * Send a Pull Request.
-
-### Getting started
-
-#### Initialisation
-
-To fill up the database for the first time:
-
-* Run `MunicipalityRegistry.Api.CrabImport` (`MunicipalityRegistry.sln`)
-* Run `MunicipalityRegistry.Importer` (`MunicipalityRegistryImporter.sln`) with `init -c -l Trace` as flags.
-
-#### Projections
-
-To start the projections for the first time:
-
-* Run `MunicipalityRegistry.Projector` (`MunicipalityRegistry.sln`)
-* Send a `POST` to `http://localhost:2006/v1/projections/start/all`
 
 ### Useful commands
 
