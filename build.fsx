@@ -121,7 +121,7 @@ Target.create "Publish_Solution" (fun _ ->
 
 Target.create "Clean_Solution" (fun _ ->
   Shell.cleanDir "packages"
-  Shell.cleanDir "node_modules"
+  // Shell.cleanDir "node_modules"
 )
 
 Target.create "Pack_Solution" (fun _ ->
