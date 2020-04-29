@@ -1,3 +1,10 @@
+## [1.41.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.41.0...v1.41.1) (2020-04-29)
+
+
+### Bug Fixes
+
+* remove municipality copy pasted docs ([e3fb18a](https://github.com/informatievlaanderen/organisation-registry/commit/e3fb18ac9df872936b35632367088358ec69c250))
+
 # [1.41.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.40.0...v1.41.0) (2020-04-29)
 
 
