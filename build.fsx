@@ -119,6 +119,11 @@ Target.create "Publish_Solution" (fun _ ->
   Shell.copyFile dist (source @@ "Dockerfile")
 )
 
+Target.create "Clean_Solution" (fun _ ->
+  Shell.cleanDir "packages"
+  Shell.cleanDir "node_modules"
+)
+
 Target.create "Pack_Solution" (fun _ ->
   [
     "OrganisationRegistry.Api"
@@ -174,6 +179,7 @@ Target.create "Push" ignore
 
 "Test"
   ==> "Publish_Solution"
+  ==> "Clean_Solution"
   ==> "Publish"
 
 "Publish"
