@@ -59,7 +59,9 @@
 
         protected override IQueryable<DelegationAssignmentListItem> Filter(FilteringHeader<DelegationAssignmentListItemFilter> filtering)
         {
-            return _context.DelegationAssignmentList.Where(x => x.BodyMandateId == _delegationId).AsQueryable();
+            return _context.DelegationAssignmentList
+                .AsQueryable()
+                .Where(x => x.BodyMandateId == _delegationId);
         }
 
         private class DelegationAssignmentListSorting : ISorting

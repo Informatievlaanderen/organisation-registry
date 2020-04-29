@@ -60,7 +60,9 @@
 
         protected override IQueryable<BodyLifecyclePhaseListItem> Filter(FilteringHeader<BodyLifecyclePhaseListItem> filtering)
         {
-            var bodyLifecyclePhases = _context.BodyLifecyclePhaseList.Where(x => x.BodyId == _bodyId).AsQueryable();
+            var bodyLifecyclePhases = _context.BodyLifecyclePhaseList
+                .AsQueryable()
+                .Where(x => x.BodyId == _bodyId).AsQueryable();
 
             if (!filtering.ShouldFilter)
                 return bodyLifecyclePhases;

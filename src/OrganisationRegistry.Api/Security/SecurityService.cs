@@ -156,6 +156,7 @@ namespace OrganisationRegistry.Api.Security
         {
             var organisationTrees = _context
                 .OrganisationTreeList
+                .AsQueryable()
                 .Where(x => ovoNumbers.Contains(x.OvoNumber))
                 .Select(x => x.OrganisationTree)
                 .ToList()
@@ -166,6 +167,7 @@ namespace OrganisationRegistry.Api.Security
 
             var organisationIds = _context
                 .OrganisationDetail
+                .AsQueryable()
                 .Where(x => organisationTrees.Contains(x.OvoNumber))
                 .Select(x => x.Id)
                 .Distinct()
@@ -173,6 +175,7 @@ namespace OrganisationRegistry.Api.Security
 
             var bodyIds = _context
                 .ActiveBodyOrganisationList
+                .AsQueryable()
                 .Where(x => organisationIds.Contains(x.OrganisationId))
                 .Select(x => x.BodyId)
                 .Distinct()

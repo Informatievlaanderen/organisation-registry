@@ -83,7 +83,9 @@ namespace OrganisationRegistry.Api.FormalFramework
         [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)
         {
-            var formalFramework = await context.FormalFrameworkList.FirstOrDefaultAsync(x => x.Id == id);
+            var formalFramework = await context.FormalFrameworkList
+                .AsQueryable()
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (formalFramework == null)
                 return NotFound();

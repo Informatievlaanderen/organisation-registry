@@ -60,7 +60,9 @@ namespace OrganisationRegistry.Api.Body.Queries
 
         protected override IQueryable<BodyBodyClassificationListItem> Filter(FilteringHeader<BodyBodyClassificationListItemFilter> filtering)
         {
-            var bodyBodyClassifications = _context.BodyBodyClassificationList.Where(x => x.BodyId == _bodyId).AsQueryable();
+            var bodyBodyClassifications = _context.BodyBodyClassificationList
+                .AsQueryable()
+                .Where(x => x.BodyId == _bodyId).AsQueryable();
 
             if (!filtering.ShouldFilter)
                 return bodyBodyClassifications;

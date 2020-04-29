@@ -18,6 +18,7 @@ namespace OrganisationRegistry.Api.FormalFramework
         {
             return
                 _context.FormalFrameworkList
+                    .AsQueryable()
                     .Where(item => item.FormalFrameworkCategoryId == categoryId)
                     .Any(item => item.Name == name);
         }
@@ -25,6 +26,7 @@ namespace OrganisationRegistry.Api.FormalFramework
         public bool IsNameTaken(Guid id, string name, Guid categoryId)
         {
             return _context.FormalFrameworkList
+                .AsQueryable()
                 .Where(item => item.Id != id)
                 .Where(item => item.FormalFrameworkCategoryId == categoryId)
                 .Any(item => item.Name == name);

@@ -58,7 +58,9 @@
 
         protected override IQueryable<BodyOrganisationListItem> Filter(FilteringHeader<BodyOrganisationListItemFilter> filtering)
         {
-            var bodyOrganisations = _context.BodyOrganisationList.Where(x => x.BodyId == _bodyId).AsQueryable();
+            var bodyOrganisations = _context.BodyOrganisationList
+                .AsQueryable()
+                .Where(x => x.BodyId == _bodyId).AsQueryable();
 
             if (!filtering.ShouldFilter)
                 return bodyOrganisations;

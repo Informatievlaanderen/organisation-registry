@@ -60,7 +60,9 @@
 
         protected override IQueryable<OrganisationKeyListItem> Filter(FilteringHeader<OrganisationKeyListItemFilter> filtering)
         {
-            var organisationKeys = _context.OrganisationKeyList.Where(x => x.OrganisationId == _organisationId).AsQueryable();
+            var organisationKeys = _context.OrganisationKeyList
+                .AsQueryable()
+                .Where(x => x.OrganisationId == _organisationId).AsQueryable();
 
             if (!filtering.ShouldFilter)
                 return organisationKeys;

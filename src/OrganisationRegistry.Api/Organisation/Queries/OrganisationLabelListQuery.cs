@@ -65,7 +65,9 @@
 
         protected override IQueryable<OrganisationLabelListItem> Filter(FilteringHeader<OrganisationLabelListItemFilter> filtering)
         {
-            var organisationLabels = _context.OrganisationLabelList.Where(x => x.OrganisationId == _organisationId).AsQueryable();
+            var organisationLabels = _context.OrganisationLabelList
+                .AsQueryable()
+                .Where(x => x.OrganisationId == _organisationId).AsQueryable();
 
             if (!filtering.ShouldFilter)
                 return organisationLabels;

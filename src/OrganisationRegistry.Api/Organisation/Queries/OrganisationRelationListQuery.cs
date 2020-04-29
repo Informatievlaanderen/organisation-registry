@@ -65,8 +65,8 @@ namespace OrganisationRegistry.Api.Organisation.Queries
         protected override IQueryable<OrganisationRelationListItem> Filter(FilteringHeader<OrganisationRelationListItemFilter> filtering)
         {
             var organisationRelations = _context.OrganisationRelationList
-                .Where(x => x.OrganisationId == _organisationId)
-                .AsQueryable();
+                .AsQueryable()
+                .Where(x => x.OrganisationId == _organisationId);
 
             if (!filtering.ShouldFilter)
                 return organisationRelations;

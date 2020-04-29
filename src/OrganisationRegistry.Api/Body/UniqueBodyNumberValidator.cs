@@ -21,6 +21,7 @@
         public bool IsBodyNumberTaken(Guid id, string bodyNumber)
         {
             return _context.BodyDetail
+                .AsQueryable()
                 .Where(item => item.Id != id)
                 .Any(item => item.BodyNumber == bodyNumber);
         }

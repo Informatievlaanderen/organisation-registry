@@ -33,7 +33,9 @@ namespace OrganisationRegistry.Api.Body.Queries
 
         protected override IQueryable<BodyContactListItem> Filter(FilteringHeader<BodyContactListItemFilter> filtering)
         {
-            var organisationContacts = _context.BodyContactList.Where(x => x.BodyId == _organisationId).AsQueryable();
+            var organisationContacts = _context.BodyContactList
+                .AsQueryable()
+                .Where(x => x.BodyId == _organisationId).AsQueryable();
 
             if (!filtering.ShouldFilter)
                 return organisationContacts;

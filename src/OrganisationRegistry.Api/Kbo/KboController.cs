@@ -56,6 +56,7 @@ namespace OrganisationRegistry.Api.Kbo
             {
                 if (await organisationRegistryContext
                     .OrganisationDetail
+                    .AsQueryable()
                     .AnyAsync(x => x.KboNumber.Equals(dotFormat) || x.KboNumber.Equals(digitsOnly)))
                 {
                     ModelState.AddModelError(

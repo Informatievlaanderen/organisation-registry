@@ -49,6 +49,7 @@ namespace OrganisationRegistry.Api.Report.Responses
         {
             //get organisation ids for organisation classification
             var organisationIds = context.BodySeatGenderRatioOrganisationClassificationList
+                .AsQueryable()
                 .Where(
                     body =>
                         body.OrganisationClassificationId == organisationClassificationId &&
@@ -62,6 +63,7 @@ namespace OrganisationRegistry.Api.Report.Responses
 
             //get body ids
             var bodies = context.BodySeatGenderRatioOrganisationPerBodyList
+                .AsQueryable()
                 .Where(body => organisationIds.Contains(body.OrganisationId))
                 .ToList();
             if (!bodies.Any())
@@ -72,6 +74,7 @@ namespace OrganisationRegistry.Api.Report.Responses
             var nonFilteredBodyIds = bodies.Select(x => x.BodyId);
             var filteredBodyIds = context
                 .BodyFormalFrameworkList
+                .AsQueryable()
                 .Where(x => nonFilteredBodyIds.Contains(x.BodyId) &&
                             x.FormalFrameworkId == configuration.Mep_FormalFrameworkId &&
                             (!x.ValidFrom.HasValue || x.ValidFrom.Value <= today) &&

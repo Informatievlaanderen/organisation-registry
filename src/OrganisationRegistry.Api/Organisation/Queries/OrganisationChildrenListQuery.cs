@@ -45,7 +45,9 @@
 
         protected override IQueryable<OrganisationChildListItem> Filter(FilteringHeader<OrganisationChildListItem> filtering)
         {
-            var organisationChildren = _context.OrganisationChildrenList.Where(x => x.ParentOrganisationId == _organisationId).AsQueryable();
+            var organisationChildren = _context.OrganisationChildrenList
+                .AsQueryable()
+                .Where(x => x.ParentOrganisationId == _organisationId).AsQueryable();
 
             // Only possible to get active children
             organisationChildren = organisationChildren

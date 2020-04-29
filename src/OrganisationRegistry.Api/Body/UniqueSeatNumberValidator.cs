@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Api.Body
 {
     using System;
     using System.Linq;
+    using SqlServer.Body;
     using SqlServer.Infrastructure;
 
     public class UniqueSeatNumberValidator : IUniqueSeatNumberValidator
@@ -21,6 +22,7 @@ namespace OrganisationRegistry.Api.Body
         public bool IsBodyNumberTaken(Guid id, string bodyNumber)
         {
             return _context.BodyDetail
+                .AsQueryable()
                 .Where(item => item.Id != id)
                 .Any(item => item.BodyNumber == bodyNumber);
         }

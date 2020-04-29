@@ -22,6 +22,7 @@
         public bool IsNameTaken(Guid id, string name)
         {
             return _context.LocationList
+                .AsQueryable()
                 .Where(item => item.Id != id)
                 .Any(item => item.FormattedAddress == name);
         }

@@ -65,7 +65,9 @@
 
         protected override IQueryable<OrganisationFormalFrameworkListItem> Filter(FilteringHeader<OrganisationFormalFrameworkListItemFilter> filtering)
         {
-            var organisationFormalFrameworks = _context.OrganisationFormalFrameworkList.Where(x => x.OrganisationId == _organisationId).AsQueryable();
+            var organisationFormalFrameworks = _context.OrganisationFormalFrameworkList
+                .AsQueryable()
+                .Where(x => x.OrganisationId == _organisationId).AsQueryable();
 
             if (!filtering.ShouldFilter)
                 return organisationFormalFrameworks;
