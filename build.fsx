@@ -87,7 +87,7 @@ Target.create "Build_Solution" (fun _ ->
   build "OrganisationRegistry")
 
 Target.create "Site_Build" (fun _ ->
-  Npm.exec "build" id
+  Npm.exec "run build" id
 
   let dist = (buildDir @@ "OrganisationRegistry.UI" @@ "linux")
   let source = "src" @@ "OrganisationRegistry.UI"
