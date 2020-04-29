@@ -10,6 +10,7 @@ open Fake.Core
 open Fake.Core.TargetOperators
 open Fake.IO
 open Fake.IO.FileSystemOperators
+open Fake.IO.Globbing.Operators
 open Fake.JavaScript
 open ``Build-generic``
 
@@ -120,8 +121,8 @@ Target.create "Publish_Solution" (fun _ ->
 )
 
 Target.create "Clean_Solution" (fun _ ->
-  Shell.cleanDir "packages"
-  // Shell.cleanDir "node_modules"
+  !! "src/**/obj/*" |> File.deleteAll
+  !! "src/**/bin/*" |> File.deleteAll
 )
 
 Target.create "Pack_Solution" (fun _ ->
@@ -166,7 +167,7 @@ Target.create "Containerize" ignore
 Target.create "Push" ignore
 
 "NpmInstall"
- // ==> "DotNetCli"
+  ==> "DotNetCli"
   ==> "CleanAll"
   ==> "Restore_Solution"
   ==> "Build_Solution"
