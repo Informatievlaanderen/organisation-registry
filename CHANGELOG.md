@@ -1,3 +1,10 @@
+## [1.41.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.41.1...v1.41.2) (2020-04-30)
+
+
+### Bug Fixes
+
+* empty bin and obj folders ([511eae8](https://github.com/informatievlaanderen/organisation-registry/commit/511eae8313769b86fead6c9abd3df70ab2940b14))
+
 ## [1.41.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.41.0...v1.41.1) (2020-04-29)
 
 
