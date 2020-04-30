@@ -123,6 +123,7 @@ Target.create "Publish_Solution" (fun _ ->
 Target.create "Clean_Solution" (fun _ ->
   !! "src/**/obj/*" |> File.deleteAll
   !! "src/**/bin/*" |> File.deleteAll
+  !! "packages/**/*" -- "packages/**/Be.Vlaanderen*" |> File.deleteAll
 )
 
 Target.create "Pack_Solution" (fun _ ->
