@@ -1,3 +1,12 @@
+# [1.42.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.41.2...v1.42.0) (2020-05-18)
+
+
+### Features
+
+* add ssXXX format to handle dates like 2019-12-24T16:01:22+05:45 ([edd3344](https://github.com/informatievlaanderen/organisation-registry/commit/edd3344f74151df235367acd0f3ee98fe9e47573))
+* upgrade to ES 7 ([ecaaeb4](https://github.com/informatievlaanderen/organisation-registry/commit/ecaaeb45ff1a5cacedb71a6f79f7c52202ab9052))
+* upgrade to NEST 7.6.1 ([3d66e95](https://github.com/informatievlaanderen/organisation-registry/commit/3d66e95ca39c72302950b95af13b03df958562b8))
+
 ## [1.41.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.41.1...v1.41.2) (2020-04-30)
 
 
