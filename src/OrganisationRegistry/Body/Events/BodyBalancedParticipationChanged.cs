@@ -7,7 +7,7 @@ namespace OrganisationRegistry.Body.Events
     {
         public Guid BodyId => Id;
 
-        public bool BalancedParticipationObligatory { get; }
+        public bool? BalancedParticipationObligatory { get; }
         public bool? PreviousBalancedParticipationObligatory { get; }
 
         public string? BalancedParticipationExtraRemark { get; }
@@ -19,7 +19,7 @@ namespace OrganisationRegistry.Body.Events
         [JsonConstructor]
         public BodyBalancedParticipationChanged(
             Guid bodyId,
-            bool balancedParticipationObligatory,
+            bool? balancedParticipationObligatory,
             string? balancedParticipationExtraRemark,
             string? balancedParticipationExceptionMeasure,
             bool? previousBalancedParticipationObligatory,

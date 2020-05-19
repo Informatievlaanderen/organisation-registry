@@ -51,12 +51,12 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyBalancedParticipat
         protected override int ExpectedNumberOfEvents => 1;
 
         [Fact]
-        public void DefaultsToNoParticipation()
+        public void SetsUnknownParticipation()
         {
             var bodyBalancedParticipationChanged = PublishedEvents[0].UnwrapBody<BodyBalancedParticipationChanged>();
             bodyBalancedParticipationChanged.BodyId.Should().Be(_bodyId);
 
-            bodyBalancedParticipationChanged.BalancedParticipationObligatory.Should().BeFalse();
+            bodyBalancedParticipationChanged.BalancedParticipationObligatory.Should().BeNull();
             bodyBalancedParticipationChanged.BalancedParticipationExtraRemark.Should().Be("remark");
             bodyBalancedParticipationChanged.BalancedParticipationExceptionMeasure.Should().Be("exception");
 

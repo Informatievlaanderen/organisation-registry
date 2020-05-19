@@ -206,7 +206,7 @@ namespace OrganisationRegistry.Body
         {
             ApplyChange(new BodyBalancedParticipationChanged(
                 Id,
-                balancedParticipationObligatory ?? false,
+                balancedParticipationObligatory,
                 balancedParticipationExtraRemark,
                 balancedParticipationExceptionMeasure,
                 _balancedParticipationObligatory,

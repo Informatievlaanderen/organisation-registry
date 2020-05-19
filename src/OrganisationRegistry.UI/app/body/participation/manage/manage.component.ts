@@ -6,6 +6,7 @@ import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
 import { required } from 'core/validation';
 
 import { BodyService, BodyBalancedParticipation } from 'services/bodies';
+import { RadioItem } from 'shared/components/form/form-group-radio/form-group-radio.model';
 
 @Component({
   templateUrl: 'manage.template.html',
@@ -13,6 +14,8 @@ import { BodyService, BodyBalancedParticipation } from 'services/bodies';
 })
 export class BodyParticipationManageComponent implements OnInit {
   public form: FormGroup;
+  public mepComplianceOptions: RadioItem[];
+
 
   constructor(
     private route: ActivatedRoute,
@@ -21,9 +24,15 @@ export class BodyParticipationManageComponent implements OnInit {
     private bodyService: BodyService,
     private alertService: AlertService
   ) {
+    this.mepComplianceOptions = [
+      new RadioItem('Niet ingevuld', ''),
+      new RadioItem('Mep-plichtig', 'true'),
+      new RadioItem('Niet Mep-plichtig', 'false'),
+    ];
+
     this.form = formBuilder.group({
       id: ['', required],
-      obligatory: ['', Validators.nullValidator],
+      obligatory: [''],
       extraRemark: ['', Validators.nullValidator],
       exceptionMeasure: ['', Validators.nullValidator]
     });
