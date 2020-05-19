@@ -202,7 +202,7 @@ export class BodyService implements ICrudService<Body> {
 
   private toBodyBalancedParticipation(res: Response): BodyBalancedParticipation {
     let bodyBalancedParticipation = res.json();
-    return (bodyBalancedParticipation || {}) as BodyBalancedParticipation;
+    return new BodyBalancedParticipation(bodyBalancedParticipation || {});
   }
 
   private toBodies(res: Response): PagedResult<BodyListItem> {

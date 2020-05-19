@@ -6,12 +6,13 @@
 
     <form class="form" [formGroup]="form" (ngSubmit)="submit(form.value)" autocomplete="off">
       <div class="form__group">
-        <ww-form-group-toggle
+        <ww-form-group-radiolist
           [id]="'obligatory'"
-          [label]="'MEP-plichtig'"
+          [name]="'Mep-plichtig'"
+          [label]="'Mep-plichtig'"
           [control]="form.get('obligatory')"
-          [name]="'MEP-plichtig'">
-        </ww-form-group-toggle>
+          [values]="mepComplianceOptions">
+        </ww-form-group-radiolist>
 
         <ww-form-group-textarea
           [id]="'extraRemark'"
