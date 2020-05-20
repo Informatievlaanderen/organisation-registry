@@ -88,7 +88,7 @@ This is how the generated documentation looks: https://structurizr.com/share/377
 
 Our `build.sh` script knows a few tricks. By default it runs with the `Test` target.
 
-The buildserver passes in `BITBUCKET_BUILD_NUMBER` as an integer to version the results and `BUILD_DOCKER_REGISTRY` to point to a Docker registry to push the resulting Docker images.
+The buildserver passes in `CI_BUILD_NUMBER` as an integer to version the results and `BUILD_DOCKER_REGISTRY` to point to a Docker registry to push the resulting Docker images.
 
 #### NpmInstall
 
