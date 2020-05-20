@@ -1,3 +1,11 @@
+# [1.43.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.42.0...v1.43.0) (2020-05-20)
+
+
+### Features
+
+* create index with settings from config ([61e001c](https://github.com/informatievlaanderen/organisation-registry/commit/61e001c2a66c1cd623e2118158fc44d58dd821ef))
+* upgrade es in docker compose ([24a632c](https://github.com/informatievlaanderen/organisation-registry/commit/24a632c8b4627f3923c5e68493d17340beac6cee))
+
 # [1.42.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.41.2...v1.42.0) (2020-05-18)
 
 
