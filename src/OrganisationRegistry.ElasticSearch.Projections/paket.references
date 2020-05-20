@@ -1,8 +1,8 @@
-System.Data.SqlClient
 System.Reflection.TypeExtensions
 
 Microsoft.EntityFrameworkCore
 Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.Data.SqlClient
 
 Microsoft.Extensions.Configuration.EnvironmentVariables
 Microsoft.Extensions.Configuration.FileExtensions

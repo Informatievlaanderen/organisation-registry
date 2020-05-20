@@ -1,6 +1,6 @@
 ﻿namespace OrganisationRegistry.Infrastructure.Configuration
 {
-    using System.Data.SqlClient;
+    using Microsoft.Data.SqlClient;
 
     public static class Obfuscator
     {

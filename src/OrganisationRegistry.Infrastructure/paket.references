@@ -13,6 +13,7 @@ Microsoft.Extensions.Http
 Be.Vlaanderen.Basisregisters.Converters.TrimString
 
 Dapper
+Microsoft.Data.SqlClient
 Newtonsoft.Json
 Autofac.Extensions.DependencyInjection
 

@@ -1,6 +1,5 @@
 Be.Vlaanderen.Basisregisters.Api
 
-System.Data.SqlClient
 System.Reflection.TypeExtensions
 System.IdentityModel.Tokens.Jwt
 System.Interactive.Async
@@ -25,6 +24,7 @@ Microsoft.AspNetCore.Connections.Abstractions
 Microsoft.EntityFrameworkCore
 Microsoft.EntityFrameworkCore.InMemory
 Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.Data.SqlClient
 
 IdentityModel
 EPPlus

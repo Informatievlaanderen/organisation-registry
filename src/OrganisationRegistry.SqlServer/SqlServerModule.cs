@@ -2,7 +2,7 @@ namespace OrganisationRegistry.SqlServer
 {
     using System;
     using System.Data.Common;
-    using System.Data.SqlClient;
+    using Microsoft.Data.SqlClient;
     using System.Reflection;
     using Autofac;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;

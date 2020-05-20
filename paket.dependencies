@@ -14,79 +14,80 @@ nuget System.ServiceModel.Security 4.7.0
 nuget System.IdentityModel.Tokens.Jwt 6.5.1
 nuget Microsoft.IdentityModel.Tokens 6.5.1
 
-nuget Microsoft.AspNetCore.Authentication.JwtBearer 3.1.3
-nuget Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore 3.1.3
-nuget Microsoft.AspNetCore.AzureAppServicesIntegration 3.1.3
+nuget Microsoft.AspNetCore.Authentication.JwtBearer 3.1.4
+nuget Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore 3.1.4
+nuget Microsoft.AspNetCore.AzureAppServicesIntegration 3.1.4
 nuget Microsoft.AspNetCore.Mvc.Versioning 4.1.1
-nuget Microsoft.AspNetCore.Mvc.Razor.Extensions 3.1.3
-nuget Microsoft.AspNetCore.Authorization 3.1.3
-nuget Microsoft.AspNetCore.Connections.Abstractions 3.1.3
-nuget Microsoft.AspNetCore.DataProtection 3.1.3
-nuget Microsoft.AspNetCore.Cryptography.Internal 3.1.3
-nuget Microsoft.AspNetCore.DataProtection.Abstractions 3.1.3
-nuget Microsoft.AspNetCore.Http.Features 3.1.3
-nuget Microsoft.AspNetCore.Razor.Language 3.1.3
-nuget Microsoft.AspNetCore.JsonPatch 3.1.3
+nuget Microsoft.AspNetCore.Mvc.Razor.Extensions 3.1.4
+nuget Microsoft.AspNetCore.Authorization 3.1.4
+nuget Microsoft.AspNetCore.Connections.Abstractions 3.1.4
+nuget Microsoft.AspNetCore.DataProtection 3.1.4
+nuget Microsoft.AspNetCore.Cryptography.Internal 3.1.4
+nuget Microsoft.AspNetCore.DataProtection.Abstractions 3.1.4
+nuget Microsoft.AspNetCore.Http.Features 3.1.4
+nuget Microsoft.AspNetCore.Razor.Language 3.1.4
+nuget Microsoft.AspNetCore.JsonPatch 3.1.4
 
-nuget Microsoft.CodeAnalysis.Razor 3.1.3
+nuget Microsoft.CodeAnalysis.Razor 3.1.4
 
-nuget Microsoft.EntityFrameworkCore.SqlServer 3.1.3
-nuget Microsoft.EntityFrameworkCore.Relational 3.1.3
-nuget Microsoft.EntityFrameworkCore 3.1.3
-nuget Microsoft.EntityFrameworkCore.Abstractions 3.1.3
-nuget Microsoft.EntityFrameworkCore.Analyzers 3.1.3
+nuget Microsoft.EntityFrameworkCore.SqlServer 3.1.4
+nuget Microsoft.EntityFrameworkCore.Relational 3.1.4
+nuget Microsoft.EntityFrameworkCore 3.1.4
+nuget Microsoft.EntityFrameworkCore.Abstractions 3.1.4
+nuget Microsoft.EntityFrameworkCore.Analyzers 3.1.4
 
-nuget Microsoft.Extensions.Caching.Abstractions 3.1.3
-nuget Microsoft.Extensions.Configuration 3.1.3
-nuget Microsoft.Extensions.Configuration.Abstractions 3.1.3
-nuget Microsoft.Extensions.Configuration.Binder 3.1.3
-nuget Microsoft.Extensions.Configuration.CommandLine 3.1.3
-nuget Microsoft.Extensions.Configuration.EnvironmentVariables 3.1.3
-nuget Microsoft.Extensions.Configuration.FileExtensions 3.1.3
-nuget Microsoft.Extensions.Configuration.Json 3.1.3
-nuget Microsoft.Extensions.DependencyInjection 3.1.3
-nuget Microsoft.Extensions.DependencyInjection.Abstractions 3.1.3
-nuget Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore 3.1.3
-nuget Microsoft.Extensions.DependencyModel 3.1.3
-nuget Microsoft.Extensions.Logging.Abstractions 3.1.3
-nuget Microsoft.Extensions.Http 3.1.3
+nuget Microsoft.Extensions.Caching.Abstractions 3.1.4
+nuget Microsoft.Extensions.Configuration 3.1.4
+nuget Microsoft.Extensions.Configuration.Abstractions 3.1.4
+nuget Microsoft.Extensions.Configuration.Binder 3.1.4
+nuget Microsoft.Extensions.Configuration.CommandLine 3.1.4
+nuget Microsoft.Extensions.Configuration.EnvironmentVariables 3.1.4
+nuget Microsoft.Extensions.Configuration.FileExtensions 3.1.4
+nuget Microsoft.Extensions.Configuration.Json 3.1.4
+nuget Microsoft.Extensions.DependencyInjection 3.1.4
+nuget Microsoft.Extensions.DependencyInjection.Abstractions 3.1.4
+nuget Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore 3.1.4
+nuget Microsoft.Extensions.DependencyModel 3.1.4
+nuget Microsoft.Extensions.Logging.Abstractions 3.1.4
+nuget Microsoft.Extensions.Http 3.1.4
 
 nuget Microsoft.Rest.ClientRuntime 2.3.21 // TODO: Can we remove this if AutoRest depends on it?
 nuget Microsoft.DotNet.InternalAbstractions 1.0.0
 
 nuget AspNetCore.HealthChecks.SqlServer 3.1.1
 
-nuget FluentFTP 32.4.0
-nuget NEST 7.6.1
-nuget Dapper 1.50.4
-nuget AutoRest 0.17.3
-nuget RestSharp 106.10.1
-nuget IdentityModel 4.2.0
-nuget EPPlus 5.1.1
+nuget Microsoft.Data.SqlClient 1.1.3
+nuget FluentFTP 32.4.1
+nuget NEST 7.7.0
+nuget Dapper 2.0.35
+nuget AutoRest 1.2.1
+nuget RestSharp 106.11.4
+nuget IdentityModel 4.3.0
+nuget EPPlus 5.1.2
 
 nuget Serilog.Sinks.Literate 3.0.0 // TODO: This can be removed eventually
 
-nuget Microsoft.EntityFrameworkCore.Design 3.1.3
+nuget Microsoft.EntityFrameworkCore.Design 3.1.4
 
 // Kbo Mutations
 nuget CsvHelper 15.0.5
 nuget Optional 4.0.0
 
 // BASE REGISTRIES STUFF
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 4.0.6
-nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 2.2.1 content: true, copy_content_to_output_dir: always, copy_local: true
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 4.1.0
+nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 2.2.3 content: true, copy_content_to_output_dir: always, copy_local: true
 
-nuget Be.Vlaanderen.Basisregisters.AggregateSource 5.0.1
+nuget Be.Vlaanderen.Basisregisters.AggregateSource 5.0.5
 
-nuget Be.Vlaanderen.Basisregisters.Api 11.1.7
+nuget Be.Vlaanderen.Basisregisters.Api 11.2.3
 
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 4.4.1
-nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql 4.4.1
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 4.4.3
+nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql 4.4.3
 
 // TEST STUFF
 nuget Microsoft.NET.Test.Sdk 16.6.1
-nuget Microsoft.EntityFrameworkCore.InMemory 3.1.3
-nuget Microsoft.AspNetCore.TestHost 3.1.3
+nuget Microsoft.EntityFrameworkCore.InMemory 3.1.4
+nuget Microsoft.AspNetCore.TestHost 3.1.4
 nuget xunit 2.4.1
 nuget xunit.runner.visualstudio 2.4.1
 nuget xunit.categories 2.0.4
@@ -94,7 +95,7 @@ nuget xunit.assert.source 2.4.1
 nuget AutoFixture 4.11.0
 nuget AutoFixture.Xunit2 4.11.0
 nuget FluentAssertions 5.10.3
-nuget Moq 4.14.0
+nuget Moq 4.14.1
 
 // BUILD STUFF
 nuget SourceLink.Embed.AllSourceFiles 2.8.3 copy_local: true
