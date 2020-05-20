@@ -1,3 +1,10 @@
+## [1.43.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.43.1...v1.43.2) (2020-05-20)
+
+
+### Bug Fixes
+
+* add window prop for aiv uri ([f5c390e](https://github.com/informatievlaanderen/organisation-registry/commit/f5c390e2a2f16cfc40cde1077af784e8313953a6))
+
 ## [1.43.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.43.0...v1.43.1) (2020-05-20)
 
 
