@@ -56,9 +56,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     {
         private readonly Elastic _elastic;
         private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
+        private readonly ElasticSearchConfiguration _elasticSearchOptions;
         private readonly IMemoryCaches _memoryCaches;
-        private readonly string _bodyIndex;
-        private readonly string _bodyType;
         private readonly ElasticWriter<BodyDocument> _elasticWriter;
 
         private static string[] ProjectionTableNames => Array.Empty<string>();
@@ -73,9 +72,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             _elastic = elastic;
             _contextFactory = contextFactory;
             _memoryCaches = memoryCaches;
+            _elasticSearchOptions = elasticSearchOptions.Value;
 
-            _bodyIndex = elasticSearchOptions.Value.BodyWriteIndex;
-            _bodyType = elasticSearchOptions.Value.BodyType;
             _elasticWriter = new ElasticWriter<BodyDocument>(elastic);
 
             PrepareIndex(elastic.WriteClient, false);
@@ -83,8 +81,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         private void PrepareIndex(IElasticClient client, bool deleteIndex)
         {
-            var indexName = _bodyIndex;
-            var typeName = _bodyType;
+            var indexName = _elasticSearchOptions.BodyWriteIndex;
 
             if (deleteIndex && client.DoesIndexExist(indexName))
             {
@@ -99,7 +96,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             {
                 var indexResult = client.Indices.Create(
                     indexName,
-                    index => index.Map<BodyDocument>(BodyDocument.Mapping));
+                    index => index
+                        .Map<BodyDocument>(BodyDocument.Mapping)
+                        .Settings(descriptor => descriptor
+                            .NumberOfShards(_elasticSearchOptions.NumberOfShards)
+                            .NumberOfReplicas(_elasticSearchOptions.NumberOfReplicas)));
 
                 if (!indexResult.IsValid)
                     throw new Exception($"Could not create body index '{indexName}'.");

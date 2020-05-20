@@ -27,8 +27,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     {
         private readonly Elastic _elastic;
         private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
-        private readonly string _peopleIndex;
-        private readonly string _personType;
+        private readonly ElasticSearchConfiguration _elasticSearchOptions;
 
         private string[] ProjectionTableNames =>
             new[]
@@ -45,8 +44,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         {
             _elastic = elastic;
             _contextFactory = contextFactory;
-            _peopleIndex = elasticSearchOptions.Value.PeopleWriteIndex;
-            _personType = elasticSearchOptions.Value.PersonType;
+            _elasticSearchOptions = elasticSearchOptions.Value;
 
             PrepareIndex(elastic.WriteClient, false);
         }
@@ -93,8 +91,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
         private void PrepareIndex(IElasticClient client, bool deleteIndex)
         {
-            var indexName = _peopleIndex;
-            var typeName = _personType;
+            var indexName = _elasticSearchOptions.PeopleWriteIndex;
 
             if (deleteIndex && client.DoesIndexExist(indexName))
             {
@@ -109,7 +106,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             {
                 var indexResult = client.Indices.Create(
                     indexName,
-                    index => index.Map<PersonDocument>(PersonDocument.Mapping));
+                    index => index
+                        .Map<PersonDocument>(PersonDocument.Mapping)
+                        .Settings(descriptor => descriptor
+                            .NumberOfShards(_elasticSearchOptions.NumberOfShards)
+                            .NumberOfReplicas(_elasticSearchOptions.NumberOfReplicas)));
 
                 if (!indexResult.IsValid)
                     throw new Exception($"Could not create people index '{indexName}'.");

@@ -50,6 +50,8 @@ namespace OrganisationRegistry.ElasticSearch.Configuration
 
         public int MaxRetryAttempts { get; set; }
         public int BatchSize { get; set; }
+        public int NumberOfShards { get; set; }
+        public int NumberOfReplicas { get; set; }
 
         public ElasticSearchConfiguration Obfuscate()
         {
@@ -67,6 +69,9 @@ namespace OrganisationRegistry.ElasticSearch.Configuration
                 OrganisationsReadIndex = OrganisationsReadIndex,
                 OrganisationsWriteIndex = OrganisationsWriteIndex,
                 OrganisationType = OrganisationType,
+
+                NumberOfShards = NumberOfShards,
+                NumberOfReplicas = NumberOfReplicas,
 
                 PeopleReadIndex = PeopleReadIndex,
                 PeopleWriteIndex = PeopleWriteIndex,

@@ -28,8 +28,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<PurposeUpdated>
     {
         private readonly Elastic _elastic;
-        private readonly string _organisationsIndex;
-        private readonly string _organisationType;
+        private readonly ElasticSearchConfiguration _elasticSearchOptions;
 
         public Organisation(
             ILogger<Organisation> logger,
@@ -37,8 +36,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             IOptions<ElasticSearchConfiguration> elasticSearchOptions) : base(logger)
         {
             _elastic = elastic;
-            _organisationsIndex = elasticSearchOptions.Value.OrganisationsWriteIndex;
-            _organisationType = elasticSearchOptions.Value.OrganisationType;
+            _elasticSearchOptions = elasticSearchOptions.Value;
 
             PrepareIndex(elastic.WriteClient, false);
         }
@@ -147,8 +145,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         private void PrepareIndex(IElasticClient client, bool deleteIndex)
         {
-            var indexName = _organisationsIndex;
-            var typeName = _organisationType;
+            var indexName = _elasticSearchOptions.OrganisationsWriteIndex;
 
             if (deleteIndex && client.DoesIndexExist(indexName))
             {
@@ -163,7 +160,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             {
                 var indexResult = client.Indices.Create(
                     indexName,
-                    index => index.Map<OrganisationDocument>(OrganisationDocument.Mapping));
+                    index => index
+                        .Map<OrganisationDocument>(OrganisationDocument.Mapping)
+                        .Settings(descriptor => descriptor
+                            .NumberOfShards(_elasticSearchOptions.NumberOfShards)
+                            .NumberOfReplicas(_elasticSearchOptions.NumberOfReplicas)));
 
                 if (!indexResult.IsValid)
                     throw new Exception($"Could not create organisation index '{indexName}'.");
