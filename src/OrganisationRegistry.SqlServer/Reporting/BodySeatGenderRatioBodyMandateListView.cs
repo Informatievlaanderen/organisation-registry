@@ -19,6 +19,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
         //  BodySeat
         public Guid BodySeatId { get; set; }
         public Guid BodySeatTypeId { get; set; }
+        public bool BodySeatTypeIsEffective { get; set; }
 
         public ICollection<BodySeatGenderRatioAssignmentItem> Assignments { get; set; }
 
