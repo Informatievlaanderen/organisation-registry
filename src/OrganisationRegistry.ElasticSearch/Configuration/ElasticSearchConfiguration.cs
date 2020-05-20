@@ -24,11 +24,6 @@ namespace OrganisationRegistry.ElasticSearch.Configuration
         public string User { get; set; }
         public string Pass { get; set; }
 
-        public string LoggingIndexFormat { get; set; }
-        public string LoggingTemplateName { get; set; }
-        public string LoggingTypeName { get; set; }
-        public int? LoggingNumberOfShards { get; set; }
-
         public string OrganisationsReadIndex { get; set; }
         public string OrganisationsWriteIndex { get; set; }
         public string OrganisationType { get; set; }
@@ -60,11 +55,6 @@ namespace OrganisationRegistry.ElasticSearch.Configuration
                 ConnectionString = ConnectionString,
                 User = User,
                 Pass = new string('*', 12),
-
-                LoggingIndexFormat = LoggingIndexFormat,
-                LoggingTemplateName = LoggingTemplateName,
-                LoggingTypeName = LoggingTypeName,
-                LoggingNumberOfShards = LoggingNumberOfShards,
 
                 OrganisationsReadIndex = OrganisationsReadIndex,
                 OrganisationsWriteIndex = OrganisationsWriteIndex,
