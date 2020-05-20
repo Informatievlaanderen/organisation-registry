@@ -1,3 +1,10 @@
+## [1.43.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.43.0...v1.43.1) (2020-05-20)
+
+
+### Bug Fixes
+
+* force build ([8f9915f](https://github.com/informatievlaanderen/organisation-registry/commit/8f9915fbe30786feed24d44a930d59293cbe009c))
+
 # [1.43.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.42.0...v1.43.0) (2020-05-20)
 
 
