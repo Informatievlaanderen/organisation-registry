@@ -7,11 +7,11 @@
           <th *ngIf="hasData(data)" class="data-table__header-title"></th>
           <th class="data-table__header-title" style="width: 50%;">
             <a class="data-table__header-title--sortable"
-              [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('bodyseatTypeName')}"
-              (click)="sortBy('bodyseatTypeName')">
+              [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('isEffectiveTranslation')}"
+              (click)="sortBy('isEffectiveTranslation')">
               Post
               <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-              [ngClass]="{'vi-u-180deg': isSortedByDescending('bodyseatTypeName')}"></i>
+              [ngClass]="{'vi-u-180deg': isSortedByDescending('isEffectiveTranslation')}"></i>
             </a>
           </th>
           <th class="data-table__header-title" style="width: 15%;">
@@ -58,7 +58,7 @@
               <div *ngIf="bodyParticipation.unassignedCount == 0" class="missingMandate"></div>
             </td>
             <td class="data-table__body-title data-table__body-ellipsis">
-              {{bodyParticipation.bodySeatTypeName}}
+              {{bodyParticipation.isEffectiveTranslation}}
             </td>
             <td class="data-table__body-title data-table__body-ellipsis"
             [ngClass]="{'text__alert': bodyParticipation.totalCount > 1 && !isMepCompliant(bodyParticipation.malePercentage), 'text__success': bodyParticipation.totalCount > 1 && isMepCompliant(bodyParticipation.malePercentage)}">

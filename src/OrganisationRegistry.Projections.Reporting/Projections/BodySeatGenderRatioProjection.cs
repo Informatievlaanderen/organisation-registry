@@ -15,6 +15,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using OrganisationRegistry.Infrastructure.Events;
     using SqlServer;
 
@@ -398,6 +399,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
                     BodySeatTypeId = message.Body.SeatTypeId,
                     BodySeatTypeName = message.Body.SeatTypeName,
+                    BodySeatTypeIsEffective = message.Body.SeatTypeIsEffective ?? true,
                 };
 
                 body.PostsPerType.Add(item);
@@ -429,13 +431,17 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
                     post.BodySeatTypeId = message.Body.SeatTypeId;
                     post.BodySeatTypeName = message.Body.SeatTypeName;
+                    post.BodySeatTypeIsEffective = message.Body.SeatTypeIsEffective ?? true;
 
                     context
                         .BodySeatGenderRatioBodyMandateList
                         .Where(mandate => mandate.BodySeatId == message.Body.BodySeatId)
                         .ToList()
                         .ForEach(mandate =>
-                            mandate.BodySeatTypeId = message.Body.SeatTypeId);
+                        {
+                            mandate.BodySeatTypeId = message.Body.SeatTypeId;
+                            mandate.BodySeatTypeIsEffective = message.Body.SeatTypeIsEffective ?? true;
+                        });
                 }
 
                 context.SaveChanges();
@@ -449,14 +455,13 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         {
             using (var context = ContextFactory.Create())
             {
-                var bodySeatTypeId =
+                var bodySeatType =
                     context
                         .BodySeatGenderRatioBodyList
                         .Include(item => item.PostsPerType)
                         .Single(item => item.BodyId == message.Body.BodyId)
                         .PostsPerType
-                        .First(item => item.BodySeatId == message.Body.BodySeatId)
-                        .BodySeatTypeId;
+                        .First(item => item.BodySeatId == message.Body.BodySeatId);
 
                 var bodyMandate = new BodySeatGenderRatioBodyMandateItem
                 {
@@ -469,7 +474,9 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
                     BodySeatId = message.Body.BodySeatId,
 
-                    BodySeatTypeId = bodySeatTypeId,
+                    BodySeatTypeId = bodySeatType.BodySeatTypeId,
+
+                    BodySeatTypeIsEffective = bodySeatType.BodySeatTypeIsEffective,
 
                     Assignments = new List<BodySeatGenderRatioAssignmentItem>()
                 };
@@ -512,17 +519,17 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
                 if (!message.Body.BodySeatId.Equals(message.Body.PreviousBodySeatId))
                 {
-                    var bodySeatTypeId =
+                    var bodySeatType =
                         context
                             .BodySeatGenderRatioBodyList
                             .Include(item => item.PostsPerType)
                             .Single(item => item.BodyId == message.Body.BodyId)
                             .PostsPerType
-                            .First(item => item.BodySeatId == message.Body.BodySeatId)
-                            .BodySeatTypeId;
+                            .First(item => item.BodySeatId == message.Body.BodySeatId);
 
                     bodyMandate.BodySeatId = message.Body.BodySeatId;
-                    bodyMandate.BodySeatTypeId = bodySeatTypeId;
+                    bodyMandate.BodySeatTypeId = bodySeatType.BodySeatTypeId;
+                    bodyMandate.BodySeatTypeIsEffective = bodySeatType.BodySeatTypeIsEffective;
                 }
 
                 bodyMandate.BodyMandateValidFrom = message.Body.ValidFrom;
@@ -545,14 +552,13 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         {
             using (var context = ContextFactory.Create())
             {
-                var bodySeatTypeId =
+                var bodySeatType =
                     context
                         .BodySeatGenderRatioBodyList
                         .Include(item => item.PostsPerType)
                         .Single(item => item.BodyId == message.Body.BodyId)
                         .PostsPerType
-                        .First(item => item.BodySeatId == message.Body.BodySeatId)
-                        .BodySeatTypeId;
+                        .First(item => item.BodySeatId == message.Body.BodySeatId);
 
                 var bodyMandate = new BodySeatGenderRatioBodyMandateItem
                 {
@@ -565,7 +571,9 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
                     BodySeatId = message.Body.BodySeatId,
 
-                    BodySeatTypeId = bodySeatTypeId,
+                    BodySeatTypeId = bodySeatType.BodySeatTypeId,
+
+                    BodySeatTypeIsEffective = bodySeatType.BodySeatTypeIsEffective,
 
                     Assignments = new List<BodySeatGenderRatioAssignmentItem>()
                 };
@@ -590,17 +598,17 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
                 if (!message.Body.BodySeatId.Equals(message.Body.PreviousBodySeatId))
                 {
-                    var bodySeatTypeId =
+                    var bodySeatType =
                         context
                             .BodySeatGenderRatioBodyList
                             .Include(x => x.PostsPerType)
                             .Single(x => x.BodyId == message.Body.BodyId)
                             .PostsPerType
-                            .First(x => x.BodySeatId == message.Body.BodySeatId)
-                            .BodySeatTypeId;
+                            .First(x => x.BodySeatId == message.Body.BodySeatId);
 
                     item.BodySeatId = message.Body.BodySeatId;
-                    item.BodySeatTypeId = bodySeatTypeId;
+                    item.BodySeatTypeId = bodySeatType.BodySeatTypeId;
+                    item.BodySeatTypeIsEffective = bodySeatType.BodySeatTypeIsEffective;
                 }
 
                 item.BodyMandateValidFrom = message.Body.ValidFrom;
@@ -617,14 +625,13 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         {
             using (var context = ContextFactory.Create())
             {
-                var bodySeatTypeId =
+                var bodySeatType =
                     context
                         .BodySeatGenderRatioBodyList
                         .Include(item => item.PostsPerType)
                         .Single(item => item.BodyId == message.Body.BodyId)
                         .PostsPerType
-                        .First(item => item.BodySeatId == message.Body.BodySeatId)
-                        .BodySeatTypeId;
+                        .First(item => item.BodySeatId == message.Body.BodySeatId);
 
                 var bodyMandate = new BodySeatGenderRatioBodyMandateItem
                 {
@@ -636,7 +643,8 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
                     BodyId = message.Body.BodyId,
 
                     BodySeatId = message.Body.BodySeatId,
-                    BodySeatTypeId = bodySeatTypeId,
+                    BodySeatTypeId = bodySeatType.BodySeatTypeId,
+                    BodySeatTypeIsEffective = bodySeatType.BodySeatTypeIsEffective,
 
                     Assignments = new List<BodySeatGenderRatioAssignmentItem>()
                 };
@@ -661,17 +669,17 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
                 if (!message.Body.BodySeatId.Equals(message.Body.PreviousBodySeatId))
                 {
-                    var bodySeatTypeId =
+                    var bodySeatType =
                         context
                             .BodySeatGenderRatioBodyList
                             .Include(x => x.PostsPerType)
                             .Single(x => x.BodyId == message.Body.BodyId)
                             .PostsPerType
-                            .First(x => x.BodySeatId == message.Body.BodySeatId)
-                            .BodySeatTypeId;
+                            .First(x => x.BodySeatId == message.Body.BodySeatId);
 
                     item.BodySeatId = message.Body.BodySeatId;
-                    item.BodySeatTypeId = bodySeatTypeId;
+                    item.BodySeatTypeId = bodySeatType.BodySeatTypeId;
+                    item.BodySeatTypeIsEffective = bodySeatType.BodySeatTypeIsEffective;
                 }
 
                 item.BodyMandateValidFrom = message.Body.ValidFrom;

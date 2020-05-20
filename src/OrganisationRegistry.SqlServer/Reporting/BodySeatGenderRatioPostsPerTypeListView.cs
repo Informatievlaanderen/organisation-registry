@@ -23,6 +23,8 @@ namespace OrganisationRegistry.SqlServer.Reporting
         // SeatType
         public Guid BodySeatTypeId { get; set; }
         public string? BodySeatTypeName { get; set; }
+
+        public bool BodySeatTypeIsEffective { get; set; }
     }
 
     public class BodySeatGenderRatioPostsPerTypeListConfiguration : EntityMappingConfiguration<BodySeatGenderRatioPostsPerTypeItem>

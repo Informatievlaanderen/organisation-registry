@@ -110,8 +110,7 @@ namespace OrganisationRegistry.Api.Report.Responses
                         {
                             x.BodyId,
                             x.Body.BodyName,
-                            x.BodySeatTypeId,
-                            x.BodySeatTypeName
+                            x.BodySeatTypeIsEffective,
                         })
                         .ToList();
 
@@ -132,9 +131,9 @@ namespace OrganisationRegistry.Api.Report.Responses
                                     // https://github.com/dotnet/efcore/issues/17623,
                                     // https://github.com/dotnet/efcore/issues/18051
 
-                var activeAssignments =
+                var activeAssignmentsPerBodySeatTypeId =
                     activeMandates
-                        .GroupBy(mandate => mandate.BodySeatTypeId)
+                        .GroupBy(mandate => mandate.BodySeatTypeIsEffective)
                         .ToDictionary(
                             x => x.Key,
                             x => x
@@ -147,10 +146,10 @@ namespace OrganisationRegistry.Api.Report.Responses
                 results.AddRange(activePostsPerType
                     .Select(g =>
                     {
-                        var bodySeatTypeId = g.Key.BodySeatTypeId;
+                        var isEffective = g.Key.BodySeatTypeIsEffective;
                         var assignmentsPerType =
-                            activeAssignments.ContainsKey(bodySeatTypeId) ?
-                                activeAssignments[bodySeatTypeId] :
+                            activeAssignmentsPerBodySeatTypeId.ContainsKey(isEffective) ?
+                                activeAssignmentsPerBodySeatTypeId[isEffective] :
                                 new List<BodySeatGenderRatioAssignmentItem>();
 
                         var totalCount = g.Count();
@@ -160,8 +159,8 @@ namespace OrganisationRegistry.Api.Report.Responses
                         {
                             BodyId = g.Key.BodyId,
                             BodyName = g.Key.BodyName,
-                            BodySeatTypeId = bodySeatTypeId,
-                            BodySeatTypeName = g.Key.BodySeatTypeName,
+                            IsEffective = isEffective,
+                            IsEffectiveTranslation = isEffective ? "Effectief" : "Niet effectief",
 
                             MaleCount = assignmentsPerType.Count(x => x.Sex == Sex.Male),
                             FemaleCount = assignmentsPerType.Count(x => x.Sex == Sex.Female),

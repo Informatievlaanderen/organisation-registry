@@ -25,16 +25,24 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
         private readonly string _bodySeatType2Name;
         private readonly Guid _bodySeatType3Id;
         private readonly string _bodySeatType3Name;
+        private readonly bool _bodySeatType1IsEffective;
+        private readonly bool _bodySeatType2IsEffective;
+        private readonly bool _bodySeatType3IsEffective;
 
         public BodyParticipationReportTests()
         {
+            // example taken from https://organisatie.dev-vlaanderen.local/#/bodies/65404842-785b-0b2b-1b0b-bceb7b3ec4e1/participation
+
             _bodyId = Guid.NewGuid();
             _bodySeatType1Id = Guid.NewGuid();
             _bodySeatType1Name = "Effectief lid";
+            _bodySeatType1IsEffective = true;
             _bodySeatType2Id = Guid.NewGuid();
             _bodySeatType2Name = "Ondervoorzitter";
+            _bodySeatType2IsEffective = false;
             _bodySeatType3Id = Guid.NewGuid();
             _bodySeatType3Name = "Voorzitter";
+            _bodySeatType3IsEffective = false;
 
             var dbContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
                 .UseInMemoryDatabase(
@@ -63,15 +71,15 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
             };
             _context.BodySeatGenderRatioBodyList.Add(bodySeatGenderRatioBodyItem);
 
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, Sex.Female);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, Sex.Female);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, Sex.Female);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, Sex.Male);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, Sex.Male);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, Sex.Male);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, Sex.Male);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType2Id, _bodySeatType2Name, Sex.Female);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType3Id, _bodySeatType3Name, Sex.Male);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, _bodySeatType1IsEffective, Sex.Female);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, _bodySeatType1IsEffective, Sex.Female);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, _bodySeatType1IsEffective, Sex.Female);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, _bodySeatType1IsEffective, Sex.Male);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, _bodySeatType1IsEffective, Sex.Male);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, _bodySeatType1IsEffective, Sex.Male);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, _bodySeatType1IsEffective, Sex.Male);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType2Id, _bodySeatType2Name, _bodySeatType2IsEffective, Sex.Female);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType3Id, _bodySeatType3Name, _bodySeatType3IsEffective, Sex.Male);
 
             _context.SaveChanges();
 
@@ -88,6 +96,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
             BodySeatGenderRatioBodyItem bodySeatGenderRatioBodyItem,
             Guid bodySeatTypeId,
             string bodySeatTypeName,
+            bool bodySeatTypeIsEffective,
             Sex sex)
         {
 
@@ -99,7 +108,8 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
                 BodySeatTypeName = bodySeatTypeName,
                 BodySeatValidFrom = null,
                 BodySeatValidTo = null,
-                EntitledToVote = true
+                EntitledToVote = true,
+                BodySeatTypeIsEffective = bodySeatTypeIsEffective
             };
             bodySeatGenderRatioBodyItem.PostsPerType.Add(bodySeatGenderRatioPostsPerTypeItem);
 
@@ -112,6 +122,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
                     BodyMandateId = Guid.NewGuid(),
                     BodyMandateValidFrom = null,
                     BodyMandateValidTo = null,
+                    BodySeatTypeIsEffective = bodySeatTypeIsEffective,
                     Assignments = new List<BodySeatGenderRatioAssignmentItem>
                     {
                         new BodySeatGenderRatioAssignmentItem
@@ -148,8 +159,8 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
                         BodyId = _bodyId,
                         AssignedCount = 7,
                         BodyName = "Ad-hoc adviescommissie impulssubsidies",
-                        BodySeatTypeId = _bodySeatType1Id,
-                        BodySeatTypeName = _bodySeatType1Name,
+                        IsEffective = true,
+                        IsEffectiveTranslation = "Effectief",
                         FemaleCount = 3,
                         FemalePercentage = new decimal(0.43),
                         MaleCount = 4,
@@ -161,32 +172,16 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
                     },
                     new BodyParticipation
                     {
-                        AssignedCount = 1,
+                        AssignedCount = 2,
                         BodyId = _bodyId,
                         BodyName = "Ad-hoc adviescommissie impulssubsidies",
-                        BodySeatTypeId = _bodySeatType2Id,
-                        BodySeatTypeName = _bodySeatType2Name,
+                        IsEffective = false,
+                        IsEffectiveTranslation = "Niet effectief",
                         FemaleCount = 1,
-                        FemalePercentage = 1,
-                        MaleCount = 0,
-                        MalePercentage = 0,
-                        TotalCount = 1,
-                        UnassignedCount = 0,
-                        UnknownCount = 0,
-                        UnknownPercentage = 0,
-                    },
-                    new BodyParticipation
-                    {
-                        AssignedCount = 1,
-                        BodyId = _bodyId,
-                        BodyName = "Ad-hoc adviescommissie impulssubsidies",
-                        BodySeatTypeId = _bodySeatType3Id,
-                        BodySeatTypeName = _bodySeatType3Name,
-                        FemaleCount = 0,
-                        FemalePercentage = 0,
+                        FemalePercentage = 0.5m,
                         MaleCount = 1,
-                        MalePercentage = 1,
-                        TotalCount = 1,
+                        MalePercentage = 0.5m,
+                        TotalCount = 2,
                         UnassignedCount = 0,
                         UnknownCount = 0,
                         UnknownPercentage = 0,

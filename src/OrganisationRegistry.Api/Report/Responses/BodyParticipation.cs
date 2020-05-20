@@ -5,8 +5,10 @@ namespace OrganisationRegistry.Api.Report.Responses
     using SqlServer.Infrastructure;
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.ComponentModel;
     using System.Linq;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Infrastructure.Search.Filtering;
     using Microsoft.EntityFrameworkCore;
     using SqlServer.Reporting;
@@ -17,8 +19,8 @@ namespace OrganisationRegistry.Api.Report.Responses
         [ExcludeFromCsv] public Guid BodyId { get; set; }
         [DisplayName("Orgaan")] public string BodyName { get; set; }
 
-        [ExcludeFromCsv] public Guid BodySeatTypeId { get; set; }
-        [DisplayName("Post")] public string BodySeatTypeName { get; set; }
+        [ExcludeFromCsv] public bool? IsEffective { get; set; }
+        [DisplayName("Is Effectief")] public string IsEffectiveTranslation { get; set; }
 
         [DisplayName("Percentage Man")] public decimal MalePercentage { get; set; }
         [DisplayName("Percentage Vrouw")] public decimal FemalePercentage { get; set; }
@@ -49,94 +51,80 @@ namespace OrganisationRegistry.Api.Report.Responses
             if (!filteringHeader.Filter.EntitledToVote && !filteringHeader.Filter.NotEntitledToVote)
                 return new List<BodyParticipation>();
 
-            var bodySeatGenderRatioBodyItems = context.BodySeatGenderRatioBodyList
-                .Include(item => item.LifecyclePhaseValidities)
+            var body = context.BodySeatGenderRatioBodyList
                 .Include(item => item.PostsPerType)
-                .Where(body => body.BodyId == bodyId)
-                .ToList();
+                .Single(item => item.BodyId == bodyId);
 
-            var seatGenderRatioBodyItems = bodySeatGenderRatioBodyItems
-                .Where(body => body.LifecyclePhaseValidities.Any(y =>
-                    y.RepresentsActivePhase &&
-                    (!y.ValidFrom.HasValue || y.ValidFrom <= DateTime.Today) &&
-                    (!y.ValidTo.HasValue || y.ValidTo >= DateTime.Today)));
-
-            var postsPerTypeQuery =
-                seatGenderRatioBodyItems
-                    .SelectMany(item => item.PostsPerType)
-                    .Where(post =>
-                        (!post.BodySeatValidFrom.HasValue || post.BodySeatValidFrom <= DateTime.Today) &&
-                        (!post.BodySeatValidTo.HasValue || post.BodySeatValidTo >= DateTime.Today))/*
-                    .Where(post => post.EntitledToVote)*/;
+            var activeSeatsPerType = body
+                .PostsPerType
+                .Where(post =>
+                    (!post.BodySeatValidFrom.HasValue || post.BodySeatValidFrom <= DateTime.Today) &&
+                    (!post.BodySeatValidTo.HasValue || post.BodySeatValidTo >= DateTime.Today));
 
             // One of the checkboxes is checked
             if (filteringHeader.Filter.EntitledToVote ^ filteringHeader.Filter.NotEntitledToVote)
                 if (filteringHeader.Filter.EntitledToVote)
-                    postsPerTypeQuery = postsPerTypeQuery.Where(x => x.EntitledToVote);
+                    activeSeatsPerType = activeSeatsPerType.Where(x => x.EntitledToVote);
                 else if (filteringHeader.Filter.NotEntitledToVote)
-                    postsPerTypeQuery = postsPerTypeQuery.Where(x => !x.EntitledToVote);
+                    activeSeatsPerType = activeSeatsPerType.Where(x => !x.EntitledToVote);
 
-            var bodySeatGenderRatioPostsPerTypeItems = postsPerTypeQuery.ToList();
+            var bodySeatGenderRatioPostsPerTypeItems = activeSeatsPerType.ToList();
 
-            var activePostsPerType =
-                bodySeatGenderRatioPostsPerTypeItems
-                    .GroupBy(x => new
-                    {
-                        x.BodyId,
-                        x.Body.BodyName,
-                        x.BodySeatTypeId,
-                        x.BodySeatTypeName
-                    })
-                    .ToList();
+            var activeSeatIds = bodySeatGenderRatioPostsPerTypeItems
+                .Select(item => item.BodySeatId)
+                .ToList();
 
-            var activeSeatIds = bodySeatGenderRatioPostsPerTypeItems.Select(item => item.BodySeatId);
+            var activeSeatsPerIsEffective = bodySeatGenderRatioPostsPerTypeItems
+                .ToList()
+                .GroupBy(mandate => mandate.BodySeatTypeIsEffective)
+                .ToDictionary(
+                    x => x.Key,
+                    x => x);
 
-            var activeMandates =
+            var activeMandates = context.BodySeatGenderRatioBodyMandateList
+                .AsAsyncQueryable()
+                .Where(mandate => mandate.BodyId == bodyId)
+                .Where(mandate =>
+                    (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= DateTime.Today) &&
+                    (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= DateTime.Today))
+                .Where(mandate => activeSeatIds.Contains(mandate.BodySeatId))
+                .ToList();
+
+            var activeMandateIds = activeMandates
+                .Select(item => item.BodyMandateId)
+                .ToList();
+
+            var activeAssignmentsPerIsEffective =
                 context.BodySeatGenderRatioBodyMandateList
                     .Include(mandate => mandate.Assignments)
+                    .AsAsyncQueryable()
                     .Where(mandate => mandate.BodyId == bodyId)
-                    .Where(mandate => activeSeatIds.Contains(mandate.BodySeatId))
                     .Where(mandate =>
                         (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= DateTime.Today) &&
                         (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= DateTime.Today))
-                    .ToList();
-
-            var activeAssignments =
-                activeMandates
-                    .GroupBy(mandate => new
-                    {
-                        mandate.BodySeatTypeId
-                    })
+                    .Where(mandate => activeMandateIds.Contains(mandate.BodyMandateId))
+                    .ToList()
+                    .GroupBy(mandate => mandate.BodySeatTypeIsEffective)
                     .ToDictionary(
-                        x => x.Key.BodySeatTypeId,
-                        x => x
-                            .SelectMany(mandate => mandate.Assignments)
-                            .Where(assignment =>
-                                (!assignment.AssignmentValidFrom.HasValue || assignment.AssignmentValidFrom <= DateTime.Today) &&
-                                (!assignment.AssignmentValidTo.HasValue || assignment.AssignmentValidTo >= DateTime.Today))
-                            .ToList());
+                        x => x.Key,
+                        x => x.SelectMany(y => y.Assignments));
 
-            var groupedResults = activePostsPerType
-                .Select(g =>
+            var groupedResults = activeSeatsPerIsEffective
+                .Select(seatPer =>
                 {
-                    var bodySeatTypeId = g.Key.BodySeatTypeId;
-                    var assignmentsPerType =
-                        activeAssignments.ContainsKey(bodySeatTypeId) ?
-                        activeAssignments[bodySeatTypeId] :
-                        new List<BodySeatGenderRatioAssignmentItem>();
-
-                    var totalCount = g.Count();
-                    var assignedCount = assignmentsPerType.Count;
+                    var totalCount = seatPer.Value.Count();
+                    var activeAssignments = activeAssignmentsPerIsEffective[seatPer.Key].ToList();
+                    var assignedCount = activeAssignments.Count;
                     return new BodyParticipation
                     {
-                        BodyId = g.Key.BodyId,
-                        BodyName = g.Key.BodyName,
-                        BodySeatTypeId = bodySeatTypeId,
-                        BodySeatTypeName = g.Key.BodySeatTypeName,
+                        BodyId = bodyId,
+                        BodyName = body.BodyName, //name
+                        IsEffective = seatPer.Key,
+                        IsEffectiveTranslation = seatPer.Key ? "Effectief" : "Niet effectief",
 
-                        MaleCount = assignmentsPerType.Count(x => x.Sex == Sex.Male),
-                        FemaleCount = assignmentsPerType.Count(x => x.Sex == Sex.Female),
-                        UnknownCount = assignmentsPerType.Count(x => !x.Sex.HasValue),
+                        MaleCount = activeAssignments.Count(x => x.Sex == Sex.Male),
+                        FemaleCount = activeAssignments.Count(x => x.Sex == Sex.Female),
+                        UnknownCount = activeAssignments.Count(x => !x.Sex.HasValue),
 
                         AssignedCount = assignedCount,
                         UnassignedCount = totalCount - assignedCount,
@@ -145,6 +133,37 @@ namespace OrganisationRegistry.Api.Report.Responses
                     };
                 })
                 .ToList();
+
+
+            // var groupedResults = activePostsPerType
+            //     .Select(g =>
+            //     {
+            //         var isEffective = g.Key.BodySeatTypeIsEffective;
+            //         var assignmentsPerType =
+            //             activeAssignmentsPerBodySeatTypeId.ContainsKey(isEffective) ?
+            //             activeAssignmentsPerBodySeatTypeId[isEffective] :
+            //             new List<BodySeatGenderRatioAssignmentItem>();
+            //
+            //         var totalCount = g.Count();
+            //         var assignedCount = assignmentsPerType.Count;
+            //         return new BodyParticipation
+            //         {
+            //             BodyId = g.Key.BodyId,
+            //             BodyName = g.Key.BodyName,
+            //             IsEffective = isEffective,
+            //             IsEffectiveTranslation = isEffective ?? false ? "Effectief" : "Niet effectief",
+            //
+            //             MaleCount = assignmentsPerType.Count(x => x.Sex == Sex.Male),
+            //             FemaleCount = assignmentsPerType.Count(x => x.Sex == Sex.Female),
+            //             UnknownCount = assignmentsPerType.Count(x => !x.Sex.HasValue),
+            //
+            //             AssignedCount = assignedCount,
+            //             UnassignedCount = totalCount - assignedCount,
+            //
+            //             TotalCount = totalCount
+            //         };
+            //     })
+            //     .ToList();
 
             return groupedResults;
         }
@@ -183,7 +202,7 @@ namespace OrganisationRegistry.Api.Report.Responses
             SortingHeader sortingHeader)
         {
             if (!sortingHeader.ShouldSort)
-                return results.OrderBy(x => x.BodyName).ThenBy(x => x.BodySeatTypeName);
+                return results.OrderBy(x => x.BodyName).ThenBy(x => x.IsEffectiveTranslation);
 
             switch (sortingHeader.SortBy.ToLowerInvariant())
             {
@@ -199,12 +218,12 @@ namespace OrganisationRegistry.Api.Report.Responses
                     return sortingHeader.SortOrder == SortOrder.Ascending
                         ? results.OrderBy(x => x.UnknownPercentage)
                         : results.OrderByDescending(x => x.UnknownPercentage);
-                case "bodyseattypename":
+                case "iseffectivetranslation":
                     return sortingHeader.SortOrder == SortOrder.Ascending
-                        ? results.OrderBy(x => x.BodySeatTypeName)
-                        : results.OrderByDescending(x => x.BodySeatTypeName);
+                        ? results.OrderBy(x => x.IsEffectiveTranslation)
+                        : results.OrderByDescending(x => x.IsEffectiveTranslation);
                 default:
-                    return results.OrderBy(x => x.BodyName).ThenBy(x => x.BodySeatTypeName);
+                    return results.OrderBy(x => x.BodyName).ThenBy(x => x.IsEffectiveTranslation);
             }
         }
     }
