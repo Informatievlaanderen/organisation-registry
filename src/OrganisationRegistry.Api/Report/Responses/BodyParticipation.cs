@@ -118,7 +118,7 @@ namespace OrganisationRegistry.Api.Report.Responses
                     return new BodyParticipation
                     {
                         BodyId = bodyId,
-                        BodyName = body.BodyName, //name
+                        BodyName = body.BodyName,
                         IsEffective = seatPer.Key,
                         IsEffectiveTranslation = seatPer.Key ? "Effectief" : "Niet effectief",
 
@@ -131,39 +131,7 @@ namespace OrganisationRegistry.Api.Report.Responses
 
                         TotalCount = totalCount
                     };
-                })
-                .ToList();
-
-
-            // var groupedResults = activePostsPerType
-            //     .Select(g =>
-            //     {
-            //         var isEffective = g.Key.BodySeatTypeIsEffective;
-            //         var assignmentsPerType =
-            //             activeAssignmentsPerBodySeatTypeId.ContainsKey(isEffective) ?
-            //             activeAssignmentsPerBodySeatTypeId[isEffective] :
-            //             new List<BodySeatGenderRatioAssignmentItem>();
-            //
-            //         var totalCount = g.Count();
-            //         var assignedCount = assignmentsPerType.Count;
-            //         return new BodyParticipation
-            //         {
-            //             BodyId = g.Key.BodyId,
-            //             BodyName = g.Key.BodyName,
-            //             IsEffective = isEffective,
-            //             IsEffectiveTranslation = isEffective ?? false ? "Effectief" : "Niet effectief",
-            //
-            //             MaleCount = assignmentsPerType.Count(x => x.Sex == Sex.Male),
-            //             FemaleCount = assignmentsPerType.Count(x => x.Sex == Sex.Female),
-            //             UnknownCount = assignmentsPerType.Count(x => !x.Sex.HasValue),
-            //
-            //             AssignedCount = assignedCount,
-            //             UnassignedCount = totalCount - assignedCount,
-            //
-            //             TotalCount = totalCount
-            //         };
-            //     })
-            //     .ToList();
+                });
 
             return groupedResults;
         }

@@ -7,6 +7,7 @@ namespace OrganisationRegistry.Api.Report.Responses
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Microsoft.EntityFrameworkCore;
     using SqlServer.Reporting;
     using OrganisationRegistry.Person;
@@ -19,8 +20,8 @@ namespace OrganisationRegistry.Api.Report.Responses
         [ExcludeFromCsv] public Guid BodyId { get; set; }
         [DisplayName("Orgaan")] public string BodyName { get; set; }
 
-        [ExcludeFromCsv] public Guid BodySeatTypeId { get; set; }
-        [DisplayName("Post")] public string BodySeatTypeName { get; set; }
+        [ExcludeFromCsv] public bool? IsEffective { get; set; }
+        [DisplayName("Is Effectief")] public string IsEffectiveTranslation { get; set; }
 
         [DisplayName("Percentage Man")] public decimal MalePercentage { get; set; }
         [DisplayName("Percentage Vrouw")] public decimal FemalePercentage { get; set; }
@@ -62,82 +63,86 @@ namespace OrganisationRegistry.Api.Report.Responses
                 .Where(body => body.LifecyclePhaseValidities.Any(y =>
                     y.RepresentsActivePhase &&
                     (!y.ValidFrom.HasValue || y.ValidFrom <= DateTime.Today) &&
-                    (!y.ValidTo.HasValue || y.ValidFrom >= DateTime.Today))); // TODO: do we really need all these wheres that check validity?
+                    (!y.ValidTo.HasValue || y.ValidFrom >= DateTime.Today)));
 
-            var activePostsQueries =
-                context.BodySeatGenderRatioPostsPerTypeList
-                    .Include(post => post.Body)
-                    .Where(post => activeBodiesQuery.Select(body => body.BodyId).Contains(post.BodyId))
-                    .Where(post =>
-                        (!post.BodySeatValidFrom.HasValue || post.BodySeatValidFrom <= DateTime.Today) &&
-                        (!post.BodySeatValidTo.HasValue || post.BodySeatValidTo >= DateTime.Today))
-                    .Where(post => post.EntitledToVote);
+            var activeBodiesById = activeBodiesQuery
+                .ToDictionary(
+                    x => x.BodyId,
+                    x => x);
 
-            var bodySeatGenderRatioPostsPerTypeItems = activePostsQueries.ToList();
+            var activeBodyIds = activeBodiesById.Keys;
 
-            var activePostsPerType = bodySeatGenderRatioPostsPerTypeItems
-                .GroupBy(x => new
-                {
-                    x.BodyId,
-                    x.Body.BodyName,
-                    x.Body.OrganisationId,
-                    x.Body.OrganisationName,
-                    x.BodySeatTypeId,
-                    x.BodySeatTypeName
-                })
+            var activeSeatsPerType = activeBodiesQuery
+                .SelectMany(body => body.PostsPerType)
+                .Where(post =>
+                    (!post.BodySeatValidFrom.HasValue || post.BodySeatValidFrom <= DateTime.Today) &&
+                    (!post.BodySeatValidTo.HasValue || post.BodySeatValidTo >= DateTime.Today));
+
+            var bodySeatGenderRatioPostsPerTypeItems = activeSeatsPerType.ToList();
+
+            var activeSeatIds = bodySeatGenderRatioPostsPerTypeItems
+                .Select(item => item.BodySeatId)
                 .ToList();
 
-            var activeSeatIds = bodySeatGenderRatioPostsPerTypeItems.Select(item => item.BodySeatId);
+            var activeSeatsPerBodyAndIsEffective = bodySeatGenderRatioPostsPerTypeItems
+                .ToList()
+                .GroupBy(mandate => new Tuple<Guid, bool>(mandate.BodyId, mandate.BodySeatTypeIsEffective))
+                .ToDictionary(
+                    x => x.Key,
+                    x => x);
 
-            var activeMandates =
+            var activeMandates = context.BodySeatGenderRatioBodyMandateList
+                .AsAsyncQueryable()
+                .Where(mandate => activeBodyIds.Contains(mandate.BodyId))
+                .Where(mandate =>
+                    (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= DateTime.Today) &&
+                    (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= DateTime.Today))
+                .Where(mandate => activeSeatIds.Contains(mandate.BodySeatId))
+                .ToList();
+
+            var activeMandateIds = activeMandates
+                .Select(item => item.BodyMandateId)
+                .ToList();
+
+            var activeAssignmentsPerIsEffective =
                 context.BodySeatGenderRatioBodyMandateList
                     .Include(mandate => mandate.Assignments)
-                    .Where(mandate => bodiesForFormalFramework.Contains(mandate.BodyId))
-                    .Where(mandate => activeSeatIds.Contains(mandate.BodySeatId))
+                    .AsAsyncQueryable()
+                    .Where(mandate => activeBodyIds.Contains(mandate.BodyId))
                     .Where(mandate =>
                         (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= DateTime.Today) &&
                         (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= DateTime.Today))
-                    .ToList();
-
-            var activeAssignments =
-                activeMandates
-                    .GroupBy(mandate => new
-                    {
-                        mandate.BodyId,
-                        mandate.BodySeatTypeId
-                    })
+                    .Where(mandate => activeMandateIds.Contains(mandate.BodyMandateId))
+                    .ToList()
+                    .GroupBy(mandate => new Tuple<Guid, bool>(mandate.BodyId, mandate.BodySeatTypeIsEffective))
                     .ToDictionary(
-                        mandates => CreateCombinedKey(mandates.Key.BodyId, mandates.Key.BodySeatTypeId),
-                        mandates => mandates
-                            .SelectMany(mandate => mandate.Assignments)
-                            .Where(assignment =>
-                                (!assignment.AssignmentValidFrom.HasValue || assignment.AssignmentValidFrom <= DateTime.Today) &&
-                                (!assignment.AssignmentValidTo.HasValue || assignment.AssignmentValidTo >= DateTime.Today))
-                            .ToList());
+                        x => x.Key,
+                        x => x.SelectMany(y => y.Assignments));
 
-            var groupedResults = activePostsPerType
-                .Select(g =>
+            var groupedResults = activeSeatsPerBodyAndIsEffective
+                .Select(seatPer =>
                 {
-                    var bodySeatTypeId = CreateCombinedKey(g.Key.BodyId, g.Key.BodySeatTypeId);
-                    var assignmentsPerType =
-                        activeAssignments.ContainsKey(bodySeatTypeId) ?
-                            activeAssignments[bodySeatTypeId] :
-                            new List<BodySeatGenderRatioAssignmentItem>();
+                    var totalCount = seatPer.Value.Count();
+                    var activeAssignments =
+                        activeAssignmentsPerIsEffective.ContainsKey(seatPer.Key)
+                            ? activeAssignmentsPerIsEffective[seatPer.Key].ToList()
+                            : new List<BodySeatGenderRatioAssignmentItem>();
 
-                    var totalCount = g.Count();
-                    var assignedCount = assignmentsPerType.Count();
+                    var assignedCount = activeAssignments.Count;
+                    var body = activeBodiesById[seatPer.Key.Item1];
                     return new FormalFrameworkParticipation
                     {
-                        BodyId = g.Key.BodyId,
-                        BodyName = g.Key.BodyName,
-                        OrganisationId = g.Key.OrganisationId ?? Guid.Empty,
-                        OrganisationName = g.Key.OrganisationName,
-                        BodySeatTypeId = g.Key.BodySeatTypeId,
-                        BodySeatTypeName = g.Key.BodySeatTypeName,
+                        BodyId = seatPer.Key.Item1,
+                        BodyName = body.BodyName,
+                        OrganisationId = body.OrganisationId ?? Guid.Empty,
+                        OrganisationName = body.OrganisationName,
 
-                        MaleCount = assignmentsPerType.Count(x => x.Sex == Sex.Male),
-                        FemaleCount = assignmentsPerType.Count(x => x.Sex == Sex.Female),
-                        UnknownCount = assignmentsPerType.Count(x => !x.Sex.HasValue),
+                        IsEffective = seatPer.Key.Item2,
+                        IsEffectiveTranslation = seatPer.Key.Item2 ? "Effectief" : "Niet effectief",
+
+                        MaleCount = activeAssignments.Count(x => x.Sex == Sex.Male),
+                        FemaleCount = activeAssignments.Count(x => x.Sex == Sex.Female),
+                        UnknownCount = activeAssignments.Count(x => !x.Sex.HasValue),
 
                         AssignedCount = assignedCount,
                         UnassignedCount = totalCount - assignedCount,
@@ -190,14 +195,14 @@ namespace OrganisationRegistry.Api.Report.Responses
             SortingHeader sortingHeader)
         {
             if (!sortingHeader.ShouldSort)
-                return results.OrderBy(x => x.BodyName).ThenBy(x => x.BodySeatTypeName);
+                return results.OrderBy(x => x.BodyName).ThenBy(x => x.IsEffectiveTranslation);
 
             switch (sortingHeader.SortBy.ToLowerInvariant())
             {
                 case "bodyname":
                     return sortingHeader.SortOrder == SortOrder.Ascending
-                        ? results.OrderBy(x => x.BodyName).ThenBy(x => x.BodySeatTypeName)
-                        : results.OrderByDescending(x => x.BodyName).ThenBy(x => x.BodySeatTypeName);
+                        ? results.OrderBy(x => x.BodyName).ThenBy(x => x.IsEffectiveTranslation)
+                        : results.OrderByDescending(x => x.BodyName).ThenBy(x => x.IsEffectiveTranslation);
                 case "malepercentage":
                     return sortingHeader.SortOrder == SortOrder.Ascending
                         ? results.OrderBy(x => x.MalePercentage)
@@ -210,12 +215,12 @@ namespace OrganisationRegistry.Api.Report.Responses
                     return sortingHeader.SortOrder == SortOrder.Ascending
                         ? results.OrderBy(x => x.UnknownPercentage)
                         : results.OrderByDescending(x => x.UnknownPercentage);
-                case "bodyseattypename":
+                case "iseffectivetranslation":
                     return sortingHeader.SortOrder == SortOrder.Ascending
-                        ? results.OrderBy(x => x.BodySeatTypeName)
-                        : results.OrderByDescending(x => x.BodySeatTypeName);
+                        ? results.OrderBy(x => x.IsEffectiveTranslation)
+                        : results.OrderByDescending(x => x.IsEffectiveTranslation);
                 default:
-                    return results.OrderBy(x => x.BodyName).ThenBy(x => x.BodySeatTypeName);
+                    return results.OrderBy(x => x.BodyName).ThenBy(x => x.IsEffectiveTranslation);
             }
         }
     }
