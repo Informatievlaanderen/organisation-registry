@@ -137,7 +137,7 @@ jobs:
         docker push $BUILD_DOCKER_REGISTRY/organisation-registry/ui:$SEMVER
         docker push $BUILD_DOCKER_REGISTRY/organisation-registry/scheduler:$SEMVER
       env:
-        BUILD_DOCKER_REGISTRY: ${{ secrets.secrets.VBR_BUILD_DOCKER_REGISTRY }}
+        BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
         SEMVER: ${{ env.RELEASE_VERSION }}
         WORKSPACE: ${{ github.workspace }}
 
