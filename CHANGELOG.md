@@ -1,3 +1,11 @@
+## [1.43.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.43.4...v1.43.5) (2020-05-25)
+
+
+### Bug Fixes
+
+* deal with npm packages ([0c7c3e6](https://github.com/informatievlaanderen/organisation-registry/commit/0c7c3e6e8872a338442fef139771ab5d9155db30))
+* revert npm packages upgrade ([7457e73](https://github.com/informatievlaanderen/organisation-registry/commit/7457e73cc31b7f4a75350e0c69990f144d8729af))
+
 ## [1.43.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.43.3...v1.43.4) (2020-05-20)
 
 
