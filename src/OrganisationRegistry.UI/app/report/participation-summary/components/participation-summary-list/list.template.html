@@ -21,7 +21,7 @@
         <thead>
           <tr class="data-table__header">
             <th class="data-table__header-title"></th>
-            <th class="data-table__header-title" style="width: 25%;">
+            <th class="data-table__header-title" style="width: 85%;">
               <a class="data-table__header-title--sortable"
                 [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('bodyName')}"
                 (click)="sortBy('bodyName')">
@@ -30,7 +30,7 @@
                 [ngClass]="{'vi-u-180deg': isSortedByDescending('bodyName')}"></i>
               </a>
             </th>
-            <th class="data-table__header-title" style="width: 25%;">
+            <th class="data-table__header-title" style="width: 15%;">
               <a class="data-table__header-title--sortable"
                 [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('isTotalCompliant')}"
                 (click)="sortBy('isTotalCompliant')">
@@ -39,43 +39,16 @@
                 [ngClass]="{'vi-u-180deg': isSortedByDescending('isTotalCompliant')}"></i>
               </a>
             </th>
-            <th class="data-table__header-title" style="width: 16%;">
-              <a class="data-table__header-title--sortable"
-                [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('malePercentage')}"
-                (click)="sortBy('malePercentage')">
-                Man
-                <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                [ngClass]="{'vi-u-180deg': isSortedByDescending('malePercentage')}"></i>
-              </a>
-            </th>
-            <th class="data-table__header-title" style="width: 16%;">
-              <a class="data-table__header-title--sortable"
-                [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('femalePercentage')}"
-                (click)="sortBy('femalePercentage')">
-                Vrouw
-                <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                [ngClass]="{'vi-u-180deg': isSortedByDescending('femalePercentage')}"></i>
-              </a>
-            </th>
-            <th class="data-table__header-title" style="width: 16%;">
-              <a class="data-table__header-title--sortable"
-                [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('unknownPercentage')}"
-                (click)="sortBy('unknownPercentage')">
-                Onbekend
-                <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                [ngClass]="{'vi-u-180deg': isSortedByDescending('unknownPercentage')}"></i>
-              </a>
-            </th>
           </tr>
         </thead>
         <tbody>
           <template [ngIf]="isBusy">
-            <tr><td colspan="6">Bezig met laden...</td></tr>
+            <tr><td colspan="3">Bezig met laden...</td></tr>
           </template>
 
           <template [ngIf]="!isBusy">
             <tr *ngIf="!hasData(data)">
-              <td colspan="6">Geen data beschikbaar...</td>
+              <td colspan="3">Geen data beschikbaar...</td>
             </tr>
             <tr *ngFor="let bodyParticipation of data" [ngClass]="{'data-table__body-missing-mandate': bodyParticipation.unassignedCount>0}">
               <td class="data-table__body-title">
@@ -89,17 +62,6 @@
               <td class="data-table__body-title data-table__body-ellipsis"
                   [ngClass]="bodyParticipation.isTotalCompliant ? 'text__success': 'text__alert'">
               {{bodyParticipation.isTotalCompliant ? 'Ja' : 'Nee' }}
-              </td>
-              <td class="data-table__body-title data-table__body-ellipsis"
-                [ngClass]="bodyParticipation.isMaleCountCompliant ? 'text__success': 'text__alert'">
-                <div class="properties--percent">{{bodyParticipation.malePercentage | percent:'1.2-2'}}</div> <span class="properties--disabled">({{bodyParticipation.maleCount}}/{{bodyParticipation.assignedCount}})</span>
-              </td>
-              <td class="data-table__body-title data-table__body-ellipsis"
-                [ngClass]="{'text__alert': !bodyParticipation.isFemaleCountCompliant, 'text__success': bodyParticipation.isFemaleCountCompliant}">
-                <div class="properties--percent">{{bodyParticipation.femalePercentage | percent:'1.2-2'}}</div> <span class="properties--disabled">({{bodyParticipation.femaleCount}}/{{bodyParticipation.assignedCount}})</span>
-              </td>
-              <td class="data-table__body-title data-table__body-ellipsis">
-                <div class="properties--percent">{{bodyParticipation.unknownPercentage | percent:'1.2-2'}}</div> <span class="properties--disabled">({{bodyParticipation.unknownCount}}/{{bodyParticipation.assignedCount}})</span>
               </td>
             </tr>
           </template>
