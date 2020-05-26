@@ -14,6 +14,7 @@ import { OrganisationClassificationReportService } from './organisationclassific
 import { OrganisationClassificationParticipationReportService } from './organisationclassification-participation/organisationclassification-participation-report.service';
 
 import { BuildingOrganisationReportService } from './building-organisations/building-organisation-report.service';
+import { ParticipationSummaryReportService } from './participation-summary';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { BuildingOrganisationReportService } from './building-organisations/buil
     FormalFrameworkOrganisationReportService,
     FormalFrameworkOrganisationVademecumReportService,
     FormalFrameworkParticipationReportService,
+    ParticipationSummaryReportService,
     OrganisationClassificationReportService,
     OrganisationClassificationParticipationReportService,
     BuildingOrganisationReportService

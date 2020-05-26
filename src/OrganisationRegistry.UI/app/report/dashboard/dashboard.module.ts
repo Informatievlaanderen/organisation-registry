@@ -12,6 +12,7 @@ import { ReportFormalFrameworkOrganisationsModule } from './../formalframework-o
 import { ReportFormalFrameworkBodiesModule } from './../formalframework-bodies';
 import { ReportFormalFrameworkOrganisationsVademecumModule } from './../formalframework-organisations-vademecum';
 import { ReportFormalFrameworkParticipationModule } from './../formalframework-participation';
+import { ReportParticipationSummaryModule } from './../participation-summary';
 
 import { ReportBuildingOrganisationsModule } from './../building-organisations';
 
@@ -28,7 +29,8 @@ import { DashboardOverviewComponent } from './overview';
     ReportFormalFrameworkParticipationModule,
     ReportOrganisationClassificationsModule,
     ReportOrganisationClassificationParticipationModule,
-    ReportBuildingOrganisationsModule
+    ReportBuildingOrganisationsModule,
+    ReportParticipationSummaryModule
   ],
   declarations: [
     DashboardOverviewComponent
