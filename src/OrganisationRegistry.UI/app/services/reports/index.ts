@@ -11,4 +11,6 @@ export * from './capacity-persons';
 export * from './organisationclassifications';
 export * from './organisationclassification-participation';
 
+export * from './participation-summary';
+
 export * from './building-organisations';

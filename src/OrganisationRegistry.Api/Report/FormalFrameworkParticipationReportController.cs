@@ -70,5 +70,51 @@ namespace OrganisationRegistry.Api.Report
                     .Take(pagination.ItemsPerPage)
                     .ToList());
         }
+
+        /// <summary>
+        /// Get gender ratio summary (grouped by body, organisation and bodyseat)
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="dateTimeProvider"></param>
+        /// <returns></returns>
+        [HttpGet("participationsummary")]
+        [ProducesResponseType(typeof(IEnumerable<FormalFrameworkParticipation>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetParticipationSummary(
+            [FromServices] OrganisationRegistryContext context,
+            [FromServices] IDateTimeProvider dateTimeProvider)
+        {
+            var sorting = Request.ExtractSortingRequest();
+
+            var participations =
+                ParticipationSummary.Sort(
+                        ParticipationSummary.Map(
+                            await ParticipationSummary.Search(context, dateTimeProvider.Today)),
+                        sorting)
+                    .ToList();
+
+            Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
+
+            var possiblePagination = Request.ExtractPaginationRequest();
+
+            if (possiblePagination is NoPaginationRequest)
+                return Ok(participations);
+
+            var pagination = possiblePagination as PaginationRequest ?? new PaginationRequest(1, 10);
+
+            Response.AddPaginationResponse(
+                new PaginationInfo(
+                    pagination.RequestedPage,
+                    pagination.ItemsPerPage,
+                    participations.Count,
+                    (int)Math.Ceiling((double)participations.Count / pagination.ItemsPerPage)));
+
+            return Ok(
+                participations
+                    .Skip((pagination.RequestedPage - 1) * pagination.ItemsPerPage)
+                    .Take(pagination.ItemsPerPage)
+                    .ToList());
+        }
     }
 }
