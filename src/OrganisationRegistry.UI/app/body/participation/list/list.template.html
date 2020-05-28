@@ -61,11 +61,11 @@
               {{bodyParticipation.isEffectiveTranslation}}
             </td>
             <td class="data-table__body-title data-table__body-ellipsis"
-            [ngClass]="{'text__alert': bodyParticipation.totalCount > 1 && !isMepCompliant(bodyParticipation.malePercentage), 'text__success': bodyParticipation.totalCount > 1 && isMepCompliant(bodyParticipation.malePercentage)}">
+            [ngClass]="{'text__alert': bodyParticipation.totalCount > 1 && !bodyParticipation.isCompliant, 'text__success': bodyParticipation.totalCount > 1 && bodyParticipation.isCompliant}">
               <div class="properties--percent">{{bodyParticipation.malePercentage | percent:'1.2-2'}}</div> <span class="properties--disabled">({{bodyParticipation.maleCount}}/{{bodyParticipation.assignedCount}})</span>
             </td>
             <td class="data-table__body-title data-table__body-ellipsis"
-            [ngClass]="{'text__alert': bodyParticipation.totalCount > 1 && !isMepCompliant(bodyParticipation.femalePercentage), 'text__success': bodyParticipation.totalCount > 1 && isMepCompliant(bodyParticipation.femalePercentage)}">
+            [ngClass]="{'text__alert': bodyParticipation.totalCount > 1 && !bodyParticipation.isCompliant, 'text__success': bodyParticipation.totalCount > 1 && bodyParticipation.isCompliant}">
               <div class="properties--percent">{{bodyParticipation.femalePercentage | percent:'1.2-2'}}</div> <span class="properties--disabled">({{bodyParticipation.femaleCount}}/{{bodyParticipation.assignedCount}})</span>
             </td>
             <td class="data-table__body-title data-table__body-ellipsis">
