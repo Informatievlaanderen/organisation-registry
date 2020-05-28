@@ -169,6 +169,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
                         UnassignedCount = 0,
                         UnknownCount = 0,
                         UnknownPercentage = 0,
+                        IsCompliant = true,
                     },
                     new BodyParticipation
                     {
@@ -176,7 +177,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
                         BodyId = _bodyId,
                         BodyName = "Ad-hoc adviescommissie impulssubsidies",
                         IsEffective = false,
-                        IsEffectiveTranslation = "Niet effectief",
+                        IsEffectiveTranslation = "Plaatsvervangend",
                         FemaleCount = 1,
                         FemalePercentage = 0.5m,
                         MaleCount = 1,
@@ -185,6 +186,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
                         UnassignedCount = 0,
                         UnknownCount = 0,
                         UnknownPercentage = 0,
+                        IsCompliant = true
                     }
                 });
         }
@@ -194,11 +196,10 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
         {
             var participationTotals =
                 BodyParticipationTotals.Map(
-                        BodyParticipationTotals.Search(
+                        BodyParticipation.Search(
                             _context,
                             _bodyId,
-                            _filtering))
-                    .ToList();
+                            _filtering));
 
             participationTotals.Should().BeEquivalentTo(
                 new BodyParticipationTotals
