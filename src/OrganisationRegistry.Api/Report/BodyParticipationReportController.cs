@@ -92,13 +92,12 @@ namespace OrganisationRegistry.Api.Report
 
             var participationTotals =
                 BodyParticipationTotals.Map(
-                        BodyParticipationTotals.Search(
-                            context,
-                            bodyId,
-                            filtering))
-                    .ToList();
+                    BodyParticipation.Search(
+                        context,
+                        bodyId,
+                        filtering));
 
-            return Ok(participationTotals.FirstOrDefault() ?? new BodyParticipationTotals());
+            return Ok(participationTotals);
         }
     }
 }
