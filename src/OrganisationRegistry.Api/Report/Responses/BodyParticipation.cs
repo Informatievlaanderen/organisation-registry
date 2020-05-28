@@ -35,6 +35,8 @@ namespace OrganisationRegistry.Api.Report.Responses
         [ExcludeFromCsv] public int AssignedCount { get; set; }
         [ExcludeFromCsv] public int UnassignedCount { get; set; }
 
+        [DisplayName("Is Mep-conform")] public bool IsCompliant { get; set; }
+
         ///  <summary>
         ///
         ///  </summary>
@@ -110,17 +112,17 @@ namespace OrganisationRegistry.Api.Report.Responses
                         x => x.SelectMany(y => y.Assignments));
 
             var groupedResults = activeSeatsPerIsEffective
-                .Select(seatPer =>
+                .Select(seatPerIsEffective =>
                 {
-                    var totalCount = seatPer.Value.Count();
-                    var activeAssignments = activeAssignmentsPerIsEffective[seatPer.Key].ToList();
+                    var totalCount = seatPerIsEffective.Value.Count();
+                    var activeAssignments = activeAssignmentsPerIsEffective[seatPerIsEffective.Key].ToList();
                     var assignedCount = activeAssignments.Count;
                     return new BodyParticipation
                     {
                         BodyId = bodyId,
                         BodyName = body.BodyName,
-                        IsEffective = seatPer.Key,
-                        IsEffectiveTranslation = seatPer.Key ? "Effectief" : "Niet effectief",
+                        IsEffective = seatPerIsEffective.Key,
+                        IsEffectiveTranslation = seatPerIsEffective.Key ? "Effectief" : "Plaatsvervangend",
 
                         MaleCount = activeAssignments.Count(x => x.Sex == Sex.Male),
                         FemaleCount = activeAssignments.Count(x => x.Sex == Sex.Female),
@@ -143,6 +145,9 @@ namespace OrganisationRegistry.Api.Report.Responses
         public static IEnumerable<BodyParticipation> Map(
             IEnumerable<BodyParticipation> results)
         {
+            var lower = Math.Floor(1m / 3 * 100) / 100;
+            var upper = Math.Ceiling(2m / 3 * 100) / 100;
+
             var participations = new List<BodyParticipation>();
 
             foreach (var result in results)
@@ -152,6 +157,10 @@ namespace OrganisationRegistry.Api.Report.Responses
                     result.MalePercentage = Math.Round((decimal)result.MaleCount / result.AssignedCount, 2);
                     result.FemalePercentage = Math.Round((decimal)result.FemaleCount / result.AssignedCount, 2);
                     result.UnknownPercentage = Math.Round((decimal)result.UnknownCount / result.AssignedCount, 2);
+                    result.IsCompliant =
+                        result.TotalCount <= 1 ||
+                        result.MalePercentage >= lower && result.MalePercentage <= upper &&
+                        result.FemalePercentage >= lower && result.FemalePercentage <= upper;
                 }
 
                 participations.Add(result);

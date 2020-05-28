@@ -15,5 +15,6 @@ export class BodyParticipationReportListItem {
       public malePercentage: number = 0,
       public femalePercentage: number = 0,
       public unknownPercentage: number = 0,
+      public isCompliant: boolean = false,
     ) { }
   }

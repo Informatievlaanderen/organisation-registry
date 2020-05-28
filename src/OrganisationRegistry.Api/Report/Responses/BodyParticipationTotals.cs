@@ -47,7 +47,6 @@ namespace OrganisationRegistry.Api.Report.Responses
                     (!y.ValidFrom.HasValue || y.ValidFrom <= DateTime.Today) &&
                     (!y.ValidTo.HasValue || y.ValidFrom >= DateTime.Today)))
                 .SingleOrDefault(post => post.BodyId == bodyId);
-            //  .Where(post => post.OrganisationIsActive) TODO: Discuss with Thomas
 
            if (bodySeatGenderRatioBodyItem == null)
                return new List<BodyParticipationTotals>();
