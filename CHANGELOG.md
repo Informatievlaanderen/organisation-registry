@@ -1,3 +1,36 @@
+# [1.44.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.43.5...v1.44.0) (2020-05-29)
+
+
+### Bug Fixes
+
+* remove typo in back to reports link ([a752990](https://github.com/informatievlaanderen/organisation-registry/commit/a7529902b70a61aa8d997a7be94d069bd0a0b306))
+
+
+### Features
+
+* add isEffective as column to seat type ([6b7ba9e](https://github.com/informatievlaanderen/organisation-registry/commit/6b7ba9e7d6f18fc8e64a24d056be83c66851e1b6))
+* add participation summary report ([9f5b5a8](https://github.com/informatievlaanderen/organisation-registry/commit/9f5b5a889776815c1a7ff51b4a6ab9b7c25f1b08))
+* allow updating seat type effectiveness from ui ([ed17370](https://github.com/informatievlaanderen/organisation-registry/commit/ed17370163482c510825f1c91dc2e44eff35c6b4))
+* allow user to unset obligatory mep compliance ([70ba5a8](https://github.com/informatievlaanderen/organisation-registry/commit/70ba5a858673fe286e16616eab98f65d13340a43))
+* calculate body participation grouped by isEffective ([9b768fb](https://github.com/informatievlaanderen/organisation-registry/commit/9b768fb49b49677840607369fffad0b65cbcb48a))
+* calculate ff body participation grouped by isEffective ([ed4540a](https://github.com/informatievlaanderen/organisation-registry/commit/ed4540a66837478876773f4672f67f5c30646949))
+* calculate male and female compliance server side ([37e13de](https://github.com/informatievlaanderen/organisation-registry/commit/37e13deede5987cf1ac07de9f1f411aaa588bba6))
+* calculate totals based on body participations ([3ddd610](https://github.com/informatievlaanderen/organisation-registry/commit/3ddd6109645366282ca9b67e79d301d76ce4779d))
+* introduce isEffective field to seat type ([3f4ddac](https://github.com/informatievlaanderen/organisation-registry/commit/3f4ddac89842ad58d1fbdb528ac6c3dc39120ade))
+* make IsBalancedParticipationObligatory nullable ([3146967](https://github.com/informatievlaanderen/organisation-registry/commit/3146967e7a0dcc8f8b98473c57c6ae9335539065))
+* make participation default to false when updating with null ([25fc8ed](https://github.com/informatievlaanderen/organisation-registry/commit/25fc8edd5e557aab9fa5f5b5d4282cfef1b1afc2))
+* optimize participation summary report ([2c87df4](https://github.com/informatievlaanderen/organisation-registry/commit/2c87df49e9d3b6cd07635b66b42ec3d5d3ae386d))
+* pass down mep compliance with body participations ([79f1c3b](https://github.com/informatievlaanderen/organisation-registry/commit/79f1c3b7641cd72815de1525e796390d38915967))
+* remove colors from participation totals ([dccaf47](https://github.com/informatievlaanderen/organisation-registry/commit/dccaf47680a9670861c394d0356b345412f026f0))
+* remove separate percentages from participation summary ([a58b31b](https://github.com/informatievlaanderen/organisation-registry/commit/a58b31b82e3e7e0ff04ad6e8145076710fd0ba41))
+* show isEffective in seat type list ([d58ba76](https://github.com/informatievlaanderen/organisation-registry/commit/d58ba7681fe8abcaf4581e1c798c222fdf055326))
+* show warning when total participation is nonCompliant ([7f83b33](https://github.com/informatievlaanderen/organisation-registry/commit/7f83b3308817327875f8fd39ee01d69f7f8eba14))
+
+
+### Reverts
+
+* Revert "chore: add dotnet ef to local tools" ([8670907](https://github.com/informatievlaanderen/organisation-registry/commit/8670907e6130c1d261e507e1ca60dbb4a3fc6ca7))
+
 ## [1.43.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.43.4...v1.43.5) (2020-05-25)
 
 
