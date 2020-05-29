@@ -40,9 +40,9 @@ tr.data-table__body-history {
 
 .data-table__body-ellipsis,
 .data-table__body-ellipsis div.data-table__cell--additional-information {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 tr.data-table__body-missing-mandate {
