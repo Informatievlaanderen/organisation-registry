@@ -5,13 +5,11 @@ namespace OrganisationRegistry.Api.Report.Responses
     using SqlServer.Infrastructure;
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.ComponentModel;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Infrastructure.Search.Filtering;
     using Microsoft.EntityFrameworkCore;
-    using SqlServer.Reporting;
     using OrganisationRegistry.Person;
 
     public class BodyParticipation
@@ -35,7 +33,10 @@ namespace OrganisationRegistry.Api.Report.Responses
         [ExcludeFromCsv] public int AssignedCount { get; set; }
         [ExcludeFromCsv] public int UnassignedCount { get; set; }
 
-        [DisplayName("Is Mep-conform")] public bool IsCompliant { get; set; }
+        [DisplayName("Is Mep-conform")] public BodyParticipationCompliance TotalCompliance { get; set; }
+
+        [DisplayName("Is Mep-conform Voor Vrouwen")] public BodyParticipationCompliance FemaleCompliance { get; set; }
+        [DisplayName("Is Mep-conform Voor Mannen")] public BodyParticipationCompliance MaleCompliance { get; set; }
 
         ///  <summary>
         ///
@@ -157,10 +158,25 @@ namespace OrganisationRegistry.Api.Report.Responses
                     result.MalePercentage = Math.Round((decimal)result.MaleCount / result.AssignedCount, 2);
                     result.FemalePercentage = Math.Round((decimal)result.FemaleCount / result.AssignedCount, 2);
                     result.UnknownPercentage = Math.Round((decimal)result.UnknownCount / result.AssignedCount, 2);
-                    result.IsCompliant =
-                        result.TotalCount <= 1 ||
-                        result.MalePercentage >= lower && result.MalePercentage <= upper &&
-                        result.FemalePercentage >= lower && result.FemalePercentage <= upper;
+                    result.MaleCompliance = result.TotalCount <= 1
+                        ? BodyParticipationCompliance.Unknown
+                        : (result.MalePercentage >= lower && result.MalePercentage <= upper)
+                            ? BodyParticipationCompliance.Compliant
+                            : BodyParticipationCompliance.NonCompliant;
+
+                    result.FemaleCompliance = result.TotalCount <= 1
+                        ? BodyParticipationCompliance.Unknown
+                        : (result.FemalePercentage >= lower && result.FemalePercentage <= upper)
+                            ? BodyParticipationCompliance.Compliant
+                            : BodyParticipationCompliance.NonCompliant;
+
+                    result.TotalCompliance =
+                        result.TotalCount <= 1
+                            ? BodyParticipationCompliance.Unknown
+                            : result.FemaleCompliance == BodyParticipationCompliance.Compliant &&
+                              result.MaleCompliance == BodyParticipationCompliance.Compliant
+                                ? BodyParticipationCompliance.Compliant
+                                : BodyParticipationCompliance.NonCompliant;
                 }
 
                 participations.Add(result);

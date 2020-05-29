@@ -1,3 +1,5 @@
+import { Compliance } from './body-participation-report-totals.model';
+
 export class BodyParticipationReportListItem {
     constructor(
       public organisationId: string = '',
@@ -15,6 +17,8 @@ export class BodyParticipationReportListItem {
       public malePercentage: number = 0,
       public femalePercentage: number = 0,
       public unknownPercentage: number = 0,
-      public isCompliant: boolean = false,
+      public totalCompliance: string = Compliance.UNKNOWN,
+      public maleCompliance: string = Compliance.UNKNOWN,
+      public femaleCompliance: string = Compliance.UNKNOWN,
     ) { }
   }
