@@ -28,6 +28,7 @@ namespace OrganisationRegistry.Api.Report
         /// Get gender ratio for a body (grouped by body and bodyseat)
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="dateTimeProvider"></param>
         /// <param name="bodyId">A body GUID identifier</param>
         /// <returns></returns>
         [HttpGet("bodyparticipation/{bodyId}")]
@@ -36,6 +37,7 @@ namespace OrganisationRegistry.Api.Report
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetBodyParticipation(
             [FromServices] OrganisationRegistryContext context,
+            [FromServices] IDateTimeProvider dateTimeProvider,
             [FromRoute] Guid bodyId)
         {
             var filtering = Request.ExtractFilteringRequest<BodyParticipationFilter>();
@@ -47,7 +49,8 @@ namespace OrganisationRegistry.Api.Report
                             BodyParticipation.Search(
                                 context,
                                 bodyId,
-                                filtering)),
+                                filtering,
+                                dateTimeProvider.Today)),
                         sorting)
                     .ToList();
 
@@ -78,6 +81,7 @@ namespace OrganisationRegistry.Api.Report
         /// Get gender ratio totals for a body (grouped by body)
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="dateTimeProvider"></param>
         /// <param name="bodyId">A body GUID identifier</param>
         /// <returns></returns>
         [HttpGet("bodyparticipation/{bodyId}/totals")]
@@ -86,6 +90,7 @@ namespace OrganisationRegistry.Api.Report
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetBodyParticipationTotals(
             [FromServices] OrganisationRegistryContext context,
+            [FromServices] IDateTimeProvider dateTimeProvider,
             [FromRoute] Guid bodyId)
         {
             var filtering = Request.ExtractFilteringRequest<BodyParticipationFilter>();
@@ -95,7 +100,8 @@ namespace OrganisationRegistry.Api.Report
                     BodyParticipation.Search(
                         context,
                         bodyId,
-                        filtering));
+                        filtering,
+                        dateTimeProvider.Today));
 
             return Ok(participationTotals);
         }
