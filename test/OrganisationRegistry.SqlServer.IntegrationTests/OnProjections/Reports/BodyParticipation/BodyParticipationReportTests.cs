@@ -147,7 +147,8 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
                             BodyParticipation.Search(
                                 _context,
                                 _bodyId,
-                                _filtering)),
+                                _filtering,
+                                DateTime.Today)),
                         _sorting)
                     .ToList();
 
@@ -203,7 +204,8 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
                         BodyParticipation.Search(
                             _context,
                             _bodyId,
-                            _filtering));
+                            _filtering,
+                            DateTime.Today));
 
             participationTotals.Should().BeEquivalentTo(
                 new BodyParticipationTotals

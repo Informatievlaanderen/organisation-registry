@@ -43,12 +43,13 @@ namespace OrganisationRegistry.Api.Report.Responses
         ///  </summary>
         ///  <param name="context"></param>
         ///  <param name="bodyId"></param>
-        /// <param name="filteringHeader"></param>
-        /// <returns></returns>
-        public static IEnumerable<BodyParticipation> Search(
-            OrganisationRegistryContext context,
+        ///  <param name="filteringHeader"></param>
+        ///  <param name="today"></param>
+        ///  <returns></returns>
+        public static IEnumerable<BodyParticipation> Search(OrganisationRegistryContext context,
             Guid bodyId,
-            FilteringHeader<BodyParticipationFilter> filteringHeader)
+            FilteringHeader<BodyParticipationFilter> filteringHeader,
+            DateTime today)
         {
             // No checkboxes are enabled
             if (!filteringHeader.Filter.EntitledToVote && !filteringHeader.Filter.NotEntitledToVote)
@@ -61,8 +62,8 @@ namespace OrganisationRegistry.Api.Report.Responses
             var activeSeatsPerType = body
                 .PostsPerType
                 .Where(post =>
-                    (!post.BodySeatValidFrom.HasValue || post.BodySeatValidFrom <= DateTime.Today) &&
-                    (!post.BodySeatValidTo.HasValue || post.BodySeatValidTo >= DateTime.Today));
+                    (!post.BodySeatValidFrom.HasValue || post.BodySeatValidFrom <= today) &&
+                    (!post.BodySeatValidTo.HasValue || post.BodySeatValidTo >= today));
 
             // One of the checkboxes is checked
             if (filteringHeader.Filter.EntitledToVote ^ filteringHeader.Filter.NotEntitledToVote)
@@ -88,8 +89,8 @@ namespace OrganisationRegistry.Api.Report.Responses
                 .AsAsyncQueryable()
                 .Where(mandate => mandate.BodyId == bodyId)
                 .Where(mandate =>
-                    (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= DateTime.Today) &&
-                    (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= DateTime.Today))
+                    (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= today) &&
+                    (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= today))
                 .Where(mandate => activeSeatIds.Contains(mandate.BodySeatId))
                 .ToList();
 
@@ -103,8 +104,8 @@ namespace OrganisationRegistry.Api.Report.Responses
                     .AsAsyncQueryable()
                     .Where(mandate => mandate.BodyId == bodyId)
                     .Where(mandate =>
-                        (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= DateTime.Today) &&
-                        (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= DateTime.Today))
+                        (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= today) &&
+                        (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= today))
                     .Where(mandate => activeMandateIds.Contains(mandate.BodyMandateId))
                     .ToList()
                     .GroupBy(mandate => mandate.BodySeatTypeIsEffective)
