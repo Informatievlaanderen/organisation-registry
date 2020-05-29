@@ -1,3 +1,10 @@
+## [1.44.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.44.0...v1.44.1) (2020-05-29)
+
+
+### Bug Fixes
+
+* update dependencies GRAR-752 ([7cdf314](https://github.com/informatievlaanderen/organisation-registry/commit/7cdf314e45bd0114d82461e953e6a072dfee2f7f))
+
 # [1.44.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.43.5...v1.44.0) (2020-05-29)
 
 
