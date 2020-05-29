@@ -6,13 +6,6 @@ namespace OrganisationRegistry.Api.Report.Responses
 
     public class BodyParticipationTotals
     {
-        public enum BodyParticipationCompliance
-        {
-            Unknown = 0,
-            NonCompliant = 1,
-            Compliant = 2,
-        }
-
         public decimal MalePercentage { get; set; }
         public decimal FemalePercentage { get; set; }
         public decimal UnknownPercentage { get; set; }
@@ -55,7 +48,8 @@ namespace OrganisationRegistry.Api.Report.Responses
             if (total.AssignedCount <= 0)
                 return total;
 
-            total.Compliance = bodyParticipations.All(participation => participation.IsCompliant)
+            total.Compliance = bodyParticipations.All(participation =>
+                participation.TotalCompliance == BodyParticipationCompliance.Compliant)
                 ? BodyParticipationCompliance.Compliant
                 : BodyParticipationCompliance.NonCompliant;
 

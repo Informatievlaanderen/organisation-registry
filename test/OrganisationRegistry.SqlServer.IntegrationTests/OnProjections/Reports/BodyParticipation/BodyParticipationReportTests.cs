@@ -169,7 +169,9 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
                         UnassignedCount = 0,
                         UnknownCount = 0,
                         UnknownPercentage = 0,
-                        IsCompliant = true,
+                        TotalCompliance = BodyParticipationCompliance.Compliant,
+                        FemaleCompliance = BodyParticipationCompliance.Compliant,
+                        MaleCompliance = BodyParticipationCompliance.Compliant
                     },
                     new BodyParticipation
                     {
@@ -186,7 +188,9 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
                         UnassignedCount = 0,
                         UnknownCount = 0,
                         UnknownPercentage = 0,
-                        IsCompliant = true
+                        TotalCompliance = BodyParticipationCompliance.Compliant,
+                        FemaleCompliance = BodyParticipationCompliance.Compliant,
+                        MaleCompliance = BodyParticipationCompliance.Compliant
                     }
                 });
         }
@@ -213,7 +217,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
                     UnassignedCount = 0,
                     UnknownCount = 0,
                     UnknownPercentage = 0,
-                    Compliance = BodyParticipationTotals.BodyParticipationCompliance.Compliant
+                    Compliance = BodyParticipationCompliance.Compliant
                 });
         }
     }
