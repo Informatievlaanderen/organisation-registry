@@ -46,7 +46,8 @@ namespace OrganisationRegistry.Api.Report.Responses
         ///  <param name="filteringHeader"></param>
         ///  <param name="today"></param>
         ///  <returns></returns>
-        public static IEnumerable<BodyParticipation> Search(OrganisationRegistryContext context,
+        public static IEnumerable<BodyParticipation> Search(
+            OrganisationRegistryContext context,
             Guid bodyId,
             FilteringHeader<BodyParticipationFilter> filteringHeader,
             DateTime today)
