@@ -16,7 +16,6 @@ export class BodyParticipationManageComponent implements OnInit {
   public form: FormGroup;
   public mepComplianceOptions: RadioItem[];
 
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
