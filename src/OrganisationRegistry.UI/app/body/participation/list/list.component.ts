@@ -4,7 +4,8 @@ import { BaseListComponent } from 'shared/components/list';
 
 import {
   BodyParticipationReportListItem,
-  BodyParticipationReportTotals, Compliance
+  BodyParticipationReportTotals, 
+  Compliance
 } from 'services/reports';
 
 @Component({
