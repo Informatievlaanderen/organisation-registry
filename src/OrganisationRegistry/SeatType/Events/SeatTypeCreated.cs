@@ -34,6 +34,7 @@ namespace OrganisationRegistry.SeatType.Events
             : this(
                 new SeatTypeId(seatTypeId),
                 new SeatTypeName(name),
-                order, isEffective) { }
+                order, 
+                isEffective) { }
     }
 }
