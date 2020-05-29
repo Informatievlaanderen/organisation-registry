@@ -59,9 +59,8 @@
                 <a [routerLink]="['/bodies/', bodyParticipation.bodyId, 'participation']" title="{{bodyParticipation.bodyName}}">{{bodyParticipation.bodyName}}</a>
                 <div *ngIf="bodyParticipation.organisationId" class="data-table__cell--disabled data-table__cell--additional-information">onderdeel van <a [routerLink]="['/organisations', bodyParticipation.organisationId]" title="{{bodyParticipation.organisationName}}">{{bodyParticipation.organisationName}}</a></div>
               </td>
-              <td class="data-table__body-title data-table__body-ellipsis"
-                  [ngClass]="bodyParticipation.isTotalCompliant ? 'text__success': 'text__alert'">
-              {{bodyParticipation.isTotalCompliant ? 'Ja' : 'Nee' }}
+              <td class="data-table__body-title data-table__body-ellipsis" [ngClass]="bodyParticipation.isTotalCompliant ? 'text__success': 'text__alert'">
+                {{bodyParticipation.isTotalCompliant ? 'Ja' : 'Nee' }}
               </td>
             </tr>
           </template>
