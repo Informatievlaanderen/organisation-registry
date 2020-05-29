@@ -53,9 +53,9 @@ namespace OrganisationRegistry.Api.Report.Responses
                 ? BodyParticipationCompliance.Compliant
                 : BodyParticipationCompliance.NonCompliant;
 
-            total.MalePercentage = Math.Round((decimal) total.MaleCount / total.AssignedCount, 2);
-            total.FemalePercentage = Math.Round((decimal) total.FemaleCount / total.AssignedCount, 2);
-            total.UnknownPercentage = Math.Round((decimal) total.UnknownCount / total.AssignedCount, 2);
+            total.MalePercentage = ParticipationCalculator.CalculatePercentage(total.MaleCount, total.AssignedCount);
+            total.FemalePercentage = ParticipationCalculator.CalculatePercentage(total.FemaleCount, total.AssignedCount);
+            total.UnknownPercentage = ParticipationCalculator.CalculatePercentage(total.UnknownCount, total.AssignedCount);
 
             return total;
         }
