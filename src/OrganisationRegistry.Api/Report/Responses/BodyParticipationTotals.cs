@@ -6,6 +6,13 @@ namespace OrganisationRegistry.Api.Report.Responses
 
     public class BodyParticipationTotals
     {
+        public enum BodyParticipationCompliance
+        {
+            Unknown = 0,
+            NonCompliant = 1,
+            Compliant = 2,
+        }
+
         public decimal MalePercentage { get; set; }
         public decimal FemalePercentage { get; set; }
         public decimal UnknownPercentage { get; set; }
@@ -19,6 +26,8 @@ namespace OrganisationRegistry.Api.Report.Responses
         public int AssignedCount { get; set; }
         public int UnassignedCount { get; set; }
 
+        public BodyParticipationCompliance Compliance { get; set; }
+
         /// <summary>
         ///
         /// </summary>
@@ -27,7 +36,10 @@ namespace OrganisationRegistry.Api.Report.Responses
         public static BodyParticipationTotals Map(
             IEnumerable<BodyParticipation> results)
         {
-            var bodyParticipations = results.ToList();
+            var bodyParticipations =
+                BodyParticipation
+                    .Map(results)
+                    .ToList();
 
             var total = new BodyParticipationTotals
             {
@@ -37,8 +49,8 @@ namespace OrganisationRegistry.Api.Report.Responses
                 AssignedCount = bodyParticipations.Sum(x => x.AssignedCount),
                 UnassignedCount = bodyParticipations.Sum(x => x.UnassignedCount),
                 TotalCount = bodyParticipations.Sum(x => x.TotalCount),
+                Compliance = BodyParticipationCompliance.Unknown,
             };
-
 
             if (total.AssignedCount <= 0)
                 return total;
@@ -47,7 +59,12 @@ namespace OrganisationRegistry.Api.Report.Responses
             total.FemalePercentage = Math.Round((decimal) total.FemaleCount / total.AssignedCount, 2);
             total.UnknownPercentage = Math.Round((decimal) total.UnknownCount / total.AssignedCount, 2);
 
+            total.Compliance = bodyParticipations.All(participation => participation.IsCompliant)
+                ? BodyParticipationCompliance.Compliant
+                : BodyParticipationCompliance.NonCompliant;
+
             return total;
         }
+
     }
 }

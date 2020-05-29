@@ -1,20 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 
 import { Alert, AlertService, AlertType } from 'core/alert';
-import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
+import { PagedEvent, PagedResult, SortOrder } from 'core/pagination';
 import { SearchEvent } from 'core/search';
-import { AuthService, Role, OidcService } from 'core/auth';
+import { OidcService, Role } from 'core/auth';
 
 import { Body, BodyService } from 'services/bodies';
 
 import {
+  BodyParticipationReportFilter,
   BodyParticipationReportListItem,
-  BodyParticipationReportTotals,
   BodyParticipationReportService,
-  BodyParticipationReportFilter
+  BodyParticipationReportTotals,
+  Compliance
 } from 'services/reports/body-participation';
 
 @Component({
@@ -81,6 +82,10 @@ export class BodyParticipationOverviewComponent implements OnInit {
     this.currentSortBy = event.sortBy;
     this.currentSortOrder = event.sortOrder;
     this.loadBodyParticipations(this.bodyId, event);
+  }
+
+  get isNonCompliant() {
+    return this.body.hasAllSeatsAssigned && this.bodyParticipationTotals.compliance === Compliance.NONCOMPLIANT;
   }
 
   private loadBodyParticipations(bodyId: string, event?: PagedEvent) {

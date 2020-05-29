@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Response, Headers, Http } from '@angular/http';
+import { Response, Http } from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
 
 import { ConfigurationService } from 'core/configuration';
 import { HeadersBuilder } from 'core/http';
 import { PagedResult, PagedResultFactory, SortOrder } from 'core/pagination';
-import { ICrudService } from 'core/crud';
 
 import {
   BodyParticipationReportFilter,

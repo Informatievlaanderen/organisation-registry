@@ -213,6 +213,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
                     UnassignedCount = 0,
                     UnknownCount = 0,
                     UnknownPercentage = 0,
+                    Compliance = BodyParticipationTotals.BodyParticipationCompliance.Compliant
                 });
         }
     }
