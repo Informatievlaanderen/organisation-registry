@@ -17,14 +17,14 @@ namespace OrganisationRegistry.Api.Report.Responses
         {
             return totalCount <= 1
                 ? BodyParticipationCompliance.Unknown
-                : (percentage >= Lower && percentage <= Upper)
+                : percentage >= Lower && percentage <= Upper
                     ? BodyParticipationCompliance.Compliant
                     : BodyParticipationCompliance.NonCompliant;
         }
 
         public static decimal CalculatePercentage(int count, decimal assignedCount)
         {
-            return Math.Round((decimal) count / assignedCount, 2);
+            return Math.Round(count / assignedCount, 2);
         }
 
     }
