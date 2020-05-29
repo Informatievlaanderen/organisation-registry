@@ -26,6 +26,5 @@ namespace OrganisationRegistry.Api.Report.Responses
         {
             return Math.Round(count / assignedCount, 2);
         }
-
     }
 }
