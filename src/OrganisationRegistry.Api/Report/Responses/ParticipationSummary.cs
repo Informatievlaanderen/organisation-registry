@@ -195,12 +195,13 @@ namespace OrganisationRegistry.Api.Report.Responses
             {
                 if (result.AssignedCount > 0)
                 {
-                    result.SubsidiaryMalePercentage = Math.Round((decimal) result.SubsidiaryMaleCount / result.AssignedCount, 2);
-                    result.SubsidiaryFemalePercentage = Math.Round((decimal) result.SubsidiaryFemaleCount / result.AssignedCount, 2);
-                    result.SubsidiaryUnknownPercentage = Math.Round((decimal) result.SubsidiaryUnknownCount / result.AssignedCount, 2);
-                    result.EffectiveMalePercentage = Math.Round((decimal) result.EffectiveMaleCount / result.AssignedCount, 2);
-                    result.EffectiveFemalePercentage = Math.Round((decimal) result.EffectiveFemaleCount / result.AssignedCount, 2);
-                    result.EffectiveUnknownPercentage = Math.Round((decimal) result.EffectiveUnknownCount / result.AssignedCount, 2);
+                    result.SubsidiaryMalePercentage = ParticipationCalculator.CalculatePercentage(result.SubsidiaryMaleCount, result.AssignedCount);
+                    result.SubsidiaryFemalePercentage = ParticipationCalculator.CalculatePercentage(result.SubsidiaryFemaleCount, result.AssignedCount);
+                    result.SubsidiaryUnknownPercentage = ParticipationCalculator.CalculatePercentage(result.SubsidiaryUnknownCount, result.AssignedCount);
+
+                    result.EffectiveMalePercentage = ParticipationCalculator.CalculatePercentage(result.EffectiveMaleCount, result.AssignedCount);
+                    result.EffectiveFemalePercentage = ParticipationCalculator.CalculatePercentage(result.EffectiveFemaleCount, result.AssignedCount);
+                    result.EffectiveUnknownPercentage = ParticipationCalculator.CalculatePercentage(result.EffectiveUnknownCount, result.AssignedCount);
 
                     result.IsEffectiveCompliant =
                         result.EffectiveTotalCount <= 1 ||
