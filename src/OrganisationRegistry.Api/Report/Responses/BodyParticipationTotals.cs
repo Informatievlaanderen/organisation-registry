@@ -55,13 +55,13 @@ namespace OrganisationRegistry.Api.Report.Responses
             if (total.AssignedCount <= 0)
                 return total;
 
-            total.MalePercentage = Math.Round((decimal) total.MaleCount / total.AssignedCount, 2);
-            total.FemalePercentage = Math.Round((decimal) total.FemaleCount / total.AssignedCount, 2);
-            total.UnknownPercentage = Math.Round((decimal) total.UnknownCount / total.AssignedCount, 2);
-
             total.Compliance = bodyParticipations.All(participation => participation.IsCompliant)
                 ? BodyParticipationCompliance.Compliant
                 : BodyParticipationCompliance.NonCompliant;
+
+            total.MalePercentage = Math.Round((decimal) total.MaleCount / total.AssignedCount, 2);
+            total.FemalePercentage = Math.Round((decimal) total.FemaleCount / total.AssignedCount, 2);
+            total.UnknownPercentage = Math.Round((decimal) total.UnknownCount / total.AssignedCount, 2);
 
             return total;
         }

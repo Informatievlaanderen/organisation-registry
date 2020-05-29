@@ -106,20 +106,16 @@
             <div class="infotext__text">posten toegewezen</div>
           </div>
         </div>
-        <div class="col--3-12 col--6-12--s">
+        <div class="col--3-12 col--6-12--s" >
           <div class="infotext">
-            <div class="infotext__value"
-              [ngClass]="{'text__alert': totals.totalCount > 1 && !isMepCompliant(totals.malePercentage), 'text__success': totals.totalCount > 1 && isMepCompliant(totals.malePercentage)}">{{totals.malePercentage | percent:'1.2-2'}}</div>
-            <div class="infotext__text"
-              [ngClass]="{'text__alert': totals.totalCount > 1 && !isMepCompliant(totals.malePercentage), 'text__success': totals.totalCount > 1 && isMepCompliant(totals.malePercentage)}">mannen</div>
+            <div class="infotext__value">{{totals.malePercentage | percent:'1.2-2'}}</div>
+            <div class="infotext__text">mannen</div>
           </div>
         </div>
         <div class="col--3-12 col--6-12--s">
           <div class="infotext">
-            <div class="infotext__value"
-              [ngClass]="{'text__alert': totals.totalCount > 1 && !isMepCompliant(totals.femalePercentage), 'text__success': totals.totalCount > 1 && isMepCompliant(totals.femalePercentage)}">{{totals.femalePercentage | percent:'1.2-2'}}</div>
-            <div class="infotext__text"
-              [ngClass]="{'text__alert': totals.totalCount > 1 && !isMepCompliant(totals.femalePercentage), 'text__success': totals.totalCount > 1 && isMepCompliant(totals.femalePercentage)}">vrouwen</div>
+            <div class="infotext__value">{{totals.femalePercentage | percent:'1.2-2'}}</div>
+            <div class="infotext__text">vrouwen</div>
           </div>
         </div>
         <div class="col--3-12 col--6-12--s">

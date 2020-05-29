@@ -4,7 +4,8 @@ import { BaseListComponent } from 'shared/components/list';
 
 import {
   BodyParticipationReportListItem,
-  BodyParticipationReportTotals } from 'services/reports';
+  BodyParticipationReportTotals, Compliance
+} from 'services/reports';
 
 @Component({
   selector: 'ww-body-participation-list',
@@ -21,7 +22,11 @@ export class BodyParticipationListComponent extends BaseListComponent<BodyPartic
   private lower: number = Math.floor((1 / 3) * 100) / 100;
   private upper: number = Math.ceil((2 / 3) * 100) / 100;
 
-  isMepCompliant(percentage) {
-    return percentage >= this.lower && percentage <= this.upper;
+  isMepCompliant(totals) {
+    return totals.totalCount > 1 && totals.compliance === Compliance.COMPLIANT;
+  }
+
+  isNonMepCompliant(totals) {
+    return totals.totalCount > 1 && totals.compliance === Compliance.NONCOMPLIANT;
   }
 }
