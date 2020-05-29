@@ -147,29 +147,18 @@ namespace OrganisationRegistry.Api.Report.Responses
         public static IEnumerable<BodyParticipation> Map(
             IEnumerable<BodyParticipation> results)
         {
-            var lower = Math.Floor(1m / 3 * 100) / 100;
-            var upper = Math.Ceiling(2m / 3 * 100) / 100;
-
             var participations = new List<BodyParticipation>();
 
             foreach (var result in results)
             {
                 if (result.AssignedCount > 0)
                 {
-                    result.MalePercentage = Math.Round((decimal)result.MaleCount / result.AssignedCount, 2);
-                    result.FemalePercentage = Math.Round((decimal)result.FemaleCount / result.AssignedCount, 2);
-                    result.UnknownPercentage = Math.Round((decimal)result.UnknownCount / result.AssignedCount, 2);
-                    result.MaleCompliance = result.TotalCount <= 1
-                        ? BodyParticipationCompliance.Unknown
-                        : (result.MalePercentage >= lower && result.MalePercentage <= upper)
-                            ? BodyParticipationCompliance.Compliant
-                            : BodyParticipationCompliance.NonCompliant;
+                    result.MalePercentage = ParticipationCalculator.CalculatePercentage(result.MaleCount, result.AssignedCount);
+                    result.FemalePercentage = ParticipationCalculator.CalculatePercentage(result.FemaleCount, result.AssignedCount);
+                    result.UnknownPercentage = ParticipationCalculator.CalculatePercentage(result.UnknownCount, result.AssignedCount);
 
-                    result.FemaleCompliance = result.TotalCount <= 1
-                        ? BodyParticipationCompliance.Unknown
-                        : (result.FemalePercentage >= lower && result.FemalePercentage <= upper)
-                            ? BodyParticipationCompliance.Compliant
-                            : BodyParticipationCompliance.NonCompliant;
+                    result.MaleCompliance = ParticipationCalculator.CalculateCompliance(result.TotalCount, result.MalePercentage);
+                    result.FemaleCompliance = ParticipationCalculator.CalculateCompliance(result.TotalCount, result.FemalePercentage);
 
                     result.TotalCompliance =
                         result.TotalCount <= 1
