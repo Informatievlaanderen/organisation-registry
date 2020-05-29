@@ -11,7 +11,7 @@
         </div>
     </div>
 
-    <div class="alert alert--warning" *ngIf="body.hasAllSeatsAssigned && !body.isMepCompliant">
+    <div class="alert alert--warning" *ngIf="isNonCompliant">
         <div class="alert__icon"></div>
 
         <div class="alert__content">
