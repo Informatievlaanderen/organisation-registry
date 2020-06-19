@@ -1,6 +1,6 @@
 {
   "name": "organisation-registry",
-  "version": "1.44.1",
+  "version": "1.44.2",
   "description": "Authentic organisation registry.",
   "author": "Basisregisters Vlaanderen",
   "license": "EUPL-1.2",
@@ -183,7 +183,10 @@
     ]
   },
   "release": {
-    "branches": [ "master", "main" ],
+    "branches": [
+      "master",
+      "main"
+    ],
     "verifyConditions": [
       "@semantic-release/changelog",
       "@semantic-release/git",
