@@ -17,6 +17,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using OrganisationRegistry.Infrastructure.Events;
+    using SeatType.Events;
     using SqlServer;
 
     public class BodySeatGenderRatioProjection :
@@ -62,6 +63,8 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
         IEventHandler<OrganisationOrganisationClassificationUpdated>,
+
+        IEventHandler<SeatTypeUpdated>,
 
         IEventHandler<InitialiseProjection>
     {
@@ -445,6 +448,38 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
                 }
 
                 context.SaveChanges();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeUpdated> message)
+        {
+            using (var context = ContextFactory.Create())
+            {
+                var bodiesWithThisSeatTypeId = context
+                    .BodySeatGenderRatioBodyList
+                    .Include(item => item.PostsPerType)
+                    .Where(item => item.PostsPerType.Any(post => post.BodySeatTypeId == message.Body.SeatTypeId))
+                    .ToList();
+
+                foreach (var body in bodiesWithThisSeatTypeId)
+                {
+                    foreach (var post in body.PostsPerType.Where(p => p.BodySeatTypeId == message.Body.SeatTypeId))
+                    {
+                        post.BodySeatTypeName = message.Body.Name;
+                        post.BodySeatTypeIsEffective = message.Body.IsEffective ?? true;
+                    }
+                }
+
+                context
+                    .BodySeatGenderRatioBodyMandateList
+                    .Where(mandate => mandate.BodySeatTypeId == message.Body.SeatTypeId)
+                    .ToList()
+                    .ForEach(mandate =>
+                    {
+                        mandate.BodySeatTypeIsEffective = message.Body.IsEffective ?? true;
+                    });
+
+                await context.SaveChangesAsync();
             }
         }
 
