@@ -195,13 +195,13 @@ namespace OrganisationRegistry.Api.Report.Responses
             {
                 if (result.AssignedCount > 0)
                 {
-                    result.SubsidiaryMalePercentage = ParticipationCalculator.CalculatePercentage(result.SubsidiaryMaleCount, result.AssignedCount);
-                    result.SubsidiaryFemalePercentage = ParticipationCalculator.CalculatePercentage(result.SubsidiaryFemaleCount, result.AssignedCount);
-                    result.SubsidiaryUnknownPercentage = ParticipationCalculator.CalculatePercentage(result.SubsidiaryUnknownCount, result.AssignedCount);
+                    result.SubsidiaryMalePercentage = ParticipationCalculator.CalculatePercentage(result.SubsidiaryMaleCount, result.SubsidiaryTotalCount);
+                    result.SubsidiaryFemalePercentage = ParticipationCalculator.CalculatePercentage(result.SubsidiaryFemaleCount, result.SubsidiaryTotalCount);
+                    result.SubsidiaryUnknownPercentage = ParticipationCalculator.CalculatePercentage(result.SubsidiaryUnknownCount, result.SubsidiaryTotalCount);
 
-                    result.EffectiveMalePercentage = ParticipationCalculator.CalculatePercentage(result.EffectiveMaleCount, result.AssignedCount);
-                    result.EffectiveFemalePercentage = ParticipationCalculator.CalculatePercentage(result.EffectiveFemaleCount, result.AssignedCount);
-                    result.EffectiveUnknownPercentage = ParticipationCalculator.CalculatePercentage(result.EffectiveUnknownCount, result.AssignedCount);
+                    result.EffectiveMalePercentage = ParticipationCalculator.CalculatePercentage(result.EffectiveMaleCount, result.EffectiveTotalCount);
+                    result.EffectiveFemalePercentage = ParticipationCalculator.CalculatePercentage(result.EffectiveFemaleCount, result.EffectiveTotalCount);
+                    result.EffectiveUnknownPercentage = ParticipationCalculator.CalculatePercentage(result.EffectiveUnknownCount, result.EffectiveTotalCount);
 
                     result.IsEffectiveCompliant =
                         result.EffectiveTotalCount <= 1 ||
