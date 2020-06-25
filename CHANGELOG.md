@@ -1,3 +1,11 @@
+## [1.44.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.44.2...v1.44.3) (2020-06-25)
+
+
+### Bug Fixes
+
+* handle SeatTypeUpdated for mep ([469a4c9](https://github.com/informatievlaanderen/organisation-registry/commit/469a4c9bc65b77822db5790b01b26e39dc05d93b))
+* only show active assignments ([fc13c0a](https://github.com/informatievlaanderen/organisation-registry/commit/fc13c0ab618f892210ebf5f68acce37405b23a18))
+
 ## [1.44.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.44.1...v1.44.2) (2020-06-19)
 
 
