@@ -112,7 +112,11 @@ namespace OrganisationRegistry.Api.Report.Responses
                     .GroupBy(mandate => mandate.BodySeatTypeIsEffective)
                     .ToDictionary(
                         x => x.Key,
-                        x => x.SelectMany(y => y.Assignments));
+                        x => x
+                            .SelectMany(y => y.Assignments)
+                            .Where(a =>
+                                (!a.AssignmentValidFrom.HasValue || a.AssignmentValidFrom <= today) &&
+                                (!a.AssignmentValidTo.HasValue || a.AssignmentValidTo >= today)));
 
             var groupedResults = activeSeatsPerIsEffective
                 .Select(seatPerIsEffective =>
