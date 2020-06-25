@@ -24,6 +24,9 @@ namespace OrganisationRegistry.Api.Report.Responses
 
         public static decimal CalculatePercentage(int count, decimal assignedCount)
         {
+            if (assignedCount == 0)
+                return decimal.Zero;
+
             return Math.Round(count / assignedCount, 2);
         }
     }
