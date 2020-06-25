@@ -205,12 +205,12 @@ namespace OrganisationRegistry.Api.Report.Responses
                     result.EffectiveUnknownPercentage = ParticipationCalculator.CalculatePercentage(result.EffectiveUnknownCount, result.EffectiveTotalCount);
 
                     result.IsEffectiveCompliant =
-                        result.EffectiveTotalCount <= 1 ||
+                        result.EffectiveTotalCount == 0 ||
                         result.EffectiveMalePercentage >= lower && result.EffectiveMalePercentage <= upper &&
                         result.EffectiveFemalePercentage >= lower && result.EffectiveFemalePercentage <= upper;
 
                     result.IsSubsidiaryCompliant =
-                        result.SubsidiaryTotalCount <= 1 ||
+                        result.SubsidiaryTotalCount == 0 ||
                         result.SubsidiaryMalePercentage >= lower && result.SubsidiaryMalePercentage <= upper &&
                         result.SubsidiaryFemalePercentage >= lower && result.SubsidiaryFemalePercentage <= upper;
 
