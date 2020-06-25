@@ -1,3 +1,12 @@
+## [1.44.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.44.3...v1.44.4) (2020-06-25)
+
+
+### Bug Fixes
+
+* only include seats that are entitled to vote ([2f7bb1c](https://github.com/informatievlaanderen/organisation-registry/commit/2f7bb1c560d4b9ce518f7d44286a283d813cf19c))
+* start calculating percentages from at least one ([0e4b3da](https://github.com/informatievlaanderen/organisation-registry/commit/0e4b3daa343980b133c92d7119515b3b1b0c636c))
+* use separate totals when calculating separate percentages ([9399744](https://github.com/informatievlaanderen/organisation-registry/commit/9399744edc65c35cceea675458bac798d8c32539))
+
 ## [1.44.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.44.2...v1.44.3) (2020-06-25)
 
 
