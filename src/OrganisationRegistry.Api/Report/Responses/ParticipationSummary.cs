@@ -67,6 +67,7 @@ namespace OrganisationRegistry.Api.Report.Responses
             var activeSeatsPerType = bodies
                 .SelectMany(x => x.PostsPerType)
                 .Where(post =>
+                    post.EntitledToVote &&
                     (!post.BodySeatValidFrom.HasValue || post.BodySeatValidFrom <= today) &&
                     (!post.BodySeatValidTo.HasValue || post.BodySeatValidTo >= today));
 
