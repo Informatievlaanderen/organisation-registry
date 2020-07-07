@@ -1,3 +1,5 @@
+## [1.44.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.44.4...v1.44.5) (2020-07-07)
+
 ## [1.44.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.44.3...v1.44.4) (2020-06-25)
 
 
