@@ -84,6 +84,8 @@ nuget Be.Vlaanderen.Basisregisters.Api 11.2.5
 nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac 4.5.1
 nuget Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql 4.5.1
 
+nuget Be.Vlaanderen.Basisregisters.Converters.Timestamp 2.2.6
+
 // TEST STUFF
 nuget Microsoft.NET.Test.Sdk 16.6.1
 nuget Microsoft.EntityFrameworkCore.InMemory 3.1.5

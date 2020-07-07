@@ -11,8 +11,8 @@ namespace OrganisationRegistry.Api.Events.Queries
     using SqlServer.Event;
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Infrastructure.Infrastructure.Json;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
+    using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
     using OrganisationRegistry.Infrastructure.EventStore;
 
     public class EventWithData

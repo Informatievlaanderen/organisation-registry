@@ -1,8 +1,8 @@
 namespace OrganisationRegistry.Api.Configuration
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
     using Newtonsoft.Json;
-    using OrganisationRegistry.Infrastructure.Infrastructure.Json;
 
     public class ApiConfiguration
     {

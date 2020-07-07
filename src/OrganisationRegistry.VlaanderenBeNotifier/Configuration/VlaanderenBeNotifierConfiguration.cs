@@ -1,7 +1,7 @@
 namespace OrganisationRegistry.VlaanderenBeNotifier.Configuration
 {
     using System;
-    using Infrastructure.Infrastructure.Json;
+    using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
     using Newtonsoft.Json;
 
     public class VlaanderenBeNotifierConfiguration

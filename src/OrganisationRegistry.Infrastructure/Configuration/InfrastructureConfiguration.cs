@@ -1,7 +1,7 @@
 namespace OrganisationRegistry.Infrastructure.Configuration
 {
     using System;
-    using Infrastructure.Json;
+    using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
     using Newtonsoft.Json;
 
     public class InfrastructureConfiguration

@@ -1,7 +1,7 @@
 namespace OrganisationRegistry.Infrastructure.Events
 {
     using System;
-    using Infrastructure.Json;
+    using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
     using Messages;
     using Newtonsoft.Json;
 

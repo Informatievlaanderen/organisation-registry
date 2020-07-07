@@ -9,13 +9,13 @@
       ]
     },
     "paket": {
-      "version": "5.241.6",
+      "version": "5.247.4",
       "commands": [
         "paket"
       ]
     },
     "dotnet-ef": {
-      "version": "3.1.4",
+      "version": "3.1.5",
       "commands": [
         "dotnet-ef"
       ]

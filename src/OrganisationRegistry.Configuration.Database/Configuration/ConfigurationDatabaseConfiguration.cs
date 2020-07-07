@@ -1,9 +1,9 @@
 namespace OrganisationRegistry.Configuration.Database.Configuration
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
     using Newtonsoft.Json;
     using Infrastructure.Configuration;
-    using Infrastructure.Infrastructure.Json;
 
     public class ConfigurationDatabaseConfiguration
     {

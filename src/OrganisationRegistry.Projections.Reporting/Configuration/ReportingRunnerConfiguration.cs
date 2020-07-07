@@ -1,8 +1,8 @@
-﻿namespace OrganisationRegistry.Projections.Reporting.Configuration
+namespace OrganisationRegistry.Projections.Reporting.Configuration
 {
     using Newtonsoft.Json;
     using System;
-    using OrganisationRegistry.Infrastructure.Infrastructure.Json;
+    using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
 
     public class ReportingRunnerConfiguration
     {

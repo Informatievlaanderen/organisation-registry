@@ -1,8 +1,8 @@
 namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump.Configuration
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
     using Newtonsoft.Json;
-    using Infrastructure.Infrastructure.Json;
 
     public class AgentschapZorgEnGezondheidFtpDumpConfiguration
     {

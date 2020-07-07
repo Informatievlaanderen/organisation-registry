@@ -11,6 +11,7 @@ Microsoft.Extensions.Logging
 Microsoft.Extensions.Http
 
 Be.Vlaanderen.Basisregisters.Converters.TrimString
+Be.Vlaanderen.Basisregisters.Converters.Timestamp
 
 Dapper
 Microsoft.Data.SqlClient

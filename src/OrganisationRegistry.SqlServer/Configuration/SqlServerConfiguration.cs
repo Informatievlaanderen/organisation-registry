@@ -1,9 +1,9 @@
-﻿namespace OrganisationRegistry.SqlServer.Configuration
+namespace OrganisationRegistry.SqlServer.Configuration
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
     using Newtonsoft.Json;
     using OrganisationRegistry.Infrastructure.Configuration;
-    using OrganisationRegistry.Infrastructure.Infrastructure.Json;
 
     public class SqlServerConfiguration
     {

@@ -134,6 +134,8 @@ NUGET
       Fake.IO.FileSystem (>= 5.20.1)
       Fake.JavaScript.Npm (>= 5.20.1)
       Newtonsoft.Json (>= 12.0.3)
+    Be.Vlaanderen.Basisregisters.Converters.Timestamp (2.2.6)
+      Newtonsoft.Json (>= 12.0.3)
     Be.Vlaanderen.Basisregisters.Converters.TrimString (2.2.4)
       Newtonsoft.Json (>= 12.0.3)
     Be.Vlaanderen.Basisregisters.DataDog.Tracing (4.5.1)
