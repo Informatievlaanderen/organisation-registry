@@ -1,3 +1,10 @@
+## [1.44.6](https://github.com/informatievlaanderen/organisation-registry/compare/v1.44.5...v1.44.6) (2020-07-19)
+
+
+### Bug Fixes
+
+* move to 3.1.6 ([0d3d129](https://github.com/informatievlaanderen/organisation-registry/commit/0d3d129bb7f242b6d9823c354def52e7dedc8fd1))
+
 ## [1.44.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.44.4...v1.44.5) (2020-07-07)
 
 ## [1.44.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.44.3...v1.44.4) (2020-06-25)
