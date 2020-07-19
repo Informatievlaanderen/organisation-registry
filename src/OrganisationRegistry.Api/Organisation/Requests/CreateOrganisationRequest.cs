@@ -91,11 +91,11 @@ namespace OrganisationRegistry.Api.Organisation.Requests
                 .When(x => x.ValidFrom.HasValue)
                 .WithMessage("Valid To must be greater than or equal to Valid From.");
 
-            RuleFor(x => x.BankAccounts).SetCollectionValidator(new BankAccountValidator());
+            RuleForEach(x => x.BankAccounts).SetValidator(new BankAccountValidator());
 
-            RuleFor(x => x.LegalForms).SetCollectionValidator(new LegalFormValidator());
+            RuleForEach(x => x.LegalForms).SetValidator(new LegalFormValidator());
 
-            RuleFor(x => x.Addresses).SetCollectionValidator(new AddressValidator());
+            RuleForEach(x => x.Addresses).SetValidator(new AddressValidator());
         }
     }
 
