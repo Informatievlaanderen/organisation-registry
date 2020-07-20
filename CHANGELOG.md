@@ -1,3 +1,10 @@
+# [1.45.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.44.6...v1.45.0) (2020-07-20)
+
+
+### Features
+
+* enable tls encryption for kbo mutations ftp ([eb555dd](https://github.com/informatievlaanderen/organisation-registry/commit/eb555dd78ec359448be5a65c705b75dba621bbfd))
+
 ## [1.44.6](https://github.com/informatievlaanderen/organisation-registry/compare/v1.44.5...v1.44.6) (2020-07-19)
 
 
