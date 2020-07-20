@@ -2,6 +2,7 @@ namespace OrganisationRegistry.KboMutations
 {
     using System;
     using System.Net;
+    using System.Security.Authentication;
     using Configuration;
     using FluentFTP;
     using Microsoft.Extensions.Logging;
@@ -26,6 +27,8 @@ namespace OrganisationRegistry.KboMutations
                 Credentials = new NetworkCredential(
                     kboMutationsConfiguration.Username,
                     kboMutationsConfiguration.Password),
+                SslProtocols = SslProtocols.Tls12,
+                EncryptionMode = FtpEncryptionMode.Explicit,
                 OnLogEvent = (level, s) =>
                 {
                     switch (level)
