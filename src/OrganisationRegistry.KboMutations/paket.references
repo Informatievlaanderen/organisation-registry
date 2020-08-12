@@ -13,7 +13,6 @@ Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 Newtonsoft.Json
 
 CsvHelper
-FluentFtp
 Optional
 
 Serilog
