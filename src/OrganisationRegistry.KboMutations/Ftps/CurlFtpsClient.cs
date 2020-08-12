@@ -28,7 +28,7 @@ namespace OrganisationRegistry.KboMutations.Ftps
             _logger.LogInformation("Fetching mutation files from folder {SourcePath}.", sourceDirectory);
 
             var sourceDirectoryUriBuilder = _baseUriBuilder.AppendDir(sourceDirectory);
-            var process = new Process
+            using (var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -37,25 +37,34 @@ namespace OrganisationRegistry.KboMutations.Ftps
                                 $"--user {_kboMutationsConfiguration.Username}:{_kboMutationsConfiguration.Password} " +
                                 $"{sourceDirectoryUriBuilder}",
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
                 }
-            };
-            process.Start();
-            string result = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
+            })
+            {
+                process.Start();
+                process.WaitForExit();
+                string result = process.StandardOutput.ReadToEnd();
+                string error = process.StandardError.ReadToEnd();
 
-            var ftpsListItems = FtpsListParser.Parse(sourceDirectoryUriBuilder, result).ToList();
-            _logger.LogInformation("Found {NumberOfMutationFiles} mutation files to process.", ftpsListItems.Count);
+                if (process.ExitCode != 0)
+                    _logger.LogError("Could not list files at {Source}:\n{Error}",
+                        sourceDirectoryUriBuilder,
+                        error);
 
-            return ftpsListItems;
+                var ftpsListItems = FtpsListParser.Parse(sourceDirectoryUriBuilder, result).ToList();
+                _logger.LogInformation("Found {NumberOfMutationFiles} mutation files to process.", ftpsListItems.Count);
+
+                return ftpsListItems;
+            }
         }
 
         public bool Download(Stream stream, string fullName)
         {
             var fullNameUriBuilder = _baseUriBuilder.WithPath(fullName);
             var fileName = fullNameUriBuilder.FileName;
-            var process = new Process
+            using (var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -65,17 +74,27 @@ namespace OrganisationRegistry.KboMutations.Ftps
                                 $"{fullNameUriBuilder} " +
                                 $"-o {fileName}",
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
                 }
-            };
-            process.Start();
-            process.WaitForExit();
+            })
+            {
+                process.Start();
+                process.WaitForExit();
+                string error = process.StandardError.ReadToEnd();
 
-            var readAllBytes = File.ReadAllBytes(fileName);
-            stream.Write(readAllBytes);
+                if (process.ExitCode != 0)
+                {
+                    _logger.LogError("Could not download file {FileFullName}:\n{Error}", fullName, error);
+                    return false;
+                }
 
-            return process.ExitCode == 0;
+                var readAllBytes = File.ReadAllBytes(fileName);
+                stream.Write(readAllBytes);
+
+                return true;
+            }
         }
 
         public void MoveFile(string sourceFileFullName, string destinationDirectory)
@@ -85,7 +104,7 @@ namespace OrganisationRegistry.KboMutations.Ftps
                 .AppendDir(destinationDirectory)
                 .AppendFileName(sourceFullNameUriBuilder.FileName);
 
-            var process = new Process
+            using (var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
@@ -96,12 +115,23 @@ namespace OrganisationRegistry.KboMutations.Ftps
                                 $"-Q \"-RNFR {sourceFullNameUriBuilder.Path}\" " +
                                 $"-Q \"-RNTO {destinationFullNameUriBuilder.Path}\"",
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
                 }
-            };
-            process.Start();
-            process.WaitForExit();
+            })
+            {
+                process.Start();
+                process.WaitForExit();
+
+                string error = process.StandardError.ReadToEnd();
+
+                if (process.ExitCode != 0)
+                    _logger.LogError("Could not move file {Source} to {Destination}:\n{Error}",
+                        sourceFullNameUriBuilder.Path,
+                        destinationFullNameUriBuilder.Path,
+                        error);
+            }
         }
     }
 }
