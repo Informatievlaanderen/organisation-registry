@@ -13,6 +13,7 @@ namespace OrganisationRegistry.Magda.Helpers
             ns.Add("s", "http://schemas.xmlsoap.org/soap/envelope/");
             ns.Add("zoekonderneming", "http://webservice.zoekondernemingdienst-02_00.onderneming-02_00.vip.vlaanderen.be");
             ns.Add("geefonderneming", "http://webservice.geefondernemingdienst-02_00.onderneming-02_00.vip.vlaanderen.be");
+            ns.Add("registreerinschrijving", "http://webservice.registreerinschrijvingdienst-02_01.repertorium-02_01.vip.vlaanderen.be");
 
             using (var textWriter = new Utf8StringWriter())
             {

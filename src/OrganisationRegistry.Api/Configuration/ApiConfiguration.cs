@@ -62,7 +62,6 @@ namespace OrganisationRegistry.Api.Configuration
         public string KboMagdaEndpoint { get; set; }
         public string KboCertificate { get; set; }
         public int KboMagdaTimeout { get; set; }
-        public string RijksRegisterCapacity { get; set; }
         public string RijksRegisterCertificatePwd { get; set; }
 
         public int SyncFromKboBatchSize { get; set; }
@@ -70,5 +69,7 @@ namespace OrganisationRegistry.Api.Configuration
         public Guid KboV2FormalNameLabelTypeId { get; set; }
         public Guid KboV2RegisteredOfficeLocationTypeId { get; set; }
         public Guid KboV2LegalFormOrganisationClassificationTypeId { get; set; }
+        public string RepertoriumMagdaEndpoint { get; set; }
+        public string RepertoriumCapacity { get; set; }
     }
 }
