@@ -53,7 +53,9 @@ namespace OrganisationRegistry.UnitTests.Magda
                 sender: _apiConfiguration.KboSender,
                 capacity: null,
                 recipient: _apiConfiguration.KboRecipient,
-                kboMagdaEndPoint: _apiConfiguration.KboMagdaEndpoint);
+                kboMagdaEndPoint: _apiConfiguration.KboMagdaEndpoint,
+                repertoriumMagdaEndpoint: _apiConfiguration.RepertoriumMagdaEndpoint,
+                repertoriumCapacity: _apiConfiguration.RepertoriumCapacity);
             return new GeefOndernemingQuery(
                 configuration: magdaConfiguration,
                 contextFactory: () => new Owned<OrganisationRegistryContext>(

@@ -21,7 +21,9 @@ namespace OrganisationRegistry.Magda
                 apiConfiguration["KboSender"],
                 apiConfiguration["RijksRegisterCapacity"],
                 apiConfiguration["KboRecipient"],
-                apiConfiguration["KboMagdaEndpoint"]);
+                apiConfiguration["KboMagdaEndpoint"],
+                apiConfiguration["RepertoriumMagdaEndpoint"],
+                apiConfiguration["RepertoriumCapacity"]);
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -43,8 +45,18 @@ namespace OrganisationRegistry.Magda
         public string Recipient { get; }
 
         public string KBOMagdaEndPoint { get; }
+        public string RepertoriumMagdaEndpoint { get; set; }
+        public string RepertoriumCapacity { get; set; }
 
-        public MagdaConfiguration(MagdaClientCertificate clientCertificate, int timeout, string sender, string capacity, string recipient, string kboMagdaEndPoint)
+        public MagdaConfiguration(
+            MagdaClientCertificate clientCertificate,
+            int timeout,
+            string sender,
+            string capacity,
+            string recipient,
+            string kboMagdaEndPoint,
+            string repertoriumMagdaEndpoint,
+            string repertoriumCapacity)
         {
             ClientCertificate = clientCertificate;
             Timeout = timeout;
@@ -52,6 +64,8 @@ namespace OrganisationRegistry.Magda
             Capacity = capacity;
             Recipient = recipient;
             KBOMagdaEndPoint = kboMagdaEndPoint;
+            RepertoriumMagdaEndpoint = repertoriumMagdaEndpoint;
+            RepertoriumCapacity = repertoriumCapacity;
         }
     }
 }

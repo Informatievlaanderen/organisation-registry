@@ -6,6 +6,8 @@ namespace OrganisationRegistry.UnitTests.Magda
     using Api.Kbo;
     using Api.Kbo.Responses;
     using FluentAssertions;
+    using global::Magda.RegistreerInschrijving;
+    using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Magda.Common;
     using OrganisationRegistry.Magda.Responses;
@@ -22,9 +24,32 @@ namespace OrganisationRegistry.UnitTests.Magda
                 .Setup(query => query.Execute(It.IsAny<ClaimsPrincipal>(), kboNr))
                 .ReturnsAsync(() => magdaResponse);
 
+            var registreerInschrijvingCommandMock = new Mock<IRegistreerInschrijvingCommand>();
+            registreerInschrijvingCommandMock
+                .Setup(query => query.Execute(It.IsAny<ClaimsPrincipal>(), kboNr))
+                .ReturnsAsync(() => new Envelope<RegistreerInschrijvingResponseBody>
+                {
+                    Body = new RegistreerInschrijvingResponseBody
+                    {
+                        RegistreerInschrijvingResponse = new RegistreerInschrijvingResponse
+                        {
+                            Repliek = new RepliekType
+                            {
+                                Antwoorden = new AntwoordenType
+                                {
+                                    Antwoord = new AntwoordType()
+                                }
+                            }
+                        }
+                    }
+                });
+            ;
+
             return new KboOrganisationRetriever(
                 new DateTimeProviderStub(DateTime.Today),
-                geefOndernemingQueryMock.Object);
+                geefOndernemingQueryMock.Object,
+                registreerInschrijvingCommandMock.Object,
+                Mock.Of<ILogger<KboOrganisationRetriever>>());
         }
 
         [Fact]
