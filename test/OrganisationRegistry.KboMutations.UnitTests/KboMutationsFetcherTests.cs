@@ -15,8 +15,20 @@ namespace OrganisationRegistry.KboMutations.UnitTests
 
     public class KboMutationsFetcherTests: IDisposable
     {
+        private readonly KboMutationsConfiguration _kboMutationsConfiguration;
+        private readonly FtpUriBuilder _baseUriBuilder;
         private const string MutationsResourceName = "OrganisationRegistry.KboMutations.UnitTests.mutations.csv";
         private const string InvalidMutationsResourceName = "OrganisationRegistry.KboMutations.UnitTests.mutationsInvalid.csv";
+
+        public KboMutationsFetcherTests()
+        {
+            _kboMutationsConfiguration = new KboMutationsConfiguration
+            {
+                SourcePath = "/source",
+                CachePath = "/cache"
+            };
+            _baseUriBuilder = new FtpUriBuilder(_kboMutationsConfiguration.Host, _kboMutationsConfiguration.Port);
+        }
 
         [Fact]
         public void ReadsAllFiles()
@@ -31,7 +43,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
 
                 var kboFtpClient = new KboMutationsFetcher(
                     new NullLogger<KboMutationsFetcher>(),
-                    new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
+                    new OptionsWrapper<KboMutationsConfiguration>(_kboMutationsConfiguration),
                     ftpsClient.Object);
 
                 var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
@@ -56,7 +68,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
 
                 var kboFtpClient = new KboMutationsFetcher(
                     new NullLogger<KboMutationsFetcher>(),
-                    new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
+                    new OptionsWrapper<KboMutationsConfiguration>(_kboMutationsConfiguration),
                     ftpClient.Object);
 
                 var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
@@ -81,7 +93,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
 
                 var kboFtpClient = new KboMutationsFetcher(
                     new NullLogger<KboMutationsFetcher>(),
-                    new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
+                    new OptionsWrapper<KboMutationsConfiguration>(_kboMutationsConfiguration),
                     ftpClient.Object);
 
                 var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
@@ -105,7 +117,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
 
                 var kboFtpClient = new KboMutationsFetcher(
                     new NullLogger<KboMutationsFetcher>(),
-                    new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
+                    new OptionsWrapper<KboMutationsConfiguration>(_kboMutationsConfiguration),
                     ftpClient.Object);
 
                 var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
@@ -126,12 +138,17 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                     new FtpsListItemStub("mutations2.csv", mutationsCsv));
 
                 ftpClient.Setup(x =>
-                        x.Download(It.IsAny<Stream>(), "/source/mutations.csv"))
+                        x.Download(
+                            It.IsAny<Stream>(),
+                            _baseUriBuilder
+                                .AppendDir(_kboMutationsConfiguration.SourcePath)
+                                .AppendFileName("mutations.csv")
+                                .ToString()))
                     .Returns(false);
 
                 var kboFtpClient = new KboMutationsFetcher(
                     new NullLogger<KboMutationsFetcher>(),
-                    new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
+                    new OptionsWrapper<KboMutationsConfiguration>(_kboMutationsConfiguration),
                     ftpClient.Object);
 
                 var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
@@ -157,7 +174,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
 
                 var kboFtpClient = new KboMutationsFetcher(
                     new NullLogger<KboMutationsFetcher>(),
-                    new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
+                    new OptionsWrapper<KboMutationsConfiguration>(_kboMutationsConfiguration),
                     ftpClient.Object);
 
                 var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
@@ -181,7 +198,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
 
                 var kboFtpClient = new KboMutationsFetcher(
                     new NullLogger<KboMutationsFetcher>(),
-                    new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
+                    new OptionsWrapper<KboMutationsConfiguration>(_kboMutationsConfiguration),
                     ftpClient.Object);
 
                 var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
@@ -195,9 +212,11 @@ namespace OrganisationRegistry.KboMutations.UnitTests
         {
             var ftpClient = new Mock<IFtpsClient>();
 
+            SetUpMock(ftpClient);
+
             var kboFtpClient = new KboMutationsFetcher(
                 new NullLogger<KboMutationsFetcher>(),
-                new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration()),
+                new OptionsWrapper<KboMutationsConfiguration>(_kboMutationsConfiguration),
                 ftpClient.Object);
 
             var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
@@ -205,23 +224,20 @@ namespace OrganisationRegistry.KboMutations.UnitTests
             kboMutationFiles.Should().BeEquivalentTo(new List<MutationsFile>());
         }
 
-        private static void SetUpMock(Mock<IFtpsClient> ftpClient, params FtpsListItemStub[] files)
+        private void SetUpMock(Mock<IFtpsClient> ftpClient, params FtpsListItemStub[] files)
         {
-            const string sourcePath = "/source";
+            var sourcePath = _kboMutationsConfiguration.SourcePath;
 
             ftpClient
                 .Setup(x => x.GetListing(It.IsAny<string>()))
                 .Returns(() =>
-                    files.Select(x =>
-                        new FtpsListItem(
-                            x.Name,
-                            $"{sourcePath}/{x.Name}",
-                            sourcePath,
-                            x.Size.ToString())).ToArray());
+                    string.Join(
+                        "\n",
+                        files.Select(x => $"-rw-rw-r--   1 user user {x.Size.ToString().PadLeft(8)} Jun 13 17:49 {x.Name}")));
 
             foreach (var file in files)
             {
-                var fullName = $"{sourcePath}/{file.Name}";
+                var fullName = _baseUriBuilder.AppendDir(sourcePath).AppendFileName(file.Name).ToString();
                 ftpClient.Setup(x =>
                         x.Download(It.IsAny<Stream>(), fullName))
                     .Callback<Stream, string>((stream, _) => file.Stream.CopyTo(stream))

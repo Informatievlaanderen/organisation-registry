@@ -5,8 +5,8 @@ namespace OrganisationRegistry.KboMutations.Ftps
 
     public interface IFtpsClient
     {
-        IEnumerable<FtpsListItem> GetListing(string sourceDirectory);
-        bool Download(Stream stream, string fullName);
-        void MoveFile(string sourceFileFullName, string destinationDirectory);
+        string GetListing(string sourceDirectory);
+        bool Download(Stream stream, string sourceFilePath);
+        void MoveFile(string baseUri, string sourceFilePath, string destinationFilePath);
     }
 }

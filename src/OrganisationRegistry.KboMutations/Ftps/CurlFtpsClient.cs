@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.KboMutations.Ftps
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
@@ -12,7 +13,6 @@ namespace OrganisationRegistry.KboMutations.Ftps
     {
         private readonly ILogger<CurlFtpsClient> _logger;
         private readonly KboMutationsConfiguration _kboMutationsConfiguration;
-        private readonly FtpUriBuilder _baseUriBuilder;
 
         public CurlFtpsClient(
             ILogger<CurlFtpsClient> logger,
@@ -20,14 +20,12 @@ namespace OrganisationRegistry.KboMutations.Ftps
         {
             _logger = logger;
             _kboMutationsConfiguration = kboMutationsConfiguration.Value;
-            _baseUriBuilder = new FtpUriBuilder(_kboMutationsConfiguration.Host, _kboMutationsConfiguration.Port);
         }
 
-        public IEnumerable<FtpsListItem> GetListing(string sourceDirectory)
+        public string GetListing(string sourceDirectory)
         {
             _logger.LogInformation("Fetching mutation files from folder {SourcePath}.", sourceDirectory);
 
-            var sourceDirectoryUriBuilder = _baseUriBuilder.AppendDir(sourceDirectory);
             using (var process = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -35,11 +33,11 @@ namespace OrganisationRegistry.KboMutations.Ftps
                     FileName = _kboMutationsConfiguration.CurlLocation,
                     Arguments = $"--ftp-ssl " +
                                 $"--user {_kboMutationsConfiguration.Username}:{_kboMutationsConfiguration.Password} " +
-                                $"{sourceDirectoryUriBuilder}",
+                                $"{sourceDirectory}",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
-                    CreateNoWindow = true,
+                    CreateNoWindow = true
                 }
             })
             {
@@ -49,21 +47,15 @@ namespace OrganisationRegistry.KboMutations.Ftps
                 string error = process.StandardError.ReadToEnd();
 
                 if (process.ExitCode != 0)
-                    _logger.LogError("Could not list files at {Source}:\n{Error}",
-                        sourceDirectoryUriBuilder,
-                        error);
+                    throw new Exception($"Could not list files at {sourceDirectory}:\n{error}");
 
-                var ftpsListItems = FtpsListParser.Parse(sourceDirectoryUriBuilder, result).ToList();
-                _logger.LogInformation("Found {NumberOfMutationFiles} mutation files to process.", ftpsListItems.Count);
-
-                return ftpsListItems;
+                return result;
             }
         }
 
-        public bool Download(Stream stream, string fullName)
+        public bool Download(Stream stream, string sourceFilePath)
         {
-            var fullNameUriBuilder = _baseUriBuilder.WithPath(fullName);
-            var fileName = fullNameUriBuilder.FileName;
+            var fileName = Guid.NewGuid().ToString();
             using (var process = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -71,7 +63,7 @@ namespace OrganisationRegistry.KboMutations.Ftps
                     FileName = _kboMutationsConfiguration.CurlLocation,
                     Arguments = $"--ftp-ssl " +
                                 $"--user {_kboMutationsConfiguration.Username}:{_kboMutationsConfiguration.Password} " +
-                                $"{fullNameUriBuilder} " +
+                                $"{sourceFilePath} " +
                                 $"-o {fileName}",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -86,24 +78,20 @@ namespace OrganisationRegistry.KboMutations.Ftps
 
                 if (process.ExitCode != 0)
                 {
-                    _logger.LogError("Could not download file {FileFullName}:\n{Error}", fullName, error);
+                    _logger.LogError("Could not download file {FileFullName}:\n{Error}", sourceFilePath, error);
                     return false;
                 }
 
                 var readAllBytes = File.ReadAllBytes(fileName);
                 stream.Write(readAllBytes);
+                File.Delete(fileName);
 
                 return true;
             }
         }
 
-        public void MoveFile(string sourceFileFullName, string destinationDirectory)
+        public void MoveFile(string baseUri, string sourceFilePath, string destinationFilePath)
         {
-            var sourceFullNameUriBuilder = _baseUriBuilder.WithPath(sourceFileFullName);
-            var destinationFullNameUriBuilder = _baseUriBuilder
-                .AppendDir(destinationDirectory)
-                .AppendFileName(sourceFullNameUriBuilder.FileName);
-
             using (var process = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -111,9 +99,9 @@ namespace OrganisationRegistry.KboMutations.Ftps
                     FileName = _kboMutationsConfiguration.CurlLocation,
                     Arguments = $"--ftp-ssl " +
                                 $"--user {_kboMutationsConfiguration.Username}:{_kboMutationsConfiguration.Password} " +
-                                $"{_baseUriBuilder} " +
-                                $"-Q \"-RNFR {sourceFullNameUriBuilder.Path}\" " +
-                                $"-Q \"-RNTO {destinationFullNameUriBuilder.Path}\"",
+                                $"{baseUri} " +
+                                $"-Q \"-RNFR {sourceFilePath}\" " +
+                                $"-Q \"-RNTO {destinationFilePath}\"",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -128,8 +116,8 @@ namespace OrganisationRegistry.KboMutations.Ftps
 
                 if (process.ExitCode != 0)
                     _logger.LogError("Could not move file {Source} to {Destination}:\n{Error}",
-                        sourceFullNameUriBuilder.Path,
-                        destinationFullNameUriBuilder.Path,
+                        sourceFilePath,
+                        destinationFilePath,
                         error);
             }
         }

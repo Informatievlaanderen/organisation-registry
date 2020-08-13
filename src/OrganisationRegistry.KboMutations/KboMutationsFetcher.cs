@@ -18,8 +18,7 @@ namespace OrganisationRegistry.KboMutations
         private readonly IFtpsClient _curlFtpsClient;
         private readonly KboMutationsConfiguration _kboMutationsConfiguration;
         private readonly CsvHelper.Configuration.CsvConfiguration _csvFileConfiguration;
-        private readonly FtpUriBuilder _sourcePath;
-        private readonly FtpUriBuilder _destinationPath;
+        private readonly FtpUriBuilder _baseUriBuilder;
 
         public KboMutationsFetcher(
             ILogger<KboMutationsFetcher> logger,
@@ -35,22 +34,45 @@ namespace OrganisationRegistry.KboMutations
                 Delimiter = ";",
                 HasHeaderRecord = false
             };
+            _baseUriBuilder = new FtpUriBuilder(_kboMutationsConfiguration.Host, _kboMutationsConfiguration.Port);
         }
 
         public IEnumerable<MutationsFile> GetKboMutationFiles()
         {
-            _logger.LogInformation("Fetching mutation files from folder {SourcePath}.",
+            _logger.LogInformation(
+                "Fetching mutation files from folder {SourcePath}.",
                 _kboMutationsConfiguration.SourcePath);
 
-            var mutationFiles = _curlFtpsClient.GetListing(_kboMutationsConfiguration.SourcePath)
-                .Select(GetMutationFile)
-                .Values()
-                .OrderBy(item => item.FullName)
-                .ToList();
+            var sourceDirectoryUri = _baseUriBuilder.AppendDir(_kboMutationsConfiguration.SourcePath);
 
-            _logger.LogInformation("Found {NumberOfMutationFiles} mutation files to process.", mutationFiles.Count);
+            var curlListResult = _curlFtpsClient.GetListing(sourceDirectoryUri.ToString());
+            var mutationFiles =
+                FtpsListParser.Parse(sourceDirectoryUri, curlListResult)
+                    .Select(GetMutationFile)
+                    .Values()
+                    .OrderBy(item => item.FullName)
+                    .ToList();
+
+            _logger.LogInformation(
+                "Found {NumberOfMutationFiles} mutation files to process.",
+                mutationFiles.Count);
 
             return mutationFiles;
+        }
+
+        public void Archive(MutationsFile file)
+        {
+            _logger.LogInformation("Archiving {FileName} to {ArchivePath}", file.FullName,
+                _kboMutationsConfiguration.CachePath);
+
+            var sourceFullNameUri = _baseUriBuilder.WithPath(file.FullName);
+            var destinationFullNameUri = _baseUriBuilder
+                .AppendDir(_kboMutationsConfiguration.CachePath)
+                .AppendFileName(sourceFullNameUri.FileName);
+
+            _curlFtpsClient.MoveFile(_baseUriBuilder.ToString(),
+                sourceFullNameUri.Path,
+                destinationFullNameUri.Path);
         }
 
         private Option<MutationsFile> GetMutationFile(FtpsListItem ftpsListItem)
@@ -65,7 +87,8 @@ namespace OrganisationRegistry.KboMutations
 
             using (var stream = new MemoryStream())
             {
-                if (!_curlFtpsClient.Download(stream, ftpsListItem.FullName))
+                var fullNameUri = _baseUriBuilder.WithPath(ftpsListItem.FullName);
+                if (!_curlFtpsClient.Download(stream, fullNameUri.ToString()))
                     return Option.None<MutationsFile>();
 
                 stream.Seek(0, SeekOrigin.Begin);
@@ -89,16 +112,6 @@ namespace OrganisationRegistry.KboMutations
                     }
                 }
             }
-        }
-
-        public void Archive(MutationsFile file)
-        {
-            _logger.LogInformation("Archiving {FileName} to {ArchivePath}", file.FullName,
-                _kboMutationsConfiguration.CachePath);
-
-            _curlFtpsClient.MoveFile(
-                file.FullName,
-                _kboMutationsConfiguration.CachePath);
         }
     }
 }
