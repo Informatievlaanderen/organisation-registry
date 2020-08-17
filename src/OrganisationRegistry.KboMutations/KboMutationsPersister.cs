@@ -33,7 +33,7 @@ namespace OrganisationRegistry.KboMutations
             {
                 foreach (var mutation in mutationsLines)
                 {
-                    context.KboSyncQueue.Add(new KboSyncQueueItem()
+                    context.KboSyncQueue.Add(new KboSyncQueueItem
                     {
                         Id = Guid.NewGuid(),
                         SourceFileName = fullName,
