@@ -1,3 +1,13 @@
+# [1.46.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.45.0...v1.46.0) (2020-08-17)
+
+
+### Features
+
+* add error logging to CurlFtpsClient ([dc697ce](https://github.com/informatievlaanderen/organisation-registry/commit/dc697ce87003f1646addb935108203a1f8d7915c))
+* enable tls encryption for kbo mutations ftp ([32ea60e](https://github.com/informatievlaanderen/organisation-registry/commit/32ea60e82e2713e7670a545f4ff1c774feb48491))
+* use curl for ftps communications ([6be774a](https://github.com/informatievlaanderen/organisation-registry/commit/6be774abeccbae68824fbee6fb099bae350acb0f))
+* use curl on PATH by default ([75ee787](https://github.com/informatievlaanderen/organisation-registry/commit/75ee7875d02eacb23ac5c00aad1bd5b3b8e6d6b0))
+
 # [1.45.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.44.6...v1.45.0) (2020-07-20)
 
 
