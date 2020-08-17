@@ -7,17 +7,13 @@ namespace OrganisationRegistry.KboMutations.Ftps
     {
         private const string FtpScheme = "ftp";
 
-        public FtpUriBuilder(string host, int port) : this(FtpScheme, host, port)
-        {
-
-        }
-
-        private FtpUriBuilder(string scheme, string host, int port) : base(scheme, host, port)
-        {
-
-        }
-
         public string FileName => Uri.Segments.Last();
+
+        public FtpUriBuilder(string host, int port) 
+            : this(FtpScheme, host, port) { }
+
+        private FtpUriBuilder(string scheme, string host, int port) 
+            : base(scheme, host, port) { }
 
         public FtpUriBuilder AppendDir(string sourcePath)
         {
