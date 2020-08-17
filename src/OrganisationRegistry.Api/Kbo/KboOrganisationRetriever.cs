@@ -1,9 +1,8 @@
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace OrganisationRegistry.Api.Kbo
 {
     using System;
+    using System.Linq;
+    using System.Threading.Tasks;
     using System.Collections.Generic;
     using System.Security.Claims;
     using GeefOnderneming = global::Magda.GeefOnderneming;
@@ -38,7 +37,6 @@ namespace OrganisationRegistry.Api.Kbo
             var kboNumberDotLess = kboNumber.ToDigitsOnly();
 
             var registerInscription = await _registerInscriptionCommand.Execute(user, kboNumberDotLess);
-            var giveOrganisation = await _geefOndernemingQuery.Execute(user, kboNumberDotLess);
 
             var registerInscriptionReply = registerInscription?.Body?.RegistreerInschrijvingResponse?.Repliek?.Antwoorden?.Antwoord;
             if (registerInscriptionReply == null)
@@ -53,6 +51,8 @@ namespace OrganisationRegistry.Api.Kbo
                 throw new Exception(
                     $"Er is een fout opgetreden tijdens het inschrijven bij magda:\n" +
                     $"{string.Join('\n', errors.Select(type => type.Diagnose))}");
+
+            var giveOrganisation = await _geefOndernemingQuery.Execute(user, kboNumberDotLess);
 
             var giveOrganisationReply = giveOrganisation.Body?.GeefOndernemingResponse?.Repliek?.Antwoorden?.Antwoord;
             if (giveOrganisationReply == null)
