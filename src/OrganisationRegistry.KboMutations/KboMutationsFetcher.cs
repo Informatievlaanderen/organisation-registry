@@ -6,6 +6,7 @@ namespace OrganisationRegistry.KboMutations
     using System.Linq;
     using Configuration;
     using CsvHelper;
+    using CsvHelper.Configuration;
     using Ftps;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
@@ -17,7 +18,7 @@ namespace OrganisationRegistry.KboMutations
         private readonly ILogger<KboMutationsFetcher> _logger;
         private readonly IFtpsClient _curlFtpsClient;
         private readonly KboMutationsConfiguration _kboMutationsConfiguration;
-        private readonly CsvHelper.Configuration.CsvConfiguration _csvFileConfiguration;
+        private readonly CsvConfiguration _csvFileConfiguration;
         private readonly FtpUriBuilder _baseUriBuilder;
 
         public KboMutationsFetcher(
@@ -29,11 +30,12 @@ namespace OrganisationRegistry.KboMutations
             _curlFtpsClient = curlFtpsClient;
             _kboMutationsConfiguration = kboMutationsConfiguration.Value;
 
-            _csvFileConfiguration = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture)
+            _csvFileConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 Delimiter = ";",
                 HasHeaderRecord = false
             };
+            
             _baseUriBuilder = new FtpUriBuilder(_kboMutationsConfiguration.Host, _kboMutationsConfiguration.Port);
         }
 
@@ -62,7 +64,9 @@ namespace OrganisationRegistry.KboMutations
 
         public void Archive(MutationsFile file)
         {
-            _logger.LogInformation("Archiving {FileName} to {ArchivePath}", file.FullName,
+            _logger.LogInformation(
+                "Archiving {FileName} to {ArchivePath}", 
+                file.FullName,
                 _kboMutationsConfiguration.CachePath);
 
             var sourceFullNameUri = _baseUriBuilder.WithPath(file.FullName);
