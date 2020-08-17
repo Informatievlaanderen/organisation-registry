@@ -7,6 +7,7 @@ namespace OrganisationRegistry.KboMutations
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using ElasticSearch;
+    using Ftps;
     using Infrastructure;
     using Infrastructure.Events;
     using Microsoft.Extensions.Configuration;
@@ -47,6 +48,9 @@ namespace OrganisationRegistry.KboMutations
 
             builder.RegisterType<Runner>()
                 .SingleInstance();
+
+            builder.RegisterType<CurlFtpsClient>()
+                .As<IFtpsClient>();
 
             builder.Populate(_services);
         }
