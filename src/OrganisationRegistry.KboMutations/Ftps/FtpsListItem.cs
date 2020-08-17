@@ -7,7 +7,6 @@ namespace OrganisationRegistry.KboMutations.Ftps
         public string Directory { get; }
         public int Size { get; }
 
-
         public FtpsListItem(string name, string fullName, string directory, string size)
         {
             Name = name;
