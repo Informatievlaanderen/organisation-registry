@@ -1,3 +1,10 @@
+# [1.47.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.46.0...v1.47.0) (2020-08-17)
+
+
+### Features
+
+* register inscription when calling kbo ([cda72ae](https://github.com/informatievlaanderen/organisation-registry/commit/cda72aeda90ff5cf7e6b12b982b07a880e2e6c3f))
+
 # [1.46.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.45.0...v1.46.0) (2020-08-17)
 
 
