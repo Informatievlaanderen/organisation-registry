@@ -9,7 +9,6 @@ namespace OrganisationRegistry.KboMutations
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Configuration;
     using Destructurama;
-    using FluentFTP;
     using Infrastructure.Configuration;
     using Infrastructure.Infrastructure.Json;
     using Microsoft.EntityFrameworkCore;

@@ -24,5 +24,6 @@ namespace OrganisationRegistry.KboMutations.Configuration
         public string LockTableName { get; set; }
         public int LockLeasePeriodInMinutes { get; set; }
         public bool LockEnabled { get; set; }
+        public string CurlLocation { get; set; }
     }
 }
