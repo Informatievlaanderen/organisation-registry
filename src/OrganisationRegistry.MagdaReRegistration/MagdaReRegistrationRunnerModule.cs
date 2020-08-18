@@ -31,12 +31,13 @@ namespace OrganisationRegistry.MagdaReRegistration
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterModule(new InfrastructureModule(_configuration, ProvideScopedServiceProvider, _services));
-            builder.RegisterModule(new OrganisationRegistryModule());
-            builder.RegisterModule(new ElasticSearchModule(_configuration, _services));
-            builder.RegisterModule(new SqlServerModule(_configuration, _services, _loggerFactory));
-            builder.RegisterModule(new MagdaModule(_configuration));
-            builder.RegisterModule(new MagdaReRegistrationModule(_configuration, _services));
+            builder
+                .RegisterModule(new InfrastructureModule(_configuration, ProvideScopedServiceProvider, _services))
+                .RegisterModule(new OrganisationRegistryModule())
+                .RegisterModule(new ElasticSearchModule(_configuration, _services))
+                .RegisterModule(new SqlServerModule(_configuration, _services, _loggerFactory))
+                .RegisterModule(new MagdaModule(_configuration))
+                .RegisterModule(new MagdaReRegistrationModule(_configuration, _services));
 
             builder.Populate(_services);
         }
