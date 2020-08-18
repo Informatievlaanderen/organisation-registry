@@ -15,17 +15,13 @@ namespace OrganisationRegistry.MagdaReRegistration
     using Configuration;
     using Destructurama;
     using global::Magda.RegistreerInschrijving;
-    using Infrastructure.Configuration;
     using Infrastructure.Infrastructure.Json;
     using Magda;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
-    using OrganisationRegistry.Configuration.Database;
-    using OrganisationRegistry.Configuration.Database.Configuration;
     using Serilog;
     using SqlServer.Infrastructure;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -44,13 +40,6 @@ namespace OrganisationRegistry.MagdaReRegistration
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
                 .AddEnvironmentVariables();
-
-            // var sqlConfiguration = builder.Build().GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>();
-            // var configuration = builder
-            //     .AddEntityFramework(x => x.UseSqlServer(
-            //         sqlConfiguration.ConnectionString,
-            //         y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")))
-            //     .Build();
 
             var configuration = builder.Build();
 
