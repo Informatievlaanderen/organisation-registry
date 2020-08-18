@@ -190,10 +190,10 @@ namespace OrganisationRegistry.MagdaReRegistration
                 apiConfiguration.KboCertificate,
                 apiConfiguration.RijksRegisterCertificatePwd);
 
-            services.AddOptions();
-            services.AddHttpClient();
-
-            services.AddHttpClient(MagdaModule.HttpClientName)
+            services
+                .AddOptions()
+                .AddHttpClient()
+                .AddHttpClient(MagdaModule.HttpClientName)
                 .ConfigurePrimaryHttpMessageHandler(() => new MagdaHttpClientHandler(magdaClientCertificate));
 
             var serviceProvider = services.BuildServiceProvider();
@@ -203,7 +203,6 @@ namespace OrganisationRegistry.MagdaReRegistration
             return new AutofacServiceProvider(builder.Build());
         }
     }
-
 
     internal class SearchResponseHeader
     {
