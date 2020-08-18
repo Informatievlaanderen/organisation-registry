@@ -72,6 +72,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganisationRegistry.KboMut
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganisationRegistry.ElasticSearch.Tests", "test\OrganisationRegistry.ElasticSearch.Tests\OrganisationRegistry.ElasticSearch.Tests.csproj", "{0E92E5D1-83EA-423B-8DB6-C4D6214FB6EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganisationRegistry.MagdaReRegistration", "src\OrganisationRegistry.MagdaReRegistration\OrganisationRegistry.MagdaReRegistration.csproj", "{3757D695-6832-4FAF-B4E2-4B02262956F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -166,6 +168,10 @@ Global
 		{0E92E5D1-83EA-423B-8DB6-C4D6214FB6EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0E92E5D1-83EA-423B-8DB6-C4D6214FB6EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E92E5D1-83EA-423B-8DB6-C4D6214FB6EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3757D695-6832-4FAF-B4E2-4B02262956F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3757D695-6832-4FAF-B4E2-4B02262956F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3757D695-6832-4FAF-B4E2-4B02262956F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3757D695-6832-4FAF-B4E2-4B02262956F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -196,5 +202,6 @@ Global
 		{9FB7EE1A-863F-4E0C-A373-53461C21507E} = {694835F2-9FEE-41C0-8989-44A574C6AF2E}
 		{B13040BE-E1BD-47CC-95AD-7598CAD3B2A2} = {6DE8E902-CCF9-4158-8686-33816FC5EE44}
 		{0E92E5D1-83EA-423B-8DB6-C4D6214FB6EA} = {694835F2-9FEE-41C0-8989-44A574C6AF2E}
+		{3757D695-6832-4FAF-B4E2-4B02262956F8} = {6DE8E902-CCF9-4158-8686-33816FC5EE44}
 	EndGlobalSection
 EndGlobal

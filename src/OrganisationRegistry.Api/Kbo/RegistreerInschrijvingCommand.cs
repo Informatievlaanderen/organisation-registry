@@ -118,7 +118,7 @@ namespace OrganisationRegistry.Api.Kbo
                         {
                             Identificatie = _magdaConfiguration.Sender,
                             Referte = reference,
-                            Hoedanigheid = _magdaConfiguration.Capacity
+                            Hoedanigheid = _magdaConfiguration.RepertoriumCapacity
                         },
                         Ontvanger = new OntvangerAdresType
                         {
