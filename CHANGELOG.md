@@ -1,3 +1,10 @@
+# [1.48.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.47.0...v1.48.0) (2020-08-18)
+
+
+### Features
+
+* add application to reregister orgs with magda ([a971164](https://github.com/informatievlaanderen/organisation-registry/commit/a971164522d5ccd5912b17e226bd7d73aab58730))
+
 # [1.47.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.46.0...v1.47.0) (2020-08-17)
 
 
