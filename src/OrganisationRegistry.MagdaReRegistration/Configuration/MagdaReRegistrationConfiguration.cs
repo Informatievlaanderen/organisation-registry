@@ -13,12 +13,9 @@ namespace OrganisationRegistry.MagdaReRegistration.Configuration
 
         public string OrganisationRegistryApiUri { get; set; }
 
-
         public MagdaReRegistrationConfiguration Obfuscate()
         {
-            return new MagdaReRegistrationConfiguration
-            {
-            };
+            return new MagdaReRegistrationConfiguration();
         }
     }
 }
