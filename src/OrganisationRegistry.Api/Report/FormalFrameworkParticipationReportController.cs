@@ -5,10 +5,12 @@ namespace OrganisationRegistry.Api.Report
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
+    using Configuration;
     using Infrastructure;
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Options;
     using Responses;
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Infrastructure.Commands;
@@ -75,6 +77,7 @@ namespace OrganisationRegistry.Api.Report
         /// Get gender ratio summary (grouped by body, organisation and bodyseat)
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="apiConfiguration"></param>
         /// <param name="dateTimeProvider"></param>
         /// <returns></returns>
         [HttpGet("participationsummary")]
@@ -83,6 +86,7 @@ namespace OrganisationRegistry.Api.Report
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetParticipationSummary(
             [FromServices] OrganisationRegistryContext context,
+            [FromServices] IOptions<ApiConfiguration> apiConfiguration,
             [FromServices] IDateTimeProvider dateTimeProvider)
         {
             var sorting = Request.ExtractSortingRequest();
@@ -90,7 +94,7 @@ namespace OrganisationRegistry.Api.Report
             var participations =
                 ParticipationSummary.Sort(
                         ParticipationSummary.Map(
-                            await ParticipationSummary.Search(context, dateTimeProvider.Today)),
+                            await ParticipationSummary.Search(context, apiConfiguration.Value, dateTimeProvider.Today)),
                         sorting)
                     .ToList();
 
