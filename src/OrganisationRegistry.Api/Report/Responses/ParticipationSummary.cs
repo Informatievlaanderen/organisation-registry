@@ -6,6 +6,7 @@ namespace OrganisationRegistry.Api.Report.Responses
     using System.Linq;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
+    using Configuration;
     using Infrastructure;
     using Infrastructure.Search.Sorting;
     using Microsoft.EntityFrameworkCore;
@@ -49,12 +50,19 @@ namespace OrganisationRegistry.Api.Report.Responses
         /// <summary>
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="apiConfiguration"></param>
         /// <param name="today"></param>
         /// <returns></returns>
         public static async Task<IEnumerable<ParticipationSummary>> Search(
             OrganisationRegistryContext context,
+            ApiConfiguration apiConfiguration,
             DateTime today)
         {
+            var bodyIdsForMep = context.BodyFormalFrameworkList
+                .AsAsyncQueryable()
+                .Where(body => body.FormalFrameworkId == apiConfiguration.Mep_FormalFrameworkId)
+                .Select(body => body.BodyId);
+
             var bodies = context.BodySeatGenderRatioBodyList
                 .Include(item => item.PostsPerType)
                 .Include(item => item.LifecyclePhaseValidities)
@@ -62,6 +70,7 @@ namespace OrganisationRegistry.Api.Report.Responses
                     y.RepresentsActivePhase &&
                     (!y.ValidFrom.HasValue || y.ValidFrom <= today) &&
                     (!y.ValidTo.HasValue || y.ValidFrom >= today)))
+                .Where(body => bodyIdsForMep.Contains(body.BodyId))
                 .ToList();
 
             var activeSeatsPerType = bodies
