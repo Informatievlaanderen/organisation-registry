@@ -47,6 +47,13 @@ namespace OrganisationRegistry.Api.Report.Responses
 
         [DisplayName("Man ok")] public bool IsEffectiveCompliant { get; set; }
 
+        [DisplayName("Beleidsdomein Id")] public Guid? PolicyDomainClassificationId { get; set; }
+        [DisplayName("Beleidsdomein Naam")] public string PolicyDomainClassificationName { get; set; }
+
+        [DisplayName("Verantwoordelijke Minister Id")] public Guid? ResponsibleMinisterClassificationId { get; set; }
+        [DisplayName("Verantwoordelijke Minister Naam")] public string ResponsibleMinisterClassificationName { get; set; }
+
+
         /// <summary>
         /// </summary>
         /// <param name="context"></param>
@@ -63,7 +70,7 @@ namespace OrganisationRegistry.Api.Report.Responses
                 .Where(body => body.FormalFrameworkId == apiConfiguration.Mep_FormalFrameworkId)
                 .Select(body => body.BodyId);
 
-            var bodies = context.BodySeatGenderRatioBodyList
+            var bodies = await context.BodySeatGenderRatioBodyList
                 .Include(item => item.PostsPerType)
                 .Include(item => item.LifecyclePhaseValidities)
                 .Where(body => body.LifecyclePhaseValidities.Any(y =>
@@ -71,7 +78,7 @@ namespace OrganisationRegistry.Api.Report.Responses
                     (!y.ValidFrom.HasValue || y.ValidFrom <= today) &&
                     (!y.ValidTo.HasValue || y.ValidFrom >= today)))
                 .Where(body => bodyIdsForMep.Contains(body.BodyId))
-                .ToList();
+                .ToListAsync();
 
             var activeSeatsPerType = bodies
                 .SelectMany(x => x.PostsPerType)
@@ -97,27 +104,27 @@ namespace OrganisationRegistry.Api.Report.Responses
                     x => x.Key,
                     x => x);
 
-            var activeMandates = context.BodySeatGenderRatioBodyMandateList
+            var activeMandates = await context.BodySeatGenderRatioBodyMandateList
                 .AsAsyncQueryable()
                 .Where(mandate =>
                     (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= today) &&
                     (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= today))
                 .Where(mandate => activeSeatIds.Contains(mandate.BodySeatId))
-                .ToList();
+                .ToListAsync();
 
             var activeMandateIds = activeMandates
                 .Select(item => item.BodyMandateId)
                 .ToList();
 
             var activeAssignmentsPerIsEffective =
-                context.BodySeatGenderRatioBodyMandateList
+                (await context.BodySeatGenderRatioBodyMandateList
                     .Include(mandate => mandate.Assignments)
                     .AsAsyncQueryable()
                     .Where(mandate =>
                         (!mandate.BodyMandateValidFrom.HasValue || mandate.BodyMandateValidFrom <= DateTime.Today) &&
                         (!mandate.BodyMandateValidTo.HasValue || mandate.BodyMandateValidTo >= DateTime.Today))
                     .Where(mandate => activeMandateIds.Contains(mandate.BodyMandateId))
-                    .ToList()
+                    .ToListAsync())
                     .GroupBy(mandate => new
                     {
                         mandate.BodyId,
@@ -129,6 +136,29 @@ namespace OrganisationRegistry.Api.Report.Responses
 
             var bodyIdsWithAssignments = activeAssignmentsPerIsEffective.Select(x => x.Key.BodyId);
             var bodiesWithAssignments = bodies.Where(x => bodyIdsWithAssignments.Contains(x.BodyId));
+            var policyDomainsPerBody = (await context.BodyBodyClassificationList
+                .AsAsyncQueryable()
+                .Where(bodyClassification => bodyIdsWithAssignments.Contains(bodyClassification.BodyId))
+                .Where(bodyClassification => bodyClassification.BodyClassificationTypeId ==
+                                             apiConfiguration.BodyPolicyDomainClassificationTypeId)
+                .Where(bodyClassification =>
+                    (!bodyClassification.ValidFrom.HasValue || bodyClassification.ValidFrom <= DateTime.Today) &&
+                    (!bodyClassification.ValidTo.HasValue || bodyClassification.ValidTo >= DateTime.Today))
+                .ToListAsync())
+                .GroupBy(bodyClassification => bodyClassification.BodyId)
+                .ToDictionary(x => x.Key, x => x);
+
+            var responsibleMinisterPerBody = (await context.BodyBodyClassificationList
+                    .AsAsyncQueryable()
+                    .Where(bodyClassification => bodyIdsWithAssignments.Contains(bodyClassification.BodyId))
+                    .Where(bodyClassification => bodyClassification.BodyClassificationTypeId ==
+                                                 apiConfiguration.BodyResponsibleMinisterClassificationTypeId)
+                    .Where(bodyClassification =>
+                        (!bodyClassification.ValidFrom.HasValue || bodyClassification.ValidFrom <= DateTime.Today) &&
+                        (!bodyClassification.ValidTo.HasValue || bodyClassification.ValidTo >= DateTime.Today))
+                    .ToListAsync())
+                .GroupBy(bodyClassification => bodyClassification.BodyId)
+                .ToDictionary(x => x.Key, x => x);
 
             return bodiesWithAssignments
                 .Select(body =>
@@ -162,6 +192,14 @@ namespace OrganisationRegistry.Api.Report.Responses
 
                     var totalCount = effectiveSeats.Count + subsidiarySeats.Count;
 
+                    var policyDomain = policyDomainsPerBody.ContainsKey(body.BodyId)
+                        ? policyDomainsPerBody[body.BodyId].Single()
+                        : null;
+
+                    var responsibleMinister = responsibleMinisterPerBody.ContainsKey(body.BodyId)
+                        ? responsibleMinisterPerBody[body.BodyId].Single()
+                        : null;
+
                     return new ParticipationSummary
                     {
                         BodyId = body.BodyId,
@@ -183,6 +221,13 @@ namespace OrganisationRegistry.Api.Report.Responses
 
                         AssignedCount = assignedCount,
                         UnassignedCount = totalCount - assignedCount,
+
+                        PolicyDomainClassificationId = policyDomain?.BodyClassificationId,
+                        PolicyDomainClassificationName = policyDomain?.BodyClassificationName ?? string.Empty,
+
+                        ResponsibleMinisterClassificationId = responsibleMinister?.BodyClassificationId,
+                        ResponsibleMinisterClassificationName = responsibleMinister?.BodyClassificationName ?? string.Empty,
+
 
                         TotalCount = totalCount
                     };

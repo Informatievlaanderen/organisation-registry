@@ -32,6 +32,24 @@
             </th>
             <th class="data-table__header-title" style="width: 15%;">
               <a class="data-table__header-title--sortable"
+                 [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('policyDomainClassificationName')}"
+                 (click)="sortBy('policyDomainClassificationName')">
+                Beleidsdomein
+                <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                   [ngClass]="{'vi-u-180deg': isSortedByDescending('policyDomainClassificationName')}"></i>
+              </a>
+            </th>
+            <th class="data-table__header-title" style="width: 15%;">
+              <a class="data-table__header-title--sortable"
+                 [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('responsibleMinisterClassificationName')}"
+                 (click)="sortBy('responsibleMinisterClassificationName')">
+                Verantwoordelijke minister
+                <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                   [ngClass]="{'vi-u-180deg': isSortedByDescending('responsibleMinisterClassificationName')}"></i>
+              </a>
+            </th>
+            <th class="data-table__header-title" style="width: 15%;">
+              <a class="data-table__header-title--sortable"
                 [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('isTotalCompliant')}"
                 (click)="sortBy('isTotalCompliant')">
                 Is conform
@@ -43,12 +61,12 @@
         </thead>
         <tbody>
           <template [ngIf]="isBusy">
-            <tr><td colspan="3">Bezig met laden...</td></tr>
+            <tr><td colspan="5">Bezig met laden...</td></tr>
           </template>
 
           <template [ngIf]="!isBusy">
             <tr *ngIf="!hasData(data)">
-              <td colspan="3">Geen data beschikbaar...</td>
+              <td colspan="5">Geen data beschikbaar...</td>
             </tr>
             <tr *ngFor="let bodyParticipation of data" [ngClass]="{'data-table__body-missing-mandate': bodyParticipation.unassignedCount>0}">
               <td class="data-table__body-title">
@@ -59,8 +77,14 @@
                 <a [routerLink]="['/bodies/', bodyParticipation.bodyId, 'participation']" title="{{bodyParticipation.bodyName}}">{{bodyParticipation.bodyName}}</a>
                 <div *ngIf="bodyParticipation.organisationId" class="data-table__cell--disabled data-table__cell--additional-information">onderdeel van <a [routerLink]="['/organisations', bodyParticipation.organisationId]" title="{{bodyParticipation.organisationName}}">{{bodyParticipation.organisationName}}</a></div>
               </td>
+              <td class="data-table__body-title data-table__body-ellipsis">
+                {{ bodyParticipation.policyDomainClassificationName }}
+              </td>
+              <td class="data-table__body-title data-table__body-ellipsis">
+                {{ bodyParticipation.responsibleMinisterClassificationName }}
+              </td>
               <td class="data-table__body-title data-table__body-ellipsis" [ngClass]="bodyParticipation.isTotalCompliant ? 'text__success': 'text__alert'">
-                {{bodyParticipation.isTotalCompliant ? 'Ja' : 'Nee' }}
+                {{ bodyParticipation.isTotalCompliant ? 'Ja' : 'Nee' }}
               </td>
             </tr>
           </template>

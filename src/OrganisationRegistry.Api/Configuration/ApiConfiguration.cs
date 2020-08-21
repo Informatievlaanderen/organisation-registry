@@ -27,6 +27,8 @@ namespace OrganisationRegistry.Api.Configuration
         public Guid LegalFormClassificationTypeId { get; set; }
         public Guid PolicyDomainClassificationTypeId { get; set; }
         public Guid ResponsibleMinisterClassificationTypeId { get; set; }
+        public Guid BodyPolicyDomainClassificationTypeId { get; set; }
+        public Guid BodyResponsibleMinisterClassificationTypeId { get; set; }
 
         public Guid Bestuursniveau_ClassificationTypeId { get; set; }
         public Guid Categorie_ClassificationTypeId { get; set; }
