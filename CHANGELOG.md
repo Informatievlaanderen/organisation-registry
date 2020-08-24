@@ -1,3 +1,10 @@
+# [1.49.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.48.0...v1.49.0) (2020-08-24)
+
+
+### Features
+
+* only show bodies for mep in participation summary ([5f293e4](https://github.com/informatievlaanderen/organisation-registry/commit/5f293e43e098b26d2a49ce5596fb75ff55d8e07d))
+
 # [1.48.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.47.0...v1.48.0) (2020-08-18)
 
 
