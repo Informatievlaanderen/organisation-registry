@@ -227,7 +227,6 @@ namespace OrganisationRegistry.Api.Report.Responses
                         ResponsibleMinisterClassificationId = responsibleMinister?.BodyClassificationId,
                         ResponsibleMinisterClassificationName = responsibleMinister?.BodyClassificationName ?? string.Empty,
 
-
                         TotalCount = totalCount
                     };
                 })
