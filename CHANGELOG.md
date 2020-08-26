@@ -1,3 +1,10 @@
+# [1.51.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.50.0...v1.51.0) (2020-08-26)
+
+
+### Features
+
+* log unsuccessful magda responses ([5a966dd](https://github.com/informatievlaanderen/organisation-registry/commit/5a966ddac8a0e8a33ca5301b4555fe044c04dbd5))
+
 # [1.50.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.49.0...v1.50.0) (2020-08-26)
 
 
