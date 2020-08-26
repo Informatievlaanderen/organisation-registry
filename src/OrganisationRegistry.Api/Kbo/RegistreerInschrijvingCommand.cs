@@ -76,10 +76,15 @@ namespace OrganisationRegistry.Api.Kbo
                             endpoint,
                             new StringContent(signedEnvelope, Encoding.UTF8, "application/soap+xml"));
 
-                    _logger.LogTrace("RegistreerInschrijving http response {@Result}", response);
 
-                    if (response.IsSuccessStatusCode)
+                    if (!response.IsSuccessStatusCode)
                     {
+                        _logger.LogWarning("RegistreerInschrijving response not successful: {@Result}", response);
+                    }
+                    else
+                    {
+                        _logger.LogTrace("RegistreerInschrijving http response: {@Result}", response);
+
                         var serializer = new XmlSerializer(typeof(Envelope<T>));
 
                         using (var reader = new StringReader(await response.Content.ReadAsStringAsync()))

@@ -79,8 +79,14 @@ namespace OrganisationRegistry.Api.Kbo
                             endpoint,
                             new StringContent(signedEnvelope, Encoding.UTF8, "application/soap+xml"));
 
-                    if (response.IsSuccessStatusCode)
+                    if (!response.IsSuccessStatusCode)
                     {
+                        _logger.LogWarning("GeefOnderneming response not successful: {@Result}", response);
+                    }
+                    else
+                    {
+                        _logger.LogTrace("GeefOnderneming http response: {@Result}", response);
+
                         var serializer = new XmlSerializer(typeof(Envelope<T>));
 
                         using (var reader = new StringReader(await response.Content.ReadAsStringAsync()))
