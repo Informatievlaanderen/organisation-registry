@@ -53,7 +53,6 @@ namespace OrganisationRegistry.Api.Report.Responses
         [DisplayName("Verantwoordelijke Minister Id")] public Guid? ResponsibleMinisterClassificationId { get; set; }
         [DisplayName("Verantwoordelijke Minister Naam")] public string ResponsibleMinisterClassificationName { get; set; }
 
-
         /// <summary>
         /// </summary>
         /// <param name="context"></param>
