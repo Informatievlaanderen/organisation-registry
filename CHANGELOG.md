@@ -1,3 +1,11 @@
+# [1.50.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.49.0...v1.50.0) (2020-08-26)
+
+
+### Features
+
+* add resp minister and policy domain to participation summary ([3f37b90](https://github.com/informatievlaanderen/organisation-registry/commit/3f37b90cd9de182234ac0e60c5f6585d869adea8))
+* recalculate percentages ([335658c](https://github.com/informatievlaanderen/organisation-registry/commit/335658cff6e36d4c96355e85e5b2cc39aad1bddd))
+
 # [1.49.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.48.0...v1.49.0) (2020-08-24)
 
 
