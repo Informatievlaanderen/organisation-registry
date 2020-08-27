@@ -1,3 +1,10 @@
+# [1.52.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.51.0...v1.52.0) (2020-08-27)
+
+
+### Features
+
+* add sync from kbo to scheduler ([3ddcd36](https://github.com/informatievlaanderen/organisation-registry/commit/3ddcd36b4bb128bccca5329d7a6e4a411542f6e6))
+
 # [1.51.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.50.0...v1.51.0) (2020-08-26)
 
 
