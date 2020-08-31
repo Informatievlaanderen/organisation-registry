@@ -1,3 +1,10 @@
+## [1.52.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.52.0...v1.52.1) (2020-08-31)
+
+
+### Bug Fixes
+
+* fix disposed object and make async ([182f491](https://github.com/informatievlaanderen/organisation-registry/commit/182f491d435163cf9ea33afe548ccbe2858a18b9))
+
 # [1.52.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.51.0...v1.52.0) (2020-08-27)
 
 
