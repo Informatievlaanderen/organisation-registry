@@ -87,7 +87,7 @@ namespace OrganisationRegistry.Api.Task
                 case TaskType.SyncFromKbo:
                     using (var context = contextFactory().Value)
                     {
-                        kboSync.SyncFromKbo(CommandSender, context, User);
+                        await kboSync.SyncFromKbo(CommandSender, context, User);
                     }
 
                     break;

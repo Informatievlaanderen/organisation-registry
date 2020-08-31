@@ -5,6 +5,7 @@ namespace OrganisationRegistry.Api.Task
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Configuration;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using OrganisationRegistry.Infrastructure.Commands;
@@ -48,14 +49,15 @@ namespace OrganisationRegistry.Api.Task
         {
             _logger.LogInformation("Kbo sync started.");
 
-            var itemsInQueue = context.KboSyncQueue
+            var itemsInQueue = await context.KboSyncQueue
                 .AsQueryable()
                 .Where(item => item.SyncCompletedAt == null)
                 .OrderBy(item => item.MutationReadAt)
                 .ThenBy(item => item.SourceOrganisationKboNumber)
-                .Take(_syncFromKboBatchSize);
+                .Take(_syncFromKboBatchSize)
+                .ToListAsync();
 
-            _logger.LogInformation("Found {NumberOfSyncItems} items to sync.", itemsInQueue.Count());
+            _logger.LogInformation("Found {NumberOfSyncItems} items to sync.", itemsInQueue.Count);
 
             foreach (var kboSyncQueueItem in itemsInQueue)
             {
@@ -94,7 +96,7 @@ namespace OrganisationRegistry.Api.Task
                 }
             }
 
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             _logger.LogInformation("Kbo sync completed.");
         }
