@@ -1,3 +1,10 @@
+## [1.52.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.52.1...v1.52.2) (2020-09-07)
+
+
+### Bug Fixes
+
+* only include organs actively linked to mep ([29a295e](https://github.com/informatievlaanderen/organisation-registry/commit/29a295e62854aa1b267fd4c24be7b4edc467bf82))
+
 ## [1.52.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.52.0...v1.52.1) (2020-08-31)
 
 
