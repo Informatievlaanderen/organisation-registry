@@ -66,7 +66,9 @@ namespace OrganisationRegistry.Api.Report.Responses
         {
             var bodyIdsForMep = context.BodyFormalFrameworkList
                 .AsAsyncQueryable()
-                .Where(body => body.FormalFrameworkId == apiConfiguration.Mep_FormalFrameworkId)
+                .Where(body => body.FormalFrameworkId == apiConfiguration.Mep_FormalFrameworkId &&
+                       (!body.ValidFrom.HasValue || body.ValidFrom <= today) &&
+                       (!body.ValidTo.HasValue || body.ValidFrom >= today))
                 .Select(body => body.BodyId);
 
             var bodies = await context.BodySeatGenderRatioBodyList
