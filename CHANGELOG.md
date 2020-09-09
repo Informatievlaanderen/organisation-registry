@@ -1,3 +1,10 @@
+# [1.53.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.52.2...v1.53.0) (2020-09-09)
+
+
+### Features
+
+* retry new kbo sync items first ([11bccb9](https://github.com/informatievlaanderen/organisation-registry/commit/11bccb912a123d438298f26ca5674dc20fa6a542))
+
 ## [1.52.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.52.1...v1.52.2) (2020-09-07)
 
 
