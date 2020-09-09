@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.Task
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace OrganisationRegistry.Api.Task
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using SqlServer.Infrastructure;
+    using SqlServer.KboSyncQueue;
 
     public interface IKboSync
     {
@@ -49,13 +51,10 @@ namespace OrganisationRegistry.Api.Task
         {
             _logger.LogInformation("Kbo sync started.");
 
-            var itemsInQueue = await context.KboSyncQueue
-                .AsQueryable()
-                .Where(item => item.SyncCompletedAt == null)
-                .OrderBy(item => item.MutationReadAt)
-                .ThenBy(item => item.SourceOrganisationKboNumber)
-                .Take(_syncFromKboBatchSize)
-                .ToListAsync();
+            var itemsInQueue = await GetNewItems(context);
+
+            if (!itemsInQueue.Any())
+                itemsInQueue = await GetItemsToRetry(context);
 
             _logger.LogInformation("Found {NumberOfSyncItems} items to sync.", itemsInQueue.Count);
 
@@ -99,6 +98,28 @@ namespace OrganisationRegistry.Api.Task
             await context.SaveChangesAsync();
 
             _logger.LogInformation("Kbo sync completed.");
+        }
+
+        private async Task<List<KboSyncQueueItem>> GetNewItems(OrganisationRegistryContext context)
+        {
+            return await context.KboSyncQueue
+                .AsQueryable()
+                .Where(item => item.SyncCompletedAt == null && item.SyncStatus == null)
+                .OrderBy(item => item.MutationReadAt)
+                .ThenBy(item => item.SourceOrganisationKboNumber)
+                .Take(_syncFromKboBatchSize)
+                .ToListAsync();
+        }
+
+        private async Task<List<KboSyncQueueItem>> GetItemsToRetry(OrganisationRegistryContext context)
+        {
+            return await context.KboSyncQueue
+                .AsQueryable()
+                .Where(item => item.SyncCompletedAt == null)
+                .OrderBy(item => item.MutationReadAt)
+                .ThenBy(item => item.SourceOrganisationKboNumber)
+                .Take(_syncFromKboBatchSize)
+                .ToListAsync();
         }
     }
 }
