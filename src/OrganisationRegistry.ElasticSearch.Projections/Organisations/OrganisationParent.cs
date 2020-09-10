@@ -18,7 +18,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<OrganisationParentAdded>,
         IEventHandler<OrganisationParentUpdated>,
         IEventHandler<OrganisationInfoUpdated>,
-        IEventHandler<OrganisationInfoUpdatedFromKbo>
+        IEventHandler<OrganisationInfoUpdatedFromKbo>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>
     {
         private readonly Elastic _elastic;
 
@@ -37,6 +38,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             MassUpdateOrganisationParentName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            MassUpdateOrganisationParentName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling, message.Number, message.Timestamp);
         }
 
         private void MassUpdateOrganisationParentName(Guid organisationId, string name, int number, DateTimeOffset timestamp)

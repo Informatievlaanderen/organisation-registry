@@ -61,6 +61,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationFormalFrameworkUpdated>,
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<FormalFrameworkUpdated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
@@ -87,6 +88,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             UpdateParentOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            UpdateParentOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
         }
 
         private static void UpdateParentOrganisationName(DbConnection dbConnection,

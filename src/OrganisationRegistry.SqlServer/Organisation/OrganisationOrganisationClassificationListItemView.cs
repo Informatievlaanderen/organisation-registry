@@ -68,6 +68,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationOrganisationClassificationAdded>,
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationOrganisationClassificationUpdated>,
         IEventHandler<OrganisationClassificationTypeUpdated>,
         IEventHandler<OrganisationClassificationUpdated>
@@ -180,6 +181,26 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 var key = context.OrganisationOrganisationClassificationList.Single(item => item.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId);
 
                 context.OrganisationOrganisationClassificationList.Remove(key);
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            if (message.Body.LegalFormOrganisationOrganisationClassificationId == null)
+                return;
+
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var x = context.OrganisationOrganisationClassificationList.Where(b =>
+                    b.OrganisationId == message.Body.OrganisationId)
+                    .ToList();
+
+                var organisationLocationListItem = context.OrganisationOrganisationClassificationList.Single(b =>
+                    b.OrganisationOrganisationClassificationId == message.Body.LegalFormOrganisationOrganisationClassificationId.Value);
+
+                context.OrganisationOrganisationClassificationList.Remove(organisationLocationListItem);
 
                 await context.SaveChangesAsync();
             }

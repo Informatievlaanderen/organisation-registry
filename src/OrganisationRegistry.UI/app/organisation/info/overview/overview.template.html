@@ -6,7 +6,12 @@
         <a *ngIf="!organisation.kboNumber"
            class="button button--secondary button--notice"
            [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
-           [routerLink]="'./couplewithkbo'">Koppel met Kbo</a>
+           [routerLink]="'./couplewithkbo'">Koppel met KBO</a>
+
+        <a *ngIf="organisation.kboNumber"
+           class="button button--secondary button--notice"
+           [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
+           [routerLink]="'./cancelcouplingwithkbo'">Koppeling met KBO ongedaan maken</a>
 
         <a
            class="button"
@@ -38,7 +43,7 @@
         <dd class="properties__data" *ngIf="organisation.shortName">{{organisation.shortName}}</dd>
         <dd class="properties__data properties--disabled" *ngIf="!organisation.shortName">Geen</dd>
 
-        <dt class="properties__label">Kbo nummer:</dt>
+        <dt class="properties__label">KBO nummer:</dt>
         <dd id="organisationKboNumber" class="properties__data" *ngIf="organisation.kboNumber">
           {{organisation.kboNumber}}
         </dd>

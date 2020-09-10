@@ -131,7 +131,7 @@ namespace OrganisationRegistry.Api.Organisation
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.OrganisationId }));
         }
 
-        /// <summary>Couple an organisation to a kbo number.</summary>
+        /// <summary>Couple an organisation to a KBO number.</summary>
         /// <response code="200">If the organisation was coupled.</response>
         [HttpPut("{id}/kboNumber/{kboNumber}")]
         [OrganisationRegistryAuthorize]
@@ -148,6 +148,26 @@ namespace OrganisationRegistry.Api.Organisation
                 new CoupleOrganisationToKbo(
                     new OrganisationId(id),
                     new KboNumber(kboNumber),
+                    User));
+
+            return Ok();
+        }
+
+        /// <summary>Cancel an organisation's active coupling with a KBO number.</summary>
+        /// <response code="200">If the organisation coupling was cancelled.</response>
+        [HttpDelete("{id}/kboNumber")]
+        [OrganisationRegistryAuthorize]
+        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> CancelCouplingWithKbo(
+            [FromServices] ISecurityService securityService,
+            [FromRoute] Guid id)
+        {
+            if (!securityService.CanEditOrganisation(User, id))
+                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
+
+            await CommandSender.Send(
+                new CancelCouplingWithKbo(
+                    new OrganisationId(id),
                     User));
 
             return Ok();

@@ -19,6 +19,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
         IEventHandler<OrganisationCreatedFromKbo>,
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationBecameActive>,
         IEventHandler<OrganisationBecameInactive>
     {
@@ -135,6 +136,23 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     message.Body.OvoNumber,
                     message.Body.Name,
                     message.Body.PreviousName,
+                    message.Body.Timestamp));
+
+            SendMails(mails.ToArray());
+        }
+
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            var mails = new List<Mail>();
+
+            var organisationHasChangedName = message.Body.NameFromKboCoupling != message.Body.NameBeforeKboCoupling;
+
+            if (organisationHasChangedName)
+                mails.Add(OrganisationNameChanged(
+                    message.Body.OrganisationId,
+                    message.Body.OvoNumber,
+                    message.Body.NameBeforeKboCoupling,
+                    message.Body.NameFromKboCoupling,
                     message.Body.Timestamp));
 
             SendMails(mails.ToArray());

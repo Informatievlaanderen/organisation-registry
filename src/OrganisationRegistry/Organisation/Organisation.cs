@@ -51,11 +51,13 @@ namespace OrganisationRegistry.Organisation
         private OrganisationLocation _mainOrganisationLocation;
         private OrganisationParent _currentOrganisationParent;
 
-        private OrganisationLocation _kboRegisteredOffice;
-        private OrganisationLabel _kboFormalNameLabel;
-        private OrganisationOrganisationClassification _kboLegalFormOrganisationClassification;
+        private OrganisationLocation? _kboRegisteredOffice;
+        private OrganisationLabel? _kboFormalNameLabel;
+        private OrganisationOrganisationClassification? _kboLegalFormOrganisationClassification;
         private readonly List<OrganisationBankAccount> _kboBankAccounts;
-        public KboNumber KboNumber { get; private set; }
+        private string _nameBeforeKboCoupling;
+        private string _shortNameBeforeKboCoupling;
+        public KboNumber? KboNumber { get; private set; }
 
         private bool HasKboNumber => KboNumber != null;
 
@@ -748,7 +750,7 @@ namespace OrganisationRegistry.Organisation
         public void UpdateKboLegalFormOrganisationClassification(
             IKboOrganisationClassificationRetriever organisationClassificationRetriever,
             OrganisationClassificationType legalFormOrganisationClassificationType,
-            IMagdaLegalForm newLegalForm,
+            IMagdaLegalForm? newLegalForm,
             Func<Guid, OrganisationClassification> getOrganisationClassification,
             DateTime modificationTime)
         {
@@ -770,7 +772,7 @@ namespace OrganisationRegistry.Organisation
                         _kboLegalFormOrganisationClassification.OrganisationClassificationId,
                         _kboLegalFormOrganisationClassification.OrganisationClassificationName,
                         _kboLegalFormOrganisationClassification.Validity.Start,
-                        _kboLegalFormOrganisationClassification.Validity.End, // validTo from newLegalForms or modifiedTime?
+                        _kboLegalFormOrganisationClassification.Validity.End,
                         _kboLegalFormOrganisationClassification.Validity.End));
 
             if (newLegalFormClassificationId != null)
@@ -1456,6 +1458,26 @@ namespace OrganisationRegistry.Organisation
                 dateTimeProvider.Today));
         }
 
+        public void CancelCouplingWithKbo(IDateTimeProvider dateTimeProvider)
+        {
+            if (!HasKboNumber)
+                throw new OrganisationNotCoupledWithKbo();
+
+            ApplyChange(new OrganisationCouplingWithKboCancelled(
+                Id,
+                KboNumber.ToDigitsOnly(),
+                _nameBeforeKboCoupling,
+                _shortNameBeforeKboCoupling,
+                Name,
+                _shortName,
+                OvoNumber,
+                _kboLegalFormOrganisationClassification?.OrganisationOrganisationClassificationId,
+                _kboFormalNameLabel?.OrganisationLabelId,
+                _kboRegisteredOffice?.OrganisationLocationId,
+                _kboBankAccounts.Select(account => account.OrganisationBankAccountId).ToList(),
+                dateTimeProvider.Today));
+        }
+
         private void CheckIfCurrentParentChanged(
             OrganisationParent organisationParent,
             DateTime today)
@@ -2138,6 +2160,16 @@ namespace OrganisationRegistry.Organisation
         private void Apply(OrganisationCoupledWithKbo @event)
         {
             KboNumber = new KboNumber(@event.KboNumber);
+            _nameBeforeKboCoupling = Name;
+            _shortNameBeforeKboCoupling = _shortName;
+
+        }
+
+        private void Apply(OrganisationCouplingWithKboCancelled @event)
+        {
+            KboNumber = null;
+            _shortName = _shortNameBeforeKboCoupling;
+            Name = _nameBeforeKboCoupling;
         }
 
         public IEnumerable<OrganisationParent> ParentsInPeriod(Period validity)

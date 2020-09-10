@@ -17,6 +17,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<OrganisationBankAccountAdded>,
         IEventHandler<KboOrganisationBankAccountAdded>,
         IEventHandler<KboOrganisationBankAccountRemoved>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationBankAccountUpdated>
     {
         private readonly Elastic _elastic;
@@ -42,6 +43,14 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountRemoved> message)
         {
             RemoveBankAccount(message.Body.OrganisationId, message.Body.OrganisationBankAccountId, message.Number, message.Timestamp);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            foreach (var bankAccountId in message.Body.OrganisationBankAccountIds)
+            {
+                RemoveBankAccount(message.Body.OrganisationId, bankAccountId, message.Number, message.Timestamp);
+            }
         }
 
         private void AddBankAccount(Guid organisationId, Guid organisationBankAccountId, string bankAccountNumber, bool isIban, string bic, bool isBic, DateTime? validFrom, DateTime? validTo, int changeId, DateTimeOffset timestamp)

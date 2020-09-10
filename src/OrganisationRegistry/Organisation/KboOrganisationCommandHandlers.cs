@@ -21,7 +21,8 @@ namespace OrganisationRegistry.Organisation
         BaseCommandHandler<KboOrganisationCommandHandlers>,
         ICommandHandler<CreateKboOrganisation>,
         ICommandHandler<CoupleOrganisationToKbo>,
-        ICommandHandler<UpdateFromKbo>
+        ICommandHandler<UpdateFromKbo>,
+        ICommandHandler<CancelCouplingWithKbo>
     {
         private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
         private readonly IOvoNumberGenerator _ovoNumberGenerator;
@@ -194,6 +195,15 @@ namespace OrganisationRegistry.Organisation
             organisation.UpdateKboBankAccount(kboOrganisation.BankAccounts);
 
             organisation.MarkAsSynced(message.KboSyncItemId);
+
+            await Session.Commit();
+        }
+
+        public async Task Handle(CancelCouplingWithKbo message)
+        {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+
+            organisation.CancelCouplingWithKbo(_dateTimeProvider);
 
             await Session.Commit();
         }

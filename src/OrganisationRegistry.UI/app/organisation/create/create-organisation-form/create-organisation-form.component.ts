@@ -112,7 +112,7 @@ export class CreateOrganisationFormComponent implements OnInit {
               new AlertBuilder()
                 .error()
                 .withTitle('KBO Nr onbekend')
-                .withMessage('Het opgeven KBO Nr werd niet terugevonden in KBO.')
+                .withMessage('Het opgegeven KBO Nr werd niet terugevonden in de KBO.')
                 .build())
           }
         },
@@ -120,8 +120,8 @@ export class CreateOrganisationFormComponent implements OnInit {
           this.alertService.setAlert(
             new AlertBuilder()
               .error(error)
-              .withTitle('Probleem bij ophalen van KBO informatie')
-              .withMessage('Er is een fout opgetreden bij het ophalen van de organisatie in KBO. Probeer het later opnieuw.')
+              .withTitle('Probleem bij het ophalen van de KBO informatie')
+              .withMessage('Er is een fout opgetreden bij het ophalen van de organisatie in de KBO. Probeer het later opnieuw.')
               .build()));
   }
 }

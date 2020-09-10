@@ -52,7 +52,7 @@ export class OrganisationCoupleWithKboComponent implements OnInit {
   public get primaryButtonText() {
     return this.organisationFromKbo.kboNumber ?
       'Waarden overnemen' :
-      'Controleer Kbo nummer';
+      'Controleer KBO nummer';
   }
 
   ngOnInit() {
@@ -141,7 +141,7 @@ export class OrganisationCoupleWithKboComponent implements OnInit {
             this.alertService.setAlert(
               new AlertBuilder()
                 .alert()
-                .withTitle('Verschillen ontdekt tussen de data uit het VKBO en lokale data!')
+                .withTitle('Verschillen ontdekt tussen de data uit de KBO en lokale data!')
                 .withMessage('Indien u verdergaat, zullen de onderstaande waarden overschreven worden.')
                 .build());
           }
@@ -150,8 +150,8 @@ export class OrganisationCoupleWithKboComponent implements OnInit {
           this.alertService.setAlert(
             new AlertBuilder()
               .alert()
-              .withTitle('Kbo nummer')
-              .withMessage('Het opgegeven kbo nummer werd niet gevonden.')
+              .withTitle('KBO nummer')
+              .withMessage('Het opgegeven KBO nummer werd niet gevonden.')
               .build());
         });
   }

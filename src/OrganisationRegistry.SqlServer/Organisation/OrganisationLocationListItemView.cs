@@ -94,6 +94,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationLocationAdded>,
         IEventHandler<KboRegisteredOfficeOrganisationLocationAdded>,
         IEventHandler<KboRegisteredOfficeOrganisationLocationRemoved>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationLocationUpdated>,
         IEventHandler<LocationTypeUpdated>
     {
@@ -193,6 +194,22 @@ namespace OrganisationRegistry.SqlServer.Organisation
             {
                 var organisationLocationListItem = context.OrganisationLocationList.Single(b =>
                     b.OrganisationLocationId == message.Body.OrganisationLocationId);
+
+                context.OrganisationLocationList.Remove(organisationLocationListItem);
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            if (message.Body.RegisteredOfficeOrganisationLocationId == null)
+                return;
+
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var organisationLocationListItem = context.OrganisationLocationList.Single(b =>
+                    b.OrganisationLocationId == message.Body.RegisteredOfficeOrganisationLocationId);
 
                 context.OrganisationLocationList.Remove(organisationLocationListItem);
 

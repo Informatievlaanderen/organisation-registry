@@ -164,6 +164,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationOrganisationClassificationAdded>,
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationOrganisationClassificationUpdated>,
         IEventHandler<OrganisationClassificationUpdated>
     {
@@ -671,6 +672,40 @@ namespace OrganisationRegistry.SqlServer.Organisation
                             .Where(validity =>
                                 validity.OrganisationOrganisationClassificationId ==
                                 message.Body.OrganisationOrganisationClassificationId)
+                            .ToList();
+
+                        context.OrganisationClassificationValidities.RemoveRange(organisationClassificationValidities);
+                    });
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                foreach (var organisationListItem in context.OrganisationList.Where(item => item.OrganisationId == message.Body.OrganisationId))
+                {
+                    organisationListItem.Name = message.Body.NameBeforeKboCoupling;
+                    organisationListItem.ShortName = message.Body.ShortNameBeforeKboCoupling;
+                }
+
+                foreach (var child in context.OrganisationList.Where(item => item.ParentOrganisationId == message.Body.OrganisationId))
+                {
+                    child.ParentOrganisation = message.Body.NameBeforeKboCoupling;
+                }
+
+                context.OrganisationList
+                    .Include(item => item.OrganisationClassificationValidities)
+                    .Where(item => item.OrganisationId == message.Body.OrganisationId)
+                    .ToList()
+                    .ForEach(item =>
+                    {
+                        var organisationClassificationValidities = item.OrganisationClassificationValidities
+                            .Where(validity =>
+                                validity.OrganisationOrganisationClassificationId ==
+                                message.Body.LegalFormOrganisationOrganisationClassificationId)
                             .ToList();
 
                         context.OrganisationClassificationValidities.RemoveRange(organisationClassificationValidities);

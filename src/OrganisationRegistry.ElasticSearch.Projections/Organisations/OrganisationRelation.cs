@@ -20,7 +20,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<OrganisationRelationUpdated>,
         IEventHandler<OrganisationRelationTypeUpdated>,
         IEventHandler<OrganisationInfoUpdated>,
-        IEventHandler<OrganisationInfoUpdatedFromKbo>
+        IEventHandler<OrganisationInfoUpdatedFromKbo>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>
+
     {
         private readonly Elastic _elastic;
         private readonly IMemoryCaches _memoryCaches;
@@ -138,6 +140,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             MassUpdateOrganisationRelationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            MassUpdateOrganisationRelationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling, message.Number, message.Timestamp);
         }
 
         private void MassUpdateOrganisationRelationName(Guid organisationId, string name, int messageNumber, DateTimeOffset timestamp)

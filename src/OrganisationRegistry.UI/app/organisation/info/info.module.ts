@@ -10,6 +10,7 @@ import { OrganisationInfoOverviewComponent, OrganisationInfoChildrenComponent } 
 import { OrganisationInfoEditComponent } from './edit';
 import { OrganisationInfoAddChildOrganisationComponent, CreateChildOrganisationFormComponent } from './add-child';
 import { OrganisationCoupleWithKboComponent } from './couple-with-kbo';
+import { OrganisationCancelCouplingWithKboComponent } from './cancel-coupling-with-kbo';
 
 @NgModule({
   imports: [
@@ -24,7 +25,8 @@ import { OrganisationCoupleWithKboComponent } from './couple-with-kbo';
     OrganisationInfoEditComponent,
     OrganisationInfoAddChildOrganisationComponent,
     CreateChildOrganisationFormComponent,
-    OrganisationCoupleWithKboComponent
+    OrganisationCoupleWithKboComponent,
+    OrganisationCancelCouplingWithKboComponent
   ],
   exports: [
     OrganisationInfoRoutingModule
