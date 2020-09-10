@@ -61,10 +61,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            if (message.Body.RegisteredOfficeOrganisationLocationId == null)
+            if (message.Body.RegisteredOfficeOrganisationLocationIdToCancel == null)
                 return;
 
-            RemoveOrganisationLocation(message.Body.OrganisationId, message.Number, message.Timestamp, message.Body.RegisteredOfficeOrganisationLocationId.Value);
+            RemoveOrganisationLocation(message.Body.OrganisationId, message.Number, message.Timestamp, message.Body.RegisteredOfficeOrganisationLocationIdToCancel.Value);
         }
 
 

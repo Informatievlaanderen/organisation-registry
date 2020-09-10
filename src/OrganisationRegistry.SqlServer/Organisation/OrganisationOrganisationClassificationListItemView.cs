@@ -188,7 +188,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            if (message.Body.LegalFormOrganisationOrganisationClassificationId == null)
+            if (message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel == null)
                 return;
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
@@ -198,7 +198,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     .ToList();
 
                 var organisationLocationListItem = context.OrganisationOrganisationClassificationList.Single(b =>
-                    b.OrganisationOrganisationClassificationId == message.Body.LegalFormOrganisationOrganisationClassificationId.Value);
+                    b.OrganisationOrganisationClassificationId == message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel.Value);
 
                 context.OrganisationOrganisationClassificationList.Remove(organisationLocationListItem);
 

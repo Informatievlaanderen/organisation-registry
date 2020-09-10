@@ -167,13 +167,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            if (message.Body.FormalNameOrganisationLabelId == null)
+            if (message.Body.FormalNameOrganisationLabelIdToCancel == null)
                 return;
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var formalNameLabel = await context.OrganisationLabelList
-                    .SingleAsync(item => item.OrganisationLabelId == message.Body.FormalNameOrganisationLabelId);
+                    .SingleAsync(item => item.OrganisationLabelId == message.Body.FormalNameOrganisationLabelIdToCancel);
 
                 var archivedNameLabel = await context.OrganisationLabelList
                     .SingleAsync(item =>

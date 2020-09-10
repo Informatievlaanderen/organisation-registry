@@ -203,13 +203,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            if (message.Body.RegisteredOfficeOrganisationLocationId == null)
+            if (message.Body.RegisteredOfficeOrganisationLocationIdToCancel == null)
                 return;
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationLocationListItem = context.OrganisationLocationList.Single(b =>
-                    b.OrganisationLocationId == message.Body.RegisteredOfficeOrganisationLocationId);
+                    b.OrganisationLocationId == message.Body.RegisteredOfficeOrganisationLocationIdToCancel);
 
                 context.OrganisationLocationList.Remove(organisationLocationListItem);
 

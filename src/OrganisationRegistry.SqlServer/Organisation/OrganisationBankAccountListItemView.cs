@@ -157,12 +157,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            if (!message.Body.OrganisationBankAccountIds.Any())
+            if (!message.Body.OrganisationBankAccountIdsToCancel.Any())
                 return;
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                foreach (var bankAccountId in message.Body.OrganisationBankAccountIds)
+                foreach (var bankAccountId in message.Body.OrganisationBankAccountIdsToCancel)
                 {
                     var organisationBankAccountListItem = await context.OrganisationBankAccountList.SingleAsync(b => b.OrganisationBankAccountId == bankAccountId);
 
