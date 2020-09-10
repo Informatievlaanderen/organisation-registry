@@ -47,7 +47,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            foreach (var bankAccountId in message.Body.OrganisationBankAccountIds)
+            foreach (var bankAccountId in message.Body.OrganisationBankAccountIdsToCancel)
             {
                 RemoveBankAccount(message.Body.OrganisationId, bankAccountId, message.Number, message.Timestamp);
             }

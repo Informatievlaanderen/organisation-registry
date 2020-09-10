@@ -705,7 +705,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                         var organisationClassificationValidities = item.OrganisationClassificationValidities
                             .Where(validity =>
                                 validity.OrganisationOrganisationClassificationId ==
-                                message.Body.LegalFormOrganisationOrganisationClassificationId)
+                                message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel)
                             .ToList();
 
                         context.OrganisationClassificationValidities.RemoveRange(organisationClassificationValidities);

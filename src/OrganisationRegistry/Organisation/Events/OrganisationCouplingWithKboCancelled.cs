@@ -7,17 +7,16 @@ namespace OrganisationRegistry.Organisation.Events
     {
         public Guid OrganisationId => Id;
 
+        public string PreviousKboNumber { get; }
         public string NameBeforeKboCoupling { get; }
         public string ShortNameBeforeKboCoupling { get; }
-        public string OvoNumber { get; }
-        public Guid? LegalFormOrganisationOrganisationClassificationId { get; }
-        public Guid? FormalNameOrganisationLabelId { get; }
-        public Guid? RegisteredOfficeOrganisationLocationId { get; }
-        public List<Guid> OrganisationBankAccountIds { get; }
-        public DateTime? ValidFrom { get; }
-        public string PreviousKboNumber { get; }
         public string NameFromKboCoupling { get; }
         public string ShortNameFromKboCoupling { get; }
+        public string OvoNumber { get; }
+        public Guid? LegalFormOrganisationOrganisationClassificationIdToCancel { get; }
+        public Guid? FormalNameOrganisationLabelIdToCancel { get; }
+        public Guid? RegisteredOfficeOrganisationLocationIdToCancel { get; }
+        public List<Guid> OrganisationBankAccountIdsToCancel { get; }
 
         public OrganisationCouplingWithKboCancelled(Guid organisationId,
             string previousKboNumber,
@@ -26,11 +25,10 @@ namespace OrganisationRegistry.Organisation.Events
             string nameFromKboCoupling,
             string shortNameFromKboCoupling,
             string ovoNumber,
-            Guid? legalFormOrganisationOrganisationClassificationId,
-            Guid? formalNameOrganisationLabelId,
-            Guid? registeredOfficeOrganisationLocationId,
-            List<Guid> organisationBankAccountIds,
-            DateTime? validFrom)
+            Guid? legalFormOrganisationOrganisationClassificationIdToCancel,
+            Guid? formalNameOrganisationLabelIdToCancel,
+            Guid? registeredOfficeOrganisationLocationIdToCancel,
+            List<Guid> organisationBankAccountIdsToCancel)
         {
             Id = organisationId;
 
@@ -40,11 +38,10 @@ namespace OrganisationRegistry.Organisation.Events
             NameFromKboCoupling = nameFromKboCoupling;
             ShortNameFromKboCoupling = shortNameFromKboCoupling;
             OvoNumber = ovoNumber;
-            LegalFormOrganisationOrganisationClassificationId = legalFormOrganisationOrganisationClassificationId;
-            FormalNameOrganisationLabelId = formalNameOrganisationLabelId;
-            RegisteredOfficeOrganisationLocationId = registeredOfficeOrganisationLocationId;
-            OrganisationBankAccountIds = organisationBankAccountIds;
-            ValidFrom = validFrom;
+            LegalFormOrganisationOrganisationClassificationIdToCancel = legalFormOrganisationOrganisationClassificationIdToCancel;
+            FormalNameOrganisationLabelIdToCancel = formalNameOrganisationLabelIdToCancel;
+            RegisteredOfficeOrganisationLocationIdToCancel = registeredOfficeOrganisationLocationIdToCancel;
+            OrganisationBankAccountIdsToCancel = organisationBankAccountIdsToCancel;
         }
     }
 }

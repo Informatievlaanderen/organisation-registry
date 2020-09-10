@@ -1474,8 +1474,7 @@ namespace OrganisationRegistry.Organisation
                 _kboLegalFormOrganisationClassification?.OrganisationOrganisationClassificationId,
                 _kboFormalNameLabel?.OrganisationLabelId,
                 _kboRegisteredOffice?.OrganisationLocationId,
-                _kboBankAccounts.Select(account => account.OrganisationBankAccountId).ToList(),
-                dateTimeProvider.Today));
+                _kboBankAccounts.Select(account => account.OrganisationBankAccountId).ToList()));
         }
 
         private void CheckIfCurrentParentChanged(

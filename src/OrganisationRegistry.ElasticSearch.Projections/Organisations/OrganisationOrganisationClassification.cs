@@ -99,12 +99,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            if (message.Body.LegalFormOrganisationOrganisationClassificationId == null)
+            if (message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel == null)
                 return;
 
             RemoveOrganisationOrganisationClassification(
                 message.Body.OrganisationId,
-                message.Body.LegalFormOrganisationOrganisationClassificationId.Value,
+                message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel.Value,
                 message.Number,
                 message.Timestamp);
         }

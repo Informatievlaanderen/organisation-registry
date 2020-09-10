@@ -61,10 +61,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            if (message.Body.FormalNameOrganisationLabelId == null)
+            if (message.Body.FormalNameOrganisationLabelIdToCancel == null)
                 return;
 
-            RemoveLabel(message.Body.OrganisationId, message.Body.FormalNameOrganisationLabelId.Value, message.Number, message.Timestamp);
+            RemoveLabel(message.Body.OrganisationId, message.Body.FormalNameOrganisationLabelIdToCancel.Value, message.Number, message.Timestamp);
         }
 
         private void AddLabel(Guid organisationId, Guid organisationLabelId, Guid labelTypeId, string labelTypeName, string labelValue, DateTime? validFrom, DateTime? validTo, int documentChangeId, DateTimeOffset timestamp)
