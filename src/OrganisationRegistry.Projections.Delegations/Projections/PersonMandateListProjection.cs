@@ -21,6 +21,8 @@
         IEventHandler<BodySeatUpdated>,
         IEventHandler<BodyOrganisationUpdated>,
         IEventHandler<OrganisationInfoUpdated>,
+        IEventHandler<OrganisationCoupledWithKbo>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<PersonAssignedToDelegation>,
         IEventHandler<PersonAssignedToDelegationUpdated>,
         IEventHandler<PersonAssignedToDelegationRemoved>
@@ -170,6 +172,42 @@
 
                 foreach (var delegationListItem in bodyOrganisationNames)
                     delegationListItem.BodyOrganisationName = message.Body.Name;
+
+                context.SaveChanges();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCoupledWithKbo> message)
+        {
+            using (var context = _contextFactory().Value)
+            {
+                var organisationNames = context.PersonMandateList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+                foreach (var delegationListItem in organisationNames)
+                    delegationListItem.OrganisationName = message.Body.Name;
+
+                var bodyOrganisationNames = context.PersonMandateList.Where(item => item.BodyOrganisationId == message.Body.OrganisationId);
+
+                foreach (var delegationListItem in bodyOrganisationNames)
+                    delegationListItem.BodyOrganisationName = message.Body.Name;
+
+                context.SaveChanges();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            using (var context = _contextFactory().Value)
+            {
+                var organisationNames = context.PersonMandateList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+                foreach (var delegationListItem in organisationNames)
+                    delegationListItem.OrganisationName = message.Body.NameBeforeKboCoupling;
+
+                var bodyOrganisationNames = context.PersonMandateList.Where(item => item.BodyOrganisationId == message.Body.OrganisationId);
+
+                foreach (var delegationListItem in bodyOrganisationNames)
+                    delegationListItem.BodyOrganisationName = message.Body.NameBeforeKboCoupling;
 
                 context.SaveChanges();
             }

@@ -122,6 +122,7 @@ namespace OrganisationRegistry.SqlServer.Body
         IEventHandler<FunctionUpdated>,
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<BodySeatUpdated>,
         IEventHandler<SeatTypeUpdated>,
         IEventHandler<BodySeatNumberAssigned>,
@@ -392,6 +393,11 @@ namespace OrganisationRegistry.SqlServer.Body
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             UpdateDelegatorName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            UpdateDelegatorName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
         }
 
         private static void UpdateDelegatorName(

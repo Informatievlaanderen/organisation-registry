@@ -27,6 +27,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
         IEventHandler<PersonAssignedToDelegationRemoved>,
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<BodyInfoChanged>,
         IEventHandler<BodySeatNumberAssigned>,
         IEventHandler<BodySeatUpdated>,
@@ -223,6 +224,11 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             UpdateOrganisationName(message.Body.OrganisationId, message.Body.Name);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            UpdateOrganisationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
         }
 
         private void UpdateOrganisationName(Guid organisationId, string organisationName)

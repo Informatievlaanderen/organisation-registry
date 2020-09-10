@@ -8,14 +8,13 @@ import { OrganisationDetailComponent } from './detail.component';
 import { ContactTypeResolver } from 'services/contacttypes';
 import { LocationTypeResolver } from 'services/locationtypes';
 
-import { ToggleNames } from 'services/toggles/toggle-names.model';
-
 import {
     OrganisationInfoComponent,
     OrganisationInfoOverviewComponent,
     OrganisationInfoEditComponent,
     OrganisationInfoAddChildOrganisationComponent,
-    OrganisationCoupleWithKboComponent
+    OrganisationCoupleWithKboComponent,
+    OrganisationCancelCouplingWithKboComponent
 } from 'organisation/info';
 
 import {
@@ -147,7 +146,16 @@ const routes: Routes = [
             component: OrganisationCoupleWithKboComponent,
             canActivate: [RoleGuard],
             data: {
-              title: 'Organisatie - Algemeen - Koppelen Kbo',
+              title: 'Organisatie - Algemeen - Koppelen KBO',
+              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+            }
+          },
+          {
+            path: 'cancelcouplingwithkbo',
+            component: OrganisationCancelCouplingWithKboComponent,
+            canActivate: [RoleGuard],
+            data: {
+              title: 'Organisatie - Algemeen - Koppelen KBO ongedaan maken',
               roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
             }
           },

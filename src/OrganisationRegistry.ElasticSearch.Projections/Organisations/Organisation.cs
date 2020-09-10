@@ -24,6 +24,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<OrganisationCreatedFromKbo>,
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationCoupledWithKbo>,
         IEventHandler<PurposeUpdated>
     {
@@ -106,6 +107,19 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             organisationDocument.Name = message.Body.Name;
             organisationDocument.ShortName = message.Body.ShortName;
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = message.Number;
+            organisationDocument.ChangeTime = message.Timestamp;
+
+            organisationDocument.Name = message.Body.NameBeforeKboCoupling;
+            organisationDocument.ShortName = message.Body.ShortNameBeforeKboCoupling;
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }

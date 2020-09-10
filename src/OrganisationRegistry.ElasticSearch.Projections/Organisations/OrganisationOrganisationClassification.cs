@@ -20,6 +20,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<OrganisationOrganisationClassificationAdded>,
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationOrganisationClassificationUpdated>,
         IEventHandler<OrganisationClassificationTypeUpdated>,
         IEventHandler<OrganisationClassificationUpdated>
@@ -92,6 +93,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             RemoveOrganisationOrganisationClassification(
                 message.Body.OrganisationId,
                 message.Body.OrganisationOrganisationClassificationId,
+                message.Number,
+                message.Timestamp);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            if (message.Body.LegalFormOrganisationOrganisationClassificationId == null)
+                return;
+
+            RemoveOrganisationOrganisationClassification(
+                message.Body.OrganisationId,
+                message.Body.LegalFormOrganisationOrganisationClassificationId.Value,
                 message.Number,
                 message.Timestamp);
         }

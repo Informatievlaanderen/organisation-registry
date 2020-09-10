@@ -85,6 +85,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationBankAccountAdded>,
         IEventHandler<KboOrganisationBankAccountAdded>,
         IEventHandler<KboOrganisationBankAccountRemoved>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationBankAccountUpdated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
@@ -149,6 +150,24 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 var organisationBankAccountListItem = await context.OrganisationBankAccountList.SingleAsync(b => b.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
 
                 context.OrganisationBankAccountList.Remove(organisationBankAccountListItem);
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            if (!message.Body.OrganisationBankAccountIds.Any())
+                return;
+
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                foreach (var bankAccountId in message.Body.OrganisationBankAccountIds)
+                {
+                    var organisationBankAccountListItem = await context.OrganisationBankAccountList.SingleAsync(b => b.OrganisationBankAccountId == bankAccountId);
+
+                    context.OrganisationBankAccountList.Remove(organisationBankAccountListItem);
+                }
 
                 await context.SaveChangesAsync();
             }

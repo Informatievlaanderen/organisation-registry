@@ -51,6 +51,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         IEventHandler<PersonUpdated>,
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<FunctionUpdated>,
         IEventHandler<SeatTypeUpdated>
     {
@@ -586,6 +587,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
         }
 
         private void UpdateMandateOrganisationName(Guid organisationId, string organisationName)

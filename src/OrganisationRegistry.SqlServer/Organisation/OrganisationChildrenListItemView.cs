@@ -67,6 +67,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         Projection<OrganisationChildListView>,
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationParentAdded>,
         IEventHandler<OrganisationParentUpdated>
     {
@@ -120,6 +121,23 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 foreach (var organisation in organisations)
                 {
                     organisation.Name = message.Body.Name;
+                }
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var organisations = context.OrganisationChildrenList.Where(x => x.Id == message.Body.OrganisationId);
+                if (!organisations.Any())
+                    return;
+
+                foreach (var organisation in organisations)
+                {
+                    organisation.Name = message.Body.NameBeforeKboCoupling;
                 }
 
                 await context.SaveChangesAsync();

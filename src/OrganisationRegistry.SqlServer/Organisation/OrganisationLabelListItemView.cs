@@ -64,6 +64,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<KboFormalNameLabelRemoved>,
         IEventHandler<OrganisationLabelUpdated>,
         IEventHandler<OrganisationCoupledWithKbo>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<LabelTypeUpdated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
@@ -146,7 +147,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             var organisationLabelListItem = new OrganisationLabelListItem
             {
-                OrganisationLabelId = message.Body.OrganisationId,
+                OrganisationLabelId = Guid.NewGuid(),
                 OrganisationId = message.Body.OrganisationId,
                 LabelTypeId = ArchivedNameLabelTypeId,
                 LabelValue = message.Body.Name,
@@ -160,6 +161,29 @@ namespace OrganisationRegistry.SqlServer.Organisation
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 await context.OrganisationLabelList.AddAsync(organisationLabelListItem);
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            if (message.Body.FormalNameOrganisationLabelId == null)
+                return;
+
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var formalNameLabel = await context.OrganisationLabelList
+                    .SingleAsync(item => item.OrganisationLabelId == message.Body.FormalNameOrganisationLabelId);
+
+                var archivedNameLabel = await context.OrganisationLabelList
+                    .SingleAsync(item =>
+                        item.OrganisationId == message.Body.OrganisationId &&
+                        item.LabelTypeId == ArchivedNameLabelTypeId &&
+                        item.ValidTo == null);
+
+                context.OrganisationLabelList.Remove(formalNameLabel);
+                context.OrganisationLabelList.Remove(archivedNameLabel);
+
                 await context.SaveChangesAsync();
             }
         }

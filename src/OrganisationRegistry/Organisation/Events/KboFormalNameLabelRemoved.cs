@@ -13,7 +13,15 @@ namespace OrganisationRegistry.Organisation.Events
         public DateTime? ValidTo { get; }
         public DateTime? PreviouslyValidTo { get; }
 
-        public KboFormalNameLabelRemoved(Guid organisationId, Guid organisationLabelId, Guid labelTypeId, string labelTypeName, string value, DateTime? validFrom, DateTime? validTo, DateTime? previouslyValidTo)
+        public KboFormalNameLabelRemoved(
+            Guid organisationId,
+            Guid organisationLabelId,
+            Guid labelTypeId,
+            string labelTypeName,
+            string value,
+            DateTime? validFrom,
+            DateTime? validTo,
+            DateTime? previouslyValidTo)
         {
             Id = organisationId;
             OrganisationLabelId = organisationLabelId;

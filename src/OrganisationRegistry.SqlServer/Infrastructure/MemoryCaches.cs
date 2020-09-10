@@ -243,6 +243,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         IEventHandler<OrganisationCreatedFromKbo>,
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<ParentAssignedToOrganisation>,
         IEventHandler<OrganisationParentUpdated>,
         IEventHandler<ParentClearedFromOrganisation>,
@@ -407,6 +408,15 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
             _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationShortNames)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ShortName);
+        }
+
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationNames)
+                .UpdateMemoryCache(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
+
+            _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationShortNames)
+                .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ShortNameBeforeKboCoupling);
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<ParentAssignedToOrganisation> message)
