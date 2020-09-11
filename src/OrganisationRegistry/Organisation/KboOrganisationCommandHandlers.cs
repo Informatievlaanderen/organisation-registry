@@ -236,19 +236,6 @@ namespace OrganisationRegistry.Organisation
             return location;
         }
 
-        private void AddKey(
-            Organisation organisation,
-            IMagdaOrganisationResponse kboOrganisation,
-            KboNumber kboNumber,
-            ValidTo validTo)
-        {
-            organisation.AddKey(
-                Guid.NewGuid(),
-                Session.Get<KeyType>(_organisationRegistryConfiguration.KboKeyTypeId),
-                kboNumber.ToDigitsOnly(),
-                new Period(new ValidFrom(kboOrganisation.ValidFrom), validTo));
-        }
-
         private void AddLabel(Organisation organisation, IMagdaOrganisationResponse kboOrganisation)
         {
             var labelType = Session.Get<LabelType>(_organisationRegistryConfiguration.KboV2FormalNameLabelTypeId);
