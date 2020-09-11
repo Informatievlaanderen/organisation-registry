@@ -104,8 +104,8 @@ export class OrganisationCoupleWithKboComponent implements OnInit {
           this.alertService.setAlert(
             new AlertBuilder()
               .success()
-              .withTitle('Persoon bijgewerkt!')
-              .withMessage('Het kbo nummer werd succesvol gekoppeld.')
+              .withTitle('Organisatie bijgewerkt!')
+              .withMessage('Het KBO nummer werd succesvol gekoppeld.')
               .build());
         },
         error => {

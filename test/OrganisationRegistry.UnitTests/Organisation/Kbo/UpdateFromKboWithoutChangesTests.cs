@@ -65,7 +65,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     "8881",
                     "Adinkerke",
                     "Belgie"),
-                new LabelTypeCreated(_organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId, "Kbo formele naam"),
+                new LabelTypeCreated(_organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId, "KBO formele naam"),
                 new OrganisationCreatedFromKbo(
                     _organisationId,
                     _kboNumber.ToDigitsOnly(),
@@ -91,7 +91,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     _organisationId,
                     Guid.NewGuid(),
                     _organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId,
-                    "Kbo formele naam",
+                    "KBO formele naam",
                     "NAME FROM KBO",
                     new ValidFrom(2008, 12, 22),
                     null),

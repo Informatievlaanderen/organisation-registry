@@ -68,7 +68,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     "8881",
                     "Adinkerke",
                     "Belgie"),
-                new LabelTypeCreated(_organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId, "Kbo formele naam"),
+                new LabelTypeCreated(_organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId, "KBO formele naam"),
                 new OrganisationCreatedFromKbo(
                     _organisationId,
                     _kboNumber.ToDigitsOnly(),
@@ -94,7 +94,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     _organisationId,
                     Guid.NewGuid(),
                     _organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId,
-                    "Kbo formele naam",
+                    "KBO formele naam",
                     "Formele naam organisatie",
                     new ValidFrom(2008, 12, 22),
                     null),
@@ -260,7 +260,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             kboFormalNameLabelRemoved.OrganisationId.Should().Be(_organisationId);
             kboFormalNameLabelRemoved.OrganisationLabelId.Should().NotBeEmpty();
             kboFormalNameLabelRemoved.LabelTypeId.Should().Be(_organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId);
-            kboFormalNameLabelRemoved.LabelTypeName.Should().Be("Kbo formele naam");
+            kboFormalNameLabelRemoved.LabelTypeName.Should().Be("KBO formele naam");
             kboFormalNameLabelRemoved.Value.Should().Be("Formele naam organisatie");
             kboFormalNameLabelRemoved.ValidFrom.Should().Be(new ValidFrom(new DateTime(2008, 12, 22)));
             kboFormalNameLabelRemoved.ValidTo.Should().Be(new ValidTo(new DateTime(2009, 1, 1)));
@@ -271,7 +271,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             kboFormalNameLabelAdded.OrganisationId.Should().Be(_organisationId);
             kboFormalNameLabelAdded.OrganisationLabelId.Should().NotBeEmpty().And.Should().NotBe(kboFormalNameLabelRemoved.OrganisationLabelId);
             kboFormalNameLabelAdded.LabelTypeId.Should().Be(_organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId);
-            kboFormalNameLabelAdded.LabelTypeName.Should().Be("Kbo formele naam");
+            kboFormalNameLabelAdded.LabelTypeName.Should().Be("KBO formele naam");
             kboFormalNameLabelAdded.Value.Should().Be("NAME FROM KBO");
             kboFormalNameLabelAdded.ValidFrom.Should().Be(new ValidFrom(new DateTime(2009, 1, 1)));
             kboFormalNameLabelAdded.ValidTo.Should().Be(new ValidTo());
