@@ -63,14 +63,10 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<KboFormalNameLabelAdded>,
         IEventHandler<KboFormalNameLabelRemoved>,
         IEventHandler<OrganisationLabelUpdated>,
-        IEventHandler<OrganisationCoupledWithKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<LabelTypeUpdated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-
-        public static readonly Guid ArchivedNameLabelTypeId = Guid.Parse("00000000-0000-4000-0000-AAA0BBB0CCC0");
-        public const string ArchivedNameLabelTypeName = "Gearchiveerde naam uit organisatieregister";
 
         public enum ProjectionTables
         {
@@ -143,28 +139,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCoupledWithKbo> message)
-        {
-            var organisationLabelListItem = new OrganisationLabelListItem
-            {
-                OrganisationLabelId = Guid.NewGuid(),
-                OrganisationId = message.Body.OrganisationId,
-                LabelTypeId = ArchivedNameLabelTypeId,
-                LabelValue = message.Body.Name,
-                LabelTypeName = ArchivedNameLabelTypeName,
-                ValidFrom = message.Body.ValidFrom,
-                ValidTo = null
-            };
-
-            organisationLabelListItem.Source = Sources.Kbo;
-
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.OrganisationLabelList.AddAsync(organisationLabelListItem);
-                await context.SaveChangesAsync();
-            }
-        }
-
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
             if (message.Body.FormalNameOrganisationLabelIdToCancel == null)
@@ -175,14 +149,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 var formalNameLabel = await context.OrganisationLabelList
                     .SingleAsync(item => item.OrganisationLabelId == message.Body.FormalNameOrganisationLabelIdToCancel);
 
-                var archivedNameLabel = await context.OrganisationLabelList
-                    .SingleAsync(item =>
-                        item.OrganisationId == message.Body.OrganisationId &&
-                        item.LabelTypeId == ArchivedNameLabelTypeId &&
-                        item.ValidTo == null);
-
                 context.OrganisationLabelList.Remove(formalNameLabel);
-                context.OrganisationLabelList.Remove(archivedNameLabel);
 
                 await context.SaveChangesAsync();
             }
