@@ -103,7 +103,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 
                 new LabelTypeCreated(
                     _organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId,
-                    "Kbo formele naam")
+                    "KBO formele naam")
             };
         }
 
@@ -284,7 +284,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             organisationLabelAdded.OrganisationId.Should().Be((Guid)_organisationId);
             organisationLabelAdded.OrganisationLabelId.Should().NotBeEmpty();
             organisationLabelAdded.LabelTypeId.Should().Be(_organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId);
-            organisationLabelAdded.LabelTypeName.Should().Be("Kbo formele naam");
+            organisationLabelAdded.LabelTypeName.Should().Be("KBO formele naam");
             organisationLabelAdded.Value.Should().Be("NAME FROM KBO");
             organisationLabelAdded.ValidFrom.Should().Be(new ValidFrom(_kboOrganisationValidFromDate));
             organisationLabelAdded.ValidTo.Should().Be(new ValidTo());

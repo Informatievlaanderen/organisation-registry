@@ -107,7 +107,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 
                 new LabelTypeCreated(
                     _organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId,
-                    "Kbo formele naam"),
+                    "KBO formele naam"),
 
                 new OrganisationCoupledWithKbo(_organisationId, "BE0123456789", "organisation X", "OVO001234", _dateTimeProviderStub.Today)
             };

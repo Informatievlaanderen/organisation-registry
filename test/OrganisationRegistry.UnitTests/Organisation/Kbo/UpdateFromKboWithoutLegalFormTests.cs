@@ -57,12 +57,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 new OrganisationClassificationTypeCreated(_legalFormOrganisationClassificationTypeId, "ClassificatieType"),
                 new OrganisationClassificationCreated(_organisationClassificationId, "Classificatie", 1, "Some Legal Code", true, _legalFormOrganisationClassificationTypeId, "ClassificatieType"),
                 new OrganisationClassificationCreated(_anotherOrganisationClassificationId, "Classificatie", 1, "Another Legal Code", true, _legalFormOrganisationClassificationTypeId, "ClassificatieType"),
-                new LabelTypeCreated(_organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId, "Kbo formele naam"),
+                new LabelTypeCreated(_organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId, "KBO formele naam"),
                 new LocationTypeCreated(_organisationRegistryConfigurationStub.KboV2RegisteredOfficeLocationTypeId, "Registered KBO Office"),
                 new OrganisationCreatedFromKbo(
                     _organisationId,
                     _kboNumber.ToDigitsOnly(),
-                    "Kbo formele naam",
+                    "KBO formele naam",
                     "OVO001234",
                     "Korte naam",
                     "",
@@ -74,8 +74,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     _organisationId,
                     Guid.NewGuid(),
                     _organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId,
-                    "Kbo Formal Name Type",
-                    "Kbo formele naam",
+                    "KBO Formal Name Type",
+                    "KBO formele naam",
                     new ValidFrom(2008, 12, 22),
                     null),
                 new KboLegalFormOrganisationOrganisationClassificationAdded(
@@ -113,7 +113,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 kboOrganisationRetriever: new KboOrganisationRetrieverStub(
                     new MockMagdaOrganisationResponse
                     {
-                        FormalName = new NameStub("Kbo formele naam", new DateTime(2009, 1, 1)),
+                        FormalName = new NameStub("KBO formele naam", new DateTime(2009, 1, 1)),
                         ShortName = new NameStub("Korte naam", new DateTime(2010, 1, 1)),
                         ValidFrom = new DateTime(2000, 12, 31),
                         LegalForm = null,
