@@ -1,3 +1,14 @@
+# [1.54.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.53.0...v1.54.0) (2020-09-15)
+
+
+### Features
+
+* allow the cancelling of a KBO coupling ([386e84f](https://github.com/informatievlaanderen/organisation-registry/commit/386e84f1ec575997b1efad6c4085047e0b374687))
+* do not show archived name in LabelListItemView ([db2bb67](https://github.com/informatievlaanderen/organisation-registry/commit/db2bb6707fc0b8382daf6601ac623a9fb6f4eb56))
+* improved info messages ([40f18de](https://github.com/informatievlaanderen/organisation-registry/commit/40f18de0fab39c4c60cf4d129849c47589ee9502))
+* rename properties to clarify ([dd50e01](https://github.com/informatievlaanderen/organisation-registry/commit/dd50e01408bb93ecbb3f1adad471aee17bdcb92d))
+* use consistent capitalization on 'KBO' ([b7b05e7](https://github.com/informatievlaanderen/organisation-registry/commit/b7b05e7c2681a48798e3db4b15214f792324074e))
+
 # [1.53.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.52.2...v1.53.0) (2020-09-09)
 
 
