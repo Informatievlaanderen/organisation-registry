@@ -22,7 +22,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>
-
     {
         private readonly Elastic _elastic;
         private readonly IMemoryCaches _memoryCaches;

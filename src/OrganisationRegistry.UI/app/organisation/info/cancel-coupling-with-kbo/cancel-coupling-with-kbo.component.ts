@@ -65,7 +65,7 @@ export class OrganisationCancelCouplingWithKboComponent implements OnInit{
             new AlertBuilder()
               .success()
               .withTitle('Organisatie bijgewerkt!')
-              .withMessage('De koppeling met de KBO werd succesvol geannuleerd.')
+              .withMessage('De koppeling met de KBO werd succesvol ongedaan gemaakt.')
               .build());
         },
         error => {

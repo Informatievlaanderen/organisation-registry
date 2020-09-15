@@ -2161,7 +2161,6 @@ namespace OrganisationRegistry.Organisation
             KboNumber = new KboNumber(@event.KboNumber);
             _nameBeforeKboCoupling = Name;
             _shortNameBeforeKboCoupling = _shortName;
-
         }
 
         private void Apply(OrganisationCouplingWithKboCancelled @event)
