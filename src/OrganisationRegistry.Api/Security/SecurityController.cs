@@ -54,6 +54,7 @@ namespace OrganisationRegistry.Api.Security
         public async Task<IActionResult> ExchangeCode(
             [FromServices] IHttpClientFactory httpClientFactory,
             string code,
+            string verifier,
             CancellationToken cancellationToken)
         {
             using var httpClient = httpClientFactory.CreateClient();
@@ -67,6 +68,7 @@ namespace OrganisationRegistry.Api.Security
                 RedirectUri = _openIdConnectConfiguration.AuthorizationRedirectUri,
                 Address = tokenEndpointAddress,
                 Code = code,
+                CodeVerifier = verifier
             }, cancellationToken);
 
             if (tokenResponse.IsError)

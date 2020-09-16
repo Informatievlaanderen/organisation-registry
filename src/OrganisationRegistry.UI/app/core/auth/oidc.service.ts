@@ -9,9 +9,7 @@ import { HeadersBuilder } from './../http';
 
 import { User } from './user.model';
 
-import * as jwt_decode from 'jwt-decode';
 import { Role } from './role.model';
-import { Router } from '@angular/router';
 import {OidcClient} from "oidc-client";
 
 interface SecurityInfo {
@@ -70,6 +68,7 @@ export class OidcService {
           scope: 'openid profile vo iv_wegwijs',
           filterProtocolClaims: true,
           loadUserInfo: true,
+          query_status_response_type: 'code'
         };
         this.client = new OidcClient(settings);
       });
@@ -87,7 +86,7 @@ export class OidcService {
   }
 
   exchangeCode(code: string, configurationService: ConfigurationService) {
-    const url = `${this.securityUrl}/exchange?code=${code}`;
+    const url = `${this.securityUrl}/exchange?code=${code}&verifier=${localStorage.getItem('verifier')}`;
 
     let headers = new HeadersBuilder()
       .json()
@@ -101,6 +100,29 @@ export class OidcService {
         localStorage.setItem('token', token);
         window.location.href = configurationService.uiUrl;
       })
+  }
+
+  public signIn() {
+    this.client
+      .createSigninRequest()
+      .then((req) => {
+        localStorage.setItem('verifier', req.state.code_verifier);
+        window.location.href = req.url;
+      })
+      .catch((err) => {
+        console.error('Could not create signin request!', err, err.request);
+      });
+  }
+
+  public signOut() {
+    localStorage.removeItem('token');
+    this.client
+      .createSignoutRequest()
+      .then((req) => {
+        window.location.href = req.url;
+      }).catch((err) => {
+      console.error('Could not create signout request!', err, err.request);
+    });
   }
 
   public get isLoggedIn(): Observable<boolean> {
@@ -223,36 +245,6 @@ export class OidcService {
 
   public resetSecurityCache() {
     this.request$.next(null);
-  }
-
-  public signIn() {
-    this.client
-      .createSigninRequest({
-        state: {
-          bar: 15,
-        },
-      })
-      .then((req) => {
-        window.location.href = req.url;
-      })
-      .catch((err) => {
-        console.error('Could not create signin request!', err, err.request);
-      });
-  }
-
-  public signOut() {
-    localStorage.removeItem('token');
-    this.client
-      .createSignoutRequest({
-        state: {
-          bar: 15,
-        },
-      })
-      .then((req) => {
-        window.location.href = req.url;
-      }).catch((err) => {
-      console.error('Could not create signout request!', err, err.request);
-    });
   }
 
   private getOrUpdateValue(): Observable<SecurityInfo> {
