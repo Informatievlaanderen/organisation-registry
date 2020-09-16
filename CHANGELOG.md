@@ -1,3 +1,11 @@
+# [1.55.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.54.0...v1.55.0) (2020-09-16)
+
+
+### Features
+
+* implement pkce flow ([f07a1e5](https://github.com/informatievlaanderen/organisation-registry/commit/f07a1e545010473e85b410778d3692ed8f756c48))
+* remove verifier on signout ([c77446b](https://github.com/informatievlaanderen/organisation-registry/commit/c77446bc6c28e80b51f48c74cc14a09db367206c))
+
 # [1.54.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.53.0...v1.54.0) (2020-09-15)
 
 
