@@ -116,6 +116,7 @@ export class OidcService {
 
   public signOut() {
     localStorage.removeItem('token');
+    localStorage.removeItem('verifier');
     this.client
       .createSignoutRequest()
       .then((req) => {
