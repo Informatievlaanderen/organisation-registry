@@ -1,13 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Params, Routes } from '@angular/router';
+import { ActivatedRoute, Params} from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 
-import { AlertBuilder, AlertService } from 'core/alert';
-import { BaseAlertMessages } from 'core/alertmessages';
+import { AlertService } from 'core/alert';
 
 import { TogglesService } from 'services/toggles';
-import { AuthService, OidcService } from 'core/auth';
+import { OidcService } from 'core/auth';
 
 import { OrganisationInfoService } from 'services/organisationinfo';
 import { Organisation } from 'services/organisations';
@@ -21,8 +20,6 @@ export class OrganisationDetailComponent implements OnInit, OnDestroy {
   public enableBankAccounts: Observable<boolean>;
   public enableOrganisationRelations: Observable<boolean>;
   public enableOrganisationOpeningHours: Observable<boolean>;
-
-  private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Organisatie');
 
   constructor(
     private route: ActivatedRoute,

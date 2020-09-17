@@ -10,6 +10,7 @@
     public enableVademecumParticipationReporting: boolean = false,
     public enableOrganisationRelations: boolean = false,
     public enableFormalFrameworkBodiesReporting: boolean = false,
-    public enableOrganisationOpeningHours: boolean = false
+    public enableOrganisationOpeningHours: boolean = false,
+    public enableOrganisationCancelKboCoupling: boolean = false
   ) { }
 }

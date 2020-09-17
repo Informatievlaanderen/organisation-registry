@@ -18,7 +18,9 @@ namespace OrganisationRegistry.Api.Organisation
     using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
     using OrganisationRegistry.Infrastructure.Commands;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
 
@@ -160,8 +162,12 @@ namespace OrganisationRegistry.Api.Organisation
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CancelCouplingWithKbo(
             [FromServices] ISecurityService securityService,
+            [FromServices] IOptions<TogglesConfiguration> toggles,
             [FromRoute] Guid id)
         {
+            if (!toggles.Value.EnableOrganisationCancelKboCoupling)
+                return StatusCode(StatusCodes.Status405MethodNotAllowed);
+
             if (!securityService.CanEditOrganisation(User, id))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 

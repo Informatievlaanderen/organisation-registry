@@ -7,7 +7,6 @@ import * as moment from 'moment/moment';
 import { AlertService, AlertBuilder } from 'core/alert';
 
 import {KboOrganisation, OrganisationService} from 'services/organisations';
-import {CreateOrganisationFormValues} from "../couple-with-kbo/create-organisation.model";
 
 @Component({
   templateUrl: 'cancel-coupling-with-kbo.template.html',
