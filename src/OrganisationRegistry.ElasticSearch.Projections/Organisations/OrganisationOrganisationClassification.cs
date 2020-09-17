@@ -21,6 +21,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
+        IEventHandler<OrganisationCouplingWithKboTerminated>,
         IEventHandler<OrganisationOrganisationClassificationUpdated>,
         IEventHandler<OrganisationClassificationTypeUpdated>,
         IEventHandler<OrganisationClassificationUpdated>
@@ -107,6 +108,28 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel.Value,
                 message.Number,
                 message.Timestamp);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        {
+            if (message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate == null)
+                return;
+
+            var organisationDocument = _elastic.TryGet(() =>
+                _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = message.Number;
+            organisationDocument.ChangeTime = message.Timestamp;
+
+            if (organisationDocument.OrganisationClassifications == null)
+                organisationDocument.OrganisationClassifications = new List<OrganisationDocument.OrganisationOrganisationClassification>();
+
+            var legalFormOrganisationClassification = organisationDocument.OrganisationClassifications.Single(label =>
+                label.OrganisationOrganisationClassificationId == message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate);
+
+            legalFormOrganisationClassification.Validity.End = message.Body.DateOfTermination;
+
+            _elastic.Try(async () => (await _elastic.WriteClient.IndexDocumentAsync(organisationDocument)).ThrowOnFailure());
         }
 
         private void AddOrganisationOrganisationClassification(Guid organisationId, Guid organisationOrganisationClassificationId, Guid organisationClassificationTypeId, string organisationClassificationTypeName, Guid organisationClassificationId, string organisationClassificationName, DateTime? validFrom, DateTime? validTo, int messageNumber, DateTimeOffset messageTimestamp)

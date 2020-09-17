@@ -64,6 +64,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<KboFormalNameLabelRemoved>,
         IEventHandler<OrganisationLabelUpdated>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
+        IEventHandler<OrganisationCouplingWithKboTerminated>,
         IEventHandler<LabelTypeUpdated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
@@ -150,6 +151,22 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     .SingleAsync(item => item.OrganisationLabelId == message.Body.FormalNameOrganisationLabelIdToCancel);
 
                 context.OrganisationLabelList.Remove(formalNameLabel);
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        {
+            if (message.Body.FormalNameOrganisationLabelIdToTerminate == null)
+                return;
+
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var formalNameLabel = await context.OrganisationLabelList
+                    .SingleAsync(item => item.OrganisationLabelId == message.Body.FormalNameOrganisationLabelIdToTerminate);
+
+                formalNameLabel.ValidTo = message.Body.DateOfTermination;
 
                 await context.SaveChangesAsync();
             }

@@ -8,6 +8,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using Microsoft.Extensions.Logging;
     using System.Collections.Generic;
     using System.Data.Common;
+    using System.Linq;
     using System.Threading.Tasks;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
@@ -18,6 +19,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<KboOrganisationBankAccountAdded>,
         IEventHandler<KboOrganisationBankAccountRemoved>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
+        IEventHandler<OrganisationCouplingWithKboTerminated>,
         IEventHandler<OrganisationBankAccountUpdated>
     {
         private readonly Elastic _elastic;
@@ -47,10 +49,27 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            foreach (var bankAccountId in message.Body.OrganisationBankAccountIdsToCancel)
+            RemoveBankAccounts(message.Body.OrganisationId, message.Body.OrganisationBankAccountIdsToCancel, message.Number, message.Timestamp);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        {
+            var organisationDocument = _elastic.TryGet(() =>
+                _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+
+            if (organisationDocument.BankAccounts == null)
+                organisationDocument.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
+
+            organisationDocument.ChangeId = message.Number;
+            organisationDocument.ChangeTime = message.Timestamp;
+
+            foreach (var bankAccountId in message.Body.OrganisationBankAccountIdsToTerminate)
             {
-                RemoveBankAccount(message.Body.OrganisationId, bankAccountId, message.Number, message.Timestamp);
+                var organisationBankAccount = organisationDocument.BankAccounts.Single(x => x.OrganisationBankAccountId == bankAccountId);
+                organisationBankAccount.Validity.End = message.Body.DateOfTermination;
             }
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }
 
         private void AddBankAccount(Guid organisationId, Guid organisationBankAccountId, string bankAccountNumber, bool isIban, string bic, bool isBic, DateTime? validFrom, DateTime? validTo, int changeId, DateTimeOffset timestamp)
@@ -95,6 +114,25 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }
+
+        private void RemoveBankAccounts(Guid organisationId, List<Guid> organisationBankAccountIdsToCancel, in int changeId, in DateTimeOffset timestamp)
+        {
+            var organisationDocument = _elastic.TryGet(() =>
+                _elastic.WriteClient.Get<OrganisationDocument>(organisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = changeId;
+            organisationDocument.ChangeTime = timestamp;
+
+            if (organisationDocument.BankAccounts == null)
+                organisationDocument.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
+
+            foreach (var organisationBankAccountId in organisationBankAccountIdsToCancel)
+            {
+                organisationDocument.BankAccounts.RemoveExistingListItems(x =>
+                    x.OrganisationBankAccountId == organisationBankAccountId);
+            }
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());        }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountUpdated> message)
         {

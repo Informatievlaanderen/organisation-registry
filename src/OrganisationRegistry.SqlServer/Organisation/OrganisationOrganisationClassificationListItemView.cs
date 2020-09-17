@@ -69,6 +69,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
+        IEventHandler<OrganisationCouplingWithKboTerminated>,
         IEventHandler<OrganisationOrganisationClassificationUpdated>,
         IEventHandler<OrganisationClassificationTypeUpdated>,
         IEventHandler<OrganisationClassificationUpdated>
@@ -193,14 +194,26 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var x = context.OrganisationOrganisationClassificationList.Where(b =>
-                    b.OrganisationId == message.Body.OrganisationId)
-                    .ToList();
-
                 var organisationLocationListItem = context.OrganisationOrganisationClassificationList.Single(b =>
                     b.OrganisationOrganisationClassificationId == message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel.Value);
 
                 context.OrganisationOrganisationClassificationList.Remove(organisationLocationListItem);
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        {
+            if (message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate == null)
+                return;
+
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var legalFormOrganisationClassification = context.OrganisationOrganisationClassificationList.Single(b =>
+                    b.OrganisationOrganisationClassificationId == message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate);
+
+                legalFormOrganisationClassification.ValidTo = message.Body.DateOfTermination;
 
                 await context.SaveChangesAsync();
             }

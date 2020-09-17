@@ -165,6 +165,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
+        IEventHandler<OrganisationCouplingWithKboTerminated>,
         IEventHandler<OrganisationOrganisationClassificationUpdated>,
         IEventHandler<OrganisationClassificationUpdated>
     {
@@ -709,6 +710,29 @@ namespace OrganisationRegistry.SqlServer.Organisation
                             .ToList();
 
                         context.OrganisationClassificationValidities.RemoveRange(organisationClassificationValidities);
+                    });
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                context.OrganisationList
+                    .Include(item => item.OrganisationClassificationValidities)
+                    .Where(item => item.OrganisationId == message.Body.OrganisationId)
+                    .ToList()
+                    .ForEach(item =>
+                    {
+                        var organisationClassificationValidities = item.OrganisationClassificationValidities
+                            .Where(validity =>
+                                validity.OrganisationOrganisationClassificationId ==
+                                message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate)
+                            .ToList();
+
+                        organisationClassificationValidities.ForEach(validity => validity.ValidTo = message.Body.DateOfTermination);
                     });
 
                 await context.SaveChangesAsync();

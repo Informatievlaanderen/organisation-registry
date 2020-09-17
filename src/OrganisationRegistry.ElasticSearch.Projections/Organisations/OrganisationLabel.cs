@@ -20,6 +20,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<KboFormalNameLabelAdded>,
         IEventHandler<KboFormalNameLabelRemoved>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
+        IEventHandler<OrganisationCouplingWithKboTerminated>,
         IEventHandler<OrganisationLabelUpdated>,
         IEventHandler<LabelTypeUpdated>
     {
@@ -65,6 +66,28 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 return;
 
             RemoveLabel(message.Body.OrganisationId, message.Body.FormalNameOrganisationLabelIdToCancel.Value, message.Number, message.Timestamp);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        {
+            if (message.Body.FormalNameOrganisationLabelIdToTerminate == null)
+                return;
+
+            var organisationDocument = _elastic.TryGet(() =>
+                _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = message.Number;
+            organisationDocument.ChangeTime = message.Timestamp;
+
+            if (organisationDocument.Labels == null)
+                organisationDocument.Labels = new List<OrganisationDocument.OrganisationLabel>();
+
+            var formalNameLabel = organisationDocument.Labels.Single(label =>
+                label.OrganisationLabelId == message.Body.FormalNameOrganisationLabelIdToTerminate);
+
+            formalNameLabel.Validity.End = message.Body.DateOfTermination;
+
+            _elastic.Try(async () => (await _elastic.WriteClient.IndexDocumentAsync(organisationDocument)).ThrowOnFailure());
         }
 
         private void AddLabel(Guid organisationId, Guid organisationLabelId, Guid labelTypeId, string labelTypeName, string labelValue, DateTime? validFrom, DateTime? validTo, int documentChangeId, DateTimeOffset timestamp)

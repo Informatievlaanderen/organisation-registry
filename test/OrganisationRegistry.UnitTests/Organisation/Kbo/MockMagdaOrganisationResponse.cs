@@ -12,6 +12,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         public List<IMagdaBankAccount> BankAccounts { get; }
         public IMagdaLegalForm LegalForm { get; set; }
         public IMagdaAddress Address { get; set; }
+        public IMagdaStopzetting Stopzetting { get; set; }
 
 
         public MockMagdaOrganisationResponse()

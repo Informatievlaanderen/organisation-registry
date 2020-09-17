@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Api.Kbo.Responses
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using global::Magda.GeefOnderneming;
     using OrganisationRegistry.Organisation;
@@ -26,6 +27,8 @@ namespace OrganisationRegistry.Api.Kbo.Responses
         public IMagdaLegalForm LegalForm { get; }
 
         public IMagdaAddress Address { get; }
+
+        public IMagdaStopzetting Stopzetting { get; }
 
         public MagdaOrganisationResponse(Onderneming2_0Type onderneming, IDateTimeProvider dateTimeProvider)
         {
@@ -58,6 +61,9 @@ namespace OrganisationRegistry.Api.Kbo.Responses
 
             if (address != null)
                 Address = new MagdaAddress(address);
+
+            if (onderneming?.Stopzetting != null)
+                Stopzetting = new MagdaStopzetting(onderneming.Stopzetting);
         }
 
         private static bool OverlapsWithToday(RechtsvormExtentieType type, DateTime today)
@@ -193,6 +199,16 @@ namespace OrganisationRegistry.Api.Kbo.Responses
         private static DateTime? ParseKboDate(string d)
         {
             return string.IsNullOrEmpty(d) ? (DateTime?)null : DateTime.ParseExact(d, KBODateFormat, null);
+        }
+    }
+
+    public class MagdaStopzetting : IMagdaStopzetting
+    {
+        public DateTime Datum { get; }
+
+        public MagdaStopzetting(StopzettingExtentieType stopzetting)
+        {
+            Datum = DateTime.ParseExact(stopzetting.Datum, "yyyy-MM-dd", CultureInfo.InvariantCulture);
         }
     }
 }
