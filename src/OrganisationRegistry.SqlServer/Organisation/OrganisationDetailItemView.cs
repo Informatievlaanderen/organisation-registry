@@ -108,6 +108,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationCreatedFromKbo>,
         IEventHandler<OrganisationCoupledWithKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
+        IEventHandler<OrganisationCouplingWithKboTerminated>,
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationParentUpdated>,
@@ -211,6 +212,18 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
                 organisationListItem.Name = message.Body.NameBeforeKboCoupling;
                 organisationListItem.ShortName = message.Body.ShortNameBeforeKboCoupling;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
+
+                organisationListItem.KboNumber = null;
 
                 await context.SaveChangesAsync();
             }

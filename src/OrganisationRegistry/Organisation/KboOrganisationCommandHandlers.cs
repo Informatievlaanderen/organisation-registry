@@ -21,8 +21,9 @@ namespace OrganisationRegistry.Organisation
         BaseCommandHandler<KboOrganisationCommandHandlers>,
         ICommandHandler<CreateKboOrganisation>,
         ICommandHandler<CoupleOrganisationToKbo>,
+        ICommandHandler<CancelCouplingWithKbo>,
         ICommandHandler<UpdateFromKbo>,
-        ICommandHandler<CancelCouplingWithKbo>
+        ICommandHandler<TerminateKboCoupling>
     {
         private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
         private readonly IOvoNumberGenerator _ovoNumberGenerator;
@@ -165,7 +166,7 @@ namespace OrganisationRegistry.Organisation
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             var kboOrganisationResult =
-                _kboOrganisationRetriever.RetrieveOrganisation(message.User, organisation.KboNumber).GetAwaiter().GetResult();
+                await _kboOrganisationRetriever.RetrieveOrganisation(message.User, organisation.KboNumber);
 
             if (kboOrganisationResult.HasErrors)
                 throw new KboOrganisationNotFoundException(kboOrganisationResult.ErrorMessages);
@@ -203,7 +204,25 @@ namespace OrganisationRegistry.Organisation
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
-            organisation.CancelCouplingWithKbo(_dateTimeProvider);
+            organisation.CancelCouplingWithKbo();
+
+            await Session.Commit();
+        }
+
+        public async Task Handle(TerminateKboCoupling message)
+        {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+
+            var kboOrganisationResult =
+                await _kboOrganisationRetriever.RetrieveOrganisation(message.User, organisation.KboNumber);
+
+            if (kboOrganisationResult.HasErrors)
+                throw new KboOrganisationNotFoundException(kboOrganisationResult.ErrorMessages);
+
+            if (kboOrganisationResult.Value.Stopzetting == null)
+                throw new KboOrganisationNotTerminatedException();
+
+            organisation.TerminateKboCoupling(kboOrganisationResult.Value.Stopzetting.Datum);
 
             await Session.Commit();
         }

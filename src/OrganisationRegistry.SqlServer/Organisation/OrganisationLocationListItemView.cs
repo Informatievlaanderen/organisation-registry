@@ -95,6 +95,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<KboRegisteredOfficeOrganisationLocationAdded>,
         IEventHandler<KboRegisteredOfficeOrganisationLocationRemoved>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
+        IEventHandler<OrganisationCouplingWithKboTerminated>,
         IEventHandler<OrganisationLocationUpdated>,
         IEventHandler<LocationTypeUpdated>
     {
@@ -212,6 +213,22 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     b.OrganisationLocationId == message.Body.RegisteredOfficeOrganisationLocationIdToCancel);
 
                 context.OrganisationLocationList.Remove(organisationLocationListItem);
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        {
+            if (message.Body.RegisteredOfficeOrganisationLocationIdToTerminate == null)
+                return;
+
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var registeredOfficeLocation = context.OrganisationLocationList.Single(b =>
+                    b.OrganisationLocationId == message.Body.RegisteredOfficeOrganisationLocationIdToTerminate);
+
+                registeredOfficeLocation.ValidTo = message.Body.DateOfTermination;
 
                 await context.SaveChangesAsync();
             }

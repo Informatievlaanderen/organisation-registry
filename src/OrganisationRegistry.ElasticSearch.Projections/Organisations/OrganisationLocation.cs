@@ -20,6 +20,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<KboRegisteredOfficeOrganisationLocationAdded>,
         IEventHandler<KboRegisteredOfficeOrganisationLocationRemoved>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
+        IEventHandler<OrganisationCouplingWithKboTerminated>,
         IEventHandler<OrganisationLocationUpdated>,
         IEventHandler<LocationUpdated>
     {
@@ -67,6 +68,27 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             RemoveOrganisationLocation(message.Body.OrganisationId, message.Number, message.Timestamp, message.Body.RegisteredOfficeOrganisationLocationIdToCancel.Value);
         }
 
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        {
+            if (message.Body.RegisteredOfficeOrganisationLocationIdToTerminate == null)
+                return;
+
+            var organisationDocument = _elastic.TryGet(() =>
+                _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = message.Number;
+            organisationDocument.ChangeTime = message.Timestamp;
+
+            if (organisationDocument.Locations == null)
+                organisationDocument.Locations = new List<OrganisationDocument.OrganisationLocation>();
+
+            var registeredOfficeLocation = organisationDocument.Locations.Single(label =>
+                label.OrganisationLocationId == message.Body.RegisteredOfficeOrganisationLocationIdToTerminate);
+
+            registeredOfficeLocation.Validity.End = message.Body.DateOfTermination;
+
+            _elastic.Try(async () => (await _elastic.WriteClient.IndexDocumentAsync(organisationDocument)).ThrowOnFailure());
+        }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationUpdated> message)
         {

@@ -28,6 +28,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
+        IEventHandler<OrganisationCouplingWithKboTerminated>,
 
         IEventHandler<OrganisationBecameActive>,
         IEventHandler<OrganisationBecameInactive>,
@@ -135,6 +136,35 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
             UpdateOrganisationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
+
+            if (message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel == null)
+                return;
+
+            using (var context = ContextFactory.Create())
+            {
+                var item = context.BodySeatGenderRatioOrganisationClassificationList.Single(x =>
+                    x.OrganisationOrganisationClassificationId == message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel);
+
+                context.BodySeatGenderRatioOrganisationClassificationList.Remove(item);
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        {
+            if (message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate == null)
+                return;
+
+            using (var context = ContextFactory.Create())
+            {
+                var legalFormOrganisationClassification = context.BodySeatGenderRatioOrganisationClassificationList.Single(x =>
+                    x.OrganisationOrganisationClassificationId == message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate);
+
+                legalFormOrganisationClassification.ClassificationValidTo = message.Body.DateOfTermination;
+
+                await context.SaveChangesAsync();
+            }
         }
 
         /// <summary>
@@ -918,7 +948,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
                 context.BodySeatGenderRatioOrganisationClassificationList.Remove(item);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
         }
 

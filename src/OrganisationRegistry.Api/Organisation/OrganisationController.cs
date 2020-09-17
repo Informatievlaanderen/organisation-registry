@@ -178,5 +178,25 @@ namespace OrganisationRegistry.Api.Organisation
 
             return Ok();
         }
+
+        /// <summary>Couple an organisation to a kbo number.</summary>
+        /// <response code="200">If the organisation was coupled.</response>
+        [HttpPut("{id}/kboNumber/terminate")]
+        [OrganisationRegistryAuthorize]
+        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> TerminateKboCoupling(
+            [FromServices] ISecurityService securityService,
+            [FromRoute] Guid id)
+        {
+            if (!securityService.CanEditOrganisation(User, id))
+                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
+
+            await CommandSender.Send(
+                new TerminateKboCoupling(
+                    new OrganisationId(id),
+                    User));
+
+            return Ok();
+        }
     }
 }

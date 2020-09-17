@@ -1458,14 +1458,14 @@ namespace OrganisationRegistry.Organisation
                 dateTimeProvider.Today));
         }
 
-        public void CancelCouplingWithKbo(IDateTimeProvider dateTimeProvider)
+        public void CancelCouplingWithKbo()
         {
             if (!HasKboNumber)
                 throw new OrganisationNotCoupledWithKbo();
 
             ApplyChange(new OrganisationCouplingWithKboCancelled(
                 Id,
-                KboNumber.ToDigitsOnly(),
+                KboNumber!.ToDigitsOnly(),
                 _nameBeforeKboCoupling,
                 _shortNameBeforeKboCoupling,
                 Name,
@@ -1475,6 +1475,26 @@ namespace OrganisationRegistry.Organisation
                 _kboFormalNameLabel?.OrganisationLabelId,
                 _kboRegisteredOffice?.OrganisationLocationId,
                 _kboBankAccounts.Select(account => account.OrganisationBankAccountId).ToList()));
+        }
+
+        public void TerminateKboCoupling(DateTime dateOfTermination)
+        {
+            if (!HasKboNumber)
+                throw new OrganisationNotCoupledWithKbo();
+
+            ApplyChange(
+                new OrganisationCouplingWithKboTerminated(
+                    Id,
+                    KboNumber!.ToDigitsOnly(),
+                    Name,
+                    OvoNumber,
+                    dateOfTermination,
+                    _kboLegalFormOrganisationClassification?.OrganisationOrganisationClassificationId,
+                    _kboFormalNameLabel?.OrganisationLabelId,
+                    _kboRegisteredOffice?.Validity.End.IsInfinite ?? false ? _kboRegisteredOffice.OrganisationLocationId : (Guid?) null,
+                    _kboBankAccounts
+                        .Where(account => account.Validity.End.IsInfinite)
+                        .Select(account => account.OrganisationBankAccountId).ToList()));
         }
 
         private void CheckIfCurrentParentChanged(
@@ -2168,6 +2188,16 @@ namespace OrganisationRegistry.Organisation
             KboNumber = null;
             _shortName = _shortNameBeforeKboCoupling;
             Name = _nameBeforeKboCoupling;
+        }
+
+        private void Apply(OrganisationCouplingWithKboTerminated @event)
+        {
+            KboNumber = null;
+
+            _kboBankAccounts.Clear();
+            _kboRegisteredOffice = null;
+            _kboFormalNameLabel = null;
+            _kboLegalFormOrganisationClassification = null;
         }
 
         public IEnumerable<OrganisationParent> ParentsInPeriod(Period validity)
