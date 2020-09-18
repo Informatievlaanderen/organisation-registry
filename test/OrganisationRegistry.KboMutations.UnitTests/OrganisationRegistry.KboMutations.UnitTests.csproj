@@ -12,8 +12,8 @@
 
   <ItemGroup>
     <None Remove="mutationsInvalid.csv" />
-    <EmbeddedResource Include="mutationsInvalid.csv" />
     <None Remove="mutations.csv" />
+    <EmbeddedResource Include="mutationsInvalid.csv" />
     <EmbeddedResource Include="mutations.csv" />
   </ItemGroup>
 

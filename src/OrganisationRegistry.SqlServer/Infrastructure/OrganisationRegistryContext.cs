@@ -152,6 +152,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         //Kbo Sync Queue
         public DbSet<KboSyncQueueItem> KboSyncQueue { get; set; }
+        public DbSet<KboTerminationSyncQueueItem> KboTerminationSyncQueue { get; set; }
 
         // This needs to be DbContextOptions<T> for Autofac!
         public OrganisationRegistryContext(DbContextOptions<OrganisationRegistryContext> options)
