@@ -7,7 +7,7 @@ namespace OrganisationRegistry.KboMutations
     using SqlServer;
     using SqlServer.KboSyncQueue;
 
-    class KboMutationsPersister : IKboMutationsPersister
+    public class KboMutationsPersister : IKboMutationsPersister
     {
         private readonly IContextFactory _contextFactory;
         private readonly ILogger<KboMutationsPersister> _logger;
@@ -33,15 +33,35 @@ namespace OrganisationRegistry.KboMutations
             {
                 foreach (var mutation in mutationsLines)
                 {
-                    context.KboSyncQueue.Add(new KboSyncQueueItem
+                    switch (mutation.StatusCode)
                     {
-                        Id = Guid.NewGuid(),
-                        SourceFileName = fullName,
-                        SourceOrganisationKboNumber = mutation.Ondernemingsnummer,
-                        SourceOrganisationName = mutation.MaatschappelijkeNaam,
-                        SourceOrganisationModifiedAt = mutation.DatumModificatie,
-                        MutationReadAt = DateTime.UtcNow,
-                    });
+                        case KboStatusCodes.Terminated:
+                            context.KboTerminationSyncQueue.Add(new KboTerminationSyncQueueItem
+                            {
+                                Id = Guid.NewGuid(),
+                                SourceFileName = fullName,
+                                SourceOrganisationKboNumber = mutation.Ondernemingsnummer,
+                                SourceOrganisationName = mutation.MaatschappelijkeNaam,
+                                SourceOrganisationModifiedAt = mutation.DatumModificatie,
+                                SourceOrganisationTerminationCode = mutation.StopzettingsCode,
+                                SourceOrganisationTerminationReason = mutation.StopzettingsReden,
+                                SourceOrganisationTerminationDate = mutation.StopzettingsDatum!.Value,
+                                MutationReadAt = DateTime.UtcNow,
+                            });
+                            break;
+                        default:
+                            context.KboSyncQueue.Add(new KboSyncQueueItem
+                            {
+                                Id = Guid.NewGuid(),
+                                SourceFileName = fullName,
+                                SourceOrganisationStatus = mutation.StatusCode,
+                                SourceOrganisationKboNumber = mutation.Ondernemingsnummer,
+                                SourceOrganisationName = mutation.MaatschappelijkeNaam,
+                                SourceOrganisationModifiedAt = mutation.DatumModificatie,
+                                MutationReadAt = DateTime.UtcNow,
+                            });
+                            break;
+                    }
                 }
 
                 context.SaveChanges();

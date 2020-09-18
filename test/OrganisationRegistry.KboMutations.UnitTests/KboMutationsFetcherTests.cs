@@ -203,7 +203,57 @@ namespace OrganisationRegistry.KboMutations.UnitTests
 
                 var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
 
-                kboMutationFiles[0].KboMutations.Should().HaveCount(238);
+                kboMutationFiles[0].KboMutations.Should().HaveCount(240);
+            }
+        }
+
+        [Fact]
+        public void ReadsLinesWithStopzettingsDatum()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            using (var mutationsCsv = assembly.GetManifestResourceStream(MutationsResourceName))
+            {
+                var ftpClient = new Mock<IFtpsClient>();
+                SetUpMock(ftpClient,
+                    new FtpsListItemStub("mutations.csv", mutationsCsv));
+
+                var kboFtpClient = new KboMutationsFetcher(
+                    new NullLogger<KboMutationsFetcher>(),
+                    new OptionsWrapper<KboMutationsConfiguration>(_kboMutationsConfiguration),
+                    ftpClient.Object);
+
+                var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
+
+                var mutationsLine = kboMutationFiles[0].KboMutations.Single(line => line.Ondernemingsnummer == "0416936979");
+                mutationsLine.StopzettingsDatum.Should().Be(new DateTime(2020, 04, 28));
+                mutationsLine.StopzettingsCode.Should().Be("014");
+                mutationsLine.StopzettingsReden.Should().Be("Sluiting van de vereffening");
+                mutationsLine.StatusCode.Should().Be(KboStatusCodes.Terminated);
+            }
+        }
+
+        [Fact]
+        public void ReadsLinesWithoutStopzettingsDatum()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            using (var mutationsCsv = assembly.GetManifestResourceStream(MutationsResourceName))
+            {
+                var ftpClient = new Mock<IFtpsClient>();
+                SetUpMock(ftpClient,
+                    new FtpsListItemStub("mutations.csv", mutationsCsv));
+
+                var kboFtpClient = new KboMutationsFetcher(
+                    new NullLogger<KboMutationsFetcher>(),
+                    new OptionsWrapper<KboMutationsConfiguration>(_kboMutationsConfiguration),
+                    ftpClient.Object);
+
+                var kboMutationFiles = kboFtpClient.GetKboMutationFiles().ToList();
+
+                var mutationsLine = kboMutationFiles[0].KboMutations.Single(line => line.Ondernemingsnummer == "0808766994");
+                mutationsLine.StopzettingsDatum.Should().BeNull();
+                mutationsLine.StopzettingsCode.Should().BeEmpty();
+                mutationsLine.StopzettingsReden.Should().BeEmpty();
+
             }
         }
 

@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.KboMutations
 {
+    using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
@@ -35,7 +36,7 @@ namespace OrganisationRegistry.KboMutations
                 Delimiter = ";",
                 HasHeaderRecord = false
             };
-            
+
             _baseUriBuilder = new FtpUriBuilder(_kboMutationsConfiguration.Host, _kboMutationsConfiguration.Port);
         }
 
@@ -65,7 +66,7 @@ namespace OrganisationRegistry.KboMutations
         public void Archive(MutationsFile file)
         {
             _logger.LogInformation(
-                "Archiving {FileName} to {ArchivePath}", 
+                "Archiving {FileName} to {ArchivePath}",
                 file.FullName,
                 _kboMutationsConfiguration.CachePath);
 
