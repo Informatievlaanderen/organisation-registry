@@ -3,11 +3,11 @@ namespace OrganisationRegistry.Organisation
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using Commands;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
-    using KeyTypes;
     using LabelType;
     using Location;
     using Location.Commands;
@@ -156,17 +156,24 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(UpdateFromKbo message)
         {
+            await UpdateFromKbo(message.OrganisationId, message.User, message.KboSyncItemId);
+        }
+
+        private async Task UpdateFromKbo(OrganisationId organisationId, ClaimsPrincipal user, Guid? kboSyncItemId)
+        {
             var registeredOfficeLocationType =
                 Session.Get<LocationType>(_organisationRegistryConfiguration.KboV2RegisteredOfficeLocationTypeId);
 
             var formalNameLabelType = Session.Get<LabelType>(_organisationRegistryConfiguration.KboV2FormalNameLabelTypeId);
 
-            var legalFormOrganisationClassificationType = Session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration.KboV2LegalFormOrganisationClassificationTypeId);
+            var legalFormOrganisationClassificationType =
+                Session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration
+                    .KboV2LegalFormOrganisationClassificationTypeId);
 
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
+            var organisation = Session.Get<Organisation>(organisationId);
 
             var kboOrganisationResult =
-                await _kboOrganisationRetriever.RetrieveOrganisation(message.User, organisation.KboNumber);
+                await _kboOrganisationRetriever.RetrieveOrganisation(user, organisation.KboNumber);
 
             if (kboOrganisationResult.HasErrors)
                 throw new KboOrganisationNotFoundException(kboOrganisationResult.ErrorMessages);
@@ -178,11 +185,11 @@ namespace OrganisationRegistry.Organisation
             await Session.Commit();
 
             // IMPORTANT: Need to re-Get the organisation, otherwise the Session will not properly handle the events.
-            organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation = Session.Get<Organisation>(organisationId);
 
             organisation.UpdateInfoFromKbo(kboOrganisation.FormalName.Value, kboOrganisation.ShortName.Value);
 
-            organisation.UpdateKboRegisteredOfficeLocations(location, registeredOfficeLocationType, message.ModificationTime);
+            organisation.UpdateKboRegisteredOfficeLocations(location, registeredOfficeLocationType);
 
             organisation.UpdateKboFormalNameLabel(kboOrganisation.FormalName, formalNameLabelType);
 
@@ -190,12 +197,14 @@ namespace OrganisationRegistry.Organisation
                 _organisationClassificationRetriever,
                 legalFormOrganisationClassificationType,
                 kboOrganisation.LegalForm,
-                guid => Session.Get<OrganisationClassification>(guid),
-                message.ModificationTime);
+                guid => Session.Get<OrganisationClassification>(guid));
 
             organisation.UpdateKboBankAccount(kboOrganisation.BankAccounts);
 
-            organisation.MarkAsSynced(message.KboSyncItemId);
+            if (kboOrganisation.Termination != null)
+                organisation.MarkTerminationFound(kboOrganisation.Termination);
+
+            organisation.MarkAsSynced(kboSyncItemId);
 
             await Session.Commit();
         }
@@ -219,10 +228,14 @@ namespace OrganisationRegistry.Organisation
             if (kboOrganisationResult.HasErrors)
                 throw new KboOrganisationNotFoundException(kboOrganisationResult.ErrorMessages);
 
-            if (kboOrganisationResult.Value.Stopzetting == null)
+            if (kboOrganisationResult.Value.Termination == null)
                 throw new KboOrganisationNotTerminatedException();
 
-            organisation.TerminateKboCoupling(kboOrganisationResult.Value.Stopzetting.Datum);
+            await UpdateFromKbo(message.OrganisationId, message.User, null);
+
+            organisation = Session.Get<Organisation>(message.OrganisationId);
+
+            organisation.TerminateKboCoupling(kboOrganisationResult.Value.Termination.Date);
 
             await Session.Commit();
         }

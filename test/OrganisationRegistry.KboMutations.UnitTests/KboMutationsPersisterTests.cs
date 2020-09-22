@@ -34,14 +34,14 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                         DatumModificatie = DateTime.Today,
                         Ondernemingsnummer = "0123456789",
                         MaatschappelijkeNaam = "test",
-                        StatusCode = KboStatusCodes.Active
+                        StatusCode = "AC",
                     },
                     new MutationsLine
                     {
                         DatumModificatie = DateTime.Today,
                         Ondernemingsnummer = "0123456789",
                         MaatschappelijkeNaam = "test",
-                        StatusCode = KboStatusCodes.Terminated,
+                        StatusCode = "ST",
                         StopzettingsCode = "014",
                         StopzettingsDatum = DateTime.Today.AddDays(-1),
                         StopzettingsReden = "Sluiting van de vereffening"
@@ -50,8 +50,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
 
             context = new OrganisationRegistryContext(dbContextOptions);
 
-            context.KboTerminationSyncQueue.Count().Should().Be(1);
-            context.KboSyncQueue.Count().Should().Be(1);
+            context.KboSyncQueue.Count().Should().Be(2);
         }
 
         public void Dispose()

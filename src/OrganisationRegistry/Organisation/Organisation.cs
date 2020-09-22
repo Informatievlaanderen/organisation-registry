@@ -57,6 +57,8 @@ namespace OrganisationRegistry.Organisation
         private readonly List<OrganisationBankAccount> _kboBankAccounts;
         private string _nameBeforeKboCoupling;
         private string _shortNameBeforeKboCoupling;
+        private KboTermination? TerminationInKbo { get; set; }
+
         public KboNumber? KboNumber { get; private set; }
 
         private bool HasKboNumber => KboNumber != null;
@@ -236,7 +238,20 @@ namespace OrganisationRegistry.Organisation
                 ApplyChange(new OrganisationBecameActive(Id));
         }
 
-        public void MarkAsSynced(Guid kboSyncItemId)
+        public void MarkTerminationFound(IMagdaTermination magdaTermination)
+        {
+            if (!HasKboNumber)
+                throw new OrganisationNotCoupledWithKbo();
+
+            var termination = KboTermination.FromMagda(magdaTermination);
+
+            if (TerminationInKbo != null && termination.Equals(TerminationInKbo.Value))
+                return;
+
+            ApplyChange(new OrganisationTerminationFoundInKbo(Id, KboNumber!.ToDigitsOnly(), termination.Date, termination.Code, termination.Reason));
+        }
+
+        public void MarkAsSynced(Guid? kboSyncItemId)
         {
             ApplyChange(new OrganisationSyncedFromKbo(Id, kboSyncItemId));
         }
@@ -751,8 +766,7 @@ namespace OrganisationRegistry.Organisation
             IKboOrganisationClassificationRetriever organisationClassificationRetriever,
             OrganisationClassificationType legalFormOrganisationClassificationType,
             IMagdaLegalForm? newLegalForm,
-            Func<Guid, OrganisationClassification> getOrganisationClassification,
-            DateTime modificationTime)
+            Func<Guid, OrganisationClassification> getOrganisationClassification)
         {
             var newLegalFormClassificationId = newLegalForm == null
                 ? null
@@ -788,7 +802,7 @@ namespace OrganisationRegistry.Organisation
                         legalFormOrganisationClassificationType.Name,
                         newLegalFormOrganisationClassification.Id,
                         newLegalFormOrganisationClassification.Name,
-                        modificationTime, // validFrom from newLegalForms
+                        newLegalForm!.ValidFrom,
                         new ValidTo()
                     ));
             }
@@ -1097,8 +1111,7 @@ namespace OrganisationRegistry.Organisation
 
         public void UpdateKboRegisteredOfficeLocations(
             KboRegisteredOffice newKboRegisteredOffice,
-            LocationType registeredOfficeLocationType,
-            DateTime modificationTime)
+            LocationType registeredOfficeLocationType)
         {
             if (newKboRegisteredOffice?.Location?.Id == _kboRegisteredOffice?.LocationId)
                 return;
@@ -1114,7 +1127,7 @@ namespace OrganisationRegistry.Organisation
                         _kboRegisteredOffice.LocationTypeId,
                         _kboRegisteredOffice.LocationTypeName,
                         _kboRegisteredOffice.Validity.Start,
-                        modificationTime.AddDays(-1),
+                        _kboRegisteredOffice.Validity.End,
                         _kboRegisteredOffice.Validity.End));
 
             if (newKboRegisteredOffice != null)
@@ -1127,7 +1140,7 @@ namespace OrganisationRegistry.Organisation
                         false,
                         registeredOfficeLocationType.Id,
                         registeredOfficeLocationType.Name,
-                        newKboRegisteredOffice.ValidFrom ?? modificationTime,
+                        newKboRegisteredOffice.ValidFrom,
                         new ValidTo()));
         }
 
@@ -2198,6 +2211,11 @@ namespace OrganisationRegistry.Organisation
             _kboRegisteredOffice = null;
             _kboFormalNameLabel = null;
             _kboLegalFormOrganisationClassification = null;
+        }
+
+        private void Apply(OrganisationTerminationFoundInKbo @event)
+        {
+            TerminationInKbo = new KboTermination(@event.TerminationDate, @event.TerminationCode, @event.TerminationReason);
         }
 
         public IEnumerable<OrganisationParent> ParentsInPeriod(Period validity)

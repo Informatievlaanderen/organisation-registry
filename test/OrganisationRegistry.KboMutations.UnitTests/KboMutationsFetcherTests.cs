@@ -228,7 +228,7 @@ namespace OrganisationRegistry.KboMutations.UnitTests
                 mutationsLine.StopzettingsDatum.Should().Be(new DateTime(2020, 04, 28));
                 mutationsLine.StopzettingsCode.Should().Be("014");
                 mutationsLine.StopzettingsReden.Should().Be("Sluiting van de vereffening");
-                mutationsLine.StatusCode.Should().Be(KboStatusCodes.Terminated);
+                mutationsLine.StatusCode.Should().Be("ST");
             }
         }
 

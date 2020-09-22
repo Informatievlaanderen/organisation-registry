@@ -198,5 +198,64 @@ namespace OrganisationRegistry.Api.Organisation
 
             return Ok();
         }
+
+        [HttpPut("{id}/kboNumber/sync")]
+        [OrganisationRegistryAuthorize]
+        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> UpdateFromKbo(
+            [FromServices] ISecurityService securityService,
+            [FromRoute] Guid id)
+        {
+            if (!securityService.CanEditOrganisation(User, id))
+                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
+
+            await CommandSender.Send(
+                new UpdateFromKbo(
+                    new OrganisationId(id),
+                    User, DateTimeOffset.Now,
+                    null));
+
+            return Ok();
+        }
+
+        /// <summary>Couple an organisation to a kbo number.</summary>
+        /// <response code="200">If the organisation was coupled.</response>
+        [HttpGet("{id}/kboNumber/{kboNumber}/termination")]
+        [OrganisationRegistryAuthorize]
+        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetTerminationStatus(
+            [FromServices] ISecurityService securityService,
+            [FromServices] OrganisationRegistryContext context,
+            [FromRoute] string kboNumber,
+            [FromRoute] Guid id)
+        {
+            if (!securityService.CanEditOrganisation(User, id))
+                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
+
+            var organisationTermination = await context.OrganisationTerminationList.SingleOrDefaultAsync(x => x.Id == id && x.KboNumber == kboNumber);
+
+            if (organisationTermination == null)
+                return Ok(OrganisationTerminationResponse.NotFound(id));
+
+            return Ok(OrganisationTerminationResponse.FromListItem(organisationTermination));
+        }
+
+        /// <summary>Get a list of events.</summary>
+        [HttpGet("terminated-in-kbo")]
+        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
+        [ProducesResponseType(typeof(List<OrganisationTerminationResponse>), (int) HttpStatusCode.OK)]
+        public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
+        {
+            var filtering = Request.ExtractFilteringRequest<OrganisationTerminationListItemFilter>();
+            var sorting = Request.ExtractSortingRequest();
+            var pagination = Request.ExtractPaginationRequest();
+
+            var pagedFunctions = new OrganisationTerminationListQuery(context).Fetch(filtering, sorting, pagination);
+
+            Response.AddPaginationResponse(pagedFunctions.PaginationInfo);
+            Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
+
+            return Ok(await pagedFunctions.Items.ToListAsync());
+        }
     }
 }

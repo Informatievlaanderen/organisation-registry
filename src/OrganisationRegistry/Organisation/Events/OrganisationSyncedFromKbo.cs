@@ -5,11 +5,11 @@ namespace OrganisationRegistry.Organisation.Events
     public class OrganisationSyncedFromKbo : BaseEvent<OrganisationSyncedFromKbo>
     {
         public Guid OrganisationId => Id;
-        public Guid KBOSyncItemId { get; }
+        public Guid? KBOSyncItemId { get; }
 
         public OrganisationSyncedFromKbo(
             Guid organisationId,
-            Guid kboSyncItemId)
+            Guid? kboSyncItemId)
         {
             Id = organisationId;
             KBOSyncItemId = kboSyncItemId;
