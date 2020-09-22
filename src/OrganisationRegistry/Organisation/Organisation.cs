@@ -1496,7 +1496,7 @@ namespace OrganisationRegistry.Organisation
                 throw new OrganisationNotCoupledWithKbo();
 
             ApplyChange(
-                new OrganisationCouplingWithKboTerminated(
+                new OrganisationTerminationSyncedWithKbo(
                     Id,
                     KboNumber!.ToDigitsOnly(),
                     Name,
@@ -2203,7 +2203,7 @@ namespace OrganisationRegistry.Organisation
             Name = _nameBeforeKboCoupling;
         }
 
-        private void Apply(OrganisationCouplingWithKboTerminated @event)
+        private void Apply(OrganisationTerminationSyncedWithKbo @event)
         {
             KboNumber = null;
 

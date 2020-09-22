@@ -95,7 +95,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<KboRegisteredOfficeOrganisationLocationAdded>,
         IEventHandler<KboRegisteredOfficeOrganisationLocationRemoved>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationCouplingWithKboTerminated>,
+        IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<OrganisationLocationUpdated>,
         IEventHandler<LocationTypeUpdated>
     {
@@ -218,7 +218,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
         {
             if (message.Body.RegisteredOfficeOrganisationLocationIdToTerminate == null)
                 return;

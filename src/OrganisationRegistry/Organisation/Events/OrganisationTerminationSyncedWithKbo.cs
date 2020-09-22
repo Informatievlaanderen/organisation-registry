@@ -3,7 +3,7 @@ namespace OrganisationRegistry.Organisation.Events
     using System;
     using System.Collections.Generic;
 
-    public class OrganisationCouplingWithKboTerminated : BaseEvent<OrganisationCouplingWithKboTerminated>
+    public class OrganisationTerminationSyncedWithKbo : BaseEvent<OrganisationTerminationSyncedWithKbo>
     {
         public Guid OrganisationId => Id;
 
@@ -16,7 +16,7 @@ namespace OrganisationRegistry.Organisation.Events
         public List<Guid> OrganisationBankAccountIdsToTerminate { get; }
         public string KboNumber { get; }
 
-        public OrganisationCouplingWithKboTerminated(
+        public OrganisationTerminationSyncedWithKbo(
             Guid organisationId,
             string kboNumber,
             string name,

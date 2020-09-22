@@ -47,7 +47,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     public class OrganisationTerminationListItemView :
         Projection<OrganisationDetailItemView>,
         IEventHandler<OrganisationTerminationFoundInKbo>,
-        IEventHandler<OrganisationCouplingWithKboTerminated>,
+        IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>
     {
         private readonly IMemoryCaches _memoryCaches;
@@ -94,7 +94,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
-            IEnvelope<OrganisationCouplingWithKboTerminated> message)
+            IEnvelope<OrganisationTerminationSyncedWithKbo> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {

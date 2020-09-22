@@ -20,7 +20,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<KboFormalNameLabelAdded>,
         IEventHandler<KboFormalNameLabelRemoved>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationCouplingWithKboTerminated>,
+        IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<OrganisationLabelUpdated>,
         IEventHandler<LabelTypeUpdated>
     {
@@ -68,7 +68,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             RemoveLabel(message.Body.OrganisationId, message.Body.FormalNameOrganisationLabelIdToCancel.Value, message.Number, message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
         {
             if (message.Body.FormalNameOrganisationLabelIdToTerminate == null)
                 return;
