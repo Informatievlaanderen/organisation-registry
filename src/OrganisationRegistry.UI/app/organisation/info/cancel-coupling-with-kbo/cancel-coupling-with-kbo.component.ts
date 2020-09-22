@@ -6,7 +6,8 @@ import * as moment from 'moment/moment';
 
 import { AlertService, AlertBuilder } from 'core/alert';
 
-import {KboOrganisation, OrganisationService} from 'services/organisations';
+import { OrganisationSyncService } from 'services/organisationsync';
+import { CreateOrganisationFormValues } from "../couple-with-kbo/create-organisation.model";
 
 @Component({
   templateUrl: 'cancel-coupling-with-kbo.template.html',
@@ -16,7 +17,6 @@ export class OrganisationCancelCouplingWithKboComponent implements OnInit{
   @Output('onCheckkboNumber') onCheckkboNumber: EventEmitter<string> = new EventEmitter<string>();
 
   public kboNumberForm: FormGroup;
-  public organisationFromKbo: KboOrganisation;
   public today: string;
   public organisationId: string;
 
@@ -24,7 +24,7 @@ export class OrganisationCancelCouplingWithKboComponent implements OnInit{
     formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private organisationService: OrganisationService,
+    private organisationSyncService: OrganisationSyncService,
     private alertService: AlertService  ) {
 
     this.today = moment().format('YYYY-MM-DD');
@@ -32,7 +32,6 @@ export class OrganisationCancelCouplingWithKboComponent implements OnInit{
     this.kboNumberForm = formBuilder.group({
       kboNumber: [''],
     });
-    this.organisationFromKbo = new KboOrganisation();
   }
 
   @Input('isBusy')
@@ -52,7 +51,7 @@ export class OrganisationCancelCouplingWithKboComponent implements OnInit{
   }
 
   submit() {
-    this.organisationService.cancelCouplingWithKbo(this.organisationId, this.organisationFromKbo.kboNumber)
+    this.organisationSyncService.cancelCouplingWithKbo(this.organisationId)
       .finally(() => {
         this.isBusy = false;
       })
@@ -73,7 +72,6 @@ export class OrganisationCancelCouplingWithKboComponent implements OnInit{
             new AlertBuilder()
               .error(error)
               .build());
-          this.organisationFromKbo = null;
         });
   }
 }

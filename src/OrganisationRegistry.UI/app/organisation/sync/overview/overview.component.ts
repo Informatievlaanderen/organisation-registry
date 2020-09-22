@@ -85,6 +85,9 @@ export class OrganisationSyncOverviewComponent implements OnInit, OnDestroy {
   }
 
   syncTermination() {
+    if (!confirm("Bent u zeker? Deze actie kan niet ongedaan gemaakt worden."))
+      return;
+
     this.isLoading = true;
 
     this.organisationSyncService.syncTermination(this.organisationId)

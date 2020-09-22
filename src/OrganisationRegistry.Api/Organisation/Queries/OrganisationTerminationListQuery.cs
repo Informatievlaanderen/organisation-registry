@@ -59,8 +59,6 @@ namespace OrganisationRegistry.Api.Organisation.Queries
         {
             var organisationTerminations = _context.OrganisationTerminationList.AsQueryable();
 
-            organisationTerminations = organisationTerminations.Where(x => x.Status != TerminationStatus.Terminated);
-
             if (!filtering.ShouldFilter)
                 return organisationTerminations;
 
