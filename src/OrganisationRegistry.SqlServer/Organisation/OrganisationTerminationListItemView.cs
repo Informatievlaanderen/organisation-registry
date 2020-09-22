@@ -27,12 +27,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public string Reason { get; set; }
     }
 
-        public class OrganisationTerminationListConfiguration : EntityMappingConfiguration<OrganisationTerminationListItem>
+    public class OrganisationTerminationListConfiguration : EntityMappingConfiguration<OrganisationTerminationListItem>
     {
         public override void Map(EntityTypeBuilder<OrganisationTerminationListItem> b)
         {
-            b.ToTable(nameof(OrganisationTerminationListItemView.ProjectionTables.OrganisationTerminationList), "OrganisationRegistry")
-                .HasKey(p => new { p.Id, p.KboNumber})
+            b.ToTable(nameof(OrganisationTerminationListItemView.ProjectionTables.OrganisationTerminationList),
+                    "OrganisationRegistry")
+                .HasKey(p => new {p.Id, p.KboNumber})
                 .IsClustered(false);
 
             b.Property(p => p.OvoNumber).HasMaxLength(OrganisationListConfiguration.OvoNumberLength).IsRequired();
@@ -43,90 +44,93 @@ namespace OrganisationRegistry.SqlServer.Organisation
         }
     }
 
-        public class OrganisationTerminationListItemView :
-            Projection<OrganisationDetailItemView>,
-            IEventHandler<OrganisationTerminationFoundInKbo>,
-            IEventHandler<OrganisationCouplingWithKboTerminated>,
-            IEventHandler<OrganisationCouplingWithKboCancelled>
+    public class OrganisationTerminationListItemView :
+        Projection<OrganisationDetailItemView>,
+        IEventHandler<OrganisationTerminationFoundInKbo>,
+        IEventHandler<OrganisationCouplingWithKboTerminated>,
+        IEventHandler<OrganisationCouplingWithKboCancelled>
+    {
+        private readonly IMemoryCaches _memoryCaches;
+        private readonly IEventStore _eventStore;
+        public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+
+        public enum ProjectionTables
         {
-            private readonly IMemoryCaches _memoryCaches;
-            private readonly IEventStore _eventStore;
-            public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+            OrganisationTerminationList
+        }
 
-            public enum ProjectionTables
+        public OrganisationTerminationListItemView(
+            ILogger<OrganisationDetailItemView> logger,
+            IMemoryCaches memoryCaches,
+            IEventStore eventStore,
+            IContextFactory contextFactory) : base(logger, contextFactory)
+        {
+            _memoryCaches = memoryCaches;
+            _eventStore = eventStore;
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationTerminationFoundInKbo> message)
+        {
+            var organisationName = _memoryCaches.OrganisationNames[message.Body.OrganisationId];
+            var organisationOvo = _memoryCaches.OvoNumbers[message.Body.OrganisationId];
+            var organisationListItem = new OrganisationTerminationListItem
             {
-                OrganisationTerminationList
-            }
+                Id = message.Body.OrganisationId,
+                Name = organisationName,
+                OvoNumber = organisationOvo,
+                KboNumber = message.Body.KboNumber,
+                Status = TerminationStatus.Proposed,
+                Date = message.Body.TerminationDate,
+                Code = message.Body.TerminationCode,
+                Reason = message.Body.TerminationReason,
+            };
 
-            public OrganisationTerminationListItemView(
-                ILogger<OrganisationDetailItemView> logger,
-                IMemoryCaches memoryCaches,
-                IEventStore eventStore,
-                IContextFactory contextFactory) : base(logger, contextFactory)
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                _memoryCaches = memoryCaches;
-                _eventStore = eventStore;
-            }
-
-            public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationFoundInKbo> message)
-            {
-                var organisationName = _memoryCaches.OrganisationNames[message.Body.OrganisationId];
-                var organisationOvo = _memoryCaches.OvoNumbers[message.Body.OrganisationId];
-                var organisationListItem = new OrganisationTerminationListItem
-                {
-                    Id = message.Body.OrganisationId,
-                    Name = organisationName,
-                    OvoNumber = organisationOvo,
-                    KboNumber = message.Body.KboNumber,
-                    Status = TerminationStatus.Proposed,
-                    Date = message.Body.TerminationDate,
-                    Code = message.Body.TerminationCode,
-                    Reason = message.Body.TerminationReason,
-                };
-
-                using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-                {
-                    await context.OrganisationTerminationList.AddAsync(organisationListItem);
-                    await context.SaveChangesAsync();
-                }
-            }
-
-            public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
-            {
-                using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-                {
-                    var organisationTerminationListItem = await context.OrganisationTerminationList.SingleAsync(item =>
-                        item.Id == message.Body.OrganisationId && item.KboNumber == message.Body.KboNumber);
-
-                    organisationTerminationListItem.Status = TerminationStatus.Terminated;
-
-                    await context.SaveChangesAsync();
-                }
-            }
-
-            public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
-            {
-                using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-                {
-                    var organisationTerminationListItem = await context.OrganisationTerminationList.SingleAsync(item =>
-                        item.Id == message.Body.OrganisationId && item.KboNumber == message.Body.PreviousKboNumber);
-
-                    context.OrganisationTerminationList.Remove(organisationTerminationListItem);
-
-                    await context.SaveChangesAsync();
-                }
-            }
-
-            public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
-            {
-                await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+                await context.OrganisationTerminationList.AddAsync(organisationListItem);
+                await context.SaveChangesAsync();
             }
         }
 
-        public enum TerminationStatus
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var organisationTerminationListItem = await context.OrganisationTerminationList.SingleAsync(item =>
+                    item.Id == message.Body.OrganisationId && item.KboNumber == message.Body.KboNumber);
+
+                context.OrganisationTerminationList.Remove(organisationTerminationListItem);
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var organisationTerminationListItem = await context.OrganisationTerminationList.SingleAsync(item =>
+                    item.Id == message.Body.OrganisationId && item.KboNumber == message.Body.PreviousKboNumber);
+
+                context.OrganisationTerminationList.Remove(organisationTerminationListItem);
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<RebuildProjection> message)
+        {
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+        }
+    }
+
+    public enum TerminationStatus
     {
         None = 0,
-        Proposed = 1,
-        Terminated = 2,
+        Proposed = 1
     }
 }
