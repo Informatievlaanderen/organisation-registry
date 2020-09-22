@@ -20,7 +20,7 @@ export class OrganisationSyncService {
   ) { }
 
   public get(organisationId: string, kboNumber: string): Observable<OrganisationTermination> {
-    const url = `${this.configurationService.apiUrl}/v1/organisations/${organisationId}/kboNumber/${kboNumber}/termination`;
+    const url = `${this.configurationService.apiUrl}/v1/organisations/${organisationId}/kbo/${kboNumber}/termination`;
 
     let headers = new HeadersBuilder()
       .json()
@@ -38,7 +38,7 @@ export class OrganisationSyncService {
     page: number = 1,
     pageSize: number = this.configurationService.defaultPageSize): Observable<PagedResult<OrganisationTermination>> {
 
-    const url = `${this.configurationService.apiUrl}/v1/organisations/terminated-in-kbo`;
+    const url = `${this.configurationService.apiUrl}/v1/organisations/kbo/terminated`;
 
     let headers = new HeadersBuilder()
       .json()
@@ -53,7 +53,7 @@ export class OrganisationSyncService {
   }
 
   public sync(organisationId: string): Observable<boolean> {
-    const url = `${this.configurationService.apiUrl}/v1/organisations/${organisationId}/kboNumber/sync`;
+    const url = `${this.configurationService.apiUrl}/v1/organisations/${organisationId}/kbo/sync`;
 
     let headers = new HeadersBuilder()
       .json()
@@ -65,7 +65,7 @@ export class OrganisationSyncService {
   }
 
   public syncTermination(organisationId: string): Observable<boolean> {
-    const url = `${this.configurationService.apiUrl}/v1/organisations/${organisationId}/kboNumber/terminate`;
+    const url = `${this.configurationService.apiUrl}/v1/organisations/${organisationId}/kbo/terminate`;
 
     let headers = new HeadersBuilder()
       .json()
@@ -74,11 +74,6 @@ export class OrganisationSyncService {
     return this.http
       .put(url, '', { headers: headers })
       .map(response => response.ok);
-  }
-
-
-  private getOrganisationTerminationUrl(organisationId) {
-    return `${this.configurationService.apiUrl}/v1/organisations/${organisationId}/kboNumber/termination`;
   }
 
   private getLocationHeader(res: Response): string {
