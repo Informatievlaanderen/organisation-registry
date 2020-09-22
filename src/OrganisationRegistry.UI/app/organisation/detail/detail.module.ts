@@ -18,6 +18,7 @@ import { OrganisationFormalFrameworksModule } from 'organisation/formalframework
 import { OrganisationBankAccountsModule } from 'organisation/bankaccounts';
 import { OrganisationRelationsModule } from 'organisation/relations';
 import { OrganisationOpeningHoursModule } from 'organisation/openinghours';
+import { OrganisationSyncModule } from "organisation/sync";
 
 import { OrganisationDetailRoutingModule } from './detail-routing.module';
 import { OrganisationDetailComponent } from './detail.component';
@@ -44,7 +45,8 @@ import { OrganisationDetailComponent } from './detail.component';
     OrganisationFormalFrameworksModule,
     OrganisationBankAccountsModule,
     OrganisationRelationsModule,
-    OrganisationOpeningHoursModule
+    OrganisationOpeningHoursModule,
+    OrganisationSyncModule
   ],
   declarations: [
     OrganisationDetailComponent

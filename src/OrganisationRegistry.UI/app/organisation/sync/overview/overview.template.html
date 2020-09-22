@@ -1,0 +1,20 @@
+<div class="label-card__content-wrapper">
+  <div class="cta-title">
+      <h3 class="h3 cta-title__title">Sync Management</h3>
+  </div>
+  <div>
+    Status: {{syncStatus.status}}
+  </div>
+  <button class="button form__button"
+          type="button"
+          [disabled]="isLoading"
+          (click)="sync()">
+    <span>Sync Kbo</span>
+  </button>
+  <button class="button form__button"
+          type="button"
+          [disabled]="isLoading"
+          (click)="syncTermination()">
+    <span>Sync Termination</span>
+  </button>
+</div>

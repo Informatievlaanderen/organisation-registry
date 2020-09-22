@@ -113,6 +113,11 @@ import {
   OrganisationOpeningHoursUpdateOrganisationOpeningHourComponent
 } from 'organisation/openinghours';
 
+import {
+  OrganisationSyncComponent,
+  OrganisationSyncOverviewComponent,
+} from 'organisation/sync';
+
 const routes: Routes = [
   {
     path: 'organisations/:id',
@@ -674,6 +679,16 @@ const routes: Routes = [
               }
             }
           }
+        ]
+      },
+      {
+        path: 'sync', component: OrganisationOpeningHoursComponent,
+        children: [
+          {
+            path: '',
+            component: OrganisationSyncOverviewComponent,
+            data: { title: 'Organisatie - Sync Management' }
+          },
         ]
       },
     ]

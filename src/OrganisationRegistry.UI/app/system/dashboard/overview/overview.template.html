@@ -1,48 +1,57 @@
 <div class="grid">
-	<div class="col--1-1">
-		<h1 class="h2">Systeem</h1>
-
-		<ul class="grid grid--is-stacked">
-			<li *ngIf="(isDeveloper | async)" class="col--1-3 col--1-1--s">
-				<a class="tile" [routerLink]="['./exceptions']">
-					<div class="tile__title">Foutmeldingen</div>
-				</a>
-			</li>
-			<li *ngIf="(isDeveloper | async)" class="col--1-3 col--1-1--s">
-				<a class="tile" [routerLink]="['./toggles']">
-					<div class="tile__title">Toggles</div>
-				</a>
-			</li>
-			<li class="col--1-3 col--1-1--s">
-				<a class="tile" [routerLink]="['./stats']">
-					<div class="tile__title">Statistieken</div>
-				</a>
-			</li>
+  <div class="col--1-1">
+    <h1 class="h2">Systeem</h1>
+    <ul class="grid grid--is-stacked">
       <li *ngIf="(isDeveloper | async)" class="col--1-3 col--1-1--s">
-				<a class="tile" [routerLink]="['./api-configuration']">
-					<div class="tile__title">Api configuratie</div>
-				</a>
-			</li>
-			<li *ngIf="(isDeveloper | async)" class="col--1-3 col--1-1--s">
-				<a class="tile" [routerLink]="['./configurationvalues']">
-					<div class="tile__title">Configuratiewaarden</div>
-				</a>
-			</li>
-			<li class="col--1-3 col--1-1--s">
-				<a class="tile" [routerLink]="['./events']">
-					<div class="tile__title">Events</div>
-				</a>
-			</li>
-			<li *ngIf="(isDeveloper | async)" class="col--1-3 col--1-1--s">
-				<a class="tile" [routerLink]="['./projections']">
-					<div class="tile__title">Projectie herbouwen</div>
-				</a>
-			</li>
-			<li *ngIf="(isDeveloper | async)" class="col--1-3 col--1-1--s">
-				<a class="tile" [routerLink]="['./projection-states']">
-					<div class="tile__title">Projectie statussen</div>
-				</a>
-			</li>			
-		</ul>
-	</div>
+        <a class="tile" [routerLink]="['./exceptions']">
+          <div class="tile__title">Foutmeldingen</div>
+        </a>
+      </li>
+      <li *ngIf="(isDeveloper | async)" class="col--1-3 col--1-1--s">
+        <a class="tile" [routerLink]="['./toggles']">
+          <div class="tile__title">Toggles</div>
+        </a>
+      </li>
+      <li class="col--1-3 col--1-1--s">
+        <a class="tile" [routerLink]="['./stats']">
+          <div class="tile__title">Statistieken</div>
+        </a>
+      </li>
+      <li *ngIf="(isDeveloper | async)" class="col--1-3 col--1-1--s">
+        <a class="tile" [routerLink]="['./api-configuration']">
+          <div class="tile__title">Api configuratie</div>
+        </a>
+      </li>
+      <li *ngIf="(isDeveloper | async)" class="col--1-3 col--1-1--s">
+        <a class="tile" [routerLink]="['./configurationvalues']">
+          <div class="tile__title">Configuratiewaarden</div>
+        </a>
+      </li>
+      <li class="col--1-3 col--1-1--s">
+        <a class="tile" [routerLink]="['./events']">
+          <div class="tile__title">Events</div>
+        </a>
+      </li>
+      <li *ngIf="(isDeveloper | async)" class="col--1-3 col--1-1--s">
+        <a class="tile" [routerLink]="['./projections']">
+          <div class="tile__title">Projectie herbouwen</div>
+        </a>
+      </li>
+      <li *ngIf="(isDeveloper | async)" class="col--1-3 col--1-1--s">
+        <a class="tile" [routerLink]="['./projection-states']">
+          <div class="tile__title">Projectie statussen</div>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="col--1-1">
+    <h1 class="h2">Management</h1>
+    <ul class="grid grid--is-stacked">
+      <li class="col--1-3 col--1-1--s">
+        <a class="tile" [routerLink]="['./terminated-in-kbo']">
+          <div class="tile__title">Stopgezet in KBO</div>
+        </a>
+      </li>
+    </ul>
+  </div>
 </div>
