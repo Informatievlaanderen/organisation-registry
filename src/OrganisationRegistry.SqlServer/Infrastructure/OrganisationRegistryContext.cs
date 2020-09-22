@@ -124,6 +124,9 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         public DbSet<OrganisationClassificationTypeListItem> OrganisationClassificationTypeList { get; set; }
         public DbSet<OrganisationRelationTypeListItem> OrganisationRelationTypeList { get; set; }
 
+        public DbSet<OrganisationTerminationListItem> OrganisationTerminationList { get; set; }
+
+
         public DbSet<PersonListItem> PersonList { get; set; }
         public DbSet<PersonCapacityListItem> PersonCapacityList { get; set; }
         public DbSet<PersonFunctionListItem> PersonFunctionList { get; set; }
@@ -152,7 +155,6 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         //Kbo Sync Queue
         public DbSet<KboSyncQueueItem> KboSyncQueue { get; set; }
-        public DbSet<KboTerminationSyncQueueItem> KboTerminationSyncQueue { get; set; }
 
         // This needs to be DbContextOptions<T> for Autofac!
         public OrganisationRegistryContext(DbContextOptions<OrganisationRegistryContext> options)

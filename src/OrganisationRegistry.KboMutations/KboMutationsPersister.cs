@@ -33,37 +33,17 @@ namespace OrganisationRegistry.KboMutations
             {
                 foreach (var mutation in mutationsLines)
                 {
-                    switch (mutation.StatusCode)
+                    context.KboSyncQueue.Add(new KboSyncQueueItem
                     {
-                        case KboStatusCodes.Terminated:
-                            context.KboTerminationSyncQueue.Add(new KboTerminationSyncQueueItem
-                            {
-                                Id = Guid.NewGuid(),
-                                SourceFileName = fullName,
-                                SourceOrganisationKboNumber = mutation.Ondernemingsnummer,
-                                SourceOrganisationName = mutation.MaatschappelijkeNaam,
-                                SourceOrganisationModifiedAt = mutation.DatumModificatie,
-                                SourceOrganisationTerminationCode = mutation.StopzettingsCode,
-                                SourceOrganisationTerminationReason = mutation.StopzettingsReden,
-                                SourceOrganisationTerminationDate = mutation.StopzettingsDatum!.Value,
-                                MutationReadAt = DateTime.UtcNow,
-                            });
-                            break;
-                        default:
-                            context.KboSyncQueue.Add(new KboSyncQueueItem
-                            {
-                                Id = Guid.NewGuid(),
-                                SourceFileName = fullName,
-                                SourceOrganisationStatus = mutation.StatusCode,
-                                SourceOrganisationKboNumber = mutation.Ondernemingsnummer,
-                                SourceOrganisationName = mutation.MaatschappelijkeNaam,
-                                SourceOrganisationModifiedAt = mutation.DatumModificatie,
-                                MutationReadAt = DateTime.UtcNow,
-                            });
-                            break;
-                    }
+                        Id = Guid.NewGuid(),
+                        SourceFileName = fullName,
+                        SourceOrganisationStatus = mutation.StatusCode,
+                        SourceOrganisationKboNumber = mutation.Ondernemingsnummer,
+                        SourceOrganisationName = mutation.MaatschappelijkeNaam,
+                        SourceOrganisationModifiedAt = mutation.DatumModificatie,
+                        MutationReadAt = DateTime.UtcNow,
+                    });
                 }
-
                 context.SaveChanges();
             }
         }

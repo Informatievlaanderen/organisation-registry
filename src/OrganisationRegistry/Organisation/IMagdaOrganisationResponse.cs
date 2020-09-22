@@ -11,7 +11,7 @@ namespace OrganisationRegistry.Organisation
         List<IMagdaBankAccount> BankAccounts { get; }
         IMagdaLegalForm LegalForm { get; }
         IMagdaAddress Address { get; }
-        IMagdaStopzetting Stopzetting { get; }
+        IMagdaTermination? Termination { get; }
     }
 
     public interface IMagdaName
@@ -46,8 +46,10 @@ namespace OrganisationRegistry.Organisation
         DateTime? ValidTo { get; }
     }
 
-    public interface IMagdaStopzetting
+    public interface IMagdaTermination
     {
-        DateTime Datum { get; }
+        DateTime Date { get; }
+        string Code { get; }
+        string Reason { get; }
     }
 }
