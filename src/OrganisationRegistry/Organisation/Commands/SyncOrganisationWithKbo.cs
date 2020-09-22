@@ -3,7 +3,7 @@ namespace OrganisationRegistry.Organisation.Commands
     using System;
     using System.Security.Claims;
 
-    public class UpdateFromKbo : BaseCommand<OrganisationId>
+    public class SyncOrganisationWithKbo : BaseCommand<OrganisationId>
     {
         public OrganisationId OrganisationId => Id;
 
@@ -11,7 +11,7 @@ namespace OrganisationRegistry.Organisation.Commands
         public DateTime ModificationTime { get; }
         public Guid? KboSyncItemId { get; }
 
-        public UpdateFromKbo(
+        public SyncOrganisationWithKbo(
             OrganisationId organisationId,
             ClaimsPrincipal user,
             DateTimeOffset modificationTime,

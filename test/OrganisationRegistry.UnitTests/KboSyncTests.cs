@@ -91,7 +91,7 @@ namespace OrganisationRegistry.UnitTests
                 kboSyncQueueItem.Id);
 
             commandSender
-                .Setup(sender => sender.Send(It.IsAny<UpdateFromKbo>()))
+                .Setup(sender => sender.Send(It.IsAny<SyncOrganisationWithKbo>()))
                 .Throws(aggregateNotFoundException);
 
             _context.SaveChanges();

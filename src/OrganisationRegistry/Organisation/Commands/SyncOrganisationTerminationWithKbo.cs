@@ -2,14 +2,14 @@ namespace OrganisationRegistry.Organisation.Commands
 {
     using System.Security.Claims;
 
-    public class TerminateKboCoupling : BaseCommand<OrganisationId>
+    public class SyncOrganisationTerminationWithKbo : BaseCommand<OrganisationId>
     {
         public OrganisationId OrganisationId => Id;
 
         public KboNumber KboNumber { get; }
         public ClaimsPrincipal User { get; }
 
-        public TerminateKboCoupling(
+        public SyncOrganisationTerminationWithKbo(
             OrganisationId organisationId,
             ClaimsPrincipal user)
         {
