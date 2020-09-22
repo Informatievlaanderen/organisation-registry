@@ -64,6 +64,15 @@ export class OrganisationSyncService {
       .map(response => response.ok);
   }
 
+  public cancelCouplingWithKbo(organisationId: string) {
+    const url = `${this.configurationService.apiUrl}/v1/organisations/${organisationId}/kbo/cancel`;
+
+    let headers = new HeadersBuilder().build();
+
+    return this.http
+      .put(url, '', { headers: headers });
+  }
+
   public syncTermination(organisationId: string): Observable<boolean> {
     const url = `${this.configurationService.apiUrl}/v1/organisations/${organisationId}/kbo/terminate`;
 

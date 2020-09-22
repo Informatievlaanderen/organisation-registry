@@ -54,7 +54,7 @@ namespace OrganisationRegistry.Api.Organisation
 
         /// <summary>Cancel an organisation's active coupling with a KBO number.</summary>
         /// <response code="200">If the organisation coupling was cancelled.</response>
-        [HttpDelete("{id}/kbo/cancel")]
+        [HttpPut("{id}/kbo/cancel")]
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CancelCouplingWithKbo(
