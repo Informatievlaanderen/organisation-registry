@@ -72,6 +72,25 @@ namespace OrganisationRegistry.Api.Organisation
             return Ok();
         }
 
+        [HttpPut("{id}/kbo/sync")]
+        [OrganisationRegistryAuthorize]
+        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> UpdateFromKbo(
+            [FromServices] ISecurityService securityService,
+            [FromRoute] Guid id)
+        {
+            if (!securityService.CanEditOrganisation(User, id))
+                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
+
+            await CommandSender.Send(
+                new SyncOrganisationWithKbo(
+                    new OrganisationId(id),
+                    User, DateTimeOffset.Now,
+                    null));
+
+            return Ok();
+        }
+
         /// <summary>Couple an organisation to a kbo number.</summary>
         /// <response code="200">If the organisation was coupled.</response>
         [HttpPut("{id}/kbo/terminate")]
@@ -85,28 +104,9 @@ namespace OrganisationRegistry.Api.Organisation
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
             await CommandSender.Send(
-                new TerminateKboCoupling(
+                new SyncOrganisationTerminationWithKbo(
                     new OrganisationId(id),
                     User));
-
-            return Ok();
-        }
-
-        [HttpPut("{id}/kbo/sync")]
-        [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> UpdateFromKbo(
-            [FromServices] ISecurityService securityService,
-            [FromRoute] Guid id)
-        {
-            if (!securityService.CanEditOrganisation(User, id))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
-            await CommandSender.Send(
-                new UpdateFromKbo(
-                    new OrganisationId(id),
-                    User, DateTimeOffset.Now,
-                    null));
 
             return Ok();
         }

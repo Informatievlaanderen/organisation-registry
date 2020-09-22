@@ -22,8 +22,8 @@ namespace OrganisationRegistry.Organisation
         ICommandHandler<CreateKboOrganisation>,
         ICommandHandler<CoupleOrganisationToKbo>,
         ICommandHandler<CancelCouplingWithKbo>,
-        ICommandHandler<UpdateFromKbo>,
-        ICommandHandler<TerminateKboCoupling>
+        ICommandHandler<SyncOrganisationWithKbo>,
+        ICommandHandler<SyncOrganisationTerminationWithKbo>
     {
         private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
         private readonly IOvoNumberGenerator _ovoNumberGenerator;
@@ -154,12 +154,12 @@ namespace OrganisationRegistry.Organisation
             await Session.Commit();
         }
 
-        public async Task Handle(UpdateFromKbo message)
+        public async Task Handle(SyncOrganisationWithKbo message)
         {
-            await UpdateFromKbo(message.OrganisationId, message.User, message.KboSyncItemId);
+            await SyncWithKbo(message.OrganisationId, message.User, message.KboSyncItemId);
         }
 
-        private async Task UpdateFromKbo(OrganisationId organisationId, ClaimsPrincipal user, Guid? kboSyncItemId)
+        private async Task SyncWithKbo(OrganisationId organisationId, ClaimsPrincipal user, Guid? kboSyncItemId)
         {
             var registeredOfficeLocationType =
                 Session.Get<LocationType>(_organisationRegistryConfiguration.KboV2RegisteredOfficeLocationTypeId);
@@ -218,7 +218,7 @@ namespace OrganisationRegistry.Organisation
             await Session.Commit();
         }
 
-        public async Task Handle(TerminateKboCoupling message)
+        public async Task Handle(SyncOrganisationTerminationWithKbo message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
@@ -231,7 +231,7 @@ namespace OrganisationRegistry.Organisation
             if (kboOrganisationResult.Value.Termination == null)
                 throw new KboOrganisationNotTerminatedException();
 
-            await UpdateFromKbo(message.OrganisationId, message.User, null);
+            await SyncWithKbo(message.OrganisationId, message.User, null);
 
             organisation = Session.Get<Organisation>(message.OrganisationId);
 

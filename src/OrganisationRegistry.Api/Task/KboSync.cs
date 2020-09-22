@@ -75,7 +75,7 @@ namespace OrganisationRegistry.Api.Task
                         continue;
                     }
 
-                    await commandSender.Send(new UpdateFromKbo(
+                    await commandSender.Send(new SyncOrganisationWithKbo(
                         new OrganisationId(organisationDetailItem.Id),
                         claimsPrincipal,
                         _dateTimeProvider.Today,

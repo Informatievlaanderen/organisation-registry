@@ -23,7 +23,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using Xunit;
     using Xunit.Abstractions;
 
-    public class UpdateFromKboWithoutChangesTests: Specification<Organisation, KboOrganisationCommandHandlers, UpdateFromKbo>
+    public class UpdateFromKboWithoutChangesTests: Specification<Organisation, KboOrganisationCommandHandlers, SyncOrganisationWithKbo>
     {
         private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
 
@@ -125,9 +125,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             };
         }
 
-        protected override UpdateFromKbo When()
+        protected override SyncOrganisationWithKbo When()
         {
-            return new UpdateFromKbo(
+            return new SyncOrganisationWithKbo(
                 new OrganisationId(_organisationId),
                 null,
                 new DateTimeOffset(new DateTime(2019, 9, 9)),
