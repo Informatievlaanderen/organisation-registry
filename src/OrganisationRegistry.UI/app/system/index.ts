@@ -9,3 +9,4 @@ export * from './projections';
 export * from './projectionstates';
 export * from './stats';
 export * from './toggles';
+export * from './terminated-in-kbo';

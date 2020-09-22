@@ -10,8 +10,9 @@ import { SystemExceptionsModule } from './../exceptions';
 import { SystemStatsModule } from './../stats';
 import { SystemConfigurationValuesModule } from './../configurationvalues';
 
-import { DashboardRoutingModule } from './dashboard-routing.module';
+import { TerminatedInKboModule } from "../terminated-in-kbo";
 
+import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardOverviewComponent } from './overview';
 
 @NgModule({
@@ -26,7 +27,8 @@ import { DashboardOverviewComponent } from './overview';
     SystemApiConfigurationModule,
     SystemExceptionsModule,
     SystemStatsModule,
-    SystemConfigurationValuesModule
+    SystemConfigurationValuesModule,
+    TerminatedInKboModule
   ],
   declarations: [
     DashboardOverviewComponent

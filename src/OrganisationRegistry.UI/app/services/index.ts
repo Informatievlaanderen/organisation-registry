@@ -42,6 +42,7 @@ export * from './organisationlocations';
 export * from './organisationorganisationclassifications';
 export * from './organisationrelationtypes';
 export * from './organisationopeninghours';
+export * from './organisationsync';
 export * from './people';
 export * from './peoplecapacities';
 export * from './peoplefunctions';

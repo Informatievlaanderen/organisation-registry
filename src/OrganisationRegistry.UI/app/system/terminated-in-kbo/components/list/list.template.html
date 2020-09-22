@@ -1,0 +1,93 @@
+<div data-table="">
+
+  <div class="u-table-overflow">
+    <table id="addressTable" class="data-table">
+      <thead>
+        <tr class="data-table__header">
+          <th class="data-table__header-title" style="width: 20%">
+            <a class="data-table__header-title--sortable"
+               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('name')}"
+               (click)="sortBy('name')">
+              Naam
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                 [ngClass]="{'vi-u-180deg': isSortedByDescending('kboNumber')}"></i>
+              </a>
+          </th>
+          <th class="data-table__header-title" style="width: 20%">
+            <a class="data-table__header-title--sortable"
+               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('kboNumber')}"
+               (click)="sortBy('name')">
+              KBO Nummer
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                 [ngClass]="{'vi-u-180deg': isSortedByDescending('kboNumber')}"></i>
+            </a>
+          </th>
+          <th class="data-table__header-title" style="width: 20%">
+            <a class="data-table__header-title--sortable"
+               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('date')}"
+               (click)="sortBy('date')">
+              Datum Stopzetting
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                 [ngClass]="{'vi-u-180deg': isSortedByDescending('date')}"></i>
+            </a>
+          </th>
+          <th class="data-table__header-title" style="width: 20%">
+            <a class="data-table__header-title--sortable"
+               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('code')}"
+               (click)="sortBy('code')">
+              Code
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                 [ngClass]="{'vi-u-180deg': isSortedByDescending('code')}"></i>
+            </a>
+          </th>
+          <th class="data-table__header-title" style="width: 20%">
+            <a class="data-table__header-title--sortable"
+               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('reason')}"
+               (click)="sortBy('reason')">
+              Reden
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                 [ngClass]="{'vi-u-180deg': isSortedByDescending('reason')}"></i>
+            </a>
+          </th>
+
+        </tr>
+      </thead>
+      <tbody>
+        <template [ngIf]="isBusy">
+          <tr><td colspan="5">Bezig met laden...</td></tr>
+        </template>
+
+        <template [ngIf]="!isBusy">
+          <tr *ngIf="!hasData(data)">
+            <td colspan="5">Geen data beschikbaar...</td>
+          </tr>
+          <tr *ngFor="let organisationTermination of data">
+            <td class="data-table__body-title"><a [routerLink]="['./../../organisations/', organisationTermination.id, 'sync']" title="{{organisationTermination.name}}">{{organisationTermination.name}}</a></td>
+            <td class="data-table__body-title"><a [routerLink]="['./../../organisations/', organisationTermination.id, 'sync']" title="{{organisationTermination.name}}">{{organisationTermination.kboNumber}}</a></td>
+            <td class="data-table__body-title">{{organisationTermination.date}}</td>
+            <td class="data-table__body-title">{{organisationTermination.code}}</td>
+            <td class="data-table__body-title">{{organisationTermination.reason}}</td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="totalPages > 1" class="data-table__actions data-table__actions--bottom">
+    <div class="pager">
+      <ul class="pager__list pager__list--right">
+        <li class="pager__element">
+          <strong>{{firstItem}} - {{lastItem}}</strong> van {{totalItems}}
+        </li>
+
+        <li class="pager__element" *ngIf="firstItem > 1">
+          <a class="link-text" (click)="previousPage()"><i class="vi vi-arrow vi-u-180deg vi-u-s"></i> vorige</a>
+        </li>
+
+        <li class="pager__element" *ngIf="lastItem < totalItems">
+          <a class="link-text" (click)="nextPage()">volgende <i class="vi vi-arrow vi-u-s"></i></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
