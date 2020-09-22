@@ -19,7 +19,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<KboOrganisationBankAccountAdded>,
         IEventHandler<KboOrganisationBankAccountRemoved>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationCouplingWithKboTerminated>,
+        IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<OrganisationBankAccountUpdated>
     {
         private readonly Elastic _elastic;
@@ -52,7 +52,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             RemoveBankAccounts(message.Body.OrganisationId, message.Body.OrganisationBankAccountIdsToCancel, message.Number, message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
         {
             var organisationDocument = _elastic.TryGet(() =>
                 _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);

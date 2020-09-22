@@ -28,7 +28,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationCouplingWithKboTerminated>,
+        IEventHandler<OrganisationTerminationSyncedWithKbo>,
 
         IEventHandler<OrganisationBecameActive>,
         IEventHandler<OrganisationBecameInactive>,
@@ -151,7 +151,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
         {
             if (message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate == null)
                 return;

@@ -21,7 +21,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
         IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationCouplingWithKboTerminated>,
+        IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<OrganisationOrganisationClassificationUpdated>,
         IEventHandler<OrganisationClassificationTypeUpdated>,
         IEventHandler<OrganisationClassificationUpdated>
@@ -110,7 +110,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
         {
             if (message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate == null)
                 return;

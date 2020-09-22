@@ -86,7 +86,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<KboOrganisationBankAccountAdded>,
         IEventHandler<KboOrganisationBankAccountRemoved>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationCouplingWithKboTerminated>,
+        IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<OrganisationBankAccountUpdated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
@@ -174,7 +174,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboTerminated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
         {
             if (!message.Body.OrganisationBankAccountIdsToTerminate.Any())
                 return;
