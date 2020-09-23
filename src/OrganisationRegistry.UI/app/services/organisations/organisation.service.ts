@@ -141,7 +141,7 @@ export class OrganisationService implements ICrudService<Organisation> {
   }
 
   public putKboNumber(organisationId: string, kboNumber: string) {
-    const url = `${this.organisationsUrl}/${organisationId}/kboNumber/${kboNumber}`;
+    const url = `${this.organisationsUrl}/${organisationId}/kbo/number/${kboNumber}`;
 
     let headers = new HeadersBuilder().build();
 
