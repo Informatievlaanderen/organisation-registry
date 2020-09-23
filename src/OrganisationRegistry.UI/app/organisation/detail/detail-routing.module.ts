@@ -687,10 +687,18 @@ const routes: Routes = [
           {
             path: '',
             component: OrganisationSyncOverviewComponent,
-            data: { title: 'Organisatie - Sync Management' }
-          },
+            canActivate: [RoleGuard, OrganisationGuard],
+            data: {
+              title: 'Organisatie - Sync Management',
+              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              organisationGuard: {
+                params: 'route.parent.parent.params',
+                idPart: 'id'
+              }
+            }
+          }
         ]
-      },
+      }
     ]
   }
 ];

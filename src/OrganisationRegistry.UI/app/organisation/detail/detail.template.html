@@ -61,7 +61,7 @@
               <li class="side-navigation__item">
                 <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['openinghours']" *ngIf="(enableOrganisationOpeningHours | async)">Openingsuren</a>
               </li>
-              <li class="side-navigation__item">
+              <li class="side-navigation__item" *ngIf="(enableSync | async)">
                 <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['sync']">Sync</a>
               </li>
             </ul>

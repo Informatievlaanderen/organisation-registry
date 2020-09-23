@@ -18,6 +18,7 @@ import { Organisation } from 'services/organisations';
 export class OrganisationDetailComponent implements OnInit, OnDestroy {
   public organisation: Organisation;
   public enableBankAccounts: Observable<boolean>;
+  public enableSync: Observable<boolean>;
   public enableOrganisationRelations: Observable<boolean>;
   public enableOrganisationOpeningHours: Observable<boolean>;
 
@@ -26,7 +27,7 @@ export class OrganisationDetailComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private store: OrganisationInfoService,
     private togglesService: TogglesService,
-    private oidcService: OidcService
+    private oidcService: OidcService,
   ) {
     this.organisation = new Organisation();
   }
@@ -39,6 +40,7 @@ export class OrganisationDetailComponent implements OnInit, OnDestroy {
     this.route.params.forEach((params: Params) => {
       let id = params['id'];
       this.store.loadOrganisation(id);
+      this.enableSync = this.oidcService.isLoggedIn && this.oidcService.canEditOrganisation(id);
     });
 
     this.enableOrganisationRelations = this.togglesService
