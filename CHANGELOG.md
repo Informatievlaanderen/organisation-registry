@@ -1,3 +1,15 @@
+# [1.56.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.55.0...v1.56.0) (2020-09-23)
+
+
+### Bug Fixes
+
+* move to 3.1.8 ([e626c60](https://github.com/informatievlaanderen/organisation-registry/commit/e626c60745d48a79c31fba360a8cf5b67cb2c214))
+
+
+### Features
+
+* put cancelling of kbo coupling behind toggle ([9b28c27](https://github.com/informatievlaanderen/organisation-registry/commit/9b28c2745b5ccaa749e7a2394ed813b8f2451eed))
+
 # [1.55.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.54.0...v1.55.0) (2020-09-16)
 
 
