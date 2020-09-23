@@ -1,19 +1,14 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 
-import { Observable } from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
+import {Observable} from 'rxjs/Observable';
+import {Subscription} from 'rxjs/Subscription';
 
-import { AuthService, OidcService } from 'core/auth';
-import { AlertBuilder, AlertService } from 'core/alert';
-import { BaseAlertMessages } from 'core/alertmessages';
-import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
-import { SearchEvent } from 'core/search';
+import {OidcService} from 'core/auth';
+import {AlertBuilder, AlertService} from 'core/alert';
+import {BaseAlertMessages} from 'core/alertmessages';
 
-import {
-  OrganisationSyncService,
-  OrganisationTermination
-} from 'services/organisationsync';
+import {OrganisationSyncService, OrganisationTermination, TerminationStatus} from 'services/organisationsync';
 import {OrganisationInfoService} from "../../../services/organisationinfo";
 import {Organisation} from "../../../services/organisations";
 
@@ -23,7 +18,7 @@ import {Organisation} from "../../../services/organisations";
 })
 export class OrganisationSyncOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
-  public syncStatus: OrganisationTermination;
+  public organisationTermination: OrganisationTermination;
   public canEditOrganisation: Observable<boolean>;
 
   private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Organisatie sync');
@@ -40,7 +35,7 @@ export class OrganisationSyncOverviewComponent implements OnInit, OnDestroy {
     private store: OrganisationInfoService,
     private alertService: AlertService
   ) {
-    this.syncStatus = new OrganisationTermination();
+    this.organisationTermination = new OrganisationTermination();
   }
 
   ngOnInit() {
@@ -65,6 +60,14 @@ export class OrganisationSyncOverviewComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  get syncEnabled() {
+    return !this.isLoading && this.organisation && this.organisation.kboNumber;
+  }
+
+  get syncTerminationEnabled() {
+    return !this.isLoading && this.organisation && this.organisation.kboNumber && this.organisationTermination.date;
   }
 
   sync() {
@@ -112,7 +115,7 @@ export class OrganisationSyncOverviewComponent implements OnInit, OnDestroy {
       .subscribe(
         item => {
           if (item)
-            this.syncStatus = item;
+            this.organisationTermination = item;
         },
         error => this.alertService.setAlert(
           new AlertBuilder()
