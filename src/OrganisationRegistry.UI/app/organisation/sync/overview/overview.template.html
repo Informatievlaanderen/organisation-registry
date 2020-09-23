@@ -6,16 +6,16 @@
     <div class="properties__column">
       <dl>
         <dt class="properties__label">Status:</dt>
-        <dd id="status" class="properties__data">{{syncStatus.status}}</dd>
+        <dd id="status" class="properties__data">{{organisationTermination.status}}</dd>
 
         <dt class="properties__label">Datum:</dt>
-        <dd class="properties__data" *ngIf="syncStatus.date">{{syncStatus.date}}</dd>
+        <dd class="properties__data" *ngIf="organisationTermination.date">{{organisationTermination.date}}</dd>
 
         <dt class="properties__label">Code:</dt>
-        <dd class="properties__data" *ngIf="syncStatus.code">{{syncStatus.code}}</dd>
+        <dd class="properties__data" *ngIf="organisationTermination.code">{{organisationTermination.code}}</dd>
 
         <dt class="properties__label">Reden:</dt>
-        <dd class="properties__data" *ngIf="syncStatus.reason">{{syncStatus.reason}}</dd>
+        <dd class="properties__data" *ngIf="organisationTermination.reason">{{organisationTermination.reason}}</dd>
 
       </dl>
     </div>
@@ -23,13 +23,15 @@
 
   <button class="button form__button"
           type="button"
-          [disabled]="isLoading"
+          [disabled]="!syncEnabled"
+          [ngClass]="{'button--disabled': !syncEnabled, 'button--loading': isLoading}"
           (click)="sync()">
     <span>Synchroniseren met KBO</span>
   </button>
   <button class="button form__button button--secondary button--warning"
           type="button"
-          [disabled]="isLoading"
+          [disabled]="!syncTerminationEnabled"
+          [ngClass]="{'button--disabled': !syncTerminationEnabled, 'button--loading': isLoading}"
           (click)="syncTermination()">
     <span>Stopzetting synchroniseren met KBO</span>
   </button>
