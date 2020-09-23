@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { AlertService} from 'core/alert';
 import { PagedEvent, PagedResult} from 'core/pagination';
-import { OidcService } from 'core/auth';
+import { OidcService, Role } from 'core/auth';
 
 import { OrganisationChild, Organisation } from 'services/organisations';
 import { OrganisationInfoService } from 'services/organisationinfo';
@@ -21,6 +21,7 @@ export class OrganisationInfoOverviewComponent implements OnInit, OnDestroy {
   public children: PagedResult<OrganisationChild> = new PagedResult<Organisation>();
   public organisation: Organisation;
   public canEditOrganisation: Observable<boolean>;
+  public isOrganisationRegistryBeheerder: Observable<boolean>;
   public organisationCancelKboCouplingEnabled: Observable<boolean>;
 
   private id: string;
@@ -67,12 +68,12 @@ export class OrganisationInfoOverviewComponent implements OnInit, OnDestroy {
         }
       }));
 
-    this.canEditOrganisation = Observable.of(false);
     this.subscriptions.push(this.route.parent.parent.params
       .subscribe(params => {
         this.isBusy = true;
         this.id = params['id'];
         this.canEditOrganisation = this.oidcService.canEditOrganisation(this.id);
+        this.isOrganisationRegistryBeheerder = this.oidcService.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
         this.store.loadOrganisation(this.id);
         this.store.loadChildren(this.id);
       }));

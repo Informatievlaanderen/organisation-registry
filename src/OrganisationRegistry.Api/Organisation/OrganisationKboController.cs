@@ -33,16 +33,13 @@ namespace OrganisationRegistry.Api.Organisation
         /// <summary>Couple an organisation to a KBO number.</summary>
         /// <response code="200">If the organisation was coupled.</response>
         [HttpPut("{id}/kbo/number/{kboNumber}")]
-        [OrganisationRegistryAuthorize]
+        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CoupleToKboNumber(
             [FromServices] ISecurityService securityService,
             [FromRoute] Guid id,
             [FromRoute] string kboNumber)
         {
-            if (!securityService.CanEditOrganisation(User, id))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
             await CommandSender.Send(
                 new CoupleOrganisationToKbo(
                     new OrganisationId(id),
@@ -55,15 +52,12 @@ namespace OrganisationRegistry.Api.Organisation
         /// <summary>Cancel an organisation's active coupling with a KBO number.</summary>
         /// <response code="200">If the organisation coupling was cancelled.</response>
         [HttpPut("{id}/kbo/cancel")]
-        [OrganisationRegistryAuthorize]
+        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> CancelCouplingWithKbo(
             [FromServices] ISecurityService securityService,
             [FromRoute] Guid id)
         {
-            if (!securityService.CanEditOrganisation(User, id))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
             await CommandSender.Send(
                 new CancelCouplingWithKbo(
                     new OrganisationId(id),
@@ -73,15 +67,12 @@ namespace OrganisationRegistry.Api.Organisation
         }
 
         [HttpPut("{id}/kbo/sync")]
-        [OrganisationRegistryAuthorize]
+        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> UpdateFromKbo(
             [FromServices] ISecurityService securityService,
             [FromRoute] Guid id)
         {
-            if (!securityService.CanEditOrganisation(User, id))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
             await CommandSender.Send(
                 new SyncOrganisationWithKbo(
                     new OrganisationId(id),
@@ -94,15 +85,12 @@ namespace OrganisationRegistry.Api.Organisation
         /// <summary>Couple an organisation to a kbo number.</summary>
         /// <response code="200">If the organisation was coupled.</response>
         [HttpPut("{id}/kbo/terminate")]
-        [OrganisationRegistryAuthorize]
+        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> TerminateKboCoupling(
             [FromServices] ISecurityService securityService,
             [FromRoute] Guid id)
         {
-            if (!securityService.CanEditOrganisation(User, id))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
             await CommandSender.Send(
                 new SyncOrganisationTerminationWithKbo(
                     new OrganisationId(id),
@@ -114,7 +102,7 @@ namespace OrganisationRegistry.Api.Organisation
         /// <summary>Couple an organisation to a kbo number.</summary>
         /// <response code="200">If the organisation was coupled.</response>
         [HttpGet("{id}/kbo/{kboNumber}/termination")]
-        [OrganisationRegistryAuthorize]
+        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetTerminationStatus(
             [FromServices] ISecurityService securityService,
@@ -122,9 +110,6 @@ namespace OrganisationRegistry.Api.Organisation
             [FromRoute] string kboNumber,
             [FromRoute] Guid id)
         {
-            if (!securityService.CanEditOrganisation(User, id))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
             var organisationTermination = await context.OrganisationTerminationList.SingleOrDefaultAsync(x => x.Id == id && x.KboNumber == kboNumber);
 
             if (organisationTermination == null)

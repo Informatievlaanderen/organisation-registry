@@ -161,7 +161,7 @@ const routes: Routes = [
             canActivate: [RoleGuard],
             data: {
               title: 'Organisatie - Algemeen - Koppelen KBO ongedaan maken',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.OrganisationRegistryBeheerder],
             }
           },
           {
@@ -690,11 +690,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Sync Management',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
-              organisationGuard: {
-                params: 'route.parent.parent.params',
-                idPart: 'id'
-              }
+              roles: [Role.OrganisationRegistryBeheerder],
             }
           }
         ]
