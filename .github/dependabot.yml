@@ -1,0 +1,47 @@
+version: 2
+
+updates:
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: daily
+
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+
+- package-ecosystem: docker
+  directory: "/src/OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump"
+  schedule:
+    interval: daily
+
+- package-ecosystem: docker
+  directory: "/src/OrganisationRegistry.Api"
+  schedule:
+    interval: daily
+
+- package-ecosystem: docker
+  directory: "/src/OrganisationRegistry.ElasticSearch.Projections"
+  schedule:
+    interval: daily
+
+- package-ecosystem: docker
+  directory: "/src/OrganisationRegistry.KboMutations"
+  schedule:
+    interval: daily
+
+- package-ecosystem: docker
+  directory: "/src/OrganisationRegistry.Projections.Delegations"
+  schedule:
+    interval: daily
+
+- package-ecosystem: docker
+  directory: "/src/OrganisationRegistry.Projections.Reporting"
+  schedule:
+    interval: daily
+
+- package-ecosystem: docker
+  directory: "/src/OrganisationRegistry.VlaanderenBeNotifier"
+  schedule:
+    interval: daily
