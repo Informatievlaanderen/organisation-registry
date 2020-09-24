@@ -60,7 +60,7 @@ namespace OrganisationRegistry.Organisation
         private KboTermination? TerminationInKbo { get; set; }
 
         public KboNumber? KboNumber { get; private set; }
-        public bool CreatedFromKbo { get; set; }
+        public bool CoupledToKboFromCreation { get; set; }
 
 
         private bool HasKboNumber => KboNumber != null;
@@ -1478,7 +1478,7 @@ namespace OrganisationRegistry.Organisation
             if (!HasKboNumber)
                 throw new OrganisationNotCoupledWithKbo();
 
-            if (CreatedFromKbo)
+            if (CoupledToKboFromCreation)
                 throw new CannotCancelCouplingWithOrganisationCreatedFromKbo();
 
             ApplyChange(new OrganisationCouplingWithKboCancelled(
@@ -1665,7 +1665,6 @@ namespace OrganisationRegistry.Organisation
             _purposes = @event.Purposes;
             _showOnVlaamseOverheidSites = @event.ShowOnVlaamseOverheidSites;
             _validity = new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo));
-            CreatedFromKbo = false;
         }
 
         private void Apply(OrganisationCreatedFromKbo @event)
@@ -1679,7 +1678,7 @@ namespace OrganisationRegistry.Organisation
             _showOnVlaamseOverheidSites = @event.ShowOnVlaamseOverheidSites;
             _validity = new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo));
             KboNumber = new KboNumber(@event.KboNumber);
-            CreatedFromKbo = true;
+            CoupledToKboFromCreation = true;
         }
 
         private void Apply(OrganisationInfoUpdatedFromKbo @event)
@@ -2204,6 +2203,7 @@ namespace OrganisationRegistry.Organisation
             KboNumber = new KboNumber(@event.KboNumber);
             _nameBeforeKboCoupling = Name;
             _shortNameBeforeKboCoupling = _shortName;
+            CoupledToKboFromCreation = false;
         }
 
         private void Apply(OrganisationCouplingWithKboCancelled @event)
