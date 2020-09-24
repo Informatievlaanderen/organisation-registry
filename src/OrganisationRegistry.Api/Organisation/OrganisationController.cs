@@ -16,11 +16,7 @@ namespace OrganisationRegistry.Api.Organisation
     using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
     using OrganisationRegistry.Infrastructure.Commands;
-    using OrganisationRegistry.Infrastructure.Configuration;
-    using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]

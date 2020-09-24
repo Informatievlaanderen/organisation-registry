@@ -8,7 +8,7 @@ import {OidcService} from 'core/auth';
 import {AlertBuilder, AlertService} from 'core/alert';
 import {BaseAlertMessages} from 'core/alertmessages';
 
-import {OrganisationSyncService, OrganisationTermination, TerminationStatus} from 'services/organisationsync';
+import {OrganisationSyncService, OrganisationTermination} from 'services/organisationsync';
 import {OrganisationInfoService} from "../../../services/organisationinfo";
 import {Organisation} from "../../../services/organisations";
 

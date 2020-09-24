@@ -10,7 +10,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using OrganisationRegistry.Organisation.Events;
     using System.Linq;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
     using Day.Events;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Building.Events;

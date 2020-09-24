@@ -1,6 +1,6 @@
 import { Response } from '@angular/http';
 import { Injectable } from '@angular/core';
-import { Headers, Http } from '@angular/http';
+import { Http } from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
 
@@ -8,9 +8,8 @@ import { ConfigurationService } from 'core/configuration';
 import { HeadersBuilder } from 'core/http';
 
 import { OrganisationTermination } from './organisation-termination.model';
-import {PagedResult, PagedResultFactory, SortOrder} from "../../core/pagination";
-import {OrganisationTerminationFilter} from "./organisation-termination-filter.model";
-import {EventListItem} from "../events";
+import { PagedResult, PagedResultFactory, SortOrder } from "../../core/pagination";
+import { OrganisationTerminationFilter } from "./organisation-termination-filter.model";
 
 @Injectable()
 export class OrganisationSyncService {
