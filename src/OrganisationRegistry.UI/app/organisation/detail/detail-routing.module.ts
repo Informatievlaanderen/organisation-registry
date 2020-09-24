@@ -691,6 +691,10 @@ const routes: Routes = [
             data: {
               title: 'Organisatie - Sync Management',
               roles: [Role.OrganisationRegistryBeheerder],
+              organisationGuard: {
+                params: 'route.parent.parent.params',
+                idPart: 'id'
+              }
             }
           }
         ]
