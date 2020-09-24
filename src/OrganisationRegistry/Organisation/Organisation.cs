@@ -2211,11 +2211,6 @@ namespace OrganisationRegistry.Organisation
             KboNumber = null;
             _shortName = _shortNameBeforeKboCoupling;
             Name = _nameBeforeKboCoupling;
-        }
-
-        private void Apply(OrganisationTerminationSyncedWithKbo @event)
-        {
-            KboNumber = null;
 
             _kboBankAccounts.Clear();
             _kboRegisteredOffice = null;
@@ -2226,6 +2221,17 @@ namespace OrganisationRegistry.Organisation
         private void Apply(OrganisationTerminationFoundInKbo @event)
         {
             TerminationInKbo = new KboTermination(@event.TerminationDate, @event.TerminationCode, @event.TerminationReason);
+        }
+
+        private void Apply(OrganisationTerminationSyncedWithKbo @event)
+        {
+            KboNumber = null;
+            TerminationInKbo = null;
+
+            _kboBankAccounts.Clear();
+            _kboRegisteredOffice = null;
+            _kboFormalNameLabel = null;
+            _kboLegalFormOrganisationClassification = null;
         }
 
         public IEnumerable<OrganisationParent> ParentsInPeriod(Period validity)
