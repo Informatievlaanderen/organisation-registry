@@ -255,7 +255,10 @@ namespace OrganisationRegistry.Organisation
 
         public void MarkAsSynced(Guid? kboSyncItemId)
         {
-            ApplyChange(new OrganisationSyncedFromKbo(Id, kboSyncItemId));
+            if (kboSyncItemId.HasValue)
+                ApplyChange(new OrganisationSyncedFromKbo(Id, kboSyncItemId));
+            else
+                ApplyChange(new OrganisationManuallySyncedWithKbo(Id));
         }
 
         public void UpdateInfoFromKbo(
