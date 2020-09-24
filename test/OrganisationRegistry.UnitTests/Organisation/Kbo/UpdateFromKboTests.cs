@@ -235,7 +235,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             organisationLocationRemoved.LocationTypeId.Should().Be(_organisationRegistryConfigurationStub.KboV2RegisteredOfficeLocationTypeId);
             organisationLocationRemoved.LocationTypeName.Should().Be("Registered KBO Office");
             organisationLocationRemoved.ValidFrom.Should().Be(new ValidFrom(1999, 12, 31));
-            organisationLocationRemoved.ValidTo.Should().Be(new ValidTo(2019, 9, 8));
+            organisationLocationRemoved.ValidTo.Should().Be(new ValidTo(null));
 
             var organisationLocationAdded = PublishedEvents[3].UnwrapBody<KboRegisteredOfficeOrganisationLocationAdded>();
             organisationLocationAdded.Should().NotBeNull();
@@ -247,7 +247,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             organisationLocationAdded.LocationFormattedAddress.Should().Be("AndereStraat, 8999 Evergem, Belgie");
             organisationLocationAdded.LocationTypeId.Should().Be(_organisationRegistryConfigurationStub.KboV2RegisteredOfficeLocationTypeId);
             organisationLocationAdded.LocationTypeName.Should().Be("Registered KBO Office");
-            organisationLocationAdded.ValidFrom.Should().Be(new ValidFrom(2019, 9, 9));
+            organisationLocationAdded.ValidFrom.Should().Be(null);
             organisationLocationAdded.ValidTo.Should().Be(null);
         }
 
@@ -301,7 +301,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationTypeName.Should().Be("ClassificatieType");
             legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationId.Should().Be(_anotherOrganisationClassificationId);
             legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationName.Should().Be("Classificatie");
-            legalFormOrganisationOrganisationClassificationAdded.ValidFrom.Should().Be(new ValidFrom(2019, 9, 9));
+            legalFormOrganisationOrganisationClassificationAdded.ValidFrom.Should().Be(new ValidFrom(2020, 12, 11));
             legalFormOrganisationOrganisationClassificationAdded.ValidTo.Should().Be(null);
         }
 
