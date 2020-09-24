@@ -1495,10 +1495,13 @@ namespace OrganisationRegistry.Organisation
                 _kboBankAccounts.Select(account => account.OrganisationBankAccountId).ToList()));
         }
 
-        public void TerminateKboCoupling(DateTime dateOfTermination)
+        public void TerminateKboCoupling()
         {
             if (!HasKboNumber)
                 throw new OrganisationNotCoupledWithKbo();
+
+            if (!TerminationInKbo.HasValue)
+                throw new KboOrganisationNotTerminatedException();
 
             ApplyChange(
                 new OrganisationTerminationSyncedWithKbo(
@@ -1506,7 +1509,7 @@ namespace OrganisationRegistry.Organisation
                     KboNumber!.ToDigitsOnly(),
                     Name,
                     OvoNumber,
-                    dateOfTermination,
+                    TerminationInKbo.Value.Date,
                     _kboLegalFormOrganisationClassification?.OrganisationOrganisationClassificationId,
                     _kboFormalNameLabel?.OrganisationLabelId,
                     _kboRegisteredOffice?.Validity.End.IsInfinite ?? false ? _kboRegisteredOffice.OrganisationLocationId : (Guid?) null,
