@@ -35,9 +35,7 @@ namespace OrganisationRegistry.Api.Organisation
         [HttpPut("{id}/kbo/number/{kboNumber}")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> CoupleToKboNumber(
-            [FromServices] ISecurityService securityService,
-            [FromRoute] Guid id,
+        public async Task<IActionResult> CoupleToKboNumber([FromRoute] Guid id,
             [FromRoute] string kboNumber)
         {
             await CommandSender.Send(
@@ -54,9 +52,7 @@ namespace OrganisationRegistry.Api.Organisation
         [HttpPut("{id}/kbo/cancel")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> CancelCouplingWithKbo(
-            [FromServices] ISecurityService securityService,
-            [FromRoute] Guid id)
+        public async Task<IActionResult> CancelCouplingWithKbo([FromRoute] Guid id)
         {
             await CommandSender.Send(
                 new CancelCouplingWithKbo(
@@ -69,9 +65,7 @@ namespace OrganisationRegistry.Api.Organisation
         [HttpPut("{id}/kbo/sync")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> UpdateFromKbo(
-            [FromServices] ISecurityService securityService,
-            [FromRoute] Guid id)
+        public async Task<IActionResult> UpdateFromKbo([FromRoute] Guid id)
         {
             await CommandSender.Send(
                 new SyncOrganisationWithKbo(
@@ -87,9 +81,7 @@ namespace OrganisationRegistry.Api.Organisation
         [HttpPut("{id}/kbo/terminate")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> TerminateKboCoupling(
-            [FromServices] ISecurityService securityService,
-            [FromRoute] Guid id)
+        public async Task<IActionResult> TerminateKboCoupling([FromRoute] Guid id)
         {
             await CommandSender.Send(
                 new SyncOrganisationTerminationWithKbo(
@@ -105,7 +97,6 @@ namespace OrganisationRegistry.Api.Organisation
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetTerminationStatus(
-            [FromServices] ISecurityService securityService,
             [FromServices] OrganisationRegistryContext context,
             [FromRoute] string kboNumber,
             [FromRoute] Guid id)

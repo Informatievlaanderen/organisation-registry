@@ -62,7 +62,6 @@ namespace OrganisationRegistry.Organisation
         public KboNumber? KboNumber { get; private set; }
         public bool CoupledToKboFromCreation { get; set; }
 
-
         private bool HasKboNumber => KboNumber != null;
 
         private Organisation()

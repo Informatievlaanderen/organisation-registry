@@ -6,7 +6,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
     using Infrastructure;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure.Events;

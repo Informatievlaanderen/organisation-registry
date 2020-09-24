@@ -126,7 +126,6 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         public DbSet<OrganisationTerminationListItem> OrganisationTerminationList { get; set; }
 
-
         public DbSet<PersonListItem> PersonList { get; set; }
         public DbSet<PersonCapacityListItem> PersonCapacityList { get; set; }
         public DbSet<PersonFunctionListItem> PersonFunctionList { get; set; }

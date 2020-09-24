@@ -6,7 +6,6 @@ namespace OrganisationRegistry.Organisation.Commands
     {
         public OrganisationId OrganisationId => Id;
 
-        public KboNumber KboNumber { get; }
         public ClaimsPrincipal User { get; }
 
         public SyncOrganisationTerminationWithKbo(

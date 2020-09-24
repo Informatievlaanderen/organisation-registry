@@ -7,7 +7,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
-
     using System.Linq;
     using System.Threading.Tasks;
     using Location;
