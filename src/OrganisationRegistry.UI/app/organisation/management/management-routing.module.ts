@@ -12,4 +12,4 @@ const routes: Routes = [
     RouterModule
   ]
 })
-export class OrganisationSyncRoutingModule { }
+export class OrganisationManagementRoutingModule { }

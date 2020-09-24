@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 
 @Component({
-    templateUrl: 'sync.template.html',
-    styleUrls: ['sync.style.css']
+    templateUrl: 'management.template.html',
+    styleUrls: ['management.style.css']
 })
-export class OrganisationSyncComponent {
+export class OrganisationManagementComponent {
 }

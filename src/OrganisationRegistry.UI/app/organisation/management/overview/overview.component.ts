@@ -16,7 +16,7 @@ import {Organisation} from "../../../services/organisations";
   templateUrl: 'overview.template.html',
   styleUrls: ['overview.style.css']
 })
-export class OrganisationSyncOverviewComponent implements OnInit, OnDestroy {
+export class OrganisationManagementOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public organisationTermination: OrganisationTermination;
   public canEditOrganisation: Observable<boolean>;

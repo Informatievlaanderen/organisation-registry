@@ -114,9 +114,9 @@ import {
 } from 'organisation/openinghours';
 
 import {
-  OrganisationSyncComponent,
-  OrganisationSyncOverviewComponent,
-} from 'organisation/sync';
+  OrganisationManagementComponent,
+  OrganisationManagementOverviewComponent,
+} from 'organisation/management';
 
 const routes: Routes = [
   {
@@ -682,14 +682,14 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'sync', component: OrganisationOpeningHoursComponent,
+        path: 'manage', component: OrganisationOpeningHoursComponent,
         children: [
           {
             path: '',
-            component: OrganisationSyncOverviewComponent,
+            component: OrganisationManagementOverviewComponent,
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
-              title: 'Organisatie - Sync Management',
+              title: 'Organisatie - Beheer',
               roles: [Role.OrganisationRegistryBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',

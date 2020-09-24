@@ -62,8 +62,8 @@
             <td colspan="5">Geen data beschikbaar...</td>
           </tr>
           <tr *ngFor="let organisationTermination of data">
-            <td class="data-table__body-title"><a [routerLink]="['./../../organisations/', organisationTermination.id, 'sync']" title="{{organisationTermination.name}}">{{organisationTermination.name}}</a></td>
-            <td class="data-table__body-title"><a [routerLink]="['./../../organisations/', organisationTermination.id, 'sync']" title="{{organisationTermination.name}}">{{organisationTermination.kboNumber}}</a></td>
+            <td class="data-table__body-title"><a [routerLink]="['./../../organisations/', organisationTermination.id, 'manage']" title="{{organisationTermination.name}}">{{organisationTermination.name}}</a></td>
+            <td class="data-table__body-title"><a [routerLink]="['./../../organisations/', organisationTermination.id, 'manage']" title="{{organisationTermination.name}}">{{organisationTermination.kboNumber}}</a></td>
             <td class="data-table__body-title">{{organisationTermination.date}}</td>
             <td class="data-table__body-title">{{organisationTermination.code}}</td>
             <td class="data-table__body-title">{{organisationTermination.reason}}</td>
