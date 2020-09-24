@@ -78,6 +78,7 @@ export class OrganisationManagementOverviewComponent implements OnInit, OnDestro
       .subscribe(
         item => {
           this.loadSyncStatus();
+          this.store.loadOrganisation(this.organisationId);
           this.alertService.setAlert(
             new AlertBuilder()
               .success()
@@ -104,6 +105,7 @@ export class OrganisationManagementOverviewComponent implements OnInit, OnDestro
       .subscribe(
         item => {
           this.loadSyncStatus();
+          this.store.loadOrganisation(this.organisationId);
           this.alertService.setAlert(
             new AlertBuilder()
               .success()
