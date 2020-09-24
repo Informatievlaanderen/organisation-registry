@@ -1,25 +1,25 @@
 import { NgModule } from '@angular/core';
 import { SharedModule } from 'shared';
 
-import { OrganisationSyncRoutingModule } from './sync-routing.module';
+import { OrganisationManagementRoutingModule } from './management-routing.module';
 
-import { OrganisationSyncComponent } from './sync.component';
-import { OrganisationSyncOverviewComponent } from './overview';
+import { OrganisationManagementComponent } from './management.component';
+import { OrganisationManagementOverviewComponent } from './overview';
 import { OrganisationSyncServiceModule } from "services/organisationsync";
 
 
 @NgModule({
   imports: [
     SharedModule,
-    OrganisationSyncRoutingModule,
+    OrganisationManagementRoutingModule,
     OrganisationSyncServiceModule,
   ],
   declarations: [
-    OrganisationSyncComponent,
-    OrganisationSyncOverviewComponent,
+    OrganisationManagementComponent,
+    OrganisationManagementOverviewComponent,
   ],
   exports: [
-    OrganisationSyncRoutingModule
+    OrganisationManagementRoutingModule
   ]
 })
-export class OrganisationSyncModule { }
+export class OrganisationManagementModule { }
