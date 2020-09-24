@@ -220,22 +220,11 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(SyncOrganisationTerminationWithKbo message)
         {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-
-            var kboOrganisationResult =
-                await _kboOrganisationRetriever.RetrieveOrganisation(message.User, organisation.KboNumber);
-
-            if (kboOrganisationResult.HasErrors)
-                throw new KboOrganisationNotFoundException(kboOrganisationResult.ErrorMessages);
-
-            if (kboOrganisationResult.Value.Termination == null)
-                throw new KboOrganisationNotTerminatedException();
-
             await SyncWithKbo(message.OrganisationId, message.User, null);
 
-            organisation = Session.Get<Organisation>(message.OrganisationId);
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
 
-            organisation.TerminateKboCoupling(kboOrganisationResult.Value.Termination.Date);
+            organisation.TerminateKboCoupling();
 
             await Session.Commit();
         }
