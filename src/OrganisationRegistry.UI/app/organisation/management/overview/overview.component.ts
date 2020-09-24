@@ -78,6 +78,12 @@ export class OrganisationManagementOverviewComponent implements OnInit, OnDestro
       .subscribe(
         item => {
           this.loadSyncStatus();
+          this.alertService.setAlert(
+            new AlertBuilder()
+              .success()
+              .withTitle('Organisatie bijgewerkt!')
+              .withMessage('De organisatie werd bijgewerkt vanuit de KBO.')
+              .build());
         },
         error => this.alertService.setAlert(
           new AlertBuilder()
@@ -98,6 +104,12 @@ export class OrganisationManagementOverviewComponent implements OnInit, OnDestro
       .subscribe(
         item => {
           this.loadSyncStatus();
+          this.alertService.setAlert(
+            new AlertBuilder()
+              .success()
+              .withTitle('Organisatie bijgewerkt!')
+              .withMessage('De organisatie werd stopgezet aan de hand van de data uit de KBO.')
+              .build());
         },
         error => this.alertService.setAlert(
           new AlertBuilder()

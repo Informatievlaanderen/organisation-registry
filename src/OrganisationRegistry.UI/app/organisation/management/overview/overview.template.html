@@ -4,9 +4,9 @@
   </div>
   <div class="properties ww-info">
     <div class="properties__column">
-      <dl>
+      <dl *ngIf="organisationTermination.date">
         <dt class="properties__label">Status:</dt>
-        <dd id="status" class="properties__data">{{organisationTermination.status}}</dd>
+        <dd id="status" class="properties__data">De organisatie is stopgezet in de KBO.</dd>
 
         <dt class="properties__label">Datum:</dt>
         <dd class="properties__data" *ngIf="organisationTermination.date">{{organisationTermination.date}}</dd>
@@ -17,6 +17,11 @@
         <dt class="properties__label">Reden:</dt>
         <dd class="properties__data" *ngIf="organisationTermination.reason">{{organisationTermination.reason}}</dd>
 
+      </dl>
+      <dl *ngIf="!organisationTermination.date">
+        <dt class="properties__label">Status:</dt>
+        <dd id="status" class="properties__data" *ngIf="!organisation.kboNumber">De organisatie is niet gekoppeld aan een KBO nummer.</dd>
+        <dd id="status" class="properties__data" *ngIf="organisation.kboNumber">De organisatie is niet stopgezet in de KBO.</dd>
       </dl>
     </div>
   </div>
