@@ -112,8 +112,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var organisationTerminationListItem = await context.OrganisationTerminationList.SingleAsync(item =>
+                var organisationTerminationListItem = await context.OrganisationTerminationList.SingleOrDefaultAsync(item =>
                     item.Id == message.Body.OrganisationId && item.KboNumber == message.Body.PreviousKboNumber);
+
+                if (organisationTerminationListItem == null)
+                    return;
 
                 context.OrganisationTerminationList.Remove(organisationTerminationListItem);
 
