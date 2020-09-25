@@ -26,7 +26,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using Xunit.Abstractions;
     using Purpose = OrganisationRegistry.Organisation.Events.Purpose;
 
-    public class CreateOrganisationFromKboTests: Specification<Organisation, KboOrganisationCommandHandlers, CreateKboOrganisation>
+    public class CreateOrganisationFromKboTests: Specification<Organisation, KboOrganisationCommandHandlers, CreateOrganisationFromKbo>
     {
         private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
 
@@ -107,9 +107,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             };
         }
 
-        protected override CreateKboOrganisation When()
+        protected override CreateOrganisationFromKbo When()
         {
-            return new CreateKboOrganisation(
+            return new CreateOrganisationFromKbo(
                 _organisationId,
                 "Naam",
                 "OVO000070",

@@ -193,11 +193,11 @@ namespace OrganisationRegistry.Api.Organisation.Requests
                 new ValidTo(message.ValidTo));
         }
 
-        public static CreateKboOrganisation MapToCreateKboOrganisation(
+        public static CreateOrganisationFromKbo MapToCreateKboOrganisation(
             CreateOrganisationRequest message,
             ClaimsPrincipal user)
         {
-            return new CreateKboOrganisation(
+            return new CreateOrganisationFromKbo(
                 new OrganisationId(message.Id),
                 message.Name,
                 message.OvoNumber,

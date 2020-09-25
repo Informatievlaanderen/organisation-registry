@@ -19,7 +19,7 @@ namespace OrganisationRegistry.Organisation
 
     public class KboOrganisationCommandHandlers :
         BaseCommandHandler<KboOrganisationCommandHandlers>,
-        ICommandHandler<CreateKboOrganisation>,
+        ICommandHandler<CreateOrganisationFromKbo>,
         ICommandHandler<CoupleOrganisationToKbo>,
         ICommandHandler<CancelCouplingWithKbo>,
         ICommandHandler<SyncOrganisationWithKbo>,
@@ -56,7 +56,7 @@ namespace OrganisationRegistry.Organisation
             _locationRetriever = locationRetriever;
         }
 
-        public async Task Handle(CreateKboOrganisation message)
+        public async Task Handle(CreateOrganisationFromKbo message)
         {
             var registeredOfficeLocationType =
                 Session.Get<LocationType>(_organisationRegistryConfiguration.KboV2RegisteredOfficeLocationTypeId);

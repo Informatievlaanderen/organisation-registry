@@ -127,7 +127,7 @@ namespace OrganisationRegistry.Organisation
         }
 
         public static Organisation CreateFromKbo(
-            CreateKboOrganisation message,
+            CreateOrganisationFromKbo message,
             IMagdaOrganisationResponse kboOrganisation,
             string ovoNumber,
             Organisation parentOrganisation,
