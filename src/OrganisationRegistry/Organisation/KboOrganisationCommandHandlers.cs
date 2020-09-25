@@ -82,6 +82,9 @@ namespace OrganisationRegistry.Organisation
             if (_uniqueKboValidator.IsKboNumberTaken(message.KboNumber))
                 throw new KboNumberNotUniqueException();
 
+            if (kboOrganisation.Termination != null)
+                throw new KboOrganisationTerminatedException();
+
             var parentOrganisation =
                 message.ParentOrganisationId != null
                     ? Session.Get<Organisation>(message.ParentOrganisationId)
@@ -131,6 +134,9 @@ namespace OrganisationRegistry.Organisation
                 throw new KboOrganisationNotFoundException(kboOrganisationResult.ErrorMessages);
 
             var kboOrganisation = kboOrganisationResult.Value;
+
+            if (kboOrganisation.Termination != null)
+                throw new KboOrganisationTerminatedException();
 
             var location = GetOrAddLocations(kboOrganisation.Address);
 
