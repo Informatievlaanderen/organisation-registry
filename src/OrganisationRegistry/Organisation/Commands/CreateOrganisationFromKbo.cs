@@ -4,7 +4,7 @@ namespace OrganisationRegistry.Organisation.Commands
     using System.Collections.Generic;
     using System.Security.Claims;
 
-    public class CreateKboOrganisation : BaseCommand<OrganisationId>
+    public class CreateOrganisationFromKbo : BaseCommand<OrganisationId>
     {
         public OrganisationId OrganisationId => Id;
 
@@ -25,7 +25,7 @@ namespace OrganisationRegistry.Organisation.Commands
         public ClaimsPrincipal User { get; }
         public KboNumber KboNumber { get; }
 
-        public CreateKboOrganisation(
+        public CreateOrganisationFromKbo(
             OrganisationId organisationId,
             string name,
             string ovoNumber,
