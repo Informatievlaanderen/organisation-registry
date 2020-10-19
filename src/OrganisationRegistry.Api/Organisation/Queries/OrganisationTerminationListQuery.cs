@@ -30,15 +30,14 @@ namespace OrganisationRegistry.Api.Organisation.Queries
             Reason = reason;
         }
 
-        public OrganisationTermination(OrganisationTerminationListItem x) : this(
-            x.Id,
-            x.Name,
-            x.KboNumber,
-            x.Date,
-            x.Code,
-            x.Reason)
-        {
-        }
+        public OrganisationTermination(OrganisationTerminationListItem x) 
+        	: this(
+	            x.Id,
+	            x.Name,
+	            x.KboNumber,
+	            x.Date,
+	            x.Code,
+	            x.Reason) { }
     }
 
     public class OrganisationTerminationListQuery: Query<OrganisationTerminationListItem, OrganisationTerminationListItemFilter, OrganisationTermination>
