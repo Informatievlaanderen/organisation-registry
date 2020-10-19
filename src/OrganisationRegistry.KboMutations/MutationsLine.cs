@@ -26,8 +26,6 @@ namespace OrganisationRegistry.KboMutations
 
         [Index(86)]
         public string StopzettingsReden { get; set; }
-
-
         protected bool Equals(MutationsLine other)
         {
             return DatumModificatie.Equals(other.DatumModificatie) &&
