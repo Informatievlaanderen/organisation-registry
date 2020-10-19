@@ -10,7 +10,7 @@ import { SystemExceptionsModule } from './../exceptions';
 import { SystemStatsModule } from './../stats';
 import { SystemConfigurationValuesModule } from './../configurationvalues';
 
-import { TerminatedInKboModule } from "../terminated-in-kbo";
+import { TerminatedInKboModule } from "./../terminated-in-kbo/terminated-in-kbo.module";
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardOverviewComponent } from './overview';
