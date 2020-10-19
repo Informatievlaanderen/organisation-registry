@@ -109,7 +109,7 @@ export class OrganisationManagementOverviewComponent implements OnInit, OnDestro
           this.alertService.setAlert(
             new AlertBuilder()
               .success()
-              .withTitle('Organisatie bijgewerkt!')
+              .withTitle('Organisatie stopgezet!')
               .withMessage('De organisatie werd stopgezet aan de hand van de data uit de KBO.')
               .build());
         },
