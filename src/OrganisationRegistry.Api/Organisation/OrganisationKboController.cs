@@ -24,11 +24,8 @@ namespace OrganisationRegistry.Api.Organisation
     [OrganisationRegistryRoute("organisations")]
     public class OrganisationKboController : OrganisationRegistryController
     {
-        public OrganisationKboController(
-            ICommandSender commandSender
-            ) : base(commandSender)
-        {
-        }
+        public OrganisationKboController(ICommandSender commandSender) 
+        	: base(commandSender) { }
 
         /// <summary>Couple an organisation to a KBO number.</summary>
         /// <response code="200">If the organisation was coupled.</response>
