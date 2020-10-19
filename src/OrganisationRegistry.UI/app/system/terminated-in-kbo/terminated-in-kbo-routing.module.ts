@@ -11,7 +11,7 @@ const routes: Routes = [
     component: TerminatedInKboOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      title: 'Systeem - Stopgezet in KBO',
+      title: 'Systeem - Stopgezet in de KBO',
       roles: [Role.OrganisationRegistryBeheerder, Role.Developer]
     }
   },
