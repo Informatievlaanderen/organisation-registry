@@ -682,7 +682,7 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'manage', component: OrganisationOpeningHoursComponent,
+        path: 'manage',
         children: [
           {
             path: '',
