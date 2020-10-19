@@ -32,7 +32,8 @@ namespace OrganisationRegistry.Api.Organisation
         [HttpPut("{id}/kbo/number/{kboNumber}")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> CoupleToKboNumber([FromRoute] Guid id,
+        public async Task<IActionResult> CoupleToKboNumber(
+            [FromRoute] Guid id,
             [FromRoute] string kboNumber)
         {
             await CommandSender.Send(
@@ -59,6 +60,8 @@ namespace OrganisationRegistry.Api.Organisation
             return Ok();
         }
 
+        /// <summary>Update the organisation according to data in the KBO.</summary>
+        /// <response code="200">If the organisation was updated.</response>
         [HttpPut("{id}/kbo/sync")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
@@ -73,8 +76,8 @@ namespace OrganisationRegistry.Api.Organisation
             return Ok();
         }
 
-        /// <summary>Couple an organisation to a kbo number.</summary>
-        /// <response code="200">If the organisation was coupled.</response>
+        /// <summary>Terminate the organisation according to data in the KBO.</summary>
+        /// <response code="200">If the organisation was terminated.</response>
         [HttpPut("{id}/kbo/terminate")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
@@ -88,8 +91,7 @@ namespace OrganisationRegistry.Api.Organisation
             return Ok();
         }
 
-        /// <summary>Couple an organisation to a kbo number.</summary>
-        /// <response code="200">If the organisation was coupled.</response>
+        /// <summary>Gets the termination status of an organisation coupled with the KBO.</summary>
         [HttpGet("{id}/kbo/{kboNumber}/termination")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
@@ -106,7 +108,7 @@ namespace OrganisationRegistry.Api.Organisation
             return Ok(OrganisationTerminationResponse.FromListItem(organisationTermination));
         }
 
-        /// <summary>Get a list of events.</summary>
+        /// <summary>Get a list of organisations to be terminated according to the KBO.</summary>
         [HttpGet("kbo/terminated")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
         [ProducesResponseType(typeof(List<OrganisationTerminationResponse>), (int) HttpStatusCode.OK)]
