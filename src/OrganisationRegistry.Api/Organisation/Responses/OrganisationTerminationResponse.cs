@@ -15,9 +15,7 @@ namespace OrganisationRegistry.Api.Organisation.Responses
 
         public TerminationStatus Status { get; private set; }
 
-        private OrganisationTerminationResponse()
-        {
-        }
+        private OrganisationTerminationResponse() { }
 
         public static OrganisationTerminationResponse FromListItem(OrganisationTerminationListItem organisationTermination)
         {
