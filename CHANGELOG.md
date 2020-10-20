@@ -1,3 +1,39 @@
+# [1.57.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.56.0...v1.57.0) (2020-10-20)
+
+
+### Bug Fixes
+
+* add missing organisationGuard arguments ([e02147b](https://github.com/informatievlaanderen/organisation-registry/commit/e02147be21c859eb347ea6fb53197e86d5293266))
+* correct couple to kbo uri ([14c00fc](https://github.com/informatievlaanderen/organisation-registry/commit/14c00fcc421e223f5e8b647d6266e52eb15b677a))
+
+
+### Features
+
+* add alerts and clearer status info ([aac292a](https://github.com/informatievlaanderen/organisation-registry/commit/aac292ac7f4987a674851a93897f3b77a1831e0c))
+* add backend for syncing kbo termination ([7acd7b3](https://github.com/informatievlaanderen/organisation-registry/commit/7acd7b3c64a7b88d46eac3b33b958e2f9e0790d7))
+* add comments to the kbo controller methods ([bfa8111](https://github.com/informatievlaanderen/organisation-registry/commit/bfa81117a3b8e0f38acb350d2020a3f24b58264d))
+* add ui to sync kbo termination ([87e1338](https://github.com/informatievlaanderen/organisation-registry/commit/87e13385863ae7df0be8a2e552d9e01f1284e745))
+* allow cancelling of org created by kbo, after recoupling with kbo ([c77e7e8](https://github.com/informatievlaanderen/organisation-registry/commit/c77e7e8b4c0590da7769aa560b56fd6542c0db7a))
+* allow syncing of end date of kbo coupling ([12abfbb](https://github.com/informatievlaanderen/organisation-registry/commit/12abfbbb03edc391324d4f30307163f9fcb8a060))
+* change title ([828caae](https://github.com/informatievlaanderen/organisation-registry/commit/828caae5c8998bb48b3b9e319ed5af1c6db3ee97))
+* clear kbo related data when syncing termination ([8f301b9](https://github.com/informatievlaanderen/organisation-registry/commit/8f301b9ab4331fd0d12315b4282a665da9c6ffa9))
+* disable sync buttons when appropriate ([41dbd1b](https://github.com/informatievlaanderen/organisation-registry/commit/41dbd1bdaf6df83a1e8d0e1e6fa7145db8f0c51e))
+* don't allow coupling with inactive kbo number ([c9fccf0](https://github.com/informatievlaanderen/organisation-registry/commit/c9fccf0f475fccb0fb4881c98dd55150622d13f3))
+* don't manually fetch termination date, trust sync to set it ([8e36b4f](https://github.com/informatievlaanderen/organisation-registry/commit/8e36b4f047e7c35d3835060975e5e98d9e0e09d7))
+* fetch organisation termination via magda ftp ([3f76671](https://github.com/informatievlaanderen/organisation-registry/commit/3f76671ccf15322b0216b6584833fcca2c7c2c22))
+* improve overview title ([453e59f](https://github.com/informatievlaanderen/organisation-registry/commit/453e59f39b86559525ef28273e348fbb65d2db2f))
+* improve title ([e098d77](https://github.com/informatievlaanderen/organisation-registry/commit/e098d77adf3a3af8576bb2c25b8ecd7e5e7c5ade))
+* introduce separate event for manual syncing with kbo ([388e4f2](https://github.com/informatievlaanderen/organisation-registry/commit/388e4f252de072e7bb9ae9b934d5a4da79d90f1d))
+* move kbo actions to dedicated controller ([9b71996](https://github.com/informatievlaanderen/organisation-registry/commit/9b719963f362cd2037862c8eff7ed865cab10ba2))
+* only give org registry maintainer access to kbo sync/cancel features ([0fff7cd](https://github.com/informatievlaanderen/organisation-registry/commit/0fff7cd8ae8a6f0f00cac2657c3b4004cecc3944))
+* prevent cancelling kbo coupling when organisation created from kbo ([843aaef](https://github.com/informatievlaanderen/organisation-registry/commit/843aaef0f75aefbdec5091991e717b36c23831c8))
+* protect sync in ui from unauthorized access ([cdaeb58](https://github.com/informatievlaanderen/organisation-registry/commit/cdaeb588001ccabbac18b57d9c56fe90c3c0335b))
+* reload the org after syncing ([e80ee8b](https://github.com/informatievlaanderen/organisation-registry/commit/e80ee8bc03c6ae6c102d2ee3dd56426eb2dd2ed9))
+* remove item on termination instead of changing status ([3c42b7a](https://github.com/informatievlaanderen/organisation-registry/commit/3c42b7a0a1b594e000c0534e230a7085f11c2e15))
+* rename 'sync' to 'manage' ([3208da0](https://github.com/informatievlaanderen/organisation-registry/commit/3208da0fd062307183b2b4463fc0ebc6ff9b5134))
+* rename OrganisationCouplingWithKboTerminated ([fce1748](https://github.com/informatievlaanderen/organisation-registry/commit/fce174894263dc1d16351c0c129a865b600f3886))
+* reorganise and add visual flair ([9a25e06](https://github.com/informatievlaanderen/organisation-registry/commit/9a25e062be00496d446d0316adeae3fa153a7b22))
+
 # [1.56.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.55.0...v1.56.0) (2020-09-23)
 
 
