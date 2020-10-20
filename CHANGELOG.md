@@ -1,3 +1,10 @@
+## [1.57.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.57.0...v1.57.1) (2020-10-20)
+
+
+### Bug Fixes
+
+* use surname claim instead of now empty name claim ([82d7df2](https://github.com/informatievlaanderen/organisation-registry/commit/82d7df27a5e58a2e5efbf7cdf276f9b4ae7f3d88))
+
 # [1.57.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.56.0...v1.57.0) (2020-10-20)
 
 
