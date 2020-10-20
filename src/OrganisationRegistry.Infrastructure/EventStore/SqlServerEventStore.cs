@@ -105,7 +105,7 @@ IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Events_Number' AND obj
             var principal = ClaimsPrincipal.Current;
             var ip = principal?.FindFirst("urn:be:vlaanderen:wegwijs:ip")?.Value;
             var firstName = principal?.FindFirst(ClaimTypes.GivenName)?.Value;
-            var lastName = principal?.FindFirst(ClaimTypes.Name)?.Value;
+            var lastName = principal?.FindFirst(ClaimTypes.Surname)?.Value;
             var userId = principal?.FindFirst("urn:be:vlaanderen:wegwijs:acmid")?.Value;
 
             var envelopes =
