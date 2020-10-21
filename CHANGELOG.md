@@ -1,3 +1,10 @@
+## [1.57.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.57.1...v1.57.2) (2020-10-21)
+
+
+### Bug Fixes
+
+* provide default value for newly required columns ([5068a9d](https://github.com/informatievlaanderen/organisation-registry/commit/5068a9df67a2b53b952f25fd9080f8f4fc5329ef))
+
 ## [1.57.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.57.0...v1.57.1) (2020-10-20)
 
 
