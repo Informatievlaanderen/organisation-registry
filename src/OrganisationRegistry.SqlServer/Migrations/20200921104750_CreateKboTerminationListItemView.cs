@@ -11,6 +11,11 @@ namespace OrganisationRegistry.SqlServer.Migrations
                 name: "KboTerminationSyncQueue",
                 schema: "Magda");
 
+            migrationBuilder.Sql("UPDATE [Magda].[KboSyncQueue] SET SourceOrganisationStatus = 'Unknown' WHERE SourceOrganisationStatus IS NULL");
+            migrationBuilder.Sql("UPDATE [Magda].[KboSyncQueue] SET SourceOrganisationName = 'Unknown' WHERE SourceOrganisationName IS NULL");
+            migrationBuilder.Sql("UPDATE [Magda].[KboSyncQueue] SET SourceOrganisationKboNumber = 'Unknown' WHERE SourceOrganisationKboNumber IS NULL");
+            migrationBuilder.Sql("UPDATE [Magda].[KboSyncQueue] SET SourceFileName = 'Unknown' WHERE SourceFileName IS NULL");
+
             migrationBuilder.AlterColumn<string>(
                 name: "SourceOrganisationStatus",
                 schema: "Magda",
