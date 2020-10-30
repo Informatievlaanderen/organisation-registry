@@ -1,3 +1,56 @@
 .label-card__content-wrapper .cta-title {
   margin-bottom: 3rem;
 }
+
+.contact-card__content-wrapper .cta-title {
+  margin-bottom: 1rem;
+  clear:both;
+}
+
+.ww-description {
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  color: #666;
+}
+
+.properties.ww-info {
+  background-color: #e8ebee;
+  padding: 2rem 1.5rem 0.5rem 2rem;
+}
+
+.properties--disabled {
+  color: #cbd2da;
+  font-weight: lighter;
+}
+
+.comma:not(:first-child) {
+  margin-left: .1em;
+}
+
+.comma:empty {
+  display: none;
+}
+
+.comma:not(:first-child):before {
+  content: ", ";
+}
+
+div.properties__column_full {
+  width: -webkit-calc(100% - 1rem);
+  width: calc(100% - 1rem);
+  padding-left: 0;
+}
+
+div.properties__column_full .properties__label {
+  width: 14.5%;
+}
+
+@media screen and (max-width: 767px) {
+  div.properties__column_full {
+    width: 100%;
+  }
+
+  div.properties__column_full .properties__label {
+    width: 40%;
+  }
+}
