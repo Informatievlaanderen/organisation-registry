@@ -1,3 +1,16 @@
+# [1.58.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.57.2...v1.58.0) (2020-10-30)
+
+
+### Features
+
+* add developer to people with rights for kbo termination ([0265c0e](https://github.com/informatievlaanderen/organisation-registry/commit/0265c0ec04b8576369132514fcc2fe859b70fbca))
+* add explanation to functionality in kbo mgmt page ([fe0068b](https://github.com/informatievlaanderen/organisation-registry/commit/fe0068be6069603cd23a9d68028b6bc9994bcabe))
+* add explanation to functionality in terminated orgs page ([1506cb3](https://github.com/informatievlaanderen/organisation-registry/commit/1506cb32462666222345f2cf11776cb0ca3da393))
+* improve text by adding articles before KBO ([12cbd2e](https://github.com/informatievlaanderen/organisation-registry/commit/12cbd2eedce4d8b95ce249b92bb390ac01244604))
+* rename title of kbo mgmt page ([3fa488f](https://github.com/informatievlaanderen/organisation-registry/commit/3fa488f173b6861cc4e634c487104c46f1dfa120))
+* reword CannotCancelCouplingWithOrganisationCreatedFromKbo msg ([1a24d94](https://github.com/informatievlaanderen/organisation-registry/commit/1a24d942d80d0adda65575fd78ef5d8f703f694b))
+* reword explanation in terminated orgs page ([77fefa1](https://github.com/informatievlaanderen/organisation-registry/commit/77fefa15c6824619909e7c4b068730122bf1d93e))
+
 ## [1.57.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.57.1...v1.57.2) (2020-10-21)
 
 
