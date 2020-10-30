@@ -689,7 +689,7 @@ const routes: Routes = [
             component: OrganisationManagementOverviewComponent,
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
-              title: 'Organisatie - Beheer',
+              title: 'Organisatie - KBO-koppeling',
               roles: [Role.OrganisationRegistryBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
