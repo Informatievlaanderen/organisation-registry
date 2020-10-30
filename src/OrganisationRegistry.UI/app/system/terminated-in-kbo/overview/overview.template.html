@@ -3,8 +3,15 @@
         <div class="cta-title">
             <h1 class="h2 cta-title__title">Stopgezet in de KBO</h1>
         </div>
+        <p class='ww-description'>
+          <span>
+            Hier vindt u een overzicht van de organisaties die op heden gekoppeld zijn met de KBO,
+            maar een stopzettingsdatum hebben in de KBO.
+          </span>
+        </p>
 
-        <ww-terminated-in-kbo-filter>
+
+      <ww-terminated-in-kbo-filter>
           [isBusy]="isLoading"
           (filter)="search($event)">
         </ww-terminated-in-kbo-filter>
