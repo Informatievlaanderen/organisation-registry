@@ -8,6 +8,7 @@ namespace OrganisationRegistry.MagdaReRegistration
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Api.Configuration;
+    using Api.Infrastructure.Search;
     using Api.Kbo;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
@@ -132,7 +133,7 @@ namespace OrganisationRegistry.MagdaReRegistration
             response.EnsureSuccessStatusCode();
 
             var searchResponseHeader =
-                JsonConvert.DeserializeObject<SearchResponseHeader>(response.Headers.GetValues("x-search-metadata").First());
+                JsonConvert.DeserializeObject<SearchResponseHeader>(response.Headers.GetValues(SearchConstants.SearchMetaDataHeaderName).First());
 
             var content = await response.Content.ReadAsStringAsync();
             var organisations = JsonConvert.DeserializeObject<List<OrganisationResult>>(content);
@@ -149,7 +150,7 @@ namespace OrganisationRegistry.MagdaReRegistration
                 scrollResponse.EnsureSuccessStatusCode();
 
                 searchResponseHeader =
-                    JsonConvert.DeserializeObject<SearchResponseHeader>(response.Headers.GetValues("x-search-metadata").First());
+                    JsonConvert.DeserializeObject<SearchResponseHeader>(response.Headers.GetValues(SearchConstants.SearchMetaDataHeaderName).First());
 
                 content = await scrollResponse.Content.ReadAsStringAsync();
                 organisations = JsonConvert.DeserializeObject<List<OrganisationResult>>(content);
