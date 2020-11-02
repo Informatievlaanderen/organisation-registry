@@ -1,3 +1,10 @@
+# [1.59.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.58.0...v1.59.0) (2020-11-02)
+
+
+### Features
+
+* expose x-search-metadata header ([ef068c6](https://github.com/informatievlaanderen/organisation-registry/commit/ef068c6910c16de44b8cecbb2f8a530a2c0f5896))
+
 # [1.58.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.57.2...v1.58.0) (2020-10-30)
 
 
