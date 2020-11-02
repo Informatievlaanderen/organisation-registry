@@ -31,6 +31,7 @@ namespace OrganisationRegistry.Api.Infrastructure
     using Newtonsoft.Json;
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
+    using Search;
     using IContainer = Autofac.IContainer;
 
     public class Startup
@@ -100,7 +101,8 @@ namespace OrganisationRegistry.Api.Infrastructure
                                 .GetSection("Cors")
                                 .GetChildren()
                                 .Select(c => c.Value)
-                                .ToArray()
+                                .ToArray(),
+                            ExposedHeaders = new []{SearchConstants.SearchMetaDataHeaderName}
                         },
                         Localization =
                         {
