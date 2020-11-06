@@ -1,3 +1,18 @@
+## [1.60.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.60.0...v1.60.1) (2020-11-06)
+
+
+### Bug Fixes
+
+* logging ([bb0a808](https://github.com/informatievlaanderen/organisation-registry/commit/bb0a8083a743fcf02f649338228913fc934e0fb4))
+* logging ([0e9574f](https://github.com/informatievlaanderen/organisation-registry/commit/0e9574f6252a1451539787a253a295602a2bb747))
+* logging ([75b2587](https://github.com/informatievlaanderen/organisation-registry/commit/75b2587d0ece096ba1831350ddc15f69c72e932b))
+* logging ([29f9e0f](https://github.com/informatievlaanderen/organisation-registry/commit/29f9e0f4ae590fadc3e4f22cdcf7127111125485))
+* logging ([686bfef](https://github.com/informatievlaanderen/organisation-registry/commit/686bfefb8c3203ec4dca1bb5406518e073cc590f))
+* logging ([5976557](https://github.com/informatievlaanderen/organisation-registry/commit/5976557c58c3f2e9ae78bd367ef871c54fe36e75))
+* logging ([aa0a237](https://github.com/informatievlaanderen/organisation-registry/commit/aa0a2378cd58841225ff0e26ff2f0dd2e367d97e))
+* logging ([e822f5c](https://github.com/informatievlaanderen/organisation-registry/commit/e822f5cda12dac02c0a0e173825c94854dcf18a9))
+* logging ([4933081](https://github.com/informatievlaanderen/organisation-registry/commit/4933081da83481f83d6362f9ecce13055ee4e301))
+
 # [1.60.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.59.0...v1.60.0) (2020-11-06)
 
 
