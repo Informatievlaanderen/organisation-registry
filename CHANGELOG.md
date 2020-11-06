@@ -1,3 +1,12 @@
+# [1.60.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.59.0...v1.60.0) (2020-11-06)
+
+
+### Features
+
+* add example for user & pass settings in appsettings.json ([c1cb95c](https://github.com/informatievlaanderen/organisation-registry/commit/c1cb95c8276e220da011d101fa6b69fb6382537c))
+* split up elastic connstring into read and write ([802f6a6](https://github.com/informatievlaanderen/organisation-registry/commit/802f6a65aaa866fc08f2fc8a596e3477926f6d8a))
+* split up elastic user & pass into read and write ([e09b8e7](https://github.com/informatievlaanderen/organisation-registry/commit/e09b8e7f74ccda2ccc4186633a07a3f4c85ea795))
+
 # [1.59.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.58.0...v1.59.0) (2020-11-02)
 
 
