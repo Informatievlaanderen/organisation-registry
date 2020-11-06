@@ -52,8 +52,10 @@ namespace OrganisationRegistry.ElasticSearch.Client
                 new ConnectionSettings(new Uri(write ? _configuration.WriteConnectionString : _configuration.ReadConnectionString))
                     .DisableDirectStreaming();
 
-            if (!string.IsNullOrEmpty(_configuration.User))
-                connectionSettings.BasicAuthentication(_configuration.User, _configuration.Pass);
+            if (!string.IsNullOrEmpty(write ? _configuration.WriteUser : _configuration.ReadUser))
+                connectionSettings.BasicAuthentication(
+                    write ? _configuration.WriteUser : _configuration.ReadUser,
+                    write ? _configuration.WritePass : _configuration.ReadPass);
 
             IConnectionSettingsValues settings = connectionSettings;
 

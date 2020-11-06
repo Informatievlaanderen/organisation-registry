@@ -22,8 +22,10 @@ namespace OrganisationRegistry.ElasticSearch.Configuration
 
         public string WriteConnectionString { get; set; }
         public string ReadConnectionString { get; set; }
-        public string User { get; set; }
-        public string Pass { get; set; }
+        public string WriteUser { get; set; }
+        public string ReadUser { get; set; }
+        public string WritePass { get; set; }
+        public string ReadPass { get; set; }
 
         public string OrganisationsReadIndex { get; set; }
         public string OrganisationsWriteIndex { get; set; }
@@ -54,8 +56,11 @@ namespace OrganisationRegistry.ElasticSearch.Configuration
             return new ElasticSearchConfiguration
             {
                 WriteConnectionString = WriteConnectionString,
-                User = User,
-                Pass = new string('*', 12),
+                ReadConnectionString = ReadConnectionString,
+                WriteUser = WriteUser,
+                ReadUser = ReadUser,
+                WritePass = new string('*', 12),
+                ReadPass = new string('*', 12),
 
                 OrganisationsReadIndex = OrganisationsReadIndex,
                 OrganisationsWriteIndex = OrganisationsWriteIndex,
