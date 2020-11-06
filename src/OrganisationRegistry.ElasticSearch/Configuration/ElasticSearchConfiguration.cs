@@ -20,7 +20,8 @@ namespace OrganisationRegistry.ElasticSearch.Configuration
         [JsonConverter(typeof(TimestampConverter))]
         public DateTime Created => DateTime.Now;
 
-        public string ConnectionString { get; set; }
+        public string WriteConnectionString { get; set; }
+        public string ReadConnectionString { get; set; }
         public string User { get; set; }
         public string Pass { get; set; }
 
@@ -52,7 +53,7 @@ namespace OrganisationRegistry.ElasticSearch.Configuration
         {
             return new ElasticSearchConfiguration
             {
-                ConnectionString = ConnectionString,
+                WriteConnectionString = WriteConnectionString,
                 User = User,
                 Pass = new string('*', 12),
 
