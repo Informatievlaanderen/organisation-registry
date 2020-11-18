@@ -1,3 +1,10 @@
+## [1.60.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.60.1...v1.60.2) (2020-11-18)
+
+
+### Bug Fixes
+
+* remove set-env usage in gh-actions ([bc4cc8d](https://github.com/informatievlaanderen/organisation-registry/commit/bc4cc8d98ba56e73c26460fe046d901b84c8625d))
+
 ## [1.60.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.60.0...v1.60.1) (2020-11-06)
 
 
