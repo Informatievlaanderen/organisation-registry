@@ -1,3 +1,10 @@
+# [1.61.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.60.2...v1.61.0) (2020-12-16)
+
+
+### Features
+
+* hardcode scheme ([c8d2bcf](https://github.com/informatievlaanderen/organisation-registry/commit/c8d2bcf672256839fc0addf0cc57138a325d0319))
+
 ## [1.60.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.60.1...v1.60.2) (2020-11-18)
 
 
