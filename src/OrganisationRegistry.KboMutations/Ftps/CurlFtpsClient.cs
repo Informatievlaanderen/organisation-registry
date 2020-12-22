@@ -33,6 +33,9 @@ namespace OrganisationRegistry.KboMutations.Ftps
                     FileName = _kboMutationsConfiguration.CurlLocation,
                     Arguments = $"--ftp-ssl " +
                                 $"--user {_kboMutationsConfiguration.Username}:{_kboMutationsConfiguration.Password} " +
+                                $"--cert {_kboMutationsConfiguration.CertPath} " +
+                                $"--key {_kboMutationsConfiguration.KeyPath} " +
+                                $"--cacert {_kboMutationsConfiguration.CaCertPath} " +
                                 $"{sourceDirectory}",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -63,6 +66,9 @@ namespace OrganisationRegistry.KboMutations.Ftps
                     FileName = _kboMutationsConfiguration.CurlLocation,
                     Arguments = $"--ftp-ssl " +
                                 $"--user {_kboMutationsConfiguration.Username}:{_kboMutationsConfiguration.Password} " +
+                                $"--cert {_kboMutationsConfiguration.CertPath} " +
+                                $"--key {_kboMutationsConfiguration.KeyPath} " +
+                                $"--cacert {_kboMutationsConfiguration.CaCertPath} " +
                                 $"{sourceFilePath} " +
                                 $"-o {fileName}",
                     RedirectStandardOutput = true,
@@ -99,6 +105,9 @@ namespace OrganisationRegistry.KboMutations.Ftps
                     FileName = _kboMutationsConfiguration.CurlLocation,
                     Arguments = $"--ftp-ssl " +
                                 $"--user {_kboMutationsConfiguration.Username}:{_kboMutationsConfiguration.Password} " +
+                                $"--cert {_kboMutationsConfiguration.CertPath} " +
+                                $"--key {_kboMutationsConfiguration.KeyPath} " +
+                                $"--cacert {_kboMutationsConfiguration.CaCertPath} " +
                                 $"{baseUri} " +
                                 $"-Q \"-RNFR {sourceFilePath}\" " +
                                 $"-Q \"-RNTO {destinationFilePath}\"",
