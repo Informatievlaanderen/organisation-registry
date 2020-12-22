@@ -18,6 +18,10 @@ namespace OrganisationRegistry.KboMutations.Configuration
         public string SourcePath { get; set; }
         public string CachePath { get; set; }
 
+        public string CertPath { get; set; }
+        public string CaCertPath { get; set; }
+        public string KeyPath { get; set; }
+
         public string LockRegionEndPoint { get; set; }
         public string LockAccessKeyId { get; set; }
         public string LockAccessKeySecret { get; set; }
