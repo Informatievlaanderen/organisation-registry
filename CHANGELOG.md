@@ -1,3 +1,15 @@
+# [1.62.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.61.0...v1.62.0) (2020-12-23)
+
+
+### Bug Fixes
+
+* move to 5.0.1 ([cdcd237](https://github.com/informatievlaanderen/organisation-registry/commit/cdcd237ccaef3ed4e56dd23c3e342fac0b542960))
+
+
+### Features
+
+* use 2-way authentication for kbo ftps communication ([7d45ea6](https://github.com/informatievlaanderen/organisation-registry/commit/7d45ea6810b1c189a815c5d39f96996c583b23ac))
+
 # [1.61.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.60.2...v1.61.0) (2020-12-16)
 
 
