@@ -85,7 +85,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             PrepareIndex(_elastic.WriteClient, true);
 
             using (var context = _contextFactory().Value)
-                context.Database.ExecuteSqlCommand(
+                context.Database.ExecuteSqlRaw(
                     string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [OrganisationRegistry].[{tableName}];")));
         }
 

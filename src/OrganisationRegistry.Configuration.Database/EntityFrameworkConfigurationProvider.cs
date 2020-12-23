@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Configuration.Database
+namespace OrganisationRegistry.Configuration.Database
 {
     using System;
     using System.Linq;
@@ -38,7 +38,7 @@
             {
                 context.Database.EnsureCreated();
 
-                context.Database.ExecuteSqlCommand(@"
+                context.Database.ExecuteSqlRaw(@"
 IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = N'OrganisationRegistry')
     EXEC('CREATE SCHEMA [OrganisationRegistry] AUTHORIZATION [dbo]');
 

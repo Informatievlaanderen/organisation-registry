@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.SqlServer.Event
+namespace OrganisationRegistry.SqlServer.Event
 {
     using System;
     using Microsoft.EntityFrameworkCore;
@@ -30,7 +30,7 @@
 
             b.Property(p => p.Number)
                 .IsRequired()
-                .UseSqlServerIdentityColumn();
+                .UseIdentityColumn();
 
             b.Property(p => p.Id)
                 .IsRequired();
