@@ -374,7 +374,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             Logger.LogInformation("Clearing tables for {ProjectionName}.", message.Body.ProjectionName);
 
             using (var context = ContextFactory.Create())
-                context.Database.ExecuteSqlCommand(
+                context.Database.ExecuteSqlRaw(
                     string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [OrganisationRegistry].[{tableName}];")));
         }
 

@@ -73,7 +73,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 
-            b.Property(p => p.Id).UseSqlServerIdentityColumn();
+            b.Property(p => p.Id).UseIdentityColumn();
             b.Property(p => p.OrganisationId).IsRequired();
 
             b.HasIndex("OrganisationId", "FormalFrameworkId").IsUnique();
@@ -114,7 +114,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 .HasKey(p => p.Id)
                 .IsClustered();
 
-            b.Property(p => p.Id).UseSqlServerIdentityColumn();
+            b.Property(p => p.Id).UseIdentityColumn();
 
             b.Property(p => p.OrganisationFormalFrameworkId);
             b.Property(p => p.ValidFrom);
@@ -133,7 +133,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 
-            b.Property(p => p.Id).UseSqlServerIdentityColumn();
+            b.Property(p => p.Id).UseIdentityColumn();
 
             b.Property(p => p.OrganisationClassificationTypeId);
             b.Property(p => p.OrganisationClassificationId);

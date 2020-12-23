@@ -101,7 +101,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         private int DeleteRows(DbContext context)
         {
-            return context.Database.ExecuteSqlCommand(
+            return context.Database.ExecuteSqlRaw(
                 string.Concat(ProjectionTableNames.Select(tableName =>
                     $"DELETE TOP(500) FROM [OrganisationRegistry].[{tableName}];")));
         }

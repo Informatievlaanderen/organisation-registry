@@ -1,8 +1,8 @@
 #r "paket:
-version 5.247.4
+version 6.0.0-beta8
 framework: netstandard20
 source https://api.nuget.org/v3/index.json
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 4.2.3 //"
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 5.0.1 //"
 
 #load "packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/build-generic.fsx"
 
@@ -22,10 +22,10 @@ let dockerRepository = "organisation-registry"
 let assemblyVersionNumber = (sprintf "2.%s")
 let nugetVersionNumber = (sprintf "%s")
 
-let build = buildSolution assemblyVersionNumber
+let buildSource = build assemblyVersionNumber
+let buildTest = buildTest assemblyVersionNumber
 let setVersions = (setSolutionVersions assemblyVersionNumber product copyright company)
-let test = testSolution
-let publish = publish assemblyVersionNumber
+let publishSource = publish assemblyVersionNumber
 let pack = pack nugetVersionNumber
 let containerize = containerize dockerRepository
 let push = push dockerRepository
@@ -43,7 +43,21 @@ Target.create "Restore_Solution" (fun _ -> restore "OrganisationRegistry")
 
 Target.create "Build_Solution" (fun _ ->
   setVersions "SolutionInfo.cs"
-  build "OrganisationRegistry")
+  buildSource "OrganisationRegistry.Api"
+  buildSource "OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump"
+  buildSource "OrganisationRegistry.ElasticSearch.Projections"
+  buildSource "OrganisationRegistry.KboMutations"
+  buildSource "OrganisationRegistry.Projections.Delegations"
+  buildSource "OrganisationRegistry.Projections.Reporting"
+  buildSource "OrganisationRegistry.UI"
+  buildSource "OrganisationRegistry.VlaanderenBeNotifier"
+  buildTest "OrganisationRegistry.Api.IntegrationTests"
+  buildTest "OrganisationRegistry.ElasticSearch.Tests"
+  buildTest "OrganisationRegistry.KboMutations.UnitTests"
+  buildTest "OrganisationRegistry.SqlServer.IntegrationTests"
+  buildTest "OrganisationRegistry.UnitTests"
+  buildTest "OrganisationRegistry.VlaanderenBeNotifier.UnitTests"
+)
 
 Target.create "Site_Build" (fun _ ->
   Npm.exec "run build" id
@@ -58,7 +72,16 @@ Target.create "Site_Build" (fun _ ->
   Shell.copyFile dist (source @@ "init.sh")
 )
 
-Target.create "Test_Solution" (fun _ -> test "OrganisationRegistry")
+Target.create "Test_Solution" (fun _ ->
+    [
+        "test" @@ "OrganisationRegistry.Api.IntegrationTests"
+        "test" @@ "OrganisationRegistry.ElasticSearch.Tests"
+        "test" @@ "OrganisationRegistry.KboMutations.UnitTests"
+        "test" @@ "OrganisationRegistry.SqlServer.IntegrationTests"
+        "test" @@ "OrganisationRegistry.UnitTests"
+        "test" @@ "OrganisationRegistry.VlaanderenBeNotifier.UnitTests"
+    ] |> List.iter testWithDotNet
+)
 
 Target.create "Publish_Solution" (fun _ ->
   [
@@ -69,7 +92,7 @@ Target.create "Publish_Solution" (fun _ ->
     "OrganisationRegistry.Projections.Delegations"
     "OrganisationRegistry.Projections.Reporting"
     "OrganisationRegistry.KboMutations"
-  ] |> List.iter publish
+  ] |> List.iter publishSource
 
   let dist = (buildDir @@ "OrganisationRegistry.Scheduler" @@ "linux")
   let source = "src" @@ "OrganisationRegistry.Scheduler"

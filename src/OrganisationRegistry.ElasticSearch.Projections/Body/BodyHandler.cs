@@ -125,7 +125,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 return;
 
             using (var context = _contextFactory().Value)
-                context.Database.ExecuteSqlCommand(
+                context.Database.ExecuteSqlRaw(
                     string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [OrganisationRegistry].[{tableName}];")));
         }
 
