@@ -1,3 +1,15 @@
+# [1.63.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.62.0...v1.63.0) (2020-12-24)
+
+
+### Bug Fixes
+
+* change how curl outputs to std and error ([95b8939](https://github.com/informatievlaanderen/organisation-registry/commit/95b8939e1a646f3eed2fa913f4bcc6f00c77daa3))
+
+
+### Features
+
+* reuse existing context instead of recreating ([e2b625f](https://github.com/informatievlaanderen/organisation-registry/commit/e2b625f1764345c536f3e2bbe7195926f0a66c69))
+
 # [1.62.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.61.0...v1.62.0) (2020-12-23)
 
 
