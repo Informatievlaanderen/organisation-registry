@@ -36,7 +36,7 @@ namespace OrganisationRegistry.KboMutations.Ftps
                                 $"--cert {_kboMutationsConfiguration.CertPath} " +
                                 $"--key {_kboMutationsConfiguration.KeyPath} " +
                                 $"--cacert {_kboMutationsConfiguration.CaCertPath} " +
-                                $"{sourceDirectory}",
+                                $"{sourceDirectory} --fail --silent --show-error",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -70,7 +70,7 @@ namespace OrganisationRegistry.KboMutations.Ftps
                                 $"--key {_kboMutationsConfiguration.KeyPath} " +
                                 $"--cacert {_kboMutationsConfiguration.CaCertPath} " +
                                 $"{sourceFilePath} " +
-                                $"-o {fileName}",
+                                $"-o {fileName} --fail --silent --show-error",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
@@ -110,7 +110,7 @@ namespace OrganisationRegistry.KboMutations.Ftps
                                 $"--cacert {_kboMutationsConfiguration.CaCertPath} " +
                                 $"{baseUri} " +
                                 $"-Q \"-RNFR {sourceFilePath}\" " +
-                                $"-Q \"-RNTO {destinationFilePath}\"",
+                                $"-Q \"-RNTO {destinationFilePath}\" --fail --silent --show-error",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
