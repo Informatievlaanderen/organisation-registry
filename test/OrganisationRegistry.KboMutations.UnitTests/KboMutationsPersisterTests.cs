@@ -22,7 +22,8 @@ namespace OrganisationRegistry.KboMutations.UnitTests
             var kboMutationsPersister =
                 new KboMutationsPersister(new NullLogger<KboMutationsPersister>());
 
-            kboMutationsPersister.Persist(context,
+            kboMutationsPersister.Persist(
+                context,
                 "test.csv",
                 new List<MutationsLine>
                 {
@@ -50,8 +51,6 @@ namespace OrganisationRegistry.KboMutations.UnitTests
             context.KboSyncQueue.Count().Should().Be(2);
         }
 
-        public void Dispose()
-        {
-        }
+        public void Dispose() { }
     }
 }
