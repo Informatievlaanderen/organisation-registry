@@ -4,23 +4,22 @@ namespace OrganisationRegistry.KboMutations
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.Extensions.Logging;
-    using SqlServer;
+    using SqlServer.Infrastructure;
     using SqlServer.KboSyncQueue;
 
     public class KboMutationsPersister : IKboMutationsPersister
     {
-        private readonly IContextFactory _contextFactory;
         private readonly ILogger<KboMutationsPersister> _logger;
 
-        public KboMutationsPersister(
-            IContextFactory contextFactory,
-            ILogger<KboMutationsPersister> logger)
+        public KboMutationsPersister(ILogger<KboMutationsPersister> logger)
         {
-            _contextFactory = contextFactory;
             _logger = logger;
         }
 
-        public void Persist(string fullName, IEnumerable<MutationsLine> mutations)
+        public void Persist(
+            OrganisationRegistryContext context,
+            string fullName,
+            IEnumerable<MutationsLine> mutations)
         {
             var mutationsLines = mutations.ToList();
 
@@ -29,23 +28,21 @@ namespace OrganisationRegistry.KboMutations
                 fullName,
                 mutationsLines.Count);
 
-            using (var context = _contextFactory.Create())
+            foreach (var mutation in mutationsLines)
             {
-                foreach (var mutation in mutationsLines)
+                context.KboSyncQueue.Add(new KboSyncQueueItem
                 {
-                    context.KboSyncQueue.Add(new KboSyncQueueItem
-                    {
-                        Id = Guid.NewGuid(),
-                        SourceFileName = fullName,
-                        SourceOrganisationStatus = mutation.StatusCode,
-                        SourceOrganisationKboNumber = mutation.Ondernemingsnummer,
-                        SourceOrganisationName = mutation.MaatschappelijkeNaam,
-                        SourceOrganisationModifiedAt = mutation.DatumModificatie,
-                        MutationReadAt = DateTime.UtcNow,
-                    });
-                }
-                context.SaveChanges();
+                    Id = Guid.NewGuid(),
+                    SourceFileName = fullName,
+                    SourceOrganisationStatus = mutation.StatusCode,
+                    SourceOrganisationKboNumber = mutation.Ondernemingsnummer,
+                    SourceOrganisationName = mutation.MaatschappelijkeNaam,
+                    SourceOrganisationModifiedAt = mutation.DatumModificatie,
+                    MutationReadAt = DateTime.UtcNow,
+                });
             }
+
+            context.SaveChanges();
         }
     }
 }
