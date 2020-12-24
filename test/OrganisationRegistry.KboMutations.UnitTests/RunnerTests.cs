@@ -8,9 +8,12 @@
     using Infrastructure;
     using Infrastructure.Configuration;
     using Infrastructure.Events;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Moq;
+    using SqlServer;
+    using SqlServer.Infrastructure;
     using Xunit;
 
     public class RunnerTests
@@ -37,7 +40,8 @@
                     kboMutationsConfiguration,
                     Mock.Of<IKboMutationsFetcher>(),
                     Mock.Of<IKboMutationsPersister>(),
-                    Mock.Of<IExternalIpFetcher>());
+                    Mock.Of<IExternalIpFetcher>(),
+                    Mock.Of<IContextFactory>());
 
             runner.Run().Should().BeFalse();
         }
@@ -55,7 +59,8 @@
                     kboMutationsConfiguration,
                     Mock.Of<IKboMutationsFetcher>(),
                     Mock.Of<IKboMutationsPersister>(),
-                    Mock.Of<IExternalIpFetcher>());
+                    Mock.Of<IExternalIpFetcher>(),
+                    Mock.Of<IContextFactory>());
 
             runner.Run().Should().BeTrue();
         }
@@ -81,7 +86,8 @@
                 kboMutationsConfiguration,
                 kboFtpClientMock.Object,
                 Mock.Of<IKboMutationsPersister>(),
-                Mock.Of<IExternalIpFetcher>());
+                Mock.Of<IExternalIpFetcher>(),
+                Mock.Of<IContextFactory>());
 
             runner.Run().Should().BeTrue();
         }
@@ -110,7 +116,8 @@
                     kboMutationsConfiguration,
                     kboFtpClientMock.Object,
                     Mock.Of<IKboMutationsPersister>(),
-                    Mock.Of<IExternalIpFetcher>());
+                    Mock.Of<IExternalIpFetcher>(),
+                    Mock.Of<IContextFactory>());
 
             runner.Run();
 
@@ -149,18 +156,22 @@
 
             var kboMutationsPersisterMock = new Mock<IKboMutationsPersister>();
 
+            var context = new OrganisationRegistryContext(new DbContextOptions<OrganisationRegistryContext>());
+            var contextFactoryMock = new Mock<IContextFactory>();
+            contextFactoryMock.Setup(factory => factory.Create()).Returns(context);
             var runner =
                 new Runner(_logger,
                     togglesConfiguration,
                     kboMutationsConfiguration,
                     kboFtpClientMock.Object,
                     kboMutationsPersisterMock.Object,
-                    Mock.Of<IExternalIpFetcher>());
+                    Mock.Of<IExternalIpFetcher>(),
+                    contextFactoryMock.Object);
 
             runner.Run();
 
-            kboMutationsPersisterMock.Verify(persister => persister.Persist("filename.csv", mutationsLines1), Times.Once);
-            kboMutationsPersisterMock.Verify(persister => persister.Persist("filename2.csv", mutationsLines2), Times.Once);
+            kboMutationsPersisterMock.Verify(persister => persister.Persist(context, "filename.csv", mutationsLines1), Times.Once);
+            kboMutationsPersisterMock.Verify(persister => persister.Persist(context, "filename2.csv", mutationsLines2), Times.Once);
         }
     }
 }

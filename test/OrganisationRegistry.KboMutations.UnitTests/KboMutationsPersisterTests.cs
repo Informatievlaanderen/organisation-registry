@@ -3,11 +3,9 @@ namespace OrganisationRegistry.KboMutations.UnitTests
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Autofac.Features.OwnedInstances;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging.Abstractions;
-    using SqlServer;
     using SqlServer.Infrastructure;
     using Xunit;
 
@@ -22,11 +20,10 @@ namespace OrganisationRegistry.KboMutations.UnitTests
             var context = new OrganisationRegistryContext(dbContextOptions);
 
             var kboMutationsPersister =
-                new KboMutationsPersister(
-                    new ContextFactory(() => new Owned<OrganisationRegistryContext>(context, this)),
-                    new NullLogger<KboMutationsPersister>());
+                new KboMutationsPersister(new NullLogger<KboMutationsPersister>());
 
-            kboMutationsPersister.Persist("test.csv",
+            kboMutationsPersister.Persist(context,
+                "test.csv",
                 new List<MutationsLine>
                 {
                     new MutationsLine

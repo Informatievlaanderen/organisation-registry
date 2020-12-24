@@ -1,9 +1,13 @@
 namespace OrganisationRegistry.KboMutations
 {
     using System.Collections.Generic;
+    using SqlServer.Infrastructure;
 
     public interface IKboMutationsPersister
     {
-        void Persist(string fullName, IEnumerable<MutationsLine> mutations);
+        void Persist(
+            OrganisationRegistryContext organisationRegistryContext,
+            string fullName,
+            IEnumerable<MutationsLine> mutations);
     }
 }
