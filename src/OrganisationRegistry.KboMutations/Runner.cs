@@ -37,8 +37,10 @@ namespace OrganisationRegistry.KboMutations
 
         public bool Run()
         {
-            _logger.LogInformation(ProgramInformation.Build(_kboMutationsConfiguration,
-                _externalIpFetcher.Fetch().GetAwaiter().GetResult()));
+            _logger.LogInformation(
+                ProgramInformation.Build(
+                    _kboMutationsConfiguration,
+                    _externalIpFetcher.Fetch().GetAwaiter().GetResult()));
 
             if (!_togglesConfiguration.KboMutationsAvailable)
                 return false;
