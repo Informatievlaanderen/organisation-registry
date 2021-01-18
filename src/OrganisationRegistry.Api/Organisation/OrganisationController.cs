@@ -15,8 +15,11 @@ namespace OrganisationRegistry.Api.Organisation
     using System;
     using System.Collections.Generic;
     using System.Net;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using OrganisationRegistry.Infrastructure.Commands;
+    using OrganisationRegistry.Organisation;
+    using OrganisationRegistry.Organisation.Commands;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
@@ -120,5 +123,25 @@ namespace OrganisationRegistry.Api.Organisation
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.OrganisationId }));
         }
+
+        /// <summary>Terminate an organisation.</summary>
+        /// <response code="200">If the organisation is terminated, together with the location.</response>
+        [HttpDelete("{id}")]
+        [OrganisationRegistryAuthorize]
+        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        {
+
+            await CommandSender.Send(new TerminateOrganisation(
+                new OrganisationId(id),
+                DateTime.Today,
+                User));
+
+            // TODO: fix roles & date
+
+            return Ok();
+        }
+
     }
 }

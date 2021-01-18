@@ -6,6 +6,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
     using ElasticSearch.Common;
     using ElasticSearch.Organisations;
     using FluentAssertions;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using Report.Responses;
     using Xunit;
 

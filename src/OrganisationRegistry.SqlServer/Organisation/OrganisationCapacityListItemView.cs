@@ -15,10 +15,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using FunctionType;
     using Location;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using Person;
-    using OrganisationRegistry.Function.Events;
+    using Function.Events;
     using OrganisationRegistry.Capacity.Events;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Location.Events;
     using OrganisationRegistry.Person.Events;
 
@@ -88,7 +90,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<CapacityUpdated>,
         IEventHandler<FunctionUpdated>,
         IEventHandler<PersonUpdated>,
-        IEventHandler<LocationUpdated>
+        IEventHandler<LocationUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -98,6 +101,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         }
 
         private readonly IEventStore _eventStore;
+
         public OrganisationCapacityListView(
             ILogger<OrganisationCapacityListView> logger,
             IEventStore eventStore,
@@ -196,21 +200,36 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var key = context.OrganisationCapacityList.SingleOrDefault(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
+                var capacity = context.OrganisationCapacityList.SingleOrDefault(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
 
-                key.OrganisationCapacityId = message.Body.OrganisationCapacityId;
-                key.OrganisationId = message.Body.OrganisationId;
-                key.CapacityId = message.Body.CapacityId;
-                key.PersonId = message.Body.PersonId;
-                key.FunctionId = message.Body.FunctionId;
-                key.LocationId = message.Body.LocationId;
-                key.CapacityName = message.Body.CapacityName;
-                key.PersonName = message.Body.PersonId.HasValue ? message.Body.PersonFullName : string.Empty;
-                key.FunctionName = message.Body.FunctionId.HasValue ? message.Body.FunctionName : string.Empty;
-                key.LocationName = message.Body.LocationId.HasValue ? message.Body.LocationName : string.Empty;
-                key.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts ?? new Dictionary<Guid, string>());
-                key.ValidFrom = message.Body.ValidFrom;
-                key.ValidTo = message.Body.ValidTo;
+                capacity.OrganisationCapacityId = message.Body.OrganisationCapacityId;
+                capacity.OrganisationId = message.Body.OrganisationId;
+                capacity.CapacityId = message.Body.CapacityId;
+                capacity.PersonId = message.Body.PersonId;
+                capacity.FunctionId = message.Body.FunctionId;
+                capacity.LocationId = message.Body.LocationId;
+                capacity.CapacityName = message.Body.CapacityName;
+                capacity.PersonName = message.Body.PersonId.HasValue ? message.Body.PersonFullName : string.Empty;
+                capacity.FunctionName = message.Body.FunctionId.HasValue ? message.Body.FunctionName : string.Empty;
+                capacity.LocationName = message.Body.LocationId.HasValue ? message.Body.LocationName : string.Empty;
+                capacity.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts ?? new Dictionary<Guid, string>());
+                capacity.ValidFrom = message.Body.ValidFrom;
+                capacity.ValidTo = message.Body.ValidTo;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var capacities = context.OrganisationCapacityList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+                foreach (var capacity in capacities)
+                {
+                    capacity.ValidTo = message.Body.CapacitiesToTerminate[capacity.OrganisationCapacityId];
+                }
 
                 await context.SaveChangesAsync();
             }

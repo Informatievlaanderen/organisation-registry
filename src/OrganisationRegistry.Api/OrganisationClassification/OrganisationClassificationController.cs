@@ -17,6 +17,7 @@ namespace OrganisationRegistry.Api.OrganisationClassification
     using Configuration;
     using Infrastructure.Security;
     using Microsoft.Extensions.Options;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using Security;
 
     [ApiVersion("1.0")]

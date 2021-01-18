@@ -55,7 +55,8 @@
         Projection<OrganisationContactListView>,
         IEventHandler<OrganisationContactAdded>,
         IEventHandler<OrganisationContactUpdated>,
-        IEventHandler<ContactTypeUpdated>
+        IEventHandler<ContactTypeUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -122,6 +123,22 @@
                 contact.ContactTypeName = message.Body.ContactTypeName;
                 contact.ValidFrom = message.Body.ValidFrom;
                 contact.ValidTo = message.Body.ValidTo;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var contacts =
+                    context.OrganisationContactList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+                foreach (var contact in contacts)
+                {
+                    contact.ValidTo = message.Body.DateOfTermination;
+                }
 
                 await context.SaveChangesAsync();
             }

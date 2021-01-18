@@ -6,6 +6,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
     using Configuration;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using Report.Responses;
     using SqlServer.Body;
     using SqlServer.Infrastructure;

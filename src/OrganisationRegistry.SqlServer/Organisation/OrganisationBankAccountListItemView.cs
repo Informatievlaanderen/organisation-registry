@@ -86,7 +86,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<KboOrganisationBankAccountRemoved>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationTerminationSyncedWithKbo>,
-        IEventHandler<OrganisationBankAccountUpdated>
+        IEventHandler<OrganisationBankAccountUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -203,6 +204,22 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 organisationBankAccountListItem.Bic = message.Body.Bic;
                 organisationBankAccountListItem.ValidFrom = message.Body.ValidFrom;
                 organisationBankAccountListItem.ValidTo = message.Body.ValidTo;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var organisationBankAccountListItems =
+                    context.OrganisationBankAccountList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+                foreach (var bankAccount in organisationBankAccountListItems)
+                {
+                    bankAccount.ValidTo = message.Body.BankAccountsToTerminate[bankAccount.OrganisationBankAccountId];
+                }
 
                 await context.SaveChangesAsync();
             }

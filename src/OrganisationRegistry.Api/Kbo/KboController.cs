@@ -15,6 +15,7 @@ namespace OrganisationRegistry.Api.Kbo
     using Magda;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure.Commands;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Organisation;
 
     [ApiVersion("1.0")]

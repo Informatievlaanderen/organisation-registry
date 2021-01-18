@@ -6,6 +6,8 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging.Abstractions;
     using OrganisationRegistry.Body.Events;
     using OrganisationRegistry.Building.Events;
     using OrganisationRegistry.ContactType.Events;
@@ -57,6 +59,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         private Dictionary<Guid, bool> _isSeatPaid;
         private readonly IContextFactory _contextFactory;
+        private readonly ILogger<MemoryCaches> _logger;
 
         public IReadOnlyDictionary<Guid, string> OvoNumbers =>
             ToReadOnlyDictionary(GetCache<string>(MemoryCacheType.OvoNumbers));
@@ -100,9 +103,10 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         public IReadOnlyDictionary<Guid, bool> IsSeatPaid =>
             ToReadOnlyDictionary(GetCache<bool>(MemoryCacheType.IsSeatPaid));
 
-        public MemoryCaches(IContextFactory contextFactory)
+        public MemoryCaches(IContextFactory contextFactory, ILogger<MemoryCaches>? logger = null)
         {
             _contextFactory = contextFactory;
+            _logger = logger ?? new NullLogger<MemoryCaches>();
 
             foreach (MemoryCacheType memoryCacheType in Enum.GetValues(typeof(MemoryCacheType)))
                 ResetCache(memoryCacheType, _contextFactory.Create());
@@ -161,6 +165,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         internal void ResetCache(MemoryCacheType cacheType, OrganisationRegistryContext context)
         {
+            _logger.LogInformation($"Building memory cache for {cacheType}");
             switch (cacheType)
             {
                 case MemoryCacheType.OvoNumbers:

@@ -10,6 +10,7 @@ namespace OrganisationRegistry.Api.Task
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using OrganisationRegistry.Infrastructure.Commands;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using SqlServer.Infrastructure;

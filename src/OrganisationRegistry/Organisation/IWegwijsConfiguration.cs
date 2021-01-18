@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Organisation
 {
     using System;
+    using System.Collections.Generic;
 
     public interface IOrganisationRegistryConfiguration
     {
@@ -16,5 +17,7 @@ namespace OrganisationRegistry.Organisation
         Guid KboV2RegisteredOfficeLocationTypeId { get; }
 
         Guid KboV2LegalFormOrganisationClassificationTypeId { get; }
+        Guid[] OrganisationCapacityTypeIdsToTerminateEndOfNextYear { get; }
+        Guid[] OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; }
     }
 }

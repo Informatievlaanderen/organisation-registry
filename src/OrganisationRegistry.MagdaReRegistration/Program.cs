@@ -16,6 +16,7 @@ namespace OrganisationRegistry.MagdaReRegistration
     using Configuration;
     using Destructurama;
     using global::Magda.RegistreerInschrijving;
+    using Infrastructure.Configuration;
     using Infrastructure.Infrastructure.Json;
     using Magda;
     using Microsoft.Extensions.Configuration;
