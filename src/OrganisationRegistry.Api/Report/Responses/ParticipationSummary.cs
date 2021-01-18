@@ -10,6 +10,7 @@ namespace OrganisationRegistry.Api.Report.Responses
     using Infrastructure;
     using Infrastructure.Search.Sorting;
     using Microsoft.EntityFrameworkCore;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Person;
     using SqlServer.Infrastructure;
     using SqlServer.Reporting;

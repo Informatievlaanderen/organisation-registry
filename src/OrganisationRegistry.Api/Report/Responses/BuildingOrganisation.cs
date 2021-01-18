@@ -10,7 +10,7 @@ namespace OrganisationRegistry.Api.Report.Responses
     using System.ComponentModel;
     using System.Linq;
     using System.Threading.Tasks;
-
+    using OrganisationRegistry.Infrastructure.Configuration;
     using SortOrder = Infrastructure.Search.Sorting.SortOrder;
 
     public class BuildingOrganisation

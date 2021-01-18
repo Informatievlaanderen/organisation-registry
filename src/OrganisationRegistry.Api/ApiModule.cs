@@ -60,8 +60,11 @@ namespace OrganisationRegistry.Api
                 .AsImplementedInterfaces();
 
             builder
-                .Register(context =>
-                    new OrganisationRegistryConfiguration(_configuration.GetSection(ApiConfiguration.Section).Get<ApiConfiguration>()))
+                .Register(_ =>
+                    new OrganisationRegistryConfiguration(
+                        _configuration.GetSection(ApiConfiguration.Section).Get<ApiConfiguration>(),
+                        _configuration.GetSection(OrganisationTerminationConfiguration.Section)
+                            .Get<OrganisationTerminationConfiguration>()))
                 .As<IOrganisationRegistryConfiguration>()
                 .SingleInstance();
 

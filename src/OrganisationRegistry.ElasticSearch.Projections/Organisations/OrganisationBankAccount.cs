@@ -20,7 +20,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<KboOrganisationBankAccountRemoved>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationTerminationSyncedWithKbo>,
-        IEventHandler<OrganisationBankAccountUpdated>
+        IEventHandler<OrganisationBankAccountUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         private readonly Elastic _elastic;
 
@@ -155,6 +156,22 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     message.Body.Bic,
                     message.Body.IsBic,
                     new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            var organisationDocument =
+                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = message.Number;
+            organisationDocument.ChangeTime = message.Timestamp;
+
+            foreach (var bankAccount in organisationDocument.BankAccounts)
+            {
+                bankAccount.Validity.End = message.Body.BankAccountsToTerminate[bankAccount.OrganisationBankAccountId];
+            }
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }

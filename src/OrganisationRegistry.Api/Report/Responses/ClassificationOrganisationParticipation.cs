@@ -10,6 +10,7 @@ namespace OrganisationRegistry.Api.Report.Responses
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Person;
 
     public class ClassificationOrganisationParticipation

@@ -23,7 +23,8 @@ namespace OrganisationRegistry.Organisation
         ICommandHandler<CoupleOrganisationToKbo>,
         ICommandHandler<CancelCouplingWithKbo>,
         ICommandHandler<SyncOrganisationWithKbo>,
-        ICommandHandler<SyncOrganisationTerminationWithKbo>
+        ICommandHandler<SyncOrganisationTerminationWithKbo>,
+        ICommandHandler<TerminateOrganisation>
     {
         private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
         private readonly IOvoNumberGenerator _ovoNumberGenerator;
@@ -231,6 +232,22 @@ namespace OrganisationRegistry.Organisation
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             organisation.TerminateKboCoupling();
+
+            await Session.Commit();
+        }
+
+        public async Task Handle(TerminateOrganisation message)
+        {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+
+            if(organisation.KboNumber != null)
+                await SyncWithKbo(message.OrganisationId, message.User, null);
+
+            organisation = Session.Get<Organisation>(message.OrganisationId);
+
+            organisation.TerminateOrganisation(message.DateOfTermination,
+                _organisationRegistryConfiguration.OrganisationCapacityTypeIdsToTerminateEndOfNextYear,
+                _organisationRegistryConfiguration.OrganisationClassificationTypeIdsToTerminateEndOfNextYear);
 
             await Session.Commit();
         }

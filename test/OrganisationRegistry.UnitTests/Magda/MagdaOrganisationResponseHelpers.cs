@@ -16,6 +16,7 @@ namespace OrganisationRegistry.UnitTests.Magda
     using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using Newtonsoft.Json;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Magda;
     using SqlServer.Infrastructure;
     using Xunit;

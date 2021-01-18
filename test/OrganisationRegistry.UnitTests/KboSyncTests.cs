@@ -11,6 +11,7 @@ namespace OrganisationRegistry.UnitTests
     using Microsoft.Extensions.Options;
     using Moq;
     using OrganisationRegistry.Infrastructure.Commands;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Domain.Exception;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;

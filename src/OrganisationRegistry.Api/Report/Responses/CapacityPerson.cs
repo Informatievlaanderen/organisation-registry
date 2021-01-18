@@ -10,6 +10,7 @@ namespace OrganisationRegistry.Api.Report.Responses
     using Infrastructure;
     using Infrastructure.Search.Sorting;
     using Nest;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using SortOrder = Infrastructure.Search.Sorting.SortOrder;
 
     public class CapacityPerson

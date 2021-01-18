@@ -16,6 +16,7 @@ namespace OrganisationRegistry.Api.Report
     using System.Net;
     using System.Threading.Tasks;
     using OrganisationRegistry.Infrastructure.Commands;
+    using OrganisationRegistry.Infrastructure.Configuration;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]

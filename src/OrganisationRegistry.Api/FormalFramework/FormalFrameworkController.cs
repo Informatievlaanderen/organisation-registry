@@ -21,6 +21,7 @@ namespace OrganisationRegistry.Api.FormalFramework
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Infrastructure.Commands;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
+    using OrganisationRegistry.Infrastructure.Configuration;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]

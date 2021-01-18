@@ -18,5 +18,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         public Guid KboV2RegisteredOfficeLocationTypeId { get; set; }
 
         public Guid KboV2LegalFormOrganisationClassificationTypeId { get; set; }
+
+        public Guid[] OrganisationCapacityTypeIdsToTerminateEndOfNextYear { get; set; }
+        public Guid[] OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; set; }
     }
 }

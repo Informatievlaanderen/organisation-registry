@@ -1,8 +1,11 @@
 namespace OrganisationRegistry.Api
 {
     using System;
+    using System.Linq;
     using Configuration;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Organisation;
+    using OrganisationRegistry.Organisation.Commands;
 
     public class OrganisationRegistryConfiguration : IOrganisationRegistryConfiguration
     {
@@ -20,9 +23,26 @@ namespace OrganisationRegistry.Api
 
         public Guid KboV2LegalFormOrganisationClassificationTypeId => _configuration.KboV2LegalFormOrganisationClassificationTypeId;
 
-        public OrganisationRegistryConfiguration(ApiConfiguration configuration)
+        public Guid[] OrganisationCapacityTypeIdsToTerminateEndOfNextYear { get; }
+        public Guid[] OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; }
+
+        public OrganisationRegistryConfiguration(
+            ApiConfiguration configuration,
+            OrganisationTerminationConfiguration terminationConfiguration)
         {
             _configuration = configuration;
+
+            OrganisationCapacityTypeIdsToTerminateEndOfNextYear =
+                terminationConfiguration.OrganisationCapacityTypeIdsToTerminateEndOfNextYear?
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(Guid.Parse)
+                    .ToArray() ?? Array.Empty<Guid>();
+
+            OrganisationClassificationTypeIdsToTerminateEndOfNextYear =
+                terminationConfiguration.OrganisationClassificationTypeIdsToTerminateEndOfNextYear?
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(Guid.Parse)
+                    .ToArray() ?? Array.Empty<Guid>();
         }
     }
 }
