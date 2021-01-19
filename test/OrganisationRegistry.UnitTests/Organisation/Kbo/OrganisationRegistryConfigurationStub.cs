@@ -21,5 +21,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 
         public Guid[] OrganisationCapacityTypeIdsToTerminateEndOfNextYear { get; set; }
         public Guid[] OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; set; }
+        public Guid[] FormalFrameworkIdsToTerminateEndOfNextYear { get; set; }
     }
 }

@@ -13,5 +13,6 @@ namespace OrganisationRegistry.Infrastructure.Configuration
 
         public string OrganisationCapacityTypeIdsToTerminateEndOfNextYear { get; set; }
         public string OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; set; }
+        public string FormalFrameworkIdsToTerminateEndOfNextYear { get; set; }
     }
 }
