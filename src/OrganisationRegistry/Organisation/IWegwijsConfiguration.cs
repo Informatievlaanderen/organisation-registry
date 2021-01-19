@@ -19,5 +19,6 @@ namespace OrganisationRegistry.Organisation
         Guid KboV2LegalFormOrganisationClassificationTypeId { get; }
         Guid[] OrganisationCapacityTypeIdsToTerminateEndOfNextYear { get; }
         Guid[] OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; }
+        Guid[] FormalFrameworkIdsToTerminateEndOfNextYear { get; }
     }
 }

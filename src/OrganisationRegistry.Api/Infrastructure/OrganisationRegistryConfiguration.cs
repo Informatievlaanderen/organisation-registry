@@ -25,24 +25,30 @@ namespace OrganisationRegistry.Api
 
         public Guid[] OrganisationCapacityTypeIdsToTerminateEndOfNextYear { get; }
         public Guid[] OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; }
+        public Guid[] FormalFrameworkIdsToTerminateEndOfNextYear { get; }
 
         public OrganisationRegistryConfiguration(
             ApiConfiguration configuration,
-            OrganisationTerminationConfiguration terminationConfiguration)
+            OrganisationTerminationConfiguration? terminationConfiguration)
         {
             _configuration = configuration;
 
             OrganisationCapacityTypeIdsToTerminateEndOfNextYear =
-                terminationConfiguration.OrganisationCapacityTypeIdsToTerminateEndOfNextYear?
-                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(Guid.Parse)
-                    .ToArray() ?? Array.Empty<Guid>();
+                SplitGuids(terminationConfiguration?.OrganisationCapacityTypeIdsToTerminateEndOfNextYear);
 
             OrganisationClassificationTypeIdsToTerminateEndOfNextYear =
-                terminationConfiguration.OrganisationClassificationTypeIdsToTerminateEndOfNextYear?
-                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(Guid.Parse)
-                    .ToArray() ?? Array.Empty<Guid>();
+                SplitGuids(terminationConfiguration?.OrganisationClassificationTypeIdsToTerminateEndOfNextYear);
+
+            FormalFrameworkIdsToTerminateEndOfNextYear =
+                SplitGuids(terminationConfiguration?.FormalFrameworkIdsToTerminateEndOfNextYear);
+        }
+
+        private static Guid[] SplitGuids(string? value)
+        {
+            return value?
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(Guid.Parse)
+                .ToArray() ?? Array.Empty<Guid>();
         }
     }
 }
