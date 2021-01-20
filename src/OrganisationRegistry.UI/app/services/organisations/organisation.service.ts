@@ -149,6 +149,15 @@ export class OrganisationService implements ICrudService<Organisation> {
       .put(url, '', { headers: headers });
   }
 
+  public terminate(organisationId: string, dateOfTermination: string) {
+    const url = `${this.organisationsUrl}/${organisationId}/terminate`;
+
+    let headers = new HeadersBuilder().build();
+
+    return this.http
+      .put(url, { dateOfTermination: dateOfTermination }, { headers: headers });
+  }
+
   private getLocationHeader(res: Response): string {
     return res.headers.get('Location');
   }
