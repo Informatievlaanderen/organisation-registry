@@ -126,22 +126,19 @@ namespace OrganisationRegistry.Api.Organisation
 
         /// <summary>Terminate an organisation.</summary>
         /// <response code="200">If the organisation is terminated, together with the location.</response>
-        [HttpDelete("{id}")]
-        [OrganisationRegistryAuthorize]
+        [HttpPut("{id}/terminate")]
+        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id, [FromBody] OrganisationTerminationRequest message)
         {
-
-            await CommandSender.Send(new TerminateOrganisation(
-                new OrganisationId(id),
-                DateTime.Today,
-                User));
-
-            // TODO: fix roles & date
+            await CommandSender.Send(
+                new TerminateOrganisation(
+                    new OrganisationId(id),
+                    message.DateOfTermination,
+                    User));
 
             return Ok();
         }
-
     }
 }
