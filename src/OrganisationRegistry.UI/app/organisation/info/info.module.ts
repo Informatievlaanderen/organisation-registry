@@ -11,6 +11,7 @@ import { OrganisationInfoEditComponent } from './edit';
 import { OrganisationInfoAddChildOrganisationComponent, CreateChildOrganisationFormComponent } from './add-child';
 import { OrganisationCoupleWithKboComponent } from './couple-with-kbo';
 import { OrganisationCancelCouplingWithKboComponent } from './cancel-coupling-with-kbo';
+import {OrganisationTerminateComponent} from "./terminate";
 
 @NgModule({
   imports: [
@@ -26,7 +27,8 @@ import { OrganisationCancelCouplingWithKboComponent } from './cancel-coupling-wi
     OrganisationInfoAddChildOrganisationComponent,
     CreateChildOrganisationFormComponent,
     OrganisationCoupleWithKboComponent,
-    OrganisationCancelCouplingWithKboComponent
+    OrganisationCancelCouplingWithKboComponent,
+    OrganisationTerminateComponent
   ],
   exports: [
     OrganisationInfoRoutingModule

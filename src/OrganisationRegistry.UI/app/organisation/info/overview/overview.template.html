@@ -15,6 +15,11 @@
            [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
            [routerLink]="'./cancelcouplingwithkbo'">Koppeling met KBO ongedaan maken</a>
 
+        <a *ngIf="(isOrganisationRegistryBeheerder | async)"
+           class="button form__button button--secondary button--warning"
+           [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
+           [routerLink]="'./terminate'">Sluit organisatie af</a>
+
         <a
            class="button"
            [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"

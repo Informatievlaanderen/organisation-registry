@@ -14,7 +14,8 @@ import {
     OrganisationInfoEditComponent,
     OrganisationInfoAddChildOrganisationComponent,
     OrganisationCoupleWithKboComponent,
-    OrganisationCancelCouplingWithKboComponent
+    OrganisationCancelCouplingWithKboComponent,
+    OrganisationTerminateComponent
 } from 'organisation/info';
 
 import {
@@ -161,6 +162,15 @@ const routes: Routes = [
             canActivate: [RoleGuard],
             data: {
               title: 'Organisatie - Algemeen - Koppelen KBO ongedaan maken',
+              roles: [Role.OrganisationRegistryBeheerder],
+            }
+          },
+          {
+            path: 'terminate',
+            component: OrganisationTerminateComponent,
+            canActivate: [RoleGuard],
+            data: {
+              title: 'Organisatie - Stopzetten',
               roles: [Role.OrganisationRegistryBeheerder],
             }
           },
