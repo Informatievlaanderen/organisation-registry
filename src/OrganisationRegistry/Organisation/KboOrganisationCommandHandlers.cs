@@ -248,7 +248,8 @@ namespace OrganisationRegistry.Organisation
             organisation.TerminateOrganisation(message.DateOfTermination,
                 _organisationRegistryConfiguration.OrganisationCapacityTypeIdsToTerminateEndOfNextYear,
                 _organisationRegistryConfiguration.OrganisationClassificationTypeIdsToTerminateEndOfNextYear,
-                _organisationRegistryConfiguration.FormalFrameworkIdsToTerminateEndOfNextYear);
+                _organisationRegistryConfiguration.FormalFrameworkIdsToTerminateEndOfNextYear,
+                _dateTimeProvider);
 
             await Session.Commit();
         }

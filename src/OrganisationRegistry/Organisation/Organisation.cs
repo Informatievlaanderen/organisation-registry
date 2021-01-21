@@ -47,9 +47,9 @@ namespace OrganisationRegistry.Organisation
         private readonly Dictionary<Guid, OrganisationFormalFramework> _organisationFormalFrameworkParentsPerFormalFramework;
         private readonly OrganisationBuildings _organisationBuildings;
         private readonly OrganisationLocations _organisationLocations;
-        private OrganisationBuilding _mainOrganisationBuilding;
-        private OrganisationLocation _mainOrganisationLocation;
-        private OrganisationParent _currentOrganisationParent;
+        private OrganisationBuilding? _mainOrganisationBuilding;
+        private OrganisationLocation? _mainOrganisationLocation;
+        private OrganisationParent? _currentOrganisationParent;
 
         private OrganisationLocation? _kboRegisteredOffice;
         private OrganisationLabel? _kboFormalNameLabel;
@@ -1524,10 +1524,12 @@ namespace OrganisationRegistry.Organisation
         }
 
 
-        public void TerminateOrganisation(DateTime dateOfTermination,
+        public void TerminateOrganisation(
+            DateTime dateOfTermination,
             IEnumerable<Guid> capacityTypeIdsToTerminateEndOfNextYear,
             IEnumerable<Guid> classificationTypeIdsToTerminateEndOfNextYear,
-            IEnumerable<Guid> formalFrameworkIdsToTerminateEndOfNextYear)
+            IEnumerable<Guid> formalFrameworkIdsToTerminateEndOfNextYear,
+            IDateTimeProvider dateTimeProvider)
         {
             if (IsTerminated)
                 throw new OrganisationAlreadyTerminated();
@@ -1576,8 +1578,41 @@ namespace OrganisationRegistry.Organisation
                 organisationTermination.KboFormalNameLabel,
                 organisationTermination.KboLegalForm,
                 TerminationInKbo?.Date));
-        }
 
+            if (_currentOrganisationParent != null &&
+                organisationTermination.Parents.ContainsKey(_currentOrganisationParent.OrganisationOrganisationParentId) &&
+                organisationTermination.Parents[_currentOrganisationParent.OrganisationOrganisationParentId] > dateTimeProvider.Today)
+            {
+                ApplyChange(new ParentClearedFromOrganisation(Id, _currentOrganisationParent.ParentOrganisationId));
+            }
+
+            if (_mainOrganisationBuilding != null &&
+                organisationTermination.Buildings.ContainsKey(_mainOrganisationBuilding.OrganisationBuildingId) &&
+                organisationTermination.Buildings[_mainOrganisationBuilding.OrganisationBuildingId] > dateTimeProvider.Today)
+            {
+                ApplyChange(new ParentClearedFromOrganisation(Id, _mainOrganisationBuilding.BuildingId));
+            }
+
+            if (_mainOrganisationLocation != null &&
+                organisationTermination.Locations.ContainsKey(_mainOrganisationLocation.OrganisationLocationId) &&
+                organisationTermination.Locations[_mainOrganisationLocation.OrganisationLocationId] > dateTimeProvider.Today)
+            {
+                ApplyChange(new ParentClearedFromOrganisation(Id, _mainOrganisationLocation.LocationId));
+            }
+
+            foreach (var (_, parent) in _organisationFormalFrameworkParentsPerFormalFramework)
+            {
+                if (organisationTermination.FormalFrameworks.ContainsKey(parent.OrganisationFormalFrameworkId) &&
+                    organisationTermination.FormalFrameworks[parent.OrganisationFormalFrameworkId] > dateTimeProvider.Today)
+                {
+                    ApplyChange(new FormalFrameworkClearedFromOrganisation(
+                        parent.OrganisationFormalFrameworkId,
+                        Id,
+                        parent.FormalFrameworkId,
+                        parent.ParentOrganisationId));
+                }
+            }
+        }
 
         private void CheckIfCurrentParentChanged(
             OrganisationParent organisationParent,
