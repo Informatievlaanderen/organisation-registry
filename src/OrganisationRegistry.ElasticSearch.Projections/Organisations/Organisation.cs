@@ -26,7 +26,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationCoupledWithKbo>,
-        IEventHandler<PurposeUpdated>
+        IEventHandler<PurposeUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         private readonly Elastic _elastic;
         private readonly ElasticSearchConfiguration _elasticSearchOptions;
@@ -183,6 +184,19 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 if (!indexResult.IsValid)
                     throw new Exception($"Could not create organisation index '{indexName}'.");
             }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = message.Number;
+            organisationDocument.ChangeTime = message.Timestamp;
+
+            organisationDocument.Validity =
+                new Period(organisationDocument.Validity.Start, message.Body.DateOfTermination);
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }
     }
 }

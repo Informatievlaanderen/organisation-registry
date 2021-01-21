@@ -21,7 +21,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<OrganisationRelationTypeUpdated>,
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
-        IEventHandler<OrganisationCouplingWithKboCancelled>
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
+        IEventHandler<OrganisationTerminated>
     {
         private readonly Elastic _elastic;
         private readonly IMemoryCaches _memoryCaches;
@@ -168,6 +169,27 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     "relationName", message.Body.Name,
                     message.Number,
                     message.Timestamp));
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            var organisationDocument =
+                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = message.Number;
+            organisationDocument.ChangeTime = message.Timestamp;
+
+            foreach (var (key, value) in message.Body.RelationsToTerminate)
+            {
+                var organisationRelation =
+                    organisationDocument
+                        .Relations
+                        .Single(x => x.OrganisationRelationId == key);
+
+                organisationRelation.Validity.End = value;
+            }
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }
     }
 }

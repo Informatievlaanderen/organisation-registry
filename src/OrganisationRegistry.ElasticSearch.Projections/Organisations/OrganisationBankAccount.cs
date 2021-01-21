@@ -168,9 +168,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             organisationDocument.ChangeId = message.Number;
             organisationDocument.ChangeTime = message.Timestamp;
 
-            foreach (var bankAccount in organisationDocument.BankAccounts)
+            var accountsToTerminate =
+                message.Body.BankAccountsToTerminate
+                    .Union(message.Body.KboBankAccountsToTerminate);
+
+            foreach (var (key, value) in accountsToTerminate)
             {
-                bankAccount.Validity.End = message.Body.BankAccountsToTerminate[bankAccount.OrganisationBankAccountId];
+                var organisationBankAccount =
+                    organisationDocument
+                        .BankAccounts
+                        .Single(x => x.OrganisationBankAccountId == key);
+
+                organisationBankAccount.Validity.End = value;
             }
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
