@@ -32,19 +32,16 @@ namespace OrganisationRegistry.Organisation
             OrganisationLocations organisationLocations,
             IEnumerable<OrganisationCapacity> organisationCapacities,
             KboTermination? terminationInKbo,
-            OrganisationLocation? kboRegisteredOffice,
-            IEnumerable<OrganisationBankAccount> kboBankAccounts,
             OrganisationBuildings organisationBuildings,
             IEnumerable<OrganisationParent> organisationParents,
             IEnumerable<OrganisationLabel> organisationLabels,
-            OrganisationLabel? kboFormalNameLabel,
             IEnumerable<OrganisationRelation> organisationRelations,
             IEnumerable<OrganisationOpeningHour> organisationOpeningHours,
             IEnumerable<OrganisationOrganisationClassification> organisationClassifications,
-            OrganisationOrganisationClassification? kboLegalForm,
             IEnumerable<Guid> classificationTypeIdsToTerminateEndOfNextYear,
             IEnumerable<OrganisationFormalFramework> organisationFormalFrameworks,
-            IEnumerable<Guid> formalFrameworkIdsToTerminateEndOfNextYear)
+            IEnumerable<Guid> formalFrameworkIdsToTerminateEndOfNextYear,
+            KboState kboState)
         {
             var endOfNextYear = new DateTime(dateOfTermination.Year + 1, 12, 31);
 
@@ -52,19 +49,19 @@ namespace OrganisationRegistry.Organisation
             {
                 Contacts = CalculateContacts(dateOfTermination, organisationContacts),
                 BankAccounts = CalculateBankAccounts(dateOfTermination, organisationBankAccounts),
-                KboBankAccounts = CalculateKboBankAccounts(terminationInKbo, kboBankAccounts),
+                KboBankAccounts = CalculateKboBankAccounts(terminationInKbo, kboState.KboBankAccounts),
                 Capacities = CalculateCapacities(dateOfTermination, capacityTypeIdsToTerminateEndOfNextYear, organisationCapacities, endOfNextYear),
                 Functions = CalculateFunctions(dateOfTermination, organisationFunctionTypes),
                 Locations = CalculateLocations(dateOfTermination, organisationLocations),
-                KboRegisteredOfficeLocation = CalculateRegisteredOfficeLocation(terminationInKbo, kboRegisteredOffice),
+                KboRegisteredOfficeLocation = CalculateRegisteredOfficeLocation(terminationInKbo, kboState.KboRegisteredOffice),
                 Buildings = CalculateBuildings(dateOfTermination, organisationBuildings),
                 Parents = CalculateParents(dateOfTermination, organisationParents),
                 Labels = CalculateLabels(dateOfTermination, organisationLabels),
-                KboFormalNameLabel = CalculateFormalNameLabel(terminationInKbo, kboFormalNameLabel),
+                KboFormalNameLabel = CalculateFormalNameLabel(terminationInKbo, kboState.KboFormalNameLabel),
                 Relations = CalculateRelations(dateOfTermination, organisationRelations),
                 OpeningHours = CalculateOpeningHours(dateOfTermination, organisationOpeningHours),
                 Classifications = CalculateClassifications(dateOfTermination, organisationClassifications, classificationTypeIdsToTerminateEndOfNextYear, endOfNextYear),
-                KboLegalForm = CalculateLegalForm(terminationInKbo, kboLegalForm),
+                KboLegalForm = CalculateLegalForm(terminationInKbo, kboState.KboLegalFormOrganisationClassification),
                 FormalFrameworks = CalculateFormalFrameworks(dateOfTermination, organisationFormalFrameworks, endOfNextYear, formalFrameworkIdsToTerminateEndOfNextYear)
             };
         }
