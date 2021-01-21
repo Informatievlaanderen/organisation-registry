@@ -35,5 +35,29 @@ namespace OrganisationRegistry.Organisation
             RelatedOrganisationName = relatedOrganisationName;
             Validity = validity;
         }
+
+        public OrganisationRelation WithValidity(Period period)
+        {
+            return new OrganisationRelation(
+                OrganisationRelationId,
+                OrganisationId,
+                OrganisationName,
+                RelationId,
+                RelationName,
+                RelationInverseName,
+                RelatedOrganisationId,
+                RelatedOrganisationName,
+                period);
+        }
+
+        public OrganisationRelation WithValidFrom(ValidFrom validFrom)
+        {
+            return WithValidity(new Period(validFrom, Validity.End));
+        }
+
+        public OrganisationRelation WithValidTo(ValidTo validTo)
+        {
+            return WithValidity(new Period(Validity.Start, validTo));
+        }
     }
 }

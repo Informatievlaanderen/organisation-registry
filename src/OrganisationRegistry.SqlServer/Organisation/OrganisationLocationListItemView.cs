@@ -96,7 +96,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<OrganisationLocationUpdated>,
-        IEventHandler<LocationTypeUpdated>
+        IEventHandler<LocationTypeUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         private readonly IEventStore _eventStore;
 
@@ -246,6 +247,21 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 organisationLocationListItem.LocationTypeName = message.Body.LocationTypeName;
                 organisationLocationListItem.ValidFrom = message.Body.ValidFrom;
                 organisationLocationListItem.ValidTo = message.Body.ValidTo;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var locations = context.OrganisationLocationList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+                foreach (var location in locations)
+                {
+                    location.ValidTo = message.Body.CapacitiesToTerminate[location.OrganisationLocationId];
+                }
 
                 await context.SaveChangesAsync();
             }

@@ -29,5 +29,27 @@
             OrganisationClassificationTypeName = organisationClassificationTypeName;
             OrganisationClassificationName = organisationClassificationName;
         }
+
+        public OrganisationOrganisationClassification WithValidity(Period period)
+        {
+            return new OrganisationOrganisationClassification(
+                OrganisationOrganisationClassificationId,
+                OrganisationId,
+                OrganisationClassificationTypeId,
+                OrganisationClassificationTypeName,
+                OrganisationClassificationId,
+                OrganisationClassificationName,
+                period);
+        }
+
+        public OrganisationOrganisationClassification WithValidFrom(ValidFrom validFrom)
+        {
+            return WithValidity(new Period(validFrom, Validity.End));
+        }
+
+        public OrganisationOrganisationClassification WithValidTo(ValidTo validTo)
+        {
+            return WithValidity(new Period(Validity.Start, validTo));
+        }
     }
 }

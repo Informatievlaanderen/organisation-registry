@@ -55,5 +55,28 @@ namespace OrganisationRegistry.Organisation
         {
             return OrganisationLocationId.GetHashCode();
         }
+
+        public OrganisationLocation WithValidity(Period period)
+        {
+            return new OrganisationLocation(
+                OrganisationLocationId,
+                OrganisationId,
+                LocationId,
+                FormattedAddress,
+                IsMainLocation,
+                LocationTypeId,
+                LocationTypeName,
+                period);
+        }
+
+        public OrganisationLocation WithValidFrom(ValidFrom validFrom)
+        {
+            return WithValidity(new Period(validFrom, Validity.End));
+        }
+
+        public OrganisationLocation WithValidTo(ValidTo validTo)
+        {
+            return WithValidity(new Period(Validity.Start, validTo));
+        }
     }
 }

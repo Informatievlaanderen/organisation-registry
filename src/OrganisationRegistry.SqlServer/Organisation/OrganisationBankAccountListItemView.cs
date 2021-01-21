@@ -214,9 +214,17 @@ namespace OrganisationRegistry.SqlServer.Organisation
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationBankAccountListItems =
-                    context.OrganisationBankAccountList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+                    context.OrganisationBankAccountList.Where(item => message.Body.BankAccountsToTerminate.Keys.Contains(item.OrganisationBankAccountId));
 
                 foreach (var bankAccount in organisationBankAccountListItems)
+                {
+                    bankAccount.ValidTo = message.Body.BankAccountsToTerminate[bankAccount.OrganisationBankAccountId];
+                }
+
+                var kboOrganisationBankAccountListItems =
+                    context.OrganisationBankAccountList.Where(item => message.Body.KboBankAccountsToTerminate.Keys.Contains(item.OrganisationBankAccountId));
+
+                foreach (var bankAccount in kboOrganisationBankAccountListItems)
                 {
                     bankAccount.ValidTo = message.Body.BankAccountsToTerminate[bankAccount.OrganisationBankAccountId];
                 }

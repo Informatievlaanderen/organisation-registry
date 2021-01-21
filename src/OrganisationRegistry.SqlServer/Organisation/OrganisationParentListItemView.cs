@@ -51,7 +51,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationParentUpdated>,
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
-        IEventHandler<OrganisationCouplingWithKboCancelled>
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
+        IEventHandler<OrganisationTerminated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -144,6 +145,21 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
             await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var parents = context.OrganisationParentList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+                foreach (var parent in parents)
+                {
+                    parent.ValidTo = message.Body.CapacitiesToTerminate[parent.ParentOrganisationId];
+                }
+
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

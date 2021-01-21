@@ -44,5 +44,26 @@ namespace OrganisationRegistry.Organisation
         {
             return OrganisationFormalFrameworkId.GetHashCode();
         }
+
+        public OrganisationFormalFramework WithValidity(Period period)
+        {
+            return new OrganisationFormalFramework(
+                OrganisationFormalFrameworkId,
+                FormalFrameworkId,
+                FormalFrameworkName,
+                ParentOrganisationId,
+                ParentOrganisationName,
+                period);
+        }
+
+        public OrganisationFormalFramework WithValidFrom(ValidFrom validFrom)
+        {
+            return WithValidity(new Period(validFrom, Validity.End));
+        }
+
+        public OrganisationFormalFramework WithValidTo(ValidTo validTo)
+        {
+            return WithValidity(new Period(Validity.Start, validTo));
+        }
     }
 }

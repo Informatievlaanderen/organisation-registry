@@ -53,5 +53,26 @@
         {
             return OrganisationBuildingId.GetHashCode();
         }
+
+        public OrganisationBuilding WithValidity(Period period)
+        {
+            return new OrganisationBuilding(
+                OrganisationBuildingId,
+                OrganisationId,
+                BuildingId,
+                BuildingName,
+                IsMainBuilding,
+                period);
+        }
+
+        public OrganisationBuilding WithValidFrom(ValidFrom validFrom)
+        {
+            return WithValidity(new Period(validFrom, Validity.End));
+        }
+
+        public OrganisationBuilding WithValidTo(ValidTo validTo)
+        {
+            return WithValidity(new Period(Validity.Start, validTo));
+        }
     }
 }

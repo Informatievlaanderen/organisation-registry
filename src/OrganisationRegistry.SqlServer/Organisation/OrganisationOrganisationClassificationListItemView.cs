@@ -71,7 +71,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<OrganisationOrganisationClassificationUpdated>,
         IEventHandler<OrganisationClassificationTypeUpdated>,
-        IEventHandler<OrganisationClassificationUpdated>
+        IEventHandler<OrganisationClassificationUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -232,6 +233,21 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 key.OrganisationClassificationName = message.Body.OrganisationClassificationName;
                 key.ValidFrom = message.Body.ValidFrom;
                 key.ValidTo = message.Body.ValidTo;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var classifications = context.OrganisationOrganisationClassificationList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+                foreach (var classification in classifications)
+                {
+                    classification.ValidTo = message.Body.CapacitiesToTerminate[classification.OrganisationClassificationId];
+                }
 
                 await context.SaveChangesAsync();
             }

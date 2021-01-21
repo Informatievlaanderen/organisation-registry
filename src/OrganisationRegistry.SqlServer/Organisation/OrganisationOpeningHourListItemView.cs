@@ -72,7 +72,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
     public class OrganisationOpeningHourListItemView :
         Projection<OrganisationOpeningHourListItemView>,
         IEventHandler<OrganisationOpeningHourAdded>,
-        IEventHandler<OrganisationOpeningHourUpdated>
+        IEventHandler<OrganisationOpeningHourUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         private readonly IEventStore _eventStore;
 
@@ -137,6 +138,21 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 label.DayOfWeek = message.Body.DayOfWeek;
                 label.ValidFrom = message.Body.ValidFrom;
                 label.ValidTo = message.Body.ValidTo;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var openingHours = context.OrganisationOpeningHourList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+                foreach (var openingHour in openingHours)
+                {
+                    openingHour.ValidTo = message.Body.CapacitiesToTerminate[openingHour.OrganisationOpeningHourId];
+                }
 
                 await context.SaveChangesAsync();
             }

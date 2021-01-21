@@ -62,7 +62,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<FormalFrameworkUpdated>
+        IEventHandler<FormalFrameworkUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -162,6 +163,21 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 organisationFormalFramework.ParentOrganisationName = message.Body.ParentOrganisationName;
                 organisationFormalFramework.ValidFrom = message.Body.ValidFrom;
                 organisationFormalFramework.ValidTo = message.Body.ValidTo;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var formalFrameworks = context.OrganisationFormalFrameworkList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+                foreach (var formalFramework in formalFrameworks)
+                {
+                    formalFramework.ValidTo = message.Body.CapacitiesToTerminate[formalFramework.OrganisationFormalFrameworkId];
+                }
 
                 await context.SaveChangesAsync();
             }
