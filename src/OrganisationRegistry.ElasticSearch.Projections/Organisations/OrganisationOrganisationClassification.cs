@@ -24,7 +24,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<OrganisationOrganisationClassificationUpdated>,
         IEventHandler<OrganisationClassificationTypeUpdated>,
-        IEventHandler<OrganisationClassificationUpdated>
+        IEventHandler<OrganisationClassificationUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         private readonly Elastic _elastic;
 
@@ -194,6 +195,33 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     message.Body.OrganisationClassificationId,
                     message.Body.OrganisationClassificationName,
                     new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            var organisationDocument =
+                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = message.Number;
+            organisationDocument.ChangeTime = message.Timestamp;
+
+            var classificationsToTerminate =
+                message.Body.ClassificationsToTerminate;
+
+            if (message.Body.KboLegalForm.HasValue)
+                classificationsToTerminate.Add(message.Body.KboLegalForm.Value.Key, message.Body.KboLegalForm.Value.Value);
+
+            foreach (var (key, value) in classificationsToTerminate)
+            {
+                var organisationOrganisationClassification =
+                    organisationDocument
+                        .OrganisationClassifications
+                        .Single(x => x.OrganisationOrganisationClassificationId == key);
+
+                organisationOrganisationClassification.Validity.End = value;
+            }
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }

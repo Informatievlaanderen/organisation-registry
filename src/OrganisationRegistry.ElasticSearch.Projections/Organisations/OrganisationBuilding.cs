@@ -17,7 +17,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         BaseProjection<OrganisationBuilding>,
         IEventHandler<OrganisationBuildingAdded>,
         IEventHandler<OrganisationBuildingUpdated>,
-        IEventHandler<BuildingUpdated>
+        IEventHandler<BuildingUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         private readonly Elastic _elastic;
 
@@ -28,7 +29,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             _elastic = elastic;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BuildingUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<BuildingUpdated> message)
         {
             // Update all which use this type, and put the changeId on them too!
             _elastic.Try(() => _elastic.WriteClient
@@ -40,9 +42,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     message.Timestamp));
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingAdded> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationBuildingAdded> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            var organisationDocument = _elastic.TryGet(() =>
+                _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
 
             organisationDocument.ChangeId = message.Number;
             organisationDocument.ChangeTime = message.Timestamp;
@@ -50,7 +54,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             if (organisationDocument.Buildings == null)
                 organisationDocument.Buildings = new List<OrganisationDocument.OrganisationBuilding>();
 
-            organisationDocument.Buildings.RemoveExistingListItems(x => x.OrganisationBuildingId == message.Body.OrganisationBuildingId);
+            organisationDocument.Buildings.RemoveExistingListItems(x =>
+                x.OrganisationBuildingId == message.Body.OrganisationBuildingId);
 
             organisationDocument.Buildings.Add(
                 new OrganisationDocument.OrganisationBuilding(
@@ -63,14 +68,17 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationBuildingUpdated> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            var organisationDocument = _elastic.TryGet(() =>
+                _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
 
             organisationDocument.ChangeId = message.Number;
             organisationDocument.ChangeTime = message.Timestamp;
 
-            organisationDocument.Buildings.RemoveExistingListItems(x => x.OrganisationBuildingId == message.Body.OrganisationBuildingId);
+            organisationDocument.Buildings.RemoveExistingListItems(x =>
+                x.OrganisationBuildingId == message.Body.OrganisationBuildingId);
 
             organisationDocument.Buildings.Add(
                 new OrganisationDocument.OrganisationBuilding(
@@ -79,6 +87,30 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     message.Body.BuildingName,
                     message.Body.IsMainBuilding,
                     new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationTerminated> message)
+        {
+            var organisationDocument =
+                _elastic.TryGet(() =>
+                    _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure()
+                        .Source);
+
+            organisationDocument.ChangeId = message.Number;
+            organisationDocument.ChangeTime = message.Timestamp;
+
+            foreach (var (key, value) in message.Body.BuildingsToTerminate)
+            {
+                var organisationBuilding =
+                    organisationDocument
+                        .Buildings
+                        .Single(x => x.OrganisationBuildingId == key);
+
+                organisationBuilding.Validity.End = value;
+            }
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }

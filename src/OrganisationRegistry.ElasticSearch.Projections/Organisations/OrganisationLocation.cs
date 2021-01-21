@@ -22,7 +22,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<OrganisationLocationUpdated>,
-        IEventHandler<LocationUpdated>
+        IEventHandler<LocationUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         private readonly Elastic _elastic;
 
@@ -156,6 +157,33 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             organisationDocument.Locations.RemoveExistingListItems(x =>
                 x.OrganisationLocationId == bodyOrganisationLocationId);
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            var organisationDocument =
+                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = message.Number;
+            organisationDocument.ChangeTime = message.Timestamp;
+
+            var locationsToTerminate =
+                message.Body.LocationsToTerminate;
+
+            if (message.Body.KboRegisteredOffice.HasValue)
+                locationsToTerminate.Add(message.Body.KboRegisteredOffice.Value.Key, message.Body.KboRegisteredOffice.Value.Value);
+
+            foreach (var (key, value) in locationsToTerminate)
+            {
+                var organisationLocation =
+                    organisationDocument
+                        .Labels
+                        .Single(x => x.OrganisationLabelId == key);
+
+                organisationLocation.Validity.End = value;
+            }
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }

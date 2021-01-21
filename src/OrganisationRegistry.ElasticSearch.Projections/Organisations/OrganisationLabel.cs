@@ -22,7 +22,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<OrganisationLabelUpdated>,
-        IEventHandler<LabelTypeUpdated>
+        IEventHandler<LabelTypeUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         private readonly Elastic _elastic;
 
@@ -146,6 +147,33 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     message.Body.LabelTypeName,
                     message.Body.Value,
                     new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            var organisationDocument =
+                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = message.Number;
+            organisationDocument.ChangeTime = message.Timestamp;
+
+            var labelsToTerminate =
+                message.Body.LabelsToTerminate;
+
+            if (message.Body.KboFormalName.HasValue)
+                labelsToTerminate.Add(message.Body.KboFormalName.Value.Key, message.Body.KboFormalName.Value.Value);
+
+            foreach (var (key, value) in labelsToTerminate)
+            {
+                var organisationBankAccount =
+                    organisationDocument
+                        .Labels
+                        .Single(x => x.OrganisationLabelId == key);
+
+                organisationBankAccount.Validity.End = value;
+            }
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }

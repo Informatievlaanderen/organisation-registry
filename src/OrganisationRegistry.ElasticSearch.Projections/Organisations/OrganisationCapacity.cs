@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 {
+    using System;
     using System.Data.Common;
     using System.Collections.Generic;
     using System.Linq;
@@ -22,7 +23,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<OrganisationCapacityUpdated>,
         IEventHandler<CapacityUpdated>,
         IEventHandler<FunctionUpdated>,
-        IEventHandler<PersonUpdated>
+        IEventHandler<PersonUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         private readonly Elastic _elastic;
         private readonly IMemoryCaches _memoryCaches;
@@ -119,6 +121,27 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     message.Body.FunctionName,
                     message.Body.Contacts.Select(x => new Contact(x.Key, _memoryCaches.ContactTypeNames[x.Key], x.Value)).ToList(),
                     new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            var organisationDocument =
+                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = message.Number;
+            organisationDocument.ChangeTime = message.Timestamp;
+
+            foreach (var (key, value) in message.Body.CapacitiesToTerminate)
+            {
+                var organisationCapacity =
+                    organisationDocument
+                        .Capacities
+                        .Single(x => x.OrganisationCapacityId == key);
+
+                organisationCapacity.Validity.End = value;
+            }
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }

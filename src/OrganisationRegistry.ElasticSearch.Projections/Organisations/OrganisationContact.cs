@@ -17,7 +17,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         BaseProjection<OrganisationContact>,
         IEventHandler<OrganisationContactAdded>,
         IEventHandler<OrganisationContactUpdated>,
-        IEventHandler<ContactTypeUpdated>
+        IEventHandler<ContactTypeUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         private readonly Elastic _elastic;
 
@@ -79,6 +80,27 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     message.Body.ContactTypeName,
                     message.Body.Value,
                     new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            var organisationDocument =
+                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = message.Number;
+            organisationDocument.ChangeTime = message.Timestamp;
+
+            foreach (var (key, value) in message.Body.ContactsToTerminate)
+            {
+                var organisationContact =
+                    organisationDocument
+                        .Contacts
+                        .Single(x => x.OrganisationContactId == key);
+
+                organisationContact.Validity.End = value;
+            }
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }
