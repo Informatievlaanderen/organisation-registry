@@ -33,5 +33,28 @@
             Contacts = contacts;
             Validity = validity;
         }
+
+        public OrganisationFunction WithValidity(Period period)
+        {
+            return new OrganisationFunction(
+                OrganisationFunctionId,
+                OrganisationId,
+                FunctionId,
+                FunctionName,
+                PersonId,
+                PersonName,
+                Contacts,
+                period);
+        }
+
+        public OrganisationFunction WithValidFrom(ValidFrom validFrom)
+        {
+            return WithValidity(new Period(validFrom, Validity.End));
+        }
+
+        public OrganisationFunction WithValidTo(ValidTo validTo)
+        {
+            return WithValidity(new Period(Validity.Start, validTo));
+        }
     }
 }

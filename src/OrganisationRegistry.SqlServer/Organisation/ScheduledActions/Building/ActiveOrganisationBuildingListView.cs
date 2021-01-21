@@ -5,7 +5,6 @@
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
     using Day.Events;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
@@ -53,6 +52,7 @@
         IEventHandler<OrganisationBuildingUpdated>,
         IEventHandler<MainBuildingAssignedToOrganisation>,
         IEventHandler<MainBuildingClearedFromOrganisation>,
+        IEventHandler<OrganisationTerminated>,
         IReactionHandler<DayHasPassed>
     {
         private readonly Dictionary<Guid, ValidTo> _endDatePerOrganisationBuildingId;
@@ -95,9 +95,10 @@
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingUpdated> message)
         {
-            // cache ValidTo for the OrganisationFormalFrameworkId,
-            // because we will need it when FormalFrameworkAssignedToOrganisation is published, which does not contain the ValidTo.
+            // cache ValidTo for the OrganisationBuildingId,
+            // because we will need it when MainBuildingAssignedToOrganisation is published, which does not contain the ValidTo.
             var validTo = new ValidTo(message.Body.ValidTo);
+
             _endDatePerOrganisationBuildingId.UpdateMemoryCache(message.Body.OrganisationBuildingId, validTo);
 
             if (validTo.IsInPastOf(_dateTimeProvider.Today))
@@ -161,13 +162,33 @@
             }
         }
 
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var buildings = context.ActiveOrganisationBuildingList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+                foreach (var building in buildings)
+                {
+                    var validTo = new ValidTo(message.Body.CapacitiesToTerminate[building.OrganisationBuildingId]);
+                    _endDatePerOrganisationBuildingId.UpdateMemoryCache(building.OrganisationBuildingId, validTo);
+
+                    if (validTo.IsInPastOf(_dateTimeProvider.Today))
+                        return;
+
+                    building.ValidTo = validTo;
+                }
+
+                await context.SaveChangesAsync();
+            }
+        }
+
         public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
         {
             using (var context = ContextFactory.Create())
             {
                 return context.ActiveOrganisationBuildingList
-                    .Where(item => item.ValidTo.HasValue)
-                    .Where(item => item.ValidTo.Value <= message.Body.Date)
+                    .Where(item => item.ValidTo.HasValue && item.ValidTo.Value <= message.Body.Date)
                     .Select(item => new UpdateMainBuilding(new OrganisationId(item.OrganisationId)))
                     .Cast<ICommand>()
                     .ToList();

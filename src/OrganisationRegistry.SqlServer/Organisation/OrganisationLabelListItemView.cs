@@ -65,7 +65,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationLabelUpdated>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationTerminationSyncedWithKbo>,
-        IEventHandler<LabelTypeUpdated>
+        IEventHandler<LabelTypeUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -197,6 +198,21 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 label.LabelTypeName = message.Body.LabelTypeName;
                 label.ValidFrom = message.Body.ValidFrom;
                 label.ValidTo = message.Body.ValidTo;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var labels = context.OrganisationLabelList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+                foreach (var label in labels)
+                {
+                    label.ValidTo = message.Body.CapacitiesToTerminate[label.OrganisationLabelId];
+                }
 
                 await context.SaveChangesAsync();
             }

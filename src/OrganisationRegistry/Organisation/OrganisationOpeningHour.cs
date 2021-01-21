@@ -27,5 +27,26 @@ namespace OrganisationRegistry.Organisation
             DayOfWeek = dayOfWeek;
             Validity = validity;
         }
+
+        public OrganisationOpeningHour WithValidity(Period period)
+        {
+            return new OrganisationOpeningHour(
+                OrganisationOpeningHourId,
+                OrganisationId,
+                Opens,
+                Closes,
+                DayOfWeek,
+                period);
+        }
+
+        public OrganisationOpeningHour WithValidFrom(ValidFrom validFrom)
+        {
+            return WithValidity(new Period(validFrom, Validity.End));
+        }
+
+        public OrganisationOpeningHour WithValidTo(ValidTo validTo)
+        {
+            return WithValidity(new Period(Validity.Start, validTo));
+        }
     }
 }

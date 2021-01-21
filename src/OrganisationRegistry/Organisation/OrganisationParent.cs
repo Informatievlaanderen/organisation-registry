@@ -38,5 +38,24 @@
         {
             return OrganisationOrganisationParentId.GetHashCode();
         }
+
+        public OrganisationParent WithValidity(Period period)
+        {
+            return new OrganisationParent(
+                OrganisationOrganisationParentId,
+                ParentOrganisationId,
+                ParentOrganisationName,
+                period);
+        }
+
+        public OrganisationParent WithValidFrom(ValidFrom validFrom)
+        {
+            return WithValidity(new Period(validFrom, Validity.End));
+        }
+
+        public OrganisationParent WithValidTo(ValidTo validTo)
+        {
+            return WithValidity(new Period(Validity.Start, validTo));
+        }
     }
 }

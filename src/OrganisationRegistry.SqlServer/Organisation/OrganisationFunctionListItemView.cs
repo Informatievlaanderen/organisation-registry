@@ -68,7 +68,8 @@
         IEventHandler<OrganisationFunctionAdded>,
         IEventHandler<OrganisationFunctionUpdated>,
         IEventHandler<FunctionUpdated>,
-        IEventHandler<PersonUpdated>
+        IEventHandler<PersonUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -153,6 +154,21 @@
                 key.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts ?? new Dictionary<Guid, string>());
                 key.ValidFrom = message.Body.ValidFrom;
                 key.ValidTo = message.Body.ValidTo;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var functions = context.OrganisationFunctionList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+                foreach (var function in functions)
+                {
+                    function.ValidTo = message.Body.CapacitiesToTerminate[function.OrganisationFunctionId];
+                }
 
                 await context.SaveChangesAsync();
             }

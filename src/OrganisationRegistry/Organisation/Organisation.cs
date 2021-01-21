@@ -1549,6 +1549,7 @@ namespace OrganisationRegistry.Organisation
                 _organisationRelations,
                 _organisationOpeningHours,
                 _organisationOrganisationClassifications,
+                _kboLegalFormOrganisationClassification,
                 classificationTypeIdsToTerminateEndOfNextYear,
                 _organisationFormalFrameworks,
                 formalFrameworkIdsToTerminateEndOfNextYear);
@@ -1570,6 +1571,10 @@ namespace OrganisationRegistry.Organisation
                 organisationTermination.BankAccounts,
                 organisationTermination.FormalFrameworks,
                 organisationTermination.OpeningHours,
+                organisationTermination.KboBankAccounts,
+                organisationTermination.KboRegisteredOfficeLocation,
+                organisationTermination.KboFormalNameLabel,
+                organisationTermination.KboLegalForm,
                 TerminationInKbo?.Date));
         }
 
@@ -2293,6 +2298,133 @@ namespace OrganisationRegistry.Organisation
         private void Apply(OrganisationTerminated @event)
         {
             _dateOfTermination = @event.DateOfTermination;
+
+            foreach (var (key, value) in @event.BuildingsToTerminate)
+            {
+                var building = _organisationBuildings
+                    .Single(organisationBuilding => organisationBuilding.OrganisationBuildingId == key);
+
+                _organisationBuildings.Remove(building);
+                _organisationBuildings.Add(building.WithValidTo(new ValidTo(value)));
+            }
+
+            foreach (var (key, value) in @event.LocationsToTerminate)
+            {
+                var location = _organisationLocations
+                    .Single(organisationLocation => organisationLocation.OrganisationLocationId == key);
+
+                _organisationLocations.Remove(location);
+                _organisationLocations.Add(location.WithValidTo(new ValidTo(value)));
+            }
+
+            foreach (var (key, value) in @event.CapacitiesToTerminate)
+            {
+                var capacity = _organisationCapacities
+                    .Single(organisationCapacity => organisationCapacity.OrganisationCapacityId == key);
+
+                _organisationCapacities.Remove(capacity);
+                _organisationCapacities.Add(capacity.WithValidTo(new ValidTo(value)));
+            }
+
+            foreach (var (key, value) in @event.ClassificationsToTerminate)
+            {
+                var classification = _organisationOrganisationClassifications
+                    .Single(organisationClassification => organisationClassification.OrganisationClassificationId == key);
+
+                _organisationOrganisationClassifications.Remove(classification);
+                _organisationOrganisationClassifications.Add(classification.WithValidTo(new ValidTo(value)));
+            }
+
+            foreach (var (key, value) in @event.ContactsToTerminate)
+            {
+                var contact = _organisationContacts
+                    .Single(organisationContact => organisationContact.OrganisationContactId == key);
+
+                _organisationContacts.Remove(contact);
+                _organisationContacts.Add(contact.WithValidTo(new ValidTo(value)));
+            }
+
+            foreach (var (key, value) in @event.FunctionsToTerminate)
+            {
+                var function = _organisationFunctionTypes
+                    .Single(organisationFunction => organisationFunction.OrganisationFunctionId == key);
+
+                _organisationFunctionTypes.Remove(function);
+                _organisationFunctionTypes.Add(function.WithValidTo(new ValidTo(value)));
+            }
+
+            foreach (var (key, value) in @event.LabelsToTerminate)
+            {
+                var label = _organisationLabels
+                    .Single(organisationLabel => organisationLabel.OrganisationLabelId == key);
+
+                _organisationLabels.Remove(label);
+                _organisationLabels.Add(label.WithValidTo(new ValidTo(value)));
+            }
+
+            foreach (var (key, value) in @event.ParentsToTerminate)
+            {
+                var parent = _organisationParents
+                    .Single(organisationParent => organisationParent.ParentOrganisationId == key);
+
+                _organisationParents.Remove(parent);
+                _organisationParents.Add(parent.WithValidTo(new ValidTo(value)));
+            }
+
+            foreach (var (key, value) in @event.RelationsToTerminate)
+            {
+                var relation = _organisationRelations
+                    .Single(organisationRelation => organisationRelation.OrganisationRelationId == key);
+
+                _organisationRelations.Remove(relation);
+                _organisationRelations.Add(relation.WithValidTo(new ValidTo(value)));
+            }
+
+            foreach (var (key, value) in @event.BankAccountsToTerminate)
+            {
+                var bankAccount = _organisationBankAccounts
+                    .Single(organisationBankAccount => organisationBankAccount.OrganisationBankAccountId == key);
+
+                _organisationBankAccounts.Remove(bankAccount);
+                _organisationBankAccounts.Add(bankAccount.WithValidTo(new ValidTo(value)));
+            }
+
+            foreach (var (key, value) in @event.FormalFrameworksToTerminate)
+            {
+                var formalFramework = _organisationFormalFrameworks
+                    .Single(organisationFormalFramework => organisationFormalFramework.OrganisationFormalFrameworkId == key);
+
+                _organisationFormalFrameworks.Remove(formalFramework);
+                _organisationFormalFrameworks.Add(formalFramework.WithValidTo(new ValidTo(value)));
+            }
+
+            foreach (var (key, value) in @event.OpeningHoursToTerminate)
+            {
+                var openingHour = _organisationOpeningHours
+                    .Single(organisationOpeningHour => organisationOpeningHour.OrganisationOpeningHourId == key);
+
+                _organisationOpeningHours.Remove(openingHour);
+                _organisationOpeningHours.Add(openingHour.WithValidTo(new ValidTo(value)));
+            }
+
+            foreach (var (key, value) in @event.KboBankAccountsToTerminate)
+            {
+                var bankAccount = _kboBankAccounts
+                    .Single(organisationBankAccount => organisationBankAccount.OrganisationBankAccountId == key);
+
+                _kboBankAccounts.Remove(bankAccount);
+                _kboBankAccounts.Add(bankAccount.WithValidTo(new ValidTo(value)));
+            }
+
+            if (@event.KboFormalName.HasValue)
+                _kboFormalNameLabel = _kboFormalNameLabel!.WithValidTo(new ValidTo(@event.KboFormalName.Value.Value));
+
+            if (@event.KboRegisteredOffice.HasValue)
+                _kboRegisteredOffice = _kboRegisteredOffice!.WithValidTo(new ValidTo(@event.KboRegisteredOffice.Value.Value));
+
+            if (@event.KboLegalForm.HasValue)
+                _kboLegalFormOrganisationClassification =
+                    _kboLegalFormOrganisationClassification!.WithValidTo(new ValidTo(@event.KboLegalForm.Value.Value));
         }
 
         public IEnumerable<OrganisationParent> ParentsInPeriod(Period validity)

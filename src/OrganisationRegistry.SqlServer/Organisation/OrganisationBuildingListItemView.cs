@@ -69,7 +69,8 @@
         Projection<OrganisationBuildingListView>,
         IEventHandler<BuildingUpdated>,
         IEventHandler<OrganisationBuildingAdded>,
-        IEventHandler<OrganisationBuildingUpdated>
+        IEventHandler<OrganisationBuildingUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -132,6 +133,21 @@
                 organisationBuildingListItem.BuildingName = message.Body.BuildingName;
                 organisationBuildingListItem.ValidFrom = message.Body.ValidFrom;
                 organisationBuildingListItem.ValidTo = message.Body.ValidTo;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var buildings = context.OrganisationBuildingList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+                foreach (var building in buildings)
+                {
+                    building.ValidTo = message.Body.CapacitiesToTerminate[building.OrganisationBuildingId];
+                }
 
                 await context.SaveChangesAsync();
             }

@@ -63,7 +63,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationRelationTypeUpdated>,
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
-        IEventHandler<OrganisationCouplingWithKboCancelled>
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
+        IEventHandler<OrganisationTerminated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -184,6 +185,21 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     organisationRelation.RelatedOrganisationName = organisationName;
 
                 context.SaveChanges();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var relations = context.OrganisationRelationList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+                foreach (var relation in relations)
+                {
+                    relation.ValidTo = message.Body.CapacitiesToTerminate[relation.OrganisationRelationId];
+                }
+
+                await context.SaveChangesAsync();
             }
         }
 

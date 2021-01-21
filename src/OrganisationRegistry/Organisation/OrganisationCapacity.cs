@@ -58,5 +58,33 @@ namespace OrganisationRegistry.Organisation
         {
             return IsActive && !Validity.OverlapsWith(date);
         }
+
+        public OrganisationCapacity WithValidity(Period period)
+        {
+            return new OrganisationCapacity(
+                OrganisationCapacityId,
+                OrganisationId,
+                CapacityId,
+                CapacityName,
+                PersonId,
+                PersonName,
+                FunctionTypeId,
+                FunctionTypeName,
+                LocationId,
+                LocationName,
+                Contacts,
+                period,
+                IsActive);
+        }
+
+        public OrganisationCapacity WithValidFrom(ValidFrom validFrom)
+        {
+            return WithValidity(new Period(validFrom, Validity.End));
+        }
+
+        public OrganisationCapacity WithValidTo(ValidTo validTo)
+        {
+            return WithValidity(new Period(Validity.Start, validTo));
+        }
     }
 }

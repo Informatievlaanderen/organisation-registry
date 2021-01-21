@@ -26,5 +26,26 @@
             Value = value;
             Validity = validity;
         }
+
+        public OrganisationLabel WithValidity(Period period)
+        {
+            return new OrganisationLabel(
+                OrganisationLabelId,
+                OrganisationId,
+                LabelTypeId,
+                LabelTypeName,
+                Value,
+                period);
+        }
+
+        public OrganisationLabel WithValidFrom(ValidFrom validFrom)
+        {
+            return WithValidity(new Period(validFrom, Validity.End));
+        }
+
+        public OrganisationLabel WithValidTo(ValidTo validTo)
+        {
+            return WithValidity(new Period(Validity.Start, validTo));
+        }
     }
 }

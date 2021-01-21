@@ -29,5 +29,27 @@
             IsBic = isBic;
             Validity = validity;
         }
+
+        public OrganisationBankAccount WithValidity(Period period)
+        {
+            return new OrganisationBankAccount(
+                OrganisationBankAccountId,
+                OrganisationId,
+                BankAccountNumber,
+                IsIban,
+                Bic,
+                IsBic,
+                period);
+        }
+
+        public OrganisationBankAccount WithValidFrom(ValidFrom validFrom)
+        {
+            return WithValidity(new Period(validFrom, Validity.End));
+        }
+
+        public OrganisationBankAccount WithValidTo(ValidTo validTo)
+        {
+            return WithValidity(new Period(Validity.Start, validTo));
+        }
     }
 }

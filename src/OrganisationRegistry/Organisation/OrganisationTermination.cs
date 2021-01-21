@@ -19,6 +19,11 @@ namespace OrganisationRegistry.Organisation
         public Dictionary<Guid, DateTime> Classifications { get; init; }
         public Dictionary<Guid, DateTime> FormalFrameworks { get; init; }
 
+        public Dictionary<Guid, DateTime> KboBankAccounts { get; set; }
+        public KeyValuePair<Guid, DateTime>? KboRegisteredOfficeLocation { get; set; }
+        public KeyValuePair<Guid, DateTime>? KboFormalNameLabel { get; set; }
+        public KeyValuePair<Guid, DateTime>? KboLegalForm { get; set; }
+
         internal static OrganisationTermination Calculate(DateTime dateOfTermination,
             IEnumerable<Guid> capacityTypeIdsToTerminateEndOfNextYear,
             IEnumerable<OrganisationContact> organisationContacts,
@@ -36,6 +41,7 @@ namespace OrganisationRegistry.Organisation
             IEnumerable<OrganisationRelation> organisationRelations,
             IEnumerable<OrganisationOpeningHour> organisationOpeningHours,
             IEnumerable<OrganisationOrganisationClassification> organisationClassifications,
+            OrganisationOrganisationClassification? kboLegalForm,
             IEnumerable<Guid> classificationTypeIdsToTerminateEndOfNextYear,
             IEnumerable<OrganisationFormalFramework> organisationFormalFrameworks,
             IEnumerable<Guid> formalFrameworkIdsToTerminateEndOfNextYear)
@@ -45,16 +51,20 @@ namespace OrganisationRegistry.Organisation
             return new OrganisationTermination
             {
                 Contacts = CalculateContacts(dateOfTermination, organisationContacts),
-                BankAccounts = CalculateBankAccounts(dateOfTermination, organisationBankAccounts, terminationInKbo, kboBankAccounts),
+                BankAccounts = CalculateBankAccounts(dateOfTermination, organisationBankAccounts),
+                KboBankAccounts = CalculateKboBankAccounts(terminationInKbo, kboBankAccounts),
                 Capacities = CalculateCapacities(dateOfTermination, capacityTypeIdsToTerminateEndOfNextYear, organisationCapacities, endOfNextYear),
                 Functions = CalculateFunctions(dateOfTermination, organisationFunctionTypes),
-                Locations = CalculateLocations(dateOfTermination, organisationLocations, terminationInKbo, kboRegisteredOffice),
+                Locations = CalculateLocations(dateOfTermination, organisationLocations),
+                KboRegisteredOfficeLocation = CalculateRegisteredOfficeLocation(terminationInKbo, kboRegisteredOffice),
                 Buildings = CalculateBuildings(dateOfTermination, organisationBuildings),
                 Parents = CalculateParents(dateOfTermination, organisationParents),
-                Labels = CalculateLabels(dateOfTermination, organisationLabels, terminationInKbo, kboFormalNameLabel),
+                Labels = CalculateLabels(dateOfTermination, organisationLabels),
+                KboFormalNameLabel = CalculateFormalNameLabel(terminationInKbo, kboFormalNameLabel),
                 Relations = CalculateRelations(dateOfTermination, organisationRelations),
                 OpeningHours = CalculateOpeningHours(dateOfTermination, organisationOpeningHours),
                 Classifications = CalculateClassifications(dateOfTermination, organisationClassifications, classificationTypeIdsToTerminateEndOfNextYear, endOfNextYear),
+                KboLegalForm = CalculateLegalForm(terminationInKbo, kboLegalForm),
                 FormalFrameworks = CalculateFormalFrameworks(dateOfTermination, organisationFormalFrameworks, endOfNextYear, formalFrameworkIdsToTerminateEndOfNextYear)
             };
         }
@@ -86,7 +96,10 @@ namespace OrganisationRegistry.Organisation
 
         }
 
-        private static Dictionary<Guid, DateTime> CalculateClassifications(DateTime dateOfTermination, IEnumerable<OrganisationOrganisationClassification> organisationClassifications, IEnumerable<Guid> classificationTypeIdsToTerminateEndOfNextYear, DateTime endOfNextYear)
+        private static Dictionary<Guid, DateTime> CalculateClassifications(DateTime dateOfTermination,
+            IEnumerable<OrganisationOrganisationClassification> organisationClassifications,
+            IEnumerable<Guid> classificationTypeIdsToTerminateEndOfNextYear,
+            DateTime endOfNextYear)
         {
             var classificationsList = organisationClassifications.ToList();
             var organisationClassificationsToTerminateEndOfNextYear =
@@ -127,16 +140,13 @@ namespace OrganisationRegistry.Organisation
                     _ => dateOfTermination);
         }
 
-        private static Dictionary<Guid, DateTime> CalculateLabels(DateTime dateOfTermination, IEnumerable<OrganisationLabel> organisationLabels, KboTermination? terminationInKbo, OrganisationLabel? kboFormalNameLabel)
+        private static Dictionary<Guid, DateTime> CalculateLabels(DateTime dateOfTermination, IEnumerable<OrganisationLabel> organisationLabels)
         {
             var labels = organisationLabels
                 .Where(label => label.Validity.End.IsInFutureOf(dateOfTermination))
                 .ToDictionary(
                     label => label.OrganisationLabelId,
                     _ => dateOfTermination);
-
-            if (terminationInKbo != null && kboFormalNameLabel != null)
-                labels.Add(kboFormalNameLabel.OrganisationLabelId, terminationInKbo.Value.Date);
 
             return labels;
         }
@@ -170,20 +180,13 @@ namespace OrganisationRegistry.Organisation
                         : dateOfTermination);
         }
 
-        private static Dictionary<Guid, DateTime> CalculateLocations(DateTime dateOfTermination, OrganisationLocations organisationLocations,
-            KboTermination? terminationInKbo, OrganisationLocation? kboRegisteredOffice)
+        private static Dictionary<Guid, DateTime> CalculateLocations(DateTime dateOfTermination, OrganisationLocations organisationLocations)
         {
-            var locationsToTerminate =
-                organisationLocations
-                    .Where(location => location.Validity.End.IsInFutureOf(dateOfTermination))
-                    .ToDictionary(
-                        account => account.OrganisationLocationId,
-                        _ => dateOfTermination);
-
-            if (terminationInKbo != null && kboRegisteredOffice != null)
-                locationsToTerminate.Add(kboRegisteredOffice.OrganisationLocationId, terminationInKbo.Value.Date);
-
-            return locationsToTerminate;
+            return organisationLocations
+                .Where(location => location.Validity.End.IsInFutureOf(dateOfTermination))
+                .ToDictionary(
+                    account => account.OrganisationLocationId,
+                    _ => dateOfTermination);
         }
 
         private static Dictionary<Guid, DateTime> CalculateContacts(DateTime dateOfTermination, IEnumerable<OrganisationContact> organisationContacts)
@@ -204,23 +207,47 @@ namespace OrganisationRegistry.Organisation
                     _ => dateOfTermination);
         }
 
-        private static Dictionary<Guid, DateTime> CalculateBankAccounts(DateTime dateOfTermination, IEnumerable<OrganisationBankAccount> organisationBankAccounts,
-            KboTermination? terminationInKbo, IEnumerable<OrganisationBankAccount> kboBankAccounts)
+        private static Dictionary<Guid, DateTime> CalculateBankAccounts(DateTime dateOfTermination, IEnumerable<OrganisationBankAccount> organisationBankAccounts)
         {
-            var bankAccountsToTerminate = organisationBankAccounts
+            return organisationBankAccounts
                 .Where(account => account.Validity.End.IsInFutureOf(dateOfTermination))
                 .ToDictionary(account => account.OrganisationBankAccountId,
                     _ => dateOfTermination);
+        }
 
-            if (terminationInKbo != null)
-                bankAccountsToTerminate =
-                    bankAccountsToTerminate.Union(
-                            kboBankAccounts.ToDictionary(
-                                account => account.OrganisationBankAccountId,
-                                _ => terminationInKbo.Value.Date))
-                        .ToDictionary(pair => pair.Key, pair => pair.Value);
+        private static Dictionary<Guid, DateTime> CalculateKboBankAccounts(KboTermination? terminationInKbo, IEnumerable<OrganisationBankAccount> kboBankAccounts)
+        {
+            return terminationInKbo != null
+                ? kboBankAccounts.ToDictionary(
+                    account => account.OrganisationBankAccountId,
+                    _ => terminationInKbo.Value.Date)
+                : new Dictionary<Guid, DateTime>();
+        }
 
-            return bankAccountsToTerminate;
+        private static KeyValuePair<Guid, DateTime>? CalculateFormalNameLabel(KboTermination? terminationInKbo, OrganisationLabel? kboFormalNameLabel)
+        {
+            return terminationInKbo != null && kboFormalNameLabel != null
+                ? new KeyValuePair<Guid, DateTime>(kboFormalNameLabel.OrganisationLabelId,
+                    terminationInKbo.Value.Date)
+                : null;
+        }
+
+        private static KeyValuePair<Guid, DateTime>? CalculateRegisteredOfficeLocation(KboTermination? terminationInKbo, OrganisationLocation? kboRegisteredOffice)
+        {
+            return terminationInKbo != null && kboRegisteredOffice != null
+                ? (KeyValuePair<Guid, DateTime>?) new KeyValuePair<Guid, DateTime>(
+                    kboRegisteredOffice.OrganisationLocationId,
+                    terminationInKbo.Value.Date)
+                : null;
+        }
+
+        private static KeyValuePair<Guid, DateTime>? CalculateLegalForm(KboTermination? terminationInKbo, OrganisationOrganisationClassification? kboLegalForm)
+        {
+            return terminationInKbo != null && kboLegalForm != null
+                ? (KeyValuePair<Guid, DateTime>?) new KeyValuePair<Guid, DateTime>(
+                    kboLegalForm.OrganisationOrganisationClassificationId,
+                    terminationInKbo.Value.Date)
+                : null;
         }
     }
 }
