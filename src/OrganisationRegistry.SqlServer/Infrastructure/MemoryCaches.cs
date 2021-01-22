@@ -4,35 +4,26 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Data.Common;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
     using OrganisationRegistry.Body.Events;
-    using OrganisationRegistry.Building.Events;
     using OrganisationRegistry.ContactType.Events;
     using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.LabelType.Events;
-    using OrganisationRegistry.Location.Events;
     using OrganisationRegistry.Organisation.Events;
 
     public enum MemoryCacheType
     {
         OvoNumbers,
         OrganisationNames,
-        OrganisationShortNames,
         OrganisationParents,
         OrganisationValidFroms,
         OrganisationValidTos,
-
         BodyNames,
-
-        LabelTypeNames,
-        BuildingNames,
-        LocationNames,
         ContactTypeNames,
-
         BodySeatNames,
         BodySeatNumbers,
         IsSeatPaid
@@ -41,24 +32,20 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     // Scoped as SingleInstance()
     public class MemoryCaches : IMemoryCaches
     {
-        private Dictionary<Guid, string> _ovoNumbers;
-        private Dictionary<Guid, string> _organisationNames;
-        private Dictionary<Guid, string> _organisationShortNames;
-        private Dictionary<Guid, Guid?> _organisationParents;
-        private Dictionary<Guid, DateTime?> _organisationValidFroms;
-        private Dictionary<Guid, DateTime?> _organisationValidTos;
+        private Dictionary<Guid, string> _ovoNumbers = null!;
+        private Dictionary<Guid, string> _organisationNames = null!;
+        private Dictionary<Guid, Guid?> _organisationParents = null!;
+        private Dictionary<Guid, DateTime?> _organisationValidFroms = null!;
+        private Dictionary<Guid, DateTime?> _organisationValidTos = null!;
 
-        private Dictionary<Guid, string> _bodyNames;
-        private Dictionary<Guid, string> _bodySeatNames;
-        private Dictionary<Guid, string> _bodySeatNumbers;
+        private Dictionary<Guid, string> _bodyNames = null!;
+        private Dictionary<Guid, string> _bodySeatNames = null!;
+        private Dictionary<Guid, string?> _bodySeatNumbers = null!;
 
-        private Dictionary<Guid, string> _labelTypeNames;
-        private Dictionary<Guid, string> _buildingNames;
-        private Dictionary<Guid, string> _locationNames;
-        private Dictionary<Guid, string> _contactTypeNames;
+        private Dictionary<Guid, string> _contactTypeNames = null!;
 
-        private Dictionary<Guid, bool> _isSeatPaid;
-        private readonly IContextFactory _contextFactory;
+        private Dictionary<Guid, bool> _isSeatPaid = null!;
+
         private readonly ILogger<MemoryCaches> _logger;
 
         public IReadOnlyDictionary<Guid, string> OvoNumbers =>
@@ -66,9 +53,6 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         public IReadOnlyDictionary<Guid, string> OrganisationNames =>
             ToReadOnlyDictionary(GetCache<string>(MemoryCacheType.OrganisationNames));
-
-        public IReadOnlyDictionary<Guid, string> OrganisationShortNames =>
-            ToReadOnlyDictionary(GetCache<string>(MemoryCacheType.OrganisationShortNames));
 
         public IReadOnlyDictionary<Guid, Guid?> OrganisationParents =>
             ToReadOnlyDictionary(GetCache<Guid?>(MemoryCacheType.OrganisationParents));
@@ -88,15 +72,6 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         public IReadOnlyDictionary<Guid, string> BodySeatNumbers =>
             ToReadOnlyDictionary(GetCache<string>(MemoryCacheType.BodySeatNumbers));
 
-        public IReadOnlyDictionary<Guid, string> LabelTypeNames =>
-            ToReadOnlyDictionary(GetCache<string>(MemoryCacheType.LabelTypeNames));
-
-        public IReadOnlyDictionary<Guid, string> BuildingNames =>
-            ToReadOnlyDictionary(GetCache<string>(MemoryCacheType.BuildingNames));
-
-        public IReadOnlyDictionary<Guid, string> LocationNames =>
-            ToReadOnlyDictionary(GetCache<string>(MemoryCacheType.LocationNames));
-
         public IReadOnlyDictionary<Guid, string> ContactTypeNames =>
             ToReadOnlyDictionary(GetCache<string>(MemoryCacheType.ContactTypeNames));
 
@@ -105,11 +80,15 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         public MemoryCaches(IContextFactory contextFactory, ILogger<MemoryCaches>? logger = null)
         {
-            _contextFactory = contextFactory;
             _logger = logger ?? new NullLogger<MemoryCaches>();
 
-            foreach (MemoryCacheType memoryCacheType in Enum.GetValues(typeof(MemoryCacheType)))
-                ResetCache(memoryCacheType, _contextFactory.Create());
+            using (var organisationRegistryContext = contextFactory.Create())
+            {
+                foreach (MemoryCacheType memoryCacheType in Enum.GetValues(typeof(MemoryCacheType)))
+                {
+                    ResetCache(memoryCacheType, organisationRegistryContext).GetAwaiter().GetResult();
+                }
+            }
         }
 
         internal Dictionary<Guid, T> GetCache<T>(MemoryCacheType cacheType)
@@ -117,111 +96,83 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
             switch (cacheType)
             {
                 case MemoryCacheType.OvoNumbers:
-                    return _ovoNumbers as Dictionary<Guid, T>;
+                    return _ovoNumbers as Dictionary<Guid, T> ?? throw new InvalidOperationException();
 
                 case MemoryCacheType.OrganisationNames:
-                    return _organisationNames as Dictionary<Guid, T>;
-
-                case MemoryCacheType.OrganisationShortNames:
-                    return _organisationShortNames as Dictionary<Guid, T>;
+                    return _organisationNames as Dictionary<Guid, T> ?? throw new InvalidOperationException();
 
                 case MemoryCacheType.OrganisationParents:
-                    return _organisationParents as Dictionary<Guid, T>;
+                    return _organisationParents as Dictionary<Guid, T> ?? throw new InvalidOperationException();
 
                 case MemoryCacheType.OrganisationValidFroms:
-                    return _organisationValidFroms as Dictionary<Guid, T>;
+                    return _organisationValidFroms as Dictionary<Guid, T> ?? throw new InvalidOperationException();
 
                 case MemoryCacheType.OrganisationValidTos:
-                    return _organisationValidTos as Dictionary<Guid, T>;
+                    return _organisationValidTos as Dictionary<Guid, T> ?? throw new InvalidOperationException();
 
                 case MemoryCacheType.BodyNames:
-                    return _bodyNames as Dictionary<Guid, T>;
+                    return _bodyNames as Dictionary<Guid, T> ?? throw new InvalidOperationException();
 
                 case MemoryCacheType.BodySeatNames:
-                    return _bodySeatNames as Dictionary<Guid, T>;
+                    return _bodySeatNames as Dictionary<Guid, T> ?? throw new InvalidOperationException();
 
                 case MemoryCacheType.BodySeatNumbers:
-                    return _bodySeatNumbers as Dictionary<Guid, T>;
-
-                case MemoryCacheType.LabelTypeNames:
-                    return _labelTypeNames as Dictionary<Guid, T>;
-
-                case MemoryCacheType.BuildingNames:
-                    return _buildingNames as Dictionary<Guid, T>;
-
-                case MemoryCacheType.LocationNames:
-                    return _locationNames as Dictionary<Guid, T>;
+                    return _bodySeatNumbers as Dictionary<Guid, T> ?? throw new InvalidOperationException();
 
                 case MemoryCacheType.ContactTypeNames:
-                    return _contactTypeNames as Dictionary<Guid, T>;
+                    return _contactTypeNames as Dictionary<Guid, T> ?? throw new InvalidOperationException();
 
                 case MemoryCacheType.IsSeatPaid:
-                    return _isSeatPaid as Dictionary<Guid, T>;
+                    return _isSeatPaid as Dictionary<Guid, T> ?? throw new InvalidOperationException();
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(cacheType), cacheType, null);
             }
         }
 
-        internal void ResetCache(MemoryCacheType cacheType, OrganisationRegistryContext context)
+        internal async Task ResetCache(MemoryCacheType cacheType, OrganisationRegistryContext context)
         {
-            _logger.LogInformation($"Building memory cache for {cacheType}");
+            _logger.LogInformation("Building memory cache for {CacheType}", cacheType);
             switch (cacheType)
             {
                 case MemoryCacheType.OvoNumbers:
-                    _ovoNumbers = context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.OvoNumber);
+                    _ovoNumbers = await context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.OvoNumber);
                     break;
 
                 case MemoryCacheType.OrganisationNames:
-                    _organisationNames = context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.Name);
-                    break;
-
-                case MemoryCacheType.OrganisationShortNames:
-                    _organisationShortNames = context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ShortName);
+                    _organisationNames = await context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.Name);
                     break;
 
                 case MemoryCacheType.OrganisationParents:
-                    _organisationParents = context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ParentOrganisationId);
+                    _organisationParents = await context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ParentOrganisationId);
                     break;
 
                 case MemoryCacheType.OrganisationValidFroms:
-                    _organisationValidFroms = context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ValidFrom);
+                    _organisationValidFroms = await context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ValidFrom);
                     break;
 
                 case MemoryCacheType.OrganisationValidTos:
-                    _organisationValidTos = context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ValidTo);
+                    _organisationValidTos = await context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ValidTo);
                     break;
 
                 case MemoryCacheType.BodyNames:
-                    _bodyNames = context.BodyDetail.BuildMemoryCache(item => item.Id, item => item.Name);
+                    _bodyNames = await context.BodyDetail.BuildMemoryCache(item => item.Id, item => item.Name);
                     break;
 
                 case MemoryCacheType.BodySeatNames:
-                    _bodySeatNames = context.BodySeatList.BuildMemoryCache(item => item.BodySeatId, item => item.Name);
+                    _bodySeatNames = await context.BodySeatList.BuildMemoryCache(item => item.BodySeatId, item => item.Name);
                     break;
 
                 case MemoryCacheType.BodySeatNumbers:
-                    _bodySeatNumbers = context.BodySeatList.BuildMemoryCache(item => item.BodySeatId, item => item.BodySeatNumber);
-                    break;
-
-                case MemoryCacheType.LabelTypeNames:
-                    _labelTypeNames = context.LabelTypeList.BuildMemoryCache(item => item.Id, item => item.Name);
-                    break;
-
-                case MemoryCacheType.BuildingNames:
-                    _buildingNames = context.BuildingList.BuildMemoryCache(item => item.Id, item => item.Name);
-                    break;
-
-                case MemoryCacheType.LocationNames:
-                    _locationNames = context.LocationList.BuildMemoryCache(item => item.Id, item => item.FormattedAddress);
+                    _bodySeatNumbers = await context.BodySeatList.BuildMemoryCache(item => item.BodySeatId, item => item.BodySeatNumber);
                     break;
 
                 case MemoryCacheType.ContactTypeNames:
-                    _contactTypeNames = context.ContactTypeList.BuildMemoryCache(item => item.Id, item => item.Name);
+                    _contactTypeNames = await context.ContactTypeList.BuildMemoryCache(item => item.Id, item => item.Name);
                     break;
 
                 case MemoryCacheType.IsSeatPaid:
-                    _isSeatPaid = context.BodySeatList.BuildMemoryCache(item => item.BodySeatId, item => item.PaidSeat);
+                    _isSeatPaid = await context.BodySeatList.BuildMemoryCache(item => item.BodySeatId, item => item.PaidSeat);
                     break;
 
                 default:
@@ -236,12 +187,6 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     }
 
     public interface IMemoryCachesMaintainer :
-        IEventHandler<LabelTypeCreated>,
-        IEventHandler<LabelTypeUpdated>,
-        IEventHandler<BuildingCreated>,
-        IEventHandler<BuildingUpdated>,
-        IEventHandler<LocationCreated>,
-        IEventHandler<LocationUpdated>,
         IEventHandler<ContactTypeCreated>,
         IEventHandler<ContactTypeUpdated>,
         IEventHandler<OrganisationCreated>,
@@ -256,7 +201,8 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         IEventHandler<BodyInfoChanged>,
         IEventHandler<BodySeatAdded>,
         IEventHandler<BodySeatUpdated>,
-        IEventHandler<ResetMemoryCache>
+        IEventHandler<ResetMemoryCache>,
+        IEventHandler<OrganisationTerminated>
     {
     }
 
@@ -304,42 +250,6 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                 .UpdateMemoryCache(message.Body.BodySeatId, message.Body.PaidSeat);
         }
 
-        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<LabelTypeCreated> message)
-        {
-            _memoryCaches.GetCache<string>(MemoryCacheType.LabelTypeNames)
-                .UpdateMemoryCache(message.Body.LabelTypeId, message.Body.Name);
-        }
-
-        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<LabelTypeUpdated> message)
-        {
-            _memoryCaches.GetCache<string>(MemoryCacheType.LabelTypeNames)
-                .UpdateMemoryCache(message.Body.LabelTypeId, message.Body.Name);
-        }
-
-        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<BuildingCreated> message)
-        {
-            _memoryCaches.GetCache<string>(MemoryCacheType.BuildingNames)
-                .UpdateMemoryCache(message.Body.BuildingId, message.Body.Name);
-        }
-
-        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<BuildingUpdated> message)
-        {
-            _memoryCaches.GetCache<string>(MemoryCacheType.BuildingNames)
-                .UpdateMemoryCache(message.Body.BuildingId, message.Body.Name);
-        }
-
-        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<LocationCreated> message)
-        {
-            _memoryCaches.GetCache<string>(MemoryCacheType.LocationNames)
-                .UpdateMemoryCache(message.Body.LocationId, message.Body.FormattedAddress);
-        }
-
-        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<LocationUpdated> message)
-        {
-            _memoryCaches.GetCache<string>(MemoryCacheType.LocationNames)
-                .UpdateMemoryCache(message.Body.LocationId, message.Body.FormattedAddress);
-        }
-
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<ContactTypeCreated> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.ContactTypeNames)
@@ -360,9 +270,6 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
             _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationNames)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.Name);
 
-            _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationShortNames)
-                .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ShortName);
-
             _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidFroms)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ValidFrom);
 
@@ -377,9 +284,6 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
             _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationNames)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.Name);
-
-            _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationShortNames)
-                .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ShortName);
 
             _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidFroms)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ValidFrom);
@@ -396,9 +300,6 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
             _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationNames)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.Name);
 
-            _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationShortNames)
-                .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ShortName);
-
             _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidFroms)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ValidFrom);
 
@@ -406,22 +307,23 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ValidTo);
         }
 
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationTerminated> message)
+        {
+            if (message.Body.OrganisationNewValidTo.HasValue)
+                _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidTos)
+                    .UpdateMemoryCache(message.Body.OrganisationId, message.Body.OrganisationNewValidTo);
+        }
+
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationNames)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.Name);
-
-            _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationShortNames)
-                .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ShortName);
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationNames)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
-
-            _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationShortNames)
-                .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ShortNameBeforeKboCoupling);
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<ParentAssignedToOrganisation> message)
@@ -444,24 +346,18 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<ResetMemoryCache> message)
         {
-            CheckResetCache(message.Body.Events, new[] { typeof(LabelTypeCreated), typeof(LabelTypeUpdated) }, new[] { MemoryCacheType.LabelTypeNames });
+            await CheckResetCache(message.Body.Events, new[] { typeof(ContactTypeCreated), typeof(ContactTypeUpdated) }, new[] { MemoryCacheType.ContactTypeNames });
 
-            CheckResetCache(message.Body.Events, new[] { typeof(BuildingCreated), typeof(BuildingUpdated) }, new[] { MemoryCacheType.BuildingNames });
+            await CheckResetCache(message.Body.Events, new[] { typeof(BodyRegistered), typeof(BodyInfoChanged) }, new[] { MemoryCacheType.BodyNames });
 
-            CheckResetCache(message.Body.Events, new[] { typeof(LocationCreated), typeof(LocationUpdated) }, new[] { MemoryCacheType.LocationNames });
-
-            CheckResetCache(message.Body.Events, new[] { typeof(ContactTypeCreated), typeof(ContactTypeUpdated) }, new[] { MemoryCacheType.ContactTypeNames });
-
-            CheckResetCache(message.Body.Events, new[] { typeof(BodyRegistered), typeof(BodyInfoChanged) }, new[] { MemoryCacheType.BodyNames });
-
-            CheckResetCache(message.Body.Events, new[] { typeof(BodySeatAdded), typeof(BodySeatUpdated) }, new[]
+            await CheckResetCache(message.Body.Events, new[] { typeof(BodySeatAdded), typeof(BodySeatUpdated) }, new[]
             {
                 MemoryCacheType.BodySeatNames,
                 MemoryCacheType.BodySeatNumbers,
                 MemoryCacheType.IsSeatPaid
             });
 
-            CheckResetCache(
+            await CheckResetCache(
                 message.Body.Events,
                 new[]
                 {
@@ -474,12 +370,11 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                 {
                     MemoryCacheType.OvoNumbers,
                     MemoryCacheType.OrganisationNames,
-                    MemoryCacheType.OrganisationShortNames,
                     MemoryCacheType.OrganisationValidFroms,
                     MemoryCacheType.OrganisationValidTos
                 });
 
-            CheckResetCache(
+            await CheckResetCache(
                 message.Body.Events,
                 new[]
                 {
@@ -490,13 +385,13 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                 new[] { MemoryCacheType.OrganisationParents });
         }
 
-        private void CheckResetCache(IEnumerable<IEvent> events, Type[] eventTypes, IEnumerable<MemoryCacheType> memoryCacheTypes)
+        private async Task CheckResetCache(IEnumerable<IEvent> events, Type[] eventTypes, IEnumerable<MemoryCacheType> memoryCacheTypes)
         {
             using (var context = _contextFactory.Create())
             {
                 if (events.Any(x => eventTypes.Contains(x.GetType())))
                     foreach (var memoryCacheType in memoryCacheTypes)
-                        _memoryCaches.ResetCache(memoryCacheType, context);
+                        await _memoryCaches.ResetCache(memoryCacheType, context);
             }
         }
     }

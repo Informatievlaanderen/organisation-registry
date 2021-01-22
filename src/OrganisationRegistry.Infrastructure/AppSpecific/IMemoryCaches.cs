@@ -7,7 +7,6 @@ namespace OrganisationRegistry.Infrastructure.AppSpecific
     {
         IReadOnlyDictionary<Guid, string> OvoNumbers { get; }
         IReadOnlyDictionary<Guid, string> OrganisationNames { get; }
-        IReadOnlyDictionary<Guid, string> OrganisationShortNames { get; }
         IReadOnlyDictionary<Guid, Guid?> OrganisationParents { get; }
         IReadOnlyDictionary<Guid, DateTime?> OrganisationValidFroms { get; }
         IReadOnlyDictionary<Guid, DateTime?> OrganisationValidTos { get; }
@@ -16,9 +15,6 @@ namespace OrganisationRegistry.Infrastructure.AppSpecific
         IReadOnlyDictionary<Guid, string> BodySeatNames { get; }
         IReadOnlyDictionary<Guid, string> BodySeatNumbers { get; }
 
-        IReadOnlyDictionary<Guid, string> LabelTypeNames { get; }
-        IReadOnlyDictionary<Guid, string> BuildingNames { get; }
-        IReadOnlyDictionary<Guid, string> LocationNames { get; }
         IReadOnlyDictionary<Guid, string> ContactTypeNames { get; }
 
         IReadOnlyDictionary<Guid, bool> IsSeatPaid { get; }
