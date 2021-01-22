@@ -50,7 +50,7 @@ export class OrganisationInfoEditComponent implements OnInit {
       parentOrganisation: [''],
       mainBuildingId: [''],
       mainBuildingName: [''],
-      mainLocationId: [''], // this is BS, man...
+      mainLocationId: [''],
       mainLocationName: [''],
       showOnVlaamseOverheidSites: [false],
       validFrom: [''],
