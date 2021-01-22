@@ -33,7 +33,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationCapacityBecameActive>,
-        IEventHandler<OrganisationCapacityBecameInactive>
+        IEventHandler<OrganisationCapacityBecameInactive>,
+        IEventHandler<OrganisationTerminated>
     {
         private readonly Elastic _elastic;
         private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
@@ -344,6 +345,20 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                 }
 
                 context.SaveChanges();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            foreach (var (key, value) in message.Body.CapacitiesToTerminate)
+            {
+                _elastic.Try(() => _elastic.WriteClient
+                    .MassUpdatePerson(
+                        queryFieldSelector: x => x.Capacities.Single().CapacityId, queryFieldValue: key,
+                        listPropertyName: "capacities", idPropertyName: "capacityId",
+                        namePropertyName: "validity.end", newName: value,
+                        changeId: message.Number,
+                        changeTime: message.Timestamp));
             }
         }
     }

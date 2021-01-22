@@ -1587,6 +1587,10 @@ namespace OrganisationRegistry.Organisation
                 organisationTermination.KboLegalForm,
                 TerminationInKbo?.Date));
 
+            var validityOverlapsWithToday = _validity.OverlapsWith(dateTimeProvider.Today);
+            if (_isActive && !validityOverlapsWithToday)
+                ApplyChange(new OrganisationBecameInactive(Id));
+
             if (_currentOrganisationParent != null &&
                 organisationTermination.Parents.ContainsKey(_currentOrganisationParent.OrganisationOrganisationParentId) &&
                 organisationTermination.Parents[_currentOrganisationParent.OrganisationOrganisationParentId] > dateTimeProvider.Today)
@@ -2341,6 +2345,7 @@ namespace OrganisationRegistry.Organisation
         private void Apply(OrganisationTerminated @event)
         {
             _dateOfTermination = @event.DateOfTermination;
+            _validity = new Period(_validity.Start, new ValidTo(@event.DateOfTermination));
 
             foreach (var (key, value) in @event.BuildingsToTerminate)
             {
