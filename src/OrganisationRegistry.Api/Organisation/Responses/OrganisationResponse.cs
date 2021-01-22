@@ -24,12 +24,6 @@
         public Guid? OrganisationClassificationTypeId { get; }
         public string Description { get; }
 
-        public Guid? MainBuildingId { get; }
-        public string MainBuildingName { get; }
-
-        public Guid? MainLocationId { get; }
-        public string MainLocationName { get; }
-
         public List<string> PurposeIds { get; }
         public List<string> Purposes { get; }
 
@@ -51,10 +45,6 @@
             OrganisationClassificationId = projectionItem.OrganisationClassificationId;
             OrganisationClassificationTypeId = projectionItem.OrganisationClassificationTypeId;
             Description = projectionItem.Description;
-            MainBuildingId = projectionItem.MainBuildingId;
-            MainBuildingName = projectionItem.MainBuildingName;
-            MainLocationId = projectionItem.MainLocationId;
-            MainLocationName = projectionItem.MainLocationName;
             PurposeIds = string.IsNullOrWhiteSpace(projectionItem.PurposeIds) ? new List<string>() : projectionItem.PurposeIds.Split(new[] {"|"}, StringSplitOptions.RemoveEmptyEntries).ToList();
             Purposes = string.IsNullOrWhiteSpace(projectionItem.PurposeNames) ? new List<string>() : projectionItem.PurposeNames.Split(new[] { "|" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             ShowOnVlaamseOverheidSites = projectionItem.ShowOnVlaamseOverheidSites;

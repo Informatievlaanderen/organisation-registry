@@ -29,9 +29,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
     using Organisation;
-    using Organisation.ScheduledActions.Building;
     using Organisation.ScheduledActions.FormalFramework;
-    using Organisation.ScheduledActions.Location;
     using Organisation.ScheduledActions.Parent;
     using OrganisationClassification;
     using OrganisationClassificationType;
@@ -113,12 +111,6 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         public DbSet<ActiveOrganisationParentListItem> ActiveOrganisationParentList { get; set; }
         public DbSet<FutureActiveOrganisationParentListItem> FutureActiveOrganisationParentList { get; set; }
-
-        public DbSet<ActiveOrganisationBuildingListItem> ActiveOrganisationBuildingList { get; set; }
-        public DbSet<FutureActiveOrganisationBuildingListItem> FutureActiveOrganisationBuildingList { get; set; }
-
-        public DbSet<ActiveOrganisationLocationListItem> ActiveOrganisationLocationList { get; set; }
-        public DbSet<FutureActiveOrganisationLocationListItem> FutureActiveOrganisationLocationList { get; set; }
 
         public DbSet<OrganisationClassificationListItem> OrganisationClassificationList { get; set; }
         public DbSet<OrganisationClassificationTypeListItem> OrganisationClassificationTypeList { get; set; }

@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Organisation.Events
 {
     using System;
 
+    [Obsolete("2020-01-22: No longer used in projections. Keep but don't use.")]
     public class MainBuildingClearedFromOrganisation : BaseEvent<MainBuildingClearedFromOrganisation>
     {
         public Guid OrganisationId => Id;

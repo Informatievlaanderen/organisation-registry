@@ -46,12 +46,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public Guid? OrganisationClassificationTypeId { get; set; }
         public string? Description { get; set; }
 
-        public Guid? MainBuildingId { get; set; }
-        public string? MainBuildingName { get; set; }
-
-        public Guid? MainLocationId { get; set; }
-        public string? MainLocationName { get; set; }
-
         public string? PurposeIds { get; set; }
         public string? PurposeNames { get; set; }
 
@@ -83,12 +77,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
             b.Property(p => p.OrganisationClassificationTypeId);
             b.Property(p => p.Description);
 
-            b.Property(p => p.MainBuildingId);
-            b.Property(p => p.MainBuildingName);
-
-            b.Property(p => p.MainLocationId);
-            b.Property(p => p.MainLocationName);
-
             b.Property(p => p.PurposeIds);
             b.Property(p => p.PurposeNames);
 
@@ -113,12 +101,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationParentUpdated>,
         IEventHandler<ParentAssignedToOrganisation>,
         IEventHandler<ParentClearedFromOrganisation>,
-        IEventHandler<MainBuildingAssignedToOrganisation>,
-        IEventHandler<MainBuildingClearedFromOrganisation>,
-        IEventHandler<BuildingUpdated>,
-        IEventHandler<MainLocationAssignedToOrganisation>,
-        IEventHandler<MainLocationClearedFromOrganisation>,
-        IEventHandler<LocationUpdated>,
         IEventHandler<PurposeUpdated>,
         IReactionHandler<DayHasPassed>
     {
@@ -332,84 +314,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 organisationListItem.ParentOrganisationId = null;
                 organisationListItem.ParentOrganisation = null;
                 organisationListItem.ParentOrganisationOrganisationParentId = null;
-
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BuildingUpdated> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisations = context.OrganisationDetail.Where(x => x.MainBuildingId == message.Body.BuildingId);
-                if (!organisations.Any())
-                    return;
-
-                foreach (var organisation in organisations)
-                    organisation.MainBuildingName = message.Body.Name;
-
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainBuildingAssignedToOrganisation> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisation = context.OrganisationDetail.Single(o => o.Id == message.Body.OrganisationId);
-                organisation.MainBuildingId = message.Body.MainBuildingId;
-                organisation.MainBuildingName = _memoryCaches.BuildingNames[message.Body.MainBuildingId];
-
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainBuildingClearedFromOrganisation> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisation = context.OrganisationDetail.Single(o => o.Id == message.Body.OrganisationId);
-                organisation.MainBuildingId = null;
-                organisation.MainBuildingName = null;
-
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LocationUpdated> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisations = context.OrganisationDetail.Where(x => x.MainLocationId == message.Body.LocationId);
-                if (!organisations.Any())
-                    return;
-
-                foreach (var organisation in organisations)
-                    organisation.MainLocationName = message.Body.FormattedAddress;
-
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainLocationAssignedToOrganisation> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisation = context.OrganisationDetail.Single(o => o.Id == message.Body.OrganisationId);
-                organisation.MainLocationId = message.Body.MainLocationId;
-                organisation.MainLocationName = _memoryCaches.LocationNames[message.Body.MainLocationId];
-
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<MainLocationClearedFromOrganisation> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisation = context.OrganisationDetail.Single(o => o.Id == message.Body.OrganisationId);
-                organisation.MainLocationId = null;
-                organisation.MainLocationName = null;
 
                 await context.SaveChangesAsync();
             }
