@@ -4,12 +4,16 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
 
     public static class MemoryCacheExtensions
     {
-        public static Dictionary<TKey, TValue> BuildMemoryCache<T, TKey, TValue>(this IQueryable<T> queryable, Func<T, TKey> keySelector, Func<T, TValue> valueSelector) where T: class
+        public static Task<Dictionary<TKey, TValue>> BuildMemoryCache<T, TKey, TValue>(
+            this IQueryable<T> queryable,
+            Func<T, TKey> keySelector,
+            Func<T, TValue> valueSelector) where T : class
         {
-            return queryable.AsNoTracking().ToDictionary(keySelector, valueSelector);
+            return queryable.AsNoTracking().ToDictionaryAsync(keySelector, valueSelector);
         }
 
         public static void UpdateMemoryCache<T>(this Dictionary<Guid, T> dictionary, Guid key, T value)
