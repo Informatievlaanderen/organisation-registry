@@ -4,7 +4,6 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
     using Body.Events;
     using OrganisationRegistry.Infrastructure.Events;
     using Infrastructure;

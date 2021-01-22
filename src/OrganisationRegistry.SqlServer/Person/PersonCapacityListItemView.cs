@@ -75,7 +75,8 @@ namespace OrganisationRegistry.SqlServer.Person
         IEventHandler<FunctionUpdated>,
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
-        IEventHandler<OrganisationCouplingWithKboCancelled>
+        IEventHandler<OrganisationCouplingWithKboCancelled>,
+        IEventHandler<OrganisationTerminated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -242,6 +243,23 @@ namespace OrganisationRegistry.SqlServer.Person
                     return;
 
                 context.PersonCapacityList.Remove(personCapacityListItem);
+                context.SaveChanges();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var capacityListItems = context.PersonCapacityList.Where(item =>
+                    message.Body.CapacitiesToTerminate.ContainsKey(item.OrganisationCapacityId));
+
+                foreach (var capacityListItem in capacityListItems)
+                {
+                    capacityListItem.ValidTo =
+                        message.Body.CapacitiesToTerminate[capacityListItem.OrganisationCapacityId];
+                }
+
                 context.SaveChanges();
             }
         }

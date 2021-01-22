@@ -15,12 +15,10 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using FunctionType;
     using Location;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using Person;
     using Function.Events;
     using OrganisationRegistry.Capacity.Events;
-    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Location.Events;
     using OrganisationRegistry.Person.Events;
 
