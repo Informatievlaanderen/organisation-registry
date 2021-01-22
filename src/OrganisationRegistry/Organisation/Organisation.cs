@@ -1602,14 +1602,14 @@ namespace OrganisationRegistry.Organisation
                 organisationTermination.Buildings.ContainsKey(_mainOrganisationBuilding.OrganisationBuildingId) &&
                 organisationTermination.Buildings[_mainOrganisationBuilding.OrganisationBuildingId] > dateTimeProvider.Today)
             {
-                ApplyChange(new ParentClearedFromOrganisation(Id, _mainOrganisationBuilding.BuildingId));
+                ApplyChange(new MainBuildingClearedFromOrganisation(Id, _mainOrganisationBuilding.BuildingId));
             }
 
             if (_mainOrganisationLocation != null &&
                 organisationTermination.Locations.ContainsKey(_mainOrganisationLocation.OrganisationLocationId) &&
                 organisationTermination.Locations[_mainOrganisationLocation.OrganisationLocationId] > dateTimeProvider.Today)
             {
-                ApplyChange(new ParentClearedFromOrganisation(Id, _mainOrganisationLocation.LocationId));
+                ApplyChange(new MainLocationClearedFromOrganisation(Id, _mainOrganisationLocation.LocationId));
             }
 
             foreach (var (_, parent) in _organisationFormalFrameworkParentsPerFormalFramework)
