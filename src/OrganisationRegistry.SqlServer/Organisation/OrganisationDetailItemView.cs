@@ -53,6 +53,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
+
+        public bool IsTerminated { get; set; }
     }
 
     public class OrganisationDetailConfiguration : EntityMappingConfiguration<OrganisationDetailItem>
@@ -82,6 +84,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
+
+            b.Property(p => p.IsTerminated);
 
             b.HasIndex(x => x.OvoNumber).IsUnique();
             b.HasIndex(x => x.Name).IsClustered();
@@ -124,7 +128,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
             _eventStore = eventStore;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationCreated> message)
         {
             var organisationListItem = new OrganisationDetailItem
             {
@@ -147,7 +152,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreatedFromKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationCreatedFromKbo> message)
         {
             var organisationListItem = new OrganisationDetailItem
             {
@@ -172,11 +178,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCoupledWithKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationCoupledWithKbo> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
+                var organisationListItem =
+                    context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
 
                 organisationListItem.KboNumber = message.Body.KboNumber;
 
@@ -184,11 +192,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
+                var organisationListItem =
+                    context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
 
                 organisationListItem.KboNumber = null;
 
@@ -199,11 +209,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationTerminationSyncedWithKbo> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
+                var organisationListItem =
+                    context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
 
                 organisationListItem.KboNumber = null;
 
@@ -211,11 +223,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationInfoUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
+                var organisationListItem =
+                    context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
 
                 organisationListItem.Name = message.Body.Name;
                 organisationListItem.ShortName = message.Body.ShortName;
@@ -223,44 +237,52 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 organisationListItem.ValidFrom = message.Body.ValidFrom;
                 organisationListItem.ValidTo = message.Body.ValidTo;
                 organisationListItem.PurposeIds = message.Body.Purposes.ToSeparatedList("|", x => x.Id.ToString());
-                organisationListItem.PurposeNames = message.Body.Purposes.OrderBy(x => x.Name).ToSeparatedList("|", x => x.Name);
+                organisationListItem.PurposeNames =
+                    message.Body.Purposes.OrderBy(x => x.Name).ToSeparatedList("|", x => x.Name);
                 organisationListItem.ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites;
 
-                foreach (var child in context.OrganisationDetail.Where(item => item.ParentOrganisationId == message.Body.OrganisationId))
+                foreach (var child in context.OrganisationDetail.Where(item =>
+                    item.ParentOrganisationId == message.Body.OrganisationId))
                     child.ParentOrganisation = message.Body.Name;
 
                 await context.SaveChangesAsync();
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
+                var organisationListItem =
+                    context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
 
                 organisationListItem.Name = message.Body.Name;
                 organisationListItem.ShortName = message.Body.ShortName;
 
-                foreach (var child in context.OrganisationDetail.Where(item => item.ParentOrganisationId == message.Body.OrganisationId))
+                foreach (var child in context.OrganisationDetail.Where(item =>
+                    item.ParentOrganisationId == message.Body.OrganisationId))
                     child.ParentOrganisation = message.Body.Name;
 
                 await context.SaveChangesAsync();
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PurposeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<PurposeUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var organisationListItems = context.OrganisationDetail.Where(item => item.PurposeIds.Contains(message.Body.PurposeId.ToString()));
+                var organisationListItems = context.OrganisationDetail.Where(item =>
+                    item.PurposeIds.Contains(message.Body.PurposeId.ToString()));
 
                 var previousPurposeName = message.Body.PreviousName;
                 foreach (var organisationListItem in organisationListItems)
                 {
                     var currentNames = string.IsNullOrWhiteSpace(organisationListItem.PurposeNames)
                         ? new List<string>()
-                        : organisationListItem.PurposeNames.Split(new[] {"|"}, StringSplitOptions.RemoveEmptyEntries).ToList();
+                        : organisationListItem.PurposeNames.Split(new[] {"|"}, StringSplitOptions.RemoveEmptyEntries)
+                            .ToList();
 
                     currentNames.Remove(previousPurposeName);
                     currentNames.Add(message.Body.Name);
@@ -272,45 +294,56 @@ namespace OrganisationRegistry.SqlServer.Organisation
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationParentUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationParentUpdated> message)
         {
             if (!message.Body.PreviousParentOrganisationId.HasValue)
                 return;
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
+                var organisationListItem =
+                    context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
 
-                if (organisationListItem.ParentOrganisationOrganisationParentId != message.Body.OrganisationOrganisationParentId)
+                if (organisationListItem.ParentOrganisationOrganisationParentId !=
+                    message.Body.OrganisationOrganisationParentId)
                     return;
 
                 organisationListItem.ParentOrganisationId = message.Body.ParentOrganisationId;
-                organisationListItem.ParentOrganisation = context.OrganisationDetail.Single(item => item.Id == message.Body.ParentOrganisationId).Name;
-                organisationListItem.ParentOrganisationOrganisationParentId = message.Body.OrganisationOrganisationParentId;
+                organisationListItem.ParentOrganisation = context.OrganisationDetail
+                    .Single(item => item.Id == message.Body.ParentOrganisationId).Name;
+                organisationListItem.ParentOrganisationOrganisationParentId =
+                    message.Body.OrganisationOrganisationParentId;
 
                 await context.SaveChangesAsync();
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentAssignedToOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<ParentAssignedToOrganisation> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
+                var organisationListItem =
+                    context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
 
                 organisationListItem.ParentOrganisationId = message.Body.ParentOrganisationId;
-                organisationListItem.ParentOrganisation = context.OrganisationDetail.Single(item => item.Id == message.Body.ParentOrganisationId).Name;
-                organisationListItem.ParentOrganisationOrganisationParentId = message.Body.OrganisationOrganisationParentId;
+                organisationListItem.ParentOrganisation = context.OrganisationDetail
+                    .Single(item => item.Id == message.Body.ParentOrganisationId).Name;
+                organisationListItem.ParentOrganisationOrganisationParentId =
+                    message.Body.OrganisationOrganisationParentId;
 
                 await context.SaveChangesAsync();
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentClearedFromOrganisation> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<ParentClearedFromOrganisation> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
+                var organisationListItem =
+                    context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
 
                 organisationListItem.ParentOrganisationId = null;
                 organisationListItem.ParentOrganisation = null;
@@ -320,22 +353,25 @@ namespace OrganisationRegistry.SqlServer.Organisation
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationTerminated> message)
         {
-            if (!message.Body.OrganisationNewValidTo.HasValue)
-                return;
-
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
+                var organisationListItem =
+                    context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
 
-                organisationListItem.ValidTo = message.Body.OrganisationNewValidTo;
+                organisationListItem.IsTerminated = true;
+
+                if (message.Body.OrganisationNewValidTo.HasValue)
+                    organisationListItem.ValidTo = message.Body.OrganisationNewValidTo;
 
                 await context.SaveChangesAsync();
             }
         }
 
-        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<RebuildProjection> message)
         {
             await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
@@ -346,7 +382,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
             {
                 var organisationDetails = context.OrganisationDetail.ToList();
                 return organisationDetails
-                    .Select(item => new UpdateRelationshipValidities(new OrganisationId(item.Id), message.Body.NextDate))
+                    .Select(item =>
+                        new UpdateRelationshipValidities(new OrganisationId(item.Id), message.Body.NextDate))
                     .Cast<ICommand>()
                     .ToList();
             }
