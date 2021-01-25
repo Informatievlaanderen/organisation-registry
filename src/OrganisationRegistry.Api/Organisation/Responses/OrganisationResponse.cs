@@ -23,7 +23,7 @@
         public Guid? OrganisationClassificationId { get; }
         public Guid? OrganisationClassificationTypeId { get; }
         public string? Description { get; }
-        public List<longstring> PurposeIds { get; }
+        public List<string> PurposeIds { get; }
         public List<string> Purposes { get; }
         public bool ShowOnVlaamseOverheidSites { get; }
         public DateTime? ValidFrom { get; }
