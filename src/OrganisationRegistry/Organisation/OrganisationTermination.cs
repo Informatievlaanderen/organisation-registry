@@ -6,6 +6,7 @@ namespace OrganisationRegistry.Organisation
 
     public struct OrganisationTermination
     {
+        public DateTime? OrganisationNewValidTo { get; init; }
         public Dictionary<Guid, DateTime> Contacts { get; init; }
         public Dictionary<Guid, DateTime> BankAccounts { get; init; }
         public Dictionary<Guid, DateTime> Functions { get; init; }
@@ -24,7 +25,8 @@ namespace OrganisationRegistry.Organisation
         public KeyValuePair<Guid, DateTime>? KboFormalNameLabel { get; set; }
         public KeyValuePair<Guid, DateTime>? KboLegalForm { get; set; }
 
-        internal static OrganisationTermination Calculate(DateTime dateOfTermination,
+        internal static OrganisationTermination Calculate(ValidTo validTo,
+            DateTime dateOfTermination,
             IEnumerable<Guid> capacityTypeIdsToTerminateEndOfNextYear,
             IEnumerable<OrganisationContact> organisationContacts,
             IEnumerable<OrganisationBankAccount> organisationBankAccounts,
@@ -47,6 +49,7 @@ namespace OrganisationRegistry.Organisation
 
             return new OrganisationTermination
             {
+                OrganisationNewValidTo = validTo.IsInFutureOf(dateOfTermination) ? dateOfTermination : null,
                 Contacts = CalculateContacts(dateOfTermination, organisationContacts),
                 BankAccounts = CalculateBankAccounts(dateOfTermination, organisationBankAccounts),
                 KboBankAccounts = CalculateKboBankAccounts(terminationInKbo, kboState.KboBankAccounts),

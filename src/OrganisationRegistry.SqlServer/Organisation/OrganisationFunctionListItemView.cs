@@ -163,11 +163,12 @@
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var functions = context.OrganisationFunctionList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+                var functions = context.OrganisationFunctionList.Where(item =>
+                    message.Body.FunctionsToTerminate.Keys.Contains(item.OrganisationFunctionId));
 
                 foreach (var function in functions)
                 {
-                    function.ValidTo = message.Body.CapacitiesToTerminate[function.OrganisationFunctionId];
+                    function.ValidTo = message.Body.FunctionsToTerminate[function.OrganisationFunctionId];
                 }
 
                 await context.SaveChangesAsync();

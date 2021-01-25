@@ -11,7 +11,6 @@ namespace OrganisationRegistry.Organisation.Events
         public string OvoNumber { get; }
         public DateTime DateOfTermination { get; }
         public DateTime? DateOfTerminationAccordingToKbo { get; }
-
         public DateTime? OrganisationNewValidTo { get; }
         public Dictionary<Guid, DateTime> BuildingsToTerminate { get; }
         public Dictionary<Guid, DateTime> BankAccountsToTerminate { get; }
@@ -36,6 +35,7 @@ namespace OrganisationRegistry.Organisation.Events
             string name,
             string ovoNumber,
             DateTime dateOfTermination,
+            DateTime? organisationNewValidTo,
             Dictionary<Guid, DateTime> organisationTerminationBuildings,
             Dictionary<Guid, DateTime> organisationTerminationCapacities,
             Dictionary<Guid, DateTime> organisationTerminationContacts,
@@ -60,6 +60,7 @@ namespace OrganisationRegistry.Organisation.Events
             Name = name;
             OvoNumber = ovoNumber;
             DateOfTermination = dateOfTermination;
+            OrganisationNewValidTo = organisationNewValidTo;
             BuildingsToTerminate = organisationTerminationBuildings;
             CapacitiesToTerminate = organisationTerminationCapacities;
             ContactsToTerminate = organisationTerminationContacts;

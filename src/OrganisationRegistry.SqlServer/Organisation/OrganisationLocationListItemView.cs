@@ -256,12 +256,23 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var locations = context.OrganisationLocationList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+                var locations = context.OrganisationLocationList.Where(item =>
+                    message.Body.LocationsToTerminate.Keys.Contains(item.OrganisationLocationId));
 
                 foreach (var location in locations)
                 {
-                    location.ValidTo = message.Body.CapacitiesToTerminate[location.OrganisationLocationId];
+                    location.ValidTo = message.Body.LocationsToTerminate[location.OrganisationLocationId];
                 }
+
+                if (message.Body.KboRegisteredOffice.HasValue)
+                {
+                    var kboOrganisationRegisteredOffice =
+                        await context.OrganisationLocationList.SingleAsync(item =>
+                            message.Body.KboRegisteredOffice.Value.Key == item.OrganisationLocationId);
+
+                    kboOrganisationRegisteredOffice.ValidTo = message.Body.KboRegisteredOffice.Value.Value;
+                }
+
 
                 await context.SaveChangesAsync();
             }

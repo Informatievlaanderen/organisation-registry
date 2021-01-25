@@ -222,7 +222,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var capacities = context.OrganisationCapacityList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+                var capacities = context.OrganisationCapacityList.Where(item =>
+                    message.Body.CapacitiesToTerminate.Keys.Contains(item.OrganisationCapacityId));
 
                 foreach (var capacity in capacities)
                 {

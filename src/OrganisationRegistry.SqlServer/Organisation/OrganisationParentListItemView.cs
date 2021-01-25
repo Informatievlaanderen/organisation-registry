@@ -151,11 +151,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var parents = context.OrganisationParentList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+                var parents = context.OrganisationParentList.Where(item =>
+                    message.Body.ParentsToTerminate.Keys.Contains(item.OrganisationOrganisationParentId));
 
                 foreach (var parent in parents)
                 {
-                    parent.ValidTo = message.Body.CapacitiesToTerminate[parent.ParentOrganisationId];
+                    parent.ValidTo = message.Body.ParentsToTerminate[parent.ParentOrganisationId];
                 }
 
                 await context.SaveChangesAsync();

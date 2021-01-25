@@ -1545,7 +1545,9 @@ namespace OrganisationRegistry.Organisation
             if (IsTerminated)
                 throw new OrganisationAlreadyTerminated();
 
-            var organisationTermination = OrganisationTermination.Calculate(dateOfTermination,
+            var organisationTermination = OrganisationTermination.Calculate(
+                _validity.End,
+                dateOfTermination,
                 capacityTypeIdsToTerminateEndOfNextYear,
                 _organisationContacts,
                 _organisationBankAccounts,
@@ -1569,10 +1571,11 @@ namespace OrganisationRegistry.Organisation
                 Name,
                 OvoNumber,
                 dateOfTermination,
+                organisationTermination.OrganisationNewValidTo,
                 organisationTermination.Buildings,
                 organisationTermination.Capacities,
-                organisationTermination.Classifications,
                 organisationTermination.Contacts,
+                organisationTermination.Classifications,
                 organisationTermination.Functions,
                 organisationTermination.Labels,
                 organisationTermination.Locations,
@@ -2377,7 +2380,7 @@ namespace OrganisationRegistry.Organisation
             foreach (var (key, value) in @event.ClassificationsToTerminate)
             {
                 var classification = _organisationOrganisationClassifications
-                    .Single(organisationClassification => organisationClassification.OrganisationClassificationId == key);
+                    .Single(organisationClassification => organisationClassification.OrganisationOrganisationClassificationId == key);
 
                 _organisationOrganisationClassifications.Remove(classification);
                 _organisationOrganisationClassifications.Add(classification.WithValidTo(new ValidTo(value)));

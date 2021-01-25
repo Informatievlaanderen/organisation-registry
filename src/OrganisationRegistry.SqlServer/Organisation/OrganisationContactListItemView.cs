@@ -132,11 +132,12 @@
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var contacts = context.OrganisationContactList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+                var contacts = context.OrganisationContactList.Where(item =>
+                    message.Body.ContactsToTerminate.Keys.Contains(item.OrganisationContactId));
 
                 foreach (var contact in contacts)
                 {
-                    contact.ValidTo = message.Body.CapacitiesToTerminate[contact.OrganisationContactId];
+                    contact.ValidTo = message.Body.ContactsToTerminate[contact.OrganisationContactId];
                 }
 
                 await context.SaveChangesAsync();
