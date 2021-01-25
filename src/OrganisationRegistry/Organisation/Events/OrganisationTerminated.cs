@@ -12,6 +12,7 @@ namespace OrganisationRegistry.Organisation.Events
         public DateTime DateOfTermination { get; }
         public DateTime? DateOfTerminationAccordingToKbo { get; }
 
+        public DateTime? OrganisationNewValidTo { get; }
         public Dictionary<Guid, DateTime> BuildingsToTerminate { get; }
         public Dictionary<Guid, DateTime> BankAccountsToTerminate { get; }
         public Dictionary<Guid, DateTime> CapacitiesToTerminate { get; }

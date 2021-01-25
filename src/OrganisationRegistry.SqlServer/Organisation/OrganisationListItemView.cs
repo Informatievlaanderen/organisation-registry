@@ -167,7 +167,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<OrganisationOrganisationClassificationUpdated>,
-        IEventHandler<OrganisationClassificationUpdated>
+        IEventHandler<OrganisationClassificationUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -820,6 +821,22 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 return;
 
             context.OrganisationList.Remove(organisationListItem);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            if (!message.Body.OrganisationNewValidTo.HasValue)
+                return;
+
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                foreach (var organisationListItem in context.OrganisationList.Where(item => item.OrganisationId == message.Body.OrganisationId))
+                {
+                    organisationListItem.ValidTo = message.Body.OrganisationNewValidTo;
+                }
+
+                await context.SaveChangesAsync();
+            }
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
