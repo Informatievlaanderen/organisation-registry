@@ -102,6 +102,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<ParentAssignedToOrganisation>,
         IEventHandler<ParentClearedFromOrganisation>,
         IEventHandler<PurposeUpdated>,
+        IEventHandler<OrganisationTerminated>,
         IReactionHandler<DayHasPassed>
     {
         private readonly IMemoryCaches _memoryCaches;
@@ -314,6 +315,21 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 organisationListItem.ParentOrganisationId = null;
                 organisationListItem.ParentOrganisation = null;
                 organisationListItem.ParentOrganisationOrganisationParentId = null;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            if (!message.Body.OrganisationNewValidTo.HasValue)
+                return;
+
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var organisationListItem = context.OrganisationDetail.Single(item => item.Id == message.Body.OrganisationId);
+
+                organisationListItem.ValidTo = message.Body.OrganisationNewValidTo;
 
                 await context.SaveChangesAsync();
             }

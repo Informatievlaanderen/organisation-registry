@@ -69,7 +69,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationParentAdded>,
-        IEventHandler<OrganisationParentUpdated>
+        IEventHandler<OrganisationParentUpdated>,
+        IEventHandler<OrganisationTerminated>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -181,6 +182,26 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 key.ValidTo = message.Body.ValidTo;
                 key.OrganisationValidFrom = _memoryCaches.OrganisationValidFroms[message.Body.OrganisationId];
                 key.OrganisationValidTo = _memoryCaches.OrganisationValidTos[message.Body.OrganisationId];
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            if (!message.Body.OrganisationNewValidTo.HasValue)
+                return;
+
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var organisations = context.OrganisationChildrenList.Where(x => x.Id == message.Body.OrganisationId);
+                if (!organisations.Any())
+                    return;
+
+                foreach (var organisation in organisations)
+                {
+                    organisation.ValidTo = message.Body.OrganisationNewValidTo;
+                }
 
                 await context.SaveChangesAsync();
             }

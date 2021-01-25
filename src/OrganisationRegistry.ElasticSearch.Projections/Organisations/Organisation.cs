@@ -188,13 +188,16 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
+            if (!message.Body.OrganisationNewValidTo.HasValue)
+                return;
+
             var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
 
             organisationDocument.ChangeId = message.Number;
             organisationDocument.ChangeTime = message.Timestamp;
 
             organisationDocument.Validity =
-                new Period(organisationDocument.Validity.Start, message.Body.DateOfTermination);
+                new Period(organisationDocument.Validity.Start, message.Body.OrganisationNewValidTo);
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }
