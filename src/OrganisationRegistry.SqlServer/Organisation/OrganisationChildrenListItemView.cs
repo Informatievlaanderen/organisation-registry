@@ -200,7 +200,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
                 foreach (var organisation in organisations)
                 {
-                    organisation.ValidTo = message.Body.OrganisationNewValidTo;
+                    organisation.OrganisationValidTo = message.Body.OrganisationNewValidTo;
                 }
 
                 await context.SaveChangesAsync();

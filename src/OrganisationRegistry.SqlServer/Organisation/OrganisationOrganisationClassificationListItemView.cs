@@ -242,11 +242,21 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var classifications = context.OrganisationOrganisationClassificationList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+                var classifications = context.OrganisationOrganisationClassificationList.Where(item =>
+                    message.Body.ClassificationsToTerminate.Keys.Contains(item.OrganisationOrganisationClassificationId));
 
                 foreach (var classification in classifications)
                 {
-                    classification.ValidTo = message.Body.CapacitiesToTerminate[classification.OrganisationClassificationId];
+                    classification.ValidTo = message.Body.ClassificationsToTerminate[classification.OrganisationOrganisationClassificationId];
+                }
+
+                if (message.Body.KboLegalForm.HasValue)
+                {
+                    var kboLegalForm =
+                        await context.OrganisationOrganisationClassificationList.SingleAsync(item =>
+                            message.Body.KboLegalForm.Value.Key == item.OrganisationOrganisationClassificationId);
+
+                    kboLegalForm.ValidTo = message.Body.KboLegalForm.Value.Value;
                 }
 
                 await context.SaveChangesAsync();

@@ -147,11 +147,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var openingHours = context.OrganisationOpeningHourList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+                var openingHours = context.OrganisationOpeningHourList.Where(item =>
+                    message.Body.OpeningHoursToTerminate.Keys.Contains(item.OrganisationOpeningHourId));
 
                 foreach (var openingHour in openingHours)
                 {
-                    openingHour.ValidTo = message.Body.CapacitiesToTerminate[openingHour.OrganisationOpeningHourId];
+                    openingHour.ValidTo = message.Body.OpeningHoursToTerminate[openingHour.OrganisationOpeningHourId];
                 }
 
                 await context.SaveChangesAsync();

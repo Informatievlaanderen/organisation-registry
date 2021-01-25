@@ -192,11 +192,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var relations = context.OrganisationRelationList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+                var relations = context.OrganisationRelationList.Where(item =>
+                    message.Body.RelationsToTerminate.Keys.Contains(item.OrganisationRelationId));
 
                 foreach (var relation in relations)
                 {
-                    relation.ValidTo = message.Body.CapacitiesToTerminate[relation.OrganisationRelationId];
+                    relation.ValidTo = message.Body.RelationsToTerminate[relation.OrganisationRelationId];
                 }
 
                 await context.SaveChangesAsync();
