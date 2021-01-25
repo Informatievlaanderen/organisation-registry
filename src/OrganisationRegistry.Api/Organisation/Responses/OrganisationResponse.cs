@@ -11,26 +11,24 @@
 
         public string OvoNumber { get; }
 
-        public string KboNumber { get; set; }
+        public string? KboNumber { get; set; }
 
         public string Name { get; }
-        public string ShortName { get; }
+        public string? ShortName { get; }
 
-        public string ParentOrganisation { get; }
+        public string? ParentOrganisation { get; }
         public Guid? ParentOrganisationId { get; }
 
         public Guid? FormalFrameworkId { get; }
         public Guid? OrganisationClassificationId { get; }
         public Guid? OrganisationClassificationTypeId { get; }
-        public string Description { get; }
-
-        public List<string> PurposeIds { get; }
+        public string? Description { get; }
+        public List<longstring> PurposeIds { get; }
         public List<string> Purposes { get; }
-
         public bool ShowOnVlaamseOverheidSites { get; }
-
         public DateTime? ValidFrom { get; }
         public DateTime? ValidTo { get; }
+        public bool IsTerminated { get; set; }
 
         public OrganisationResponse(OrganisationDetailItem projectionItem)
         {
@@ -50,6 +48,7 @@
             ShowOnVlaamseOverheidSites = projectionItem.ShowOnVlaamseOverheidSites;
             ValidFrom = projectionItem.ValidFrom;
             ValidTo = projectionItem.ValidTo;
+            IsTerminated = projectionItem.IsTerminated;
         }
     }
 }

@@ -15,7 +15,8 @@ export class Organisation implements ICrudItem<Organisation>, ICreateOrganisatio
     public validTo: Date = null,
     public purposeIds: Array<string> = [],
     public purposes: Array<string> = [],
-    public showOnVlaamseOverheidSites: boolean = false
+    public showOnVlaamseOverheidSites: boolean = false,
+    public isTerminated: boolean = false
   ) {
   }
 }
