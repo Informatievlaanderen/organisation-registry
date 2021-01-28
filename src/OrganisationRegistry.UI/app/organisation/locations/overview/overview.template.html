@@ -6,7 +6,7 @@
             (filter)="search($event)">
         </ww-organisation-location-filter>
         <div class="cta-title__cta">
-            <a *ngIf="(canEditOrganisation | async)" class="button cta-title__cta" [routerLink]="['./create']">Locatie koppelen</a>
+            <a *ngIf="(store.isEditableChanged | async)" class="button cta-title__cta" [routerLink]="['./create']">Locatie koppelen</a>
             <div class="u-align-right" style="clear: both;"></div>
         </div>
     </div>
@@ -15,6 +15,6 @@
       [items]="organisationLocations"
       [isBusy]="isLoading"
       (changePage)="changePage($event)"
-      [canEdit]="canEditOrganisation">
+      [canEdit]="store.isEditableChanged">
     </ww-organisation-location-list>
 </div>

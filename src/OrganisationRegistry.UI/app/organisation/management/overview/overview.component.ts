@@ -9,8 +9,8 @@ import {AlertBuilder, AlertService} from 'core/alert';
 import {BaseAlertMessages} from 'core/alertmessages';
 
 import {OrganisationSyncService, OrganisationTermination} from 'services/organisationsync';
-import {OrganisationInfoService} from "../../../services/organisationinfo";
-import {Organisation} from "../../../services/organisations";
+import {OrganisationInfoService} from "services/organisationinfo";
+import {Organisation} from "services/organisations";
 
 @Component({
   templateUrl: 'overview.template.html',

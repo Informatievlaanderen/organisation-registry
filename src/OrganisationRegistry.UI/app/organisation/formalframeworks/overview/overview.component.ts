@@ -1,10 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
-import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 
-import { AuthService, OidcService } from 'core/auth';
+import { OidcService } from 'core/auth';
 import { AlertBuilder, AlertService } from 'core/alert';
 import { BaseAlertMessages } from 'core/alertmessages';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -25,7 +24,6 @@ import { OrganisationInfoService } from 'services/organisationinfo';
 export class OrganisationFormalFrameworksOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public organisationFormalFrameworks: PagedResult<OrganisationFormalFrameworkListItem>;
-  public canEditOrganisation: Observable<boolean>;
 
   private filter: OrganisationFormalFrameworkFilter = new OrganisationFormalFrameworkFilter();
   private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Organisatie historiek');
@@ -47,10 +45,8 @@ export class OrganisationFormalFrameworksOverviewComponent implements OnInit, On
   }
 
   ngOnInit() {
-    this.canEditOrganisation = Observable.of(false);
     this.subscriptions.push(this.route.parent.parent.params.subscribe((params: Params) => {
       this.organisationId = params['id'];
-      this.canEditOrganisation = this.oidcService.canEditOrganisation(this.organisationId);
       this.loadFormalFrameworks();
       this.store.loadOrganisation(this.organisationId);
     }));

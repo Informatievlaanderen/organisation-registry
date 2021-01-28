@@ -20,7 +20,6 @@ export class OrganisationInfoOverviewComponent implements OnInit, OnDestroy {
   public isBusy = true;
   public children: PagedResult<OrganisationChild> = new PagedResult<Organisation>();
   public organisation: Organisation;
-  public canEditOrganisation: Observable<boolean>;
   public isOrganisationRegistryBeheerder: Observable<boolean>;
   public organisationCancelKboCouplingEnabled: Observable<boolean>;
 
@@ -33,8 +32,8 @@ export class OrganisationInfoOverviewComponent implements OnInit, OnDestroy {
     private router: Router,
     private alertService: AlertService,
     private oidcService: OidcService,
-    private store: OrganisationInfoService,
-    private togglesService: TogglesService
+    private togglesService: TogglesService,
+    public store: OrganisationInfoService
   ) {
     this.organisation = new Organisation();
     this.children = new PagedResult<OrganisationChild>();
@@ -72,7 +71,6 @@ export class OrganisationInfoOverviewComponent implements OnInit, OnDestroy {
       .subscribe(params => {
         this.isBusy = true;
         this.id = params['id'];
-        this.canEditOrganisation = this.oidcService.canEditOrganisation(this.id);
         this.isOrganisationRegistryBeheerder = this.oidcService.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
         this.store.loadOrganisation(this.id);
         this.store.loadChildren(this.id);

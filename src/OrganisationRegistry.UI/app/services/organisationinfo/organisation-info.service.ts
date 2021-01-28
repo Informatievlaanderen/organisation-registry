@@ -8,22 +8,29 @@ import { Organisation, OrganisationService, OrganisationChild } from 'services/o
 import { AlertBuilder, AlertService, Alert, AlertType } from 'core/alert';
 import { PagedEvent, PagedResult, SortOrder } from 'core/pagination';
 import { BaseAlertMessages } from 'core/alertmessages';
+import {OidcService} from "core/auth";
+import {ReplaySubject} from "rxjs";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
 @Injectable()
 export class OrganisationInfoService {
   private organisationChangedSource: Subject<Organisation>;
-  private organisationChanged$: Observable<Organisation>;
+  private readonly organisationChanged$: Observable<Organisation>;
 
   private organisationChildrenChangedSource: Subject<PagedResult<OrganisationChild>>;
-  private organisationChildrenChanged$: Observable<PagedResult<OrganisationChild>>;
+  private readonly organisationChildrenChanged$: Observable<PagedResult<OrganisationChild>>;
 
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
   private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Organisatie');
 
+  private isEditableChangedSource: BehaviorSubject<boolean>;
+  private readonly isEditableChanged$: Observable<boolean>;
+
   constructor(
     private organisationService: OrganisationService,
+    private oidcService: OidcService,
     private alertService: AlertService
   ) {
     this.organisationChangedSource = new Subject<Organisation>();
@@ -31,6 +38,14 @@ export class OrganisationInfoService {
 
     this.organisationChildrenChangedSource = new Subject<PagedResult<OrganisationChild>>();
     this.organisationChildrenChanged$ = this.organisationChildrenChangedSource.asObservable();
+
+    this.isEditableChangedSource = new BehaviorSubject<boolean>(false);
+    this.isEditableChanged$ = this.isEditableChangedSource.asObservable();
+
+    this.organisationChanged$.subscribe(value =>
+    {
+      this.isEditableChangedSource.next( !value.isTerminated);
+    });
   }
 
   get organisationChanged() {
@@ -41,7 +56,12 @@ export class OrganisationInfoService {
     return this.organisationChildrenChanged$;
   }
 
+  get isEditableChanged() {
+    return this.isEditableChanged$;
+  }
+
   loadOrganisation(id: string) {
+    console.log('Loading organisation');
     this.organisationService.get(id)
       .subscribe(
         item => {

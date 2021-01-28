@@ -8,12 +8,12 @@ import { AlertService, AlertBuilder } from 'core/alert';
 
 import {OrganisationSyncService, OrganisationTermination} from 'services/organisationsync';
 import {Observable} from "rxjs/Observable";
-import {OrganisationInfoService} from "../../../services";
+import {OrganisationInfoService} from "services";
 import {Subscription} from "rxjs/Subscription";
-import {Organisation, OrganisationService} from "../../../services/organisations";
-import {OidcService, Role} from "../../../core/auth";
-import {BaseAlertMessages} from "../../../core/alertmessages";
-import {required} from "../../../core/validation";
+import {Organisation, OrganisationService} from "services/organisations";
+import {OidcService, Role} from "core/auth";
+import {BaseAlertMessages} from "core/alertmessages";
+import {required} from "core/validation";
 
 @Component({
   templateUrl: 'terminate.template.html',
@@ -93,7 +93,7 @@ export class OrganisationTerminateComponent implements OnInit{
             new AlertBuilder()
               .success()
               .withTitle('Organisatie bijgewerkt!')
-              .withMessage('De koppeling met de KBO werd succesvol ongedaan gemaakt.')
+              .withMessage('De organisatie werd succesvol stopgezet.')
               .build());
         },
         error => {

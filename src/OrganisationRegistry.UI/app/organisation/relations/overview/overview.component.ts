@@ -1,10 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
-import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 
-import { AuthService, OidcService } from 'core/auth';
+import { OidcService } from 'core/auth';
 import { AlertBuilder, AlertService } from 'core/alert';
 import { BaseAlertMessages } from 'core/alertmessages';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -15,6 +14,7 @@ import {
   OrganisationRelationService,
   OrganisationRelationFilter
 } from 'services/organisationrelations';
+import {OrganisationInfoService} from "services";
 
 @Component({
   templateUrl: 'overview.template.html',
@@ -23,7 +23,6 @@ import {
 export class OrganisationRelationsOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public organisationRelations: PagedResult<OrganisationRelationListItem>;
-  public canEditOrganisation: Observable<boolean>;
 
   private filter: OrganisationRelationFilter = new OrganisationRelationFilter();
   private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Organisatie relaties');
@@ -38,16 +37,15 @@ export class OrganisationRelationsOverviewComponent implements OnInit, OnDestroy
     private router: Router,
     private organisationRelationService: OrganisationRelationService,
     private oidcService: OidcService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    public store: OrganisationInfoService
   ) {
     this.organisationRelations = new PagedResult<OrganisationRelationListItem>();
   }
 
   ngOnInit() {
-    this.canEditOrganisation = Observable.of(false);
     this.subscriptions.push(this.route.parent.parent.params.subscribe((params: Params) => {
       this.organisationId = params['id'];
-      this.canEditOrganisation = this.oidcService.canEditOrganisation(this.organisationId);
       this.loadRelations();
     }));
   }
