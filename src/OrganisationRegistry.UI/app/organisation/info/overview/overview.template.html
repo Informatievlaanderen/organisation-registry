@@ -2,7 +2,7 @@
   <div class="cta-title">
     <h3 class="h3 cta-title__title">Algemene informatie</h3>
     <div class="cta-title__cta">
-      <div *ngIf="(canEditOrganisation | async)">
+      <div *ngIf="(store.isEditableChanged | async)">
         <a *ngIf="!organisation.kboNumber"
            class="button button--secondary button--notice"
            [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
@@ -92,7 +92,7 @@
   <div class="cta-title">
     <h3 class="h3 cta-title__title">Dochterorganisaties</h3>
     <div class="cta-title__cta">
-      <a *ngIf="(canEditOrganisation | async)" class="button cta-title__cta"
+      <a *ngIf="(store.isEditableChanged | async)" class="button cta-title__cta"
          [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}" [routerLink]="'./addchild'">Voeg dochter
         toe</a>
       <div class="u-align-right" style="clear: both;">

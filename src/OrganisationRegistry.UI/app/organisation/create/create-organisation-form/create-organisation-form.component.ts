@@ -7,7 +7,7 @@ import { AlertService, AlertBuilder } from 'core/alert';
 import {
   Kbo,
   KboService
-} from '../../../services/kbo';
+} from 'services/kbo';
 
 @Component({
   selector: 'ww-create-organisation-form',

@@ -1,10 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
-import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 
-import { AuthService, OidcService } from 'core/auth';
+import { OidcService } from 'core/auth';
 import { AlertBuilder, AlertService } from 'core/alert';
 import { BaseAlertMessages } from 'core/alertmessages';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -23,7 +22,6 @@ import { OrganisationInfoService } from 'services/organisationinfo';
 export class OrganisationParentsOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public organisationParents: PagedResult<OrganisationParentListItem>;
-  public canEditOrganisation: Observable<boolean>;
 
   private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Organisatie historiek');
   private organisationId: string;
@@ -38,16 +36,14 @@ export class OrganisationParentsOverviewComponent implements OnInit, OnDestroy {
     private organisationParentService: OrganisationParentService,
     private oidcService: OidcService,
     private alertService: AlertService,
-    private store: OrganisationInfoService
+    public store: OrganisationInfoService
   ) {
     this.organisationParents = new PagedResult<OrganisationParentListItem>();
   }
 
   ngOnInit() {
-    this.canEditOrganisation = Observable.of(false);
     this.subscriptions.push(this.route.parent.parent.params.subscribe((params: Params) => {
       this.organisationId = params['id'];
-      this.canEditOrganisation = this.oidcService.canEditOrganisation(this.organisationId);
       this.loadParents();
       this.store.loadOrganisation(this.organisationId);
     }));
