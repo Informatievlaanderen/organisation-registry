@@ -35,7 +35,7 @@
                 ApplyChange(new MainLocationClearedFromOrganisation(Id, _mainOrganisationLocation.LocationId)); // bestaat en overlapt niet met vandaag.
             }
 
-            var mainLocation = _organisationLocations.SingleOrDefault(location => location.IsMainLocation && location.Validity.OverlapsWith(dateTimeProvider.Today));
+            var mainLocation = State.OrganisationLocations.SingleOrDefault(location => location.IsMainLocation && location.Validity.OverlapsWith(dateTimeProvider.Today));
             if (mainLocation != null)
             {
                 bugFixResult.AppendLine($"Nieuwe main location gevonden! {mainLocation.FormattedAddress}, geldig op {mainLocation.Validity}.");
@@ -54,7 +54,7 @@
                 ApplyChange(new MainBuildingClearedFromOrganisation(Id, _mainOrganisationBuilding.BuildingId)); // bestaat en overlapt niet met vandaag.
             }
 
-            var mainBuilding = _organisationBuildings.SingleOrDefault(building => building.IsMainBuilding && building.Validity.OverlapsWith(dateTimeProvider.Today));
+            var mainBuilding = State.OrganisationBuildings.SingleOrDefault(building => building.IsMainBuilding && building.Validity.OverlapsWith(dateTimeProvider.Today));
             if (mainBuilding != null)
             {
                 bugFixResult.AppendLine($"Nieuwe main building gevonden! {mainBuilding.BuildingName}, geldig op {mainBuilding.Validity}.");

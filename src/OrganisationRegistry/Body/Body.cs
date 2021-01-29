@@ -121,7 +121,7 @@ namespace OrganisationRegistry.Body
                 Id,
                 _name,
                 organisation.Id,
-                organisation.Name,
+                organisation.State.Name,
                 null,
                 null));
 
@@ -129,18 +129,18 @@ namespace OrganisationRegistry.Body
                 Id,
                 _name,
                 organisation.Id,
-                organisation.Name,
+                organisation.State.Name,
                 Id));
         }
 
-        private static bool IsNotTheDefaultActiveLifecyclePhaseType(LifecyclePhaseType activeLifecyclePhaseType)
+        private static bool IsNotTheDefaultActiveLifecyclePhaseType(LifecyclePhaseType? activeLifecyclePhaseType)
         {
             return activeLifecyclePhaseType == null ||
                    activeLifecyclePhaseType.Status != LifecyclePhaseTypeStatus.Default ||
                    activeLifecyclePhaseType.LifecyclePhaseTypeIsRepresentativeFor != LifecyclePhaseTypeIsRepresentativeFor.ActivePhase;
         }
 
-        private static bool IsNotTheDefaultInactiveLifecyclePhaseType(LifecyclePhaseType inactiveLifecyclePhaseType)
+        private static bool IsNotTheDefaultInactiveLifecyclePhaseType(LifecyclePhaseType? inactiveLifecyclePhaseType)
         {
             return inactiveLifecyclePhaseType == null ||
                    inactiveLifecyclePhaseType.Status != LifecyclePhaseTypeStatus.Default ||
@@ -384,7 +384,7 @@ namespace OrganisationRegistry.Body
                 bodyOrganisationId,
                 _name,
                 organisation.Id,
-                organisation.Name,
+                organisation.State.Name,
                 validity.Start,
                 validity.End));
 
@@ -392,7 +392,7 @@ namespace OrganisationRegistry.Body
                 new BodyOrganisation(
                     bodyOrganisationId,
                     new OrganisationId(organisation.Id),
-                    organisation.Name,
+                    organisation.State.Name,
                     validity),
                 dateTimeProvider.Today);
         }
@@ -414,7 +414,7 @@ namespace OrganisationRegistry.Body
                 Id,
                 bodyOrganisationId,
                 organisation.Id,
-                organisation.Name,
+                organisation.State.Name,
                 validity.Start,
                 validity.End,
                 previousBodyOrganisation.OrganisationId,
@@ -426,7 +426,7 @@ namespace OrganisationRegistry.Body
                 new BodyOrganisation(
                     bodyOrganisationId,
                     new OrganisationId(organisation.Id),
-                    organisation.Name,
+                    organisation.State.Name,
                     validity),
                 dateTimeProvider.Today);
         }
@@ -505,7 +505,7 @@ namespace OrganisationRegistry.Body
                 bodySeat.Name,
                 bodySeat.SeatType.Order,
                 organisation.Id,
-                organisation.Name,
+                organisation.State.Name,
                 functionType.Id,
                 functionType.Name,
                 validity.Start,
@@ -531,7 +531,7 @@ namespace OrganisationRegistry.Body
                 bodySeat.Name,
                 bodySeat.SeatType.Order,
                 organisation.Id,
-                organisation.Name,
+                organisation.State.Name,
                 validity.Start,
                 validity.End));
         }
@@ -607,7 +607,7 @@ namespace OrganisationRegistry.Body
                 bodySeat.Name,
                 bodySeat.SeatType.Order,
                 organisation.Id,
-                organisation.Name,
+                organisation.State.Name,
                 functionType.Id,
                 functionType.Name,
                 validity.Start,
@@ -648,7 +648,7 @@ namespace OrganisationRegistry.Body
                 bodySeat.Name,
                 bodySeat.SeatType.Order,
                 organisation.Id,
-                organisation.Name,
+                organisation.State.Name,
                 validity.Start,
                 validity.End,
                 previousBodySeat.BodySeatId,

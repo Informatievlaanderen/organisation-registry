@@ -2,7 +2,7 @@ namespace OrganisationRegistry.Organisation
 {
     using System;
 
-    internal readonly struct KboTermination
+    public readonly struct KboTermination
     {
         public DateTime Date { get; }
         public string Code { get; }
