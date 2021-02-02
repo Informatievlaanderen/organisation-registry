@@ -1,3 +1,10 @@
+## [1.63.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.63.0...v1.63.1) (2021-02-02)
+
+
+### Bug Fixes
+
+* move to 5.0.2 ([36a1d78](https://github.com/informatievlaanderen/organisation-registry/commit/36a1d785576dc19348e2fd0ce91ce6575eb27d10))
+
 # [1.63.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.62.0...v1.63.0) (2020-12-24)
 
 
