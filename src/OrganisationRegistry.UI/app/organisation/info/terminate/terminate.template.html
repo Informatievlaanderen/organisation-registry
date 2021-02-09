@@ -4,7 +4,7 @@
         <h1 class="h2">Organisatie stopzetten</h1>
         <p>Door deze actie uit te voeren krijgt de organisatie een einddatum op verschillende velden,
           en zal de organisatie niet meer editeerbaar zijn voor niet-algemeenbeheerders.</p>
-        <p> Misschien samenvatting geven van wat zal worden afgesloten, via TerminationCalculator?</p>
+        <p *ngIf="isTerminated(organisationTermination)">Deze organisatie is afgesloten volgens de kbo.</p>
       </div>
 
       <form class="form" [formGroup]="terminateForm" (ngSubmit)="submit()" autocomplete="off">

@@ -1,10 +1,10 @@
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {ActivatedRoute, Params, Router} from '@angular/router';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 import * as moment from 'moment/moment';
 
-import { AlertService, AlertBuilder } from 'core/alert';
+import {AlertBuilder, AlertService} from 'core/alert';
 
 import {OrganisationSyncService, OrganisationTermination} from 'services/organisationsync';
 import {Observable} from "rxjs/Observable";
@@ -103,6 +103,10 @@ export class OrganisationTerminateComponent implements OnInit{
               .error(error)
               .build());
         });
+  }
+
+  isTerminated(organisationTermination) {
+    return organisationTermination && organisationTermination.status === "proposed";
   }
 
   private loadSyncStatus() {
