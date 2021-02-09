@@ -2,8 +2,9 @@ namespace OrganisationRegistry.Organisation
 {
     using System;
 
-    public class OrganisationRelation
+    public class OrganisationRelation : IOrganisationField, IValidityBuilder<OrganisationRelation>
     {
+        public Guid Id => OrganisationRelationId;
         public Guid OrganisationRelationId { get; }
         public Guid OrganisationId { get; } // todo: remove organisationId from this (but not from event, possibly not from command)
         public string OrganisationName { get; }

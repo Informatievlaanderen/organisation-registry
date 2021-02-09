@@ -2,10 +2,10 @@ namespace OrganisationRegistry.Organisation
 {
     using System;
 
-    public class OrganisationOpeningHour
+    public class OrganisationOpeningHour : IOrganisationField, IValidityBuilder<OrganisationOpeningHour>
     {
+        public Guid Id => OrganisationOpeningHourId;
         public Guid OrganisationId { get; }
-
         public Guid OrganisationOpeningHourId { get; }
         public TimeSpan Opens { get; }
         public TimeSpan Closes { get; }

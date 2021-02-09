@@ -3,8 +3,9 @@ namespace OrganisationRegistry.Organisation
     using System;
     using System.Collections.Generic;
 
-    public class OrganisationCapacity
+    public class OrganisationCapacity : IOrganisationField, IValidityBuilder<OrganisationCapacity>
     {
+        public Guid Id => OrganisationCapacityId;
         public Guid OrganisationId { get; } // todo: remove organisationId from this (but not from event, possibly not from command)
         public Guid OrganisationCapacityId { get; }
         public Guid CapacityId { get; }

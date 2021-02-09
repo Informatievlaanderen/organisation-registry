@@ -2,8 +2,9 @@
 {
     using System;
 
-    public class OrganisationBankAccount
+    public class OrganisationBankAccount : IOrganisationField, IValidityBuilder<OrganisationBankAccount>
     {
+        public Guid Id => OrganisationBankAccountId;
         public Guid OrganisationId { get; }
         public Guid OrganisationBankAccountId { get; }
         public string BankAccountNumber { get; }

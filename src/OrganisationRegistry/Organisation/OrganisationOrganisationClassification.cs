@@ -2,8 +2,9 @@
 {
     using System;
 
-    public class OrganisationOrganisationClassification
+    public class OrganisationOrganisationClassification : IOrganisationField, IValidityBuilder<OrganisationOrganisationClassification>
     {
+        public Guid Id => OrganisationOrganisationClassificationId;
         public Guid OrganisationId { get; } // todo: remove organisationId from this (but not from event, possibly not from command)
         public Guid OrganisationOrganisationClassificationId { get; }
         public Guid OrganisationClassificationTypeId { get; }

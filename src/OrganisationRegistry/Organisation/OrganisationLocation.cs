@@ -2,8 +2,9 @@ namespace OrganisationRegistry.Organisation
 {
     using System;
 
-    public class OrganisationLocation
+    public class OrganisationLocation : IOrganisationField, IValidityBuilder<OrganisationLocation>
     {
+        public Guid Id => OrganisationLocationId;
         public Guid OrganisationLocationId { get; }
         public Guid OrganisationId { get; }
         public Guid LocationId { get; }
