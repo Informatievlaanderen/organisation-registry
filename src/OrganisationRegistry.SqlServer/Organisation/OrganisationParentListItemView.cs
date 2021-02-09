@@ -156,7 +156,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
                 foreach (var parent in parents)
                 {
-                    parent.ValidTo = message.Body.ParentsToTerminate[parent.ParentOrganisationId];
+                    parent.ValidTo = message.Body.ParentsToTerminate[parent.OrganisationOrganisationParentId];
                 }
 
                 await context.SaveChangesAsync();
