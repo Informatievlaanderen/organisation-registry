@@ -2,8 +2,9 @@
 {
     using System;
 
-    public class OrganisationContact
+    public class OrganisationContact : IOrganisationField, IValidityBuilder<OrganisationContact>
     {
+        public Guid Id => OrganisationContactId;
         public Guid OrganisationId { get; } // todo: remove organisationId from this (but not from event, possibly not from command)
         public Guid OrganisationContactId { get; }
         public Guid ContactTypeId { get; }
@@ -47,5 +48,13 @@
         {
             return WithValidity(new Period(Validity.Start, validTo));
         }
+    }
+
+    public interface IValidityBuilder<T> where T: IOrganisationField
+    {
+        T WithValidity(Period period);
+
+        T WithValidFrom(ValidFrom validFrom);
+        T WithValidTo(ValidTo validTo);
     }
 }

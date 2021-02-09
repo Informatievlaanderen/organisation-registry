@@ -2,8 +2,9 @@ namespace OrganisationRegistry.Organisation
 {
     using System;
 
-    public class OrganisationFormalFramework
+    public class OrganisationFormalFramework : IOrganisationField, IValidityBuilder<OrganisationFormalFramework>
     {
+        public Guid Id => OrganisationFormalFrameworkId;
         public Guid OrganisationFormalFrameworkId { get; }
         public Guid FormalFrameworkId { get; }
         public string FormalFrameworkName { get; }

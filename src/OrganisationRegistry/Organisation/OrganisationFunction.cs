@@ -3,8 +3,9 @@
     using System;
     using System.Collections.Generic;
 
-    public class OrganisationFunction
+    public class OrganisationFunction : IOrganisationField, IValidityBuilder<OrganisationFunction>
     {
+        public Guid Id => OrganisationFunctionId;
         public Guid OrganisationId { get; } // todo: remove organisationId from this (but not from event, possibly not from command)
         public Guid OrganisationFunctionId { get; }
         public Guid FunctionId { get; }

@@ -2,8 +2,9 @@
 {
     using System;
 
-    public class OrganisationParent
+    public class OrganisationParent : IOrganisationField, IValidityBuilder<OrganisationParent>
     {
+        public Guid Id => OrganisationOrganisationParentId;
         public Guid ParentOrganisationId { get; }
         public string ParentOrganisationName { get; }
         public Guid OrganisationOrganisationParentId { get; }
