@@ -2418,7 +2418,7 @@ namespace OrganisationRegistry.Organisation
             foreach (var (key, value) in @event.ParentsToTerminate)
             {
                 var parent = State.OrganisationParents
-                    .Single(organisationParent => organisationParent.ParentOrganisationId == key);
+                    .Single(organisationParent => organisationParent.OrganisationOrganisationParentId == key);
 
                 State.OrganisationParents.Remove(parent);
                 State.OrganisationParents.Add(parent.WithValidTo(new ValidTo(value)));
