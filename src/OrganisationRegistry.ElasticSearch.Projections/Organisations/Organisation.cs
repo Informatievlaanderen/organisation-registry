@@ -27,6 +27,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationCoupledWithKbo>,
         IEventHandler<PurposeUpdated>,
+        IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<OrganisationTerminated>
     {
         private readonly Elastic _elastic;
@@ -186,6 +187,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             }
         }
 
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
+        {
+            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+
+            organisationDocument.ChangeId = message.Number;
+            organisationDocument.ChangeTime = message.Timestamp;
+
+            organisationDocument.KboNumber = string.Empty;
+
+            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+        }
+
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
             if (!message.Body.OrganisationNewValidTo.HasValue)
@@ -198,6 +211,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             organisationDocument.Validity =
                 new Period(organisationDocument.Validity.Start, message.Body.OrganisationNewValidTo);
+
+            if (message.Body.ForcedKboTermination)
+                organisationDocument.KboNumber = string.Empty;
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }

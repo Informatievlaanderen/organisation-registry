@@ -46,11 +46,10 @@ namespace OrganisationRegistry.UnitTests
             };
 
             Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
-                () => OrganisationTermination.Calculate(dateOfTermination,
+                () => OrganisationTermination.CalculateTermination(dateOfTermination,
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
-                    new KboState(),
                     organisationState));
         }
 
@@ -68,14 +67,13 @@ namespace OrganisationRegistry.UnitTests
                     new ValidTo(dateOfTermination))
             };
 
-            OrganisationTermination.Calculate(dateOfTermination,
+            OrganisationTermination.CalculateTermination(dateOfTermination,
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
-                    new KboState(),
                     organisationState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTermination
+                    new OrganisationTerminationSummary
                     {
                         OrganisationNewValidTo = null
                     });
@@ -95,14 +93,13 @@ namespace OrganisationRegistry.UnitTests
                     new ValidTo(dateOfTermination.AddDays(-1)))
             };
 
-            OrganisationTermination.Calculate(dateOfTermination,
+            OrganisationTermination.CalculateTermination(dateOfTermination,
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
-                    new KboState(),
                     organisationState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTermination
+                    new OrganisationTerminationSummary
                     {
                         OrganisationNewValidTo = null
                     });
@@ -122,14 +119,13 @@ namespace OrganisationRegistry.UnitTests
                     new ValidTo(dateOfTermination.AddDays(1)))
             };
 
-            OrganisationTermination.Calculate(dateOfTermination,
+            OrganisationTermination.CalculateTermination(dateOfTermination,
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
-                    new KboState(),
                     organisationState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTermination
+                    new OrganisationTerminationSummary
                     {
                         OrganisationNewValidTo = dateOfTermination
                     });
@@ -156,11 +152,10 @@ namespace OrganisationRegistry.UnitTests
             };
 
             Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
-                () => OrganisationTermination.Calculate(dateOfTermination,
+                () => OrganisationTermination.CalculateTermination(dateOfTermination,
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
-                    new KboState(),
                     organisationState));
         }
 
@@ -185,11 +180,10 @@ namespace OrganisationRegistry.UnitTests
             };
 
             Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
-                () => OrganisationTermination.Calculate(dateOfTermination,
+                () => OrganisationTermination.CalculateTermination(dateOfTermination,
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
-                    new KboState(),
                     organisationState));
         }
 
@@ -239,14 +233,13 @@ namespace OrganisationRegistry.UnitTests
             organisationState.OrganisationFormalFrameworks.AddRange(overlappingFormalFrameworks);
             organisationState.OrganisationFormalFrameworks.AddRange(CreateFieldsInThePastOf<OrganisationFormalFramework>(dateOfTermination, fixture));
 
-            OrganisationTermination.Calculate(dateOfTermination,
+            OrganisationTermination.CalculateTermination(dateOfTermination,
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
-                    new KboState(),
                     organisationState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTermination
+                    new OrganisationTerminationSummary
                     {
                         OrganisationNewValidTo = new ValidTo(dateOfTermination),
                         Contacts = overlappingContacts.ToDictionary(x => x.OrganisationContactId, _ => dateOfTermination),
@@ -287,14 +280,13 @@ namespace OrganisationRegistry.UnitTests
             var classificationTypeIdsToTerminateEndOfNextYear = fixture.CreateMany<Guid>();
             var formalFrameworkIdsToTerminateEndOfNextYear = fixture.CreateMany<Guid>();
 
-            OrganisationTermination.Calculate(dateOfTermination,
+            OrganisationTermination.CalculateTermination(dateOfTermination,
                     capacityTypeIdsToTerminateEndOfNextYear,
                     classificationTypeIdsToTerminateEndOfNextYear,
                     formalFrameworkIdsToTerminateEndOfNextYear,
-                    new KboState(),
                     organisationState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTermination
+                    new OrganisationTerminationSummary
                     {
                         OrganisationNewValidTo = new ValidTo(dateOfTermination),
                         Capacities = overlappingCapacities.ToDictionary(x => x.OrganisationCapacityId, _ => dateOfTermination),
@@ -304,13 +296,11 @@ namespace OrganisationRegistry.UnitTests
         }
 
         [Fact]
-        public void OverwritesKboFields()
+        public void OverwritesKboFieldsWhenKboHasTermination()
         {
             var fixture = new Fixture();
 
             var dateOfTermination = fixture.Create<DateTime>();
-
-            var organisationState = new OrganisationState();
 
             var kboState = new KboState();
             kboState.KboBankAccounts.AddRange(CreateFieldsInThePastOf<OrganisationBankAccount>(dateOfTermination, fixture));
@@ -334,21 +324,58 @@ namespace OrganisationRegistry.UnitTests
                 fixture.Create<string>(),
                 fixture.Create<string>());
 
-            OrganisationTermination.Calculate(dateOfTermination,
-                    Enumerable.Empty<Guid>(),
-                    Enumerable.Empty<Guid>(),
-                    Enumerable.Empty<Guid>(),
-                    kboState,
-                    organisationState)
+            OrganisationTermination.CalculateForcedKboTermination(dateOfTermination,
+                    kboState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTermination
+                    new OrganisationTerminationKboSummary
                     {
-                        OrganisationNewValidTo = new ValidTo(dateOfTermination),
-                        KboBankAccounts = kboState.KboBankAccounts.ToDictionary(x => x.OrganisationBankAccountId, _ => kboState.TerminationInKbo.Value.Date),
-                        KboFormalNameLabel = new KeyValuePair<Guid, DateTime>(kboState.KboFormalNameLabel.OrganisationLabelId, kboState.TerminationInKbo.Value.Date),
-                        KboRegisteredOfficeLocation = new KeyValuePair<Guid, DateTime>(kboState.KboRegisteredOffice.OrganisationLocationId, kboState.TerminationInKbo.Value.Date),
-                        KboLegalForm = new KeyValuePair<Guid, DateTime>(kboState.KboLegalFormOrganisationClassification.OrganisationOrganisationClassificationId, kboState.TerminationInKbo.Value.Date),
+                        KboBankAccounts = kboState.KboBankAccounts.ToDictionary(x => x.OrganisationBankAccountId, _ => dateOfTermination),
+                        KboFormalNameLabel = new KeyValuePair<Guid, DateTime>(kboState.KboFormalNameLabel.OrganisationLabelId, dateOfTermination),
+                        KboRegisteredOfficeLocation = new KeyValuePair<Guid, DateTime>(kboState.KboRegisteredOffice.OrganisationLocationId, dateOfTermination),
+                        KboLegalForm = new KeyValuePair<Guid, DateTime>(kboState.KboLegalFormOrganisationClassification.OrganisationOrganisationClassificationId, dateOfTermination),
+                    });
+        }
+
+                [Fact]
+        public void OverwritesKboFieldsWhenKboDoesntHaveTermination()
+        {
+            var fixture = new Fixture();
+
+            var dateOfTermination = fixture.Create<DateTime>();
+
+            var kboState = new KboState();
+            kboState.KboBankAccounts.AddRange(CreateFieldsInThePastOf<OrganisationBankAccount>(dateOfTermination, fixture));
+            kboState.KboRegisteredOffice = fixture.Create<OrganisationLocation>()
+                .WithValidity(
+                    new Period(
+                        new ValidFrom(),
+                        new ValidTo(dateOfTermination.AddYears(fixture.Create<int>() * -1))));
+            kboState.KboFormalNameLabel = fixture.Create<OrganisationLabel>()
+                .WithValidity(
+                    new Period(
+                        new ValidFrom(),
+                        new ValidTo(dateOfTermination.AddYears(fixture.Create<int>() * -1))));
+            kboState.KboLegalFormOrganisationClassification = fixture.Create<OrganisationOrganisationClassification>()
+                .WithValidity(
+                    new Period(
+                        new ValidFrom(),
+                        new ValidTo(dateOfTermination.AddYears(fixture.Create<int>() * -1))));
+            kboState.TerminationInKbo = null;
+
+            OrganisationTermination.CalculateForcedKboTermination(dateOfTermination,
+                    kboState)
+                .Should().BeEquivalentTo(
+                    new OrganisationTerminationKboSummary
+                    {
+                        KboBankAccounts = kboState.KboBankAccounts.ToDictionary(x => x.OrganisationBankAccountId, _ => dateOfTermination),
+                        KboFormalNameLabel = new KeyValuePair<Guid, DateTime>(kboState.KboFormalNameLabel.OrganisationLabelId, dateOfTermination),
+                        KboRegisteredOfficeLocation = new KeyValuePair<Guid, DateTime>(kboState.KboRegisteredOffice.OrganisationLocationId, dateOfTermination),
+                        KboLegalForm = new KeyValuePair<Guid, DateTime>(kboState.KboLegalFormOrganisationClassification.OrganisationOrganisationClassificationId, dateOfTermination),
                     });
         }
     }
+
+    // TODO: Meer testen en controleren op velden in de toekomst op alles.
+    // TODO: Meer classes overerven van OrganisationField
+    // TODO: OrganisationOrganisationClassificationId en dergelijke maken voor fixture.Freeze te kunnen gebruiken???
 }

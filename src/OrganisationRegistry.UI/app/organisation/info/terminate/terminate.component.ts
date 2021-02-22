@@ -48,7 +48,9 @@ export class OrganisationTerminateComponent implements OnInit{
 
     this.terminateForm = formBuilder.group({
       terminationDate: ['', required],
+      forceTerminate: [false]
     });
+    this.organisation = new Organisation();
   }
 
   @Input('isBusy')
@@ -81,7 +83,9 @@ export class OrganisationTerminateComponent implements OnInit{
   }
 
   submit() {
-    this.organisationService.terminate(this.organisationId, this.terminateForm.get('terminationDate').value)
+    let dateOfTermination = this.terminateForm.get('terminationDate').value;
+    let forceTermination = this.terminateForm.get('forceTermination').value;
+    this.organisationService.terminate(this.organisationId, dateOfTermination, forceTermination)
       .finally(() => {
         this.isBusy = false;
       })
@@ -118,7 +122,10 @@ export class OrganisationTerminateComponent implements OnInit{
         item => {
           if (item){
             this.organisationTermination = item;
-            this.terminateForm.setValue({terminationDate: item.date || null})
+            this.terminateForm.setValue({
+              terminationDate: item.date || null,
+              forceTerminate: false
+            })
           }
         },
         error => this.alertService.setAlert(

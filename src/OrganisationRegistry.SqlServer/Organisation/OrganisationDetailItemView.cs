@@ -353,8 +353,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
-            IEnvelope<OrganisationTerminated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -365,6 +364,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
                 if (message.Body.OrganisationNewValidTo.HasValue)
                     organisationListItem.ValidTo = message.Body.OrganisationNewValidTo;
+
+                if(message.Body.ForcedKboTermination)
+                    organisationListItem.KboNumber = null;
 
                 await context.SaveChangesAsync();
             }

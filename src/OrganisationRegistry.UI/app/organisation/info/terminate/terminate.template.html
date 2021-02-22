@@ -2,38 +2,76 @@
     <div class="col--8-12 col--10-12--m col--1-1--s">
       <div>
         <h1 class="h2">Organisatie stopzetten</h1>
-        <p>Door deze actie uit te voeren krijgt de organisatie een einddatum op verschillende velden,
-          en zal de organisatie niet meer editeerbaar zijn voor niet-algemeenbeheerders.</p>
-        <p *ngIf="isTerminated(organisationTermination)">Deze organisatie is afgesloten volgens de kbo.</p>
+        <p class='ww-description'>
+          <span>Door deze actie uit te voeren krijgt de organisatie een einddatum op verschillende velden,
+          en zal de organisatie niet meer editeerbaar zijn voor niet-algemeenbeheerders.</span>
+        </p>
       </div>
+
+
 
       <form class="form" [formGroup]="terminateForm" (ngSubmit)="submit()" autocomplete="off">
         <div class="form__group">
 
-          <ww-form-group-datepicker
-            [id]="'terminationDate'"
-            [name]="'Afsluitingsdatum'"
-            [label]="'Afsluitingsdatum'"
-            [placeholder]="'Afsluitingsdatum'"
-            [control]="terminateForm.get('terminationDate')">
-          </ww-form-group-datepicker>
+          <div *ngIf="isTerminated(organisationTermination)" class="alert alert--warning">
+            <div class="alert__icon"></div>
+            <div class="alert__content">
+              <div class="alert__title">Opgelet!</div>
+              <div class="alert__message">
+                <p>
+                  Deze organisatie is afgesloten volgens de KBO. De bijhorende velden zullen een einddatum krijgen
+                  overeenstemmend met de einddatum uit de KBO.
+                </p>
+              </div>
+            </div>
+          </div>
 
-            <div class="form__row">
-              <div class="form__buttons">
-                <div class="form__buttons__left">
-                    <a [routerLink]="['./..']" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
-                </div>
-                <div class="form__buttons__right">
-                  <button class="button form__button"
-                          type="submit"
-                          [ngClass]="{'button--disabled': !terminateForm.valid, 'button--loading': terminateForm.disabled}"
-                          [disabled]="!terminateForm.valid || terminateForm.disabled">
-                    <span>Organisatie stopzetten</span>
-                  </button>
+          <div class="form__row">
+            <div *ngIf="!isTerminated(organisationTermination) && organisation.kboNumber" class="alert alert--warning">
+              <div class="alert__icon"></div>
+              <div class="alert__content">
+                <div class="alert__title">Opgelet!</div>
+                <div class="alert__message">
+                  <p>De organisatie is niet afgesloten volgens de KBO. U kunt de koppeling met de KBO alsnog handmatig verbreken.
+                    Hierdoor wordt de organisatie ontkoppeld van het KBO nummer, en zullen er geen updates meer volgen vanuit de KBO.
+                  </p>
+                  <ww-form-group-toggle
+                    [id]="'forceTerminate'"
+                    [label]="'Koppeling met de KBO afsluiten?'"
+                    [control]="terminateForm.get('forceTerminate')"
+                    [name]="'KoppelingKboAfsluiten'">
+                  </ww-form-group-toggle>
                 </div>
               </div>
             </div>
           </div>
-        </form>
-    </div>
+
+          <div class="form__row">
+            <ww-form-group-datepicker
+              [id]="'terminationDate'"
+              [name]="'Afsluitingsdatum'"
+              [label]="'Afsluitingsdatum'"
+              [placeholder]="'Afsluitingsdatum'"
+              [control]="terminateForm.get('terminationDate')">
+            </ww-form-group-datepicker>
+          </div>
+
+        <div class="form__row">
+          <div class="form__buttons">
+            <div class="form__buttons__left">
+                <a [routerLink]="['./..']" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
+            </div>
+            <div class="form__buttons__right">
+              <button class="button form__button"
+                      type="submit"
+                      [ngClass]="{'button--disabled': !terminateForm.valid, 'button--loading': terminateForm.disabled}"
+                      [disabled]="!terminateForm.valid || terminateForm.disabled">
+                <span>Organisatie stopzetten</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
   </div>
+</div>

@@ -1,0 +1,9 @@
+.ww-description {
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  color: #666;
+}
+
+p+ww-form-group-toggle {
+  margin-top: 1.5rem;
+}

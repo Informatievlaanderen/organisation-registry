@@ -7,17 +7,18 @@ namespace OrganisationRegistry.Organisation.Commands
     {
         public OrganisationId OrganisationId => Id;
         public DateTime DateOfTermination { get; }
-
+        public bool ForceTermination { get; }
         public ClaimsPrincipal User { get; }
-
 
         public TerminateOrganisation(
             OrganisationId organisationId,
             DateTime dateOfTermination,
+            bool forceTermination,
             ClaimsPrincipal user)
         {
             Id = organisationId;
             DateOfTermination = dateOfTermination;
+            ForceTermination = forceTermination;
             User = user;
         }
     }
