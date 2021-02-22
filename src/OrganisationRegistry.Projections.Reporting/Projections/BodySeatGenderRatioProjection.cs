@@ -1,6 +1,5 @@
 namespace OrganisationRegistry.Projections.Reporting.Projections
 {
-    using Autofac.Features.OwnedInstances;
     using Body.Events;
     using Infrastructure;
     using LifecyclePhaseType;
@@ -15,7 +14,6 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using OrganisationRegistry.Infrastructure.Events;
     using SeatType.Events;
     using SqlServer;

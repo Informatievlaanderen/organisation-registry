@@ -18,7 +18,6 @@ namespace OrganisationRegistry.Organisation
     using Person;
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Commands;
     using Purpose = Purpose.Purpose;
@@ -29,9 +28,20 @@ namespace OrganisationRegistry.Organisation
         public OrganisationLabel? KboFormalNameLabel { get; set; }
         public OrganisationOrganisationClassification? KboLegalFormOrganisationClassification { get; set; }
         public List<OrganisationBankAccount> KboBankAccounts { get; }
-        public string NameBeforeKboCoupling { get; set; }
-        public string ShortNameBeforeKboCoupling { get; set; }
+        public string? NameBeforeKboCoupling { get; set; }
+        public string? ShortNameBeforeKboCoupling { get; set; }
         public KboTermination? TerminationInKbo { get; set; }
+        public KboNumber? KboNumber { get; set; }
+
+        public void Clear()
+        {
+            KboNumber = null;
+            TerminationInKbo = null;
+            KboBankAccounts.Clear();
+            KboRegisteredOffice = null;
+            KboFormalNameLabel = null;
+            KboLegalFormOrganisationClassification = null;
+        }
 
         public KboState()
         {
@@ -97,20 +107,19 @@ namespace OrganisationRegistry.Organisation
         private OrganisationLocation? _mainOrganisationLocation;
         private OrganisationParent? _currentOrganisationParent;
 
-        private readonly KboState _kboState;
+        public KboState KboState { get; }
 
         private DateTime? _dateOfTermination;
         private bool IsTerminated => _dateOfTermination != null;
 
-        public KboNumber? KboNumber { get; private set; }
         public bool CoupledToKboFromCreation { get; set; }
 
-        private bool HasKboNumber => KboNumber != null;
+        private bool HasKboNumber => KboState.KboNumber != null;
 
         private Organisation()
         {
             State = new OrganisationState();
-            _kboState = new KboState();
+            KboState = new KboState();
         }
 
         public Organisation(
@@ -276,10 +285,14 @@ namespace OrganisationRegistry.Organisation
 
             var termination = KboTermination.FromMagda(magdaTermination);
 
-            if (_kboState.TerminationInKbo != null && termination.Equals(_kboState.TerminationInKbo.Value))
+            if (KboState.TerminationInKbo != null && termination.Equals(KboState.TerminationInKbo.Value))
                 return;
 
-            ApplyChange(new OrganisationTerminationFoundInKbo(Id, KboNumber!.ToDigitsOnly(), termination.Date, termination.Code, termination.Reason));
+            ApplyChange(new OrganisationTerminationFoundInKbo(Id,
+                KboState.KboNumber!.ToDigitsOnly(),
+                termination.Date,
+                termination.Code,
+                termination.Reason));
         }
 
         public void MarkAsSynced(Guid? kboSyncItemId)
@@ -807,21 +820,21 @@ namespace OrganisationRegistry.Organisation
                 : organisationClassificationRetriever
                     .FetchOrganisationClassificationForLegalFormCode(newLegalForm.Code);
 
-            if (newLegalFormClassificationId == _kboState.KboLegalFormOrganisationClassification?.OrganisationClassificationId)
+            if (newLegalFormClassificationId == KboState.KboLegalFormOrganisationClassification?.OrganisationClassificationId)
                 return;
 
-            if (_kboState.KboLegalFormOrganisationClassification != null)
+            if (KboState.KboLegalFormOrganisationClassification != null)
                 ApplyChange(
                     new KboLegalFormOrganisationOrganisationClassificationRemoved(
                         Id,
-                        _kboState.KboLegalFormOrganisationClassification.OrganisationOrganisationClassificationId,
-                        _kboState.KboLegalFormOrganisationClassification.OrganisationClassificationTypeId,
-                        _kboState.KboLegalFormOrganisationClassification.OrganisationClassificationTypeName,
-                        _kboState.KboLegalFormOrganisationClassification.OrganisationClassificationId,
-                        _kboState.KboLegalFormOrganisationClassification.OrganisationClassificationName,
-                        _kboState.KboLegalFormOrganisationClassification.Validity.Start,
-                        _kboState.KboLegalFormOrganisationClassification.Validity.End,
-                        _kboState.KboLegalFormOrganisationClassification.Validity.End));
+                        KboState.KboLegalFormOrganisationClassification.OrganisationOrganisationClassificationId,
+                        KboState.KboLegalFormOrganisationClassification.OrganisationClassificationTypeId,
+                        KboState.KboLegalFormOrganisationClassification.OrganisationClassificationTypeName,
+                        KboState.KboLegalFormOrganisationClassification.OrganisationClassificationId,
+                        KboState.KboLegalFormOrganisationClassification.OrganisationClassificationName,
+                        KboState.KboLegalFormOrganisationClassification.Validity.Start,
+                        KboState.KboLegalFormOrganisationClassification.Validity.End,
+                        KboState.KboLegalFormOrganisationClassification.Validity.End));
 
             if (newLegalFormClassificationId != null)
             {
@@ -955,19 +968,19 @@ namespace OrganisationRegistry.Organisation
 
         public void UpdateKboFormalNameLabel(IMagdaName kboFormalName, LabelType formalNameLabelType)
         {
-            if (_kboState.KboFormalNameLabel.Value == kboFormalName.Value)
+            if (KboState.KboFormalNameLabel.Value == kboFormalName.Value)
                 return;
 
             ApplyChange(
                 new KboFormalNameLabelRemoved(
                     Id,
-                    _kboState.KboFormalNameLabel.OrganisationLabelId,
-                    _kboState.KboFormalNameLabel.LabelTypeId,
-                    _kboState.KboFormalNameLabel.LabelTypeName,
-                    _kboState.KboFormalNameLabel.Value,
-                    _kboState.KboFormalNameLabel.Validity.Start,
+                    KboState.KboFormalNameLabel.OrganisationLabelId,
+                    KboState.KboFormalNameLabel.LabelTypeId,
+                    KboState.KboFormalNameLabel.LabelTypeName,
+                    KboState.KboFormalNameLabel.Value,
+                    KboState.KboFormalNameLabel.Validity.Start,
                     kboFormalName.ValidFrom,
-                    _kboState.KboFormalNameLabel.Validity.End));
+                    KboState.KboFormalNameLabel.Validity.End));
 
             ApplyChange(
                 new KboFormalNameLabelAdded(
@@ -1147,22 +1160,22 @@ namespace OrganisationRegistry.Organisation
             KboRegisteredOffice newKboRegisteredOffice,
             LocationType registeredOfficeLocationType)
         {
-            if (newKboRegisteredOffice?.Location?.Id == _kboState.KboRegisteredOffice?.LocationId)
+            if (newKboRegisteredOffice?.Location?.Id == KboState.KboRegisteredOffice?.LocationId)
                 return;
 
-            if (_kboState.KboRegisteredOffice != null)
+            if (KboState.KboRegisteredOffice != null)
                 ApplyChange(
                     new KboRegisteredOfficeOrganisationLocationRemoved(
                         Id,
-                        _kboState.KboRegisteredOffice.OrganisationLocationId,
-                        _kboState.KboRegisteredOffice.LocationId,
-                        _kboState.KboRegisteredOffice.FormattedAddress,
-                        _kboState.KboRegisteredOffice.IsMainLocation,
-                        _kboState.KboRegisteredOffice.LocationTypeId,
-                        _kboState.KboRegisteredOffice.LocationTypeName,
-                        _kboState.KboRegisteredOffice.Validity.Start,
-                        _kboState.KboRegisteredOffice.Validity.End,
-                        _kboState.KboRegisteredOffice.Validity.End));
+                        KboState.KboRegisteredOffice.OrganisationLocationId,
+                        KboState.KboRegisteredOffice.LocationId,
+                        KboState.KboRegisteredOffice.FormattedAddress,
+                        KboState.KboRegisteredOffice.IsMainLocation,
+                        KboState.KboRegisteredOffice.LocationTypeId,
+                        KboState.KboRegisteredOffice.LocationTypeName,
+                        KboState.KboRegisteredOffice.Validity.Start,
+                        KboState.KboRegisteredOffice.Validity.End,
+                        KboState.KboRegisteredOffice.Validity.End));
 
             if (newKboRegisteredOffice != null)
                 ApplyChange(
@@ -1334,7 +1347,7 @@ namespace OrganisationRegistry.Organisation
         public void UpdateKboBankAccount(List<IMagdaBankAccount> kboOrganisationBankAccounts)
         {
             var events = new List<IEvent>();
-            foreach (var kboBankAccount in _kboState.KboBankAccounts)
+            foreach (var kboBankAccount in KboState.KboBankAccounts)
             {
                 if (!kboOrganisationBankAccounts.Any(x =>
                     kboBankAccount.BankAccountNumber == x.AccountNumber &&
@@ -1357,7 +1370,7 @@ namespace OrganisationRegistry.Organisation
 
             foreach (var magdaBankAccount in kboOrganisationBankAccounts)
             {
-                if (!_kboState.KboBankAccounts.Any(x =>
+                if (!KboState.KboBankAccounts.Any(x =>
                     magdaBankAccount.AccountNumber == x.BankAccountNumber &&
                     magdaBankAccount.Bic == x.Bic &&
                     magdaBankAccount.ValidFrom == x.Validity.Start &&
@@ -1515,82 +1528,78 @@ namespace OrganisationRegistry.Organisation
 
             ApplyChange(new OrganisationCouplingWithKboCancelled(
                 Id,
-                KboNumber!.ToDigitsOnly(),
-                _kboState.NameBeforeKboCoupling,
-                _kboState.ShortNameBeforeKboCoupling,
+                KboState.KboNumber!.ToDigitsOnly(),
+                KboState.NameBeforeKboCoupling,
+                KboState.ShortNameBeforeKboCoupling,
                 State.Name,
                 State.ShortName,
                 State.OvoNumber,
-                _kboState.KboLegalFormOrganisationClassification?.OrganisationOrganisationClassificationId,
-                _kboState.KboFormalNameLabel?.OrganisationLabelId,
-                _kboState.KboRegisteredOffice?.OrganisationLocationId,
-                _kboState.KboBankAccounts.Select(account => account.OrganisationBankAccountId).ToList()));
+                KboState.KboLegalFormOrganisationClassification?.OrganisationOrganisationClassificationId,
+                KboState.KboFormalNameLabel?.OrganisationLabelId,
+                KboState.KboRegisteredOffice?.OrganisationLocationId,
+                KboState.KboBankAccounts.Select(account => account.OrganisationBankAccountId).ToList()));
         }
 
-        public void TerminateKboCoupling()
+        public void SyncKboTermination()
         {
             if (!HasKboNumber)
                 throw new OrganisationNotCoupledWithKbo();
 
-            if (!_kboState.TerminationInKbo.HasValue)
+            if (!KboState.TerminationInKbo.HasValue)
                 throw new KboOrganisationNotTerminatedException();
 
             ApplyChange(
                 new OrganisationTerminationSyncedWithKbo(
                     Id,
-                    KboNumber!.ToDigitsOnly(),
+                    KboState.KboNumber!.ToDigitsOnly(),
                     State.Name,
                     State.OvoNumber,
-                    _kboState.TerminationInKbo.Value.Date,
-                    _kboState.KboLegalFormOrganisationClassification?.OrganisationOrganisationClassificationId,
-                    _kboState.KboFormalNameLabel?.OrganisationLabelId,
-                    _kboState.KboRegisteredOffice?.Validity.End.IsInfinite ?? false ? _kboState.KboRegisteredOffice.OrganisationLocationId : (Guid?) null,
-                    _kboState.KboBankAccounts
+                    KboState.TerminationInKbo.Value.Date,
+                    KboState.KboLegalFormOrganisationClassification?.OrganisationOrganisationClassificationId,
+                    KboState.KboFormalNameLabel?.OrganisationLabelId,
+                    KboState.KboRegisteredOffice?.Validity.End.IsInfinite ?? false ? KboState.KboRegisteredOffice.OrganisationLocationId : (Guid?) null,
+                    KboState.KboBankAccounts
                         .Where(account => account.Validity.End.IsInfinite)
                         .Select(account => account.OrganisationBankAccountId).ToList()));
         }
 
-
-        public void TerminateOrganisation(
-            DateTime dateOfTermination,
+        public void TerminateOrganisation(DateTime dateOfTermination,
             IEnumerable<Guid> capacityTypeIdsToTerminateEndOfNextYear,
             IEnumerable<Guid> classificationTypeIdsToTerminateEndOfNextYear,
             IEnumerable<Guid> formalFrameworkIdsToTerminateEndOfNextYear,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider,
+            bool forceKboTermination)
         {
             if (IsTerminated)
                 throw new OrganisationAlreadyTerminated();
 
-            var organisationTermination = OrganisationTermination.Calculate(dateOfTermination,
+            if (KboState.TerminationInKbo.HasValue && forceKboTermination)
+                throw new OrganisationAlreadyTerminatedInKbo();
+
+            var organisationTermination = OrganisationTermination.CalculateTermination(dateOfTermination,
                 capacityTypeIdsToTerminateEndOfNextYear,
                 classificationTypeIdsToTerminateEndOfNextYear,
                 formalFrameworkIdsToTerminateEndOfNextYear,
-                _kboState,
                 State);
 
-            ApplyChange(new OrganisationTerminated(
-                Id,
-                State.Name,
-                State.OvoNumber,
-                dateOfTermination,
-                organisationTermination.OrganisationNewValidTo,
-                organisationTermination.Buildings,
-                organisationTermination.Capacities,
-                organisationTermination.Contacts,
-                organisationTermination.Classifications,
-                organisationTermination.Functions,
-                organisationTermination.Labels,
-                organisationTermination.Locations,
-                organisationTermination.Parents,
-                organisationTermination.Relations,
-                organisationTermination.BankAccounts,
-                organisationTermination.FormalFrameworks,
-                organisationTermination.OpeningHours,
-                organisationTermination.KboBankAccounts,
-                organisationTermination.KboRegisteredOfficeLocation,
-                organisationTermination.KboFormalNameLabel,
-                organisationTermination.KboLegalForm,
-                _kboState.TerminationInKbo?.Date));
+            var organisationTerminationKboSummary = forceKboTermination ?
+                OrganisationTermination.CalculateForcedKboTermination(dateOfTermination, KboState) :
+                new OrganisationTerminationKboSummary();
+
+            ApplyChange(
+                OrganisationTerminated.Create(
+                    Id,
+                    State,
+                    KboState,
+                    organisationTermination,
+                    forceKboTermination,
+                    organisationTerminationKboSummary,
+                    dateOfTermination));
+
+            if (HasKboNumber && KboState.TerminationInKbo.HasValue)
+            {
+                SyncKboTermination();
+            }
 
             var validityOverlapsWithToday = State.Validity.OverlapsWith(dateTimeProvider.Today);
             if (State.IsActive && !validityOverlapsWithToday)
@@ -1790,7 +1799,7 @@ namespace OrganisationRegistry.Organisation
             _purposes = @event.Purposes;
             State.ShowOnVlaamseOverheidSites = @event.ShowOnVlaamseOverheidSites;
             State.Validity = new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo));
-            KboNumber = new KboNumber(@event.KboNumber);
+            KboState.KboNumber = new KboNumber(@event.KboNumber);
             CoupledToKboFromCreation = true;
         }
 
@@ -1921,7 +1930,7 @@ namespace OrganisationRegistry.Organisation
 
         private void Apply(KboLegalFormOrganisationOrganisationClassificationAdded @event)
         {
-            _kboState.KboLegalFormOrganisationClassification = new OrganisationOrganisationClassification(
+            KboState.KboLegalFormOrganisationClassification = new OrganisationOrganisationClassification(
                 @event.OrganisationOrganisationClassificationId,
                 @event.OrganisationId,
                 @event.OrganisationClassificationTypeId,
@@ -1933,7 +1942,7 @@ namespace OrganisationRegistry.Organisation
 
         private void Apply(KboLegalFormOrganisationOrganisationClassificationRemoved @event)
         {
-            _kboState.KboLegalFormOrganisationClassification = null;
+            KboState.KboLegalFormOrganisationClassification = null;
         }
 
         private void Apply(OrganisationLabelAdded @event)
@@ -1949,7 +1958,7 @@ namespace OrganisationRegistry.Organisation
 
         private void Apply(KboFormalNameLabelAdded @event)
         {
-            _kboState.KboFormalNameLabel = new OrganisationLabel(
+            KboState.KboFormalNameLabel = new OrganisationLabel(
                 @event.OrganisationLabelId,
                 @event.OrganisationId,
                 @event.LabelTypeId,
@@ -1962,7 +1971,7 @@ namespace OrganisationRegistry.Organisation
 
         private void Apply(KboFormalNameLabelRemoved @event)
         {
-            _kboState.KboFormalNameLabel = null;
+            KboState.KboFormalNameLabel = null;
         }
 
         private void Apply(OrganisationBuildingAdded @event)
@@ -2020,7 +2029,7 @@ namespace OrganisationRegistry.Organisation
 
         private void Apply(KboRegisteredOfficeOrganisationLocationAdded @event)
         {
-            _kboState.KboRegisteredOffice = new OrganisationLocation(
+            KboState.KboRegisteredOffice = new OrganisationLocation(
                 @event.OrganisationLocationId,
                 @event.OrganisationId,
                 @event.LocationId,
@@ -2033,7 +2042,7 @@ namespace OrganisationRegistry.Organisation
 
         private void Apply(KboRegisteredOfficeOrganisationLocationRemoved @event)
         {
-            _kboState.KboRegisteredOffice = null;
+            KboState.KboRegisteredOffice = null;
         }
 
         private void Apply(OrganisationLocationUpdated @event)
@@ -2207,7 +2216,7 @@ namespace OrganisationRegistry.Organisation
 
         private void Apply(KboOrganisationBankAccountAdded @event)
         {
-            _kboState.KboBankAccounts.Add(
+            KboState.KboBankAccounts.Add(
                 new OrganisationBankAccount(
                     @event.OrganisationBankAccountId,
                     @event.OrganisationId,
@@ -2220,7 +2229,7 @@ namespace OrganisationRegistry.Organisation
 
         private void Apply(KboOrganisationBankAccountRemoved @event)
         {
-            _kboState.KboBankAccounts.Remove(_kboState.KboBankAccounts.Single(account =>
+            KboState.KboBankAccounts.Remove(KboState.KboBankAccounts.Single(account =>
                 account.OrganisationBankAccountId == @event.OrganisationBankAccountId));
         }
 
@@ -2313,38 +2322,28 @@ namespace OrganisationRegistry.Organisation
 
         private void Apply(OrganisationCoupledWithKbo @event)
         {
-            KboNumber = new KboNumber(@event.KboNumber);
-            _kboState.NameBeforeKboCoupling = State.Name;
-            _kboState.ShortNameBeforeKboCoupling = State.ShortName;
+            KboState.KboNumber = new KboNumber(@event.KboNumber);
+            KboState.NameBeforeKboCoupling = State.Name;
+            KboState.ShortNameBeforeKboCoupling = State.ShortName;
             CoupledToKboFromCreation = false;
         }
 
         private void Apply(OrganisationCouplingWithKboCancelled @event)
         {
-            KboNumber = null;
-            State.ShortName = _kboState.ShortNameBeforeKboCoupling;
-            State.Name = _kboState.NameBeforeKboCoupling;
+            State.ShortName = KboState.ShortNameBeforeKboCoupling!;
+            State.Name = KboState.NameBeforeKboCoupling!;
 
-            _kboState.KboBankAccounts.Clear();
-            _kboState.KboRegisteredOffice = null;
-            _kboState.KboFormalNameLabel = null;
-            _kboState.KboLegalFormOrganisationClassification = null;
+            KboState.Clear();
         }
 
         private void Apply(OrganisationTerminationFoundInKbo @event)
         {
-            _kboState.TerminationInKbo = new KboTermination(@event.TerminationDate, @event.TerminationCode, @event.TerminationReason);
+            KboState.TerminationInKbo = new KboTermination(@event.TerminationDate, @event.TerminationCode, @event.TerminationReason);
         }
 
         private void Apply(OrganisationTerminationSyncedWithKbo @event)
         {
-            KboNumber = null;
-            _kboState.TerminationInKbo = null;
-
-            _kboState.KboBankAccounts.Clear();
-            _kboState.KboRegisteredOffice = null;
-            _kboState.KboFormalNameLabel = null;
-            _kboState.KboLegalFormOrganisationClassification = null;
+            KboState.Clear();
         }
 
         private void Apply(OrganisationTerminated @event)
@@ -2462,22 +2461,29 @@ namespace OrganisationRegistry.Organisation
 
             foreach (var (key, value) in @event.KboBankAccountsToTerminate)
             {
-                var bankAccount = _kboState.KboBankAccounts
+                var bankAccount = KboState.KboBankAccounts
                     .Single(organisationBankAccount => organisationBankAccount.OrganisationBankAccountId == key);
 
-                _kboState.KboBankAccounts.Remove(bankAccount);
-                _kboState.KboBankAccounts.Add(bankAccount.WithValidTo(new ValidTo(value)));
+                KboState.KboBankAccounts.Remove(bankAccount);
+                KboState.KboBankAccounts.Add(bankAccount.WithValidTo(new ValidTo(value)));
             }
 
             if (@event.KboFormalName.HasValue)
-                _kboState.KboFormalNameLabel = _kboState.KboFormalNameLabel!.WithValidTo(new ValidTo(@event.KboFormalName.Value.Value));
+                KboState.KboFormalNameLabel = KboState.KboFormalNameLabel!.WithValidTo(new ValidTo(@event.KboFormalName.Value.Value));
 
             if (@event.KboRegisteredOffice.HasValue)
-                _kboState.KboRegisteredOffice = _kboState.KboRegisteredOffice!.WithValidTo(new ValidTo(@event.KboRegisteredOffice.Value.Value));
+                KboState.KboRegisteredOffice = KboState.KboRegisteredOffice!.WithValidTo(new ValidTo(@event.KboRegisteredOffice.Value.Value));
 
             if (@event.KboLegalForm.HasValue)
-                _kboState.KboLegalFormOrganisationClassification =
-                    _kboState.KboLegalFormOrganisationClassification!.WithValidTo(new ValidTo(@event.KboLegalForm.Value.Value));
+                KboState.KboLegalFormOrganisationClassification =
+                    KboState.KboLegalFormOrganisationClassification!.WithValidTo(new ValidTo(@event.KboLegalForm.Value.Value));
+
+            // TODO: should we clear it if it's not forced as well? Does this code above and below make sense?
+
+            if (@event.ForcedKboTermination)
+            {
+                KboState.Clear();
+            }
         }
 
         public IEnumerable<OrganisationParent> ParentsInPeriod(Period validity)

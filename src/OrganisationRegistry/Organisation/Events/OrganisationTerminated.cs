@@ -25,11 +25,11 @@ namespace OrganisationRegistry.Organisation.Events
         public Dictionary<Guid, DateTime> FormalFrameworksToTerminate { get; }
         public Dictionary<Guid, DateTime> OpeningHoursToTerminate { get; }
 
+        public bool ForcedKboTermination { get; }
         public Dictionary<Guid, DateTime> KboBankAccountsToTerminate { get; }
         public KeyValuePair<Guid, DateTime>? KboRegisteredOffice { get; }
         public KeyValuePair<Guid, DateTime>? KboFormalName { get; }
         public KeyValuePair<Guid, DateTime>? KboLegalForm { get; }
-
 
         public OrganisationTerminated(Guid organisationId,
             string name,
@@ -48,6 +48,7 @@ namespace OrganisationRegistry.Organisation.Events
             Dictionary<Guid, DateTime> organisationTerminationBankAccounts,
             Dictionary<Guid, DateTime> organisationTerminationFormalFrameworks,
             Dictionary<Guid, DateTime> organisationTerminationOpeningHours,
+            bool forcedKboTermination,
             Dictionary<Guid, DateTime> kboBankAccounts,
             KeyValuePair<Guid, DateTime>? kboRegisteredOffice,
             KeyValuePair<Guid, DateTime>? kboFormalName,
@@ -74,10 +75,44 @@ namespace OrganisationRegistry.Organisation.Events
             FormalFrameworksToTerminate = organisationTerminationFormalFrameworks;
             OpeningHoursToTerminate = organisationTerminationOpeningHours;
             DateOfTerminationAccordingToKbo = dateOfTerminationAccordingToKbo;
+            ForcedKboTermination = forcedKboTermination;
             KboBankAccountsToTerminate = kboBankAccounts;
             KboRegisteredOffice = kboRegisteredOffice;
             KboFormalName = kboFormalName;
             KboLegalForm = kboLegalForm;
+        }
+
+        public static OrganisationTerminated Create(Guid id,
+            OrganisationState state,
+            KboState kboState,
+            OrganisationTerminationSummary organisationTermination,
+            bool forceKboTermination,
+            OrganisationTerminationKboSummary organisationTerminationKboSummary, DateTime dateOfTermination)
+        {
+            return new OrganisationTerminated(
+                id,
+                state.Name,
+                state.OvoNumber,
+                dateOfTermination,
+                organisationTermination.OrganisationNewValidTo,
+                organisationTermination.Buildings,
+                organisationTermination.Capacities,
+                organisationTermination.Contacts,
+                organisationTermination.Classifications,
+                organisationTermination.Functions,
+                organisationTermination.Labels,
+                organisationTermination.Locations,
+                organisationTermination.Parents,
+                organisationTermination.Relations,
+                organisationTermination.BankAccounts,
+                organisationTermination.FormalFrameworks,
+                organisationTermination.OpeningHours,
+                forceKboTermination,
+                organisationTerminationKboSummary.KboBankAccounts,
+                organisationTerminationKboSummary.KboRegisteredOfficeLocation,
+                organisationTerminationKboSummary.KboFormalNameLabel,
+                organisationTerminationKboSummary.KboLegalForm,
+                kboState.TerminationInKbo?.Date);
         }
     }
 }

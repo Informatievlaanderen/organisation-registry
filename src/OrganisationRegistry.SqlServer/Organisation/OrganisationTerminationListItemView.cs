@@ -45,9 +45,10 @@ namespace OrganisationRegistry.SqlServer.Organisation
     }
 
     public class OrganisationTerminationListItemView :
-        Projection<OrganisationDetailItemView>,
+        Projection<OrganisationTerminationListItemView>,
         IEventHandler<OrganisationTerminationFoundInKbo>,
         IEventHandler<OrganisationTerminationSyncedWithKbo>,
+        IEventHandler<OrganisationTerminated>,
         IEventHandler<OrganisationCouplingWithKboCancelled>
     {
         private readonly IMemoryCaches _memoryCaches;
@@ -60,7 +61,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         }
 
         public OrganisationTerminationListItemView(
-            ILogger<OrganisationDetailItemView> logger,
+            ILogger<OrganisationTerminationListItemView> logger,
             IMemoryCaches memoryCaches,
             IEventStore eventStore,
             IContextFactory contextFactory) : base(logger, contextFactory)
@@ -114,6 +115,25 @@ namespace OrganisationRegistry.SqlServer.Organisation
             {
                 var organisationTerminationListItem = await context.OrganisationTerminationList.SingleOrDefaultAsync(item =>
                     item.Id == message.Body.OrganisationId && item.KboNumber == message.Body.PreviousKboNumber);
+
+                if (organisationTerminationListItem == null)
+                    return;
+
+                context.OrganisationTerminationList.Remove(organisationTerminationListItem);
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            if (!message.Body.ForcedKboTermination)
+                return;
+
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var organisationTerminationListItem = await context.OrganisationTerminationList.SingleOrDefaultAsync(item =>
+                    item.Id == message.Body.OrganisationId);
 
                 if (organisationTerminationListItem == null)
                     return;

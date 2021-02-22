@@ -4,7 +4,7 @@ namespace OrganisationRegistry.Organisation
     using System.Collections.Generic;
     using System.Linq;
 
-    public class OrganisationTermination
+    public class OrganisationTerminationSummary
     {
         public DateTime? OrganisationNewValidTo { get; init; }
         public Dictionary<Guid, DateTime> Contacts { get; init; }
@@ -19,12 +19,8 @@ namespace OrganisationRegistry.Organisation
         public Dictionary<Guid, DateTime> OpeningHours { get; init; }
         public Dictionary<Guid, DateTime> Classifications { get; init; }
         public Dictionary<Guid, DateTime> FormalFrameworks { get; init; }
-        public Dictionary<Guid, DateTime> KboBankAccounts { get; init; }
-        public KeyValuePair<Guid, DateTime>? KboRegisteredOfficeLocation { get; init; }
-        public KeyValuePair<Guid, DateTime>? KboFormalNameLabel { get; init; }
-        public KeyValuePair<Guid, DateTime>? KboLegalForm { get; init; }
 
-        public OrganisationTermination()
+        public OrganisationTerminationSummary()
         {
             Contacts = new Dictionary<Guid, DateTime>();
             BankAccounts = new Dictionary<Guid, DateTime>();
@@ -38,14 +34,41 @@ namespace OrganisationRegistry.Organisation
             OpeningHours = new Dictionary<Guid, DateTime>();
             Classifications = new Dictionary<Guid, DateTime>();
             FormalFrameworks = new Dictionary<Guid, DateTime>();
+        }
+    }
+
+    public class OrganisationTerminationKboSummary
+    {
+        public Dictionary<Guid, DateTime> KboBankAccounts { get; init; }
+        public KeyValuePair<Guid, DateTime>? KboRegisteredOfficeLocation { get; init; }
+        public KeyValuePair<Guid, DateTime>? KboFormalNameLabel { get; init; }
+        public KeyValuePair<Guid, DateTime>? KboLegalForm { get; init; }
+
+        public OrganisationTerminationKboSummary()
+        {
             KboBankAccounts = new Dictionary<Guid, DateTime>();
         }
 
-        public static OrganisationTermination Calculate(DateTime dateOfTermination,
+    }
+
+    public static class OrganisationTermination
+    {
+
+        public static OrganisationTerminationKboSummary CalculateForcedKboTermination(DateTime dateOfTermination, KboState kboState)
+        {
+            return new OrganisationTerminationKboSummary
+            {
+                KboRegisteredOfficeLocation = CalculateRegisteredOfficeLocation(dateOfTermination, kboState.KboRegisteredOffice),
+                KboFormalNameLabel = CalculateFormalNameLabel(dateOfTermination, kboState.KboFormalNameLabel),
+                KboBankAccounts = CalculateKboBankAccounts(dateOfTermination, kboState.KboBankAccounts),
+                KboLegalForm = CalculateLegalForm(dateOfTermination, kboState.KboLegalFormOrganisationClassification),
+            };
+        }
+
+        public static OrganisationTerminationSummary CalculateTermination(DateTime dateOfTermination,
             IEnumerable<Guid> capacityTypeIdsToTerminateEndOfNextYear,
             IEnumerable<Guid> classificationTypeIdsToTerminateEndOfNextYear,
             IEnumerable<Guid> formalFrameworkIdsToTerminateEndOfNextYear,
-            KboState kboState,
             OrganisationState state)
         {
             var endOfNextYear = new DateTime(dateOfTermination.Year + 1, 12, 31);
@@ -53,11 +76,12 @@ namespace OrganisationRegistry.Organisation
             if (state.Validity.Start.IsInFutureOf(dateOfTermination))
                 throw new OrganisationCannotBeTerminatedWithFieldsInTheFuture();
 
-            return new OrganisationTermination
+            return new OrganisationTerminationSummary
             {
                 OrganisationNewValidTo = state.Validity.End.IsInFutureOf(dateOfTermination) ? dateOfTermination : null,
                 Contacts = Calculate(state.OrganisationContacts, dateOfTermination),
                 BankAccounts = Calculate(state.OrganisationBankAccounts, dateOfTermination),
+                Capacities = CalculateCapacities(dateOfTermination, capacityTypeIdsToTerminateEndOfNextYear, state.OrganisationCapacities, endOfNextYear),
                 Functions = Calculate(state.OrganisationFunctionTypes, dateOfTermination),
                 Locations = Calculate(state.OrganisationLocations, dateOfTermination),
                 Buildings = Calculate(state.OrganisationBuildings, dateOfTermination),
@@ -65,13 +89,8 @@ namespace OrganisationRegistry.Organisation
                 Labels = Calculate(state.OrganisationLabels, dateOfTermination),
                 Relations = Calculate(state.OrganisationRelations, dateOfTermination),
                 OpeningHours = Calculate(state.OrganisationOpeningHours, dateOfTermination),
-                Capacities = CalculateCapacities(dateOfTermination, capacityTypeIdsToTerminateEndOfNextYear, state.OrganisationCapacities, endOfNextYear),
                 Classifications = CalculateClassifications(dateOfTermination, state.OrganisationOrganisationClassifications, classificationTypeIdsToTerminateEndOfNextYear, endOfNextYear),
-                FormalFrameworks = CalculateFormalFrameworks(dateOfTermination, state.OrganisationFormalFrameworks, endOfNextYear, formalFrameworkIdsToTerminateEndOfNextYear),
-                KboRegisteredOfficeLocation = CalculateRegisteredOfficeLocation(kboState.TerminationInKbo, kboState.KboRegisteredOffice),
-                KboBankAccounts = CalculateKboBankAccounts(kboState.TerminationInKbo, kboState.KboBankAccounts),
-                KboLegalForm = CalculateLegalForm(kboState.TerminationInKbo, kboState.KboLegalFormOrganisationClassification),
-                KboFormalNameLabel = CalculateFormalNameLabel(kboState.TerminationInKbo, kboState.KboFormalNameLabel)
+                FormalFrameworks = CalculateFormalFrameworks(dateOfTermination, state.OrganisationFormalFrameworks, endOfNextYear, formalFrameworkIdsToTerminateEndOfNextYear)
             };
         }
 
@@ -79,6 +98,7 @@ namespace OrganisationRegistry.Organisation
             IEnumerable<OrganisationFormalFramework> organisationFormalFrameworks, DateTime endOfNextYear,
             IEnumerable<Guid> formalFrameworkIdsToTerminateEndOfNextYear)
         {
+
             var formalFrameworksList = organisationFormalFrameworks.ToList();
             var organisationFormalFrameworksToTerminateEndOfNextYear =
                 formalFrameworksList
@@ -141,38 +161,38 @@ namespace OrganisationRegistry.Organisation
                         : dateOfTermination);
         }
 
-        private static Dictionary<Guid, DateTime> CalculateKboBankAccounts(KboTermination? terminationInKbo, IEnumerable<OrganisationBankAccount> kboBankAccounts)
+        private static Dictionary<Guid, DateTime> CalculateKboBankAccounts(DateTime dateOfTermination, IEnumerable<OrganisationBankAccount> kboBankAccounts)
         {
-            return terminationInKbo != null
+            return dateOfTermination != null
                 ? kboBankAccounts.ToDictionary(
                     account => account.OrganisationBankAccountId,
-                    _ => terminationInKbo.Value.Date)
+                    _ => dateOfTermination)
                 : new Dictionary<Guid, DateTime>();
         }
 
-        private static KeyValuePair<Guid, DateTime>? CalculateFormalNameLabel(KboTermination? terminationInKbo, OrganisationLabel? kboFormalNameLabel)
+        private static KeyValuePair<Guid, DateTime>? CalculateFormalNameLabel(DateTime dateOfTermination, OrganisationLabel? kboFormalNameLabel)
         {
-            return terminationInKbo != null && kboFormalNameLabel != null
+            return kboFormalNameLabel != null
                 ? new KeyValuePair<Guid, DateTime>(kboFormalNameLabel.OrganisationLabelId,
-                    terminationInKbo.Value.Date)
+                    dateOfTermination)
                 : null;
         }
 
-        private static KeyValuePair<Guid, DateTime>? CalculateRegisteredOfficeLocation(KboTermination? terminationInKbo, OrganisationLocation? kboRegisteredOffice)
+        private static KeyValuePair<Guid, DateTime>? CalculateRegisteredOfficeLocation(DateTime dateOfTermination, OrganisationLocation? kboRegisteredOffice)
         {
-            return terminationInKbo != null && kboRegisteredOffice != null
+            return kboRegisteredOffice != null
                 ? (KeyValuePair<Guid, DateTime>?) new KeyValuePair<Guid, DateTime>(
                     kboRegisteredOffice.OrganisationLocationId,
-                    terminationInKbo.Value.Date)
+                    dateOfTermination)
                 : null;
         }
 
-        private static KeyValuePair<Guid, DateTime>? CalculateLegalForm(KboTermination? terminationInKbo, OrganisationOrganisationClassification? kboLegalForm)
+        private static KeyValuePair<Guid, DateTime>? CalculateLegalForm(DateTime dateOfTermination, OrganisationOrganisationClassification? kboLegalForm)
         {
-            return terminationInKbo != null && kboLegalForm != null
+            return kboLegalForm != null
                 ? (KeyValuePair<Guid, DateTime>?) new KeyValuePair<Guid, DateTime>(
                     kboLegalForm.OrganisationOrganisationClassificationId,
-                    terminationInKbo.Value.Date)
+                    dateOfTermination)
                 : null;
         }
 

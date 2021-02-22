@@ -23,8 +23,7 @@ namespace OrganisationRegistry.Organisation
         ICommandHandler<CoupleOrganisationToKbo>,
         ICommandHandler<CancelCouplingWithKbo>,
         ICommandHandler<SyncOrganisationWithKbo>,
-        ICommandHandler<SyncOrganisationTerminationWithKbo>,
-        ICommandHandler<TerminateOrganisation>
+        ICommandHandler<SyncOrganisationTerminationWithKbo>
     {
         private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
         private readonly IOvoNumberGenerator _ovoNumberGenerator;
@@ -180,7 +179,7 @@ namespace OrganisationRegistry.Organisation
             var organisation = Session.Get<Organisation>(organisationId);
 
             var kboOrganisationResult =
-                await _kboOrganisationRetriever.RetrieveOrganisation(user, organisation.KboNumber);
+                await _kboOrganisationRetriever.RetrieveOrganisation(user, organisation.KboState.KboNumber);
 
             if (kboOrganisationResult.HasErrors)
                 throw new KboOrganisationNotFoundException(kboOrganisationResult.ErrorMessages);
@@ -231,25 +230,7 @@ namespace OrganisationRegistry.Organisation
 
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
-            organisation.TerminateKboCoupling();
-
-            await Session.Commit();
-        }
-
-        public async Task Handle(TerminateOrganisation message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-
-            if(organisation.KboNumber != null)
-                await SyncWithKbo(message.OrganisationId, message.User, null);
-
-            organisation = Session.Get<Organisation>(message.OrganisationId);
-
-            organisation.TerminateOrganisation(message.DateOfTermination,
-                _organisationRegistryConfiguration.OrganisationCapacityTypeIdsToTerminateEndOfNextYear,
-                _organisationRegistryConfiguration.OrganisationClassificationTypeIdsToTerminateEndOfNextYear,
-                _organisationRegistryConfiguration.FormalFrameworkIdsToTerminateEndOfNextYear,
-                _dateTimeProvider);
+            organisation.SyncKboTermination();
 
             await Session.Commit();
         }

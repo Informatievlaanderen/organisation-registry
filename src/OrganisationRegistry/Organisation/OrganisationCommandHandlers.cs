@@ -56,7 +56,8 @@ namespace OrganisationRegistry.Organisation
         ICommandHandler<AddOrganisationRelation>,
         ICommandHandler<UpdateOrganisationRelation>,
         ICommandHandler<AddOrganisationOpeningHour>,
-        ICommandHandler<UpdateOrganisationOpeningHour>
+        ICommandHandler<UpdateOrganisationOpeningHour>,
+        ICommandHandler<TerminateOrganisation>
     {
         private readonly IOvoNumberGenerator _ovoNumberGenerator;
         private readonly IUniqueOvoNumberValidator _uniqueOvoNumberValidator;
@@ -667,6 +668,20 @@ namespace OrganisationRegistry.Organisation
                 message.Closes,
                 message.DayOfWeek,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+
+            await Session.Commit();
+        }
+
+        public async Task Handle(TerminateOrganisation message)
+        {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+
+            organisation.TerminateOrganisation(message.DateOfTermination,
+                _organisationRegistryConfiguration.OrganisationCapacityTypeIdsToTerminateEndOfNextYear,
+                _organisationRegistryConfiguration.OrganisationClassificationTypeIdsToTerminateEndOfNextYear,
+                _organisationRegistryConfiguration.FormalFrameworkIdsToTerminateEndOfNextYear,
+                _dateTimeProvider,
+                message.ForceTermination);
 
             await Session.Commit();
         }

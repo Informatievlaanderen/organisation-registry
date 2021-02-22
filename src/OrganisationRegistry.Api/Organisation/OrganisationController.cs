@@ -136,6 +136,7 @@ namespace OrganisationRegistry.Api.Organisation
                 new TerminateOrganisation(
                     new OrganisationId(id),
                     message.DateOfTermination,
+                    message.ForceTermination,
                     User));
 
             return Ok();
