@@ -264,13 +264,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     location.ValidTo = message.Body.LocationsToTerminate[location.OrganisationLocationId];
                 }
 
-                if (message.Body.KboRegisteredOffice.HasValue)
+                if (message.Body.KboRegisteredOfficeToTerminate.HasValue)
                 {
                     var kboOrganisationRegisteredOffice =
                         await context.OrganisationLocationList.SingleAsync(item =>
-                            message.Body.KboRegisteredOffice.Value.Key == item.OrganisationLocationId);
+                            message.Body.KboRegisteredOfficeToTerminate.Value.Key == item.OrganisationLocationId);
 
-                    kboOrganisationRegisteredOffice.ValidTo = message.Body.KboRegisteredOffice.Value.Value;
+                    kboOrganisationRegisteredOffice.ValidTo = message.Body.KboRegisteredOfficeToTerminate.Value.Value;
                 }
 
 

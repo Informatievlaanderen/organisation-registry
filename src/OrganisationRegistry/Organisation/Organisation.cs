@@ -20,83 +20,8 @@ namespace OrganisationRegistry.Organisation
     using System.Collections.Generic;
     using System.Linq;
     using Commands;
+    using State;
     using Purpose = Purpose.Purpose;
-
-    public class KboState
-    {
-        public OrganisationLocation? KboRegisteredOffice { get; set; }
-        public OrganisationLabel? KboFormalNameLabel { get; set; }
-        public OrganisationOrganisationClassification? KboLegalFormOrganisationClassification { get; set; }
-        public List<OrganisationBankAccount> KboBankAccounts { get; }
-        public string? NameBeforeKboCoupling { get; set; }
-        public string? ShortNameBeforeKboCoupling { get; set; }
-        public KboTermination? TerminationInKbo { get; set; }
-        public KboNumber? KboNumber { get; set; }
-
-        public void Clear()
-        {
-            KboNumber = null;
-            TerminationInKbo = null;
-            KboBankAccounts.Clear();
-            KboRegisteredOffice = null;
-            KboFormalNameLabel = null;
-            KboLegalFormOrganisationClassification = null;
-        }
-
-        public KboState()
-        {
-            KboBankAccounts = new List<OrganisationBankAccount>();
-        }
-    }
-
-    public class OrganisationState
-    {
-        public string Name { get; set; }
-        public string OvoNumber { get; set; }
-        public string ShortName { get; set; }
-        public string Description { get; set; }
-        public Period Validity { get; set; }
-        public bool ShowOnVlaamseOverheidSites { get; set; }
-        public bool IsActive { get; set; }
-        public List<OrganisationKey> OrganisationKeys { get; }
-        public List<OrganisationContact> OrganisationContacts { get; }
-        public List<OrganisationLabel> OrganisationLabels { get; }
-        public List<OrganisationOrganisationClassification> OrganisationOrganisationClassifications { get; }
-        public List<OrganisationFunction> OrganisationFunctionTypes { get; }
-        public List<OrganisationRelation> OrganisationRelations { get; }
-        public List<OrganisationCapacity> OrganisationCapacities { get; }
-        public List<OrganisationParent> OrganisationParents { get; }
-        public List<OrganisationFormalFramework> OrganisationFormalFrameworks { get; }
-        public List<OrganisationBankAccount> OrganisationBankAccounts { get; }
-        public List<OrganisationOpeningHour> OrganisationOpeningHours { get; }
-        public Dictionary<Guid, OrganisationFormalFramework> OrganisationFormalFrameworkParentsPerFormalFramework { get; }
-        public OrganisationBuildings OrganisationBuildings { get; }
-        public OrganisationLocations OrganisationLocations { get; }
-
-        public OrganisationState()
-        {
-            Name = string.Empty;
-            OvoNumber = string.Empty;
-            ShortName = string.Empty;
-            Description = string.Empty;
-            Validity = new Period();
-
-            OrganisationKeys = new List<OrganisationKey>();
-            OrganisationContacts = new List<OrganisationContact>();
-            OrganisationLabels = new List<OrganisationLabel>();
-            OrganisationOrganisationClassifications = new List<OrganisationOrganisationClassification>();
-            OrganisationFunctionTypes = new List<OrganisationFunction>();
-            OrganisationRelations = new List<OrganisationRelation>();
-            OrganisationCapacities = new List<OrganisationCapacity>();
-            OrganisationParents = new List<OrganisationParent>();
-            OrganisationFormalFrameworks = new List<OrganisationFormalFramework>();
-            OrganisationBankAccounts = new List<OrganisationBankAccount>();
-            OrganisationOpeningHours = new List<OrganisationOpeningHour>();
-            OrganisationFormalFrameworkParentsPerFormalFramework = new Dictionary<Guid, OrganisationFormalFramework>();
-            OrganisationBuildings = new OrganisationBuildings();
-            OrganisationLocations = new OrganisationLocations();
-        }
-    }
 
     public partial class Organisation : AggregateRoot
     {
@@ -1607,21 +1532,21 @@ namespace OrganisationRegistry.Organisation
 
             if (_currentOrganisationParent != null &&
                 organisationTermination.Parents.ContainsKey(_currentOrganisationParent.OrganisationOrganisationParentId) &&
-                organisationTermination.Parents[_currentOrganisationParent.OrganisationOrganisationParentId] > dateTimeProvider.Today)
+                organisationTermination.Parents[_currentOrganisationParent.OrganisationOrganisationParentId] < dateTimeProvider.Today)
             {
                 ApplyChange(new ParentClearedFromOrganisation(Id, _currentOrganisationParent.ParentOrganisationId));
             }
 
             if (_mainOrganisationBuilding != null &&
                 organisationTermination.Buildings.ContainsKey(_mainOrganisationBuilding.OrganisationBuildingId) &&
-                organisationTermination.Buildings[_mainOrganisationBuilding.OrganisationBuildingId] > dateTimeProvider.Today)
+                organisationTermination.Buildings[_mainOrganisationBuilding.OrganisationBuildingId] < dateTimeProvider.Today)
             {
                 ApplyChange(new MainBuildingClearedFromOrganisation(Id, _mainOrganisationBuilding.BuildingId));
             }
 
             if (_mainOrganisationLocation != null &&
                 organisationTermination.Locations.ContainsKey(_mainOrganisationLocation.OrganisationLocationId) &&
-                organisationTermination.Locations[_mainOrganisationLocation.OrganisationLocationId] > dateTimeProvider.Today)
+                organisationTermination.Locations[_mainOrganisationLocation.OrganisationLocationId] < dateTimeProvider.Today)
             {
                 ApplyChange(new MainLocationClearedFromOrganisation(Id, _mainOrganisationLocation.LocationId));
             }
@@ -1629,7 +1554,7 @@ namespace OrganisationRegistry.Organisation
             foreach (var (_, parent) in State.OrganisationFormalFrameworkParentsPerFormalFramework)
             {
                 if (organisationTermination.FormalFrameworks.ContainsKey(parent.OrganisationFormalFrameworkId) &&
-                    organisationTermination.FormalFrameworks[parent.OrganisationFormalFrameworkId] > dateTimeProvider.Today)
+                    organisationTermination.FormalFrameworks[parent.OrganisationFormalFrameworkId] < dateTimeProvider.Today)
                 {
                     ApplyChange(new FormalFrameworkClearedFromOrganisation(
                         parent.OrganisationFormalFrameworkId,
@@ -2468,15 +2393,15 @@ namespace OrganisationRegistry.Organisation
                 KboState.KboBankAccounts.Add(bankAccount.WithValidTo(new ValidTo(value)));
             }
 
-            if (@event.KboFormalName.HasValue)
-                KboState.KboFormalNameLabel = KboState.KboFormalNameLabel!.WithValidTo(new ValidTo(@event.KboFormalName.Value.Value));
+            if (@event.KboFormalNameToTerminate.HasValue)
+                KboState.KboFormalNameLabel = KboState.KboFormalNameLabel!.WithValidTo(new ValidTo(@event.KboFormalNameToTerminate.Value.Value));
 
-            if (@event.KboRegisteredOffice.HasValue)
-                KboState.KboRegisteredOffice = KboState.KboRegisteredOffice!.WithValidTo(new ValidTo(@event.KboRegisteredOffice.Value.Value));
+            if (@event.KboRegisteredOfficeToTerminate.HasValue)
+                KboState.KboRegisteredOffice = KboState.KboRegisteredOffice!.WithValidTo(new ValidTo(@event.KboRegisteredOfficeToTerminate.Value.Value));
 
-            if (@event.KboLegalForm.HasValue)
+            if (@event.KboLegalFormToTerminate.HasValue)
                 KboState.KboLegalFormOrganisationClassification =
-                    KboState.KboLegalFormOrganisationClassification!.WithValidTo(new ValidTo(@event.KboLegalForm.Value.Value));
+                    KboState.KboLegalFormOrganisationClassification!.WithValidTo(new ValidTo(@event.KboLegalFormToTerminate.Value.Value));
 
             // TODO: should we clear it if it's not forced as well? Does this code above and below make sense?
 

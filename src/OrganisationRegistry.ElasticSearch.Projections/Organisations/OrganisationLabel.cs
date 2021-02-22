@@ -162,8 +162,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             var labelsToTerminate =
                 message.Body.LabelsToTerminate;
 
-            if (message.Body.KboFormalName.HasValue)
-                labelsToTerminate.Add(message.Body.KboFormalName.Value.Key, message.Body.KboFormalName.Value.Value);
+            if (message.Body.KboFormalNameToTerminate.HasValue)
+                labelsToTerminate.Add(message.Body.KboFormalNameToTerminate.Value.Key, message.Body.KboFormalNameToTerminate.Value.Value);
 
             foreach (var (key, value) in labelsToTerminate)
             {

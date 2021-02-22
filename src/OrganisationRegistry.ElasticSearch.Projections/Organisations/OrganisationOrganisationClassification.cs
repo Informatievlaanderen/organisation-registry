@@ -210,8 +210,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             var classificationsToTerminate =
                 message.Body.ClassificationsToTerminate;
 
-            if (message.Body.KboLegalForm.HasValue)
-                classificationsToTerminate.Add(message.Body.KboLegalForm.Value.Key, message.Body.KboLegalForm.Value.Value);
+            if (message.Body.KboLegalFormToTerminate.HasValue)
+                classificationsToTerminate.Add(message.Body.KboLegalFormToTerminate.Value.Key, message.Body.KboLegalFormToTerminate.Value.Value);
 
             foreach (var (key, value) in classificationsToTerminate)
             {

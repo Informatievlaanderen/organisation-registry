@@ -172,8 +172,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             var locationsToTerminate =
                 message.Body.LocationsToTerminate;
 
-            if (message.Body.KboRegisteredOffice.HasValue)
-                locationsToTerminate.Add(message.Body.KboRegisteredOffice.Value.Key, message.Body.KboRegisteredOffice.Value.Value);
+            if (message.Body.KboRegisteredOfficeToTerminate.HasValue)
+                locationsToTerminate.Add(message.Body.KboRegisteredOfficeToTerminate.Value.Key, message.Body.KboRegisteredOfficeToTerminate.Value.Value);
 
             foreach (var (key, value) in locationsToTerminate)
             {
