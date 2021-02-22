@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Organisation.Events
 {
     using System;
     using System.Collections.Generic;
+    using State;
 
     public class OrganisationTerminated : BaseEvent<OrganisationTerminated>
     {
@@ -27,9 +28,9 @@ namespace OrganisationRegistry.Organisation.Events
 
         public bool ForcedKboTermination { get; }
         public Dictionary<Guid, DateTime> KboBankAccountsToTerminate { get; }
-        public KeyValuePair<Guid, DateTime>? KboRegisteredOffice { get; }
-        public KeyValuePair<Guid, DateTime>? KboFormalName { get; }
-        public KeyValuePair<Guid, DateTime>? KboLegalForm { get; }
+        public KeyValuePair<Guid, DateTime>? KboRegisteredOfficeToTerminate { get; }
+        public KeyValuePair<Guid, DateTime>? KboFormalNameToTerminate { get; }
+        public KeyValuePair<Guid, DateTime>? KboLegalFormToTerminate { get; }
 
         public OrganisationTerminated(Guid organisationId,
             string name,
@@ -50,9 +51,9 @@ namespace OrganisationRegistry.Organisation.Events
             Dictionary<Guid, DateTime> organisationTerminationOpeningHours,
             bool forcedKboTermination,
             Dictionary<Guid, DateTime> kboBankAccounts,
-            KeyValuePair<Guid, DateTime>? kboRegisteredOffice,
-            KeyValuePair<Guid, DateTime>? kboFormalName,
-            KeyValuePair<Guid, DateTime>? kboLegalForm,
+            KeyValuePair<Guid, DateTime>? kboRegisteredOfficeToTerminate,
+            KeyValuePair<Guid, DateTime>? kboFormalNameToTerminate,
+            KeyValuePair<Guid, DateTime>? kboLegalFormToTerminate,
             DateTime? dateOfTerminationAccordingToKbo = null)
 
         {
@@ -77,9 +78,9 @@ namespace OrganisationRegistry.Organisation.Events
             DateOfTerminationAccordingToKbo = dateOfTerminationAccordingToKbo;
             ForcedKboTermination = forcedKboTermination;
             KboBankAccountsToTerminate = kboBankAccounts;
-            KboRegisteredOffice = kboRegisteredOffice;
-            KboFormalName = kboFormalName;
-            KboLegalForm = kboLegalForm;
+            KboRegisteredOfficeToTerminate = kboRegisteredOfficeToTerminate;
+            KboFormalNameToTerminate = kboFormalNameToTerminate;
+            KboLegalFormToTerminate = kboLegalFormToTerminate;
         }
 
         public static OrganisationTerminated Create(Guid id,

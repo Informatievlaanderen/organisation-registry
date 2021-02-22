@@ -215,13 +215,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     label.ValidTo = message.Body.LabelsToTerminate[label.OrganisationLabelId];
                 }
 
-                if (message.Body.KboFormalName.HasValue)
+                if (message.Body.KboFormalNameToTerminate.HasValue)
                 {
                     var kboFormalName =
                         await context.OrganisationLabelList.SingleAsync(item =>
-                            message.Body.KboFormalName.Value.Key == item.OrganisationLabelId);
+                            message.Body.KboFormalNameToTerminate.Value.Key == item.OrganisationLabelId);
 
-                    kboFormalName.ValidTo = message.Body.KboFormalName.Value.Value;
+                    kboFormalName.ValidTo = message.Body.KboFormalNameToTerminate.Value.Value;
                 }
 
                 await context.SaveChangesAsync();

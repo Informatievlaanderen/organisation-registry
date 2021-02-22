@@ -250,13 +250,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     classification.ValidTo = message.Body.ClassificationsToTerminate[classification.OrganisationOrganisationClassificationId];
                 }
 
-                if (message.Body.KboLegalForm.HasValue)
+                if (message.Body.KboLegalFormToTerminate.HasValue)
                 {
                     var kboLegalForm =
                         await context.OrganisationOrganisationClassificationList.SingleAsync(item =>
-                            message.Body.KboLegalForm.Value.Key == item.OrganisationOrganisationClassificationId);
+                            message.Body.KboLegalFormToTerminate.Value.Key == item.OrganisationOrganisationClassificationId);
 
-                    kboLegalForm.ValidTo = message.Body.KboLegalForm.Value.Value;
+                    kboLegalForm.ValidTo = message.Body.KboLegalFormToTerminate.Value.Value;
                 }
 
                 await context.SaveChangesAsync();
