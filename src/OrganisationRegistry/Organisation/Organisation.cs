@@ -20,6 +20,7 @@ namespace OrganisationRegistry.Organisation
     using System.Collections.Generic;
     using System.Linq;
     using Commands;
+    using OrganisationTermination;
     using State;
     using Purpose = Purpose.Purpose;
 
@@ -1501,15 +1502,15 @@ namespace OrganisationRegistry.Organisation
             if (KboState.TerminationInKbo.HasValue && forceKboTermination)
                 throw new OrganisationAlreadyTerminatedInKbo();
 
-            var organisationTermination = OrganisationTermination.CalculateTermination(dateOfTermination,
+            var organisationTermination = OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
                 capacityTypeIdsToTerminateEndOfNextYear,
                 classificationTypeIdsToTerminateEndOfNextYear,
                 formalFrameworkIdsToTerminateEndOfNextYear,
                 State);
 
-            var organisationTerminationKboSummary = forceKboTermination ?
-                OrganisationTermination.CalculateForcedKboTermination(dateOfTermination, KboState) :
-                new OrganisationTerminationKboSummary();
+            var organisationTerminationKboSummary = forceKboTermination
+                ? OrganisationTerminationCalculator.GetKboFieldsToForceTerminate(dateOfTermination, KboState)
+                : new OrganisationTerminationKboSummary();
 
             ApplyChange(
                 OrganisationTerminated.Create(
