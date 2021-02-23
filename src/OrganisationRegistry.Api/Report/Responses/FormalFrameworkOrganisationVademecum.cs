@@ -1,6 +1,5 @@
 namespace OrganisationRegistry.Api.Report.Responses
 {
-    using Configuration;
     using ElasticSearch.Organisations;
     using Infrastructure;
     using Infrastructure.Search.Sorting;

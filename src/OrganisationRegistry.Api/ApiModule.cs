@@ -7,6 +7,7 @@ namespace OrganisationRegistry.Api
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Configuration;
     using ElasticSearch;
+    using Infrastructure;
     using Infrastructure.Search;
     using Infrastructure.Security;
     using Microsoft.AspNetCore.Http;

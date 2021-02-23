@@ -6,7 +6,6 @@ namespace OrganisationRegistry.Api.Report.Responses
     using System.Linq;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
-    using Configuration;
     using Infrastructure;
     using Infrastructure.Search.Sorting;
     using Microsoft.EntityFrameworkCore;

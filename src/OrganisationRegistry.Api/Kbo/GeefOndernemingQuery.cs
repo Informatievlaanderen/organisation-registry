@@ -191,7 +191,7 @@ namespace OrganisationRegistry.Api.Kbo
                 CalledAt = DateTimeOffset.UtcNow,
                 UserClaims = string.Join(Environment.NewLine, principal.Claims.Select(claim => $"{claim.Type}: {claim.Value}"))
             };
-            context.MagdaCallReferences.Add(magdaCallReference);
+            await context.MagdaCallReferences.AddAsync(magdaCallReference);
             await context.SaveChangesAsync();
             return magdaCallReference.Reference.ToString("D");
         }
@@ -247,8 +247,8 @@ namespace OrganisationRegistry.Api.Kbo
             var keyInfoData = new KeyInfoX509Data(cert);
             //var kin = new KeyInfoName { Value = "Public key of certificate" };
 
-            var rsaprovider = (RSA)cert.PublicKey.Key;
-            var rkv = new RSAKeyValue(rsaprovider);
+            var rsaProvider = (RSA)cert.PublicKey.Key;
+            var rkv = new RSAKeyValue(rsaProvider);
             //keyInfo.AddClause(kin);
             keyInfo.AddClause(rkv);
             keyInfo.AddClause(keyInfoData);

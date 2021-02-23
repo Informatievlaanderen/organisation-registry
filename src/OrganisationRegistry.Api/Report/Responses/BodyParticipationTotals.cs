@@ -1,6 +1,5 @@
 namespace OrganisationRegistry.Api.Report.Responses
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
 

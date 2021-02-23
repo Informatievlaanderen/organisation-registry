@@ -1,11 +1,8 @@
 namespace OrganisationRegistry.Api.FormalFramework
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
-    using Configuration;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Pagination;

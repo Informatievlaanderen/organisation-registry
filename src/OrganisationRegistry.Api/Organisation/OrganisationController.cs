@@ -15,7 +15,6 @@ namespace OrganisationRegistry.Api.Organisation
     using System;
     using System.Collections.Generic;
     using System.Net;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Organisation;

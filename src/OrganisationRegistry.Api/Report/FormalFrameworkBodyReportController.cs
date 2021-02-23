@@ -1,6 +1,5 @@
 namespace OrganisationRegistry.Api.Report
 {
-    using Configuration;
     using ElasticSearch.Client;
     using Infrastructure;
     using Infrastructure.Search.Pagination;

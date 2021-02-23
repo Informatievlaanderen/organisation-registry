@@ -1,6 +1,5 @@
 namespace OrganisationRegistry.Api.Report.Responses
 {
-    using Configuration;
     using Infrastructure;
     using Infrastructure.Search.Sorting;
     using Microsoft.EntityFrameworkCore;

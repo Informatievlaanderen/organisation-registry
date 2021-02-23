@@ -5,7 +5,6 @@ namespace OrganisationRegistry.Api.Report.Responses
     using System.ComponentModel;
     using System.Linq;
     using System.Threading.Tasks;
-    using Configuration;
     using ElasticSearch.Organisations;
     using Infrastructure;
     using Infrastructure.Search.Sorting;
