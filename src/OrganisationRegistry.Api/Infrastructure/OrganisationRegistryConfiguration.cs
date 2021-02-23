@@ -1,11 +1,9 @@
-namespace OrganisationRegistry.Api
+namespace OrganisationRegistry.Api.Infrastructure
 {
     using System;
     using System.Linq;
-    using Configuration;
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
 
     public class OrganisationRegistryConfiguration : IOrganisationRegistryConfiguration
     {

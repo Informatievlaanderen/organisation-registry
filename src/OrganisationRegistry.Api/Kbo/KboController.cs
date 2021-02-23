@@ -2,20 +2,16 @@ namespace OrganisationRegistry.Api.Kbo
 {
     using System;
     using System.Linq;
-    using Configuration;
     using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Options;
     using SqlServer.Infrastructure;
     using System.Net;
     using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Infrastructure.Security;
-    using Magda;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure.Commands;
-    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Organisation;
 
     [ApiVersion("1.0")]
@@ -24,18 +20,12 @@ namespace OrganisationRegistry.Api.Kbo
     public class KboController : OrganisationRegistryController
     {
         private readonly ILogger<KboController> _logger;
-        private readonly MagdaConfiguration _magdaConfiguration;
-        private readonly ApiConfiguration _apiConfiguration;
 
         public KboController(
             ILogger<KboController> logger,
-            ICommandSender commandSender,
-            IOptions<ApiConfiguration> apiOptions,
-            MagdaConfiguration magdaConfiguration) : base(commandSender)
+            ICommandSender commandSender) : base(commandSender)
         {
             _logger = logger;
-            _magdaConfiguration = magdaConfiguration;
-            _apiConfiguration = apiOptions.Value;
         }
 
         /// <summary>Find organisation in KBO.</summary>

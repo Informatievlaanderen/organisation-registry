@@ -14,7 +14,6 @@ namespace OrganisationRegistry.Api.OrganisationClassification
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Infrastructure.Commands;
     using System.Net;
-    using Configuration;
     using Infrastructure.Security;
     using Microsoft.Extensions.Options;
     using OrganisationRegistry.Infrastructure.Configuration;

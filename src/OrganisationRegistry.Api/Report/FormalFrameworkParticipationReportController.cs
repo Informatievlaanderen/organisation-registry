@@ -5,7 +5,6 @@ namespace OrganisationRegistry.Api.Report
     using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
-    using Configuration;
     using Infrastructure;
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;

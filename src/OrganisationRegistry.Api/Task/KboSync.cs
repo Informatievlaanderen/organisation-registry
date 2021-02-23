@@ -5,7 +5,6 @@ namespace OrganisationRegistry.Api.Task
     using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Configuration;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
@@ -50,20 +49,20 @@ namespace OrganisationRegistry.Api.Task
             OrganisationRegistryContext context,
             ClaimsPrincipal claimsPrincipal)
         {
-            _logger.LogInformation("KBO sync started.");
+            _logger.LogInformation("KBO sync started");
 
             var itemsInQueue = await GetNewItems(context);
 
             if (!itemsInQueue.Any())
                 itemsInQueue = await GetItemsToRetry(context);
 
-            _logger.LogInformation("Found {NumberOfSyncItems} items to sync.", itemsInQueue.Count);
+            _logger.LogInformation("Found {NumberOfSyncItems} items to sync", itemsInQueue.Count);
 
             foreach (var kboSyncQueueItem in itemsInQueue)
             {
                 try
                 {
-                    _logger.LogInformation("Trying to sync for KBO number {KboNumber}.", kboSyncQueueItem.SourceOrganisationKboNumber);
+                    _logger.LogInformation("Trying to sync for KBO number {KboNumber}", kboSyncQueueItem.SourceOrganisationKboNumber);
 
                     var organisationDetailItem = context.OrganisationDetail.SingleOrDefault(item => item.KboNumber == kboSyncQueueItem.SourceOrganisationKboNumber);
                     if (organisationDetailItem == null)
@@ -71,7 +70,7 @@ namespace OrganisationRegistry.Api.Task
                         kboSyncQueueItem.SyncStatus = SyncStatusNotFound;
                         kboSyncQueueItem.SyncInfo = SyncInfoNotFound;
 
-                        _logger.LogWarning("Organisation for KBO number {KboNumber} not found.", kboSyncQueueItem.SourceOrganisationKboNumber);
+                        _logger.LogWarning("Organisation for KBO number {KboNumber} not found", kboSyncQueueItem.SourceOrganisationKboNumber);
 
                         continue;
                     }
@@ -86,7 +85,7 @@ namespace OrganisationRegistry.Api.Task
                     kboSyncQueueItem.SyncStatus = SyncStatusSuccess;
                     kboSyncQueueItem.SyncInfo = string.Empty;
 
-                    _logger.LogInformation("KBO sync for KBO number {KboNumber} completed.", kboSyncQueueItem.SourceOrganisationKboNumber);
+                    _logger.LogInformation("KBO sync for KBO number {KboNumber} completed", kboSyncQueueItem.SourceOrganisationKboNumber);
                 }
                 catch (Exception e)
                 {
@@ -98,7 +97,7 @@ namespace OrganisationRegistry.Api.Task
 
             await context.SaveChangesAsync();
 
-            _logger.LogInformation("KBO sync completed.");
+            _logger.LogInformation("KBO sync completed");
         }
 
         private async Task<List<KboSyncQueueItem>> GetNewItems(OrganisationRegistryContext context)

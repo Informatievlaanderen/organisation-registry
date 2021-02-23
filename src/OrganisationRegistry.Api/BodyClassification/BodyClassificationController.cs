@@ -1,6 +1,5 @@
 namespace OrganisationRegistry.Api.BodyClassification
 {
-    using Configuration;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Pagination;

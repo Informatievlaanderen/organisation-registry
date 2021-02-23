@@ -1,6 +1,5 @@
 namespace OrganisationRegistry.Api.Report
 {
-    using Configuration;
     using ElasticSearch.Client;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
@@ -14,7 +13,6 @@ namespace OrganisationRegistry.Api.Report
     using Responses;
     using Search;
     using SqlServer.Infrastructure;
-    using SqlServer.OrganisationClassification;
     using System;
     using System.Collections.Generic;
     using System.Linq;
