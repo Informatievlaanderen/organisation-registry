@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Organisation.Events
 {
     using System;
     using System.Collections.Generic;
+    using OrganisationTermination;
     using State;
 
     public class OrganisationTerminated : BaseEvent<OrganisationTerminated>

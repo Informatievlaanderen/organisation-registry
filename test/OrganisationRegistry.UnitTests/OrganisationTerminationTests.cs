@@ -7,6 +7,7 @@ namespace OrganisationRegistry.UnitTests
     using AutoFixture.Kernel;
     using FluentAssertions;
     using OrganisationRegistry.Organisation;
+    using OrganisationRegistry.Organisation.OrganisationTermination;
     using OrganisationRegistry.Organisation.State;
     using Xunit;
 
@@ -47,7 +48,7 @@ namespace OrganisationRegistry.UnitTests
             };
 
             Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
-                () => OrganisationTermination.CalculateTermination(dateOfTermination,
+                () => OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
@@ -68,7 +69,7 @@ namespace OrganisationRegistry.UnitTests
                     new ValidTo(dateOfTermination))
             };
 
-            OrganisationTermination.CalculateTermination(dateOfTermination,
+            OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
@@ -94,7 +95,7 @@ namespace OrganisationRegistry.UnitTests
                     new ValidTo(dateOfTermination.AddDays(-1)))
             };
 
-            OrganisationTermination.CalculateTermination(dateOfTermination,
+            OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
@@ -120,7 +121,7 @@ namespace OrganisationRegistry.UnitTests
                     new ValidTo(dateOfTermination.AddDays(1)))
             };
 
-            OrganisationTermination.CalculateTermination(dateOfTermination,
+            OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
@@ -139,26 +140,186 @@ namespace OrganisationRegistry.UnitTests
 
             var dateOfTermination = fixture.Create<DateTime>();
 
-            var organisationContact = fixture.Create<OrganisationContact>()
-                .WithValidity(new Period(
-                    new ValidFrom(dateOfTermination.AddDays(1)),
-                    new ValidTo()));
-
             var organisationState = new OrganisationState
             {
                 OrganisationContacts =
                 {
-                    organisationContact
+                    fixture.Create<OrganisationContact>()
+                        .WithValidity(new Period(
+                            new ValidFrom(dateOfTermination.AddDays(1)),
+                            new ValidTo()))
                 }
             };
 
             Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
-                () => OrganisationTermination.CalculateTermination(dateOfTermination,
+                () => OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     organisationState));
         }
+
+        [Fact]
+        public void ThrowsWhenAnyFormalFrameworkValidityIsInFutureOfTerminationDate()
+        {
+            var fixture = new Fixture();
+
+            var dateOfTermination = fixture.Create<DateTime>();
+
+            var organisationState = new OrganisationState
+            {
+                OrganisationFormalFrameworks =
+                {
+                    fixture.Create<OrganisationFormalFramework>()
+                        .WithValidity(new Period(
+                            new ValidFrom(dateOfTermination.AddDays(1)),
+                            new ValidTo()))
+                }
+            };
+
+            Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
+                () => OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
+                    Enumerable.Empty<Guid>(),
+                    Enumerable.Empty<Guid>(),
+                    Enumerable.Empty<Guid>(),
+                    organisationState));
+        }
+
+        [Fact]
+        public void ThrowsWhenAnyClassificationValidityIsInFutureOfTerminationDate()
+        {
+            var fixture = new Fixture();
+
+            var dateOfTermination = fixture.Create<DateTime>();
+
+            var organisationState = new OrganisationState
+            {
+                OrganisationOrganisationClassifications =
+                {
+                    fixture.Create<OrganisationOrganisationClassification>()
+                        .WithValidity(new Period(
+                            new ValidFrom(dateOfTermination.AddDays(1)),
+                            new ValidTo()))
+                }
+            };
+
+            Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
+                () => OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
+                    Enumerable.Empty<Guid>(),
+                    Enumerable.Empty<Guid>(),
+                    Enumerable.Empty<Guid>(),
+                    organisationState));
+        }
+
+        [Fact]
+        public void ThrowsWhenAnyCapacityValidityIsInFutureOfTerminationDate()
+        {
+            var fixture = new Fixture();
+
+            var dateOfTermination = fixture.Create<DateTime>();
+
+            var organisationState = new OrganisationState
+            {
+                OrganisationCapacities =
+                {
+                    fixture.Create<OrganisationCapacity>()
+                        .WithValidity(new Period(
+                            new ValidFrom(dateOfTermination.AddDays(1)),
+                            new ValidTo()))
+                }
+            };
+
+            Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
+                () => OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
+                    Enumerable.Empty<Guid>(),
+                    Enumerable.Empty<Guid>(),
+                    Enumerable.Empty<Guid>(),
+                    organisationState));
+        }
+
+        [Fact]
+        public void ThrowsWhenAnyFormalFrameworkToTerminateEndOfNextYearIsInFutureOfEndOfNextYear()
+        {
+            var fixture = new Fixture();
+
+            var dateOfTermination = fixture.Create<DateTime>();
+
+            var organisationFormalFramework = fixture.Create<OrganisationFormalFramework>()
+                .WithValidity(new Period(
+                    new ValidFrom(dateOfTermination.AddYears(2)),
+                    new ValidTo()));
+            var organisationState = new OrganisationState
+            {
+                OrganisationFormalFrameworks =
+                {
+                    organisationFormalFramework
+                }
+            };
+
+            Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
+                () => OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
+                    Enumerable.Empty<Guid>(),
+                    Enumerable.Empty<Guid>(),
+                    new[] {organisationFormalFramework.FormalFrameworkId},
+                    organisationState));
+        }
+
+
+        [Fact]
+        public void ThrowsWhenAnyClassificationToTerminateEndOfNextYearIsInFutureOfEndOfNextYear()
+        {
+            var fixture = new Fixture();
+
+            var dateOfTermination = fixture.Create<DateTime>();
+
+            var organisationClassification = fixture.Create<OrganisationOrganisationClassification>()
+                .WithValidity(new Period(
+                    new ValidFrom(dateOfTermination.AddYears(2)),
+                    new ValidTo()));
+            var organisationState = new OrganisationState
+            {
+                OrganisationOrganisationClassifications =
+                {
+                    organisationClassification
+                }
+            };
+
+            Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
+                () => OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
+                    Enumerable.Empty<Guid>(),
+                    new[] {organisationClassification.OrganisationClassificationTypeId},
+                    Enumerable.Empty<Guid>(),
+                    organisationState));
+        }
+
+        [Fact]
+        public void ThrowsWhenAnyCapacityToTerminateEndOfNextYearIsInFutureOfEndOfNextYear()
+        {
+            var fixture = new Fixture();
+
+            var dateOfTermination = fixture.Create<DateTime>();
+
+            var organisationCapacity = fixture.Create<OrganisationCapacity>()
+                .WithValidity(new Period(
+                    new ValidFrom(dateOfTermination.AddYears(2)),
+                    new ValidTo()));
+
+            var organisationState = new OrganisationState
+            {
+                OrganisationCapacities =
+                {
+                    organisationCapacity
+                }
+            };
+
+            Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
+                () => OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
+                    new[] {organisationCapacity.OrganisationCapacityId},
+                    Enumerable.Empty<Guid>(),
+                    Enumerable.Empty<Guid>(),
+                    organisationState));
+        }
+
 
         [Fact]
         public void ThrowsWhenAnyOpeningHourValidityIsInFutureOfTerminationDate()
@@ -181,7 +342,7 @@ namespace OrganisationRegistry.UnitTests
             };
 
             Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
-                () => OrganisationTermination.CalculateTermination(dateOfTermination,
+                () => OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
@@ -234,7 +395,7 @@ namespace OrganisationRegistry.UnitTests
             organisationState.OrganisationFormalFrameworks.AddRange(overlappingFormalFrameworks);
             organisationState.OrganisationFormalFrameworks.AddRange(CreateFieldsInThePastOf<OrganisationFormalFramework>(dateOfTermination, fixture));
 
-            OrganisationTermination.CalculateTermination(dateOfTermination,
+            OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
@@ -255,6 +416,59 @@ namespace OrganisationRegistry.UnitTests
                         Capacities = overlappingCapacities.ToDictionary(x => x.OrganisationCapacityId, _ => dateOfTermination),
                         Classifications = overlappingClassifications.ToDictionary(x => x.OrganisationOrganisationClassificationId, _ => dateOfTermination),
                         FormalFrameworks = overlappingFormalFrameworks.ToDictionary(x => x.OrganisationFormalFrameworkId, _ => dateOfTermination),
+                    });
+        }
+
+                [Fact]
+        public void OverwritesFieldsWhenValiditySpansOverEndOfNextYear() // todo: title
+        {
+            var fixture = new Fixture();
+
+            var dateOfTermination = fixture.Create<DateTime>();
+
+            var endOfNextYear = new DateTime(dateOfTermination.Year + 1, 12, 31);
+
+            var capacitiesToTerminateEndOfNextYear = new List<OrganisationCapacity>()
+            {
+                fixture.Create<OrganisationCapacity>()
+                    .WithValidFrom(new ValidFrom(dateOfTermination.AddDays(1)))
+                    .WithValidTo(new ValidTo())
+            };
+
+            var classificationsToTerminateEndOfNextYear = new List<OrganisationOrganisationClassification>()
+            {
+                fixture.Create<OrganisationOrganisationClassification>()
+                    .WithValidFrom(new ValidFrom(dateOfTermination.AddDays(1)))
+                    .WithValidTo(new ValidTo())
+            };
+
+            var formalFrameworksToTerminateEndOfNextYear = new List<OrganisationFormalFramework>()
+            {
+                fixture.Create<OrganisationFormalFramework>()
+                    .WithValidFrom(new ValidFrom(dateOfTermination.AddDays(1)))
+                    .WithValidTo(new ValidTo())
+            };
+
+            var organisationState = new OrganisationState();
+            organisationState.OrganisationCapacities.AddRange(capacitiesToTerminateEndOfNextYear);
+            organisationState.OrganisationCapacities.AddRange(CreateFieldsInThePastOf<OrganisationCapacity>(dateOfTermination, fixture));
+            organisationState.OrganisationOrganisationClassifications.AddRange(classificationsToTerminateEndOfNextYear);
+            organisationState.OrganisationOrganisationClassifications.AddRange(CreateFieldsInThePastOf<OrganisationOrganisationClassification>(dateOfTermination, fixture));
+            organisationState.OrganisationFormalFrameworks.AddRange(formalFrameworksToTerminateEndOfNextYear);
+            organisationState.OrganisationFormalFrameworks.AddRange(CreateFieldsInThePastOf<OrganisationFormalFramework>(dateOfTermination, fixture));
+
+            OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
+                    capacitiesToTerminateEndOfNextYear.Select(x => x.CapacityId),
+                    classificationsToTerminateEndOfNextYear.Select(x => x.OrganisationClassificationTypeId),
+                    formalFrameworksToTerminateEndOfNextYear.Select(x => x.FormalFrameworkId),
+                    organisationState)
+                .Should().BeEquivalentTo(
+                    new OrganisationTerminationSummary
+                    {
+                        OrganisationNewValidTo = new ValidTo(dateOfTermination),
+                        Capacities = capacitiesToTerminateEndOfNextYear.ToDictionary(x => x.OrganisationCapacityId, _ => endOfNextYear),
+                        Classifications = classificationsToTerminateEndOfNextYear.ToDictionary(x => x.OrganisationOrganisationClassificationId, _ => endOfNextYear),
+                        FormalFrameworks = formalFrameworksToTerminateEndOfNextYear.ToDictionary(x => x.OrganisationFormalFrameworkId, _ => endOfNextYear),
                     });
         }
 
@@ -281,7 +495,7 @@ namespace OrganisationRegistry.UnitTests
             var classificationTypeIdsToTerminateEndOfNextYear = fixture.CreateMany<Guid>();
             var formalFrameworkIdsToTerminateEndOfNextYear = fixture.CreateMany<Guid>();
 
-            OrganisationTermination.CalculateTermination(dateOfTermination,
+            OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
                     capacityTypeIdsToTerminateEndOfNextYear,
                     classificationTypeIdsToTerminateEndOfNextYear,
                     formalFrameworkIdsToTerminateEndOfNextYear,
@@ -325,7 +539,7 @@ namespace OrganisationRegistry.UnitTests
                 fixture.Create<string>(),
                 fixture.Create<string>());
 
-            OrganisationTermination.CalculateForcedKboTermination(dateOfTermination,
+            OrganisationTerminationCalculator.GetKboFieldsToForceTerminate(dateOfTermination,
                     kboState)
                 .Should().BeEquivalentTo(
                     new OrganisationTerminationKboSummary
@@ -363,7 +577,7 @@ namespace OrganisationRegistry.UnitTests
                         new ValidTo(dateOfTermination.AddYears(fixture.Create<int>() * -1))));
             kboState.TerminationInKbo = null;
 
-            OrganisationTermination.CalculateForcedKboTermination(dateOfTermination,
+            OrganisationTerminationCalculator.GetKboFieldsToForceTerminate(dateOfTermination,
                     kboState)
                 .Should().BeEquivalentTo(
                     new OrganisationTerminationKboSummary
@@ -375,8 +589,4 @@ namespace OrganisationRegistry.UnitTests
                     });
         }
     }
-
-    // TODO: Meer testen en controleren op velden in de toekomst op alles.
-    // TODO: Meer classes overerven van OrganisationField
-    // TODO: OrganisationOrganisationClassificationId en dergelijke maken voor fixture.Freeze te kunnen gebruiken???
 }
