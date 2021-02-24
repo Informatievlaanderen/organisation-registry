@@ -71,7 +71,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         [EnvVarIgnoreFact]
         public void OrganisationCreated_CreatesDocument()
         {
-            var scenario = new BodyScenario(Guid.NewGuid());
+            var scenario = new OrganisationScenario(Guid.NewGuid());
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var organisationCreated = scenario.Create<OrganisationCreated>();
@@ -90,7 +90,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         [EnvVarIgnoreFact]
         public void OrganisationKboBankAccountAdded_AddsBankAccount()
         {
-            var scenario = new BodyScenario(Guid.NewGuid());
+            var scenario = new OrganisationScenario(Guid.NewGuid());
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var organisationCreated = scenario.Create<OrganisationCreated>();
@@ -125,7 +125,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         [EnvVarIgnoreFact]
         public void OrganisationKboBankAccountRemoved_RemovesBankAccount()
         {
-            var scenario = new BodyScenario(Guid.NewGuid());
+            var scenario = new OrganisationScenario(Guid.NewGuid());
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var organisationCreated = scenario.Create<OrganisationCreated>();

@@ -11,17 +11,17 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario
     {
         public BodyScenario(Guid bodyId) :
             base(
-                new ParameterNameArg("bodyId", bodyId),
-                new ParameterNameArg("lifecyclePhaseTypeId", Guid.NewGuid()),
-                new ParameterNameArg("bodySeatId", Guid.NewGuid()),
-                new ParameterNameArg("bodyMandateId", Guid.NewGuid()),
-                new ParameterNameArg("delegationAssignmentId", Guid.NewGuid()),
-                new ParameterNameArg("personId", Guid.NewGuid()),
-                new ParameterNameArg("organisationId", Guid.NewGuid()))
+                new ParameterNameArg<Guid>("bodyId", bodyId),
+                new ParameterNameArg<Guid>("lifecyclePhaseTypeId", Guid.NewGuid()),
+                new ParameterNameArg<Guid>("bodySeatId", Guid.NewGuid()),
+                new ParameterNameArg<Guid>("bodyMandateId", Guid.NewGuid()),
+                new ParameterNameArg<Guid>("delegationAssignmentId", Guid.NewGuid()),
+                new ParameterNameArg<Guid>("personId", Guid.NewGuid()),
+                new ParameterNameArg<Guid>("organisationId", Guid.NewGuid()))
         {
             var functionTypeId = Guid.NewGuid();
-            AddCustomization(new ParameterNameArg("functionId", functionTypeId));
-            AddCustomization(new ParameterNameArg("functionTypeId", functionTypeId));
+            AddCustomization(new ParameterNameArg<Guid>("functionId", functionTypeId));
+            AddCustomization(new ParameterNameArg<Guid>("functionTypeId", functionTypeId));
         }
     }
 }

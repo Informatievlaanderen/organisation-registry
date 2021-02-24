@@ -4,6 +4,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario
     using AutoFixture;
     using AutoFixture.Kernel;
     using Projections.Infrastructure;
+    using Specimen;
 
     public class ScenarioBase<T>
     {
@@ -14,7 +15,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario
             _fixture = new Fixture();
 
             _fixture.Register(() => new InitialiseProjection(typeof(T).FullName));
-            _fixture.Register<DateTime?>(() => null);
+            _fixture.Register<DateTime?>(() => _fixture.Create<DateTime>().Date);
 
             foreach (var specimenBuilder in specimenBuilders)
             {

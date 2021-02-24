@@ -4,15 +4,15 @@ using AutoFixture.Kernel;
 
 namespace OrganisationRegistry.ElasticSearch.Tests.Scenario.Specimen
 {
-    public class ParameterNameArg : ISpecimenBuilder
+    public class ParameterNameArg<T> : ISpecimenBuilder
     {
         private readonly string _parameterName;
-        private readonly Guid _guid;
+        private readonly T _value;
 
-        public ParameterNameArg(string parameterName, Guid guid)
+        public ParameterNameArg(string parameterName, T value)
         {
             _parameterName = parameterName;
-            _guid = guid;
+            _value = value;
         }
 
         public object Create(object request, ISpecimenContext context)
@@ -20,11 +20,11 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario.Specimen
             if (!(request is ParameterInfo pi))
                 return new NoSpecimen();
 
-            if (pi.ParameterType != typeof(Guid) ||
+            if (pi.ParameterType != typeof(T) ||
                 pi.Name != _parameterName)
                 return new NoSpecimen();
 
-            return _guid;
+            return _value;
         }
     }
 }
