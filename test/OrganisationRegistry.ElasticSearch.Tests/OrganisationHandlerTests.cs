@@ -17,6 +17,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using Organisations;
     using Projections;
     using Projections.Organisations;
+    using Scenario.Specimen;
     using SqlServer.Infrastructure;
 
     [Collection(nameof(ElasticSearchFixture))]
@@ -158,6 +159,62 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                     kboOrganisationBankAccountAdded.Bic,
                     kboOrganisationBankAccountAdded.IsBic,
                     new Period(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo)));
+        }
+
+        [EnvVarIgnoreFact]
+        public void OrganisationTerminated()
+        {
+            var scenario = new OrganisationScenario(Guid.NewGuid());
+            scenario.AddCustomization(new ParameterNameArg<bool>("forcedKboTermination", false));
+
+
+            var initialiseProjection = scenario.Create<InitialiseProjection>();
+            var organisationCreated = scenario.Create<OrganisationCreated>();
+            var coupledWithKbo = scenario.Create<OrganisationCoupledWithKbo>();
+            var organisationTerminated = scenario.Create<OrganisationTerminated>();
+
+            Handle(
+                initialiseProjection,
+                organisationCreated,
+                coupledWithKbo,
+                organisationTerminated);
+
+            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+
+            organisation.Source.Name.Should().Be(organisationCreated.Name);
+            organisation.Source.ShortName.Should().Be(organisationCreated.ShortName);
+            organisation.Source.Description.Should().Be(organisationCreated.Description);
+            organisation.Source.Validity.Start.Should().Be(organisationCreated.ValidFrom);
+            organisation.Source.Validity.End.Should().Be(organisationTerminated.OrganisationNewValidTo);
+            organisation.Source.KboNumber.Should().Be(coupledWithKbo.KboNumber);
+        }
+
+        [EnvVarIgnoreFact]
+        public void OrganisationTerminatedWithForcedKboTermination()
+        {
+            var scenario = new OrganisationScenario(Guid.NewGuid());
+            scenario.AddCustomization(new ParameterNameArg<bool>("forcedKboTermination", true));
+
+
+            var initialiseProjection = scenario.Create<InitialiseProjection>();
+            var organisationCreated = scenario.Create<OrganisationCreated>();
+            var coupledWithKbo = scenario.Create<OrganisationCoupledWithKbo>();
+            var organisationTerminated = scenario.Create<OrganisationTerminated>();
+
+            Handle(
+                initialiseProjection,
+                organisationCreated,
+                coupledWithKbo,
+                organisationTerminated);
+
+            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+
+            organisation.Source.Name.Should().Be(organisationCreated.Name);
+            organisation.Source.ShortName.Should().Be(organisationCreated.ShortName);
+            organisation.Source.Description.Should().Be(organisationCreated.Description);
+            organisation.Source.Validity.Start.Should().Be(organisationCreated.ValidFrom);
+            organisation.Source.Validity.End.Should().Be(organisationTerminated.OrganisationNewValidTo);
+            organisation.Source.KboNumber.Should().BeEmpty();
         }
 
         private void Handle(params IEvent[] envelopes)

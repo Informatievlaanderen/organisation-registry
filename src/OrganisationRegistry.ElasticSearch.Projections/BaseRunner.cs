@@ -20,7 +20,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
         private readonly string _elasticSearchProjectionsProjectionName;
         private readonly string _projectionFullName;
 
-        private readonly int _batchSize = 5000;
+        private readonly int _batchSize;
         private readonly ILogger<BaseRunner> _logger;
         private readonly IEventStore _store;
         private readonly IProjectionStates _projectionStates;

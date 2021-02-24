@@ -18,6 +18,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Person.Events;
+    using SqlServer;
 
     public class Person :
         Infrastructure.BaseProjection<Person>,
@@ -26,7 +27,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         IEventHandler<PersonUpdated>
     {
         private readonly Elastic _elastic;
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
+        private readonly IContextFactory _contextFactory;
         private readonly ElasticSearchConfiguration _elasticSearchOptions;
 
         private string[] ProjectionTableNames =>
@@ -39,7 +40,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         public Person(
             ILogger<Person> logger,
             Elastic elastic,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
+            IContextFactory contextFactory,
             IOptions<ElasticSearchConfiguration> elasticSearchOptions) : base(logger)
         {
             _elastic = elastic;
@@ -84,7 +85,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             Logger.LogInformation("Rebuilding index for {ProjectionName}.", message.Body.ProjectionName);
             PrepareIndex(_elastic.WriteClient, true);
 
-            using (var context = _contextFactory().Value)
+            using (var context = _contextFactory.Create())
                 context.Database.ExecuteSqlRaw(
                     string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [OrganisationRegistry].[{tableName}];")));
         }
