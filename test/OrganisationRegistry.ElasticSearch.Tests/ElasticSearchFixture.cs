@@ -6,9 +6,11 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using Autofac.Features.OwnedInstances;
     using Client;
     using Configuration;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using SqlServer;
     using SqlServer.Infrastructure;
 
     // ReSharper disable once ClassNeverInstantiated.Global
@@ -17,8 +19,15 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     {
         public ElasticSearchFixture()
         {
+            var dbContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
+                .UseInMemoryDatabase(
+                    $"org-es-test-{Guid.NewGuid()}",
+                    builder => { }).Options;
+            var context = new OrganisationRegistryContext(
+                dbContextOptions);
+
             LoggerFactory = new LoggerFactory();
-            ContextFactory = () => new Owned<OrganisationRegistryContext>(null, null);
+            ContextFactory = new TestContextFactory(dbContextOptions);
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetParent(GetType().GetTypeInfo().Assembly.Location).FullName)
                 .AddJsonFile("appsettings.json", optional: false);
@@ -35,7 +44,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         }
 
         public LoggerFactory LoggerFactory { get; set; }
-        public Func<Owned<OrganisationRegistryContext>> ContextFactory { get; set; }
+        public IContextFactory ContextFactory { get; set; }
         public Elastic Elastic { get; }
         public IOptions<ElasticSearchConfiguration> ElasticSearchOptions { get; set; }
 

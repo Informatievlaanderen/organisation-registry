@@ -24,6 +24,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     using OrganisationRegistry.Body.Events;
     using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Events;
+    using SqlServer;
 
     public class BodyHandler :
         Infrastructure.BaseProjection<BodyHandler>,
@@ -56,7 +57,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         IEventHandler<SeatTypeUpdated>
     {
         private readonly Elastic _elastic;
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
+        private readonly IContextFactory _contextFactory;
         private readonly ElasticSearchConfiguration _elasticSearchOptions;
         private readonly IMemoryCaches _memoryCaches;
         private readonly ElasticWriter<BodyDocument> _elasticWriter;
@@ -66,7 +67,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public BodyHandler(
             ILogger<BodyHandler> logger,
             Elastic elastic,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
+            IContextFactory contextFactory,
             IOptions<ElasticSearchConfiguration> elasticSearchOptions,
             IMemoryCaches memoryCaches) : base(logger)
         {
@@ -124,7 +125,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             if (!ProjectionTableNames.Any())
                 return;
 
-            using (var context = _contextFactory().Value)
+            using (var context = _contextFactory.Create())
                 context.Database.ExecuteSqlRaw(
                     string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [OrganisationRegistry].[{tableName}];")));
         }

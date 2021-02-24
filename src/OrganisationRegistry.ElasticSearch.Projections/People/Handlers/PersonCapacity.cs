@@ -20,6 +20,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Events;
+    using SqlServer;
 
     public class PersonCapacity :
         Infrastructure.BaseProjection<PersonCapacity>,
@@ -37,13 +38,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         IEventHandler<OrganisationTerminated>
     {
         private readonly Elastic _elastic;
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
+        private readonly IContextFactory _contextFactory;
         private readonly IMemoryCaches _memoryCaches;
 
         public PersonCapacity(
             ILogger<PersonCapacity> logger,
             Elastic elastic,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
+            IContextFactory contextFactory,
             IMemoryCaches memoryCaches) : base(logger)
         {
             _elastic = elastic;
@@ -258,7 +259,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
         private bool ShouldPersonBeShownOnVlaamseOverheidSites(PersonDocument personDocument)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = _contextFactory.Create())
             {
                 var organisationIds =
                     personDocument.Capacities
@@ -288,7 +289,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
         private void AddCacheShowOnVlaamseOverheidSites(Guid organisationId, bool showOnVlaamseOverheidSites)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = _contextFactory.Create())
             {
                 if (context.ShowOnVlaamseOverheidSitesPerOrganisationList.Any(x => x.Id == organisationId))
                     return;
@@ -307,7 +308,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
         private void UpdateCacheShowOnVlaamseOverheidSites(IEnvelope<OrganisationInfoUpdated> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = _contextFactory.Create())
             {
                 var showOnVlaamseOverheidSitesPerOrganisation =
                     context
@@ -322,7 +323,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
         private void UpdateIsActivePerOrganisationCapacity(Guid organisationCapacityId, bool isActive)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = _contextFactory.Create())
             {
                 var isActivePerOrganisationCapacity =
                     context
