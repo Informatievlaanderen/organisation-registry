@@ -10,11 +10,11 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario
     public class OrganisationScenario : ScenarioBase<Organisation>
     {
         public OrganisationScenario(Guid organisationId) :
-            base(new ParameterNameArg("organisationId", organisationId))
+            base(new ParameterNameArg<Guid>("organisationId", organisationId))
         {
             var functionTypeId = Guid.NewGuid();
-            AddCustomization(new ParameterNameArg("functionId", functionTypeId));
-            AddCustomization(new ParameterNameArg("functionTypeId", functionTypeId));
+            AddCustomization(new ParameterNameArg<Guid>("functionId", functionTypeId));
+            AddCustomization(new ParameterNameArg<Guid>("functionTypeId", functionTypeId));
         }
     }
 }

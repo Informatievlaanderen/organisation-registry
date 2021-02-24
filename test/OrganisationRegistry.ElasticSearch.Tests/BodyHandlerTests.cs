@@ -69,8 +69,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             bodyDocument.Source.BodyNumber.Should().Be(bodyRegistered.BodyNumber);
             bodyDocument.Source.ShortName.Should().Be(bodyRegistered.ShortName);
             bodyDocument.Source.Description.Should().Be(bodyRegistered.Description);
-            bodyDocument.Source.FormalValidity.Start.Should().BeNull();
-            bodyDocument.Source.FormalValidity.End.Should().BeNull();
+            bodyDocument.Source.FormalValidity.Start.Should().Be(bodyRegistered.FormalValidFrom);
+            bodyDocument.Source.FormalValidity.End.Should().Be(bodyRegistered.FormalValidTo);
             bodyDocument.Source.LifecyclePhases.Count.Should().Be(0, "Lifecycle phases are added by a different event.");
         }
 
@@ -105,7 +105,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         {
             var bodyId = Guid.NewGuid();
             var scenario = new ScenarioBase<BodyHandler>(
-                new ParameterNameArg("bodyId", bodyId));
+                new ParameterNameArg<Guid>("bodyId", bodyId));
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
@@ -157,8 +157,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             bodyMandate.FunctionTypeName.Should().Be(null);
             bodyMandate.PersonId.Should().Be(assignedPersonToBodySeat.PersonId);
             bodyMandate.PersonName.Should().Be(assignedPersonToBodySeat.PersonFirstName + " " + assignedPersonToBodySeat.PersonName);
-            bodyMandate.Validity.Start.Should().Be(null);
-            bodyMandate.Validity.End.Should().Be(null);
+            bodyMandate.Validity.Start.Should().Be(assignedPersonToBodySeat.ValidFrom);
+            bodyMandate.Validity.End.Should().Be(assignedPersonToBodySeat.ValidTo);
         }
 
         [EnvVarIgnoreFact]
@@ -195,8 +195,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             bodyMandate.FunctionTypeName.Should().Be(null);
             bodyMandate.PersonId.Should().Be(reassignedPersonToBodySeat.PersonId);
             bodyMandate.PersonName.Should().Be(reassignedPersonToBodySeat.PersonFirstName + " " + reassignedPersonToBodySeat.PersonName);
-            bodyMandate.Validity.Start.Should().Be(null);
-            bodyMandate.Validity.End.Should().Be(null);
+            bodyMandate.Validity.Start.Should().Be(reassignedPersonToBodySeat.ValidFrom);
+            bodyMandate.Validity.End.Should().Be(reassignedPersonToBodySeat.ValidTo);
         }
 
         [EnvVarIgnoreFact]
@@ -204,9 +204,9 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         {
             var bodyId = Guid.NewGuid();
             var scenario = new ScenarioBase<BodyHandler>(
-                new ParameterNameArg("bodyId", bodyId),
-                new ParameterNameArg("lifecyclePhaseTypeId", Guid.NewGuid()),
-                new ParameterNameArg("bodySeatId", Guid.NewGuid()));
+                new ParameterNameArg<Guid>("bodyId", bodyId),
+                new ParameterNameArg<Guid>("lifecyclePhaseTypeId", Guid.NewGuid()),
+                new ParameterNameArg<Guid>("bodySeatId", Guid.NewGuid()));
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
@@ -214,7 +214,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var assignedPersonToBodySeat = scenario.Create<AssignedPersonToBodySeat>();
             var assignedOtherPersonToBodySeat = scenario.Create<AssignedPersonToBodySeat>();
 
-            scenario.AddCustomization(new ParameterNameArg("bodyMandateId", assignedPersonToBodySeat.BodyMandateId));
+            scenario.AddCustomization(new ParameterNameArg<Guid>("bodyMandateId", assignedPersonToBodySeat.BodyMandateId));
             var reassignedPersonToBodySeat = scenario.Create<ReassignedPersonToBodySeat>();
 
             Handle(
@@ -244,8 +244,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             otherBodyMandate.FunctionTypeName.Should().Be(null);
             otherBodyMandate.PersonId.Should().Be(assignedOtherPersonToBodySeat.PersonId);
             otherBodyMandate.PersonName.Should().Be(assignedOtherPersonToBodySeat.PersonFirstName + " " + assignedOtherPersonToBodySeat.PersonName);
-            otherBodyMandate.Validity.Start.Should().Be(null);
-            otherBodyMandate.Validity.End.Should().Be(null);
+            otherBodyMandate.Validity.Start.Should().Be(assignedOtherPersonToBodySeat.ValidFrom);
+            otherBodyMandate.Validity.End.Should().Be(assignedOtherPersonToBodySeat.ValidTo);
         }
 
         [EnvVarIgnoreFact]
@@ -253,8 +253,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         {
             var bodyId = Guid.NewGuid();
             var scenario = new ScenarioBase<BodyHandler>(
-                new ParameterNameArg("bodyId", bodyId),
-                new ParameterNameArg("bodySeatId", Guid.NewGuid()));
+                new ParameterNameArg<Guid>("bodyId", bodyId),
+                new ParameterNameArg<Guid>("bodySeatId", Guid.NewGuid()));
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
@@ -312,8 +312,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             bodyMandate.FunctionTypeName.Should().Be(null);
             bodyMandate.PersonId.Should().Be(null);
             bodyMandate.PersonName.Should().Be(null);
-            bodyMandate.Validity.Start.Should().Be(null);
-            bodyMandate.Validity.End.Should().Be(null);
+            bodyMandate.Validity.Start.Should().Be(reassignedOrganisationToBodySeat.ValidFrom);
+            bodyMandate.Validity.End.Should().Be(reassignedOrganisationToBodySeat.ValidTo);
         }
 
         [EnvVarIgnoreFact]
@@ -350,8 +350,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             bodyMandate.FunctionTypeName.Should().Be(reassignedFunctionToBodySeat.FunctionTypeName);
             bodyMandate.PersonId.Should().Be(null);
             bodyMandate.PersonName.Should().Be(null);
-            bodyMandate.Validity.Start.Should().Be(null);
-            bodyMandate.Validity.End.Should().Be(null);
+            bodyMandate.Validity.Start.Should().Be(reassignedFunctionToBodySeat.ValidFrom);
+            bodyMandate.Validity.End.Should().Be(reassignedFunctionToBodySeat.ValidTo);
         }
 
         [EnvVarIgnoreFact]
@@ -591,13 +591,13 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         {
             var bodyId = Guid.NewGuid();
             var scenario = new ScenarioBase<BodyHandler>(
-                new ParameterNameArg("bodyId", bodyId));
+                new ParameterNameArg<Guid>("bodyId", bodyId));
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
             var bodySeatAdded = scenario.Create<BodySeatAdded>();
             var anotherBodySeatAdded = scenario.Create<BodySeatAdded>();
-            scenario.AddCustomization(new ParameterNameArg("seatTypeId", bodySeatAdded.SeatTypeId));
+            scenario.AddCustomization(new ParameterNameArg<Guid>("seatTypeId", bodySeatAdded.SeatTypeId));
             var seatTypeUpdated = scenario.Create<SeatTypeUpdated>();
 
             Handle(
