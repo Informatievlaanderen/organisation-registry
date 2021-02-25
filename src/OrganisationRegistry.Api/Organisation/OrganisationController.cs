@@ -135,7 +135,7 @@ namespace OrganisationRegistry.Api.Organisation
                 new TerminateOrganisation(
                     new OrganisationId(id),
                     message.DateOfTermination,
-                    message.ForceTermination,
+                    message.ForceKboTermination,
                     User));
 
             return Ok();

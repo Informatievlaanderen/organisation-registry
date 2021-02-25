@@ -149,7 +149,7 @@ export class OrganisationService implements ICrudService<Organisation> {
       .put(url, '', { headers: headers });
   }
 
-  public terminate(organisationId: string, dateOfTermination: string, forceTermination: boolean) {
+  public terminate(organisationId: string, dateOfTermination: string, forceKboTermination: boolean) {
     const url = `${this.organisationsUrl}/${organisationId}/terminate`;
 
     let headers = new HeadersBuilder().build();
@@ -157,7 +157,7 @@ export class OrganisationService implements ICrudService<Organisation> {
     return this.http
       .put(url, {
         dateOfTermination: dateOfTermination,
-        forceTermination: forceTermination
+        forceKboTermination: forceKboTermination
       }, { headers: headers });
   }
 

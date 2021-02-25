@@ -681,7 +681,7 @@ namespace OrganisationRegistry.Organisation
                 _organisationRegistryConfiguration.OrganisationClassificationTypeIdsToTerminateEndOfNextYear,
                 _organisationRegistryConfiguration.FormalFrameworkIdsToTerminateEndOfNextYear,
                 _dateTimeProvider,
-                message.ForceTermination);
+                message.ForceKboTermination);
 
             await Session.Commit();
         }
