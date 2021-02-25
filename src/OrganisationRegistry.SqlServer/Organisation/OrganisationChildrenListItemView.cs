@@ -189,7 +189,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            if (!message.Body.FieldsToTerminate.OrganisationNewValidTo.HasValue)
+            if (!message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
                 return;
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
@@ -200,7 +200,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
                 foreach (var organisation in organisations)
                 {
-                    organisation.OrganisationValidTo = message.Body.FieldsToTerminate.OrganisationNewValidTo;
+                    organisation.OrganisationValidTo = message.Body.FieldsToTerminate.OrganisationValidity;
                 }
 
                 await context.SaveChangesAsync();

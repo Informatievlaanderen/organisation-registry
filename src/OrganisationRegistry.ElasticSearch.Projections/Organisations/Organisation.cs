@@ -201,7 +201,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            if (!message.Body.FieldsToTerminate.OrganisationNewValidTo.HasValue)
+            if (!message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
                 return;
 
             var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
@@ -210,7 +210,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             organisationDocument.ChangeTime = message.Timestamp;
 
             organisationDocument.Validity =
-                new Period(organisationDocument.Validity.Start, message.Body.FieldsToTerminate.OrganisationNewValidTo);
+                new Period(organisationDocument.Validity.Start, message.Body.FieldsToTerminate.OrganisationValidity);
 
             if (message.Body.ForcedKboTermination)
                 organisationDocument.KboNumber = string.Empty;

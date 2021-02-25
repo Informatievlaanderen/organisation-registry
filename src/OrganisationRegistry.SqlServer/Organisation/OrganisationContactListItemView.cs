@@ -133,11 +133,11 @@
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var contacts = context.OrganisationContactList.Where(item =>
-                    message.Body.FieldsToTerminate.ContactsToTerminate.Keys.Contains(item.OrganisationContactId));
+                    message.Body.FieldsToTerminate.Contacts.Keys.Contains(item.OrganisationContactId));
 
                 foreach (var contact in contacts)
                 {
-                    contact.ValidTo = message.Body.FieldsToTerminate.ContactsToTerminate[contact.OrganisationContactId];
+                    contact.ValidTo = message.Body.FieldsToTerminate.Contacts[contact.OrganisationContactId];
                 }
 
                 await context.SaveChangesAsync();

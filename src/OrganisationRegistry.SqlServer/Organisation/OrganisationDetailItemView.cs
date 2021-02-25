@@ -362,8 +362,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
                 organisationListItem.IsTerminated = true;
 
-                if (message.Body.FieldsToTerminate.OrganisationNewValidTo.HasValue)
-                    organisationListItem.ValidTo = message.Body.FieldsToTerminate.OrganisationNewValidTo;
+                if (message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
+                    organisationListItem.ValidTo = message.Body.FieldsToTerminate.OrganisationValidity;
 
                 if(message.Body.ForcedKboTermination)
                     organisationListItem.KboNumber = null;

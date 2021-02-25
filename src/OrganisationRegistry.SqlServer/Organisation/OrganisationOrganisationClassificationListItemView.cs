@@ -243,20 +243,20 @@ namespace OrganisationRegistry.SqlServer.Organisation
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var classifications = context.OrganisationOrganisationClassificationList.Where(item =>
-                    message.Body.FieldsToTerminate.ClassificationsToTerminate.Keys.Contains(item.OrganisationOrganisationClassificationId));
+                    message.Body.FieldsToTerminate.Classifications.Keys.Contains(item.OrganisationOrganisationClassificationId));
 
                 foreach (var classification in classifications)
                 {
-                    classification.ValidTo = message.Body.FieldsToTerminate.ClassificationsToTerminate[classification.OrganisationOrganisationClassificationId];
+                    classification.ValidTo = message.Body.FieldsToTerminate.Classifications[classification.OrganisationOrganisationClassificationId];
                 }
 
-                if (message.Body.KboFieldsToTerminate.KboLegalFormToTerminate.HasValue)
+                if (message.Body.KboFieldsToTerminate.LegalForm.HasValue)
                 {
                     var kboLegalForm =
                         await context.OrganisationOrganisationClassificationList.SingleAsync(item =>
-                            message.Body.KboFieldsToTerminate.KboLegalFormToTerminate.Value.Key == item.OrganisationOrganisationClassificationId);
+                            message.Body.KboFieldsToTerminate.LegalForm.Value.Key == item.OrganisationOrganisationClassificationId);
 
-                    kboLegalForm.ValidTo = message.Body.KboFieldsToTerminate.KboLegalFormToTerminate.Value.Value;
+                    kboLegalForm.ValidTo = message.Body.KboFieldsToTerminate.LegalForm.Value.Value;
                 }
 
                 await context.SaveChangesAsync();

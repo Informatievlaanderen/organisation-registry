@@ -185,7 +185,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             organisation.Source.ShortName.Should().Be(organisationCreated.ShortName);
             organisation.Source.Description.Should().Be(organisationCreated.Description);
             organisation.Source.Validity.Start.Should().Be(organisationCreated.ValidFrom);
-            organisation.Source.Validity.End.Should().Be(organisationTerminated.FieldsToTerminate.OrganisationNewValidTo);
+            organisation.Source.Validity.End.Should().Be(organisationTerminated.FieldsToTerminate.OrganisationValidity);
             organisation.Source.KboNumber.Should().Be(coupledWithKbo.KboNumber);
         }
 
@@ -213,7 +213,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             organisation.Source.ShortName.Should().Be(organisationCreated.ShortName);
             organisation.Source.Description.Should().Be(organisationCreated.Description);
             organisation.Source.Validity.Start.Should().Be(organisationCreated.ValidFrom);
-            organisation.Source.Validity.End.Should().Be(organisationTerminated.FieldsToTerminate.OrganisationNewValidTo);
+            organisation.Source.Validity.End.Should().Be(organisationTerminated.FieldsToTerminate.OrganisationValidity);
             organisation.Source.KboNumber.Should().BeEmpty();
         }
 
