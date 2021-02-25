@@ -160,10 +160,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             organisationDocument.ChangeTime = message.Timestamp;
 
             var labelsToTerminate =
-                message.Body.LabelsToTerminate;
+                message.Body.FieldsToTerminate.LabelsToTerminate;
 
-            if (message.Body.KboFormalNameToTerminate.HasValue)
-                labelsToTerminate.Add(message.Body.KboFormalNameToTerminate.Value.Key, message.Body.KboFormalNameToTerminate.Value.Value);
+            if (message.Body.KboFieldsToTerminate.KboFormalNameToTerminate.HasValue)
+                labelsToTerminate.Add(message.Body.KboFieldsToTerminate.KboFormalNameToTerminate.Value.Key, message.Body.KboFieldsToTerminate.KboFormalNameToTerminate.Value.Value);
 
             foreach (var (key, value) in labelsToTerminate)
             {

@@ -351,7 +351,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            foreach (var (key, value) in message.Body.CapacitiesToTerminate)
+            foreach (var (key, value) in message.Body.FieldsToTerminate.CapacitiesToTerminate)
             {
                 _elastic.Try(() => _elastic.WriteClient
                     .MassUpdatePerson(

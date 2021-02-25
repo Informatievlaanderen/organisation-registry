@@ -257,20 +257,20 @@ namespace OrganisationRegistry.SqlServer.Organisation
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var locations = context.OrganisationLocationList.Where(item =>
-                    message.Body.LocationsToTerminate.Keys.Contains(item.OrganisationLocationId));
+                    message.Body.FieldsToTerminate.LocationsToTerminate.Keys.Contains(item.OrganisationLocationId));
 
                 foreach (var location in locations)
                 {
-                    location.ValidTo = message.Body.LocationsToTerminate[location.OrganisationLocationId];
+                    location.ValidTo = message.Body.FieldsToTerminate.LocationsToTerminate[location.OrganisationLocationId];
                 }
 
-                if (message.Body.KboRegisteredOfficeToTerminate.HasValue)
+                if (message.Body.KboFieldsToTerminate.KboRegisteredOfficeToTerminate.HasValue)
                 {
                     var kboOrganisationRegisteredOffice =
                         await context.OrganisationLocationList.SingleAsync(item =>
-                            message.Body.KboRegisteredOfficeToTerminate.Value.Key == item.OrganisationLocationId);
+                            message.Body.KboFieldsToTerminate.KboRegisteredOfficeToTerminate.Value.Key == item.OrganisationLocationId);
 
-                    kboOrganisationRegisteredOffice.ValidTo = message.Body.KboRegisteredOfficeToTerminate.Value.Value;
+                    kboOrganisationRegisteredOffice.ValidTo = message.Body.KboFieldsToTerminate.KboRegisteredOfficeToTerminate.Value.Value;
                 }
 
 

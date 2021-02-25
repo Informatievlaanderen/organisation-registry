@@ -169,8 +169,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             organisationDocument.ChangeTime = message.Timestamp;
 
             var accountsToTerminate =
-                message.Body.BankAccountsToTerminate
-                    .Union(message.Body.KboBankAccountsToTerminate);
+                message.Body.FieldsToTerminate.BankAccountsToTerminate
+                    .Union(message.Body.KboFieldsToTerminate.KboBankAccountsToTerminate);
 
             foreach (var (key, value) in accountsToTerminate)
             {

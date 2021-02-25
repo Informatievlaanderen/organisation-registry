@@ -133,7 +133,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             organisationDocument.ChangeId = message.Number;
             organisationDocument.ChangeTime = message.Timestamp;
 
-            foreach (var (key, value) in message.Body.CapacitiesToTerminate)
+            foreach (var (key, value) in message.Body.FieldsToTerminate.CapacitiesToTerminate)
             {
                 var organisationCapacity =
                     organisationDocument
