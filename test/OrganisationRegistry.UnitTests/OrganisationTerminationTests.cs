@@ -551,7 +551,7 @@ namespace OrganisationRegistry.UnitTests
                     });
         }
 
-                [Fact]
+        [Fact]
         public void OverwritesKboFieldsWhenKboDoesntHaveTermination()
         {
             var fixture = new Fixture();
