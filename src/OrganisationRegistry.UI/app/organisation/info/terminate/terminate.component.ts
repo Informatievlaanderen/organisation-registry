@@ -1,6 +1,6 @@
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {ActivatedRoute, Params, Router} from '@angular/router';
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
 import * as moment from 'moment/moment';
 
@@ -19,9 +19,7 @@ import {required} from "core/validation";
   templateUrl: 'terminate.template.html',
   styleUrls: ['terminate.style.css'],
 })
-export class OrganisationTerminateComponent implements OnInit{
-  @Output('onCheckkboNumber') onCheckkboNumber: EventEmitter<string> = new EventEmitter<string>();
-
+export class OrganisationTerminateComponent implements OnInit, OnDestroy{
   public isLoading: boolean = true;
   public canEditOrganisation: Observable<boolean>;
   public terminateForm: FormGroup;
@@ -80,6 +78,10 @@ export class OrganisationTerminateComponent implements OnInit{
       this.canEditOrganisation = this.oidcService.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
       this.store.loadOrganisation(this.organisationId);
     }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   submit() {
