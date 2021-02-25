@@ -39,7 +39,7 @@ export class OrganisationFormalFrameworksOverviewComponent implements OnInit, On
     private organisationFormalFrameworkService: OrganisationFormalFrameworkService,
     private oidcService: OidcService,
     private alertService: AlertService,
-    private store: OrganisationInfoService
+    public store: OrganisationInfoService
   ) {
     this.organisationFormalFrameworks = new PagedResult<OrganisationFormalFrameworkListItem>();
   }

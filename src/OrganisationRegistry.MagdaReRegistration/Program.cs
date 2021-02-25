@@ -7,7 +7,6 @@ namespace OrganisationRegistry.MagdaReRegistration
     using System.Net.Http;
     using System.Security.Claims;
     using System.Threading.Tasks;
-    using Api.Configuration;
     using Api.Infrastructure.Search;
     using Api.Kbo;
     using Autofac;
