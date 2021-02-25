@@ -4,8 +4,8 @@ import { Observable } from 'rxjs/Observable';
 
 import { OidcClient } from 'oidc-client';
 
-import { Role, OidcService } from './../../../core/auth';
-import { ConfigurationService } from './../../../core/configuration';
+import { Role, OidcService } from 'core/auth';
+import { ConfigurationService } from 'core/configuration';
 
 import {
   TogglesService,

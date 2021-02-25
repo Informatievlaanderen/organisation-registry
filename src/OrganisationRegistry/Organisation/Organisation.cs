@@ -2310,10 +2310,7 @@ namespace OrganisationRegistry.Organisation
                     .Single(organisationClassification => organisationClassification.OrganisationOrganisationClassificationId == key);
 
                 State.OrganisationOrganisationClassifications.Remove(classification);
-    kboBankAccounts:
-kboRegisteredOfficeToTerminate:
-kboFormalNameToTerminate:
-kboLegalFormToTerminate:             State.OrganisationOrganisationClassifications.Add(classification.WithValidTo(new ValidTo(value)));
+                State.OrganisationOrganisationClassifications.Add(classification.WithValidTo(new ValidTo(value)));
             }
 
             foreach (var (key, value) in @event.FieldsToTerminate.Contacts)

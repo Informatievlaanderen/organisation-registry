@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
-import { BaseListComponent } from '../../../shared/components/list';
-import { OrganisationDocument } from '../../../services/search/organisation';
+import { BaseListComponent } from 'shared/components/list';
+import { OrganisationDocument } from 'services/search/organisation';
 
 @Component({
   selector: 'ww-organisation-search-list',

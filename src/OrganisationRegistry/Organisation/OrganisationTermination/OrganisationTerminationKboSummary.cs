@@ -14,6 +14,5 @@ namespace OrganisationRegistry.Organisation.OrganisationTermination
         {
             KboBankAccounts = new Dictionary<Guid, DateTime>();
         }
-
     }
 }

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
-import { BaseListComponent } from '../../../shared/components/list';
-import { BodySearchListItem } from '../../../services/search/body';
+import { BaseListComponent } from 'shared/components/list';
+import { BodySearchListItem } from 'services/search/body';
 
 @Component({
   selector: 'ww-body-search-list',

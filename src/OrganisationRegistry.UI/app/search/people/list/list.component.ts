@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
-import { BaseListComponent } from '../../../shared/components/list';
-import { PersonSearchListItem } from '../../../services/search/person';
+import { BaseListComponent } from 'shared/components/list';
+import { PersonSearchListItem } from 'services/search/person';
 
 @Component({
   selector: 'ww-person-search-list',

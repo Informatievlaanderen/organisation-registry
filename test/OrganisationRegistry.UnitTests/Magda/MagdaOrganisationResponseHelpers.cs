@@ -6,7 +6,6 @@ namespace OrganisationRegistry.UnitTests.Magda
     using System.Reflection;
     using System.Security.Principal;
     using System.Threading.Tasks;
-    using Api.Configuration;
     using Api.Kbo;
     using Autofac.Features.OwnedInstances;
     using Autofac.Util;

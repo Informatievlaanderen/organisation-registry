@@ -3,7 +3,6 @@ namespace OrganisationRegistry.Api.IntegrationTests
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Configuration;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Infrastructure.Configuration;
