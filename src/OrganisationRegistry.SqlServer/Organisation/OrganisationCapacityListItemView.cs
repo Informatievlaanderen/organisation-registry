@@ -223,11 +223,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var capacities = context.OrganisationCapacityList.Where(item =>
-                    message.Body.FieldsToTerminate.CapacitiesToTerminate.Keys.Contains(item.OrganisationCapacityId));
+                    message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
 
                 foreach (var capacity in capacities)
                 {
-                    capacity.ValidTo = message.Body.FieldsToTerminate.CapacitiesToTerminate[capacity.OrganisationCapacityId];
+                    capacity.ValidTo = message.Body.FieldsToTerminate.Capacities[capacity.OrganisationCapacityId];
                 }
 
                 await context.SaveChangesAsync();

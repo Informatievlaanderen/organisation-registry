@@ -51,24 +51,24 @@ namespace OrganisationRegistry.Organisation.Events
                 state.OvoNumber,
                 dateOfTermination,
                 new FieldsToTerminate(
-                    organisationTermination.OrganisationNewValidTo,
-                    organisationTermination.Buildings,
-                    organisationTermination.BankAccounts,
-                    organisationTermination.Capacities,
-                    organisationTermination.Contacts,
-                    organisationTermination.Classifications,
-                    organisationTermination.Functions,
-                    organisationTermination.Labels,
-                    organisationTermination.Locations,
-                    organisationTermination.Parents,
-                    organisationTermination.Relations,
-                    organisationTermination.FormalFrameworks,
-                    organisationTermination.OpeningHours),
+                    organisationValidity: organisationTermination.OrganisationNewValidTo,
+                    buildings: organisationTermination.Buildings,
+                    bankAccounts: organisationTermination.BankAccounts,
+                    capacities: organisationTermination.Capacities,
+                    contacts: organisationTermination.Contacts,
+                    classifications: organisationTermination.Classifications,
+                    functions: organisationTermination.Functions,
+                    labels: organisationTermination.Labels,
+                    locations: organisationTermination.Locations,
+                    parents: organisationTermination.Parents,
+                    relations: organisationTermination.Relations,
+                    formalFrameworks: organisationTermination.FormalFrameworks,
+                    openingHours: organisationTermination.OpeningHours),
                 new KboFieldsToTerminate(
-                    organisationTerminationKboSummary.KboBankAccounts,
-                    organisationTerminationKboSummary.KboRegisteredOfficeLocation,
-                    organisationTerminationKboSummary.KboFormalNameLabel,
-                    organisationTerminationKboSummary.KboLegalForm
+                    bankAccounts: organisationTerminationKboSummary.KboBankAccounts,
+                    registeredOffice: organisationTerminationKboSummary.KboRegisteredOfficeLocation,
+                    formalName: organisationTerminationKboSummary.KboFormalNameLabel,
+                    legalForm: organisationTerminationKboSummary.KboLegalForm
                 ),
                 forceKboTermination,
                 kboState.TerminationInKbo?.Date);
@@ -77,66 +77,66 @@ namespace OrganisationRegistry.Organisation.Events
 
     public class FieldsToTerminate
     {
-        public FieldsToTerminate(DateTime? organisationNewValidTo,
-            Dictionary<Guid, DateTime> buildingsToTerminate,
-            Dictionary<Guid, DateTime> bankAccountsToTerminate,
-            Dictionary<Guid, DateTime> capacitiesToTerminate,
-            Dictionary<Guid, DateTime> contactsToTerminate,
-            Dictionary<Guid, DateTime> classificationsToTerminate,
-            Dictionary<Guid, DateTime> functionsToTerminate,
-            Dictionary<Guid, DateTime> labelsToTerminate,
-            Dictionary<Guid, DateTime> locationsToTerminate,
-            Dictionary<Guid, DateTime> parentsToTerminate,
-            Dictionary<Guid, DateTime> relationsToTerminate,
-            Dictionary<Guid, DateTime> formalFrameworksToTerminate,
-            Dictionary<Guid, DateTime> openingHoursToTerminate)
+        public FieldsToTerminate(DateTime? organisationValidity,
+            Dictionary<Guid, DateTime> buildings,
+            Dictionary<Guid, DateTime> bankAccounts,
+            Dictionary<Guid, DateTime> capacities,
+            Dictionary<Guid, DateTime> contacts,
+            Dictionary<Guid, DateTime> classifications,
+            Dictionary<Guid, DateTime> functions,
+            Dictionary<Guid, DateTime> labels,
+            Dictionary<Guid, DateTime> locations,
+            Dictionary<Guid, DateTime> parents,
+            Dictionary<Guid, DateTime> relations,
+            Dictionary<Guid, DateTime> formalFrameworks,
+            Dictionary<Guid, DateTime> openingHours)
         {
-            OrganisationNewValidTo = organisationNewValidTo;
-            BuildingsToTerminate = buildingsToTerminate;
-            BankAccountsToTerminate = bankAccountsToTerminate;
-            CapacitiesToTerminate = capacitiesToTerminate;
-            ContactsToTerminate = contactsToTerminate;
-            ClassificationsToTerminate = classificationsToTerminate;
-            FunctionsToTerminate = functionsToTerminate;
-            LabelsToTerminate = labelsToTerminate;
-            LocationsToTerminate = locationsToTerminate;
-            ParentsToTerminate = parentsToTerminate;
-            RelationsToTerminate = relationsToTerminate;
-            FormalFrameworksToTerminate = formalFrameworksToTerminate;
-            OpeningHoursToTerminate = openingHoursToTerminate;
+            OrganisationValidity = organisationValidity;
+            Buildings = buildings;
+            BankAccounts = bankAccounts;
+            Capacities = capacities;
+            Contacts = contacts;
+            Classifications = classifications;
+            Functions = functions;
+            Labels = labels;
+            Locations = locations;
+            Parents = parents;
+            Relations = relations;
+            FormalFrameworks = formalFrameworks;
+            OpeningHours = openingHours;
         }
 
-        public DateTime? OrganisationNewValidTo { get; }
-        public Dictionary<Guid, DateTime> BuildingsToTerminate { get; }
-        public Dictionary<Guid, DateTime> BankAccountsToTerminate { get; }
-        public Dictionary<Guid, DateTime> CapacitiesToTerminate { get; }
-        public Dictionary<Guid, DateTime> ContactsToTerminate { get; }
-        public Dictionary<Guid, DateTime> ClassificationsToTerminate { get; }
-        public Dictionary<Guid, DateTime> FunctionsToTerminate { get; }
-        public Dictionary<Guid, DateTime> LabelsToTerminate { get; }
-        public Dictionary<Guid, DateTime> LocationsToTerminate { get; }
-        public Dictionary<Guid, DateTime> ParentsToTerminate { get; }
-        public Dictionary<Guid, DateTime> RelationsToTerminate { get; }
-        public Dictionary<Guid, DateTime> FormalFrameworksToTerminate { get; }
-        public Dictionary<Guid, DateTime> OpeningHoursToTerminate { get; }
+        public DateTime? OrganisationValidity { get; }
+        public Dictionary<Guid, DateTime> Buildings { get; }
+        public Dictionary<Guid, DateTime> BankAccounts { get; }
+        public Dictionary<Guid, DateTime> Capacities { get; }
+        public Dictionary<Guid, DateTime> Contacts { get; }
+        public Dictionary<Guid, DateTime> Classifications { get; }
+        public Dictionary<Guid, DateTime> Functions { get; }
+        public Dictionary<Guid, DateTime> Labels { get; }
+        public Dictionary<Guid, DateTime> Locations { get; }
+        public Dictionary<Guid, DateTime> Parents { get; }
+        public Dictionary<Guid, DateTime> Relations { get; }
+        public Dictionary<Guid, DateTime> FormalFrameworks { get; }
+        public Dictionary<Guid, DateTime> OpeningHours { get; }
     }
 
     public class KboFieldsToTerminate
     {
-        public KboFieldsToTerminate(Dictionary<Guid, DateTime> kboBankAccountsToTerminate,
-            KeyValuePair<Guid, DateTime>? kboRegisteredOfficeToTerminate,
-            KeyValuePair<Guid, DateTime>? kboFormalNameToTerminate,
-            KeyValuePair<Guid, DateTime>? kboLegalFormToTerminate)
+        public KboFieldsToTerminate(Dictionary<Guid, DateTime> bankAccounts,
+            KeyValuePair<Guid, DateTime>? registeredOffice,
+            KeyValuePair<Guid, DateTime>? formalName,
+            KeyValuePair<Guid, DateTime>? legalForm)
         {
-            KboBankAccountsToTerminate = kboBankAccountsToTerminate;
-            KboRegisteredOfficeToTerminate = kboRegisteredOfficeToTerminate;
-            KboFormalNameToTerminate = kboFormalNameToTerminate;
-            KboLegalFormToTerminate = kboLegalFormToTerminate;
+            BankAccounts = bankAccounts;
+            RegisteredOffice = registeredOffice;
+            FormalName = formalName;
+            LegalForm = legalForm;
         }
 
-        public Dictionary<Guid, DateTime> KboBankAccountsToTerminate { get; }
-        public KeyValuePair<Guid, DateTime>? KboRegisteredOfficeToTerminate { get; }
-        public KeyValuePair<Guid, DateTime>? KboFormalNameToTerminate { get; }
-        public KeyValuePair<Guid, DateTime>? KboLegalFormToTerminate { get; }
+        public Dictionary<Guid, DateTime> BankAccounts { get; }
+        public KeyValuePair<Guid, DateTime>? RegisteredOffice { get; }
+        public KeyValuePair<Guid, DateTime>? FormalName { get; }
+        public KeyValuePair<Guid, DateTime>? LegalForm { get; }
     }
 }

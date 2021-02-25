@@ -214,19 +214,19 @@ namespace OrganisationRegistry.SqlServer.Organisation
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var organisationBankAccountListItems =
-                    context.OrganisationBankAccountList.Where(item => message.Body.FieldsToTerminate.BankAccountsToTerminate.Keys.Contains(item.OrganisationBankAccountId));
+                    context.OrganisationBankAccountList.Where(item => message.Body.FieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
 
                 foreach (var bankAccount in organisationBankAccountListItems)
                 {
-                    bankAccount.ValidTo = message.Body.FieldsToTerminate.BankAccountsToTerminate[bankAccount.OrganisationBankAccountId];
+                    bankAccount.ValidTo = message.Body.FieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
                 }
 
                 var kboOrganisationBankAccountListItems =
-                    context.OrganisationBankAccountList.Where(item => message.Body.KboFieldsToTerminate.KboBankAccountsToTerminate.Keys.Contains(item.OrganisationBankAccountId));
+                    context.OrganisationBankAccountList.Where(item => message.Body.KboFieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
 
                 foreach (var bankAccount in kboOrganisationBankAccountListItems)
                 {
-                    bankAccount.ValidTo = message.Body.KboFieldsToTerminate.KboBankAccountsToTerminate[bankAccount.OrganisationBankAccountId];
+                    bankAccount.ValidTo = message.Body.KboFieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
                 }
 
                 await context.SaveChangesAsync();

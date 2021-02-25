@@ -2277,7 +2277,7 @@ namespace OrganisationRegistry.Organisation
             _dateOfTermination = @event.DateOfTermination;
             State.Validity = new Period(State.Validity.Start, new ValidTo(@event.DateOfTermination));
 
-            foreach (var (key, value) in @event.FieldsToTerminate.BuildingsToTerminate)
+            foreach (var (key, value) in @event.FieldsToTerminate.Buildings)
             {
                 var building = State.OrganisationBuildings
                     .Single(organisationBuilding => organisationBuilding.OrganisationBuildingId == key);
@@ -2286,7 +2286,7 @@ namespace OrganisationRegistry.Organisation
                 State.OrganisationBuildings.Add(building.WithValidTo(new ValidTo(value)));
             }
 
-            foreach (var (key, value) in @event.FieldsToTerminate.LocationsToTerminate)
+            foreach (var (key, value) in @event.FieldsToTerminate.Locations)
             {
                 var location = State.OrganisationLocations
                     .Single(organisationLocation => organisationLocation.OrganisationLocationId == key);
@@ -2295,7 +2295,7 @@ namespace OrganisationRegistry.Organisation
                 State.OrganisationLocations.Add(location.WithValidTo(new ValidTo(value)));
             }
 
-            foreach (var (key, value) in @event.FieldsToTerminate.CapacitiesToTerminate)
+            foreach (var (key, value) in @event.FieldsToTerminate.Capacities)
             {
                 var capacity = State.OrganisationCapacities
                     .Single(organisationCapacity => organisationCapacity.OrganisationCapacityId == key);
@@ -2304,7 +2304,7 @@ namespace OrganisationRegistry.Organisation
                 State.OrganisationCapacities.Add(capacity.WithValidTo(new ValidTo(value)));
             }
 
-            foreach (var (key, value) in @event.FieldsToTerminate.ClassificationsToTerminate)
+            foreach (var (key, value) in @event.FieldsToTerminate.Classifications)
             {
                 var classification = State.OrganisationOrganisationClassifications
                     .Single(organisationClassification => organisationClassification.OrganisationOrganisationClassificationId == key);
@@ -2316,7 +2316,7 @@ kboFormalNameToTerminate:
 kboLegalFormToTerminate:             State.OrganisationOrganisationClassifications.Add(classification.WithValidTo(new ValidTo(value)));
             }
 
-            foreach (var (key, value) in @event.FieldsToTerminate.ContactsToTerminate)
+            foreach (var (key, value) in @event.FieldsToTerminate.Contacts)
             {
                 var contact = State.OrganisationContacts
                     .Single(organisationContact => organisationContact.OrganisationContactId == key);
@@ -2325,7 +2325,7 @@ kboLegalFormToTerminate:             State.OrganisationOrganisationClassificatio
                 State.OrganisationContacts.Add(contact.WithValidTo(new ValidTo(value)));
             }
 
-            foreach (var (key, value) in @event.FieldsToTerminate.FunctionsToTerminate)
+            foreach (var (key, value) in @event.FieldsToTerminate.Functions)
             {
                 var function = State.OrganisationFunctionTypes
                     .Single(organisationFunction => organisationFunction.OrganisationFunctionId == key);
@@ -2334,7 +2334,7 @@ kboLegalFormToTerminate:             State.OrganisationOrganisationClassificatio
                 State.OrganisationFunctionTypes.Add(function.WithValidTo(new ValidTo(value)));
             }
 
-            foreach (var (key, value) in @event.FieldsToTerminate.LabelsToTerminate)
+            foreach (var (key, value) in @event.FieldsToTerminate.Labels)
             {
                 var label = State.OrganisationLabels
                     .Single(organisationLabel => organisationLabel.OrganisationLabelId == key);
@@ -2343,7 +2343,7 @@ kboLegalFormToTerminate:             State.OrganisationOrganisationClassificatio
                 State.OrganisationLabels.Add(label.WithValidTo(new ValidTo(value)));
             }
 
-            foreach (var (key, value) in @event.FieldsToTerminate.ParentsToTerminate)
+            foreach (var (key, value) in @event.FieldsToTerminate.Parents)
             {
                 var parent = State.OrganisationParents
                     .Single(organisationParent => organisationParent.OrganisationOrganisationParentId == key);
@@ -2352,7 +2352,7 @@ kboLegalFormToTerminate:             State.OrganisationOrganisationClassificatio
                 State.OrganisationParents.Add(parent.WithValidTo(new ValidTo(value)));
             }
 
-            foreach (var (key, value) in @event.FieldsToTerminate.RelationsToTerminate)
+            foreach (var (key, value) in @event.FieldsToTerminate.Relations)
             {
                 var relation = State.OrganisationRelations
                     .Single(organisationRelation => organisationRelation.OrganisationRelationId == key);
@@ -2361,7 +2361,7 @@ kboLegalFormToTerminate:             State.OrganisationOrganisationClassificatio
                 State.OrganisationRelations.Add(relation.WithValidTo(new ValidTo(value)));
             }
 
-            foreach (var (key, value) in @event.FieldsToTerminate.BankAccountsToTerminate)
+            foreach (var (key, value) in @event.FieldsToTerminate.BankAccounts)
             {
                 var bankAccount = State.OrganisationBankAccounts
                     .Single(organisationBankAccount => organisationBankAccount.OrganisationBankAccountId == key);
@@ -2370,7 +2370,7 @@ kboLegalFormToTerminate:             State.OrganisationOrganisationClassificatio
                 State.OrganisationBankAccounts.Add(bankAccount.WithValidTo(new ValidTo(value)));
             }
 
-            foreach (var (key, value) in @event.FieldsToTerminate.FormalFrameworksToTerminate)
+            foreach (var (key, value) in @event.FieldsToTerminate.FormalFrameworks)
             {
                 var formalFramework = State.OrganisationFormalFrameworks
                     .Single(organisationFormalFramework => organisationFormalFramework.OrganisationFormalFrameworkId == key);
@@ -2379,7 +2379,7 @@ kboLegalFormToTerminate:             State.OrganisationOrganisationClassificatio
                 State.OrganisationFormalFrameworks.Add(formalFramework.WithValidTo(new ValidTo(value)));
             }
 
-            foreach (var (key, value) in @event.FieldsToTerminate.OpeningHoursToTerminate)
+            foreach (var (key, value) in @event.FieldsToTerminate.OpeningHours)
             {
                 var openingHour = State.OrganisationOpeningHours
                     .Single(organisationOpeningHour => organisationOpeningHour.OrganisationOpeningHourId == key);
@@ -2388,7 +2388,7 @@ kboLegalFormToTerminate:             State.OrganisationOrganisationClassificatio
                 State.OrganisationOpeningHours.Add(openingHour.WithValidTo(new ValidTo(value)));
             }
 
-            foreach (var (key, value) in @event.KboFieldsToTerminate.KboBankAccountsToTerminate)
+            foreach (var (key, value) in @event.KboFieldsToTerminate.BankAccounts)
             {
                 var bankAccount = KboState.KboBankAccounts
                     .Single(organisationBankAccount => organisationBankAccount.OrganisationBankAccountId == key);
@@ -2397,15 +2397,15 @@ kboLegalFormToTerminate:             State.OrganisationOrganisationClassificatio
                 KboState.KboBankAccounts.Add(bankAccount.WithValidTo(new ValidTo(value)));
             }
 
-            if (@event.KboFieldsToTerminate.KboFormalNameToTerminate.HasValue)
-                KboState.KboFormalNameLabel = KboState.KboFormalNameLabel!.WithValidTo(new ValidTo(@event.KboFieldsToTerminate.KboFormalNameToTerminate.Value.Value));
+            if (@event.KboFieldsToTerminate.FormalName.HasValue)
+                KboState.KboFormalNameLabel = KboState.KboFormalNameLabel!.WithValidTo(new ValidTo(@event.KboFieldsToTerminate.FormalName.Value.Value));
 
-            if (@event.KboFieldsToTerminate.KboRegisteredOfficeToTerminate.HasValue)
-                KboState.KboRegisteredOffice = KboState.KboRegisteredOffice!.WithValidTo(new ValidTo(@event.KboFieldsToTerminate.KboRegisteredOfficeToTerminate.Value.Value));
+            if (@event.KboFieldsToTerminate.RegisteredOffice.HasValue)
+                KboState.KboRegisteredOffice = KboState.KboRegisteredOffice!.WithValidTo(new ValidTo(@event.KboFieldsToTerminate.RegisteredOffice.Value.Value));
 
-            if (@event.KboFieldsToTerminate.KboLegalFormToTerminate.HasValue)
+            if (@event.KboFieldsToTerminate.LegalForm.HasValue)
                 KboState.KboLegalFormOrganisationClassification =
-                    KboState.KboLegalFormOrganisationClassification!.WithValidTo(new ValidTo(@event.KboFieldsToTerminate.KboLegalFormToTerminate.Value.Value));
+                    KboState.KboLegalFormOrganisationClassification!.WithValidTo(new ValidTo(@event.KboFieldsToTerminate.LegalForm.Value.Value));
 
             // TODO: should we clear it if it's not forced as well? Does this code above and below make sense?
 

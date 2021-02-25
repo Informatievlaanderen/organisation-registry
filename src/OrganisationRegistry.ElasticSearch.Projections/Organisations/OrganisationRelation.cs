@@ -179,7 +179,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             organisationDocument.ChangeId = message.Number;
             organisationDocument.ChangeTime = message.Timestamp;
 
-            foreach (var (key, value) in message.Body.FieldsToTerminate.RelationsToTerminate)
+            foreach (var (key, value) in message.Body.FieldsToTerminate.Relations)
             {
                 var organisationRelation =
                     organisationDocument

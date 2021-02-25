@@ -208,20 +208,20 @@ namespace OrganisationRegistry.SqlServer.Organisation
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var labels = context.OrganisationLabelList.Where(item =>
-                    message.Body.FieldsToTerminate.LabelsToTerminate.Keys.Contains(item.OrganisationLabelId));
+                    message.Body.FieldsToTerminate.Labels.Keys.Contains(item.OrganisationLabelId));
 
                 foreach (var label in labels)
                 {
-                    label.ValidTo = message.Body.FieldsToTerminate.LabelsToTerminate[label.OrganisationLabelId];
+                    label.ValidTo = message.Body.FieldsToTerminate.Labels[label.OrganisationLabelId];
                 }
 
-                if (message.Body.KboFieldsToTerminate.KboFormalNameToTerminate.HasValue)
+                if (message.Body.KboFieldsToTerminate.FormalName.HasValue)
                 {
                     var kboFormalName =
                         await context.OrganisationLabelList.SingleAsync(item =>
-                            message.Body.KboFieldsToTerminate.KboFormalNameToTerminate.Value.Key == item.OrganisationLabelId);
+                            message.Body.KboFieldsToTerminate.FormalName.Value.Key == item.OrganisationLabelId);
 
-                    kboFormalName.ValidTo = message.Body.KboFieldsToTerminate.KboFormalNameToTerminate.Value.Value;
+                    kboFormalName.ValidTo = message.Body.KboFieldsToTerminate.FormalName.Value.Value;
                 }
 
                 await context.SaveChangesAsync();

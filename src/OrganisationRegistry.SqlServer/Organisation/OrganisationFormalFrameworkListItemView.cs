@@ -173,11 +173,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var formalFrameworks = context.OrganisationFormalFrameworkList.Where(item =>
-                    message.Body.FieldsToTerminate.FormalFrameworksToTerminate.Keys.Contains(item.OrganisationFormalFrameworkId));
+                    message.Body.FieldsToTerminate.FormalFrameworks.Keys.Contains(item.OrganisationFormalFrameworkId));
 
                 foreach (var formalFramework in formalFrameworks)
                 {
-                    formalFramework.ValidTo = message.Body.FieldsToTerminate.FormalFrameworksToTerminate[formalFramework.OrganisationFormalFrameworkId];
+                    formalFramework.ValidTo = message.Body.FieldsToTerminate.FormalFrameworks[formalFramework.OrganisationFormalFrameworkId];
                 }
 
                 await context.SaveChangesAsync();

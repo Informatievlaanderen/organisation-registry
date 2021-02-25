@@ -143,11 +143,11 @@
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var buildings = context.OrganisationBuildingList.Where(item =>
-                    message.Body.FieldsToTerminate.BuildingsToTerminate.Keys.Contains(item.OrganisationBuildingId));
+                    message.Body.FieldsToTerminate.Buildings.Keys.Contains(item.OrganisationBuildingId));
 
                 foreach (var building in buildings)
                 {
-                    building.ValidTo = message.Body.FieldsToTerminate.BuildingsToTerminate[building.OrganisationBuildingId];
+                    building.ValidTo = message.Body.FieldsToTerminate.Buildings[building.OrganisationBuildingId];
                 }
 
                 await context.SaveChangesAsync();

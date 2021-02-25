@@ -102,7 +102,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             organisationDocument.ChangeId = message.Number;
             organisationDocument.ChangeTime = message.Timestamp;
 
-            foreach (var (key, value) in message.Body.FieldsToTerminate.BuildingsToTerminate)
+            foreach (var (key, value) in message.Body.FieldsToTerminate.Buildings)
             {
                 var organisationBuilding =
                     organisationDocument

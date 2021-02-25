@@ -825,14 +825,14 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            if (!message.Body.FieldsToTerminate.OrganisationNewValidTo.HasValue)
+            if (!message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
                 return;
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 foreach (var organisationListItem in context.OrganisationList.Where(item => item.OrganisationId == message.Body.OrganisationId))
                 {
-                    organisationListItem.ValidTo = message.Body.FieldsToTerminate.OrganisationNewValidTo;
+                    organisationListItem.ValidTo = message.Body.FieldsToTerminate.OrganisationValidity;
                 }
 
                 await context.SaveChangesAsync();
