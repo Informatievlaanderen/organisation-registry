@@ -208,10 +208,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             organisationDocument.ChangeTime = message.Timestamp;
 
             var classificationsToTerminate =
-                message.Body.ClassificationsToTerminate;
+                message.Body.FieldsToTerminate.ClassificationsToTerminate;
 
-            if (message.Body.KboLegalFormToTerminate.HasValue)
-                classificationsToTerminate.Add(message.Body.KboLegalFormToTerminate.Value.Key, message.Body.KboLegalFormToTerminate.Value.Value);
+            if (message.Body.KboFieldsToTerminate.KboLegalFormToTerminate.HasValue)
+                classificationsToTerminate.Add(message.Body.KboFieldsToTerminate.KboLegalFormToTerminate.Value.Key, message.Body.KboFieldsToTerminate.KboLegalFormToTerminate.Value.Value);
 
             foreach (var (key, value) in classificationsToTerminate)
             {

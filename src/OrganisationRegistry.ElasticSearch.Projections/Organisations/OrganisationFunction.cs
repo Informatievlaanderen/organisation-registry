@@ -114,7 +114,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             organisationDocument.ChangeId = message.Number;
             organisationDocument.ChangeTime = message.Timestamp;
 
-            foreach (var (key, value) in message.Body.FunctionsToTerminate)
+            foreach (var (key, value) in message.Body.FieldsToTerminate.FunctionsToTerminate)
             {
                 var organisationFunction =
                     organisationDocument

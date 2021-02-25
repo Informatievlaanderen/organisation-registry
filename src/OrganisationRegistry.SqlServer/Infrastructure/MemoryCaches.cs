@@ -309,9 +309,9 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationTerminated> message)
         {
-            if (message.Body.OrganisationNewValidTo.HasValue)
+            if (message.Body.FieldsToTerminate.OrganisationNewValidTo.HasValue)
                 _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidTos)
-                    .UpdateMemoryCache(message.Body.OrganisationId, message.Body.OrganisationNewValidTo);
+                    .UpdateMemoryCache(message.Body.OrganisationId, message.Body.FieldsToTerminate.OrganisationNewValidTo);
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationInfoUpdatedFromKbo> message)

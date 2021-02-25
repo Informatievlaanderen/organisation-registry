@@ -105,24 +105,27 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 name: scenario.Create<string>(),
                 ovoNumber: scenario.Create<string>(),
                 dateOfTermination: dateOfTermination,
-                organisationNewValidTo: scenario.Create<DateTime>(),
-                organisationTerminationBuildings: new Dictionary<Guid, DateTime>(),
-                organisationTerminationCapacities: organisationTerminationCapacities,
-                organisationTerminationContacts: new Dictionary<Guid, DateTime>(),
-                organisationTerminationClassifications: new Dictionary<Guid, DateTime>(),
-                organisationTerminationFunctions: new Dictionary<Guid, DateTime>(),
-                organisationTerminationLabels: new Dictionary<Guid, DateTime>(),
-                organisationTerminationLocations: new Dictionary<Guid, DateTime>(),
-                organisationTerminationParents: new Dictionary<Guid, DateTime>(),
-                organisationTerminationRelations: new Dictionary<Guid, DateTime>(),
-                organisationTerminationBankAccounts: new Dictionary<Guid, DateTime>(),
-                organisationTerminationFormalFrameworks: new Dictionary<Guid, DateTime>(),
-                organisationTerminationOpeningHours: new Dictionary<Guid, DateTime>(),
-                forcedKboTermination: scenario.Create<bool>(),
-                kboBankAccounts: new Dictionary<Guid, DateTime>(),
-                kboRegisteredOfficeToTerminate: null,
-                kboFormalNameToTerminate: null,
-                kboLegalFormToTerminate: null
+                new FieldsToTerminate(
+                    organisationNewValidTo: scenario.Create<DateTime>(),
+                    buildingsToTerminate: new Dictionary<Guid, DateTime>(),
+                    bankAccountsToTerminate: organisationTerminationCapacities,
+                    capacitiesToTerminate: new Dictionary<Guid, DateTime>(),
+                    contactsToTerminate: new Dictionary<Guid, DateTime>(),
+                    classificationsToTerminate: new Dictionary<Guid, DateTime>(),
+                    functionsToTerminate: new Dictionary<Guid, DateTime>(),
+                    labelsToTerminate: new Dictionary<Guid, DateTime>(),
+                    locationsToTerminate: new Dictionary<Guid, DateTime>(),
+                    parentsToTerminate: new Dictionary<Guid, DateTime>(),
+                    relationsToTerminate: new Dictionary<Guid, DateTime>(),
+                    formalFrameworksToTerminate: new Dictionary<Guid, DateTime>(),
+                    openingHoursToTerminate: new Dictionary<Guid, DateTime>()),
+                new KboFieldsToTerminate(
+                    kboBankAccountsToTerminate: new Dictionary<Guid, DateTime>(),
+                    kboRegisteredOfficeToTerminate: null,
+                    kboFormalNameToTerminate: null,
+                    kboLegalFormToTerminate: null
+                ),
+                forcedKboTermination: scenario.Create<bool>()
             );
 
             Handle(

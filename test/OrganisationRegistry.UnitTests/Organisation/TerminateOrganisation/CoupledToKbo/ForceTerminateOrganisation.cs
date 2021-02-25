@@ -105,27 +105,27 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.Coup
             organisationTerminated.Should().NotBeNull();
 
             organisationTerminated.OrganisationId.Should().Be((Guid) _organisationId);
-            organisationTerminated.OrganisationNewValidTo.Should().Be(_dateOfTermination);
+            organisationTerminated.FieldsToTerminate.OrganisationNewValidTo.Should().Be(_dateOfTermination);
             organisationTerminated.OvoNumber.Should().Be("OVO001234");
-            organisationTerminated.BuildingsToTerminate.Should().BeEmpty();
-            organisationTerminated.CapacitiesToTerminate.Should().BeEmpty();
-            organisationTerminated.ClassificationsToTerminate.Should().BeEmpty();
-            organisationTerminated.ContactsToTerminate.Should().BeEmpty();
+            organisationTerminated.FieldsToTerminate.BuildingsToTerminate.Should().BeEmpty();
+            organisationTerminated.FieldsToTerminate.CapacitiesToTerminate.Should().BeEmpty();
+            organisationTerminated.FieldsToTerminate.ClassificationsToTerminate.Should().BeEmpty();
+            organisationTerminated.FieldsToTerminate.ContactsToTerminate.Should().BeEmpty();
             organisationTerminated.DateOfTermination.Should().Be(_dateOfTermination);
-            organisationTerminated.FunctionsToTerminate.Should().BeEmpty();
-            organisationTerminated.LabelsToTerminate.Should().BeEmpty();
-            organisationTerminated.LocationsToTerminate.Should().BeEmpty();
-            organisationTerminated.ParentsToTerminate.Should().BeEmpty();
-            organisationTerminated.RelationsToTerminate.Should().BeEmpty();
-            organisationTerminated.BankAccountsToTerminate.Should().BeEmpty();
-            organisationTerminated.FormalFrameworksToTerminate.Should().BeEmpty();
-            organisationTerminated.OpeningHoursToTerminate.Should().BeEmpty();
+            organisationTerminated.FieldsToTerminate.FunctionsToTerminate.Should().BeEmpty();
+            organisationTerminated.FieldsToTerminate.LabelsToTerminate.Should().BeEmpty();
+            organisationTerminated.FieldsToTerminate.LocationsToTerminate.Should().BeEmpty();
+            organisationTerminated.FieldsToTerminate.ParentsToTerminate.Should().BeEmpty();
+            organisationTerminated.FieldsToTerminate.RelationsToTerminate.Should().BeEmpty();
+            organisationTerminated.FieldsToTerminate.BankAccountsToTerminate.Should().BeEmpty();
+            organisationTerminated.FieldsToTerminate.FormalFrameworksToTerminate.Should().BeEmpty();
+            organisationTerminated.FieldsToTerminate.OpeningHoursToTerminate.Should().BeEmpty();
 
             organisationTerminated.ForcedKboTermination.Should().BeTrue();
-            organisationTerminated.KboBankAccountsToTerminate.Should().HaveCount(1);
-            organisationTerminated.KboFormalNameToTerminate.Should().NotBeNull();
-            organisationTerminated.KboLegalFormToTerminate.Should().BeNull();
-            organisationTerminated.KboRegisteredOfficeToTerminate.Should().BeNull();
+            organisationTerminated.KboFieldsToTerminate.KboBankAccountsToTerminate.Should().HaveCount(1);
+            organisationTerminated.KboFieldsToTerminate.KboFormalNameToTerminate.Should().NotBeNull();
+            organisationTerminated.KboFieldsToTerminate.KboLegalFormToTerminate.Should().BeNull();
+            organisationTerminated.KboFieldsToTerminate.KboRegisteredOfficeToTerminate.Should().BeNull();
             organisationTerminated.DateOfTerminationAccordingToKbo.Should().BeNull();
         }
 
