@@ -419,8 +419,8 @@ namespace OrganisationRegistry.UnitTests
                     });
         }
 
-                [Fact]
-        public void OverwritesFieldsWhenValiditySpansOverEndOfNextYear() // todo: title
+        [Fact]
+        public void OverwritesFieldsWhenValiditySpansOverEndOfNextYear()
         {
             var fixture = new Fixture();
 
