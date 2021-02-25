@@ -2,25 +2,20 @@ namespace OrganisationRegistry.UnitTests
 {
     using System;
     using System.Security.Claims;
-    using Api.Configuration;
     using Api.Task;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
     using Microsoft.Extensions.Options;
     using Moq;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Domain.Exception;
-    using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-    using Serilog;
     using SqlServer.Infrastructure;
     using SqlServer.KboSyncQueue;
     using SqlServer.Organisation;
     using Xunit;
-    using ILogger = Serilog.ILogger;
 
     public class KboSyncTests
     {

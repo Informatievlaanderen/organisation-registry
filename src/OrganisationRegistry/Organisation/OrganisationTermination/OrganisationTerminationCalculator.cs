@@ -64,7 +64,6 @@ namespace OrganisationRegistry.Organisation.OrganisationTermination
                 .ToDictionary(
                     x => x.Id,
                     _ => dateOfTermination);
-
         }
 
         private static Dictionary<Guid, DateTime> FieldsToTerminateWithEndOfNextYear<T>(

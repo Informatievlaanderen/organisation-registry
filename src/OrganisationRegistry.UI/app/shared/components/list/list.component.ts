@@ -1,6 +1,6 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter } from '@angular/core';
 
-import { PagedResult, PagedEvent, SortOrder } from './../../../core/pagination';
+import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
 
 @Component({
   inputs: ['items', 'isBusy'],

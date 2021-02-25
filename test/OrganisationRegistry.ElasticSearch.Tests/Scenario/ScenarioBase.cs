@@ -4,7 +4,6 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario
     using AutoFixture;
     using AutoFixture.Kernel;
     using Projections.Infrastructure;
-    using Specimen;
 
     public class ScenarioBase<T>
     {

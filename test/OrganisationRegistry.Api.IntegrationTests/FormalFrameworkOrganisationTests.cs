@@ -2,7 +2,6 @@ namespace OrganisationRegistry.Api.IntegrationTests
 {
     using System;
     using System.Collections.Generic;
-    using Configuration;
     using ElasticSearch.Common;
     using ElasticSearch.Organisations;
     using FluentAssertions;

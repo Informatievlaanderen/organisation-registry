@@ -3,7 +3,6 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using System;
     using System.IO;
     using System.Reflection;
-    using Autofac.Features.OwnedInstances;
     using Client;
     using Configuration;
     using Microsoft.EntityFrameworkCore;

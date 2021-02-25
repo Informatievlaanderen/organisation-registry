@@ -61,7 +61,6 @@ export class OrganisationInfoService {
   }
 
   loadOrganisation(id: string) {
-    console.log('Loading organisation');
     this.organisationService.get(id)
       .subscribe(
         item => {
