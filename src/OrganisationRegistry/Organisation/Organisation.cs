@@ -2385,26 +2385,10 @@ namespace OrganisationRegistry.Organisation
                 State.OrganisationOpeningHours.Add(openingHour.WithValidTo(new ValidTo(value)));
             }
 
-            foreach (var (key, value) in @event.KboFieldsToTerminate.BankAccounts)
-            {
-                var bankAccount = KboState.KboBankAccounts
-                    .Single(organisationBankAccount => organisationBankAccount.OrganisationBankAccountId == key);
-
-                KboState.KboBankAccounts.Remove(bankAccount);
-                KboState.KboBankAccounts.Add(bankAccount.WithValidTo(new ValidTo(value)));
-            }
-
-            if (@event.KboFieldsToTerminate.FormalName.HasValue)
-                KboState.KboFormalNameLabel = KboState.KboFormalNameLabel!.WithValidTo(new ValidTo(@event.KboFieldsToTerminate.FormalName.Value.Value));
-
-            if (@event.KboFieldsToTerminate.RegisteredOffice.HasValue)
-                KboState.KboRegisteredOffice = KboState.KboRegisteredOffice!.WithValidTo(new ValidTo(@event.KboFieldsToTerminate.RegisteredOffice.Value.Value));
-
-            if (@event.KboFieldsToTerminate.LegalForm.HasValue)
-                KboState.KboLegalFormOrganisationClassification =
-                    KboState.KboLegalFormOrganisationClassification!.WithValidTo(new ValidTo(@event.KboFieldsToTerminate.LegalForm.Value.Value));
-
-            // TODO: should we clear it if it's not forced as well? Does this code above and below make sense?
+            // We don't need to clear KBO state here if !ForcedKboTermination.
+            // If the organisation is terminated according to KBO,
+            // SyncKboTermination() will take care of clearing the KBO state by
+            // publishing a OrganisationTerminationSyncedWithKbo event.
 
             if (@event.ForcedKboTermination)
             {
