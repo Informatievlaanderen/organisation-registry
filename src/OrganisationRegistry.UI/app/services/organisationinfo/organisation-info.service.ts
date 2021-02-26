@@ -1,16 +1,16 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 
-import { Organisation, OrganisationService, OrganisationChild } from 'services/organisations';
+import {Organisation, OrganisationChild, OrganisationService} from 'services/organisations';
 
-import { AlertBuilder, AlertService, Alert, AlertType } from 'core/alert';
-import { PagedEvent, PagedResult, SortOrder } from 'core/pagination';
-import { BaseAlertMessages } from 'core/alertmessages';
-import {OidcService} from "core/auth";
-import {ReplaySubject} from "rxjs";
+import {AlertBuilder, AlertService} from 'core/alert';
+import {PagedEvent, PagedResult, SortOrder} from 'core/pagination';
+import {BaseAlertMessages} from 'core/alertmessages';
+import {OidcService, Role} from "core/auth";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {combineLatest} from "rxjs/observable/combineLatest";
 
 @Injectable()
 export class OrganisationInfoService {
@@ -42,10 +42,12 @@ export class OrganisationInfoService {
     this.isEditableChangedSource = new BehaviorSubject<boolean>(false);
     this.isEditableChanged$ = this.isEditableChangedSource.asObservable();
 
-    this.organisationChanged$.subscribe(value =>
-    {
-      this.isEditableChangedSource.next( !value.isTerminated);
-    });
+    combineLatest(this.organisationChanged$, oidcService.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+      .subscribe(combined => {
+        const isTerminated = combined[0].isTerminated;
+        const isOrganisationRegistryBeheerder = combined[1];
+        this.isEditableChangedSource.next(!isTerminated || isOrganisationRegistryBeheerder);
+      });
   }
 
   get organisationChanged() {
