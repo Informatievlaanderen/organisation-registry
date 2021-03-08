@@ -3,7 +3,10 @@ namespace OrganisationRegistry.Infrastructure.Bus
     using System;
     using System.Collections.Generic;
     using System.Data.Common;
+    using System.Linq;
+    using System.Security.Claims;
     using System.Threading.Tasks;
+    using Authorization;
     using Commands;
     using Events;
     using Messages;
@@ -13,13 +16,15 @@ namespace OrganisationRegistry.Infrastructure.Bus
     public class InProcessBus : ICommandSender, IEventPublisher, IHandlerRegistrar
     {
         private readonly ILogger<InProcessBus> _logger;
+        private readonly ISecurityService _securityService;
         private readonly Dictionary<Type, List<Func<DbConnection, DbTransaction, IMessage, Task>>> _eventRoutes = new Dictionary<Type, List<Func<DbConnection, DbTransaction, IMessage, Task>>>();
         private readonly Dictionary<Type, List<Func<IMessage, Task<List<ICommand>>>>> _reactionRoutes = new Dictionary<Type, List<Func<IMessage, Task<List<ICommand>>>>>();
         private readonly Dictionary<Type, List<Func<IMessage, Task>>> _commandRoutes = new Dictionary<Type, List<Func<IMessage, Task>>>();
 
-        public InProcessBus(ILogger<InProcessBus> logger)
+        public InProcessBus(ILogger<InProcessBus> logger, ISecurityService securityService)
         {
             _logger = logger;
+            _securityService = securityService;
             _logger.LogTrace("Creating InProcessBus.");
         }
 
@@ -64,6 +69,11 @@ namespace OrganisationRegistry.Infrastructure.Bus
                 {
                     _logger.LogCritical("Tried to send command {@Command} but got {NumberOfCommandHandlers} handlers.", command, handlers.Count);
                     throw new InvalidOperationException("Cannot send to more than one handler.");
+                }
+
+                if (command.User == null)
+                {
+                    command.User = _securityService.GetUser(ClaimsPrincipal.Current);
                 }
 
                 _logger.LogDebug("Sending command {@Command}", command);

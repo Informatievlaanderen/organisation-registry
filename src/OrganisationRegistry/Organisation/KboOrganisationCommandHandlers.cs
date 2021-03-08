@@ -6,6 +6,7 @@ namespace OrganisationRegistry.Organisation
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Commands;
+    using Infrastructure.Authorization;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using LabelType;
@@ -141,6 +142,7 @@ namespace OrganisationRegistry.Organisation
             var location = GetOrAddLocations(kboOrganisation.Address);
 
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
 
             organisation.CoupleToKbo(message.KboNumber, _dateTimeProvider);
 
@@ -165,7 +167,7 @@ namespace OrganisationRegistry.Organisation
             await SyncWithKbo(message.OrganisationId, message.User, message.KboSyncItemId);
         }
 
-        private async Task SyncWithKbo(OrganisationId organisationId, ClaimsPrincipal user, Guid? kboSyncItemId)
+        private async Task SyncWithKbo(OrganisationId organisationId, IUser user, Guid? kboSyncItemId)
         {
             var registeredOfficeLocationType =
                 Session.Get<LocationType>(_organisationRegistryConfiguration.KboV2RegisteredOfficeLocationTypeId);

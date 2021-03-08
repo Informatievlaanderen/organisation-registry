@@ -4,7 +4,6 @@ namespace OrganisationRegistry.Api.Kbo
     using System.IO;
     using System.Linq;
     using System.Net.Http;
-    using System.Security.Claims;
     using System.Security.Cryptography;
     using System.Security.Cryptography.X509Certificates;
     using System.Security.Cryptography.Xml;
@@ -20,12 +19,13 @@ namespace OrganisationRegistry.Api.Kbo
     using Magda.Requests;
     using Magda.Responses;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using SqlServer.Infrastructure;
     using SqlServer.Magda;
 
     public interface IRegistreerInschrijvingCommand
     {
-        Task<Envelope<RegistreerInschrijvingResponseBody>> Execute(ClaimsPrincipal user, string kboNumber);
+        Task<Envelope<RegistreerInschrijvingResponseBody>> Execute(IUser user, string kboNumber);
     }
 
     public class RegistreerInschrijvingCommand : IRegistreerInschrijvingCommand
@@ -47,7 +47,7 @@ namespace OrganisationRegistry.Api.Kbo
             _logger = logger;
         }
 
-        public async Task<Envelope<RegistreerInschrijvingResponseBody>> Execute(ClaimsPrincipal user, string kboNumber)
+        public async Task<Envelope<RegistreerInschrijvingResponseBody>> Execute(IUser user, string kboNumber)
         {
             using (var organisationRegistryContext = _contextFactory().Value)
             {
@@ -163,15 +163,19 @@ namespace OrganisationRegistry.Api.Kbo
             }
         };
 
-        private static async Task<string> CreateAndStoreReference(OrganisationRegistryContext context, ClaimsPrincipal principal)
+        private static async Task<string> CreateAndStoreReference(OrganisationRegistryContext context, IUser user)
         {
             var magdaCallReference = new MagdaCallReference
             {
                 Reference = Guid.NewGuid(),
                 CalledAt = DateTimeOffset.UtcNow,
-                UserClaims = string.Join(Environment.NewLine, principal.Claims.Select(claim => $"{claim.Type}: {claim.Value}"))
+                UserClaims = $"FirstName: {user.FirstName} | " +
+                             $"LastName: {user.LastName} | " +
+                             $"UserId: {user.UserId} | " +
+                             $"Ip: {user.Ip} | " +
+                             $"Roles: {string.Join(',', user.Roles)}"
             };
-            context.MagdaCallReferences.Add(magdaCallReference);
+            await context.MagdaCallReferences.AddAsync(magdaCallReference);
             await context.SaveChangesAsync();
             return magdaCallReference.Reference.ToString("D");
         }

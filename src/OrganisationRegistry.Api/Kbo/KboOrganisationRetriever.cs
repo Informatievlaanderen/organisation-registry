@@ -8,6 +8,7 @@ namespace OrganisationRegistry.Api.Kbo
     using GeefOnderneming = global::Magda.GeefOnderneming;
     using RegistreerInschrijving = global::Magda.RegistreerInschrijving;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using Responses;
     using OrganisationRegistry.Organisation;
 
@@ -31,7 +32,7 @@ namespace OrganisationRegistry.Api.Kbo
         }
 
         public async Task<Result<IMagdaOrganisationResponse>> RetrieveOrganisation(
-            ClaimsPrincipal user,
+            IUser user,
             KboNumber kboNumber)
         {
             var kboNumberDotLess = kboNumber.ToDigitsOnly();

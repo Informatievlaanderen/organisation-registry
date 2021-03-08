@@ -120,7 +120,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 true,
                 new ValidFrom(),
                 new ValidTo(),
-                null,
                 new KboNumber("BE0123456789"));
         }
 

@@ -14,6 +14,7 @@ namespace OrganisationRegistry.Api.Body
     using Queries;
     using System.Net;
     using Infrastructure.Security;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using Requests;
     using Responses;
     using Security;

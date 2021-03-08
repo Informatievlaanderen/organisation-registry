@@ -9,12 +9,12 @@ namespace OrganisationRegistry.Api.Body
     using Microsoft.EntityFrameworkCore;
     using Queries;
     using Requests;
-    using Security;
     using SqlServer.Body;
     using SqlServer.Infrastructure;
     using System;
     using System.Net;
     using System.Threading.Tasks;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
 
     [ApiVersion("1.0")]

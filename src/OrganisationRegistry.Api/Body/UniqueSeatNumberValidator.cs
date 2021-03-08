@@ -2,7 +2,6 @@ namespace OrganisationRegistry.Api.Body
 {
     using System;
     using System.Linq;
-    using SqlServer.Body;
     using SqlServer.Infrastructure;
 
     public class UniqueSeatNumberValidator : IUniqueSeatNumberValidator

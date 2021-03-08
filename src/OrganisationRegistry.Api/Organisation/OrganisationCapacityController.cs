@@ -15,6 +15,8 @@
     using Queries;
     using System.Net;
     using Infrastructure.Security;
+    using OrganisationRegistry.Infrastructure;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using Responses;
     using Security;
 

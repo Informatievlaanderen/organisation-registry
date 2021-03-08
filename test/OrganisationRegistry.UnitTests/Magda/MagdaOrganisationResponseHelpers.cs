@@ -15,6 +15,7 @@ namespace OrganisationRegistry.UnitTests.Magda
     using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using Newtonsoft.Json;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Magda;
     using SqlServer.Infrastructure;
@@ -96,7 +97,7 @@ namespace OrganisationRegistry.UnitTests.Magda
 
             var envelope = await CreateGeefOndernemingQuery()
                 .Execute(
-                    new GenericPrincipal(new GenericIdentity("magda test"), new string[0]),
+                    Mock.Of<IUser>(),
                     kboNumber);
 
             envelope.Should().NotBeNull();

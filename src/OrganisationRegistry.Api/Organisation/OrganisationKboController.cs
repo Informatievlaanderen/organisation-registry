@@ -39,8 +39,7 @@ namespace OrganisationRegistry.Api.Organisation
             await CommandSender.Send(
                 new CoupleOrganisationToKbo(
                     new OrganisationId(id),
-                    new KboNumber(kboNumber),
-                    User));
+                    new KboNumber(kboNumber)));
 
             return Ok();
         }
@@ -70,7 +69,7 @@ namespace OrganisationRegistry.Api.Organisation
             await CommandSender.Send(
                 new SyncOrganisationWithKbo(
                     new OrganisationId(id),
-                    User, DateTimeOffset.Now,
+                    DateTimeOffset.Now,
                     null));
 
             return Ok();
@@ -85,8 +84,7 @@ namespace OrganisationRegistry.Api.Organisation
         {
             await CommandSender.Send(
                 new SyncOrganisationTerminationWithKbo(
-                    new OrganisationId(id),
-                    User));
+                    new OrganisationId(id)));
 
             return Ok();
         }

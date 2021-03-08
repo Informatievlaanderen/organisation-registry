@@ -208,7 +208,6 @@ namespace OrganisationRegistry.Api.Organisation.Requests
                 message.ShowOnVlaamseOverheidSites,
                 new ValidFrom(message.ValidFrom),
                 new ValidTo(message.ValidTo),
-                user,
                 new KboNumber(message.KboNumber));
         }
     }

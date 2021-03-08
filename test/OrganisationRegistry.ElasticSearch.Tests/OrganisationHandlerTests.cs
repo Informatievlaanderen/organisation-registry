@@ -7,6 +7,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using Scenario;
     using Xunit;
     using System;
+    using Api.Security;
     using Common;
     using Infrastructure.Bus;
     using Infrastructure.Config;
@@ -53,7 +54,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 .AddSingleton(new MemoryCachesMaintainer(new MemoryCaches(testContextFactory), testContextFactory))
                 .BuildServiceProvider();
 
-            _inProcessBus = new InProcessBus(new NullLogger<InProcessBus>());
+            _inProcessBus = new InProcessBus(new NullLogger<InProcessBus>(), new SecurityService(fixture.ContextFactory.Create()));
             var registrar = new BusRegistrar(new NullLogger<BusRegistrar>(), _inProcessBus, () => serviceProvider);
             registrar.RegisterEventHandlers(OrganisationsRunner.EventHandlers);
         }

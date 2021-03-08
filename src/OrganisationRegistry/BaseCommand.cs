@@ -2,6 +2,7 @@ namespace OrganisationRegistry
 {
     using System;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Infrastructure.Authorization;
     using Infrastructure.Commands;
     using Infrastructure.Messages;
 
@@ -16,6 +17,8 @@ namespace OrganisationRegistry
             get => Id;
             set => Id = value;
         }
+
+        public IUser User { get; set; }
     }
 
     public class BaseCommand<T> : BaseCommand where T : GuidValueObject<T>

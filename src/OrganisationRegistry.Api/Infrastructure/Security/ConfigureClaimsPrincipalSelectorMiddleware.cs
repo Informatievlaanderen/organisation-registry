@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Api.Infrastructure.Security
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
+    using OrganisationRegistry.Infrastructure.Authorization;
 
     public class ConfigureClaimsPrincipalSelectorMiddleware
     {
@@ -27,9 +28,8 @@ namespace OrganisationRegistry.Api.Infrastructure.Security
 
                     var ip = context.Request.HttpContext.Connection.RemoteIpAddress;
 
-                    const string urnBeVlaanderenOrganisationRegistryIp = "urn:be:vlaanderen:wegwijs:ip";
-                    if (!user.HasClaim(x => x.Type == urnBeVlaanderenOrganisationRegistryIp))
-                        user.AddClaim(new Claim(urnBeVlaanderenOrganisationRegistryIp, ip.ToString(), ClaimValueTypes.String));
+                    if (!user.HasClaim(x => x.Type == OrganisationRegistryClaims.ClaimIp))
+                        user.AddClaim(new Claim(OrganisationRegistryClaims.ClaimIp, ip.ToString(), ClaimValueTypes.String));
 
                     return authInfo.Principal;
                 }

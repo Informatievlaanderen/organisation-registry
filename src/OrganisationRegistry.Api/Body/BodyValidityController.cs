@@ -8,9 +8,9 @@
     using Microsoft.EntityFrameworkCore;
     using System.Net;
     using Infrastructure.Security;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using Requests;
     using Responses;
-    using Security;
     using SqlServer.Infrastructure;
 
     [ApiVersion("1.0")]

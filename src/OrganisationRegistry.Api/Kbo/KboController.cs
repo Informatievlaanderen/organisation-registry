@@ -7,10 +7,12 @@ namespace OrganisationRegistry.Api.Kbo
     using Microsoft.EntityFrameworkCore;
     using SqlServer.Infrastructure;
     using System.Net;
+    using System.Security.Claims;
     using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Infrastructure.Security;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Organisation;
 
@@ -37,6 +39,7 @@ namespace OrganisationRegistry.Api.Kbo
         public async Task<IActionResult> Get(
             [FromServices] Func<Owned<OrganisationRegistryContext>> contextFactory,
             [FromServices] IKboOrganisationRetriever kboOrganisationRetriever,
+            [FromServices] ISecurityService securityService,
             [FromRoute] string kboNumberInput)
         {
             var kboNumber = new KboNumber(kboNumberInput);
@@ -58,7 +61,7 @@ namespace OrganisationRegistry.Api.Kbo
                 }
             }
 
-            var kboOrganisationResult = await kboOrganisationRetriever.RetrieveOrganisation(User, kboNumber);
+            var kboOrganisationResult = await kboOrganisationRetriever.RetrieveOrganisation(securityService.GetUser(ClaimsPrincipal.Current), kboNumber);
 
             if (kboOrganisationResult.HasErrors)
             {

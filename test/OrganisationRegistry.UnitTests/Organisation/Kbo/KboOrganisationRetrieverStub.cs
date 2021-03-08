@@ -1,10 +1,8 @@
 namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 {
     using System;
-    using System.Security.Claims;
     using System.Threading.Tasks;
-    using Api.Kbo;
-    using Api.Kbo.Responses;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Organisation;
 
     public class KboOrganisationRetrieverStub : IKboOrganisationRetriever
@@ -14,7 +12,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         public KboOrganisationRetrieverStub(MockMagdaOrganisationResponse response)
             => _response = response;
 
-        public Task<Result<IMagdaOrganisationResponse>> RetrieveOrganisation(ClaimsPrincipal user, KboNumber kboNumber)
+        public Task<Result<IMagdaOrganisationResponse>> RetrieveOrganisation(IUser user, KboNumber kboNumber)
             => Task.FromResult(Result<IMagdaOrganisationResponse>.Success(_response));
     }
 

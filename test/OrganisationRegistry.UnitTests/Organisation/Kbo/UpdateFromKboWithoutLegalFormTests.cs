@@ -94,7 +94,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         {
             return new SyncOrganisationWithKbo(
                 new OrganisationId(_organisationId),
-                null,
                 new DateTimeOffset(new DateTime(2019, 9, 9)),
                 _kboSyncItemId);
         }

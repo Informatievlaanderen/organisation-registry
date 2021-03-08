@@ -9,6 +9,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.Coup
     using Kbo;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
@@ -81,8 +82,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.Coup
             return new TerminateOrganisation(
                 _organisationId,
                 _dateOfTermination,
-                false,
-                new ClaimsPrincipal());
+                false)
+                .WithUserRole(Role.OrganisationRegistryBeheerder);
         }
 
         protected override OrganisationCommandHandlers BuildHandler()

@@ -13,6 +13,9 @@ namespace OrganisationRegistry.Api.Organisation.Queries
     using SqlServer.Organisation;
     using System.ComponentModel;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
+    using OrganisationRegistry.Infrastructure;
+    using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Infrastructure.Commands;
 
     public class OrganisationListQueryResult
     {

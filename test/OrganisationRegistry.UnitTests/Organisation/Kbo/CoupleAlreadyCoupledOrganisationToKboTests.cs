@@ -104,8 +104,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         {
             return new CoupleOrganisationToKbo(
                 _organisationId,
-                new KboNumber("BE0123456789"),
-                null);
+                new KboNumber("BE0123456789"));
         }
 
         protected override KboOrganisationCommandHandlers BuildHandler()

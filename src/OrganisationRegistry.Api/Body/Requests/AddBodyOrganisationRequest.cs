@@ -4,9 +4,9 @@
     using FluentValidation;
     using Infrastructure.Security;
     using Microsoft.AspNetCore.Http;
-    using Security;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Organisation;
 
     public class AddBodyOrganisationInternalRequest

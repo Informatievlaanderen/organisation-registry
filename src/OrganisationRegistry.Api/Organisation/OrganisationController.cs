@@ -16,6 +16,8 @@ namespace OrganisationRegistry.Api.Organisation
     using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
+    using OrganisationRegistry.Infrastructure;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
@@ -135,8 +137,7 @@ namespace OrganisationRegistry.Api.Organisation
                 new TerminateOrganisation(
                     new OrganisationId(id),
                     message.DateOfTermination,
-                    message.ForceKboTermination,
-                    User));
+                    message.ForceKboTermination));
 
             return Ok();
         }
