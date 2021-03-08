@@ -2,7 +2,6 @@ namespace OrganisationRegistry.Organisation.Commands
 {
     using Purpose;
     using System.Collections.Generic;
-    using System.Security.Claims;
 
     public class CreateOrganisationFromKbo : BaseCommand<OrganisationId>
     {
@@ -22,7 +21,6 @@ namespace OrganisationRegistry.Organisation.Commands
         public List<AddOrganisationBankAccount> BankAccounts { get; set; } = new List<AddOrganisationBankAccount>();
         public List<AddOrganisationOrganisationClassification> OrganisationClassifications { get; set; } = new List<AddOrganisationOrganisationClassification>();
         public List<AddOrganisationLocation> OrganisationLocations { get; set; } = new List<AddOrganisationLocation>();
-        public ClaimsPrincipal User { get; }
         public KboNumber KboNumber { get; }
 
         public CreateOrganisationFromKbo(
@@ -36,7 +34,6 @@ namespace OrganisationRegistry.Organisation.Commands
             bool showOnVlaamseOverheidSites,
             ValidFrom validFrom,
             ValidTo validTo,
-            ClaimsPrincipal user,
             KboNumber kboNumber)
         {
             Id = organisationId;
@@ -50,7 +47,6 @@ namespace OrganisationRegistry.Organisation.Commands
             ShowOnVlaamseOverheidSites = showOnVlaamseOverheidSites;
             ValidFrom = validFrom;
             ValidTo = validTo;
-            User = user;
             KboNumber = kboNumber;
         }
     }

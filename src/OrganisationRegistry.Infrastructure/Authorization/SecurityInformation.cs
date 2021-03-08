@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.Security
+namespace OrganisationRegistry.Infrastructure.Authorization
 {
     using System;
     using System.Collections.Generic;

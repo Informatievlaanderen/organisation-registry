@@ -19,7 +19,10 @@ namespace OrganisationRegistry.Organisation
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Claims;
     using Commands;
+    using Infrastructure.Authorization;
+    using Infrastructure.Commands;
     using OrganisationTermination;
     using State;
     using Purpose = Purpose.Purpose;
@@ -2406,6 +2409,12 @@ namespace OrganisationRegistry.Organisation
             return State.OrganisationFormalFrameworks
                 .Where(parent => parent.Validity.OverlapsWith(validity))
                 .Where(parent => parent.FormalFrameworkId == formalFramework.Id);
+        }
+
+        public void ThrowIfTerminated(IUser user)
+        {
+            if (IsTerminated && !user.IsInRole(Role.OrganisationRegistryBeheerder))
+                throw new OrganisationAlreadyTerminated();
         }
     }
 }

@@ -10,9 +10,9 @@ namespace OrganisationRegistry.Api.Body
     using Infrastructure.Security;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using Queries;
     using Requests;
-    using Security;
     using SqlServer.Body;
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Infrastructure.Commands;

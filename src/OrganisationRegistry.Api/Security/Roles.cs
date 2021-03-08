@@ -1,14 +1,5 @@
 ﻿namespace OrganisationRegistry.Api.Security
 {
-    public enum Role
-    {
-        OrganisationRegistryBeheerder,
-        OrganisatieBeheerder,
-        OrgaanBeheerder,
-        Developer,
-        AutomatedTask
-    }
-
     public static class Roles
     {
         public const string OrganisationRegistryBeheerder = "organisationRegistryBeheerder";

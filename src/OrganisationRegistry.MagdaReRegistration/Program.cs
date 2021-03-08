@@ -15,6 +15,8 @@ namespace OrganisationRegistry.MagdaReRegistration
     using Configuration;
     using Destructurama;
     using global::Magda.RegistreerInschrijving;
+    using Infrastructure.Authorization;
+    using Infrastructure.Bus;
     using Infrastructure.Configuration;
     using Infrastructure.Infrastructure.Json;
     using Magda;
@@ -66,10 +68,10 @@ namespace OrganisationRegistry.MagdaReRegistration
                 app.GetService<IHttpClientFactory>(),
                 app.GetService<ILogger<RegistreerInschrijvingCommand>>());
 
-            var claimsIdentity = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
+            var claimsIdentity = new User("Magda", "Reregistrator", "Magda Reregistrator", null, new[]
             {
-                new Claim(ClaimTypes.Name, "Magda Reregistrator", ClaimValueTypes.String)
-            }));
+                Role.AutomatedTask
+            });
 
             foreach (var organisation in allOrganisations)
             {
@@ -84,10 +86,10 @@ namespace OrganisationRegistry.MagdaReRegistration
         private static async Task RegisterOrganisation(
             ILogger logger,
             IRegistreerInschrijvingCommand registerInscriptionCommand,
-            OrganisationResult organisation, ClaimsPrincipal claimsPrincipal)
+            OrganisationResult organisation, IUser user)
         {
             var envelope = await registerInscriptionCommand.Execute(
-                claimsPrincipal,
+                user,
                 organisation.KboNumber);
 
             if (envelope == null)

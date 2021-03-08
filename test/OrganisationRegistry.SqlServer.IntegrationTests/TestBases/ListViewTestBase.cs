@@ -7,6 +7,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
     using System.IO;
     using System.Reflection;
     using System.Threading.Tasks;
+    using Api;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Infrastructure;
@@ -100,6 +101,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
 
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterModule(new ApiModule(_configuration, _services, _loggerFactory));
             builder.RegisterModule(new InfrastructureModule(_configuration, ProvideScopedServiceProvider, _services));
             builder.RegisterModule(new OrganisationRegistryModule());
             builder.RegisterModule(new SqlServerModule(_configuration, _services, _loggerFactory));

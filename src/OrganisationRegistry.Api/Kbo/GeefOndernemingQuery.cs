@@ -20,12 +20,14 @@ namespace OrganisationRegistry.Api.Kbo
     using Magda.Requests;
     using Magda.Responses;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Infrastructure.Bus;
     using SqlServer.Infrastructure;
     using SqlServer.Magda;
 
     public interface IGeefOndernemingQuery
     {
-        Task<Envelope<GeefOndernemingResponseBody>> Execute(ClaimsPrincipal user, string kboNumberDotLess);
+        Task<Envelope<GeefOndernemingResponseBody>> Execute(IUser user, string kboNumberDotLess);
     }
 
     public class GeefOndernemingQuery : IGeefOndernemingQuery
@@ -47,7 +49,7 @@ namespace OrganisationRegistry.Api.Kbo
             _logger = logger;
         }
 
-        public async Task<Envelope<GeefOndernemingResponseBody>> Execute(ClaimsPrincipal user, string kboNumberDotLess)
+        public async Task<Envelope<GeefOndernemingResponseBody>> Execute(IUser user, string kboNumberDotLess)
         {
             using (var organisationRegistryContext = _contextFactory().Value)
             {
@@ -183,13 +185,17 @@ namespace OrganisationRegistry.Api.Kbo
             }
         };
 
-        private static async Task<string> CreateAndStoreReference(OrganisationRegistryContext context, ClaimsPrincipal principal)
+        private static async Task<string> CreateAndStoreReference(OrganisationRegistryContext context, IUser user)
         {
             var magdaCallReference = new MagdaCallReference
             {
                 Reference = Guid.NewGuid(),
                 CalledAt = DateTimeOffset.UtcNow,
-                UserClaims = string.Join(Environment.NewLine, principal.Claims.Select(claim => $"{claim.Type}: {claim.Value}"))
+                UserClaims = $"FirstName: {user.FirstName} | " +
+                             $"LastName: {user.LastName} | " +
+                             $"UserId: {user.UserId} | " +
+                             $"Ip: {user.Ip} | " +
+                             $"Roles: {string.Join(',', user.Roles)}"
             };
             await context.MagdaCallReferences.AddAsync(magdaCallReference);
             await context.SaveChangesAsync();

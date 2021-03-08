@@ -16,6 +16,7 @@ namespace OrganisationRegistry.Api.Security
     using Infrastructure.Security;
     using Microsoft.Extensions.Options;
     using Microsoft.IdentityModel.Tokens;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
 
@@ -94,23 +95,6 @@ namespace OrganisationRegistry.Api.Security
         }
     }
 
-    public class OrganisationRegistryClaims
-    {
-        public const string ClaimRoles = "iv_wegwijs_rol_3D";
-        public const string ClaimAcmId = "vo_id";
-        public const string ClaimFirstname = "urn:be:vlaanderen:acm:voornaam";
-        public const string ClaimName = "urn:be:vlaanderen:acm:familienaam";
-
-        public const string ClaimOrganisation = "urn:be:vlaanderen:wegwijs:organisation";
-        public const string ClaimUserId = "urn:be:vlaanderen:dienstverlening:acmid";
-
-        public const string OrganisationRegistryBeheerderPrefix = "wegwijsbeheerder-";
-
-        public const string OrganisationRegistryBeheerderRole = "algemeenbeheerder";
-        public const string OrganisationRegistryInvoerderRole = "beheerder";
-        public const string OrganisationRegistryOrgaanBeheerderRole = "orgaanbeheerder";
-    }
-
     public class OrganisationRegistryApiClaims
     {
         public const string OrganisationRegistryBeheerder = "organisationRegistryBeheerder";
@@ -161,9 +145,7 @@ namespace OrganisationRegistry.Api.Security
 
         public ClaimsIdentity ParseRoles(ClaimsIdentity identity)
         {
-            // todo: not sure we need to translate the claims.
-
-            identity.AddClaim(new Claim(OrganisationRegistryClaims.ClaimUserId, OrganisationRegistryClaims.ClaimAcmId, ClaimValueTypes.String));
+            identity.AddClaim(new Claim(OrganisationRegistryClaims.ClaimUserId, identity.GetClaim(JwtClaimTypes.Subject), ClaimValueTypes.String));
             identity.AddClaim(new Claim(OrganisationRegistryClaims.ClaimName, JwtClaimTypes.FamilyName, ClaimValueTypes.String));
             identity.AddClaim(new Claim(OrganisationRegistryClaims.ClaimFirstname, JwtClaimTypes.GivenName, ClaimValueTypes.String));
 

@@ -9,6 +9,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
     using Kbo;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
@@ -60,8 +61,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
             return new TerminateOrganisation(
                 _organisationId,
                 _dateOfTermination,
-                false,
-                new ClaimsPrincipal());
+                false)
+                .WithUserRole(Role.OrganisationRegistryBeheerder);
         }
 
         protected override OrganisationCommandHandlers BuildHandler()

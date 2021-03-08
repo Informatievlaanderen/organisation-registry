@@ -29,6 +29,8 @@ namespace OrganisationRegistry.Api.Infrastructure
     using Microsoft.Net.Http.Headers;
     using Microsoft.OpenApi.Models;
     using Newtonsoft.Json;
+    using OrganisationRegistry.Infrastructure;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
     using Search;

@@ -4,11 +4,11 @@
     using FluentValidation;
     using Infrastructure.Security;
     using Microsoft.AspNetCore.Http;
-    using Security;
     using SqlServer.Body;
     using SqlServer.LifecyclePhaseType;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.LifecyclePhaseType;
     using OrganisationRegistry.Organisation;
 

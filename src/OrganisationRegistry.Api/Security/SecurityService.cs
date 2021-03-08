@@ -4,21 +4,9 @@ namespace OrganisationRegistry.Api.Security
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
-    using IdentityModel;
+    using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Infrastructure.Bus;
     using SqlServer.Infrastructure;
-
-    public interface ISecurityService
-    {
-        bool CanAddOrganisation(ClaimsPrincipal user, Guid? parentOrganisationId);
-        bool CanEditOrganisation(ClaimsPrincipal user, Guid organisationId);
-
-        bool CanAddBody(ClaimsPrincipal user, Guid? organisationId);
-        bool CanEditBody(ClaimsPrincipal user, Guid bodyId);
-
-        bool CanEditDelegation(ClaimsPrincipal user, Guid? organisationId, Guid? bodyId);
-
-        SecurityInformation GetSecurityInformation(ClaimsPrincipal user);
-    }
 
     public class SecurityService : ISecurityService
     {
@@ -150,6 +138,42 @@ namespace OrganisationRegistry.Api.Security
                 organisationSecurity.OvoNumbers,
                 organisationSecurity.OrganisationIds,
                 organisationSecurity.BodyIds);
+        }
+
+        public Role[] GetRoles(ClaimsPrincipal principal)
+        {
+            return principal
+                .GetClaims(ClaimTypes.Role)
+                .Where(role => _roleMapping.ContainsKey(role))
+                .Select(role => _roleMapping[role])
+                .ToArray();
+        }
+
+        public IUser GetUser(ClaimsPrincipal? principal)
+        {
+            if (principal == null)
+                throw new Exception("Could not determine current user");
+
+            var firstName = principal.FindFirst(ClaimTypes.GivenName);
+            if (firstName == null)
+                throw new Exception("Could not determine current user's first name");
+
+            var lastName = principal.FindFirst(ClaimTypes.Surname);
+            if (lastName == null)
+                throw new Exception("Could not determine current user's last name");
+
+            var acmId = principal.FindFirst(OrganisationRegistryClaims.ClaimAcmId);
+            if (acmId == null)
+                throw new Exception("Could not determine current user's acm id");
+
+            var ip = principal.FindFirst(OrganisationRegistryClaims.ClaimIp);
+
+            return new User(
+                firstName.Value,
+                lastName.Value,
+                acmId.Value,
+                ip?.Value,
+                GetRoles(principal));
         }
 
         private OrganisationSecurityInformation GetSecurityInformation(IEnumerable<string> ovoNumbers)

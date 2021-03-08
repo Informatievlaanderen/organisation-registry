@@ -12,6 +12,7 @@
     using OrganisationRegistry.Infrastructure.Commands;
     using System.Threading.Tasks;
     using Infrastructure.Security;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using Queries;
     using Requests;
     using Security;

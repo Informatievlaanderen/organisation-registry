@@ -15,6 +15,8 @@ namespace OrganisationRegistry.Api.Organisation
     using System;
     using System.Net;
     using System.Threading.Tasks;
+    using OrganisationRegistry.Infrastructure;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
 
     [ApiVersion("1.0")]

@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Organisation
 {
+    using System;
     using Building;
     using Capacity;
     using Commands;
@@ -21,6 +22,7 @@ namespace OrganisationRegistry.Organisation
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Infrastructure.Authorization;
 
     public class OrganisationCommandHandlers :
         BaseCommandHandler<OrganisationCommandHandlers>,
@@ -115,12 +117,14 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(UpdateOrganisationInfo message)
         {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+
+            organisation.ThrowIfTerminated(message.User);
+
             var purposes = message
                 .Purposes
                 .Select(purposeId => Session.Get<Purpose>(purposeId))
                 .ToList();
-
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             organisation.UpdateInfo(
                 message.Name,
@@ -136,9 +140,10 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(AddOrganisationParent message)
         {
-            var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
 
+            var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
             var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
 
             if (ParentTreeHasOrganisationInIt(organisation, validity, parentOrganisation, new List<Organisation>()))
@@ -155,9 +160,10 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(UpdateOrganisationParent message)
         {
-            var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
 
+            var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
             var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
 
             if (ParentTreeHasOrganisationInIt(organisation, validity, parentOrganisation, new List<Organisation>()))
@@ -174,9 +180,11 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(AddOrganisationFormalFramework message)
         {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             var formalFramework = Session.Get<FormalFramework>(message.FormalFrameworkId);
             var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
 
@@ -195,9 +203,11 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(UpdateOrganisationFormalFramework message)
         {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             var formalFramework = Session.Get<FormalFramework>(message.FormalFrameworkId);
             var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
 
@@ -253,8 +263,9 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(AddOrganisationKey message)
         {
-            var keyType = Session.Get<KeyType>(message.KeyTypeId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+
+            var keyType = Session.Get<KeyType>(message.KeyTypeId);
 
             organisation.AddKey(
                 message.OrganisationKeyId,
@@ -267,8 +278,9 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(UpdateOrganisationKey message)
         {
-            var keyType = Session.Get<KeyType>(message.KeyTypeId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+
+            var keyType = Session.Get<KeyType>(message.KeyTypeId);
 
             organisation.UpdateKey(
                 message.OrganisationKeyId,
@@ -281,11 +293,13 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(AddOrganisationCapacity message)
         {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             var capacity = Session.Get<Capacity>(message.CapacityId);
             var person = message.PersonId != null ? Session.Get<Person>(message.PersonId) : null;
             var function = message.FunctionId != null ? Session.Get<FunctionType>(message.FunctionId) : null;
             var location = message.LocationId != null ? Session.Get<Location>(message.LocationId) : null;
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             var contacts = message.Contacts.Select(contact =>
             {
@@ -308,11 +322,13 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(UpdateOrganisationCapacity message)
         {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             var capacity = Session.Get<Capacity>(message.CapacityId);
             var person = message.PersonId != null ? Session.Get<Person>(message.PersonId) : null;
             var function = message.FunctionTypeId != null ? Session.Get<FunctionType>(message.FunctionTypeId) : null;
             var location = message.LocationId != null ? Session.Get<Location>(message.LocationId) : null;
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             var contacts = message.Contacts.Select(contact =>
             {
@@ -335,9 +351,11 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(AddOrganisationFunction message)
         {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             var person = Session.Get<Person>(message.PersonId);
             var function = Session.Get<FunctionType>(message.FunctionTypeId);
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             var contacts = message.Contacts.Select(contact =>
             {
@@ -357,9 +375,11 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(UpdateOrganisationFunction message)
         {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             var person = Session.Get<Person>(message.PersonId);
             var function = Session.Get<FunctionType>(message.FunctionTypeId);
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             var contacts = message.Contacts.Select(contact =>
             {
@@ -379,9 +399,11 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(AddOrganisationRelation message)
         {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             var relatedOrganisation = Session.Get<Organisation>(message.RelatedOrganisationId);
             var relation = Session.Get<OrganisationRelationType>(message.RelationTypeId);
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             organisation.AddRelation(
                 message.OrganisationRelationId,
@@ -394,9 +416,11 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(UpdateOrganisationRelation message)
         {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             var relatedOrganisation = Session.Get<Organisation>(message.RelatedOrganisationId);
             var relation = Session.Get<OrganisationRelationType>(message.RelationTypeId);
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             organisation.UpdateRelation(
                 message.OrganisationRelationId,
@@ -409,8 +433,10 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(AddOrganisationBuilding message)
         {
-            var building = Session.Get<Building>(message.BuildingId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
+            var building = Session.Get<Building>(message.BuildingId);
 
             organisation.AddBuilding(
                 message.OrganisationBuildingId,
@@ -424,8 +450,10 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(UpdateOrganisationBuilding message)
         {
-            var building = Session.Get<Building>(message.BuildingId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
+            var building = Session.Get<Building>(message.BuildingId);
 
             organisation.UpdateBuilding(
                 message.OrganisationBuildingId,
@@ -439,9 +467,11 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(AddOrganisationLocation message)
         {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             var location = Session.Get<Location>(message.LocationId);
             var locationType = message.LocationTypeId != null ? Session.Get<LocationType>(message.LocationTypeId) : null;
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             KboV2Guards.ThrowIfRegisteredOffice(_organisationRegistryConfiguration, locationType);
 
@@ -458,9 +488,11 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(UpdateOrganisationLocation message)
         {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             var location = Session.Get<Location>(message.LocationId);
             var locationType = message.LocationTypeId != null ? Session.Get<LocationType>(message.LocationTypeId) : null;
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             KboV2Guards.ThrowIfRegisteredOffice(_organisationRegistryConfiguration, locationType);
 
@@ -477,8 +509,10 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(AddOrganisationContact message)
         {
-            var contactType = Session.Get<ContactType>(message.ContactTypeId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
+            var contactType = Session.Get<ContactType>(message.ContactTypeId);
 
             organisation.AddContact(
                 message.OrganisationContactId,
@@ -491,8 +525,10 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(UpdateOrganisationContact message)
         {
-            var contactType = Session.Get<ContactType>(message.ContactTypeId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
+            var contactType = Session.Get<ContactType>(message.ContactTypeId);
 
             organisation.UpdateContact(
                 message.OrganisationContactId,
@@ -505,8 +541,10 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(AddOrganisationLabel message)
         {
-            var labelType = Session.Get<LabelType>(message.LabelTypeId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
+            var labelType = Session.Get<LabelType>(message.LabelTypeId);
 
             KboV2Guards.ThrowIfFormalName(_organisationRegistryConfiguration, labelType);
 
@@ -521,8 +559,10 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(UpdateOrganisationLabel message)
         {
-            var labelType = Session.Get<LabelType>(message.LabelTypeId);
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
+            var labelType = Session.Get<LabelType>(message.LabelTypeId);
 
             KboV2Guards.ThrowIfFormalName(_organisationRegistryConfiguration, labelType);
 
@@ -537,9 +577,11 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(AddOrganisationOrganisationClassification message)
         {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             var organisationClassification = Session.Get<OrganisationClassification>(message.OrganisationClassificationId);
             var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             organisation.AddOrganisationClassification(
                 _organisationRegistryConfiguration,
@@ -553,9 +595,11 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(UpdateOrganisationOrganisationClassification message)
         {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             var organisationClassification = Session.Get<OrganisationClassification>(message.OrganisationClassificationId);
             var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             KboV2Guards.ThrowIfLegalForm(_organisationRegistryConfiguration, organisationClassificationType);
 
@@ -571,6 +615,7 @@ namespace OrganisationRegistry.Organisation
         public async Task Handle(AddOrganisationBankAccount message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
 
             var bankAccountNumber = BankAccountNumber.CreateWithExpectedValidity(message.BankAccountNumber, message.IsIban);
             var bankAccountBic = BankAccountBic.CreateWithExpectedValidity(message.Bic, message.IsBic);
@@ -589,6 +634,7 @@ namespace OrganisationRegistry.Organisation
         public async Task Handle(UpdateOrganisationBankAccount message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
 
             var bankAccountNumber = BankAccountNumber.CreateWithExpectedValidity(message.BankAccountNumber, message.IsIban);
             var bankAccountBic = BankAccountBic.CreateWithExpectedValidity(message.Bic, message.IsBic);
@@ -607,6 +653,8 @@ namespace OrganisationRegistry.Organisation
         public async Task Handle(UpdateMainBuilding message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             organisation.UpdateMainBuilding(_dateTimeProvider.Today);
 
             await Session.Commit();
@@ -615,6 +663,8 @@ namespace OrganisationRegistry.Organisation
         public async Task Handle(UpdateMainLocation message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             organisation.UpdateMainLocation(_dateTimeProvider.Today);
 
             await Session.Commit();
@@ -623,6 +673,8 @@ namespace OrganisationRegistry.Organisation
         public async Task Handle(UpdateOrganisationFormalFrameworkParents message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             organisation.UpdateOrganisationFormalFrameworkParent(_dateTimeProvider.Today, message.FormalFrameworkId);
 
             await Session.Commit();
@@ -631,6 +683,8 @@ namespace OrganisationRegistry.Organisation
         public async Task Handle(UpdateCurrentOrganisationParent message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             organisation.UpdateCurrentOrganisationParent(_dateTimeProvider.Today);
 
             await Session.Commit();
@@ -639,6 +693,8 @@ namespace OrganisationRegistry.Organisation
         public async Task Handle(UpdateRelationshipValidities message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
             organisation.UpdateRelationshipValidities(message.Date);
 
             await Session.Commit();
@@ -647,6 +703,7 @@ namespace OrganisationRegistry.Organisation
         public async Task Handle(AddOrganisationOpeningHour message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
 
             organisation.AddOpeningHour(
                 message.OrganisationOpeningHourId,
@@ -661,6 +718,7 @@ namespace OrganisationRegistry.Organisation
         public async Task Handle(UpdateOrganisationOpeningHour message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
 
             organisation.UpdateOpeningHour(
                 message.OrganisationOpeningHourId,
@@ -674,6 +732,8 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(TerminateOrganisation message)
         {
+            Guard.RequiresRole(message.User, Role.OrganisationRegistryBeheerder);
+
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
             organisation.TerminateOrganisation(message.DateOfTermination,

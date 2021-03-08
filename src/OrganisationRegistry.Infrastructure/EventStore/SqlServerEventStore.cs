@@ -13,6 +13,7 @@ namespace OrganisationRegistry.Infrastructure.EventStore
     using System.Security.Claims;
     using System.Threading.Tasks;
     using AppSpecific;
+    using Authorization;
     using Configuration;
     using Infrastructure.Json;
     using Microsoft.Extensions.Options;
@@ -103,10 +104,10 @@ IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Events_Number' AND obj
                 return;
 
             var principal = ClaimsPrincipal.Current;
-            var ip = principal?.FindFirst("urn:be:vlaanderen:wegwijs:ip")?.Value;
+            var ip = principal?.FindFirst(OrganisationRegistryClaims.ClaimIp)?.Value;
             var firstName = principal?.FindFirst(ClaimTypes.GivenName)?.Value;
             var lastName = principal?.FindFirst(ClaimTypes.Surname)?.Value;
-            var userId = principal?.FindFirst("urn:be:vlaanderen:wegwijs:acmid")?.Value;
+            var userId = principal?.FindFirst(OrganisationRegistryClaims.ClaimAcmId)?.Value;
 
             var envelopes =
                 eventsToSave

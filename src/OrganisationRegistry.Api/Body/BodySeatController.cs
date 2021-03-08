@@ -14,7 +14,7 @@
     using Queries;
     using System.Net;
     using Infrastructure.Security;
-    using Security;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using SqlServer.Infrastructure;
 
     [ApiVersion("1.0")]

@@ -3,6 +3,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Api.Security;
     using FluentAssertions;
     using Infrastructure.AppSpecific;
     using Infrastructure.Bus;
@@ -54,7 +55,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 .AddSingleton(new MemoryCachesMaintainer(new MemoryCaches(fixture.ContextFactory), fixture.ContextFactory))
                 .BuildServiceProvider();
 
-            _inProcessBus = new InProcessBus(new NullLogger<InProcessBus>());
+            _inProcessBus = new InProcessBus(new NullLogger<InProcessBus>(), new SecurityService(fixture.ContextFactory.Create()));
             var registrar = new BusRegistrar(new NullLogger<BusRegistrar>(), _inProcessBus, () => serviceProvider);
             registrar.RegisterEventHandlers(PeopleRunner.EventHandlers);
         }
