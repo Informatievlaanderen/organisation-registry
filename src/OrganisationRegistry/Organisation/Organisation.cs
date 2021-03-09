@@ -217,7 +217,8 @@ namespace OrganisationRegistry.Organisation
             if (KboState.TerminationInKbo != null && termination.Equals(KboState.TerminationInKbo.Value))
                 return;
 
-            ApplyChange(new OrganisationTerminationFoundInKbo(Id,
+            ApplyChange(new OrganisationTerminationFoundInKbo(
+                Id,
                 KboState.KboNumber!.ToDigitsOnly(),
                 termination.Date,
                 termination.Code,
@@ -1526,9 +1527,7 @@ namespace OrganisationRegistry.Organisation
                     dateOfTermination));
 
             if (HasKboNumber && KboState.TerminationInKbo.HasValue)
-            {
                 SyncKboTermination();
-            }
 
             var validityOverlapsWithToday = State.Validity.OverlapsWith(dateTimeProvider.Today);
             if (State.IsActive && !validityOverlapsWithToday)
@@ -2394,9 +2393,7 @@ namespace OrganisationRegistry.Organisation
             // publishing a OrganisationTerminationSyncedWithKbo event.
 
             if (@event.ForcedKboTermination)
-            {
                 KboState.Clear();
-            }
         }
 
         public IEnumerable<OrganisationParent> ParentsInPeriod(Period validity)
