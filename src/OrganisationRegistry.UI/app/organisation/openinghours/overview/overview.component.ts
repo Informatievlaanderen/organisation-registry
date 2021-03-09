@@ -14,7 +14,7 @@ import {
   OrganisationOpeningHourService,
   OrganisationOpeningHourFilter
 } from 'services/organisationopeninghours';
-import {OrganisationInfoService} from "services";
+import { OrganisationInfoService } from 'services';
 
 @Component({
   templateUrl: 'overview.template.html',
