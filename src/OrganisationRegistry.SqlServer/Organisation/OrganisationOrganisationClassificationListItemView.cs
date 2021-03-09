@@ -246,9 +246,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     message.Body.FieldsToTerminate.Classifications.Keys.Contains(item.OrganisationOrganisationClassificationId));
 
                 foreach (var classification in classifications)
-                {
                     classification.ValidTo = message.Body.FieldsToTerminate.Classifications[classification.OrganisationOrganisationClassificationId];
-                }
 
                 if (message.Body.KboFieldsToTerminate.LegalForm.HasValue)
                 {
