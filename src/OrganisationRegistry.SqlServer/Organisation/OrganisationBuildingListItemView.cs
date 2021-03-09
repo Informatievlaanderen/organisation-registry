@@ -24,9 +24,7 @@
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
 
-        public OrganisationBuildingListItem()
-        {
-        }
+        public OrganisationBuildingListItem() { }
 
         public OrganisationBuildingListItem(Guid organisationBuildingId, Guid organisationId, Guid buildingId, string buildingName, bool isMainBuilding, DateTime? validFrom, DateTime? validTo)
         {
@@ -146,9 +144,7 @@
                     message.Body.FieldsToTerminate.Buildings.Keys.Contains(item.OrganisationBuildingId));
 
                 foreach (var building in buildings)
-                {
                     building.ValidTo = message.Body.FieldsToTerminate.Buildings[building.OrganisationBuildingId];
-                }
 
                 await context.SaveChangesAsync();
             }
