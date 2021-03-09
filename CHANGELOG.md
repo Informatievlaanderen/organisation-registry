@@ -1,3 +1,41 @@
+# [1.64.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.63.1...v1.64.0) (2021-03-09)
+
+
+### Bug Fixes
+
+* apply correct events ([074995e](https://github.com/informatievlaanderen/organisation-registry/commit/074995e8141fae804311495e709281b43aecd337))
+* don't clear kbo fields if not forced ([365561f](https://github.com/informatievlaanderen/organisation-registry/commit/365561fb71837b8ffefe93723bd9cf313cff6247))
+* only fetch items to terminate ([fde93b6](https://github.com/informatievlaanderen/organisation-registry/commit/fde93b64c08c4bb801ae672de8cc9b9758e944cf))
+* only update updated contacts ([42aac40](https://github.com/informatievlaanderen/organisation-registry/commit/42aac407f239de81d5a908e047192b75732eb6d1))
+* typo ([f0901ec](https://github.com/informatievlaanderen/organisation-registry/commit/f0901ec39885459300f0dcdb75f336507e09d822))
+* unsubscribe OnDestroy ([ae35b88](https://github.com/informatievlaanderen/organisation-registry/commit/ae35b882d3e801b9e7f28885ce4624f93445a58e))
+* use correct Id for organisation parents ([5d17cd4](https://github.com/informatievlaanderen/organisation-registry/commit/5d17cd4a432aa9991cd4819a415d7d41791ad27f))
+* use store for isEditable ([6fbae05](https://github.com/informatievlaanderen/organisation-registry/commit/6fbae0599506d10e620c6811a0d14d1e6d6298c9))
+
+
+### Features
+
+* add IsTerminated to OrgDetailItemView ([477bc0d](https://github.com/informatievlaanderen/organisation-registry/commit/477bc0d333d6175d17083d95dffe35288c6daac9))
+* add kbo specific terminations, handle in AR ([cfe261c](https://github.com/informatievlaanderen/organisation-registry/commit/cfe261c0888ee63f609aa156c163cedfbe9b6736))
+* add role restriction and date to terminate ctrl method ([da804a8](https://github.com/informatievlaanderen/organisation-registry/commit/da804a8423176b703bcec835d393886505cf0787))
+* add simple ui to terminate organisation ([706610a](https://github.com/informatievlaanderen/organisation-registry/commit/706610abe66cfbfc49b242258826474ef7fac1e8))
+* allow force termination of kbo coupling ([943cc66](https://github.com/informatievlaanderen/organisation-registry/commit/943cc666112ca260fe33d0539c6343c9dc192b5a))
+* allow OrganisationRegistryBeheerders to update organisations, even if terminated ([9e28567](https://github.com/informatievlaanderen/organisation-registry/commit/9e28567fee9f6c9200f46ddef7173a05aa2426cd))
+* calculate fields to terminate ([49e2a46](https://github.com/informatievlaanderen/organisation-registry/commit/49e2a46dd1d335bd4207476ef835067b261413d9))
+* clear current parent/building/... if necessary ([f31444d](https://github.com/informatievlaanderen/organisation-registry/commit/f31444d5f4e0e46120518652ee9de575147061d5))
+* don't show edit buttons when org is terminated ([c37f73d](https://github.com/informatievlaanderen/organisation-registry/commit/c37f73d9ab7c8a1497ac7c0f93a14ff3eeeb4441))
+* extract state into dedicated class ([cb8dcfb](https://github.com/informatievlaanderen/organisation-registry/commit/cb8dcfba3e86f87a22d62179d13b53cfb78e9b07))
+* handle OrganisationTerminated in ElasticSearch projections ([797ad8c](https://github.com/informatievlaanderen/organisation-registry/commit/797ad8c190ad624362deaa49bf7edcd9c2765ff0))
+* inject user into commands ([8587608](https://github.com/informatievlaanderen/organisation-registry/commit/8587608c038cb9fc2bf568fca7cb4a245af904f0))
+* introduce IOrganisationField, IValidityBuilder interfaces ([104cb31](https://github.com/informatievlaanderen/organisation-registry/commit/104cb3142ef9ca41c01cb87a28c7ee1333e71850))
+* optimize memory caches ([35b5e5b](https://github.com/informatievlaanderen/organisation-registry/commit/35b5e5bf4a19cac1cc2515e550d2521a417f2463))
+* remove active/future main building/location logic ([f1d3a9d](https://github.com/informatievlaanderen/organisation-registry/commit/f1d3a9dd0294a57fae650fb2bb2f5e65227b6cc9))
+* tell user if org is terminated according to kbo ([5ac05b9](https://github.com/informatievlaanderen/organisation-registry/commit/5ac05b90106bbbc0e655a403285bb22409fc1860))
+* update capacities on OrganisationTerminated ([a939922](https://github.com/informatievlaanderen/organisation-registry/commit/a939922fed87bd2fce787bc08e3b8c2f2ec8ff5d))
+* update jwt in integration tests ([4c72a6f](https://github.com/informatievlaanderen/organisation-registry/commit/4c72a6f4134dc3008e02ca2553d024d0c814129a))
+* update org's validTo on OrganisationTerminated ([bc2db78](https://github.com/informatievlaanderen/organisation-registry/commit/bc2db788833fd2ef614edda4ae0c3bf3503f60c4))
+* wip on terminating organisation ([915279f](https://github.com/informatievlaanderen/organisation-registry/commit/915279f274915ed003ba430479ad72917dbb7659))
+
 ## [1.63.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.63.0...v1.63.1) (2021-02-02)
 
 
