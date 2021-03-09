@@ -14,7 +14,7 @@ import {
   OrganisationCapacityService,
   OrganisationCapacityFilter
 } from 'services/organisationcapacities';
-import {OrganisationInfoService} from "services";
+import { OrganisationInfoService } from 'services';
 
 @Component({
   templateUrl: 'overview.template.html',
