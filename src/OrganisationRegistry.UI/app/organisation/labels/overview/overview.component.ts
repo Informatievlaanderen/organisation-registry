@@ -14,7 +14,7 @@ import {
   OrganisationLabelService,
   OrganisationLabelFilter
 } from 'services/organisationlabels';
-import {OrganisationInfoService} from "services";
+import { OrganisationInfoService } from 'services';
 
 @Component({
   templateUrl: 'overview.template.html',
