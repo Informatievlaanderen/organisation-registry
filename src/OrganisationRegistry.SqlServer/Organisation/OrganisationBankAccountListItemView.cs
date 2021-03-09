@@ -26,9 +26,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public bool IsEditable => Source != Sources.Kbo;
 
-        public OrganisationBankAccountListItem()
-        {
-        }
+        public OrganisationBankAccountListItem() { }
 
         public OrganisationBankAccountListItem(
             Guid organisationBankAccountId,
@@ -217,17 +215,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     context.OrganisationBankAccountList.Where(item => message.Body.FieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
 
                 foreach (var bankAccount in organisationBankAccountListItems)
-                {
                     bankAccount.ValidTo = message.Body.FieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
-                }
 
                 var kboOrganisationBankAccountListItems =
                     context.OrganisationBankAccountList.Where(item => message.Body.KboFieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
 
                 foreach (var bankAccount in kboOrganisationBankAccountListItems)
-                {
                     bankAccount.ValidTo = message.Body.KboFieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
-                }
 
                 await context.SaveChangesAsync();
             }
