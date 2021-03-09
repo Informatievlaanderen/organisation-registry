@@ -136,9 +136,7 @@
                     message.Body.FieldsToTerminate.Contacts.Keys.Contains(item.OrganisationContactId));
 
                 foreach (var contact in contacts)
-                {
                     contact.ValidTo = message.Body.FieldsToTerminate.Contacts[contact.OrganisationContactId];
-                }
 
                 await context.SaveChangesAsync();
             }
