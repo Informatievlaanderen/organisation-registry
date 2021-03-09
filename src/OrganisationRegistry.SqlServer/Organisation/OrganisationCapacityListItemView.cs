@@ -226,9 +226,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
 
                 foreach (var capacity in capacities)
-                {
                     capacity.ValidTo = message.Body.FieldsToTerminate.Capacities[capacity.OrganisationCapacityId];
-                }
 
                 await context.SaveChangesAsync();
             }
