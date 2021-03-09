@@ -42,7 +42,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     message.Timestamp));
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+        public async Task Handle(
+            DbConnection dbConnection, 
+            DbTransaction dbTransaction,
             IEnvelope<OrganisationBuildingAdded> message)
         {
             var organisationDocument = _elastic.TryGet(() =>
@@ -68,7 +70,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+        public async Task Handle(
+            DbConnection dbConnection, 
+            DbTransaction dbTransaction,
             IEnvelope<OrganisationBuildingUpdated> message)
         {
             var organisationDocument = _elastic.TryGet(() =>
@@ -91,12 +95,17 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+        public async Task Handle(
+            DbConnection dbConnection, 
+            DbTransaction dbTransaction,
             IEnvelope<OrganisationTerminated> message)
         {
             var organisationDocument =
-                _elastic.TryGet(() =>
-                    _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure()
+                _elastic.TryGet(() => 
+                    _elastic
+                        .WriteClient
+                        .Get<OrganisationDocument>(message.Body.OrganisationId)
+                        .ThrowOnFailure()
                         .Source);
 
             organisationDocument.ChangeId = message.Number;
