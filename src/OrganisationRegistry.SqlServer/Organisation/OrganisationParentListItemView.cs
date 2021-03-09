@@ -94,8 +94,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             using (var context = contextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var organisations =
-                    context.OrganisationParentList.Where(x => x.ParentOrganisationId == organisationId);
+                var organisations = context.OrganisationParentList.Where(x => x.ParentOrganisationId == organisationId);
                 if (!organisations.Any())
                     return;
 
@@ -155,9 +154,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     message.Body.FieldsToTerminate.Parents.Keys.Contains(item.OrganisationOrganisationParentId));
 
                 foreach (var parent in parents)
-                {
                     parent.ValidTo = message.Body.FieldsToTerminate.Parents[parent.OrganisationOrganisationParentId];
-                }
 
                 await context.SaveChangesAsync();
             }
