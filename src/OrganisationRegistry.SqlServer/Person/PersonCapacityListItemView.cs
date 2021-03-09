@@ -255,10 +255,7 @@ namespace OrganisationRegistry.SqlServer.Person
                     message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
 
                 foreach (var capacityListItem in capacityListItems)
-                {
-                    capacityListItem.ValidTo =
-                        message.Body.FieldsToTerminate.Capacities[capacityListItem.OrganisationCapacityId];
-                }
+                    capacityListItem.ValidTo = message.Body.FieldsToTerminate.Capacities[capacityListItem.OrganisationCapacityId];
 
                 context.SaveChanges();
             }
