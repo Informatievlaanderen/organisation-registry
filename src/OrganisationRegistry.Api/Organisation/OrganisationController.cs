@@ -126,7 +126,7 @@ namespace OrganisationRegistry.Api.Organisation
         }
 
         /// <summary>Terminate an organisation.</summary>
-        /// <response code="200">If the organisation is terminated, together with the location.</response>
+        /// <response code="200">If the organisation is terminated.</response>
         [HttpPut("{id}/terminate")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
