@@ -211,9 +211,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     message.Body.FieldsToTerminate.Labels.Keys.Contains(item.OrganisationLabelId));
 
                 foreach (var label in labels)
-                {
                     label.ValidTo = message.Body.FieldsToTerminate.Labels[label.OrganisationLabelId];
-                }
 
                 if (message.Body.KboFieldsToTerminate.FormalName.HasValue)
                 {
