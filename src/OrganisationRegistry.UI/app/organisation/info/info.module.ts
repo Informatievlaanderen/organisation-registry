@@ -11,7 +11,7 @@ import { OrganisationInfoEditComponent } from './edit';
 import { OrganisationInfoAddChildOrganisationComponent, CreateChildOrganisationFormComponent } from './add-child';
 import { OrganisationCoupleWithKboComponent } from './couple-with-kbo';
 import { OrganisationCancelCouplingWithKboComponent } from './cancel-coupling-with-kbo';
-import {OrganisationTerminateComponent} from "./terminate";
+import { OrganisationTerminateComponent } from './terminate';
 
 @NgModule({
   imports: [
