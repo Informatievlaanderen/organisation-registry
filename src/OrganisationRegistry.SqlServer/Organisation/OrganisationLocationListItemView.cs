@@ -30,9 +30,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public bool IsEditable => Source != Sources.Kbo;
 
-        public OrganisationLocationListItem()
-        {
-        }
+        public OrganisationLocationListItem() { }
 
         public OrganisationLocationListItem(
             Guid organisationLocationId,
@@ -260,9 +258,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     message.Body.FieldsToTerminate.Locations.Keys.Contains(item.OrganisationLocationId));
 
                 foreach (var location in locations)
-                {
                     location.ValidTo = message.Body.FieldsToTerminate.Locations[location.OrganisationLocationId];
-                }
 
                 if (message.Body.KboFieldsToTerminate.RegisteredOffice.HasValue)
                 {
