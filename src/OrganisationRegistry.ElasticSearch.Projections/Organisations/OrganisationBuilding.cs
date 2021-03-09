@@ -29,7 +29,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             _elastic = elastic;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+        public async Task Handle(
+            DbConnection dbConnection, 
+            DbTransaction dbTransaction,
             IEnvelope<BuildingUpdated> message)
         {
             // Update all which use this type, and put the changeId on them too!
