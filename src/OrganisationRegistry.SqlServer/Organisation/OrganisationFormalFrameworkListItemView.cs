@@ -176,9 +176,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     message.Body.FieldsToTerminate.FormalFrameworks.Keys.Contains(item.OrganisationFormalFrameworkId));
 
                 foreach (var formalFramework in formalFrameworks)
-                {
                     formalFramework.ValidTo = message.Body.FieldsToTerminate.FormalFrameworks[formalFramework.OrganisationFormalFrameworkId];
-                }
 
                 await context.SaveChangesAsync();
             }
