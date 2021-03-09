@@ -77,7 +77,22 @@ namespace OrganisationRegistry.Organisation.Events
 
     public class FieldsToTerminate
     {
-        public FieldsToTerminate(DateTime? organisationValidity,
+        public DateTime? OrganisationValidity { get; }
+        public Dictionary<Guid, DateTime> Buildings { get; }
+        public Dictionary<Guid, DateTime> BankAccounts { get; }
+        public Dictionary<Guid, DateTime> Capacities { get; }
+        public Dictionary<Guid, DateTime> Contacts { get; }
+        public Dictionary<Guid, DateTime> Classifications { get; }
+        public Dictionary<Guid, DateTime> Functions { get; }
+        public Dictionary<Guid, DateTime> Labels { get; }
+        public Dictionary<Guid, DateTime> Locations { get; }
+        public Dictionary<Guid, DateTime> Parents { get; }
+        public Dictionary<Guid, DateTime> Relations { get; }
+        public Dictionary<Guid, DateTime> FormalFrameworks { get; }
+        public Dictionary<Guid, DateTime> OpeningHours { get; }
+        
+        public FieldsToTerminate(
+            DateTime? organisationValidity,
             Dictionary<Guid, DateTime> buildings,
             Dictionary<Guid, DateTime> bankAccounts,
             Dictionary<Guid, DateTime> capacities,
@@ -105,25 +120,17 @@ namespace OrganisationRegistry.Organisation.Events
             FormalFrameworks = formalFrameworks;
             OpeningHours = openingHours;
         }
-
-        public DateTime? OrganisationValidity { get; }
-        public Dictionary<Guid, DateTime> Buildings { get; }
-        public Dictionary<Guid, DateTime> BankAccounts { get; }
-        public Dictionary<Guid, DateTime> Capacities { get; }
-        public Dictionary<Guid, DateTime> Contacts { get; }
-        public Dictionary<Guid, DateTime> Classifications { get; }
-        public Dictionary<Guid, DateTime> Functions { get; }
-        public Dictionary<Guid, DateTime> Labels { get; }
-        public Dictionary<Guid, DateTime> Locations { get; }
-        public Dictionary<Guid, DateTime> Parents { get; }
-        public Dictionary<Guid, DateTime> Relations { get; }
-        public Dictionary<Guid, DateTime> FormalFrameworks { get; }
-        public Dictionary<Guid, DateTime> OpeningHours { get; }
     }
 
     public class KboFieldsToTerminate
     {
-        public KboFieldsToTerminate(Dictionary<Guid, DateTime> bankAccounts,
+        public Dictionary<Guid, DateTime> BankAccounts { get; }
+        public KeyValuePair<Guid, DateTime>? RegisteredOffice { get; }
+        public KeyValuePair<Guid, DateTime>? FormalName { get; }
+        public KeyValuePair<Guid, DateTime>? LegalForm { get; }
+        
+        public KboFieldsToTerminate(
+            Dictionary<Guid, DateTime> bankAccounts,
             KeyValuePair<Guid, DateTime>? registeredOffice,
             KeyValuePair<Guid, DateTime>? formalName,
             KeyValuePair<Guid, DateTime>? legalForm)
@@ -133,10 +140,5 @@ namespace OrganisationRegistry.Organisation.Events
             FormalName = formalName;
             LegalForm = legalForm;
         }
-
-        public Dictionary<Guid, DateTime> BankAccounts { get; }
-        public KeyValuePair<Guid, DateTime>? RegisteredOffice { get; }
-        public KeyValuePair<Guid, DateTime>? FormalName { get; }
-        public KeyValuePair<Guid, DateTime>? LegalForm { get; }
     }
 }
