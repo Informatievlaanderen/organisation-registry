@@ -85,9 +85,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
             using (var organisationRegistryContext = contextFactory.Create())
             {
                 foreach (MemoryCacheType memoryCacheType in Enum.GetValues(typeof(MemoryCacheType)))
-                {
                     ResetCache(memoryCacheType, organisationRegistryContext).GetAwaiter().GetResult();
-                }
             }
         }
 
