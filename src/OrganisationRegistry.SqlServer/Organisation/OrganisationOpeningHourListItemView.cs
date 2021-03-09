@@ -27,9 +27,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public DateTime? ValidTo { get; set; }
 
-        public OrganisationOpeningHourListItem()
-        {
-        }
+        public OrganisationOpeningHourListItem() { }
 
         public OrganisationOpeningHourListItem(
             Guid organisationOpeningHourId,
@@ -151,9 +149,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     message.Body.FieldsToTerminate.OpeningHours.Keys.Contains(item.OrganisationOpeningHourId));
 
                 foreach (var openingHour in openingHours)
-                {
                     openingHour.ValidTo = message.Body.FieldsToTerminate.OpeningHours[openingHour.OrganisationOpeningHourId];
-                }
 
                 await context.SaveChangesAsync();
             }
