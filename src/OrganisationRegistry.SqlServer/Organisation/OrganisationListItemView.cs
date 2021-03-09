@@ -264,9 +264,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 }
 
                 foreach (var child in context.OrganisationList.Where(item => item.ParentOrganisationId == message.Body.OrganisationId))
-                {
                     child.ParentOrganisation = message.Body.Name;
-                }
 
                 await context.SaveChangesAsync();
             }
@@ -694,9 +692,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 }
 
                 foreach (var child in context.OrganisationList.Where(item => item.ParentOrganisationId == message.Body.OrganisationId))
-                {
                     child.ParentOrganisation = message.Body.NameBeforeKboCoupling;
-                }
 
                 context.OrganisationList
                     .Include(item => item.OrganisationClassificationValidities)
@@ -727,7 +723,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     .ToList()
                     .ForEach(item =>
                     {
-                        var organisationClassificationValidities = item.OrganisationClassificationValidities
+                        var organisationClassificationValidities = item
+                            .OrganisationClassificationValidities
                             .Where(validity =>
                                 validity.OrganisationOrganisationClassificationId ==
                                 message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate)
@@ -788,9 +785,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     .Where(validity => validity.OrganisationClassificationId == message.Body.OrganisationClassificationId);
 
                 foreach (var validity in validities)
-                {
                     validity.OrganisationClassificationTypeId = message.Body.OrganisationClassificationTypeId;
-                }
+                    
                 await context.SaveChangesAsync();
             }
         }
@@ -831,9 +827,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 foreach (var organisationListItem in context.OrganisationList.Where(item => item.OrganisationId == message.Body.OrganisationId))
-                {
                     organisationListItem.ValidTo = message.Body.FieldsToTerminate.OrganisationValidity;
-                }
 
                 await context.SaveChangesAsync();
             }
