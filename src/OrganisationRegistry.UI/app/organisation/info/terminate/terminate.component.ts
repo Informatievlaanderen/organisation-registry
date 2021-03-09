@@ -1,19 +1,19 @@
-import {FormBuilder, FormGroup} from '@angular/forms';
-import {ActivatedRoute, Params, Router} from '@angular/router';
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 
 import * as moment from 'moment/moment';
+import { Observable } from 'rxjs/Observable';
+import { Subscription } from 'rxjs/Subscription';
 
-import {AlertBuilder, AlertService} from 'core/alert';
+import { AlertBuilder, AlertService } from 'core/alert';
+import { OidcService, Role } from 'core/auth';
+import { BaseAlertMessages } from 'core/alertmessages';
+import { required } from 'core/validation';
 
-import {OrganisationSyncService, OrganisationTermination} from 'services/organisationsync';
-import {Observable} from "rxjs/Observable";
-import {OrganisationInfoService} from "services";
-import {Subscription} from "rxjs/Subscription";
-import {Organisation, OrganisationService} from "services/organisations";
-import {OidcService, Role} from "core/auth";
-import {BaseAlertMessages} from "core/alertmessages";
-import {required} from "core/validation";
+import { OrganisationInfoService } from 'services';
+import { OrganisationSyncService, OrganisationTermination } from 'services/organisationsync';
+import { Organisation, OrganisationService } from 'services/organisations';
 
 @Component({
   templateUrl: 'terminate.template.html',
