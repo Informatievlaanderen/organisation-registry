@@ -72,9 +72,7 @@ namespace OrganisationRegistry.Infrastructure.Bus
                 }
 
                 if (command.User == null)
-                {
                     command.User = _securityService.GetUser(ClaimsPrincipal.Current);
-                }
 
                 _logger.LogDebug("Sending command {@Command}", command);
                 await handlers[0](command);
