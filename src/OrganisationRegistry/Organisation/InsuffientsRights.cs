@@ -4,6 +4,5 @@ namespace OrganisationRegistry.Organisation
     {
         public InsuffientsRights()
             : base("U heeft onvoldoende rechten voor deze actie.") { }
-
     }
 }
