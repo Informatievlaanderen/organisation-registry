@@ -14,7 +14,7 @@ import {
   OrganisationLocationService,
   OrganisationLocationFilter
 } from 'services/organisationlocations';
-import {OrganisationInfoService} from "services";
+import { OrganisationInfoService } from 'services';
 
 @Component({
   templateUrl: 'overview.template.html',
