@@ -176,8 +176,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             using (var context = contextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var organisationRelations =
-                    context.OrganisationRelationList.Where(x => x.RelatedOrganisationId == organisationId);
+                var organisationRelations = context.OrganisationRelationList.Where(x => x.RelatedOrganisationId == organisationId);
                 if (!organisationRelations.Any())
                     return;
 
@@ -196,9 +195,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     message.Body.FieldsToTerminate.Relations.Keys.Contains(item.OrganisationRelationId));
 
                 foreach (var relation in relations)
-                {
                     relation.ValidTo = message.Body.FieldsToTerminate.Relations[relation.OrganisationRelationId];
-                }
 
                 await context.SaveChangesAsync();
             }
