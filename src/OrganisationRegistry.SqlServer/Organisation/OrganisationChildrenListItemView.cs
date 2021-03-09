@@ -120,9 +120,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     return;
 
                 foreach (var organisation in organisations)
-                {
                     organisation.Name = message.Body.Name;
-                }
 
                 await context.SaveChangesAsync();
             }
@@ -137,9 +135,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     return;
 
                 foreach (var organisation in organisations)
-                {
                     organisation.Name = message.Body.NameBeforeKboCoupling;
-                }
 
                 await context.SaveChangesAsync();
             }
@@ -199,9 +195,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                     return;
 
                 foreach (var organisation in organisations)
-                {
                     organisation.OrganisationValidTo = message.Body.FieldsToTerminate.OrganisationValidity;
-                }
 
                 await context.SaveChangesAsync();
             }
