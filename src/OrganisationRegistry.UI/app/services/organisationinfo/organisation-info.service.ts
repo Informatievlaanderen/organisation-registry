@@ -1,16 +1,16 @@
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 
-import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
+import { Subject } from 'rxjs/Subject';
 
-import {Organisation, OrganisationChild, OrganisationService} from 'services/organisations';
+import { Organisation, OrganisationChild, OrganisationService } from 'services/organisations';
 
-import {AlertBuilder, AlertService} from 'core/alert';
-import {PagedEvent, PagedResult, SortOrder} from 'core/pagination';
-import {BaseAlertMessages} from 'core/alertmessages';
-import {OidcService, Role} from "core/auth";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
-import {combineLatest} from "rxjs/observable/combineLatest";
+import { AlertBuilder, AlertService } from 'core/alert';
+import { PagedEvent, PagedResult, SortOrder } from 'core/pagination';
+import { BaseAlertMessages } from 'core/alertmessages';
+import { OidcService, Role } from "core/auth";
+import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import { combineLatest } from "rxjs/observable/combineLatest";
 
 @Injectable()
 export class OrganisationInfoService {
