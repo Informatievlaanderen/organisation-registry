@@ -14,7 +14,7 @@ import {
   OrganisationFunctionService,
   OrganisationFunctionFilter
 } from 'services/organisationfunctions';
-import {OrganisationInfoService} from "services";
+import { OrganisationInfoService } from 'services';
 
 @Component({
   templateUrl: 'overview.template.html',
