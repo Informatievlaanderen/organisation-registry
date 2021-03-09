@@ -167,9 +167,7 @@
                     message.Body.FieldsToTerminate.Functions.Keys.Contains(item.OrganisationFunctionId));
 
                 foreach (var function in functions)
-                {
                     function.ValidTo = message.Body.FieldsToTerminate.Functions[function.OrganisationFunctionId];
-                }
 
                 await context.SaveChangesAsync();
             }
