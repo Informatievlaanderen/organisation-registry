@@ -9,6 +9,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using Microsoft.Extensions.Logging;
     using SqlServer;
     using OrganisationRegistry.Infrastructure;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Events;
 
     public class ElasticSearchProjectionsModule : Autofac.Module
@@ -40,6 +41,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             builder.RegisterAssemblyTypes(typeof(OrganisationRegistryElasticSearchProjectionsAssemblyTokenClass).GetTypeInfo().Assembly)
                 .AsClosedTypesOf(typeof(IReactionHandler<>))
                 .SingleInstance();
+
+            builder.RegisterType<NotImplementedSecurityService>()
+                .As<ISecurityService>()
+                .InstancePerLifetimeScope();
 
             builder.RegisterType<OrganisationsRunner>()
                 .SingleInstance();

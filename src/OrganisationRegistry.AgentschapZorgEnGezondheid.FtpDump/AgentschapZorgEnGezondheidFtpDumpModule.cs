@@ -11,6 +11,7 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
     using Microsoft.Extensions.Options;
     using SqlServer;
     using Infrastructure;
+    using Infrastructure.Authorization;
     using Infrastructure.Events;
     using Microsoft.Extensions.Logging;
 
@@ -45,6 +46,10 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
             builder.RegisterAssemblyTypes(typeof(OrganisationRegistryAgentschapZorgEnGezondheidFtpDumpAssemblyTokenClass).GetTypeInfo().Assembly)
                 .AsClosedTypesOf(typeof(IEventHandler<>))
                 .SingleInstance();
+
+            builder.RegisterType<NotImplementedSecurityService>()
+                .As<ISecurityService>()
+                .InstancePerLifetimeScope();
 
             builder.RegisterType<Runner>()
                 .SingleInstance();

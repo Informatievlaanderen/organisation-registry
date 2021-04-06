@@ -11,6 +11,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
     using SendGrid;
     using SqlServer;
     using System.Reflection;
+    using Infrastructure.Authorization;
     using Microsoft.Extensions.Logging;
 
     public class VlaanderenBeNotifierRunnerModule : Autofac.Module
@@ -44,6 +45,10 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             builder.RegisterType<SendGridMailer>()
                 .As<IMailer>()
                 .SingleInstance();
+
+            builder.RegisterType<NotImplementedSecurityService>()
+                .As<ISecurityService>()
+                .InstancePerLifetimeScope();
 
             builder.RegisterType<Runner>()
                 .SingleInstance();
