@@ -1,3 +1,10 @@
+# [1.65.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.64.0...v1.65.0) (2021-04-06)
+
+
+### Features
+
+* add security service for use in projections ([b382228](https://github.com/informatievlaanderen/organisation-registry/commit/b38222861512023026070c0a609c0748ab596e98))
+
 # [1.64.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.63.1...v1.64.0) (2021-03-09)
 
 
