@@ -12,6 +12,7 @@ namespace OrganisationRegistry.Projections.Delegations
     using Microsoft.Extensions.Options;
     using SqlServer;
     using OrganisationRegistry.Infrastructure;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Events;
 
     public class DelegationsRunnerModule : Autofac.Module
@@ -44,6 +45,10 @@ namespace OrganisationRegistry.Projections.Delegations
             builder.RegisterAssemblyTypes(typeof(OrganisationRegistryDelegationsRunnerAssemblyTokenClass).GetTypeInfo().Assembly)
                 .AsClosedTypesOf(typeof(IEventHandler<>))
                 .SingleInstance();
+
+            builder.RegisterType<NotImplementedSecurityService>()
+                .As<ISecurityService>()
+                .InstancePerLifetimeScope();
 
             builder.RegisterType<Runner>()
                 .SingleInstance();

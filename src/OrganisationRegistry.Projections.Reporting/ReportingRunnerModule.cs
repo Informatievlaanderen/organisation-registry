@@ -13,6 +13,7 @@ namespace OrganisationRegistry.Projections.Reporting
     using System.Reflection;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Events;
 
     public class ReportingRunnerModule : Autofac.Module
@@ -51,6 +52,10 @@ namespace OrganisationRegistry.Projections.Reporting
 
             builder.RegisterType<GenderRatioRunner>()
                 .SingleInstance();
+
+            builder.RegisterType<NotImplementedSecurityService>()
+                .As<ISecurityService>()
+                .InstancePerLifetimeScope();
 
             builder.Populate(_services);
         }
