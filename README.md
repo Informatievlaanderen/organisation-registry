@@ -17,10 +17,20 @@
 
 #### To run the UI in live reload mode:
 
+Make sure you have the following lines in your `hosts` file
+
 ```bash
+127.0.0.1	organisatie.dev-vlaanderen.local
+127.0.0.1	api.organisatie.dev-vlaanderen.local
+``
+
+Run the following commands:
+```bash
+nvm use #optional
+sudo setcap 'cap_net_bind_service=+ep' `which node` #first run only
 npm install
 npm run start:hmr
-# browse to https://localhost
+# browse to https://organisatie.dev-vlaanderen.local
 ```
 
 #### To add a migration:
