@@ -1,3 +1,15 @@
+# [1.66.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.65.0...v1.66.0) (2021-04-08)
+
+
+### Bug Fixes
+
+* use currently valid properties ([3f5cb93](https://github.com/informatievlaanderen/organisation-registry/commit/3f5cb93a13e7064d6f2f3f10150bfbdea432ba4d))
+
+
+### Features
+
+* expand readme ([92a6f94](https://github.com/informatievlaanderen/organisation-registry/commit/92a6f9432bb68ee4de14269338177ae8b4ec2a20))
+
 # [1.65.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.64.0...v1.65.0) (2021-04-06)
 
 
