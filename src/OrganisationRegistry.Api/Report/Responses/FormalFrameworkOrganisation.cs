@@ -59,11 +59,12 @@ namespace OrganisationRegistry.Api.Report.Responses
         /// <param name="documents"></param>
         /// <param name="formalFrameworkId"></param>
         /// <param name="params"></param>
+        /// <param name="today"></param>
         /// <returns></returns>
-        public static IEnumerable<FormalFrameworkOrganisationBase> Map(
-            IEnumerable<OrganisationDocument> documents,
+        public static IEnumerable<FormalFrameworkOrganisationBase> Map(IEnumerable<OrganisationDocument> documents,
             Guid formalFrameworkId,
-            ApiConfiguration @params)
+            ApiConfiguration @params,
+            DateTime today)
         {
             var formalFrameworkOrganisations = new List<FormalFrameworkOrganisationBase>();
 
@@ -74,8 +75,8 @@ namespace OrganisationRegistry.Api.Report.Responses
                     .Where(x =>
                         x.FormalFrameworkId == formalFrameworkId &&
                         (x.Validity == null ||
-                         (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
-                         (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))
+                         (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
+                         (!x.Validity.End.HasValue || x.Validity.End.Value >= today)))
                     .ToList();
 
                 if (formalFrameworks == null || !formalFrameworks.Any())
@@ -86,7 +87,7 @@ namespace OrganisationRegistry.Api.Report.Responses
                         document,
                         @params,
                         formalFrameworkId,
-                        DateTime.Now));
+                        today));
             }
 
             return formalFrameworkOrganisations;
@@ -200,23 +201,23 @@ namespace OrganisationRegistry.Api.Report.Responses
 
         [Order]
         [DisplayName("Juridische vorm")]
-        public string LegalForm { get; set; }
+        public string? LegalForm { get; set; }
 
         [Order]
         [DisplayName("Beleidsdomein")]
-        public string PolicyDomain { get; set; }
+        public string? PolicyDomain { get; set; }
 
         [Order]
         [DisplayName("Bevoegde minister")]
-        public string ResponsibleMinister { get; set; }
+        public string? ResponsibleMinister { get; set; }
 
         [Order]
         [DisplayName("Hoofdlocatie")]
-        public string MainLocation { get; set; }
+        public string? MainLocation { get; set; }
 
         [Order]
         [DisplayName("Locatie")]
-        public string Location { get; set; }
+        public string? Location { get; set; }
 
         public FormalFrameworkOrganisationBase(
             OrganisationDocument document,
@@ -244,27 +245,34 @@ namespace OrganisationRegistry.Api.Report.Responses
                 new Uri(string.Format(@params.DataVlaanderenOrganisationUri, document.OvoNumber));
 
             LegalForm = document.OrganisationClassifications
-                ?.FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.LegalFormClassificationTypeId)
+                ?.SingleOrDefault(x => x.OrganisationClassificationTypeId == @params.LegalFormClassificationTypeId &&
+                                      (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
+                                      (!x.Validity.End.HasValue || x.Validity.End.Value >= today))
                 ?.OrganisationClassificationName;
 
             PolicyDomain = document.OrganisationClassifications
-                ?.FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.PolicyDomainClassificationTypeId)
+                ?.SingleOrDefault(x => x.OrganisationClassificationTypeId == @params.PolicyDomainClassificationTypeId &&
+                                      (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
+                                      (!x.Validity.End.HasValue || x.Validity.End.Value >= today))
                 ?.OrganisationClassificationName;
 
             ResponsibleMinister = document.OrganisationClassifications
-                ?.Where(x =>
+                ?.SingleOrDefault(x =>
+                    x.OrganisationClassificationTypeId == @params.ResponsibleMinisterClassificationTypeId &&
                     (!x.Validity.Start.HasValue || x.Validity.Start <= today) &&
                     (!x.Validity.End.HasValue || x.Validity.End >= today))
-                .SingleOrDefault(x =>
-                    x.OrganisationClassificationTypeId == @params.ResponsibleMinisterClassificationTypeId)
                 ?.OrganisationClassificationName;
 
             MainLocation = document.Locations
-                ?.FirstOrDefault(x => x.IsMainLocation)
+                ?.SingleOrDefault(x => x.IsMainLocation &&
+                                      (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
+                                      (!x.Validity.End.HasValue || x.Validity.End.Value >= today))
                 ?.FormattedAddress;
 
             Location = document.Locations
-                ?.FirstOrDefault(x => !x.IsMainLocation)
+                ?.SingleOrDefault(x => !x.IsMainLocation &&
+                                      (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
+                                      (!x.Validity.End.HasValue || x.Validity.End.Value >= today))
                 ?.FormattedAddress;
         }
     }

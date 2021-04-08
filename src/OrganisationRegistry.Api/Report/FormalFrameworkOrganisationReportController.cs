@@ -36,6 +36,7 @@ namespace OrganisationRegistry.Api.Report
         /// Get all organisations for a formal framework.
         /// </summary>
         /// <param name="elastic"></param>
+        /// <param name="dateTimeProvider"></param>
         /// <param name="id">A formal framework GUID identifier</param>
         /// <returns></returns>
         [HttpGet("formalframeworkorganisations/{id}")]
@@ -44,6 +45,7 @@ namespace OrganisationRegistry.Api.Report
         [ProducesResponseType(typeof(BadRequestResult), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> GetFormalFrameworkOrganisations(
             [FromServices] Elastic elastic,
+            [FromServices] IDateTimeProvider dateTimeProvider,
             [FromRoute] Guid id)
         {
             var sorting = Request.ExtractSortingRequest();
@@ -57,7 +59,8 @@ namespace OrganisationRegistry.Api.Report
                                 ScrollSize,
                                 ScrollTimeout),
                             id,
-                            _config),
+                            _config,
+                            dateTimeProvider.Today),
                         sorting)
                     .ToList();
 
