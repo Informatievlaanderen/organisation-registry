@@ -47,6 +47,13 @@ cd src/OrganisationRegistry.SqlServer/
 dotnet ef database update --context OrganisationRegistryContext
 ```
 
+#### To copy events from staging to local db:
+
+```bash
+bcp OrganisationRegistry.OrganisationRegistry.Events out ./events.bcp -S<server> -U<user> -n -E
+bcp OrganisationRegistry.OrganisationRegistry.Events in ./events.bcp -S 127.0.0.1,21433 -U sa -P E@syP@ssw0rd -n -E
+```
+
 ### Tasks
 
 #### General Info
