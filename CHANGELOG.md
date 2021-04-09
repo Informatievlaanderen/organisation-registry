@@ -1,3 +1,15 @@
+# [1.67.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.66.0...v1.67.0) (2021-04-09)
+
+
+### Bug Fixes
+
+* use kbo property instead of outdated key ([9586389](https://github.com/informatievlaanderen/organisation-registry/commit/9586389d0530a2d48e7cae70065eecfddffcae35))
+
+
+### Features
+
+* expand readme with bcp commands ([fe9e706](https://github.com/informatievlaanderen/organisation-registry/commit/fe9e706ee107d5c48d0c068f8c241055ad711a4f))
+
 # [1.66.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.65.0...v1.66.0) (2021-04-08)
 
 
