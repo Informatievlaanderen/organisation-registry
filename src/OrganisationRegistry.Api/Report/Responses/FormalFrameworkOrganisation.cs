@@ -350,6 +350,9 @@ namespace OrganisationRegistry.Api.Report.Responses
                 ?.FirstOrDefault(x =>
                     x.KeyTypeId == @params.KBO_KeyTypeId)
                 ?.Value;
+
+            KBO = document.KboNumber;
+
             Orafin = document.Keys
                 ?.FirstOrDefault(x =>
                     x.KeyTypeId == @params.Orafin_KeyTypeId)
