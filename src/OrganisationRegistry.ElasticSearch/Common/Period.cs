@@ -16,6 +16,12 @@ namespace OrganisationRegistry.ElasticSearch.Common
             End = end;
         }
 
+        public bool OverlapsWith(DateTime date)
+        {
+            return (!Start.HasValue || Start.Value <= date) &&
+                   (!End.HasValue || End.Value >= date);
+        }
+
         public static IPromise<IProperties> Mapping(PropertiesDescriptor<Period> map) => map
             .Date(d => d
                 .Name(p => p.Start)

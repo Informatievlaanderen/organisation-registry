@@ -75,8 +75,7 @@ namespace OrganisationRegistry.Api.Report.Responses
                     .Where(x =>
                         x.FormalFrameworkId == formalFrameworkId &&
                         (x.Validity == null ||
-                         (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
-                         (!x.Validity.End.HasValue || x.Validity.End.Value >= today)))
+                         x.Validity.OverlapsWith(today)))
                     .ToList();
 
                 if (formalFrameworks == null || !formalFrameworks.Any())
@@ -116,8 +115,7 @@ namespace OrganisationRegistry.Api.Report.Responses
                     .Where(x =>
                         x.FormalFrameworkId == formalFrameworkId &&
                         (x.Validity == null ||
-                         (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
-                         (!x.Validity.End.HasValue || x.Validity.End.Value >= today)))
+                         x.Validity.OverlapsWith(today)))
                     .ToList();
 
                 if (formalFrameworks == null || !formalFrameworks.Any())
@@ -230,8 +228,7 @@ namespace OrganisationRegistry.Api.Report.Responses
                     x =>
                         x.FormalFrameworkId == formalFrameworkId &&
                         (x.Validity == null ||
-                         (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
-                         (!x.Validity.End.HasValue || x.Validity.End.Value >= today)));
+                         x.Validity.OverlapsWith(today)));
 
             ParentOrganisationId = formalFramework?.ParentOrganisationId;
             ParentOrganisationName = formalFramework?.ParentOrganisationName;
@@ -281,7 +278,7 @@ namespace OrganisationRegistry.Api.Report.Responses
     {
         [Order]
         [DisplayName("INR")]
-        public string INR { get; set; }
+        public string? INR { get; set; }
 
         [Order]
         [DisplayName("KBO")]
@@ -289,43 +286,43 @@ namespace OrganisationRegistry.Api.Report.Responses
 
         [Order]
         [DisplayName("Orafin")]
-        public string Orafin { get; set; }
+        public string? Orafin { get; set; }
 
         [Order]
         [DisplayName("Vlimpers")]
-        public string Vlimpers { get; set; }
+        public string? Vlimpers { get; set; }
 
         [Order]
         [DisplayName("Vlimpers_kort")]
-        public string VlimpersKort { get; set; }
+        public string? VlimpersKort { get; set; }
 
         [Order]
         [DisplayName("Bestuursniveau")]
-        public string Bestuursniveau { get; set; }
+        public string? Bestuursniveau { get; set; }
 
         [Order]
         [DisplayName("Categorie")]
-        public string Categorie { get; set; }
+        public string? Categorie { get; set; }
 
         [Order]
         [DisplayName("Entiteitsvorm")]
-        public string Entiteitsvorm { get; set; }
+        public string? Entiteitsvorm { get; set; }
 
         [Order]
         [DisplayName("ESR Klasse toezichthoudende overheid")]
-        public string ESRKlasseToezichthoudendeOverheid { get; set; }
+        public string? ESRKlasseToezichthoudendeOverheid { get; set; }
 
         [Order]
         [DisplayName("ESR Sector")]
-        public string ESRSector { get; set; }
+        public string? ESRSector { get; set; }
 
         [Order]
         [DisplayName("ESR Toezichthoudende overheid")]
-        public string ESRToezichthoudendeOverheid { get; set; }
+        public string? ESRToezichthoudendeOverheid { get; set; }
 
         [Order]
         [DisplayName("Uitvoerend niveau")]
-        public string UitvoerendNiveau { get; set; }
+        public string? UitvoerendNiveau { get; set; }
 
         [Order]
         [DisplayName("Geldig vanaf")]
@@ -343,57 +340,72 @@ namespace OrganisationRegistry.Api.Report.Responses
             : base(document, @params, formalFrameworkId, today)
         {
             INR = document.Keys
-                ?.FirstOrDefault(x =>
-                    x.KeyTypeId == @params.INR_KeyTypeId)
-                ?.Value;
-            KBO = document.Keys
-                ?.FirstOrDefault(x =>
-                    x.KeyTypeId == @params.KBO_KeyTypeId)
+                ?.SingleOrDefault(x =>
+                    x.KeyTypeId == @params.INR_KeyTypeId &&
+                    x.Validity.OverlapsWith(today))
                 ?.Value;
 
             KBO = document.KboNumber;
 
             Orafin = document.Keys
-                ?.FirstOrDefault(x =>
-                    x.KeyTypeId == @params.Orafin_KeyTypeId)
+                ?.SingleOrDefault(x =>
+                    x.KeyTypeId == @params.Orafin_KeyTypeId &&
+                    x.Validity.OverlapsWith(today))
                 ?.Value;
+
             Vlimpers = document.Keys
-                ?.FirstOrDefault(x =>
-                    x.KeyTypeId == @params.Vlimpers_KeyTypeId)
+                ?.SingleOrDefault(x =>
+                    x.KeyTypeId == @params.Vlimpers_KeyTypeId &&
+                    x.Validity.OverlapsWith(today))
                 ?.Value;
+
             VlimpersKort = document.Keys
-                ?.FirstOrDefault(x =>
-                    x.KeyTypeId == @params.VlimpersKort_KeyTypeId)
+                ?.SingleOrDefault(x =>
+                    x.KeyTypeId == @params.VlimpersKort_KeyTypeId &&
+                    x.Validity.OverlapsWith(today))
                 ?.Value;
 
             Bestuursniveau = document.OrganisationClassifications
-                ?.FirstOrDefault(x =>
-                    x.OrganisationClassificationTypeId == @params.Bestuursniveau_ClassificationTypeId)
+                ?.SingleOrDefault(x =>
+                    x.OrganisationClassificationTypeId == @params.Bestuursniveau_ClassificationTypeId &&
+                    x.Validity.OverlapsWith(today))
                 ?.OrganisationClassificationName;
+
             Categorie = document.OrganisationClassifications
-                ?.FirstOrDefault(x =>
-                    x.OrganisationClassificationTypeId == @params.Categorie_ClassificationTypeId)
+                ?.SingleOrDefault(x =>
+                    x.OrganisationClassificationTypeId == @params.Categorie_ClassificationTypeId &&
+                    x.Validity.OverlapsWith(today))
                 ?.OrganisationClassificationName;
+
             Entiteitsvorm = document.OrganisationClassifications
-                ?.FirstOrDefault(x =>
-                    x.OrganisationClassificationTypeId == @params.Entiteitsvorm_ClassificationTypeId)
+                ?.SingleOrDefault(x =>
+                    x.OrganisationClassificationTypeId == @params.Entiteitsvorm_ClassificationTypeId &&
+                    x.Validity.OverlapsWith(today))
                 ?.OrganisationClassificationName;
+
             ESRKlasseToezichthoudendeOverheid = document.OrganisationClassifications
-                ?.FirstOrDefault(x =>
+                ?.SingleOrDefault(x =>
                     x.OrganisationClassificationTypeId ==
-                    @params.ESRKlasseToezichthoudendeOverheid_ClassificationTypeId)
+                    @params.ESRKlasseToezichthoudendeOverheid_ClassificationTypeId &&
+                    x.Validity.OverlapsWith(today))
                 ?.OrganisationClassificationName;
+
             ESRSector = document.OrganisationClassifications
-                ?.FirstOrDefault(x =>
-                    x.OrganisationClassificationTypeId == @params.ESRSector_ClassificationTypeId)
+                ?.SingleOrDefault(x =>
+                    x.OrganisationClassificationTypeId == @params.ESRSector_ClassificationTypeId &&
+                    x.Validity.OverlapsWith(today))
                 ?.OrganisationClassificationName;
+
             ESRToezichthoudendeOverheid = document.OrganisationClassifications
-                ?.FirstOrDefault(x =>
-                    x.OrganisationClassificationTypeId == @params.ESRToezichthoudendeOverheid_ClassificationTypeId)
+                ?.SingleOrDefault(x =>
+                    x.OrganisationClassificationTypeId == @params.ESRToezichthoudendeOverheid_ClassificationTypeId &&
+                    x.Validity.OverlapsWith(today))
                 ?.OrganisationClassificationName;
+
             UitvoerendNiveau = document.OrganisationClassifications
-                ?.FirstOrDefault(x =>
-                    x.OrganisationClassificationTypeId == @params.UitvoerendNiveau_ClassificationTypeId)
+                ?.SingleOrDefault(x =>
+                    x.OrganisationClassificationTypeId == @params.UitvoerendNiveau_ClassificationTypeId &&
+                    x.Validity.OverlapsWith(today))
                 ?.OrganisationClassificationName;
 
             ValidFrom = document.Validity.Start;
