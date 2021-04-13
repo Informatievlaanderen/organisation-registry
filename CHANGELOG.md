@@ -1,3 +1,11 @@
+## [1.67.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.67.0...v1.67.1) (2021-04-13)
+
+
+### Bug Fixes
+
+* correctly handle async exceptions ([5394957](https://github.com/informatievlaanderen/organisation-registry/commit/539495710679a13213faba7a0d3069e1aa37779a))
+* override ToString ([193374a](https://github.com/informatievlaanderen/organisation-registry/commit/193374a1be87c25889de7fa17010293eaf95e5dd))
+
 # [1.67.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.66.0...v1.67.0) (2021-04-09)
 
 
