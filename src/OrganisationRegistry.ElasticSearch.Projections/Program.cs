@@ -3,6 +3,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using System;
     using System.IO;
     using System.Threading;
+    using System.Threading.Tasks;
     using Amazon;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
@@ -25,7 +26,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
 
     internal class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             Console.WriteLine("Starting ElasticSearch Projections Runner");
 
@@ -46,12 +47,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")))
                 .Build();
 
-            RunProgram<PeopleRunner>(configuration);
-            RunProgram<OrganisationsRunner>(configuration);
-            RunProgram<BodyRunner>(configuration);
+            await RunProgram<PeopleRunner>(configuration);
+            await RunProgram<OrganisationsRunner>(configuration);
+            await RunProgram<BodyRunner>(configuration);
         }
 
-        private static void RunProgram<T>(IConfiguration configuration) where T : BaseRunner
+        private static async Task RunProgram<T>(IConfiguration configuration) where T : BaseRunner
         {
             var runnerName = typeof(T).Name;
             var services = new ServiceCollection();
@@ -115,7 +116,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     var runner = app.GetService<T>();
                     UseOrganisationRegistryEventSourcing(app, runner);
 
-                    ExecuteRunner(runner);
+                    await ExecuteRunner(runner);
                     logger.LogInformation("[{RunnerName}] Processing completed successfully, exiting program.", runnerName);
                 }
                 else
@@ -138,7 +139,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             }
         }
 
-        private static void ExecuteRunner(BaseRunner runner) => runner.Run();
+        private static async Task ExecuteRunner(BaseRunner runner) => await runner.Run();
 
         private static void FlushLoggerAndTelemetry()
         {

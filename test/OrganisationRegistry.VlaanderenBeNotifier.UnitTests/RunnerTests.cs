@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.VlaanderenBeNotifier.UnitTests
 {
+    using System.Threading.Tasks;
     using Configuration;
     using FluentAssertions;
     using Infrastructure.Configuration;
@@ -14,13 +15,13 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.UnitTests
     {
         private readonly IEventPublisher _publisher;
         private readonly IProjectionStates _projectionStates;
-        private readonly IEventStore _eventstore;
+        private readonly IEventStore _eventStore;
         private readonly ILogger<Runner> _logger;
         private readonly OptionsWrapper<VlaanderenBeNotifierConfiguration> _vlaanderenBeNotifierConfigurationOptions;
 
         public RunnerTests()
         {
-            _eventstore = Mock.Of<IEventStore>();
+            _eventStore = Mock.Of<IEventStore>();
             _projectionStates = Mock.Of<IProjectionStates>();
             _publisher = Mock.Of<IEventPublisher>();
             _logger = Mock.Of<ILogger<Runner>>();
@@ -28,7 +29,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.UnitTests
         }
 
         [Fact]
-        public void ReturnsFalseWhenNotEnabled()
+        public async Task ReturnsFalseWhenNotEnabled()
         {
             var togglesConfiguration =
                 new OptionsWrapper<TogglesConfiguration>(new TogglesConfiguration { VlaanderenBeNotifierAvailable = false });
@@ -38,15 +39,16 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.UnitTests
                     _logger,
                     togglesConfiguration,
                     _vlaanderenBeNotifierConfigurationOptions,
-                    _eventstore,
+                    _eventStore,
                     _projectionStates,
                     _publisher);
 
-            runner.Run().Should().BeFalse();
+            var result = await runner.Run();
+            result.Should().BeFalse();
         }
 
         [Fact]
-        public void ReturnsTrueWhenEnabled()
+        public async Task ReturnsTrueWhenEnabled()
         {
             var togglesConfiguration =
                 new OptionsWrapper<TogglesConfiguration>(new TogglesConfiguration { VlaanderenBeNotifierAvailable = true });
@@ -55,11 +57,12 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.UnitTests
                 _logger,
                 togglesConfiguration,
                 _vlaanderenBeNotifierConfigurationOptions,
-                _eventstore,
+                _eventStore,
                 _projectionStates,
                 _publisher);
 
-            runner.Run().Should().BeTrue();
+            var result = await runner.Run();
+            result.Should().BeTrue();
         }
     }
 }

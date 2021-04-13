@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Projections.Delegations
     using System;
     using System.IO;
     using System.Threading;
+    using System.Threading.Tasks;
     using Amazon;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
@@ -26,7 +27,7 @@ namespace OrganisationRegistry.Projections.Delegations
 
     internal class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             Console.WriteLine("Starting Delegations Runner");
 
@@ -103,7 +104,8 @@ namespace OrganisationRegistry.Projections.Delegations
                     return;
                 }
 
-                if (app.GetService<Runner>().Run())
+                var runner = app.GetService<Runner>();
+                if (await runner.Run())
                 {
                     logger.LogInformation("Processing completed successfully, exiting program.");
                 }
