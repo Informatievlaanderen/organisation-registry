@@ -32,5 +32,10 @@ namespace OrganisationRegistry.Organisation
 
             return digitsOnly;
         }
+
+        public override string ToString()
+        {
+            return _value;
+        }
     }
 }
