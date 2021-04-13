@@ -1,3 +1,10 @@
+# [1.68.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.67.1...v1.68.0) (2021-04-13)
+
+
+### Features
+
+* print env variables for serilog debug ([105644d](https://github.com/informatievlaanderen/organisation-registry/commit/105644d2ed9b56e609cf0ffd61140819321e509c))
+
 ## [1.67.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.67.0...v1.67.1) (2021-04-13)
 
 
