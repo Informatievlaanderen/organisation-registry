@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.ElasticSearch.Projections
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
@@ -30,11 +29,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
         public static async Task Main(string[] args)
         {
             Console.WriteLine("Starting ElasticSearch Projections Runner");
-            var environmentVariables = Environment.GetEnvironmentVariables();
-            foreach (string entry in environmentVariables.Keys)
-            {
-                Console.WriteLine($"{entry}: {environmentVariables[entry]}");
-            }
 
             JsonConvert.DefaultSettings =
                 () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
