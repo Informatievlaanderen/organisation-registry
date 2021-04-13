@@ -3,6 +3,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
     using System;
     using System.IO;
     using System.Threading;
+    using System.Threading.Tasks;
     using Amazon;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
@@ -25,7 +26,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
 
     internal class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             Console.WriteLine("Starting VlaanderenBeNotifier");
 
@@ -45,10 +46,10 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")))
                 .Build();
 
-            RunProgram<Runner>(configuration);
+            await RunProgram<Runner>(configuration);
         }
 
-        private static void RunProgram<T>(IConfiguration configuration) where T : Runner
+        private static async Task RunProgram<T>(IConfiguration configuration) where T : Runner
         {
             var services = new ServiceCollection();
 
@@ -111,7 +112,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     var runner = app.GetService<T>();
                     UseOrganisationRegistryEventSourcing(app);
 
-                    ExecuteRunner(runner);
+                    await ExecuteRunner(runner);
                     logger.LogInformation("Processing completed successfully, exiting program.");
                 }
                 else
@@ -134,7 +135,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             }
         }
 
-        private static void ExecuteRunner(Runner runner) => runner.Run();
+        private static async Task ExecuteRunner(Runner runner) => await runner.Run();
 
         private static void FlushLoggerAndTelemetry()
         {

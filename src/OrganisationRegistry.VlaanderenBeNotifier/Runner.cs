@@ -3,6 +3,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using Configuration;
     using Info;
     using Infrastructure.Configuration;
@@ -38,7 +39,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             _bus = bus;
         }
 
-        public bool Run()
+        public async Task<bool> Run()
         {
             _logger.LogInformation(ProgramInformation.Build(_vlaanderenBeNotifierConfiguration));
 
@@ -53,8 +54,10 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             var newLastProcessedEventNumber = new int?();
             try
             {
-                envelopes.ForEach(envelope =>
-                    newLastProcessedEventNumber = ProcessEnvelope(envelope));
+                foreach (var envelope in envelopes)
+                {
+                    newLastProcessedEventNumber = await ProcessEnvelope(envelope);
+                }
             }
             catch (Exception ex)
             {
@@ -78,11 +81,11 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             _projectionStates.UpdateProjectionState(VlaanderenbeNotifierProjectionName, newLastProcessedEventNumber.Value);
         }
 
-        private int? ProcessEnvelope(IEnvelope envelope)
+        private async Task<int?> ProcessEnvelope(IEnvelope envelope)
         {
             try
             {
-                _bus.Publish(null, null, (dynamic) envelope);
+                await _bus.Publish(null, null, (dynamic) envelope);
                 return envelope.Number;
             }
             catch

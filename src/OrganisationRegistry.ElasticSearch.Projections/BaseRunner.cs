@@ -4,6 +4,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using System.Threading.Tasks;
     using Configuration;
     using Infrastructure;
     using Microsoft.Extensions.Logging;
@@ -52,7 +53,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             ReactionHandlers = reactionHandlers;
         }
 
-        public void Run()
+        public async Task Run()
         {
             var lastProcessedEventNumber = _projectionStates.GetLastProcessedEventNumber(_elasticSearchProjectionsProjectionName);
             InitialiseProjection(lastProcessedEventNumber);
@@ -73,8 +74,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             var newLastProcessedEventNumber = new int?();
             try
             {
-                envelopes.ForEach(envelope =>
-                    newLastProcessedEventNumber = ProcessEnvelope(envelope));
+                foreach (var envelope in envelopes)
+                {
+                    newLastProcessedEventNumber = await ProcessEnvelope(envelope);
+                }
             }
             catch (Exception ex)
             {
@@ -87,13 +90,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             }
         }
 
-        private void InitialiseProjection(int lastProcessedEventNumber)
+        private async Task InitialiseProjection(int lastProcessedEventNumber)
         {
             if (lastProcessedEventNumber != -1)
                 return;
 
             _logger.LogInformation("[{ProjectionName}] First run, initialising projections!", ProjectionName);
-            ProcessEnvelope(new InitialiseProjection(_projectionFullName).ToTypedEnvelope());
+            await ProcessEnvelope(new InitialiseProjection(_projectionFullName).ToTypedEnvelope());
         }
 
         private void UpdateProjectionState(int? newLastProcessedEventNumber)
@@ -105,11 +108,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             _projectionStates.UpdateProjectionState(_elasticSearchProjectionsProjectionName, newLastProcessedEventNumber.Value);
         }
 
-        private int? ProcessEnvelope(IEnvelope envelope)
+        private async Task<int?> ProcessEnvelope(IEnvelope envelope)
         {
             try
             {
-                _bus.Publish(null, null, (dynamic)envelope);
+                await _bus.Publish(null, null, (dynamic)envelope);
                 return envelope.Number;
             }
             catch

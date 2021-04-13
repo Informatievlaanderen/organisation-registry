@@ -15,6 +15,7 @@ namespace OrganisationRegistry.Projections.Reporting
     using System;
     using System.IO;
     using System.Threading;
+    using System.Threading.Tasks;
     using Amazon;
     using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
@@ -27,7 +28,7 @@ namespace OrganisationRegistry.Projections.Reporting
 
     internal class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             Console.WriteLine("Starting Reporting Runner");
 
@@ -48,10 +49,10 @@ namespace OrganisationRegistry.Projections.Reporting
                     y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")))
                 .Build();
 
-            RunProgram<GenderRatioRunner>(configuration);
+            await RunProgram<GenderRatioRunner>(configuration);
         }
 
-        private static void RunProgram<T>(IConfiguration configuration) where T : BaseRunner
+        private static async Task RunProgram<T>(IConfiguration configuration) where T : BaseRunner
         {
             var services = new ServiceCollection();
             services.AddLogging(loggingBuilder =>
@@ -113,7 +114,7 @@ namespace OrganisationRegistry.Projections.Reporting
 
                     UseOrganisationRegistryEventSourcing(app, runner);
 
-                    ExecuteRunner(runner);
+                    await ExecuteRunner(runner);
 
                     logger.LogInformation("Processing completed successfully, exiting program.");
                 }
@@ -140,11 +141,9 @@ namespace OrganisationRegistry.Projections.Reporting
             }
         }
 
-        private static void ExecuteRunner(BaseRunner runner)
+        private static async Task ExecuteRunner(BaseRunner runner)
         {
-            runner.Run();
-
-            //telemetryClient.TrackEvent($"ReportingProjections::{runner.ProjectionName}::Ran");
+            await runner.Run();
         }
 
         private static void FlushLoggerAndTelemetry()

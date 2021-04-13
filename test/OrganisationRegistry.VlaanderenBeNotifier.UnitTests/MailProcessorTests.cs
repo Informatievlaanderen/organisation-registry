@@ -93,7 +93,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.UnitTests
                 projectionStates.Object,
                 eventPublisher.Object);
 
-            Assert.Throws<Exception>(() => runner.Run());
+            Assert.ThrowsAsync<Exception>(() => runner.Run());
 
             projectionStates.Verify(states => states.UpdateProjectionState(Runner.VlaanderenbeNotifierProjectionName, It.IsAny<int>()), Times.Never);
         }
@@ -136,7 +136,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.UnitTests
                 projectionStates.Object,
                 eventPublisher.Object);
 
-            Assert.Throws<Exception>(() => runner.Run());
+            Assert.ThrowsAsync<Exception>(() => runner.Run());
 
             projectionStates.Verify(states => states.UpdateProjectionState(Runner.VlaanderenbeNotifierProjectionName, 2));
         }

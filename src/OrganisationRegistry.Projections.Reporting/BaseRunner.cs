@@ -7,6 +7,7 @@ namespace OrganisationRegistry.Projections.Reporting
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using System.Threading.Tasks;
     using OrganisationRegistry.Infrastructure.Events;
 
     public class BaseRunner
@@ -47,10 +48,10 @@ namespace OrganisationRegistry.Projections.Reporting
             _projectionFullName = projectionFullName;
         }
 
-        public void Run()
+        public async Task Run()
         {
             var lastProcessedEventNumber = _projectionStates.GetLastProcessedEventNumber(_dbProjectionsProjectionName);
-            InitialiseProjection(lastProcessedEventNumber);
+            await InitialiseProjection(lastProcessedEventNumber);
 
             var eventsBeingListenedTo =
                 EventHandlers
@@ -68,8 +69,10 @@ namespace OrganisationRegistry.Projections.Reporting
             var newLastProcessedEventNumber = new int?();
             try
             {
-                envelopes.ForEach(envelope =>
-                    newLastProcessedEventNumber = ProcessEnvelope(envelope));
+                foreach (var envelope in envelopes)
+                {
+                    newLastProcessedEventNumber = await ProcessEnvelope(envelope);
+                }
             }
             catch (Exception ex)
             {
@@ -83,14 +86,14 @@ namespace OrganisationRegistry.Projections.Reporting
             }
         }
 
-        private void InitialiseProjection(int lastProcessedEventNumber)
+        private async Task InitialiseProjection(int lastProcessedEventNumber)
         {
             if (lastProcessedEventNumber != -1)
                 return;
 
             _logger.LogInformation("[{ProjectionName}] First run, initialising projections!", ProjectionName);
 
-            ProcessEnvelope(new InitialiseProjection(_projectionFullName).ToTypedEnvelope());
+            await ProcessEnvelope(new InitialiseProjection(_projectionFullName).ToTypedEnvelope());
         }
 
         private void UpdateProjectionState(int? newLastProcessedEventNumber)
@@ -103,11 +106,11 @@ namespace OrganisationRegistry.Projections.Reporting
             _projectionStates.UpdateProjectionState(_dbProjectionsProjectionName, newLastProcessedEventNumber.Value);
         }
 
-        private int? ProcessEnvelope(IEnvelope envelope)
+        private async Task<int?> ProcessEnvelope(IEnvelope envelope)
         {
             try
             {
-                _bus.Publish(null, null, (dynamic)envelope);
+                await _bus.Publish(null, null, (dynamic)envelope);
                 return envelope.Number;
             }
             catch

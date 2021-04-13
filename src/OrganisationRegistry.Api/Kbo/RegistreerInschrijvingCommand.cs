@@ -76,7 +76,6 @@ namespace OrganisationRegistry.Api.Kbo
                             endpoint,
                             new StringContent(signedEnvelope, Encoding.UTF8, "application/soap+xml"));
 
-
                     if (!response.IsSuccessStatusCode)
                     {
                         _logger.LogWarning("RegistreerInschrijving response not successful: {@Result}", response);
