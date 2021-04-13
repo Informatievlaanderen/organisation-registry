@@ -1,3 +1,10 @@
+## [1.68.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.68.0...v1.68.1) (2021-04-13)
+
+
+### Reverts
+
+* Revert "feat: print env variables for serilog debug" ([efd1fd4](https://github.com/informatievlaanderen/organisation-registry/commit/efd1fd4b45371f2fbbfd6399f3cf1c2d526f4579))
+
 # [1.68.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.67.1...v1.68.0) (2021-04-13)
 
 
