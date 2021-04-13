@@ -13,7 +13,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using Day.Events;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Building.Events;
-    using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Location.Events;
     using OrganisationRegistry.Organisation;
@@ -109,7 +108,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationTerminated>,
         IReactionHandler<DayHasPassed>
     {
-        private readonly IMemoryCaches _memoryCaches;
         private readonly IEventStore _eventStore;
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -120,11 +118,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public OrganisationDetailItemView(
             ILogger<OrganisationDetailItemView> logger,
-            IMemoryCaches memoryCaches,
             IEventStore eventStore,
             IContextFactory contextFactory) : base(logger, contextFactory)
         {
-            _memoryCaches = memoryCaches;
             _eventStore = eventStore;
         }
 
