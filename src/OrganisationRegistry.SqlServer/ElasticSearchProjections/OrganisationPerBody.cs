@@ -24,7 +24,7 @@
 
         public override void Map(EntityTypeBuilder<OrganisationPerBody> b)
         {
-            b.ToTable(TableName, "OrganisationRegistry")
+            b.ToTable(TableName, WellknownSchemas.ElasticSearchProjectionsSchema)
                 .HasKey(p => p.BodyId)
                 .IsClustered(false);
 
