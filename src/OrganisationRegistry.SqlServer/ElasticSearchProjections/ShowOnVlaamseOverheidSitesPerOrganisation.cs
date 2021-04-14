@@ -17,7 +17,7 @@ namespace OrganisationRegistry.SqlServer.ElasticSearchProjections
 
         public override void Map(EntityTypeBuilder<ShowOnVlaamseOverheidSitesPerOrganisation> b)
         {
-            b.ToTable(TableName, "OrganisationRegistry")
+            b.ToTable(TableName, WellknownSchemas.ElasticSearchProjectionsSchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

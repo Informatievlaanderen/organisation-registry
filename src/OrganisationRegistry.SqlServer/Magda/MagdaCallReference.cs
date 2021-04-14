@@ -16,7 +16,7 @@ namespace OrganisationRegistry.SqlServer.Magda
     {
         public override void Map(EntityTypeBuilder<MagdaCallReference> b)
         {
-            b.ToTable("CallReferences", "Magda")
+            b.ToTable("CallReferences", WellknownSchemas.MagdaSchema)
                 .HasKey(p => p.Reference);
 
             b.Property(p => p.UserClaims);

@@ -24,7 +24,7 @@ namespace OrganisationRegistry.SqlServer.KboSyncQueue
     {
         public override void Map(EntityTypeBuilder<KboSyncQueueItem> b)
         {
-            b.ToTable("KboSyncQueue", "Magda")
+            b.ToTable("KboSyncQueue", WellknownSchemas.MagdaSchema)
                 .HasKey(p => p.Id);
 
             b.Property(p => p.SourceFileName);

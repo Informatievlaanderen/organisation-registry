@@ -128,11 +128,12 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         public DbSet<ProjectionStateItem> ProjectionStates { get; set; }
 
+        // ElasticSearch
         public DbSet<ShowOnVlaamseOverheidSitesPerOrganisation> ShowOnVlaamseOverheidSitesPerOrganisationList { get; set; }
         public DbSet<IsActivePerOrganisationCapacity> IsActivePerOrganisationCapacityList { get; set; }
-
         public DbSet<Delegations.OrganisationPerBody> OrganisationPerBodyList { get; set; }
         public DbSet<ElasticSearchProjections.OrganisationPerBody> OrganisationPerBodyListForES { get; set; }
+        public DbSet<OrganisationToRebuild> OrganisationsToRebuild { get; set; }
 
         // Reporting
         public DbSet<BodySeatGenderRatioOrganisationPerBodyListItem> BodySeatGenderRatioOrganisationPerBodyList { get; set; }
