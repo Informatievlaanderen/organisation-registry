@@ -1,3 +1,14 @@
+# [1.69.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.68.1...v1.69.0) (2021-04-14)
+
+
+### Features
+
+* add FromVersion ([89ef91c](https://github.com/informatievlaanderen/organisation-registry/commit/89ef91c226358d0ec4c27a1f54a9514ff65b5e19))
+* add individual rebuild runner for ES ([5c497f9](https://github.com/informatievlaanderen/organisation-registry/commit/5c497f9c827c44da60d36db3216de1ad088065d7))
+* add method to get all events for an id ([bd8a6da](https://github.com/informatievlaanderen/organisation-registry/commit/bd8a6da612b2b6988ce5e7240556d296f996fff2))
+* add OrganisationsToRebuild and move to ES schema ([61051bc](https://github.com/informatievlaanderen/organisation-registry/commit/61051bcc20d5c9b41cfabf974a297506daa46779))
+* add production settings for serilog ([4c00b9e](https://github.com/informatievlaanderen/organisation-registry/commit/4c00b9e912f3c7939de3f3b5af654bd23a49c22e))
+
 ## [1.68.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.68.0...v1.68.1) (2021-04-13)
 
 
