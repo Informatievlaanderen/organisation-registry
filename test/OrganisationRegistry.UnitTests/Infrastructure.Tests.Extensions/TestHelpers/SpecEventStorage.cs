@@ -29,6 +29,9 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
         public IEnumerable<IEvent> Get<T>(Guid aggregateId, int fromVersion)
             => Events.Where(x => x.Version > fromVersion && x.Id == aggregateId);
 
+        public IEnumerable<IEnvelope> GetEventEnvelopes<T>(Guid aggregateId)
+            => Events.Where(x => x.Id == aggregateId).Select(x => x.ToEnvelope());
+
         public IEnumerable<IEnvelope> GetEventEnvelopes(params Type[] eventTypes)
             => Events.Where(x => eventTypes.Contains(x.GetType())).Select(x => x.ToEnvelope());
 

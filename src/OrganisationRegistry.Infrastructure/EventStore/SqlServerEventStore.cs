@@ -175,7 +175,7 @@ SELECT CAST(SCOPE_IDENTITY() as int)",
 
         public IEnumerable<IEvent> Get<T>(Guid aggregateId, int fromVersion)
         {
-            var events = _eventDataReader.Get(aggregateId, fromVersion);
+            var events = _eventDataReader.GetEvents(aggregateId, fromVersion);
 
             return events
                 .Select(e =>
@@ -194,29 +194,37 @@ SELECT CAST(SCOPE_IDENTITY() as int)",
 
         public int GetEventEnvelopeCount(DateTimeOffset? dateTimeOffset = null)
         {
-            return _eventDataReader.GetEventEnvelopeCount(dateTimeOffset);
+            return _eventDataReader.GetEventCount(dateTimeOffset);
         }
 
         public IEnumerable<IEnvelope> GetEventEnvelopes(params Type[] eventTypes)
         {
-            var events = _eventDataReader.GetEventEnvelopes(eventTypes);
+            var events = _eventDataReader.GetEvents(eventTypes);
 
             return ParseEventsIntoEnvelopes(events, _jsonSerializerSettings);
         }
 
         public IEnumerable<IEnvelope> GetEventEnvelopesAfter(int eventNumber)
         {
-            var events = _eventDataReader.GetEventEnvelopesAfter(eventNumber);
+            var events = _eventDataReader.GetEventsAfter(eventNumber);
 
             return ParseEventsIntoEnvelopes(events, _jsonSerializerSettings);
         }
 
         public IEnumerable<IEnvelope> GetEventEnvelopesAfter(int eventNumber, int maxEvents, params Type[] eventTypesToInclude)
         {
-            var events = _eventDataReader.GetEventEnvelopesAfter(eventNumber, maxEvents, eventTypesToInclude);
+            var events = _eventDataReader.GetEventsAfter(eventNumber, maxEvents, eventTypesToInclude);
 
             return ParseEventsIntoEnvelopes(events, _jsonSerializerSettings);
         }
+
+        public IEnumerable<IEnvelope> GetEventEnvelopes<T>(Guid aggregateId)
+        {
+            var events = _eventDataReader.GetEvents(aggregateId, FromVersion.Start);
+
+            return ParseEventsIntoEnvelopes(events, _jsonSerializerSettings);
+        }
+
 
         public int GetLastEvent()
         {

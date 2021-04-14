@@ -6,6 +6,7 @@ namespace OrganisationRegistry.Infrastructure.Domain
     using Factories;
     using System.Linq;
     using System.Threading.Tasks;
+    using EventStore;
     using Microsoft.Extensions.Logging;
 
     // Scoped as SingleInstance()
@@ -33,7 +34,7 @@ namespace OrganisationRegistry.Infrastructure.Domain
 
         public T Get<T>(Guid aggregateId) where T : AggregateRoot
         {
-            var events = _eventStore.Get<T>(aggregateId, -1).ToList();
+            var events = _eventStore.Get<T>(aggregateId, FromVersion.Start).ToList();
             if (!events.Any())
                 throw new AggregateNotFoundException(typeof(T), aggregateId);
 

@@ -9,11 +9,11 @@ namespace OrganisationRegistry.Infrastructure.EventStore
 
     public interface IEventDataReader
     {
-        List<EventData> Get(Guid aggregateId, int fromVersion);
-        int GetEventEnvelopeCount(DateTimeOffset? dateTimeOffset = null);
-        List<EventData> GetEventEnvelopes(params Type[] eventTypes);
-        List<EventData> GetEventEnvelopesAfter(int eventNumber);
-        List<EventData> GetEventEnvelopesAfter(int eventNumber, int maxEvents, params Type[] eventTypesToInclude);
+        List<EventData> GetEvents(Guid aggregateId, int fromVersion);
+        int GetEventCount(DateTimeOffset? dateTimeOffset = null);
+        List<EventData> GetEvents(params Type[] eventTypes);
+        List<EventData> GetEventsAfter(int eventNumber);
+        List<EventData> GetEventsAfter(int eventNumber, int maxEvents, params Type[] eventTypesToInclude);
         int GetLastEvent();
     }
 
@@ -26,7 +26,7 @@ namespace OrganisationRegistry.Infrastructure.EventStore
             _getConnection = getConnection;
         }
 
-        public List<EventData> Get(Guid aggregateId, int fromVersion)
+        public List<EventData> GetEvents(Guid aggregateId, int fromVersion)
         {
             List<EventData> events;
 
@@ -35,7 +35,7 @@ namespace OrganisationRegistry.Infrastructure.EventStore
                 db.Open();
 
                 events = db.Query<EventData>(
-                    @"SELECT [Id], [Version], [Name], [Timestamp], [Data], [Ip], [LastName], [FirstName], [UserId]
+                    @"SELECT [Id], [Number], [Version], [Name], [Timestamp], [Data], [Ip], [LastName], [FirstName], [UserId]
 FROM [OrganisationRegistry].[Events]
 WHERE [Id] = @Id
 AND [Version] > @Version
@@ -50,7 +50,7 @@ ORDER BY Version ASC",
             return events;
         }
 
-        public int GetEventEnvelopeCount(DateTimeOffset? dateTimeOffset = null)
+        public int GetEventCount(DateTimeOffset? dateTimeOffset = null)
         {
             using (var db = _getConnection())
             {
@@ -67,7 +67,7 @@ WHERE [Timestamp] > @DateTime",
             }
         }
 
-        public List<EventData> GetEventEnvelopes(params Type[] eventTypes)
+        public List<EventData> GetEvents(params Type[] eventTypes)
         {
             using (var db = _getConnection())
             {
@@ -85,7 +85,7 @@ ORDER BY [Number] ASC",
             }
         }
 
-        public List<EventData> GetEventEnvelopesAfter(int eventNumber)
+        public List<EventData> GetEventsAfter(int eventNumber)
         {
             using (var db = _getConnection())
             {
@@ -95,7 +95,7 @@ ORDER BY [Number] ASC",
             }
         }
 
-        public List<EventData> GetEventEnvelopesAfter(int eventNumber, int maxEvents, params Type[] eventTypesToInclude)
+        public List<EventData> GetEventsAfter(int eventNumber, int maxEvents, params Type[] eventTypesToInclude)
         {
             using (var db = _getConnection())
             {
