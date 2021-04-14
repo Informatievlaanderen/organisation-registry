@@ -4,6 +4,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using Autofac;
     using System.Reflection;
     using Autofac.Extensions.DependencyInjection;
+    using Body;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -11,6 +12,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Events;
+    using Organisations;
+    using People;
 
     public class ElasticSearchProjectionsModule : Autofac.Module
     {
@@ -53,6 +56,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 .SingleInstance();
 
             builder.RegisterType<BodyRunner>()
+                .SingleInstance();
+
+            builder.RegisterType<IndividualRebuildRunner>()
                 .SingleInstance();
 
             builder.Populate(_services);
