@@ -10,6 +10,7 @@ namespace OrganisationRegistry.Infrastructure.Events
 
         IEnumerable<IEvent> Get<T>(Guid aggregateId, int fromVersion);
 
+        IEnumerable<IEnvelope> GetEventEnvelopes<T>(Guid aggregateId);
         IEnumerable<IEnvelope> GetEventEnvelopes(params Type[] eventTypes);
 
         IEnumerable<IEnvelope> GetEventEnvelopesAfter(int eventNumber);

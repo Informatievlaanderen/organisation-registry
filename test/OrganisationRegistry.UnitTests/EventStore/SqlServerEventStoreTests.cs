@@ -26,7 +26,7 @@ namespace OrganisationRegistry.UnitTests
             var eventData = JsonConvert.DeserializeObject<EventData[]>(lines);
 
             var dataInterface = new Mock<IEventDataReader>();
-            dataInterface.Setup(i => i.Get(It.IsAny<Guid>(), It.IsAny<int>()))
+            dataInterface.Setup(i => i.GetEvents(It.IsAny<Guid>(), It.IsAny<int>()))
                 .Returns(eventData.ToList());
 
             var sqlServerEventStore = new SqlServerEventStore(

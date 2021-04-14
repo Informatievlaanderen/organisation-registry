@@ -18,6 +18,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using Person.Events;
     using Projections;
     using Projections.Infrastructure;
+    using Projections.People;
     using Projections.People.Handlers;
     using Scenario;
     using SqlServer.Infrastructure;
