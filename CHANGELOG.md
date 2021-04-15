@@ -1,3 +1,15 @@
+# [1.70.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.69.0...v1.70.0) (2021-04-15)
+
+
+### Bug Fixes
+
+* don't re-throw so other runners can still run ([6b11e6a](https://github.com/informatievlaanderen/organisation-registry/commit/6b11e6aff45187e55f50c1ceafca64740119b21a))
+
+
+### Features
+
+* run individual runner first and until current projection number ([a6a9d16](https://github.com/informatievlaanderen/organisation-registry/commit/a6a9d162846aa43a9e4b673dbfc81752bd200cfe))
+
 # [1.69.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.68.1...v1.69.0) (2021-04-14)
 
 
