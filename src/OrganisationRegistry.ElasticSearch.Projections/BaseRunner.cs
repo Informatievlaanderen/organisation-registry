@@ -82,7 +82,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             catch (Exception ex)
             {
                 _logger.LogCritical(0, ex, "[{ProjectionName}] An exception occurred while handling envelopes.", ProjectionName);
-                throw;
             }
             finally
             {
