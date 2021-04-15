@@ -6,7 +6,6 @@ namespace OrganisationRegistry.Infrastructure.EventStore
     using System.Data.Common;
     using Microsoft.Data.SqlClient;
     using System.Linq;
-    using System.Runtime.CompilerServices;
     using Dapper;
     using Events;
     using Newtonsoft.Json;
@@ -204,6 +203,20 @@ SELECT CAST(SCOPE_IDENTITY() as int)",
             return ParseEventsIntoEnvelopes(events, _jsonSerializerSettings);
         }
 
+        public IEnumerable<IEnvelope> GetEventEnvelopes<T>(Guid aggregateId)
+        {
+            var events = _eventDataReader.GetEvents(aggregateId, FromVersion.Start);
+
+            return ParseEventsIntoEnvelopes(events, _jsonSerializerSettings);
+        }
+
+        public IEnumerable<IEnvelope> GetEventEnvelopesUntil<T>(Guid aggregateId, int untilEventNumber)
+        {
+            var events = _eventDataReader.GetEventsUntil(aggregateId, untilEventNumber);
+
+            return ParseEventsIntoEnvelopes(events, _jsonSerializerSettings);
+        }
+
         public IEnumerable<IEnvelope> GetEventEnvelopesAfter(int eventNumber)
         {
             var events = _eventDataReader.GetEventsAfter(eventNumber);
@@ -214,13 +227,6 @@ SELECT CAST(SCOPE_IDENTITY() as int)",
         public IEnumerable<IEnvelope> GetEventEnvelopesAfter(int eventNumber, int maxEvents, params Type[] eventTypesToInclude)
         {
             var events = _eventDataReader.GetEventsAfter(eventNumber, maxEvents, eventTypesToInclude);
-
-            return ParseEventsIntoEnvelopes(events, _jsonSerializerSettings);
-        }
-
-        public IEnumerable<IEnvelope> GetEventEnvelopes<T>(Guid aggregateId)
-        {
-            var events = _eventDataReader.GetEvents(aggregateId, FromVersion.Start);
 
             return ParseEventsIntoEnvelopes(events, _jsonSerializerSettings);
         }
