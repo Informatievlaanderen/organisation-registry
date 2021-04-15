@@ -10,7 +10,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
     public class OrganisationsRunner : BaseRunner
     {
-        private const string ElasticSearchProjectionsProjectionName = "ElasticSearchOrganisationsProjection";
+        public const string ElasticSearchProjectionsProjectionName = "ElasticSearchOrganisationsProjection";
         private static readonly string ProjectionFullName = typeof(Organisation).FullName;
         private new const string ProjectionName = nameof(Organisation);
 

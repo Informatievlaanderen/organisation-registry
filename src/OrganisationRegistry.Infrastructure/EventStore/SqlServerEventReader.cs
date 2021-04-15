@@ -12,6 +12,7 @@ namespace OrganisationRegistry.Infrastructure.EventStore
         List<EventData> GetEvents(Guid aggregateId, int fromVersion);
         int GetEventCount(DateTimeOffset? dateTimeOffset = null);
         List<EventData> GetEvents(params Type[] eventTypes);
+        List<EventData> GetEventsUntil(Guid aggregateId, int untilEventNumber);
         List<EventData> GetEventsAfter(int eventNumber);
         List<EventData> GetEventsAfter(int eventNumber, int maxEvents, params Type[] eventTypesToInclude);
         int GetLastEvent();
@@ -83,6 +84,30 @@ ORDER BY [Number] ASC",
                         EventTypes = eventTypes.GetEventTypeNames()
                     }).ToList();
             }
+        }
+
+        public List<EventData> GetEventsUntil(Guid aggregateId, int untilEventNumber)
+        {
+            List<EventData> events;
+
+            using (var db = _getConnection())
+            {
+                db.Open();
+
+                events = db.Query<EventData>(
+                    @"SELECT [Id], [Number], [Version], [Name], [Timestamp], [Data], [Ip], [LastName], [FirstName], [UserId]
+FROM [OrganisationRegistry].[Events]
+WHERE [Id] = @Id
+AND [Number] <= @Number
+ORDER BY Version ASC",
+                    new
+                    {
+                        Id = aggregateId,
+                        Number = untilEventNumber
+                    }).ToList();
+            }
+
+            return events;
         }
 
         public List<EventData> GetEventsAfter(int eventNumber)

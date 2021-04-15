@@ -52,10 +52,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")))
                 .Build();
 
+            await RunIndividualRunner(configuration);
             await RunProgram<PeopleRunner>(configuration);
             await RunProgram<OrganisationsRunner>(configuration);
             await RunProgram<BodyRunner>(configuration);
-            await RunIndividualRunner(configuration);
         }
 
         private static async Task RunProgram<T>(IConfiguration configuration) where T : BaseRunner

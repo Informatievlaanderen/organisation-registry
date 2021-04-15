@@ -35,6 +35,9 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
         public IEnumerable<IEnvelope> GetEventEnvelopes(params Type[] eventTypes)
             => Events.Where(x => eventTypes.Contains(x.GetType())).Select(x => x.ToEnvelope());
 
+        public IEnumerable<IEnvelope> GetEventEnvelopesUntil<T>(Guid aggregateId, int untilEventNumber)
+            => Events.Where(x => x.Version <= untilEventNumber && x.Id == aggregateId).Select(x => x.ToEnvelope());
+
         public IEnumerable<IEnvelope> GetEventEnvelopesAfter(int eventNumber)
             => throw new NotImplementedException();
 
