@@ -267,7 +267,7 @@ namespace OrganisationRegistry.Api.Report.Responses
                 ?.FormattedAddress;
 
             Location = document.Locations
-                ?.SingleOrDefault(x => !x.IsMainLocation &&
+                ?.FirstOrDefault(x => !x.IsMainLocation &&
                                       (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
                                       (!x.Validity.End.HasValue || x.Validity.End.Value >= today))
                 ?.FormattedAddress;
