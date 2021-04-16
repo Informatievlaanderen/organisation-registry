@@ -1,3 +1,10 @@
+## [1.70.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.70.0...v1.70.1) (2021-04-16)
+
+
+### Bug Fixes
+
+* only return first location ([4935eaa](https://github.com/informatievlaanderen/organisation-registry/commit/4935eaaaedf35a774e8c5fa2f1df5225d3377fa4))
+
 # [1.70.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.69.0...v1.70.0) (2021-04-15)
 
 
