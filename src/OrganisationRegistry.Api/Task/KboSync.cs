@@ -8,6 +8,7 @@ namespace OrganisationRegistry.Api.Task
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Organisation;
@@ -31,15 +32,18 @@ namespace OrganisationRegistry.Api.Task
         public const string SyncInfoNotFound = "Er werd geen organisatie gevonden voor dit KBO nummer";
 
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly ISecurityService _securityService;
         private readonly int _syncFromKboBatchSize;
         private readonly ILogger<KboSync> _logger;
 
         public KboSync(
             IDateTimeProvider dateTimeProvider,
             IOptions<ApiConfiguration> apiOptions,
+            ISecurityService securityService,
             ILogger<KboSync> logger)
         {
             _dateTimeProvider = dateTimeProvider;
+            _securityService = securityService;
             _logger = logger;
             _syncFromKboBatchSize = apiOptions.Value.SyncFromKboBatchSize;
         }
@@ -58,6 +62,8 @@ namespace OrganisationRegistry.Api.Task
 
             _logger.LogInformation("Found {NumberOfSyncItems} items to sync", itemsInQueue.Count);
 
+            var user = _securityService.GetUser(claimsPrincipal);
+
             foreach (var kboSyncQueueItem in itemsInQueue)
             {
                 try
@@ -75,10 +81,14 @@ namespace OrganisationRegistry.Api.Task
                         continue;
                     }
 
-                    await commandSender.Send(new SyncOrganisationWithKbo(
+                    var syncOrganisationWithKbo = new SyncOrganisationWithKbo(
                         new OrganisationId(organisationDetailItem.Id),
                         _dateTimeProvider.Today,
-                        kboSyncQueueItem.Id));
+                        kboSyncQueueItem.Id);
+
+                    syncOrganisationWithKbo.User = user;
+
+                    await commandSender.Send(syncOrganisationWithKbo);
 
                     kboSyncQueueItem.SyncCompletedAt = _dateTimeProvider.UtcNow;
                     kboSyncQueueItem.SyncStatus = SyncStatusSuccess;
