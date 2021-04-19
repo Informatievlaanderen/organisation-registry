@@ -1,3 +1,15 @@
+# [1.71.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.70.1...v1.71.0) (2021-04-19)
+
+
+### Bug Fixes
+
+* add missing param ([897f8ff](https://github.com/informatievlaanderen/organisation-registry/commit/897f8ffb02b70e3a9e55c9e585128d606f518585))
+
+
+### Features
+
+* set user on command ([0e0d222](https://github.com/informatievlaanderen/organisation-registry/commit/0e0d222e86543d0faa702d764ce1a988652954bb))
+
 ## [1.70.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.70.0...v1.70.1) (2021-04-16)
 
 
