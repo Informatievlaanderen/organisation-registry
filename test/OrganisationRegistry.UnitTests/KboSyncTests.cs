@@ -8,6 +8,7 @@ namespace OrganisationRegistry.UnitTests
     using Microsoft.Extensions.Logging.Abstractions;
     using Microsoft.Extensions.Options;
     using Moq;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Domain.Exception;
@@ -46,7 +47,7 @@ namespace OrganisationRegistry.UnitTests
 
             _context.SaveChanges();
 
-            new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(commandSender, _context, _claimsPrincipal);
+            new KboSync(_dateTimeProviderStub, _apiConfiguration, Mock.Of<ISecurityService>(), new NullLogger<KboSync>()).SyncFromKbo(commandSender, _context, _claimsPrincipal);
 
             _context.KboSyncQueue.Should().BeEquivalentTo(
                 new KboSyncQueueItem
@@ -92,7 +93,7 @@ namespace OrganisationRegistry.UnitTests
 
             _context.SaveChanges();
 
-            new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(commandSender.Object, _context,
+            new KboSync(_dateTimeProviderStub, _apiConfiguration, Mock.Of<ISecurityService>(), new NullLogger<KboSync>()).SyncFromKbo(commandSender.Object, _context,
                 _claimsPrincipal);
 
             _context.KboSyncQueue.Should().BeEquivalentTo(
@@ -131,7 +132,7 @@ namespace OrganisationRegistry.UnitTests
 
             _context.SaveChanges();
 
-            new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(commandSender, _context,
+            new KboSync(_dateTimeProviderStub, _apiConfiguration, Mock.Of<ISecurityService>(), new NullLogger<KboSync>()).SyncFromKbo(commandSender, _context,
                 _claimsPrincipal);
 
             _context.KboSyncQueue.Should().BeEquivalentTo(
