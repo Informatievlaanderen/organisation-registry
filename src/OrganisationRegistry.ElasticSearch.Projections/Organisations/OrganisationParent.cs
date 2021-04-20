@@ -107,7 +107,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             organisationDocument.ChangeId = message.Number;
             organisationDocument.ChangeTime = message.Timestamp;
 
-            foreach (var (key, value) in message.Body.FieldsToTerminate.Labels)
+            foreach (var (key, value) in message.Body.FieldsToTerminate.Parents)
             {
                 var organisationParent =
                     organisationDocument
