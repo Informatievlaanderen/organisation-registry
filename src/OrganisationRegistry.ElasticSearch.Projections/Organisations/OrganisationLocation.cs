@@ -179,8 +179,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             {
                 var organisationLocation =
                     organisationDocument
-                        .Labels
-                        .Single(x => x.OrganisationLabelId == key);
+                        .Locations
+                        .Single(x => x.OrganisationLocationId == key);
 
                 organisationLocation.Validity.End = value;
             }
