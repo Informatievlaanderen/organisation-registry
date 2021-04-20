@@ -1,3 +1,10 @@
+## [1.71.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.71.1...v1.71.2) (2021-04-20)
+
+
+### Bug Fixes
+
+* copy paste error ([00c76b3](https://github.com/informatievlaanderen/organisation-registry/commit/00c76b39585129c4b502411fce21f58bfd4267de))
+
 ## [1.71.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.71.0...v1.71.1) (2021-04-20)
 
 
