@@ -1,3 +1,10 @@
+## [1.71.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.71.2...v1.71.3) (2021-04-20)
+
+
+### Bug Fixes
+
+* update existing item in cache io trying to add again ([298b9bb](https://github.com/informatievlaanderen/organisation-registry/commit/298b9bbdfd792f288b16f3e605741bacc84ff679))
+
 ## [1.71.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.71.1...v1.71.2) (2021-04-20)
 
 
