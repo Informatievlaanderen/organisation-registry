@@ -851,16 +851,29 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
                 var cachedOrganisation = GetOrganisationFromCache(context, message.Body.OrganisationId);
 
                 //organisation per body cache
-                var body = new BodySeatGenderRatioOrganisationPerBodyListItem
-                {
-                    BodyId = message.Body.BodyId,
-                    BodyOrganisationId = message.Body.BodyOrganisationId,
-                    OrganisationId = message.Body.OrganisationId,
-                    OrganisationName = message.Body.OrganisationName,
-                    OrganisationActive = cachedOrganisation?.OrganisationActive ?? false
-                };
+                var existingBody = context.BodySeatGenderRatioOrganisationPerBodyList
+                    .SingleOrDefault(item => item.BodyId == message.Body.BodyId);
 
-                context.BodySeatGenderRatioOrganisationPerBodyList.Add(body);
+                if (existingBody != null)
+                {
+                    existingBody.BodyOrganisationId = message.Body.BodyOrganisationId;
+                    existingBody.OrganisationId = message.Body.OrganisationId;
+                    existingBody.OrganisationName = message.Body.OrganisationName;
+                    existingBody.OrganisationActive = cachedOrganisation.OrganisationActive;
+                }
+                else
+                {
+                    var body = new BodySeatGenderRatioOrganisationPerBodyListItem
+                    {
+                        BodyId = message.Body.BodyId,
+                        BodyOrganisationId = message.Body.BodyOrganisationId,
+                        OrganisationId = message.Body.OrganisationId,
+                        OrganisationName = message.Body.OrganisationName,
+                        OrganisationActive = cachedOrganisation.OrganisationActive
+                    };
+
+                    context.BodySeatGenderRatioOrganisationPerBodyList.Add(body);
+                }
 
                 context.BodySeatGenderRatioBodyList
                     .Where(post => post.BodyId == message.Body.BodyId)
