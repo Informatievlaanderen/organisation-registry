@@ -1,3 +1,10 @@
+# [1.73.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.72.0...v1.73.0) (2021-04-21)
+
+
+### Features
+
+* add sensible defaults for staging/prd logging ([895413d](https://github.com/informatievlaanderen/organisation-registry/commit/895413d810c30d0219da74737379d06cb411717b))
+
 # [1.72.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.71.3...v1.72.0) (2021-04-21)
 
 
