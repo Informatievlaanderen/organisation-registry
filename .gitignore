@@ -1,6 +1,7 @@
 appsettings.*.json
 !appsettings.eventstore.json
 !appsettings.production.json
+!appsettings.staging.json
 *.Importer-*.config
 wwwroot/
 

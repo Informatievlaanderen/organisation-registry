@@ -35,10 +35,12 @@ namespace OrganisationRegistry.Projections.Reporting
             JsonConvert.DefaultSettings =
                 () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
 
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "development";
             var builder =
                 new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .AddJsonFile($"appsettings.{env.ToLowerInvariant()}.json", optional: true)
                     .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
                     .AddEnvironmentVariables();
 
