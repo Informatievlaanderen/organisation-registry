@@ -7,6 +7,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
     using OrganisationRegistry.Body.Events;
@@ -134,43 +135,63 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
             switch (cacheType)
             {
                 case MemoryCacheType.OvoNumbers:
-                    _ovoNumbers = await context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.OvoNumber);
+                    _ovoNumbers = await context.OrganisationDetail.AsNoTracking()
+                        .Select(x => new {x.Id, x.OvoNumber})
+                        .ToDictionaryAsync(x => x.Id, x => x.OvoNumber);
                     break;
 
                 case MemoryCacheType.OrganisationNames:
-                    _organisationNames = await context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.Name);
+                    _organisationNames = await context.OrganisationDetail.AsNoTracking()
+                        .Select(x => new {x.Id, x.Name})
+                        .ToDictionaryAsync(item => item.Id, item => item.Name);
                     break;
 
                 case MemoryCacheType.OrganisationParents:
-                    _organisationParents = await context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ParentOrganisationId);
+                    _organisationParents = await context.OrganisationDetail.AsNoTracking()
+                        .Select(x => new {x.Id, x.ParentOrganisationId})
+                        .ToDictionaryAsync(item => item.Id, item => item.ParentOrganisationId);
                     break;
 
                 case MemoryCacheType.OrganisationValidFroms:
-                    _organisationValidFroms = await context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ValidFrom);
+                    _organisationValidFroms = await context.OrganisationDetail.AsNoTracking()
+                        .Select(x => new {x.Id, x.ValidFrom})
+                        .ToDictionaryAsync(item => item.Id, item => item.ValidFrom);
                     break;
 
                 case MemoryCacheType.OrganisationValidTos:
-                    _organisationValidTos = await context.OrganisationDetail.BuildMemoryCache(item => item.Id, item => item.ValidTo);
+                    _organisationValidTos = await context.OrganisationDetail.AsNoTracking()
+                        .Select(x => new {x.Id, x.ValidTo})
+                        .ToDictionaryAsync(item => item.Id, item => item.ValidTo);
                     break;
 
                 case MemoryCacheType.BodyNames:
-                    _bodyNames = await context.BodyDetail.BuildMemoryCache(item => item.Id, item => item.Name);
+                    _bodyNames = await context.BodyDetail.AsNoTracking()
+                        .Select(x => new {x.Id, x.Name})
+                        .ToDictionaryAsync(item => item.Id, item => item.Name);
                     break;
 
                 case MemoryCacheType.BodySeatNames:
-                    _bodySeatNames = await context.BodySeatList.BuildMemoryCache(item => item.BodySeatId, item => item.Name);
+                    _bodySeatNames = await context.BodySeatList.AsNoTracking()
+                        .Select(x => new {x.BodySeatId, x.Name})
+                        .ToDictionaryAsync(item => item.BodySeatId, item => item.Name);
                     break;
 
                 case MemoryCacheType.BodySeatNumbers:
-                    _bodySeatNumbers = await context.BodySeatList.BuildMemoryCache(item => item.BodySeatId, item => item.BodySeatNumber);
+                    _bodySeatNumbers = await context.BodySeatList.AsNoTracking()
+                        .Select(x => new {x.BodySeatId, x.BodySeatNumber})
+                        .ToDictionaryAsync(item => item.BodySeatId, item => item.BodySeatNumber);
                     break;
 
                 case MemoryCacheType.ContactTypeNames:
-                    _contactTypeNames = await context.ContactTypeList.BuildMemoryCache(item => item.Id, item => item.Name);
+                    _contactTypeNames = await context.ContactTypeList.AsNoTracking()
+                        .Select(x => new {x.Id, x.Name})
+                        .ToDictionaryAsync(item => item.Id, item => item.Name);
                     break;
 
                 case MemoryCacheType.IsSeatPaid:
-                    _isSeatPaid = await context.BodySeatList.BuildMemoryCache(item => item.BodySeatId, item => item.PaidSeat);
+                    _isSeatPaid = await context.BodySeatList.AsNoTracking()
+                        .Select(x => new {x.BodySeatId, x.PaidSeat})
+                        .ToDictionaryAsync(item => item.BodySeatId, item => item.PaidSeat);
                     break;
 
                 default:
