@@ -1,3 +1,10 @@
+# [1.72.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.71.3...v1.72.0) (2021-04-21)
+
+
+### Features
+
+* reduce async network io for memory caches ([c00b1f3](https://github.com/informatievlaanderen/organisation-registry/commit/c00b1f3eae7d378e2d2f87a9c32c835bf5c160a7))
+
 ## [1.71.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.71.2...v1.71.3) (2021-04-20)
 
 
