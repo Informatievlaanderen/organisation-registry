@@ -36,12 +36,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             JsonConvert.DefaultSettings =
                 () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
 
-            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "development";
             var builder =
                 new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                    .AddJsonFileIf(() => !string.IsNullOrWhiteSpace(env), $"appsettings.{env?.ToLowerInvariant()}.json", optional: false)
+                    .AddJsonFile($"appsettings.{env.ToLowerInvariant()}.json", optional: true)
                     .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
                     .AddEnvironmentVariables();
 

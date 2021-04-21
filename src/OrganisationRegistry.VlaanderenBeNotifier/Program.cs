@@ -33,11 +33,14 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             JsonConvert.DefaultSettings =
                 () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
 
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
-                .AddEnvironmentVariables();
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "development";
+            var builder =
+                new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                    .AddJsonFile($"appsettings.{env.ToLowerInvariant()}.json", optional: true)
+                    .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
+                    .AddEnvironmentVariables();
 
             var sqlConfiguration = builder.Build().GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>();
             var configuration = builder
