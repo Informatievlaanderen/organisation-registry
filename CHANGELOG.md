@@ -1,3 +1,10 @@
+## [1.73.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.73.0...v1.73.1) (2021-04-26)
+
+
+### Bug Fixes
+
+* allow sorting participation summary ([a6c09a8](https://github.com/informatievlaanderen/organisation-registry/commit/a6c09a8df1594deaa191abacde448c8bdf1e1976))
+
 # [1.73.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.72.0...v1.73.0) (2021-04-21)
 
 
