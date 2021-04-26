@@ -299,11 +299,11 @@ namespace OrganisationRegistry.Api.Report.Responses
                     return sortingHeader.SortOrder == SortOrder.Ascending
                         ? results.OrderBy(x => x.IsTotalCompliant)
                         : results.OrderByDescending(x => x.IsTotalCompliant);
-                case "responsibleMinisterClassificationName":
+                case "responsibleministerclassificationname":
                     return sortingHeader.SortOrder == SortOrder.Ascending
                         ? results.OrderBy(x => x.ResponsibleMinisterClassificationName)
                         : results.OrderByDescending(x => x.ResponsibleMinisterClassificationName);
-                case "policyDomainClassificationName":
+                case "policydomainclassificationname":
                     return sortingHeader.SortOrder == SortOrder.Ascending
                         ? results.OrderBy(x => x.PolicyDomainClassificationName)
                         : results.OrderByDescending(x => x.PolicyDomainClassificationName);
