@@ -1,3 +1,10 @@
+## [1.73.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.73.1...v1.73.2) (2021-04-26)
+
+
+### Bug Fixes
+
+* use correct capitalization ([13d76dd](https://github.com/informatievlaanderen/organisation-registry/commit/13d76dd8f4dcbbcbf9dc2cdb9a85482c2a2586c4))
+
 ## [1.73.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.73.0...v1.73.1) (2021-04-26)
 
 
