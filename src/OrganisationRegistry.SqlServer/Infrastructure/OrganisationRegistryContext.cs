@@ -57,6 +57,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         public DbSet<BodyLifecyclePhaseValidity> BodyLifecyclePhaseValidities { get; set; }
         public DbSet<BodyListItem> BodyList { get; set; }
         public DbSet<BodyMandateListItem> BodyMandateList { get; set; }
+        internal DbSet<BodySeatCacheItemForBodyMandateList> BodySeatCacheForBodyMandateList { get; set; }
         public DbSet<BodyOrganisationListItem> BodyOrganisationList { get; set; }
         public DbSet<BodySeatListItem> BodySeatList { get; set; }
         public DbSet<BodyBodyClassificationListItem> BodyBodyClassificationList { get; set; }

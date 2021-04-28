@@ -51,9 +51,17 @@ namespace OrganisationRegistry.SqlServer.Body
         public DateTime? ValidTo { get; set; }
     }
 
+    public class BodySeatCacheItemForBodyMandateList
+    {
+        public Guid BodySeatId { get; set; }
+
+        public Guid SeatTypeId { get; set; }
+        public string SeatTypeName { get; set; }
+    }
+
     public class BodyMandateListConfiguration : EntityMappingConfiguration<BodyMandateListItem>
     {
-        public int RepresentationLength = new[] {
+        public readonly int RepresentationLength = new[] {
             OrganisationListConfiguration.NameLength,
             FunctionTypeListConfiguration.NameLength,
             PersonListConfiguration.FullNameLength
@@ -110,6 +118,23 @@ namespace OrganisationRegistry.SqlServer.Body
         }
     }
 
+    public class BodySeatCacheForBodyMandateListConfiguration : EntityMappingConfiguration<BodySeatCacheItemForBodyMandateList>
+    {
+        public override void Map(EntityTypeBuilder<BodySeatCacheItemForBodyMandateList> b)
+        {
+            b.ToTable(nameof(BodyMandateListView.ProjectionTables.BodySeatCacheForBodyMandateList),
+                    "OrganisationRegistry")
+                .HasKey(p => p.BodySeatId)
+                .IsClustered(false);
+
+            b.Property(p => p.BodySeatId).IsRequired();
+            b.Property(p => p.SeatTypeId).IsRequired();
+            b.Property(p => p.SeatTypeName)
+                .HasMaxLength(SeatTypeListConfiguration.NameLength)
+                .IsRequired();
+        }
+    }
+
     public class BodyMandateListView :
         Projection<BodyMandateListView>,
         IEventHandler<AssignedPersonToBodySeat>,
@@ -124,6 +149,7 @@ namespace OrganisationRegistry.SqlServer.Body
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<BodySeatUpdated>,
+        IEventHandler<BodySeatAdded>,
         IEventHandler<SeatTypeUpdated>,
         IEventHandler<BodySeatNumberAssigned>,
         IEventHandler<AssignedPersonAssignedToBodyMandate>,
@@ -133,7 +159,8 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public enum ProjectionTables
         {
-            BodyMandateList
+            BodyMandateList,
+            BodySeatCacheForBodyMandateList
         }
 
         private readonly IEventStore _eventStore;
@@ -147,33 +174,36 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonToBodySeat> message)
         {
-            var bodyMandateListItem = new BodyMandateListItem
-            {
-                BodyMandateId = message.Body.BodyMandateId,
-                BodyMandateType = BodyMandateType.Person,
-                BodyId = message.Body.BodyId,
-
-                BodySeatId = message.Body.BodySeatId,
-                BodySeatName = message.Body.BodySeatName,
-                BodySeatNumber = message.Body.BodySeatNumber,
-
-                //BodySeatTypeId = message.Body.BodySeatTypeId,
-                //BodySeatTypeName = message.Body.BodySeatTypeName,
-                //BodySeatTypeOrder = message.Body.BodySeatTypeOrder ?? int.MaxValue,
-
-                DelegatorId = message.Body.PersonId,
-                DelegatorName = FormatPersonName(message.Body.PersonFirstName, message.Body.PersonName),
-                DelegatedId = null,
-                DelegatedName = null,
-
-                ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts ?? new Dictionary<Guid, string>()),
-
-                ValidFrom = message.Body.ValidFrom,
-                ValidTo = message.Body.ValidTo
-            };
-
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
+                var bodySeat =
+                    await context.BodySeatCacheForBodyMandateList.SingleAsync(item => item.BodySeatId == message.Body.BodySeatId);
+
+                var bodyMandateListItem = new BodyMandateListItem
+                {
+                    BodyMandateId = message.Body.BodyMandateId,
+                    BodyMandateType = BodyMandateType.Person,
+                    BodyId = message.Body.BodyId,
+
+                    BodySeatId = message.Body.BodySeatId,
+                    BodySeatName = message.Body.BodySeatName,
+                    BodySeatNumber = message.Body.BodySeatNumber,
+
+                    BodySeatTypeId = bodySeat.SeatTypeId,
+                    BodySeatTypeName = bodySeat.SeatTypeName,
+                    BodySeatTypeOrder = message.Body.BodySeatTypeOrder ?? int.MaxValue,
+
+                    DelegatorId = message.Body.PersonId,
+                    DelegatorName = FormatPersonName(message.Body.PersonFirstName, message.Body.PersonName),
+                    DelegatedId = null,
+                    DelegatedName = null,
+
+                    ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts ?? new Dictionary<Guid, string>()),
+
+                    ValidFrom = message.Body.ValidFrom,
+                    ValidTo = message.Body.ValidTo
+                };
+
                 await context.BodyMandateList.AddAsync(bodyMandateListItem);
                 await context.SaveChangesAsync();
             }
@@ -181,31 +211,35 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedFunctionTypeToBodySeat> message)
         {
-            var bodyMandateListItem = new BodyMandateListItem
-            {
-                BodyMandateId = message.Body.BodyMandateId,
-                BodyMandateType = BodyMandateType.FunctionType,
-                BodyId = message.Body.BodyId,
-
-                BodySeatId = message.Body.BodySeatId,
-                BodySeatName = message.Body.BodySeatName,
-                BodySeatNumber = message.Body.BodySeatNumber,
-
-                //BodySeatTypeId = message.Body.BodySeatTypeId,
-                //BodySeatTypeName = message.Body.BodySeatTypeName,
-                BodySeatTypeOrder = message.Body.BodySeatTypeOrder ?? int.MaxValue,
-
-                DelegatorId = message.Body.OrganisationId,
-                DelegatorName = message.Body.OrganisationName,
-                DelegatedId = message.Body.FunctionTypeId,
-                DelegatedName = message.Body.FunctionTypeName,
-
-                ValidFrom = message.Body.ValidFrom,
-                ValidTo = message.Body.ValidTo
-            };
-
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
+                var bodySeat =
+                    await context.BodySeatCacheForBodyMandateList.SingleAsync(item => item.BodySeatId == message.Body.BodySeatId);
+
+                var bodyMandateListItem = new BodyMandateListItem
+                {
+                    BodyMandateId = message.Body.BodyMandateId,
+                    BodyMandateType = BodyMandateType.FunctionType,
+                    BodyId = message.Body.BodyId,
+
+                    BodySeatId = message.Body.BodySeatId,
+                    BodySeatName = message.Body.BodySeatName,
+                    BodySeatNumber = message.Body.BodySeatNumber,
+
+                    BodySeatTypeId = bodySeat.SeatTypeId,
+                    BodySeatTypeName = bodySeat.SeatTypeName,
+
+                    BodySeatTypeOrder = message.Body.BodySeatTypeOrder ?? int.MaxValue,
+
+                    DelegatorId = message.Body.OrganisationId,
+                    DelegatorName = message.Body.OrganisationName,
+                    DelegatedId = message.Body.FunctionTypeId,
+                    DelegatedName = message.Body.FunctionTypeName,
+
+                    ValidFrom = message.Body.ValidFrom,
+                    ValidTo = message.Body.ValidTo
+                };
+
                 await context.BodyMandateList.AddAsync(bodyMandateListItem);
                 await context.SaveChangesAsync();
             }
@@ -213,31 +247,33 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedOrganisationToBodySeat> message)
         {
-            var bodyMandateListItem = new BodyMandateListItem
-            {
-                BodyMandateId = message.Body.BodyMandateId,
-                BodyMandateType = BodyMandateType.Organisation,
-                BodyId = message.Body.BodyId,
-
-                BodySeatId = message.Body.BodySeatId,
-                BodySeatName = message.Body.BodySeatName,
-                BodySeatNumber = message.Body.BodySeatNumber,
-
-                //BodySeatTypeId = message.Body.BodySeatTypeId,
-                //BodySeatTypeName = message.Body.BodySeatTypeName,
-                BodySeatTypeOrder = message.Body.BodySeatTypeOrder ?? int.MaxValue,
-
-                DelegatorId = message.Body.OrganisationId,
-                DelegatorName = message.Body.OrganisationName,
-                DelegatedId = null,
-                DelegatedName = null,
-
-                ValidFrom = message.Body.ValidFrom,
-                ValidTo = message.Body.ValidTo
-            };
-
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
+                var bodySeat =
+                    await context.BodySeatCacheForBodyMandateList.SingleAsync(item => item.BodySeatId == message.Body.BodySeatId);
+
+                var bodyMandateListItem = new BodyMandateListItem
+                {
+                    BodyMandateId = message.Body.BodyMandateId,
+                    BodyMandateType = BodyMandateType.Organisation,
+                    BodyId = message.Body.BodyId,
+
+                    BodySeatId = message.Body.BodySeatId,
+                    BodySeatName = message.Body.BodySeatName,
+                    BodySeatNumber = message.Body.BodySeatNumber,
+
+                    BodySeatTypeId = bodySeat.SeatTypeId,
+                    BodySeatTypeName = bodySeat.SeatTypeName,
+                    BodySeatTypeOrder = message.Body.BodySeatTypeOrder ?? int.MaxValue,
+
+                    DelegatorId = message.Body.OrganisationId,
+                    DelegatorName = message.Body.OrganisationName,
+                    DelegatedId = null,
+                    DelegatedName = null,
+
+                    ValidFrom = message.Body.ValidFrom,
+                    ValidTo = message.Body.ValidTo
+                };
                 await context.BodyMandateList.AddAsync(bodyMandateListItem);
                 await context.SaveChangesAsync();
             }
@@ -247,14 +283,15 @@ namespace OrganisationRegistry.SqlServer.Body
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var bodyMandateListItem = context.BodyMandateList.Single(item => item.BodyMandateId == message.Body.BodyMandateId);
+                var bodyMandateListItem = await context.BodyMandateList.SingleAsync(item => item.BodyMandateId == message.Body.BodyMandateId);
+                var bodySeat = await context.BodySeatCacheForBodyMandateList.SingleAsync(item => item.BodySeatId == message.Body.BodySeatId);
 
                 bodyMandateListItem.BodySeatId = message.Body.BodySeatId;
                 bodyMandateListItem.BodySeatName = message.Body.BodySeatName;
                 bodyMandateListItem.BodySeatNumber = message.Body.BodySeatNumber;
 
-                //bodyMandateListItem.BodySeatTypeId = message.Body.BodySeatTypeId;
-                //bodyMandateListItem.BodySeatTypeName = message.Body.BodySeatTypeName;
+                bodyMandateListItem.BodySeatTypeId = bodySeat.SeatTypeId;
+                bodyMandateListItem.BodySeatTypeName = bodySeat.SeatTypeName;
                 bodyMandateListItem.BodySeatTypeOrder = message.Body.BodySeatTypeOrder ?? int.MaxValue;
 
                 bodyMandateListItem.DelegatorId = message.Body.PersonId;
@@ -275,13 +312,14 @@ namespace OrganisationRegistry.SqlServer.Body
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandateListItem = context.BodyMandateList.Single(item => item.BodyMandateId == message.Body.BodyMandateId);
+                var bodySeat = await context.BodySeatCacheForBodyMandateList.SingleAsync(item => item.BodySeatId == message.Body.BodySeatId);
 
                 bodyMandateListItem.BodySeatId = message.Body.BodySeatId;
                 bodyMandateListItem.BodySeatName = message.Body.BodySeatName;
                 bodyMandateListItem.BodySeatNumber = message.Body.BodySeatNumber;
 
-                //bodyMandateListItem.BodySeatTypeId = message.Body.BodySeatTypeId;
-                //bodyMandateListItem.BodySeatTypeName = message.Body.BodySeatTypeName;
+                bodyMandateListItem.BodySeatTypeId = bodySeat.SeatTypeId;
+                bodyMandateListItem.BodySeatTypeName = bodySeat.SeatTypeName;
                 bodyMandateListItem.BodySeatTypeOrder = message.Body.BodySeatTypeOrder ?? int.MaxValue;
 
                 bodyMandateListItem.DelegatorId = message.Body.OrganisationId;
@@ -301,13 +339,15 @@ namespace OrganisationRegistry.SqlServer.Body
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
                 var bodyMandateListItem = context.BodyMandateList.Single(item => item.BodyMandateId == message.Body.BodyMandateId);
+                var bodySeat = await context.BodySeatCacheForBodyMandateList.SingleAsync(item => item.BodySeatId == message.Body.BodySeatId);
+
 
                 bodyMandateListItem.BodySeatId = message.Body.BodySeatId;
                 bodyMandateListItem.BodySeatName = message.Body.BodySeatName;
                 bodyMandateListItem.BodySeatNumber = message.Body.BodySeatNumber;
 
-                //bodyMandateListItem.BodySeatTypeId = message.Body.BodySeatTypeId;
-                //bodyMandateListItem.BodySeatTypeName = message.Body.BodySeatTypeName;
+                bodyMandateListItem.BodySeatTypeId = bodySeat.SeatTypeId;
+                bodyMandateListItem.BodySeatTypeName = bodySeat.SeatTypeName;
                 bodyMandateListItem.BodySeatTypeOrder = message.Body.BodySeatTypeOrder ?? int.MaxValue;
 
                 bodyMandateListItem.DelegatorId = message.Body.OrganisationId;
@@ -423,6 +463,22 @@ namespace OrganisationRegistry.SqlServer.Body
             }
         }
 
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatAdded> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var bodySeat = new BodySeatCacheItemForBodyMandateList
+                {
+                    BodySeatId = message.Body.BodySeatId,
+                    SeatTypeId = message.Body.SeatTypeId,
+                    SeatTypeName = message.Body.SeatTypeName
+                };
+
+                await context.BodySeatCacheForBodyMandateList.AddAsync(bodySeat);
+                await context.SaveChangesAsync();
+            }
+        }
+
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
@@ -437,6 +493,12 @@ namespace OrganisationRegistry.SqlServer.Body
                     bodyMandateListItem.BodySeatTypeId = message.Body.SeatTypeId;
                     bodyMandateListItem.BodySeatTypeName = message.Body.SeatTypeName;
                     bodyMandateListItem.BodySeatTypeOrder = message.Body.SeatTypeOrder ?? int.MaxValue;
+                }
+
+                foreach (var bodySeat in context.BodySeatCacheForBodyMandateList)
+                {
+                    bodySeat.SeatTypeId = message.Body.SeatTypeId;
+                    bodySeat.SeatTypeName = message.Body.SeatTypeName;
                 }
 
                 await context.SaveChangesAsync();

@@ -25,14 +25,15 @@ namespace OrganisationRegistry.Api.Body.Queries
         public string DelegatedName { get; }
         public Guid? AssignedToId { get; set; }
         public string AssignedToName { get; set; }
+        public Guid? BodySeatTypeId { get; }
+        public string? BodySeatTypeName { get; }
 
         public DateTime? ValidFrom { get; }
         public DateTime? ValidTo { get; }
 
         public bool IsActive { get; }
 
-        public BodyMandateListQueryResult(
-            Guid bodyMandateId,
+        public BodyMandateListQueryResult(Guid bodyMandateId,
             BodyMandateType bodyMandateType,
             Guid bodySeatId,
             string bodySeatNumber,
@@ -43,6 +44,8 @@ namespace OrganisationRegistry.Api.Body.Queries
             string delegatedName,
             Guid? assignedToId,
             string assignedToName,
+            Guid? bodySeatTypeId,
+            string? bodySeatTypeName,
             DateTime? validFrom,
             DateTime? validTo)
         {
@@ -57,6 +60,8 @@ namespace OrganisationRegistry.Api.Body.Queries
             DelegatedName = delegatedName;
             AssignedToId = assignedToId;
             AssignedToName = assignedToName;
+            BodySeatTypeId = bodySeatTypeId;
+            BodySeatTypeName = bodySeatTypeName;
             ValidFrom = validFrom;
             ValidTo = validTo;
 
@@ -84,6 +89,8 @@ namespace OrganisationRegistry.Api.Body.Queries
                 x.DelegatedName,
                 x.AssignedToId,
                 x.AssignedToName,
+                x.BodySeatTypeId,
+                x.BodySeatTypeName,
                 x.ValidFrom,
                 x.ValidTo);
 
@@ -119,6 +126,7 @@ namespace OrganisationRegistry.Api.Body.Queries
                 nameof(BodyMandateListItem.DelegatorName),
                 nameof(BodyMandateListItem.ValidFrom),
                 nameof(BodyMandateListItem.ValidTo),
+                nameof(BodyMandateListItem.BodySeatTypeName),
                 nameof(BodyMandateListItem.BodySeatTypeOrder)
             };
 
