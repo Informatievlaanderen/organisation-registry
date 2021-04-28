@@ -1,3 +1,10 @@
+# [1.74.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.73.2...v1.74.0) (2021-04-28)
+
+
+### Features
+
+* add seat type name to body mandate view ([bd902e8](https://github.com/informatievlaanderen/organisation-registry/commit/bd902e80dba86c8ed3053db243e58393f34df49e))
+
 ## [1.73.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.73.1...v1.73.2) (2021-04-26)
 
 
