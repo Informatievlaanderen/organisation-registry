@@ -21,6 +21,15 @@
                  [ngClass]="{'vi-u-180deg': isSortedByDescending('bodySeatName')}"></i>
               </a>
           </th>
+          <th class="data-table__header-title" style="width: 20%">
+            <a class="data-table__header-title--sortable"
+               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('bodySeatTypeName')}"
+               (click)="sortBy('bodySeatTypeName')">
+              Type
+              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+                 [ngClass]="{'vi-u-180deg': isSortedByDescending('bodySeatTypeName')}"></i>
+            </a>
+          </th>
           <th class="data-table__header-title" style="width: 35%">
             <a class="data-table__header-title--sortable"
                [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('delegatorName')}"
@@ -53,12 +62,12 @@
       </thead>
       <tbody>
         <template [ngIf]="isBusy">
-          <tr><td colspan="6">Bezig met laden...</td></tr>
+          <tr><td colspan="7">Bezig met laden...</td></tr>
         </template>
 
         <template [ngIf]="!isBusy">
           <tr *ngIf="!hasData(data)">
-            <td colspan="6">Geen data beschikbaar...</td>
+            <td colspan="7">Geen data beschikbaar...</td>
           </tr>
           <tr *ngFor="let mandate of data" [ngClass]="{'data-table__body-history': !mandate.isActive}">
             <td class="data-table__body-title">
@@ -66,6 +75,9 @@
             </td>
             <td class="data-table__body-title">
               {{mandate.bodySeatName}}
+            </td>
+            <td class="data-table__body-title">
+              {{mandate.bodySeatTypeName}}
             </td>
             <td class="data-table__body-title">
               <a *ngIf="mandate.bodyMandateType == 'person'" [routerLink]="['/people', mandate.delegatorId, 'mandates']" title="{{mandate.delegatorName}}">{{mandate.delegatorName}}</a>
