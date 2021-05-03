@@ -34,10 +34,6 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         {
             _fixture = fixture;
 
-            var memoryCaches = new Mock<IMemoryCaches>();
-            memoryCaches.Setup(caches => caches.OrganisationNames[It.IsAny<Guid>()]).Returns("org name");
-            memoryCaches.Setup(caches => caches.ContactTypeNames[It.IsAny<Guid>()]).Returns("contact type name");
-
             var personHandler = new Person(
                 logger: _fixture.LoggerFactory.CreateLogger<Person>(),
                 elastic: _fixture.Elastic,
@@ -52,7 +48,6 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var serviceProvider = new ServiceCollection()
                 .AddSingleton(personHandler)
                 .AddSingleton(personCapacityHandler)
-                .AddSingleton(new MemoryCachesMaintainer(new MemoryCaches(fixture.ContextFactory), fixture.ContextFactory))
                 .BuildServiceProvider();
 
             _inProcessBus = new InProcessBus(new NullLogger<InProcessBus>(), new SecurityService(fixture.ContextFactory.Create()));
