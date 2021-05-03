@@ -1,3 +1,15 @@
+# [1.75.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.74.0...v1.75.0) (2021-05-03)
+
+
+### Bug Fixes
+
+* use correct cache ([30b155f](https://github.com/informatievlaanderen/organisation-registry/commit/30b155f6293c354896b9b280f9609c8c1e7204da))
+
+
+### Features
+
+* don't use memory caches for ES ([669c464](https://github.com/informatievlaanderen/organisation-registry/commit/669c464eeed3097941adb5f27f4651ddfcbc1747))
+
 # [1.74.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.73.2...v1.74.0) (2021-04-28)
 
 
