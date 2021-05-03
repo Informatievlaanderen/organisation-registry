@@ -156,7 +156,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
             await using var organisationRegistryContext = _contextFactory.Create();
-            var organisation = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
+            var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
 
             _elastic.Try(() => _elastic.WriteClient
                 .MassUpdatePerson(
