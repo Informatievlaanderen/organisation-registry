@@ -5,7 +5,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
     using Bodies;
     using Client;
     using Common;
@@ -20,9 +19,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     using Organisation.Events;
     using Person.Events;
     using SeatType.Events;
-    using SqlServer.Infrastructure;
     using OrganisationRegistry.Body.Events;
-    using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Events;
     using SqlServer;
 
@@ -59,7 +56,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         private readonly Elastic _elastic;
         private readonly IContextFactory _contextFactory;
         private readonly ElasticSearchConfiguration _elasticSearchOptions;
-        private readonly IMemoryCaches _memoryCaches;
         private readonly ElasticWriter<BodyDocument> _elasticWriter;
 
         private static string[] ProjectionTableNames => Array.Empty<string>();
@@ -68,12 +64,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             ILogger<BodyHandler> logger,
             Elastic elastic,
             IContextFactory contextFactory,
-            IOptions<ElasticSearchConfiguration> elasticSearchOptions,
-            IMemoryCaches memoryCaches) : base(logger)
+            IOptions<ElasticSearchConfiguration> elasticSearchOptions) : base(logger)
         {
             _elastic = elastic;
             _contextFactory = contextFactory;
-            _memoryCaches = memoryCaches;
             _elasticSearchOptions = elasticSearchOptions.Value;
 
             _elasticWriter = new ElasticWriter<BodyDocument>(elastic);
@@ -125,9 +119,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             if (!ProjectionTableNames.Any())
                 return;
 
-            using (var context = _contextFactory.Create())
-                context.Database.ExecuteSqlRaw(
-                    string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [OrganisationRegistry].[{tableName}];")));
+            await using var context = _contextFactory.Create();
+            await context.Database.ExecuteSqlRawAsync(
+                string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [ElasticSearchProjections].[{tableName}];")));
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyRegistered> message)
@@ -443,6 +437,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
         {
+            await using var organisationRegistryContext = _contextFactory.Create();
+            var contactTypeNames = await organisationRegistryContext.ContactTypeList
+                .Select(x => new {x.Id, x.Name})
+                .ToDictionaryAsync(x => x.Id, x => x.Name);
+
             _elasticWriter
                 .Update(message.Body.BodyId, message)
                 .CommitDocument(document =>
@@ -462,13 +461,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.Contacts.Select(x =>
                                 new Contact(
                                     x.Key,
-                                    _memoryCaches.ContactTypeNames[x.Key], x.Value)).ToList(),
+                                    contactTypeNames[x.Key], x.Value)).ToList(),
                             new Period(message.Body.ValidFrom, message.Body.ValidTo)));
                 });
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
         {
+            await using var organisationRegistryContext = _contextFactory.Create();
+            var contactTypeNames = await organisationRegistryContext.ContactTypeList
+                .Select(x => new {x.Id, x.Name})
+                .ToDictionaryAsync(x => x.Id, x => x.Name);
+
             _elasticWriter
                 .Update(message.Body.BodyId, message)
                 .CommitDocument(document =>
@@ -488,7 +492,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.Contacts.Select(x =>
                                 new Contact(
                                     x.Key,
-                                    _memoryCaches.ContactTypeNames[x.Key], x.Value)).ToList(),
+                                    contactTypeNames[x.Key], x.Value)).ToList(),
                             new Period(message.Body.ValidFrom, message.Body.ValidTo)));
                 });
         }

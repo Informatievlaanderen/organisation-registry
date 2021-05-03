@@ -12,8 +12,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Person.Events;
-    using OrganisationRegistry.Infrastructure.AppSpecific;
     using Common;
+    using Microsoft.EntityFrameworkCore;
+    using SqlServer;
 
     public class OrganisationFunction :
         BaseProjection<OrganisationFunction>,
@@ -24,15 +25,15 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<OrganisationTerminated>
     {
         private readonly Elastic _elastic;
-        private readonly IMemoryCaches _memoryCaches;
+        private readonly IContextFactory _contextFactory;
 
         public OrganisationFunction(
             ILogger<OrganisationFunction> logger,
             Elastic elastic,
-            IMemoryCaches memoryCaches) : base(logger)
+            IContextFactory contextFactory) : base(logger)
         {
             _elastic = elastic;
-            _memoryCaches = memoryCaches;
+            _contextFactory = contextFactory;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
@@ -61,6 +62,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionAdded> message)
         {
+            await using var organisationRegistryContext = _contextFactory.Create();
+            var contactTypeNames = await organisationRegistryContext.ContactTypeList
+                .Select(x => new {x.Id, x.Name})
+                .ToDictionaryAsync(x => x.Id, x => x.Name);
+
             var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
 
             organisationDocument.ChangeId = message.Number;
@@ -78,7 +84,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     message.Body.FunctionName,
                     message.Body.PersonId,
                     message.Body.PersonFullName,
-                    message.Body.Contacts.Select(x => new Contact(x.Key, _memoryCaches.ContactTypeNames[x.Key], x.Value)).ToList(),
+                    message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
                     new Period(message.Body.ValidFrom, message.Body.ValidTo)));
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
@@ -86,6 +92,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionUpdated> message)
         {
+            await using var organisationRegistryContext = _contextFactory.Create();
+            var contactTypeNames = await organisationRegistryContext.ContactTypeList
+                .Select(x => new {x.Id, x.Name})
+                .ToDictionaryAsync(x => x.Id, x => x.Name);
+
             var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
 
             organisationDocument.ChangeId = message.Number;
@@ -100,7 +111,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     message.Body.FunctionName,
                     message.Body.PersonId,
                     message.Body.PersonFullName,
-                    message.Body.Contacts.Select(x => new Contact(x.Key, _memoryCaches.ContactTypeNames[x.Key], x.Value)).ToList(),
+                    message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
                     new Period(message.Body.ValidFrom, message.Body.ValidTo)));
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());

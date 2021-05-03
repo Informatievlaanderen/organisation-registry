@@ -36,8 +36,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 logger: _fixture.LoggerFactory.CreateLogger<BodyHandler>(),
                 elastic: _fixture.Elastic,
                 contextFactory: _fixture.ContextFactory,
-                elasticSearchOptions: _fixture.ElasticSearchOptions,
-                memoryCaches: memoryCaches.Object);
+                elasticSearchOptions: _fixture.ElasticSearchOptions);
         }
 
         [EnvVarIgnoreFact]

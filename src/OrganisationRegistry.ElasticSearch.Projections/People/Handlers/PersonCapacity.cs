@@ -18,7 +18,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using Organisation.Events;
     using SqlServer.ElasticSearchProjections;
     using SqlServer.Infrastructure;
-    using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Events;
     using SqlServer;
 
@@ -39,17 +38,14 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     {
         private readonly Elastic _elastic;
         private readonly IContextFactory _contextFactory;
-        private readonly IMemoryCaches _memoryCaches;
 
         public PersonCapacity(
             ILogger<PersonCapacity> logger,
             Elastic elastic,
-            IContextFactory contextFactory,
-            IMemoryCaches memoryCaches) : base(logger)
+            IContextFactory contextFactory) : base(logger)
         {
             _elastic = elastic;
             _contextFactory = contextFactory;
-            _memoryCaches = memoryCaches;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<CapacityUpdated> message)
@@ -148,6 +144,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityAdded> message)
         {
+            await using var organisationRegistryContext = _contextFactory.Create();
+            var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
+            var contactTypeNames = await organisationRegistryContext.ContactTypeList
+                .Select(x => new {x.Id, x.Name})
+                .ToDictionaryAsync(x => x.Id, x => x.Name);
+
             // Person is optional
             if (!message.Body.PersonId.HasValue)
                 return;
@@ -168,10 +170,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     message.Body.CapacityId,
                     message.Body.CapacityName,
                     message.Body.OrganisationId,
-                    _memoryCaches.OrganisationNames[message.Body.OrganisationId],
+                    organisation.Name,
                     message.Body.FunctionId,
                     message.Body.FunctionName,
-                    message.Body.Contacts.Select(x => new Contact(x.Key, _memoryCaches.ContactTypeNames[x.Key], x.Value)).ToList(),
+                    message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
                     new Period(message.Body.ValidFrom, message.Body.ValidTo)));
 
             personDocument.ShowOnVlaamseOverheidSites = ShouldPersonBeShownOnVlaamseOverheidSites(personDocument);
@@ -206,6 +208,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             if (!message.Body.PersonId.HasValue)
                 return;
 
+            await using var organisationRegistryContext = _contextFactory.Create();
+            var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
+            var contactTypeNames = await organisationRegistryContext.ContactTypeList
+                .Select(x => new {x.Id, x.Name})
+                .ToDictionaryAsync(x => x.Id, x => x.Name);
+
             var personDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PersonId).ThrowOnFailure().Source);
 
             personDocument.ChangeId = message.Number;
@@ -222,10 +230,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     message.Body.CapacityId,
                     message.Body.CapacityName,
                     message.Body.OrganisationId,
-                    _memoryCaches.OrganisationNames[message.Body.OrganisationId],
+                    organisation.Name,
                     message.Body.FunctionId,
                     message.Body.FunctionName,
-                    message.Body.Contacts.Select(x => new Contact(x.Key, _memoryCaches.ContactTypeNames[x.Key], x.Value)).ToList(),
+                    message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
                     new Period(message.Body.ValidFrom, message.Body.ValidTo)));
 
             personDocument.ShowOnVlaamseOverheidSites = ShouldPersonBeShownOnVlaamseOverheidSites(personDocument);

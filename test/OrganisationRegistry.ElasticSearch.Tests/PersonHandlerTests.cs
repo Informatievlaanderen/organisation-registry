@@ -47,8 +47,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var personCapacityHandler = new PersonCapacity(
                 logger: _fixture.LoggerFactory.CreateLogger<PersonCapacity>(),
                 elastic: _fixture.Elastic,
-                contextFactory: _fixture.ContextFactory,
-                memoryCaches.Object);
+                contextFactory: _fixture.ContextFactory);
 
             var serviceProvider = new ServiceCollection()
                 .AddSingleton(personHandler)

@@ -5,12 +5,13 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using SqlServer.ElasticSearchProjections;
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Body.Events;
-    using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Events;
+    using SqlServer;
 
     public class CachedOrganisationForBodies :
         Infrastructure.BaseProjection<CachedOrganisationForBodies>,
@@ -18,21 +19,18 @@
         IEventHandler<BodyClearedFromOrganisation>,
         IEventHandler<BodyOrganisationUpdated>
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
-        private readonly IMemoryCaches _memoryCaches;
+        private readonly IContextFactory _contextFactory;
 
         public CachedOrganisationForBodies(
             ILogger<CachedOrganisationForBodies> logger,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
-            IMemoryCaches memoryCaches) : base(logger)
+            IContextFactory contextFactory) : base(logger)
         {
             _contextFactory = contextFactory;
-            _memoryCaches = memoryCaches;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = _contextFactory.Create())
             {
                 if (context.OrganisationPerBodyListForES.Any(x => x.BodyId == message.Body.BodyId))
                     return;
@@ -52,7 +50,7 @@
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = _contextFactory.Create())
             {
                 var body = context
                     .OrganisationPerBodyListForES
@@ -69,18 +67,18 @@
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
-            using (var context = _contextFactory().Value)
-            {
-                var body = context
-                    .OrganisationPerBodyListForES
-                    .SingleOrDefault(x => x.BodyId == message.Body.BodyId);
+            await using var context = _contextFactory.Create();
 
-                if (body == null)
-                    return;
+            var organisation = await context.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
+            var body = context
+                .OrganisationPerBodyListForES
+                .SingleOrDefault(x => x.BodyId == message.Body.BodyId);
 
-                body.OrganisationId = message.Body.BodyOrganisationId;
-                body.OrganisationName = _memoryCaches.OrganisationNames[message.Body.OrganisationId];
-            }
+            if (body == null)
+                return;
+
+            body.OrganisationId = message.Body.BodyOrganisationId;
+            body.OrganisationName = organisation.Name;
         }
     }
 }

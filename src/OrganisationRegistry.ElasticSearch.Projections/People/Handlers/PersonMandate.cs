@@ -11,12 +11,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using Common;
     using ElasticSearch.People;
     using Infrastructure;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Organisation.Events;
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Body.Events;
-    using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Events;
+    using SqlServer;
 
     public class PersonMandate :
         Infrastructure.BaseProjection<PersonMandate>,
@@ -35,23 +36,23 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         IEventHandler<BodyClearedFromOrganisation>
     {
         private readonly Elastic _elastic;
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
-        private readonly IMemoryCaches _memoryCaches;
+        private readonly IContextFactory _contextFactory;
 
         public PersonMandate(
             ILogger<PersonMandate> logger,
             Elastic elastic,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
-            IMemoryCaches memoryCaches) : base(logger)
+            IContextFactory contextFactory) : base(logger)
         {
             _elastic = elastic;
             _contextFactory = contextFactory;
-            _memoryCaches = memoryCaches;
         }
 
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonToBodySeat> message)
         {
+            await using var organisationRegistryContext = _contextFactory.Create();
+            var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
+
             var personDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PersonId).ThrowOnFailure().Source);
 
             personDocument.ChangeId = message.Number;
@@ -71,13 +72,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     message.Body.BodyMandateId,
                     null,
                     message.Body.BodyId,
-                    _memoryCaches.BodyNames[message.Body.BodyId],
+                    bodySeat.Name,
                     organisationForBody.OrganisationId,
                     organisationForBody.OrganisationName,
                     message.Body.BodySeatId,
                     message.Body.BodySeatName,
                     message.Body.BodySeatNumber,
-                    _memoryCaches.IsSeatPaid[message.Body.BodySeatId],
+                    bodySeat.IsPaid,
                     new Period(
                         message.Body.ValidFrom,
                         message.Body.ValidTo)));
@@ -87,6 +88,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedPersonToBodySeat> message)
         {
+            await using var organisationRegistryContext = _contextFactory.Create();
+            var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
+
             // If previous exists and current is different, we need to delete and add
             if (message.Body.PreviousPersonId != message.Body.PersonId)
             {
@@ -123,13 +127,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     message.Body.BodyMandateId,
                     null,
                     message.Body.BodyId,
-                    _memoryCaches.BodyNames[message.Body.BodyId],
+                    bodySeat.Name,
                     organisationForBody.OrganisationId,
                     organisationForBody.OrganisationName,
                     message.Body.BodySeatId,
                     message.Body.BodySeatName,
                     message.Body.BodySeatNumber,
-                    _memoryCaches.IsSeatPaid[message.Body.BodySeatId],
+                    bodySeat.IsPaid,
                     new Period(
                         message.Body.ValidFrom,
                         message.Body.ValidTo)));
@@ -151,6 +155,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
+            await using var organisationRegistryContext = _contextFactory.Create();
+            var organisation = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
+
             _elastic.Try(() => _elastic.WriteClient
                 .MassUpdatePerson(
                     x => x.Mandates.Single().BodyId, message.Body.BodyId,
@@ -163,7 +170,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                 .MassUpdatePerson(
                     x => x.Mandates.Single().BodyId, message.Body.BodyId,
                     "mandates", "bodyId",
-                    "bodyOrganisationName", _memoryCaches.OrganisationNames[message.Body.OrganisationId],
+                    "bodyOrganisationName", organisation.Id,
                     message.Number,
                     message.Timestamp));
         }
@@ -216,6 +223,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
         {
+            await using var organisationRegistryContext = _contextFactory.Create();
+            var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
+            var body = await organisationRegistryContext.BodyCache.SingleAsync(x => x.Id == message.Body.BodyId);
+
             var personDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PersonId).ThrowOnFailure().Source);
 
             personDocument.ChangeId = message.Number;
@@ -235,13 +246,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     message.Body.BodyMandateId,
                     message.Body.DelegationAssignmentId,
                     message.Body.BodyId,
-                    _memoryCaches.BodyNames[message.Body.BodyId],
+                    body.Name,
                     organisationForBody.OrganisationId,
                     organisationForBody.OrganisationName,
                     message.Body.BodySeatId,
-                    _memoryCaches.BodySeatNames[message.Body.BodySeatId],
-                    _memoryCaches.BodySeatNumbers[message.Body.BodySeatId],
-                    _memoryCaches.IsSeatPaid[message.Body.BodySeatId],
+                    bodySeat.Name,
+                    bodySeat.Number,
+                    bodySeat.IsPaid,
                     new Period(
                         message.Body.ValidFrom,
                         message.Body.ValidTo)));
@@ -251,7 +262,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
         {
-                        // If previous exists and current is different, we need to delete and add
+            await using var organisationRegistryContext = _contextFactory.Create();
+            var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
+            var body = await organisationRegistryContext.BodyCache.SingleAsync(x => x.Id == message.Body.BodyId);
+
+            // If previous exists and current is different, we need to delete and add
             if (message.Body.PreviousPersonId != message.Body.PersonId)
             {
                 var previousPersonDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PreviousPersonId).ThrowOnFailure().Source);
@@ -287,13 +302,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     message.Body.BodyMandateId,
                     message.Body.DelegationAssignmentId,
                     message.Body.BodyId,
-                    _memoryCaches.BodyNames[message.Body.BodyId],
+                    body.Name,
                     organisationForBody.OrganisationId,
                     organisationForBody.OrganisationName,
                     message.Body.BodySeatId,
-                    _memoryCaches.BodySeatNames[message.Body.BodySeatId],
-                    _memoryCaches.BodySeatNumbers[message.Body.BodySeatId],
-                    _memoryCaches.IsSeatPaid[message.Body.BodySeatId],
+                    bodySeat.Name,
+                    bodySeat.Number,
+                    bodySeat.IsPaid,
                     new Period(
                         message.Body.ValidFrom,
                         message.Body.ValidTo)));
@@ -325,6 +340,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
+            await using var organisationRegistryContext = _contextFactory.Create();
+            var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
+
             _elastic.Try(() => _elastic.WriteClient
                 .MassUpdatePerson(
                     x => x.Mandates.Single().BodyId, message.Body.BodyId,
@@ -337,7 +355,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                 .MassUpdatePerson(
                     x => x.Mandates.Single().BodyId, message.Body.BodyId,
                     "mandates", "BodyId",
-                    "bodyOrganisationName", _memoryCaches.OrganisationNames[message.Body.OrganisationId],
+                    "bodyOrganisationName", organisation.Name,
                     message.Number,
                     message.Timestamp));
         }
@@ -363,7 +381,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
         private CachedOrganisationBody GetOrganisationForBodyFromCache(Guid bodyId)
         {
-            using (var context = _contextFactory().Value)
+            using (var context = _contextFactory.Create())
             {
                 var organisationPerBody =
                     context
