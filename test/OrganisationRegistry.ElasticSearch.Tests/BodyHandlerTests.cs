@@ -28,9 +28,6 @@ namespace OrganisationRegistry.ElasticSearch.Tests
 
         public BodyHandlerTests(ElasticSearchFixture fixture)
         {
-            var memoryCaches = new Mock<IMemoryCaches>();
-            memoryCaches.Setup(caches => caches.ContactTypeNames[It.IsAny<Guid>()]).Returns("contact type");
-
             _fixture = fixture;
             _handler = new BodyHandler(
                 logger: _fixture.LoggerFactory.CreateLogger<BodyHandler>(),
