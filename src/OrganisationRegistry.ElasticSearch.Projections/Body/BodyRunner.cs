@@ -16,7 +16,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         private new static readonly Type[] EventHandlers =
         {
-            typeof(MemoryCachesMaintainer),
             typeof(BodyHandler)
         };
 

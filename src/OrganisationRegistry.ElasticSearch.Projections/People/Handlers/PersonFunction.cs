@@ -10,10 +10,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using ElasticSearch.People;
     using Function.Events;
     using Infrastructure;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Organisation.Events;
     using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Events;
+    using SqlServer;
 
     public class PersonFunction :
         BaseProjection<PersonFunction>,
@@ -25,19 +27,25 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         IEventHandler<OrganisationCouplingWithKboCancelled>
     {
         private readonly Elastic _elastic;
-        private readonly IMemoryCaches _memoryCaches;
+        private readonly IContextFactory _contextFactory;
 
         public PersonFunction(
             ILogger<PersonFunction> logger,
             Elastic elastic,
-            IMemoryCaches memoryCaches) : base(logger)
+            IContextFactory contextFactory) : base(logger)
         {
             _elastic = elastic;
-            _memoryCaches = memoryCaches;
+            _contextFactory = contextFactory;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionAdded> message)
         {
+            await using var organisationRegistryContext = _contextFactory.Create();
+            var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
+            var contactTypeNames = await organisationRegistryContext.ContactTypeList
+                .Select(x => new {x.Id, x.Name})
+                .ToDictionaryAsync(x => x.Id, x => x.Name);
+
             var personDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PersonId).ThrowOnFailure().Source);
 
             personDocument.ChangeId = message.Number;
@@ -54,8 +62,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     message.Body.FunctionId,
                     message.Body.FunctionName,
                     message.Body.OrganisationId,
-                    _memoryCaches.OrganisationNames[message.Body.OrganisationId],
-                    message.Body.Contacts.Select(x => new Contact(x.Key, _memoryCaches.ContactTypeNames[x.Key], x.Value)).ToList(),
+                    organisation.Name,
+                    message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
                     new Period(message.Body.ValidFrom, message.Body.ValidTo)));
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(personDocument).ThrowOnFailure());
@@ -63,6 +71,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionUpdated> message)
         {
+            await using var organisationRegistryContext = _contextFactory.Create();
+            var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
+            var contactTypeNames = await organisationRegistryContext.ContactTypeList
+                .Select(x => new {x.Id, x.Name})
+                .ToDictionaryAsync(x => x.Id, x => x.Name);
+
             // If previous exists and current is different, we need to delete and add
             if (message.Body.PreviousPersonId != message.Body.PersonId)
             {
@@ -94,8 +108,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     message.Body.FunctionId,
                     message.Body.FunctionName,
                     message.Body.OrganisationId,
-                    _memoryCaches.OrganisationNames[message.Body.OrganisationId],
-                    message.Body.Contacts.Select(x => new Contact(x.Key, _memoryCaches.ContactTypeNames[x.Key], x.Value)).ToList(),
+                    organisation.Name,
+                    message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
                     new Period(message.Body.ValidFrom, message.Body.ValidTo)));
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(personDocument).ThrowOnFailure());

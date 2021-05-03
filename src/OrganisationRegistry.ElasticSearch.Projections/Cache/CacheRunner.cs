@@ -1,63 +1,50 @@
-namespace OrganisationRegistry.ElasticSearch.Projections
+namespace OrganisationRegistry.ElasticSearch.Projections.Cache
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
-    using Configuration;
+    using Autofac.Features.OwnedInstances;
     using Infrastructure;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using SqlServer.ProjectionState;
     using OrganisationRegistry.Infrastructure.Events;
+    using SqlServer.Infrastructure;
+    using SqlServer.ProjectionState;
 
-    public abstract class BaseRunner
+    public class CacheRunner
     {
-        public string ProjectionName { get; }
-        public Type[] EventHandlers { get; }
-        public Type[] ReactionHandlers { get; }
+        public static readonly Type[] EventHandlers =
+        {
+            typeof(OrganisationCache),
+            typeof(BodySeatCache),
+            typeof(BodyCache),
+        };
 
-        private readonly string _elasticSearchProjectionsProjectionName;
-        private readonly string _projectionFullName;
+        public static string ProjectionName => "ElasticSearchCache";
 
-        private readonly int _batchSize;
-        private readonly ILogger<BaseRunner> _logger;
+        private readonly ILogger<CacheRunner> _logger;
         private readonly IEventStore _store;
+        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
         private readonly IProjectionStates _projectionStates;
         private readonly IEventPublisher _bus;
 
-        protected BaseRunner(
-            ILogger<BaseRunner> logger,
-            IOptions<ElasticSearchConfiguration> configuration,
+        public CacheRunner(
+            ILogger<CacheRunner> logger,
             IEventStore store,
+            Func<Owned<OrganisationRegistryContext>> contextFactory,
             IProjectionStates projectionStates,
-            IEventPublisher bus,
-            string elasticSearchProjectionsProjectionName,
-            string projectionFullName,
-            string projectionName,
-            Type[] eventHandlers,
-            Type[] reactionHandlers)
+            IEventPublisher bus)
         {
             _logger = logger;
             _store = store;
+            _contextFactory = contextFactory;
             _projectionStates = projectionStates;
             _bus = bus;
-
-            _batchSize = configuration.Value.BatchSize;
-            _elasticSearchProjectionsProjectionName = elasticSearchProjectionsProjectionName;
-            _projectionFullName = projectionFullName;
-
-            ProjectionName = projectionName;
-            EventHandlers = eventHandlers;
-            ReactionHandlers = reactionHandlers;
         }
 
         public async Task Run()
         {
-            var lastProcessedEventNumber = _projectionStates.GetLastProcessedEventNumber(_elasticSearchProjectionsProjectionName);
-            await InitialiseProjection(lastProcessedEventNumber);
-
             var eventsBeingListenedTo =
                 EventHandlers
                     .SelectMany(handler => handler
@@ -67,25 +54,39 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     .Distinct()
                     .ToList();
 
-            var envelopes = _store.GetEventEnvelopesAfter(lastProcessedEventNumber, _batchSize, eventsBeingListenedTo.ToArray()).ToList();
+            await using var context = _contextFactory().Value;
 
-            LogEnvelopeCount(envelopes);
+            var lastEvent = _store.GetLastEvent();
+            var lastProcessedEventNumber = _projectionStates.GetLastProcessedEventNumber(ProjectionName);
+            await InitialiseProjection(lastProcessedEventNumber);
 
-            var newLastProcessedEventNumber = new int?();
-            try
+            var previousLastProcessedEventNumber = (int?)null;
+
+            while (lastEvent > lastProcessedEventNumber && lastProcessedEventNumber != previousLastProcessedEventNumber)
             {
-                foreach (var envelope in envelopes)
+                previousLastProcessedEventNumber = lastProcessedEventNumber;
+                var envelopes = _store.GetEventEnvelopesAfter(lastProcessedEventNumber, 2500, eventsBeingListenedTo.ToArray()).ToList();
+
+                LogEnvelopeCount(envelopes);
+
+                var newLastProcessedEventNumber = new int?();
+                try
                 {
-                    newLastProcessedEventNumber = await ProcessEnvelope(envelope);
+                    foreach (var envelope in envelopes)
+                    {
+                        newLastProcessedEventNumber = await ProcessEnvelope(envelope);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogCritical(0, ex, "[{ProjectionName}] An exception occurred while handling envelopes.", ProjectionName);
-            }
-            finally
-            {
-                UpdateProjectionState(newLastProcessedEventNumber);
+                catch (Exception ex)
+                {
+                    _logger.LogCritical(0, ex, "[{ProjectionName}] An exception occurred while handling envelopes.", ProjectionName);
+                }
+                finally
+                {
+                    UpdateProjectionState(newLastProcessedEventNumber);
+                }
+
+                lastProcessedEventNumber = _projectionStates.GetLastProcessedEventNumber(ProjectionName);
             }
         }
 
@@ -95,7 +96,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 return;
 
             _logger.LogInformation("[{ProjectionName}] First run, initialising projections!", ProjectionName);
-            await ProcessEnvelope(new InitialiseProjection(_projectionFullName).ToTypedEnvelope());
+            await ProcessEnvelope(new InitialiseProjection(ProjectionName).ToTypedEnvelope());
         }
 
         private void UpdateProjectionState(int? newLastProcessedEventNumber)
@@ -104,7 +105,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 return;
 
             _logger.LogInformation("[{ProjectionName}] Processed up until envelope #{LastProcessedEnvelopeNumber}, writing number to db...", ProjectionName, newLastProcessedEventNumber);
-            _projectionStates.UpdateProjectionState(_elasticSearchProjectionsProjectionName, newLastProcessedEventNumber.Value);
+            _projectionStates.UpdateProjectionState(ProjectionName, newLastProcessedEventNumber.Value);
         }
 
         private async Task<int?> ProcessEnvelope(IEnvelope envelope)

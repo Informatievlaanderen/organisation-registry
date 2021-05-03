@@ -5,6 +5,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using System.Reflection;
     using Autofac.Extensions.DependencyInjection;
     using Body;
+    using Cache;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -59,6 +60,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 .SingleInstance();
 
             builder.RegisterType<IndividualRebuildRunner>()
+                .SingleInstance();
+
+            builder.RegisterType<CacheRunner>()
                 .SingleInstance();
 
             builder.Populate(_services);

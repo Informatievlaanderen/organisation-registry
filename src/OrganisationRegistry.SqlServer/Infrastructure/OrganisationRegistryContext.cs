@@ -136,6 +136,11 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         public DbSet<ElasticSearchProjections.OrganisationPerBody> OrganisationPerBodyListForES { get; set; }
         public DbSet<OrganisationToRebuild> OrganisationsToRebuild { get; set; }
 
+        public DbSet<OrganisationCacheItem> OrganisationCache { get; set; }
+        public DbSet<BodySeatCacheItem> BodySeatCache { get; set; }
+        public DbSet<BodyCacheItem> BodyCache { get; set; }
+
+
         // Reporting
         public DbSet<BodySeatGenderRatioOrganisationPerBodyListItem> BodySeatGenderRatioOrganisationPerBodyList { get; set; }
         public DbSet<BodySeatGenderRatioPersonListItem> BodySeatGenderRatioPersonList { get; set; }

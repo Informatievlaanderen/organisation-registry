@@ -16,7 +16,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public new static readonly Type[] EventHandlers =
         {
-            typeof(MemoryCachesMaintainer),
             typeof(Organisation),
             typeof(OrganisationBody),
             typeof(OrganisationBuilding),

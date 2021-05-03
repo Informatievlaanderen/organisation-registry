@@ -9,11 +9,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using Common;
     using ElasticSearch.Organisations;
     using Infrastructure;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using OrganisationRelationType.Events;
-    using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
+    using SqlServer;
 
     public class OrganisationRelation : BaseProjection<OrganisationRelation>,
         IEventHandler<OrganisationRelationAdded>,
@@ -25,19 +26,23 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IEventHandler<OrganisationTerminated>
     {
         private readonly Elastic _elastic;
-        private readonly IMemoryCaches _memoryCaches;
+        private readonly IContextFactory _contextFactory;
 
         public OrganisationRelation(
             ILogger<OrganisationRelation> logger,
-            IMemoryCaches memoryCaches,
-            Elastic elastic) : base(logger)
+            Elastic elastic,
+            IContextFactory contextFactory) : base(logger)
         {
-            _memoryCaches = memoryCaches;
             _elastic = elastic;
+            _contextFactory = contextFactory;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationAdded> message)
         {
+            await using var organisationRegistryContext = _contextFactory.Create();
+            var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
+            var relatedOrganisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.RelatedOrganisationId);
+
             //initiator
             var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
 
@@ -46,6 +51,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             if (organisationDocument.Relations == null)
                 organisationDocument.Relations = new List<OrganisationDocument.OrganisationRelation>();
+
             organisationDocument.Relations.RemoveExistingListItems(x => x.OrganisationRelationId == message.Body.OrganisationRelationId);
             organisationDocument.Relations.Add(
                     new OrganisationDocument.OrganisationRelation(
@@ -53,8 +59,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         message.Body.RelationId,
                         message.Body.RelationName,
                         message.Body.RelatedOrganisationId,
-                        _memoryCaches.OvoNumbers[message.Body.RelatedOrganisationId],
-                        _memoryCaches.OrganisationNames[message.Body.RelatedOrganisationId],
+                        relatedOrganisation.OvoNumber,
+                        relatedOrganisation.Name,
                         new Period(message.Body.ValidFrom, message.Body.ValidTo)));
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
@@ -67,6 +73,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             if (relatedOrganisationDocument.Relations == null)
                 relatedOrganisationDocument.Relations = new List<OrganisationDocument.OrganisationRelation>();
+
             relatedOrganisationDocument.Relations.RemoveExistingListItems(x => x.OrganisationRelationId == message.Body.OrganisationRelationId);
             relatedOrganisationDocument.Relations.Add(
                 new OrganisationDocument.OrganisationRelation(
@@ -74,8 +81,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     message.Body.RelationId,
                     message.Body.RelationInverseName,
                     message.Body.OrganisationId,
-                    _memoryCaches.OvoNumbers[message.Body.OrganisationId],
-                    _memoryCaches.OrganisationNames[message.Body.OrganisationId],
+                    organisation.OvoNumber,
+                    organisation.Name,
                     new Period(message.Body.ValidFrom, message.Body.ValidTo)));
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(relatedOrganisationDocument).ThrowOnFailure());
@@ -83,6 +90,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationUpdated> message)
         {
+            await using var organisationRegistryContext = _contextFactory.Create();
+            var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
+            var relatedOrganisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.RelatedOrganisationId);
+
             //initiator
             var organisationDocument = _elastic.TryGet(() =>
                 _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure()
@@ -101,8 +112,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     message.Body.RelationId,
                     message.Body.RelationName,
                     message.Body.RelatedOrganisationId,
-                    _memoryCaches.OvoNumbers[message.Body.RelatedOrganisationId],
-                    _memoryCaches.OrganisationNames[message.Body.RelatedOrganisationId],
+                    relatedOrganisation.OvoNumber,
+                    relatedOrganisation.Name,
                     new Period(message.Body.ValidFrom, message.Body.ValidTo)));
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
@@ -125,8 +136,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     message.Body.RelationId,
                     message.Body.RelationInverseName,
                     message.Body.OrganisationId,
-                    _memoryCaches.OvoNumbers[message.Body.OrganisationId],
-                    _memoryCaches.OrganisationNames[message.Body.OrganisationId],
+                    organisation.OvoNumber,
+                    organisation.Name,
                     new Period(message.Body.ValidFrom, message.Body.ValidTo)));
 
             _elastic.Try(() => _elastic.WriteClient.IndexDocument(relatedOrganisationDocument).ThrowOnFailure());
