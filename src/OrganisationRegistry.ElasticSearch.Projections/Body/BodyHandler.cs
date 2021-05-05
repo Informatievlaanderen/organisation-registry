@@ -246,6 +246,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
+            _elastic.WriteClient.Indices.Refresh(Indices.All);
             _elasticWriter
                 .Update(message.Body.BodyId, message)
                 .CommitDocument(document =>
@@ -262,6 +263,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatAdded> message)
         {
+            _elastic.WriteClient.Indices.Refresh(Indices.All);
             _elasticWriter
                 .Update(message.Body.BodyId, message)
                 .CommitDocument(document =>
@@ -299,6 +301,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonToBodySeat> message)
         {
+            _elastic.WriteClient.Indices.Refresh(Indices.All);
             _elasticWriter
                 .Update(message.Body.BodyId, message)
                 .CommitDocument(document =>
@@ -322,6 +325,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedPersonToBodySeat> message)
         {
+            _elastic.WriteClient.Indices.Refresh(Indices.All);
             _elasticWriter
                 .Update(message.Body.BodyId, message)
                 .CommitDocument(document =>
@@ -345,6 +349,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedOrganisationToBodySeat> message)
         {
+            _elastic.WriteClient.Indices.Refresh(Indices.All);
             _elasticWriter
                 .Update(message.Body.BodyId, message)
                 .CommitDocument(document =>
@@ -368,6 +373,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedOrganisationToBodySeat> message)
         {
+            _elastic.WriteClient.Indices.Refresh(Indices.All);
             _elasticWriter
                 .Update(message.Body.BodyId, message)
                 .CommitDocument(document =>
@@ -391,6 +397,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedFunctionTypeToBodySeat> message)
         {
+            _elastic.WriteClient.Indices.Refresh(Indices.All);
             _elasticWriter
                 .Update(message.Body.BodyId, message)
                 .CommitDocument(document =>
@@ -414,6 +421,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedFunctionTypeToBodySeat> message)
         {
+            _elastic.WriteClient.Indices.Refresh(Indices.All);
             _elasticWriter
                 .Update(message.Body.BodyId, message)
                 .CommitDocument(document =>
@@ -437,6 +445,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
         {
+            _elastic.WriteClient.Indices.Refresh(Indices.All);
             await using var organisationRegistryContext = _contextFactory.Create();
             var contactTypeNames = await organisationRegistryContext.ContactTypeList
                 .Select(x => new {x.Id, x.Name})
@@ -468,6 +477,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
         {
+            _elastic.WriteClient.Indices.Refresh(Indices.All);
             await using var organisationRegistryContext = _contextFactory.Create();
             var contactTypeNames = await organisationRegistryContext.ContactTypeList
                 .Select(x => new {x.Id, x.Name})
@@ -499,6 +509,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
         {
+            _elastic.WriteClient.Indices.Refresh(Indices.All);
             _elasticWriter
                 .Update(message.Body.BodyId, message)
                 .CommitDocument(document =>
@@ -555,7 +566,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         private void UpdatePersonForDelegations(IEnvelope<PersonUpdated> message)
         {
             _elastic.WriteClient.Indices.Refresh(Indices.All);
-
             var delegationResults =
                 _elastic.TryGet(
                     () => _elastic.WriteClient.Search<BodyDocument>(
