@@ -28,5 +28,8 @@ Serilog.Enrichers.Thread
 Serilog.Enrichers.Environment
 Serilog.Formatting.Compact
 
+App.Metrics.AspNetCore.Tracking
+App.Metrics.Reporting.Console
+
 SourceLink.Embed.AllSourceFiles
 SourceLink.Copy.PdbFiles

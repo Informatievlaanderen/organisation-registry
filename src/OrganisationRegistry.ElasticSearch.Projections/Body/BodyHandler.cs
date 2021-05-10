@@ -5,6 +5,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
+    using App.Metrics;
+    using App.Metrics.Timer;
     using Bodies;
     using Client;
     using Common;
@@ -23,6 +25,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     using OrganisationRegistry.Body.Events;
     using OrganisationRegistry.Infrastructure.Events;
     using SqlServer;
+    using TimeUnit = App.Metrics.TimeUnit;
 
     public class BodyHandler :
         BaseProjection<BodyHandler>,
@@ -56,9 +59,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     {
         private readonly Elastic _elastic;
         private readonly IContextFactory _contextFactory;
+        private readonly IMetricsRoot _metrics;
         private readonly ElasticSearchConfiguration _elasticSearchOptions;
 
         private static readonly TimeSpan ScrollTimeout = TimeSpan.FromMinutes(5);
+        private readonly TimerOptions _indexTimer;
 
         private static IEnumerable<string> ProjectionTableNames => Array.Empty<string>();
 
@@ -66,10 +71,19 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             ILogger<BodyHandler> logger,
             Elastic elastic,
             IContextFactory contextFactory,
-            IOptions<ElasticSearchConfiguration> elasticSearchOptions) : base(logger)
+            IOptions<ElasticSearchConfiguration> elasticSearchOptions,
+            IMetricsRoot metrics) : base(logger)
         {
             _elastic = elastic;
             _contextFactory = contextFactory;
+            _metrics = metrics;
+            _indexTimer = new TimerOptions
+            {
+                Name = "Index Refresh Timer",
+                MeasurementUnit = Unit.Requests,
+                DurationUnit = TimeUnit.Milliseconds,
+                RateUnit = TimeUnit.Milliseconds
+            };
             _elasticSearchOptions = elasticSearchOptions.Value;
 
             PrepareIndex(elastic.WriteClient, false);
@@ -526,7 +540,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<PersonAssignedToDelegation> message)
         {
-            _elastic.WriteClient.Indices.Refresh(Indices.All);
+            _metrics.Measure.Timer.Time(_indexTimer, () => _elastic.WriteClient.Indices.Refresh(Indices.All));
             await using var organisationRegistryContext = _contextFactory.Create();
             var contactTypeNames = await organisationRegistryContext.ContactTypeList
                 .Select(x => new {x.Id, x.Name})
@@ -563,7 +577,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<PersonAssignedToDelegationUpdated> message)
         {
-            _elastic.WriteClient.Indices.Refresh(Indices.All);
+            _metrics.Measure.Timer.Time(_indexTimer, () => _elastic.WriteClient.Indices.Refresh(Indices.All));
             await using var organisationRegistryContext = _contextFactory.Create();
             var contactTypeNames = await organisationRegistryContext.ContactTypeList
                 .Select(x => new {x.Id, x.Name})
@@ -632,9 +646,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             );
         }
 
-        private static void UpdatePersonForDelegations(IEnvelope<PersonUpdated> message, Elastic elastic)
+        private void UpdatePersonForDelegations(IEnvelope<PersonUpdated> message, Elastic elastic)
         {
-            elastic.WriteClient.Indices.Refresh(Indices.Index<BodyDocument>());
+            _metrics.Measure.Timer.Time(_indexTimer, () => elastic.WriteClient.Indices.Refresh(Indices.Index<BodyDocument>()));
 
             var searchResponse = elastic.WriteClient.Search<BodyDocument>(
                 s => s.Query(
@@ -670,9 +684,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             elastic.Try(() => elastic.WriteClient.IndexMany(bodyDocuments));
         }
 
-        private static void UpdatePersonForMandates(IEnvelope<PersonUpdated> message, Elastic elastic)
+        private void UpdatePersonForMandates(IEnvelope<PersonUpdated> message, Elastic elastic)
         {
-            elastic.WriteClient.Indices.Refresh(Indices.Index<BodyDocument>());
+            _metrics.Measure.Timer.Time(_indexTimer, () => elastic.WriteClient.Indices.Refresh(Indices.Index<BodyDocument>()));
 
             var searchResponse = elastic.WriteClient.Search<BodyDocument>(
                 s => s.Query(
@@ -731,7 +745,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             (
                 elastic =>
                 {
-                    elastic.WriteClient.Indices.Refresh(Indices.Index<BodyDocument>());
+                    _metrics.Measure.Timer.Time(_indexTimer, () => elastic.WriteClient.Indices.Refresh(Indices.Index<BodyDocument>()));
 
                     var searchResponse = elastic.WriteClient.Search<BodyDocument>(
                         s => s.Query(
@@ -773,7 +787,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             (
                 elastic =>
                 {
-                    elastic.WriteClient.Indices.Refresh(Indices.Index<BodyDocument>());
+                    _metrics.Measure.Timer.Time(_indexTimer, () => elastic.WriteClient.Indices.Refresh(Indices.Index<BodyDocument>()));
 
                     var searchResponse = elastic.WriteClient.Search<BodyDocument>(
                         s => s.Query(

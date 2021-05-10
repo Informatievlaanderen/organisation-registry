@@ -3,6 +3,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using System;
     using Autofac;
     using System.Reflection;
+    using App.Metrics;
     using Autofac.Core;
     using Autofac.Extensions.DependencyInjection;
     using Body;
@@ -75,6 +76,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 .SingleInstance();
 
             builder.RegisterType<ElasticBusRegistrar>()
+                .SingleInstance();
+
+            builder.RegisterInstance(new MetricsBuilder()
+                    .Report.ToConsole()
+                    .Build())
+                .As<IMetricsRoot>()
                 .SingleInstance();
 
             builder.Populate(_services);
