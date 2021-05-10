@@ -2,9 +2,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
+    using App.Metrics;
+    using App.Metrics.Timer;
     using Bodies;
     using Client;
     using Configuration;
@@ -15,6 +18,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     using Nest;
     using OrganisationRegistry.Infrastructure.Events;
     using SqlServer.ProjectionState;
+    using TimeUnit = Nest.TimeUnit;
 
     public class BodyRunner
     {
@@ -28,6 +32,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         private readonly IProjectionStates _projectionStates;
         private readonly Elastic _elastic;
         private readonly ElasticBus _bus;
+        private readonly IMetricsRoot _metrics;
 
 
         public static readonly Type[] EventHandlers =
@@ -41,13 +46,15 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             IEventStore store,
             IProjectionStates projectionStates,
             Elastic elastic,
-            ElasticBus bus)
+            ElasticBus bus,
+            IMetricsRoot metrics)
         {
             _logger = logger;
             _store = store;
             _projectionStates = projectionStates;
             _elastic = elastic;
             _bus = bus;
+            _metrics = metrics;
 
             _batchSize = configuration.Value.BatchSize;
 
@@ -55,6 +62,22 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         public async Task Run()
         {
+            var changeDocumentTimer = new TimerOptions
+            {
+                Name = "Change Document Timer",
+                MeasurementUnit = Unit.Calls,
+                DurationUnit = App.Metrics.TimeUnit.Milliseconds,
+                RateUnit = App.Metrics.TimeUnit.Milliseconds
+            };
+
+            var getEventsTimer = new TimerOptions
+            {
+                Name = "Get Events Timer",
+                MeasurementUnit = Unit.Calls,
+                DurationUnit = App.Metrics.TimeUnit.Milliseconds,
+                RateUnit = App.Metrics.TimeUnit.Milliseconds
+            };
+
             var lastProcessedEventNumber = _projectionStates.GetLastProcessedEventNumber(ElasticSearchProjectionsProjectionName);
             await InitialiseProjection(lastProcessedEventNumber);
 
@@ -67,7 +90,14 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                     .Distinct()
                     .ToList();
 
-            var envelopes = _store.GetEventEnvelopesAfter(lastProcessedEventNumber, _batchSize, eventsBeingListenedTo.ToArray()).ToList();
+            var envelopes = new List<IEnvelope>();
+
+            _metrics.Measure.Timer.Time(getEventsTimer, () =>
+            {
+                envelopes = _store
+                    .GetEventEnvelopesAfter(lastProcessedEventNumber, _batchSize, eventsBeingListenedTo.ToArray())
+                    .ToList();
+            });
 
             LogEnvelopeCount(envelopes);
 
@@ -113,7 +143,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
                     foreach (var change in changeSet.Value)
                     {
-                        change(document);
+                        _metrics.Measure.Timer.Time(changeDocumentTimer, () => change(document));
                     }
                 }
 
@@ -134,6 +164,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             }
             finally
             {
+                await Task.WhenAll(_metrics.ReportRunner.RunAllAsync());
             }
         }
 
