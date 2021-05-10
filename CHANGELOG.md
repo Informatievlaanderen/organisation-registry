@@ -1,3 +1,16 @@
+# [1.78.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.77.0...v1.78.0) (2021-05-10)
+
+
+### Bug Fixes
+
+* add default metrics to test ([0ccd434](https://github.com/informatievlaanderen/organisation-registry/commit/0ccd434ddde42d662603c6779f4d273161b9ea0f))
+* remove unnecessary index refreshes ([96274ef](https://github.com/informatievlaanderen/organisation-registry/commit/96274ef201a8202d2d04d74e8cd418e8c622890f))
+
+
+### Features
+
+* introduce simple metrics ([967b3cd](https://github.com/informatievlaanderen/organisation-registry/commit/967b3cd3d5f66de9fb85846c70923763f6ac552b))
+
 # [1.77.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.76.0...v1.77.0) (2021-05-10)
 
 
