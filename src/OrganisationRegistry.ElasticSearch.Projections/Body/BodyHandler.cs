@@ -25,7 +25,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     using SqlServer;
 
     public class BodyHandler :
-        BaseProjection<BodyHandler>,
+        Infrastructure.BaseProjection<BodyHandler>,
         IElasticEventHandler<InitialiseProjection>,
         IElasticEventHandler<BodyRegistered>,
         IElasticEventHandler<BodyInfoChanged>,

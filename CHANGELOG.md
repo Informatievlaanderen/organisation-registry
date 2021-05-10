@@ -1,3 +1,10 @@
+# [1.76.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.75.0...v1.76.0) (2021-05-05)
+
+
+### Features
+
+* temporarily refresh indices ([2084fbf](https://github.com/informatievlaanderen/organisation-registry/commit/2084fbfeb84bd04912756f29a213b1f9496d296e))
+
 # [1.75.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.74.0...v1.75.0) (2021-05-03)
 
 
