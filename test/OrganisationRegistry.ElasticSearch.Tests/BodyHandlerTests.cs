@@ -12,6 +12,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using Scenario;
     using Xunit;
     using System;
+    using App.Metrics;
+    using App.Metrics.Internal;
     using Moq;
     using Scenario.Specimen;
     using Function.Events;
@@ -33,7 +35,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 logger: _fixture.LoggerFactory.CreateLogger<BodyHandler>(),
                 elastic: _fixture.Elastic,
                 contextFactory: _fixture.ContextFactory,
-                elasticSearchOptions: _fixture.ElasticSearchOptions);
+                elasticSearchOptions: _fixture.ElasticSearchOptions,
+                new MetricsBuilder().Build());
         }
 
         [EnvVarIgnoreFact]
