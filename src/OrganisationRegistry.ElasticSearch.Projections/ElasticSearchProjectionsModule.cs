@@ -3,9 +3,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using System;
     using Autofac;
     using System.Reflection;
+    using Autofac.Core;
     using Autofac.Extensions.DependencyInjection;
     using Body;
     using Cache;
+    using Infrastructure;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -43,6 +45,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 .SingleInstance();
 
             builder.RegisterAssemblyTypes(typeof(OrganisationRegistryElasticSearchProjectionsAssemblyTokenClass).GetTypeInfo().Assembly)
+                .AsClosedTypesOf(typeof(IElasticEventHandler<>))
+                .SingleInstance();
+
+            builder.RegisterAssemblyTypes(typeof(OrganisationRegistryElasticSearchProjectionsAssemblyTokenClass).GetTypeInfo().Assembly)
                 .AsClosedTypesOf(typeof(IReactionHandler<>))
                 .SingleInstance();
 
@@ -63,6 +69,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 .SingleInstance();
 
             builder.RegisterType<CacheRunner>()
+                .SingleInstance();
+
+            builder.RegisterType<ElasticBus>()
+                .SingleInstance();
+
+            builder.RegisterType<ElasticBusRegistrar>()
                 .SingleInstance();
 
             builder.Populate(_services);

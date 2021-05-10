@@ -8,6 +8,22 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
     public static class MassUpdateBodyExtension
     {
+        /// <summary>
+        /// For each Body Document where `queryFieldSelector` equals `queryFieldValue`,
+        /// update in the list of `listPropertyName` where `idProperty` equals `queryFieldValue`,
+        /// the value of the `namePropertyName` field in the list of `listPropertyName` to `newName`.
+        /// Also sets the `changeId` and `changeTime` for each of those changes.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="queryFieldSelector"></param>
+        /// <param name="queryFieldValue"></param>
+        /// <param name="listPropertyName"></param>
+        /// <param name="idPropertyName"></param>
+        /// <param name="namePropertyName"></param>
+        /// <param name="newName"></param>
+        /// <param name="changeId"></param>
+        /// <param name="changeTime"></param>
+        /// <param name="scrollSize"></param>
         public static void MassUpdateBody(
             this ElasticClient client,
             Expression<Func<BodyDocument, object>> queryFieldSelector,
