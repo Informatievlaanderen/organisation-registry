@@ -1,3 +1,11 @@
+# [1.77.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.76.0...v1.77.0) (2021-05-10)
+
+
+### Features
+
+* introduce batching for ES projections ([c2ac169](https://github.com/informatievlaanderen/organisation-registry/commit/c2ac16979931d5cd9a47d9f337aefd8c77198dd6))
+* update es version in local docker env ([e7f0054](https://github.com/informatievlaanderen/organisation-registry/commit/e7f0054f9307383620546147c106300579e7421b))
+
 # [1.76.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.75.0...v1.76.0) (2021-05-05)
 
 
