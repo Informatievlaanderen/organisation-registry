@@ -540,7 +540,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<PersonAssignedToDelegation> message)
         {
-            _metrics.Measure.Timer.Time(_indexTimer, () => _elastic.WriteClient.Indices.Refresh(Indices.All));
             await using var organisationRegistryContext = _contextFactory.Create();
             var contactTypeNames = await organisationRegistryContext.ContactTypeList
                 .Select(x => new {x.Id, x.Name})
@@ -577,7 +576,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<PersonAssignedToDelegationUpdated> message)
         {
-            _metrics.Measure.Timer.Time(_indexTimer, () => _elastic.WriteClient.Indices.Refresh(Indices.All));
             await using var organisationRegistryContext = _contextFactory.Create();
             var contactTypeNames = await organisationRegistryContext.ContactTypeList
                 .Select(x => new {x.Id, x.Name})
