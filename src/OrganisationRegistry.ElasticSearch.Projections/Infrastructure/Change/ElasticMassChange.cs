@@ -1,15 +1,16 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure.Change
 {
     using System;
+    using System.Threading.Tasks;
     using Client;
 
     public class ElasticMassChange : IElasticChange
     {
-        public ElasticMassChange(Action<Elastic> change)
+        public ElasticMassChange(Func<Elastic,Task> change)
         {
             Change = change;
         }
 
-        public Action<Elastic> Change { get; set; }
+        public Func<Elastic,Task> Change { get; set; }
     }
 }

@@ -159,11 +159,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             PrepareIndex(_elastic.WriteClient, true);
         }
 
-        private void PrepareIndex(IElasticClient client, bool deleteIndex)
+        private async Task PrepareIndex(IElasticClient client, bool deleteIndex)
         {
             var indexName = _elasticSearchOptions.OrganisationsWriteIndex;
 
-            if (deleteIndex && client.DoesIndexExist(indexName))
+            if (deleteIndex && await client.DoesIndexExist(indexName))
             {
                 var deleteResult = client.Indices.Delete(
                     new DeleteIndexRequest(Indices.Index(new List<IndexName> { indexName })));
@@ -172,7 +172,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     throw new Exception($"Could not delete organisation index '{indexName}'.");
             }
 
-            if (!client.DoesIndexExist(indexName))
+            if (!await client.DoesIndexExist(indexName))
             {
                 var indexResult = client.Indices.Create(
                     indexName,

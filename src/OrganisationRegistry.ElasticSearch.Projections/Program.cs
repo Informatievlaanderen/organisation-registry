@@ -26,7 +26,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
     using Organisations;
-    using People;
 
     internal class Program
     {

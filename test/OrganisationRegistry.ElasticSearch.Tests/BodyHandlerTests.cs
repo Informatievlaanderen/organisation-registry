@@ -13,11 +13,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using Xunit;
     using System;
     using App.Metrics;
-    using App.Metrics.Internal;
-    using Moq;
     using Scenario.Specimen;
     using Function.Events;
-    using Infrastructure.AppSpecific;
     using Organisation.Events;
     using Person.Events;
     using SeatType.Events;

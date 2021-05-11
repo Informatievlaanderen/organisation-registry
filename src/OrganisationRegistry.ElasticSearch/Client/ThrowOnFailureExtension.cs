@@ -32,6 +32,23 @@
             return response;
         }
 
+        public static ShardsOperationResponseBase ThrowOnFailure(this ShardsOperationResponseBase response)
+        {
+            if (!response.IsValid)
+                throw new ElasticsearchException(response.DebugInformation, response.OriginalException);
+
+            return response;
+        }
+
+        public static ClearScrollResponse ThrowOnFailure(this ClearScrollResponse response)
+        {
+            if (!response.IsValid)
+                throw new ElasticsearchException(response.DebugInformation, response.OriginalException);
+
+            return response;
+        }
+
+
         public static void ThrowOnFailure(this BulkResponse response)
         {
             if (!response.IsValid)

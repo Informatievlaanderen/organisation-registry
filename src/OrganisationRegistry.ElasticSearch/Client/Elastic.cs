@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.ElasticSearch.Client
 {
     using System;
+    using System.Threading.Tasks;
     using Bodies;
     using Configuration;
     using Microsoft.Extensions.Logging;
@@ -14,7 +15,7 @@ namespace OrganisationRegistry.ElasticSearch.Client
 
     public static class ElasticSearch6BugFix
     {
-        public static bool DoesIndexExist(this IElasticClient client, string indexName) => client.Indices.ExistsAsync(indexName).GetAwaiter().GetResult().Exists;
+        public static async Task<bool> DoesIndexExist(this IElasticClient client, string indexName) => (await client.Indices.ExistsAsync(indexName)).Exists;
     }
 
     // Scoped as SingleInstance()
@@ -23,17 +24,11 @@ namespace OrganisationRegistry.ElasticSearch.Client
         private readonly ILogger<Elastic> _logger;
         private readonly ElasticSearchConfiguration _configuration;
         private RetryPolicy _waitAndRetry;
+        private AsyncRetryPolicy _waitAndRetryAsync;
         public const int MaxResultWindow = 10000;
 
-        private Policy RetryPolicy =>
-            _waitAndRetry ??
-            (_waitAndRetry = Policy
-                .Handle<Exception>()
-                .WaitAndRetry(
-                    _configuration.MaxRetryAttempts,
-                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                    (exception, timeSpan, retryCount, context) =>
-                        _logger.LogError(0, exception, "Elasticsearch exception occurred, attempt #{RetryCount}, trying again in {RetrySeconds} seconds.", retryCount, timeSpan.TotalSeconds)));
+        private Policy RetryPolicy { get; }
+        private AsyncRetryPolicy AsyncRetryPolicy { get; }
 
         public ElasticClient ReadClient => GetElasticClient(write: false);
         public ElasticClient WriteClient => GetElasticClient(write: true);
@@ -44,6 +39,26 @@ namespace OrganisationRegistry.ElasticSearch.Client
         {
             _logger = logger;
             _configuration = elasticSearchOptions.Value;
+
+            RetryPolicy = Policy
+                .Handle<Exception>()
+                .WaitAndRetry(
+                    _configuration.MaxRetryAttempts,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (exception, timeSpan, retryCount, context) =>
+                        _logger.LogError(0, exception,
+                            "Elasticsearch exception occurred, attempt #{RetryCount}, trying again in {RetrySeconds} seconds.",
+                            retryCount, timeSpan.TotalSeconds));
+
+            AsyncRetryPolicy = Policy
+                .Handle<Exception>()
+                .WaitAndRetryAsync(
+                    _configuration.MaxRetryAttempts,
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    (exception, timeSpan, retryCount, context) =>
+                        _logger.LogError(0, exception,
+                            "Elasticsearch exception occurred, attempt #{RetryCount}, trying again in {RetrySeconds} seconds.",
+                            retryCount, timeSpan.TotalSeconds));
         }
 
         private ElasticClient GetElasticClient(bool write)
@@ -77,9 +92,24 @@ namespace OrganisationRegistry.ElasticSearch.Client
             RetryPolicy.Execute(actionToTry);
         }
 
+        public async Task TryAsync(Func<Task> actionToTry)
+        {
+            await AsyncRetryPolicy.ExecuteAsync(async () => await actionToTry());
+        }
+
         public T TryGet<T>(Func<T> actionToTry)
         {
             var result = RetryPolicy.ExecuteAndCapture(actionToTry);
+
+            if (result.Outcome == OutcomeType.Successful)
+                return result.Result;
+
+            throw result.FinalException;
+        }
+
+        public async Task<T> TryGetAsync<T>(Func<Task<T>> actionToTry)
+        {
+            var result = await AsyncRetryPolicy.ExecuteAndCaptureAsync(async () => await actionToTry());
 
             if (result.Outcome == OutcomeType.Successful)
                 return result.Result;

@@ -87,22 +87,22 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             _elasticSearchOptions = elasticSearchOptions.Value;
         }
 
-        private void PrepareIndex(IElasticClient client, bool deleteIndex)
+        private async Task PrepareIndex(IElasticClient client, bool deleteIndex)
         {
             var indexName = _elasticSearchOptions.BodyWriteIndex;
 
-            if (deleteIndex && client.DoesIndexExist(indexName))
+            if (deleteIndex && await client.DoesIndexExist(indexName))
             {
-                var deleteResult = client.Indices.Delete(
+                var deleteResult = await client.Indices.DeleteAsync(
                     new DeleteIndexRequest(Indices.Index(new List<IndexName> {indexName})));
 
                 if (!deleteResult.IsValid)
                     throw new Exception($"Could not delete body index '{indexName}'.");
             }
 
-            if (!client.DoesIndexExist(indexName))
+            if (!await client.DoesIndexExist(indexName))
             {
-                var indexResult = client.Indices.Create(
+                var indexResult = await client.Indices.CreateAsync(
                     indexName,
                     index => index
                         .Map<BodyDocument>(BodyDocument.Mapping)
@@ -127,7 +127,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 return new ElasticNoChange();
 
             Logger.LogInformation("Rebuilding index for {ProjectionName}.", message.Body.ProjectionName);
-            PrepareIndex(_elastic.WriteClient, true);
+            await PrepareIndex(_elastic.WriteClient, true);
 
             if (!ProjectionTableNames.Any())
                 return new ElasticNoChange();
@@ -226,8 +226,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         {
             return new ElasticMassChange
             (
-                elastic => elastic.Try(() => _elastic.WriteClient
-                    .MassUpdateBody(
+                elastic => elastic.TryAsync(async () => await _elastic.WriteClient
+                    .MassUpdateBodyAsync(
                         x => x.LifecyclePhases.Single().LifecyclePhaseTypeId, message.Body.LifecyclePhaseTypeId,
                         "lifecyclePhases", "lifecyclePhaseTypeId",
                         "lifecyclePhaseTypeName", message.Body.Name,
@@ -632,27 +632,29 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<PersonUpdated> message)
         {
-            return new ElasticMassChange
-            (
-                elastic =>
+            return new ElasticMassChange(
+                async elastic =>
                 {
-                    UpdatePersonForMandates(message, elastic);
-                    UpdatePersonForDelegations(message, elastic);
+                    await UpdatePersonForMandates(message, elastic);
+                    await UpdatePersonForDelegations(message, elastic);
                 }
             );
         }
 
-        private void UpdatePersonForDelegations(IEnvelope<PersonUpdated> message, Elastic elastic)
+        private async Task UpdatePersonForDelegations(IEnvelope<PersonUpdated> message, Elastic elastic)
         {
-            _metrics.Measure.Timer.Time(_indexTimer, () => elastic.WriteClient.Indices.Refresh(Indices.Index<BodyDocument>()));
+            using(_metrics.Measure.Timer.Time(_indexTimer))
+            {
+                (await elastic.TryGetAsync(() => elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>()))).ThrowOnFailure();
+            }
 
-            var searchResponse = elastic.WriteClient.Search<BodyDocument>(
+            var searchResponse = (await elastic.TryGetAsync(() => elastic.WriteClient.SearchAsync<BodyDocument>(
                 s => s.Query(
                     q => q.Term(
                         t => t
                             .Field(f => f.Seats.First().Mandates.First().Delegations.First().PersonId)
                             .Value(message.Body.PersonId))
-                ).Scroll(new Time(ScrollTimeout)));
+                ).Scroll(new Time(ScrollTimeout))))).ThrowOnFailure();
 
             var bodyDocuments = new List<BodyDocument>();
 
@@ -669,28 +671,33 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
                 bodyDocuments.AddRange(searchResponse.Documents);
 
-                searchResponse =
-                    elastic.WriteClient.Scroll<BodyDocument>(new Time(ScrollTimeout), searchResponse.ScrollId);
+                var response = searchResponse;
+                searchResponse = (await elastic.TryGetAsync(() =>
+                    elastic.WriteClient.ScrollAsync<BodyDocument>(new Time(ScrollTimeout),
+                        response.ScrollId))).ThrowOnFailure();
             }
-            elastic.WriteClient.ClearScroll(new ClearScrollRequest(searchResponse.ScrollId));
+            (await elastic.TryGetAsync(() => elastic.WriteClient.ClearScrollAsync(new ClearScrollRequest(searchResponse.ScrollId)))).ThrowOnFailure();
 
             if (!bodyDocuments.Any())
                 return;
 
-            elastic.Try(() => elastic.WriteClient.IndexMany(bodyDocuments));
+            (await elastic.TryGetAsync(() => elastic.WriteClient.IndexManyAsync(bodyDocuments))).ThrowOnFailure();
         }
 
-        private void UpdatePersonForMandates(IEnvelope<PersonUpdated> message, Elastic elastic)
+        private async Task UpdatePersonForMandates(IEnvelope<PersonUpdated> message, Elastic elastic)
         {
-            _metrics.Measure.Timer.Time(_indexTimer, () => elastic.WriteClient.Indices.Refresh(Indices.Index<BodyDocument>()));
+            using(_metrics.Measure.Timer.Time(_indexTimer))
+            {
+                (await elastic.TryGetAsync(() => elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>()))).ThrowOnFailure();
+            }
 
-            var searchResponse = elastic.WriteClient.Search<BodyDocument>(
+            var searchResponse = (await elastic.TryGetAsync(() => elastic.WriteClient.SearchAsync<BodyDocument>(
                 s => s.Query(
                     q => q.Term(
                         t => t
                             .Field(f => f.Seats.Single().Mandates.Single().PersonId)
                             .Value(message.Body.PersonId))
-                ).Scroll(new Time(ScrollTimeout)));
+                ).Scroll(new Time(ScrollTimeout))))).ThrowOnFailure();
 
             var bodyDocuments = new List<BodyDocument>();
 
@@ -706,10 +713,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
                 bodyDocuments.AddRange(searchResponse.Documents);
 
-                searchResponse =
-                    elastic.WriteClient.Scroll<BodyDocument>(new Time(ScrollTimeout), searchResponse.ScrollId);
+                var response = searchResponse;
+                searchResponse = (await elastic.TryGetAsync(() =>
+                    elastic.WriteClient.ScrollAsync<BodyDocument>(new Time(ScrollTimeout),
+                        response.ScrollId))).ThrowOnFailure();
             }
-            elastic.WriteClient.ClearScroll(new ClearScrollRequest(searchResponse.ScrollId));
+            (await elastic.TryGetAsync(() => elastic.WriteClient.ClearScrollAsync(new ClearScrollRequest(searchResponse.ScrollId)))).ThrowOnFailure();
 
             if (!bodyDocuments.Any())
                 return;
@@ -739,17 +748,20 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         {
             return new ElasticMassChange
             (
-                elastic =>
+                async elastic =>
                 {
-                    _metrics.Measure.Timer.Time(_indexTimer, () => elastic.WriteClient.Indices.Refresh(Indices.Index<BodyDocument>()));
+                    using (_metrics.Measure.Timer.Time(_indexTimer))
+                    {
+                        (await elastic.TryGetAsync(() => elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>()))).ThrowOnFailure();
+                    }
 
-                    var searchResponse = elastic.WriteClient.Search<BodyDocument>(
+                    var searchResponse = (await elastic.TryGetAsync(() => elastic.WriteClient.SearchAsync<BodyDocument>(
                         s => s.Query(
                             q => q.Term(
                                 t => t
                                     .Field(f => f.Seats.Single().Mandates.Single().OrganisationId)
                                     .Value(organisationId))
-                        ).Scroll(new Time(ScrollTimeout)));
+                        ).Scroll(new Time(ScrollTimeout))))).ThrowOnFailure();
 
                     var bodyDocuments = new List<BodyDocument>();
 
@@ -764,14 +776,17 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
                         bodyDocuments.AddRange(searchResponse.Documents);
 
-                        searchResponse = elastic.WriteClient.Scroll<BodyDocument>(new Time(ScrollTimeout), searchResponse.ScrollId);
+                        var response = searchResponse;
+                        searchResponse = (await elastic.TryGetAsync(() =>
+                            elastic.WriteClient.ScrollAsync<BodyDocument>(new Time(ScrollTimeout),
+                                response.ScrollId))).ThrowOnFailure();
                     }
-                    elastic.WriteClient.ClearScroll(new ClearScrollRequest(searchResponse.ScrollId));
+                    (await elastic.TryGetAsync(() => elastic.WriteClient.ClearScrollAsync(new ClearScrollRequest(searchResponse.ScrollId)))).ThrowOnFailure();
 
                     if (!bodyDocuments.Any())
                         return;
 
-                    elastic.Try(() => elastic.WriteClient.IndexMany(bodyDocuments));
+                    (await elastic.TryGetAsync(() => elastic.WriteClient.IndexManyAsync(bodyDocuments))).ThrowOnFailure();
                 }
             );
         }
@@ -781,17 +796,20 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         {
             return new ElasticMassChange
             (
-                elastic =>
+                async elastic =>
                 {
-                    _metrics.Measure.Timer.Time(_indexTimer, () => elastic.WriteClient.Indices.Refresh(Indices.Index<BodyDocument>()));
+                    using (_metrics.Measure.Timer.Time(_indexTimer))
+                    {
+                        (await elastic.TryGetAsync(() => elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>()))).ThrowOnFailure();
+                    }
 
-                    var searchResponse = elastic.WriteClient.Search<BodyDocument>(
+                    var searchResponse = (await elastic.TryGetAsync(() => elastic.WriteClient.SearchAsync<BodyDocument>(
                         s => s.Query(
                             q => q.Term(
                                 t => t
                                     .Field(f => f.Seats.Single().Mandates.Single().FunctionTypeId)
                                     .Value(message.Body.FunctionId))
-                        ).Scroll(new Time(ScrollTimeout)));
+                        ).Scroll(new Time(ScrollTimeout))))).ThrowOnFailure();
 
                     var bodyDocuments = new List<BodyDocument>();
 
@@ -806,14 +824,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
                         bodyDocuments.AddRange(searchResponse.Documents);
 
-                        searchResponse = elastic.WriteClient.Scroll<BodyDocument>(new Time(ScrollTimeout), searchResponse.ScrollId);
+                        var response = searchResponse;
+                        searchResponse = (await elastic.TryGetAsync(() =>
+                            elastic.WriteClient.ScrollAsync<BodyDocument>(new Time(ScrollTimeout),
+                                response.ScrollId))).ThrowOnFailure();
                     }
-                    elastic.WriteClient.ClearScroll(new ClearScrollRequest(searchResponse.ScrollId));
+
+                    (await elastic.TryGetAsync(() => elastic.WriteClient.ClearScrollAsync(new ClearScrollRequest(searchResponse.ScrollId)))).ThrowOnFailure();
 
                     if (!bodyDocuments.Any())
                         return;
 
-                    elastic.Try(() => elastic.WriteClient.IndexMany(bodyDocuments));
+                    (await elastic.TryGetAsync(() => elastic.WriteClient.IndexManyAsync(bodyDocuments))).ThrowOnFailure();
                 }
             );
         }
@@ -823,8 +845,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         {
             return new ElasticMassChange
             (
-                elastic => elastic.WriteClient
-                    .MassUpdateBody(
+                async elastic => await elastic.WriteClient
+                    .MassUpdateBodyAsync(
                         x => x.Seats.Single().SeatTypeId, message.Body.SeatTypeId,
                         "seats", "seatTypeId",
                         "seatTypeName", message.Body.Name,
