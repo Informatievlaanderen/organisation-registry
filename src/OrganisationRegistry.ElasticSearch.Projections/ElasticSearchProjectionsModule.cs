@@ -4,6 +4,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using Autofac;
     using System.Reflection;
     using App.Metrics;
+    using App.Metrics.Filtering;
     using Autofac.Core;
     using Autofac.Extensions.DependencyInjection;
     using Body;

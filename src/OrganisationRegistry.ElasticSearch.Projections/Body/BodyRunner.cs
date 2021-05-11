@@ -133,10 +133,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
                     if (!documents.ContainsKey(document.Id))
                     {
-                        if ((await _elastic.WriteClient.DocumentExistsAsync<BodyDocument>(changeSet.Key)).Exists)
+                        if ((await _elastic.TryGetAsync(() => _elastic.WriteClient.DocumentExistsAsync<BodyDocument>(changeSet.Key))).Exists)
                         {
-                            document = _elastic.TryGet(() =>
-                                _elastic.WriteClient.Get<BodyDocument>(changeSet.Key).ThrowOnFailure().Source);
+                            document = (await _elastic.TryGetAsync(() =>
+                                    _elastic.WriteClient.GetAsync<BodyDocument>(changeSet.Key)))
+                                .ThrowOnFailure()
+                                .Source;
                         }
                         documents.Add(changeSet.Key, document);
                     }
@@ -148,11 +150,15 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 }
 
                 if (documents.Any())
-                    _elastic.Try(() => _elastic.WriteClient.IndexMany(documents.Values).ThrowOnFailure());
+                {
+                    (await _elastic.TryGetAsync(async () =>
+                            await _elastic.WriteClient.IndexManyAsync(documents.Values)))
+                        .ThrowOnFailure();
+                }
 
                 foreach (var massUpdate in massUpdates)
                 {
-                    massUpdate.Change(_elastic);
+                    await massUpdate.Change(_elastic);
                 }
 
                 UpdateProjectionState(newLastProcessedEventNumber);

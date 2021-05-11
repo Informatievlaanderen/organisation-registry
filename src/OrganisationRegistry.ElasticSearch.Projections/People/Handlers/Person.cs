@@ -81,18 +81,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                 return;
 
             Logger.LogInformation("Rebuilding index for {ProjectionName}.", message.Body.ProjectionName);
-            PrepareIndex(_elastic.WriteClient, true);
+            await PrepareIndex(_elastic.WriteClient, true);
 
             using (var context = _contextFactory.Create())
                 context.Database.ExecuteSqlRaw(
                     string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [ElasticSearchProjections].[{tableName}];")));
         }
 
-        private void PrepareIndex(IElasticClient client, bool deleteIndex)
+        private async Task PrepareIndex(IElasticClient client, bool deleteIndex)
         {
             var indexName = _elasticSearchOptions.PeopleWriteIndex;
 
-            if (deleteIndex && client.DoesIndexExist(indexName))
+            if (deleteIndex && (await client.DoesIndexExist(indexName)))
             {
                 var deleteResult = client.Indices.Delete(
                     new DeleteIndexRequest(Indices.Index(new List<IndexName> { indexName })));
@@ -101,7 +101,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     throw new Exception($"Could not delete people index '{indexName}'.");
             }
 
-            if (!client.DoesIndexExist(indexName))
+            if (!await client.DoesIndexExist(indexName))
             {
                 var indexResult = client.Indices.Create(
                     indexName,
