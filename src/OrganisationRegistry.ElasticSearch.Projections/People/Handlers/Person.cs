@@ -46,8 +46,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             _elastic = elastic;
             _contextFactory = contextFactory;
             _elasticSearchOptions = elasticSearchOptions.Value;
-
-            PrepareIndex(elastic.WriteClient, false);
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonCreated> message)
