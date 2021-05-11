@@ -85,8 +85,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 RateUnit = TimeUnit.Milliseconds
             };
             _elasticSearchOptions = elasticSearchOptions.Value;
-
-            PrepareIndex(elastic.WriteClient, false);
         }
 
         private void PrepareIndex(IElasticClient client, bool deleteIndex)
