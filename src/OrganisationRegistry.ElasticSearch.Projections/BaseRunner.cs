@@ -65,7 +65,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
 
         public async Task Run()
         {
-                        var changeDocumentTimer = new TimerOptions
+            var changeDocumentTimer = new TimerOptions
             {
                 Name = "Change Document Timer",
                 MeasurementUnit = Unit.Calls,
@@ -180,38 +180,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             {
                 await Task.WhenAll(_metrics.ReportRunner.RunAllAsync());
             }
-            // var lastProcessedEventNumber = _projectionStates.GetLastProcessedEventNumber(_elasticSearchProjectionsProjectionName);
-            // await InitialiseProjection(lastProcessedEventNumber);
-            //
-            // var eventsBeingListenedTo =
-            //     EventHandlers
-            //         .SelectMany(handler => handler
-            //             .GetTypeInfo()
-            //             .ImplementedInterfaces
-            //             .SelectMany(@interface => @interface.GenericTypeArguments))
-            //         .Distinct()
-            //         .ToList();
-            //
-            // var envelopes = _store.GetEventEnvelopesAfter(lastProcessedEventNumber, _batchSize, eventsBeingListenedTo.ToArray()).ToList();
-            //
-            // LogEnvelopeCount(envelopes);
-            //
-            // var newLastProcessedEventNumber = new int?();
-            // try
-            // {
-            //     foreach (var envelope in envelopes)
-            //     {
-            //         newLastProcessedEventNumber = await ProcessEnvelope(envelope);
-            //     }
-            // }
-            // catch (Exception ex)
-            // {
-            //     _logger.LogCritical(0, ex, "[{ProjectionName}] An exception occurred while handling envelopes.", ProjectionName);
-            // }
-            // finally
-            // {
-            //     UpdateProjectionState(newLastProcessedEventNumber);
-            // }
         }
 
         private async Task InitialiseProjection(int lastProcessedEventNumber)
@@ -254,7 +222,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
         private void LogEnvelopeCount(IReadOnlyCollection<IEnvelope> envelopes)
         {
             _logger.LogInformation("[{ProjectionName}] Found {NumberOfEnvelopes} envelopes to process.", ProjectionName, envelopes.Count);
-            //_telemetryClient.TrackMetric($"ElasticSearchProjections::{ProjectionName}::EnvelopesToProcess", envelopes.Count);
 
             if (envelopes.Count > 0)
                 _logger.LogInformation("[{ProjectionName}] Starting at #{FirstEnvelopeNumber} to #{LastEnvelopeNumber}.", ProjectionName, envelopes.First().Number, envelopes.Last().Number);
