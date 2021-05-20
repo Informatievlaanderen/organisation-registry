@@ -10,6 +10,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using Configuration;
     using ElasticSearch.People;
     using Infrastructure;
+    using Infrastructure.Change;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
@@ -22,9 +23,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
     public class Person :
         Infrastructure.BaseProjection<Person>,
-        IEventHandler<InitialiseProjection>,
-        IEventHandler<PersonCreated>,
-        IEventHandler<PersonUpdated>
+        IElasticEventHandler<InitialiseProjection>,
+        IElasticEventHandler<PersonCreated>,
+        IElasticEventHandler<PersonUpdated>
     {
         private readonly Elastic _elastic;
         private readonly IContextFactory _contextFactory;
@@ -48,44 +49,53 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             _elasticSearchOptions = elasticSearchOptions.Value;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonCreated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<PersonCreated> message)
         {
-            var personDocument = new PersonDocument
-            {
-                ChangeId = message.Number,
-                ChangeTime = message.Timestamp,
-                Id = message.Body.PersonId,
-                FirstName = message.Body.FirstName,
-                Name = message.Body.Name
-            };
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(personDocument).ThrowOnFailure());
+            return new ElasticPerDocumentChange<PersonDocument>
+            (
+                message.Body.PersonId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+                    document.Id = message.Body.PersonId;
+                    document.FirstName = message.Body.FirstName;
+                    document.Name = message.Body.Name;
+                });
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
-            var personDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PersonId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<PersonDocument>
+            (
+                message.Body.PersonId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            personDocument.ChangeId = message.Number;
-            personDocument.ChangeTime = message.Timestamp;
+                    document.FirstName = message.Body.FirstName;
+                    document.Name = message.Body.Name;
 
-            personDocument.FirstName = message.Body.FirstName;
-            personDocument.Name = message.Body.Name;
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(personDocument).ThrowOnFailure());
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<InitialiseProjection> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<InitialiseProjection> message)
         {
             if (message.Body.ProjectionName != typeof(Person).FullName)
-                return;
+                return new ElasticNoChange();
 
             Logger.LogInformation("Rebuilding index for {ProjectionName}.", message.Body.ProjectionName);
             await PrepareIndex(_elastic.WriteClient, true);
 
-            using (var context = _contextFactory.Create())
-                context.Database.ExecuteSqlRaw(
-                    string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [ElasticSearchProjections].[{tableName}];")));
+            await using var context = _contextFactory.Create();
+            await context.Database.ExecuteSqlRawAsync(
+                string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [ElasticSearchProjections].[{tableName}];")));
+
+            return new ElasticNoChange();
         }
 
         private async Task PrepareIndex(IElasticClient client, bool deleteIndex)
@@ -94,7 +104,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
             if (deleteIndex && (await client.DoesIndexExist(indexName)))
             {
-                var deleteResult = client.Indices.Delete(
+                var deleteResult = await client.Indices.DeleteAsync(
                     new DeleteIndexRequest(Indices.Index(new List<IndexName> { indexName })));
 
                 if (!deleteResult.IsValid)
@@ -103,7 +113,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
             if (!await client.DoesIndexExist(indexName))
             {
-                var indexResult = client.Indices.Create(
+                var indexResult = await client.Indices.CreateAsync(
                     indexName,
                     index => index
                         .Map<PersonDocument>(PersonDocument.Mapping)

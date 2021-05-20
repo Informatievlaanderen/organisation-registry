@@ -5,10 +5,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using Client;
     using Common;
     using ElasticSearch.Organisations;
     using Infrastructure;
+    using Infrastructure.Change;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using OrganisationRelationType.Events;
@@ -17,43 +17,94 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using SqlServer;
 
     public class OrganisationRelation : BaseProjection<OrganisationRelation>,
-        IEventHandler<OrganisationRelationAdded>,
-        IEventHandler<OrganisationRelationUpdated>,
-        IEventHandler<OrganisationRelationTypeUpdated>,
-        IEventHandler<OrganisationInfoUpdated>,
-        IEventHandler<OrganisationInfoUpdatedFromKbo>,
-        IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationRelationAdded>,
+        IElasticEventHandler<OrganisationRelationUpdated>,
+        IElasticEventHandler<OrganisationRelationTypeUpdated>,
+        IElasticEventHandler<OrganisationInfoUpdated>,
+        IElasticEventHandler<OrganisationInfoUpdatedFromKbo>,
+        IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
+        IElasticEventHandler<OrganisationTerminated>
     {
-        private readonly Elastic _elastic;
         private readonly IContextFactory _contextFactory;
 
         public OrganisationRelation(
             ILogger<OrganisationRelation> logger,
-            Elastic elastic,
             IContextFactory contextFactory) : base(logger)
         {
-            _elastic = elastic;
             _contextFactory = contextFactory;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationAdded> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationAdded> message)
         {
-            await using var organisationRegistryContext = _contextFactory.Create();
-            var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
-            var relatedOrganisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.RelatedOrganisationId);
+            var changes = new Dictionary<Guid, Action<OrganisationDocument>>();
+            //initiator
+            changes.Add(message.Body.OrganisationId, async document =>
+            {
+                await using var organisationRegistryContext = _contextFactory.Create();
+                var relatedOrganisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.RelatedOrganisationId);
+
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
+
+                if (document.Relations == null)
+                    document.Relations = new List<OrganisationDocument.OrganisationRelation>();
+
+                document.Relations.RemoveExistingListItems(x => x.OrganisationRelationId == message.Body.OrganisationRelationId);
+                document.Relations.Add(
+                    new OrganisationDocument.OrganisationRelation(
+                        message.Body.OrganisationRelationId,
+                        message.Body.RelationId,
+                        message.Body.RelationName,
+                        message.Body.RelatedOrganisationId,
+                        relatedOrganisation.OvoNumber,
+                        relatedOrganisation.Name,
+                        new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+            });
+            //relation
+            changes.Add(message.Body.RelatedOrganisationId, async document =>
+            {
+                await using var organisationRegistryContext = _contextFactory.Create();
+                var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
+
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
+
+                if (document.Relations == null)
+                    document.Relations = new List<OrganisationDocument.OrganisationRelation>();
+
+                document.Relations.RemoveExistingListItems(x => x.OrganisationRelationId == message.Body.OrganisationRelationId);
+                document.Relations.Add(
+                    new OrganisationDocument.OrganisationRelation(
+                        message.Body.OrganisationRelationId,
+                        message.Body.RelationId,
+                        message.Body.RelationInverseName,
+                        message.Body.OrganisationId,
+                        organisation.OvoNumber,
+                        organisation.Name,
+                        new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+
+            });
+            return new ElasticPerDocumentChange<OrganisationDocument>(changes);
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationUpdated> message)
+        {
+            var changes = new Dictionary<Guid, Action<OrganisationDocument>>();
 
             //initiator
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            changes.Add(message.Body.OrganisationId, async document =>
+            {
+                await using var organisationRegistryContext = _contextFactory.Create();
+                var relatedOrganisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.RelatedOrganisationId);
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
 
-            if (organisationDocument.Relations == null)
-                organisationDocument.Relations = new List<OrganisationDocument.OrganisationRelation>();
-
-            organisationDocument.Relations.RemoveExistingListItems(x => x.OrganisationRelationId == message.Body.OrganisationRelationId);
-            organisationDocument.Relations.Add(
+                if (document.Relations == null)
+                    document.Relations = new List<OrganisationDocument.OrganisationRelation>();
+                document.Relations.RemoveExistingListItems(x =>
+                    x.OrganisationRelationId == message.Body.OrganisationRelationId);
+                document.Relations.Add(
                     new OrganisationDocument.OrganisationRelation(
                         message.Body.OrganisationRelationId,
                         message.Body.RelationId,
@@ -63,144 +114,98 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         relatedOrganisation.Name,
                         new Period(message.Body.ValidFrom, message.Body.ValidTo)));
 
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+            });
 
             //relation
-            var relatedOrganisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.RelatedOrganisationId).ThrowOnFailure().Source);
-
-            relatedOrganisationDocument.ChangeId = message.Number;
-            relatedOrganisationDocument.ChangeTime = message.Timestamp;
-
-            if (relatedOrganisationDocument.Relations == null)
-                relatedOrganisationDocument.Relations = new List<OrganisationDocument.OrganisationRelation>();
-
-            relatedOrganisationDocument.Relations.RemoveExistingListItems(x => x.OrganisationRelationId == message.Body.OrganisationRelationId);
-            relatedOrganisationDocument.Relations.Add(
-                new OrganisationDocument.OrganisationRelation(
-                    message.Body.OrganisationRelationId,
-                    message.Body.RelationId,
-                    message.Body.RelationInverseName,
-                    message.Body.OrganisationId,
-                    organisation.OvoNumber,
-                    organisation.Name,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(relatedOrganisationDocument).ThrowOnFailure());
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationUpdated> message)
-        {
-            await using var organisationRegistryContext = _contextFactory.Create();
-            var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
-            var relatedOrganisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.RelatedOrganisationId);
-
-            //initiator
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure()
-                    .Source);
-
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
-
-            if (organisationDocument.Relations == null)
-                organisationDocument.Relations = new List<OrganisationDocument.OrganisationRelation>();
-            organisationDocument.Relations.RemoveExistingListItems(x =>
-                x.OrganisationRelationId == message.Body.OrganisationRelationId);
-            organisationDocument.Relations.Add(
-                new OrganisationDocument.OrganisationRelation(
-                    message.Body.OrganisationRelationId,
-                    message.Body.RelationId,
-                    message.Body.RelationName,
-                    message.Body.RelatedOrganisationId,
-                    relatedOrganisation.OvoNumber,
-                    relatedOrganisation.Name,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
-
-            //relation
-            var relatedOrganisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(message.Body.RelatedOrganisationId).ThrowOnFailure()
-                    .Source);
-
-            relatedOrganisationDocument.ChangeId = message.Number;
-            relatedOrganisationDocument.ChangeTime = message.Timestamp;
-
-            if (relatedOrganisationDocument.Relations == null)
-                relatedOrganisationDocument.Relations = new List<OrganisationDocument.OrganisationRelation>();
-            relatedOrganisationDocument.Relations.RemoveExistingListItems(x =>
-                x.OrganisationRelationId == message.Body.OrganisationRelationId);
-            relatedOrganisationDocument.Relations.Add(
-                new OrganisationDocument.OrganisationRelation(
-                    message.Body.OrganisationRelationId,
-                    message.Body.RelationId,
-                    message.Body.RelationInverseName,
-                    message.Body.OrganisationId,
-                    organisation.OvoNumber,
-                    organisation.Name,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(relatedOrganisationDocument).ThrowOnFailure());
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
-        {
-            MassUpdateOrganisationRelationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
-        {
-            MassUpdateOrganisationRelationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
-        {
-            MassUpdateOrganisationRelationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling, message.Number, message.Timestamp);
-        }
-
-        private void MassUpdateOrganisationRelationName(Guid organisationId, string name, int messageNumber, DateTimeOffset timestamp)
-        {
-// Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.Relations.Single().RelatedOrganisationId, organisationId,
-                    "relations", "relationId",
-                    "relationName", name,
-                    messageNumber,
-                    timestamp));
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationTypeUpdated> message)
-        {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.Relations.Single().RelationId, message.Body.OrganisationRelationTypeId,
-                    "relations", "relationId",
-                    "relationName", message.Body.Name,
-                    message.Number,
-                    message.Timestamp));
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
-        {
-            var organisationDocument =
-                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
-
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
-
-            foreach (var (key, value) in message.Body.FieldsToTerminate.Relations)
+            changes.Add(message.Body.RelatedOrganisationId, async document =>
             {
-                var organisationRelation =
-                    organisationDocument
-                        .Relations
-                        .Single(x => x.OrganisationRelationId == key);
+                await using var organisationRegistryContext = _contextFactory.Create();
+                var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
 
-                organisationRelation.Validity.End = value;
-            }
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
 
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                if (document.Relations == null)
+                    document.Relations = new List<OrganisationDocument.OrganisationRelation>();
+                document.Relations.RemoveExistingListItems(x =>
+                    x.OrganisationRelationId == message.Body.OrganisationRelationId);
+                document.Relations.Add(
+                    new OrganisationDocument.OrganisationRelation(
+                        message.Body.OrganisationRelationId,
+                        message.Body.RelationId,
+                        message.Body.RelationInverseName,
+                        message.Body.OrganisationId,
+                        organisation.OvoNumber,
+                        organisation.Name,
+                        new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+            });
+
+            return new ElasticPerDocumentChange<OrganisationDocument>(changes);
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        {
+            return await MassUpdateOrganisationRelationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        {
+            return await MassUpdateOrganisationRelationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        {
+            return await MassUpdateOrganisationRelationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling, message.Number, message.Timestamp);
+        }
+
+        private static async Task<IElasticChange> MassUpdateOrganisationRelationName(Guid organisationId, string name, int messageNumber, DateTimeOffset timestamp)
+        {
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.Relations.Single().RelatedOrganisationId, organisationId,
+                        "relations", "relationId",
+                        "relationName", name,
+                        messageNumber,
+                        timestamp))
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationTypeUpdated> message)
+        {
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.Relations.Single().RelationId, message.Body.OrganisationRelationTypeId,
+                        "relations", "relationId",
+                        "relationName", message.Body.Name,
+                        message.Number,
+                        message.Timestamp))
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    foreach (var (key, value) in message.Body.FieldsToTerminate.Relations)
+                    {
+                        var organisationRelation =
+                            document
+                                .Relations
+                                .Single(x => x.OrganisationRelationId == key);
+
+                        organisationRelation.Validity.End = value;
+                    }
+                }
+            );
         }
     }
 }

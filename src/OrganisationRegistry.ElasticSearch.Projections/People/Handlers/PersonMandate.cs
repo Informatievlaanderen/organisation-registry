@@ -5,12 +5,14 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
+    using Amazon.DynamoDBv2.DocumentModel;
     using Autofac.Features.OwnedInstances;
+    using Bodies;
     using Cache;
-    using Client;
     using Common;
     using ElasticSearch.People;
     using Infrastructure;
+    using Infrastructure.Change;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Organisation.Events;
@@ -21,362 +23,397 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
     public class PersonMandate :
         Infrastructure.BaseProjection<PersonMandate>,
-        IEventHandler<AssignedPersonToBodySeat>,
-        IEventHandler<ReassignedPersonToBodySeat>,
-        IEventHandler<BodyInfoChanged>,
-        IEventHandler<BodyOrganisationUpdated>,
-        IEventHandler<BodySeatUpdated>,
-        IEventHandler<OrganisationInfoUpdated>,
-        IEventHandler<OrganisationInfoUpdatedFromKbo>,
-        IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<PersonAssignedToDelegation>,
-        IEventHandler<PersonAssignedToDelegationUpdated>,
-        IEventHandler<PersonAssignedToDelegationRemoved>,
-        IEventHandler<BodyAssignedToOrganisation>,
-        IEventHandler<BodyClearedFromOrganisation>
+        IElasticEventHandler<AssignedPersonToBodySeat>,
+        IElasticEventHandler<ReassignedPersonToBodySeat>,
+        IElasticEventHandler<BodyInfoChanged>,
+        IElasticEventHandler<BodyOrganisationUpdated>,
+        IElasticEventHandler<BodySeatUpdated>,
+        IElasticEventHandler<OrganisationInfoUpdated>,
+        IElasticEventHandler<OrganisationInfoUpdatedFromKbo>,
+        IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
+        IElasticEventHandler<PersonAssignedToDelegation>,
+        IElasticEventHandler<PersonAssignedToDelegationUpdated>,
+        IElasticEventHandler<PersonAssignedToDelegationRemoved>,
+        IElasticEventHandler<BodyAssignedToOrganisation>,
+        IElasticEventHandler<BodyClearedFromOrganisation>
     {
-        private readonly Elastic _elastic;
         private readonly IContextFactory _contextFactory;
 
         public PersonMandate(
             ILogger<PersonMandate> logger,
-            Elastic elastic,
             IContextFactory contextFactory) : base(logger)
         {
-            _elastic = elastic;
             _contextFactory = contextFactory;
         }
 
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonToBodySeat> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonToBodySeat> message)
         {
-            await using var organisationRegistryContext = _contextFactory.Create();
-            var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
+            return new ElasticPerDocumentChange<PersonDocument>
+            (
+                message.Body.BodyId, async document =>
+                {
+                    await using var organisationRegistryContext = _contextFactory.Create();
+                    var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
 
-            var personDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PersonId).ThrowOnFailure().Source);
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            personDocument.ChangeId = message.Number;
-            personDocument.ChangeTime = message.Timestamp;
+                    if (document.Mandates == null)
+                        document.Mandates = new List<PersonDocument.PersonMandate>();
 
-            if (personDocument.Mandates == null)
-                personDocument.Mandates = new List<PersonDocument.PersonMandate>();
+                    document.Mandates.RemoveExistingListItems(x =>
+                        x.BodyMandateId == message.Body.BodyMandateId &&
+                        x.DelegationAssignmentId == null);
 
-            personDocument.Mandates.RemoveExistingListItems(x =>
-                x.BodyMandateId == message.Body.BodyMandateId &&
-                x.DelegationAssignmentId == null);
+                    var organisationForBody = GetOrganisationForBodyFromCache(message.Body.BodyId);
 
-            var organisationForBody = GetOrganisationForBodyFromCache(message.Body.BodyId);
-
-            personDocument.Mandates.Add(
-                new PersonDocument.PersonMandate(
-                    message.Body.BodyMandateId,
-                    null,
-                    message.Body.BodyId,
-                    bodySeat.Name,
-                    organisationForBody.OrganisationId,
-                    organisationForBody.OrganisationName,
-                    message.Body.BodySeatId,
-                    message.Body.BodySeatName,
-                    message.Body.BodySeatNumber,
-                    bodySeat.IsPaid,
-                    new Period(
-                        message.Body.ValidFrom,
-                        message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(personDocument).ThrowOnFailure());
+                    document.Mandates.Add(
+                        new PersonDocument.PersonMandate(
+                            message.Body.BodyMandateId,
+                            null,
+                            message.Body.BodyId,
+                            bodySeat.Name,
+                            organisationForBody.OrganisationId,
+                            organisationForBody.OrganisationName,
+                            message.Body.BodySeatId,
+                            message.Body.BodySeatName,
+                            message.Body.BodySeatNumber,
+                            bodySeat.IsPaid,
+                            new Period(
+                                message.Body.ValidFrom,
+                                message.Body.ValidTo)));
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedPersonToBodySeat> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedPersonToBodySeat> message)
         {
-            await using var organisationRegistryContext = _contextFactory.Create();
-            var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
+            var changes = new Dictionary<Guid, Action<PersonDocument>>();
 
             // If previous exists and current is different, we need to delete and add
             if (message.Body.PreviousPersonId != message.Body.PersonId)
             {
-                var previousPersonDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PreviousPersonId).ThrowOnFailure().Source);
-                previousPersonDocument.ChangeId = message.Number;
-                previousPersonDocument.ChangeTime = message.Timestamp;
+                changes.Add(message.Body.PreviousPersonId, document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-                if (previousPersonDocument.Mandates == null)
-                    previousPersonDocument.Mandates = new List<PersonDocument.PersonMandate>();
+                    if (document.Mandates == null)
+                        document.Mandates = new List<PersonDocument.PersonMandate>();
 
-                previousPersonDocument.Mandates.RemoveExistingListItems(x =>
+                    document.Mandates.RemoveExistingListItems(x =>
+                        x.BodyMandateId == message.Body.BodyMandateId &&
+                        x.DelegationAssignmentId == null);
+                });
+            }
+
+            changes.Add(message.Body.PersonId, async document =>
+            {
+                await using var organisationRegistryContext = _contextFactory.Create();
+                var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
+
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
+
+                if (document.Mandates == null)
+                    document.Mandates = new List<PersonDocument.PersonMandate>();
+
+                document.Mandates.RemoveExistingListItems(x =>
                     x.BodyMandateId == message.Body.BodyMandateId &&
                     x.DelegationAssignmentId == null);
 
-                _elastic.Try(() => _elastic.WriteClient.IndexDocument(previousPersonDocument).ThrowOnFailure());
-            }
+                var organisationForBody = GetOrganisationForBodyFromCache(message.Body.BodyId);
 
-            var personDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PersonId).ThrowOnFailure().Source);
-
-            personDocument.ChangeId = message.Number;
-            personDocument.ChangeTime = message.Timestamp;
-
-            if (personDocument.Mandates == null)
-                personDocument.Mandates = new List<PersonDocument.PersonMandate>();
-
-            personDocument.Mandates.RemoveExistingListItems(x =>
-                x.BodyMandateId == message.Body.BodyMandateId &&
-                x.DelegationAssignmentId == null);
-
-            var organisationForBody = GetOrganisationForBodyFromCache(message.Body.BodyId);
-
-            personDocument.Mandates.Add(
-                new PersonDocument.PersonMandate(
-                    message.Body.BodyMandateId,
-                    null,
-                    message.Body.BodyId,
-                    bodySeat.Name,
-                    organisationForBody.OrganisationId,
-                    organisationForBody.OrganisationName,
-                    message.Body.BodySeatId,
-                    message.Body.BodySeatName,
-                    message.Body.BodySeatNumber,
-                    bodySeat.IsPaid,
-                    new Period(
-                        message.Body.ValidFrom,
-                        message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(personDocument).ThrowOnFailure());
+                document.Mandates.Add(
+                    new PersonDocument.PersonMandate(
+                        message.Body.BodyMandateId,
+                        null,
+                        message.Body.BodyId,
+                        bodySeat.Name,
+                        organisationForBody.OrganisationId,
+                        organisationForBody.OrganisationName,
+                        message.Body.BodySeatId,
+                        message.Body.BodySeatName,
+                        message.Body.BodySeatNumber,
+                        bodySeat.IsPaid,
+                        new Period(
+                            message.Body.ValidFrom,
+                            message.Body.ValidTo)));
+            });
+            return new ElasticPerDocumentChange<PersonDocument>(changes);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdatePerson(
-                    x => x.Mandates.Single().BodyId, message.Body.BodyId,
-                    "mandates", "bodyId",
-                    "bodyName", message.Body.Name,
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                async elastic => await elastic.WriteClient
+                    .MassUpdatePersonAsync(
+                        x => x.Mandates.Single().BodyId, message.Body.BodyId,
+                        "mandates", "bodyId",
+                        "bodyName", message.Body.Name,
+                        message.Number,
+                        message.Timestamp)
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
-            await using var organisationRegistryContext = _contextFactory.Create();
-            var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
+            return new ElasticMassChange
+            (
+                async elastic =>
+                {
+                    await using var organisationRegistryContext = _contextFactory.Create();
+                    var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
 
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdatePerson(
-                    x => x.Mandates.Single().BodyId, message.Body.BodyId,
-                    "mandates", "bodyId",
-                    "bodyOrganisationId", message.Body.OrganisationId,
-                    message.Number,
-                    message.Timestamp));
+                    await elastic.TryAsync(() => elastic.WriteClient
+                        .MassUpdatePersonAsync(
+                            x => x.Mandates.Single().BodyId, message.Body.BodyId,
+                            "mandates", "bodyId",
+                            "bodyOrganisationId", message.Body.OrganisationId,
+                            message.Number,
+                            message.Timestamp));
 
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdatePerson(
-                    x => x.Mandates.Single().BodyId, message.Body.BodyId,
-                    "mandates", "bodyId",
-                    "bodyOrganisationName", organisation.Id,
-                    message.Number,
-                    message.Timestamp));
+                    await elastic.TryAsync(() => elastic.WriteClient
+                        .MassUpdatePersonAsync(
+                            x => x.Mandates.Single().BodyId, message.Body.BodyId,
+                            "mandates", "bodyId",
+                            "bodyOrganisationName", organisation.Id,
+                            message.Number,
+                            message.Timestamp));
+                }
+            );
+
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
         {
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdatePerson(
-                    x => x.Mandates.Single().BodySeatId, message.Body.BodySeatId,
-                    "mandates", "bodySeatId",
-                    "bodySeatName", message.Body.Name,
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                async elastic =>
+                {
+                    await elastic.TryAsync(() => elastic.WriteClient
+                        .MassUpdatePersonAsync(
+                            x => x.Mandates.Single().BodySeatId, message.Body.BodySeatId,
+                            "mandates", "bodySeatId",
+                            "bodySeatName", message.Body.Name,
+                            message.Number,
+                            message.Timestamp));
 
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdatePerson(
-                    x => x.Mandates.Single().BodySeatId, message.Body.BodySeatId,
-                    "mandates", "bodySeatId",
-                    "paidSeat", message.Body.PaidSeat,
-                    message.Number,
-                    message.Timestamp));
+                    await elastic.TryAsync(() => elastic.WriteClient
+                        .MassUpdatePersonAsync(
+                            x => x.Mandates.Single().BodySeatId, message.Body.BodySeatId,
+                            "mandates", "bodySeatId",
+                            "paidSeat", message.Body.PaidSeat,
+                            message.Number,
+                            message.Timestamp));
+                }
+            );
+
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
-            MassUpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
+            return await MassUpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
-            MassUpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
+            return await MassUpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            MassUpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling, message.Number, message.Timestamp);
+            return await MassUpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling, message.Number, message.Timestamp);
         }
 
-        private void MassUpdateMandateOrganisationName(Guid organisationId, string name, int messageNumber, DateTimeOffset timestamp)
+        private async Task<IElasticChange> MassUpdateMandateOrganisationName(Guid organisationId, string name, int messageNumber, DateTimeOffset timestamp)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdatePerson(
-                    x => x.Mandates.Single().BodyOrganisationId, organisationId,
-                    "mandates", "bodyOrganisationId",
-                    "bodyOrganisationName", name,
-                    messageNumber,
-                    timestamp));
+            return new ElasticMassChange
+            (
+                async elastic => await elastic.WriteClient
+                    .MassUpdatePersonAsync(
+                        x => x.Mandates.Single().BodyOrganisationId, organisationId,
+                        "mandates", "bodyOrganisationId",
+                        "bodyOrganisationName", name,
+                        messageNumber,
+                        timestamp)
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
         {
-            await using var organisationRegistryContext = _contextFactory.Create();
-            var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
-            var body = await organisationRegistryContext.BodyCache.SingleAsync(x => x.Id == message.Body.BodyId);
+            return new ElasticPerDocumentChange<PersonDocument>
+            (
+                message.Body.PersonId,
+                async document =>
+                {
+                    await using var organisationRegistryContext = _contextFactory.Create();
+                    var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
+                    var body = await organisationRegistryContext.BodyCache.SingleAsync(x => x.Id == message.Body.BodyId);
 
-            var personDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PersonId).ThrowOnFailure().Source);
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            personDocument.ChangeId = message.Number;
-            personDocument.ChangeTime = message.Timestamp;
+                    if (document.Mandates == null)
+                        document.Mandates = new List<PersonDocument.PersonMandate>();
 
-            if (personDocument.Mandates == null)
-                personDocument.Mandates = new List<PersonDocument.PersonMandate>();
+                    document.Mandates.RemoveExistingListItems(x =>
+                        x.BodyMandateId == message.Body.BodyMandateId &&
+                        x.DelegationAssignmentId == message.Body.DelegationAssignmentId);
 
-            personDocument.Mandates.RemoveExistingListItems(x =>
-                x.BodyMandateId == message.Body.BodyMandateId &&
-                x.DelegationAssignmentId == message.Body.DelegationAssignmentId);
+                    var organisationForBody = GetOrganisationForBodyFromCache(message.Body.BodyId);
 
-            var organisationForBody = GetOrganisationForBodyFromCache(message.Body.BodyId);
+                    document.Mandates.Add(
+                        new PersonDocument.PersonMandate(
+                            message.Body.BodyMandateId,
+                            message.Body.DelegationAssignmentId,
+                            message.Body.BodyId,
+                            body.Name,
+                            organisationForBody.OrganisationId,
+                            organisationForBody.OrganisationName,
+                            message.Body.BodySeatId,
+                            bodySeat.Name,
+                            bodySeat.Number,
+                            bodySeat.IsPaid,
+                            new Period(
+                                message.Body.ValidFrom,
+                                message.Body.ValidTo)));
 
-            personDocument.Mandates.Add(
-                new PersonDocument.PersonMandate(
-                    message.Body.BodyMandateId,
-                    message.Body.DelegationAssignmentId,
-                    message.Body.BodyId,
-                    body.Name,
-                    organisationForBody.OrganisationId,
-                    organisationForBody.OrganisationName,
-                    message.Body.BodySeatId,
-                    bodySeat.Name,
-                    bodySeat.Number,
-                    bodySeat.IsPaid,
-                    new Period(
-                        message.Body.ValidFrom,
-                        message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(personDocument).ThrowOnFailure());
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
         {
-            await using var organisationRegistryContext = _contextFactory.Create();
-            var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
-            var body = await organisationRegistryContext.BodyCache.SingleAsync(x => x.Id == message.Body.BodyId);
+            var changes = new Dictionary<Guid, Action<PersonDocument>>();
 
             // If previous exists and current is different, we need to delete and add
             if (message.Body.PreviousPersonId != message.Body.PersonId)
             {
-                var previousPersonDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PreviousPersonId).ThrowOnFailure().Source);
-                previousPersonDocument.ChangeId = message.Number;
-                previousPersonDocument.ChangeTime = message.Timestamp;
+                changes.Add(message.Body.PreviousPersonId, document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-                if (previousPersonDocument.Mandates == null)
-                    previousPersonDocument.Mandates = new List<PersonDocument.PersonMandate>();
+                    if (document.Mandates == null)
+                        document.Mandates = new List<PersonDocument.PersonMandate>();
 
-                previousPersonDocument.Mandates.RemoveExistingListItems(x =>
+                    document.Mandates.RemoveExistingListItems(x =>
+                        x.BodyMandateId == message.Body.BodyMandateId &&
+                        x.DelegationAssignmentId == message.Body.DelegationAssignmentId);
+                });
+            }
+
+            changes.Add(message.Body.PersonId, async document =>
+            {
+                await using var organisationRegistryContext = _contextFactory.Create();
+                var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
+                var body = await organisationRegistryContext.BodyCache.SingleAsync(x => x.Id == message.Body.BodyId);
+
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
+
+                if (document.Mandates == null)
+                    document.Mandates = new List<PersonDocument.PersonMandate>();
+
+                document.Mandates.RemoveExistingListItems(x =>
                     x.BodyMandateId == message.Body.BodyMandateId &&
                     x.DelegationAssignmentId == message.Body.DelegationAssignmentId);
 
-                _elastic.Try(() => _elastic.WriteClient.IndexDocument(previousPersonDocument).ThrowOnFailure());
-            }
+                var organisationForBody = GetOrganisationForBodyFromCache(message.Body.BodyId);
 
-            var personDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PersonId).ThrowOnFailure().Source);
+                document.Mandates.Add(
+                    new PersonDocument.PersonMandate(
+                        message.Body.BodyMandateId,
+                        message.Body.DelegationAssignmentId,
+                        message.Body.BodyId,
+                        body.Name,
+                        organisationForBody.OrganisationId,
+                        organisationForBody.OrganisationName,
+                        message.Body.BodySeatId,
+                        bodySeat.Name,
+                        bodySeat.Number,
+                        bodySeat.IsPaid,
+                        new Period(
+                            message.Body.ValidFrom,
+                            message.Body.ValidTo)));
+            });
 
-            personDocument.ChangeId = message.Number;
-            personDocument.ChangeTime = message.Timestamp;
-
-            if (personDocument.Mandates == null)
-                personDocument.Mandates = new List<PersonDocument.PersonMandate>();
-
-            personDocument.Mandates.RemoveExistingListItems(x =>
-                x.BodyMandateId == message.Body.BodyMandateId &&
-                x.DelegationAssignmentId == message.Body.DelegationAssignmentId);
-
-            var organisationForBody = GetOrganisationForBodyFromCache(message.Body.BodyId);
-
-            personDocument.Mandates.Add(
-                new PersonDocument.PersonMandate(
-                    message.Body.BodyMandateId,
-                    message.Body.DelegationAssignmentId,
-                    message.Body.BodyId,
-                    body.Name,
-                    organisationForBody.OrganisationId,
-                    organisationForBody.OrganisationName,
-                    message.Body.BodySeatId,
-                    bodySeat.Name,
-                    bodySeat.Number,
-                    bodySeat.IsPaid,
-                    new Period(
-                        message.Body.ValidFrom,
-                        message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(personDocument).ThrowOnFailure());
+            return new ElasticPerDocumentChange<PersonDocument>(changes);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
         {
-            var previousPersonDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<PersonDocument>(message.Body.PreviousPersonId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<PersonDocument>
+            (
+                message.Body.PreviousPersonId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            previousPersonDocument.ChangeId = message.Number;
-            previousPersonDocument.ChangeTime = message.Timestamp;
+                    if (document.Mandates == null)
+                        document.Mandates = new List<PersonDocument.PersonMandate>();
 
-            if (previousPersonDocument.Mandates == null)
-                previousPersonDocument.Mandates = new List<PersonDocument.PersonMandate>();
-
-            RemoveMandate(previousPersonDocument, message.Body.BodyMandateId, message.Body.DelegationAssignmentId);
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(previousPersonDocument).ThrowOnFailure());
+                    document.Mandates.RemoveExistingListItems(x =>
+                        x.BodyMandateId == message.Body.BodyMandateId &&
+                        x.DelegationAssignmentId == message.Body.DelegationAssignmentId);
+                }
+            );
         }
 
-        private static void RemoveMandate(PersonDocument previousPersonDocument, Guid bodyMandateId, Guid delegationAssignmentId)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
-            previousPersonDocument.Mandates.RemoveExistingListItems(x =>
-                x.BodyMandateId == bodyMandateId &&
-                x.DelegationAssignmentId == delegationAssignmentId);
+            return new ElasticMassChange(
+                async elastic =>
+                {
+                    await using var organisationRegistryContext = _contextFactory.Create();
+                    var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
+
+                    await elastic.TryAsync(() => elastic.WriteClient
+                        .MassUpdatePersonAsync(
+                            x => x.Mandates.Single().BodyId, message.Body.BodyId,
+                            "mandates", "BodyId",
+                            "bodyOrganisationId", message.Body.OrganisationId,
+                            message.Number,
+                            message.Timestamp));
+
+                    await elastic.TryAsync(() => elastic.WriteClient
+                        .MassUpdatePersonAsync(
+                            x => x.Mandates.Single().BodyId, message.Body.BodyId,
+                            "mandates", "BodyId",
+                            "bodyOrganisationName", organisation.Name,
+                            message.Number,
+                            message.Timestamp));
+
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
-            await using var organisationRegistryContext = _contextFactory.Create();
-            var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
+            return new ElasticMassChange(
+                async elastic =>
+                {
+                    await elastic.TryAsync(() => elastic.WriteClient
+                        .MassUpdatePersonAsync(
+                            x => x.Mandates.Single().BodyId, message.Body.BodyId,
+                            "mandates", "bodyId",
+                            "bodyOrganisationId", null,
+                            message.Number,
+                            message.Timestamp));
 
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdatePerson(
-                    x => x.Mandates.Single().BodyId, message.Body.BodyId,
-                    "mandates", "BodyId",
-                    "bodyOrganisationId", message.Body.OrganisationId,
-                    message.Number,
-                    message.Timestamp));
-
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdatePerson(
-                    x => x.Mandates.Single().BodyId, message.Body.BodyId,
-                    "mandates", "BodyId",
-                    "bodyOrganisationName", organisation.Name,
-                    message.Number,
-                    message.Timestamp));
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
-        {
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdatePerson(
-                    x => x.Mandates.Single().BodyId, message.Body.BodyId,
-                    "mandates", "bodyId",
-                    "bodyOrganisationId", null,
-                    message.Number,
-                    message.Timestamp));
-
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdatePerson(
-                    x => x.Mandates.Single().BodyId, message.Body.BodyId,
-                    "mandates", "bodyId",
-                    "bodyOrganisationName", null,
-                    message.Number,
-                    message.Timestamp));
+                    await elastic.TryAsync(() => elastic.WriteClient
+                        .MassUpdatePersonAsync(
+                            x => x.Mandates.Single().BodyId, message.Body.BodyId,
+                            "mandates", "bodyId",
+                            "bodyOrganisationName", null,
+                            message.Number,
+                            message.Timestamp));
+                }
+            );
         }
 
         private CachedOrganisationBody GetOrganisationForBodyFromCache(Guid bodyId)

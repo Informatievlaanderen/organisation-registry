@@ -24,6 +24,14 @@
             return response;
         }
 
+        public static ExistsResponse ThrowOnFailure(this ExistsResponse response)
+        {
+            if (!response.IsValid)
+                throw new ElasticsearchException(response.DebugInformation, response.OriginalException);
+
+            return response;
+        }
+
         public static ISearchResponse<T> ThrowOnFailure<T>(this ISearchResponse<T> response) where T : class
         {
             if (!response.IsValid)

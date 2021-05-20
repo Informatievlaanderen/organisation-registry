@@ -4,7 +4,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Client;
     using ElasticSearch.Organisations;
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Infrastructure.Events;
@@ -12,75 +11,78 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using KeyTypes.Events;
     using Microsoft.Extensions.Logging;
     using Common;
+    using Infrastructure.Change;
 
     public class OrganisationKey :
         BaseProjection<OrganisationKey>,
-        IEventHandler<OrganisationKeyAdded>,
-        IEventHandler<OrganisationKeyUpdated>,
-        IEventHandler<KeyTypeUpdated>
+        IElasticEventHandler<OrganisationKeyAdded>,
+        IElasticEventHandler<OrganisationKeyUpdated>,
+        IElasticEventHandler<KeyTypeUpdated>
     {
-        private readonly Elastic _elastic;
-
         public OrganisationKey(
-            ILogger<OrganisationKey> logger,
-            Elastic elastic) : base(logger)
+            ILogger<OrganisationKey> logger) : base(logger)
         {
-            _elastic = elastic;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KeyTypeUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KeyTypeUpdated> message)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.Keys.Single().KeyTypeId, message.Body.KeyTypeId,
-                    "keys", "keyTypeId",
-                    "keyTypeName", message.Body.Name,
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.Keys.Single().KeyTypeId, message.Body.KeyTypeId,
+                        "keys", "keyTypeId",
+                        "keyTypeName", message.Body.Name,
+                        message.Number,
+                        message.Timestamp))
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationKeyAdded> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationKeyAdded> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    if (document.Keys == null)
+                        document.Keys = new List<OrganisationDocument.OrganisationKey>();
 
-            if (organisationDocument.Keys == null)
-                organisationDocument.Keys = new List<OrganisationDocument.OrganisationKey>();
+                    document.Keys.RemoveExistingListItems(x => x.OrganisationKeyId == message.Body.OrganisationKeyId);
 
-            organisationDocument.Keys.RemoveExistingListItems(x => x.OrganisationKeyId == message.Body.OrganisationKeyId);
-
-            organisationDocument.Keys.Add(
-                new OrganisationDocument.OrganisationKey(
-                    message.Body.OrganisationKeyId,
-                    message.Body.KeyTypeId,
-                    message.Body.KeyTypeName,
-                    message.Body.Value,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Keys.Add(
+                        new OrganisationDocument.OrganisationKey(
+                            message.Body.OrganisationKeyId,
+                            message.Body.KeyTypeId,
+                            message.Body.KeyTypeName,
+                            message.Body.Value,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationKeyUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationKeyUpdated> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    document.Keys.RemoveExistingListItems(x => x.OrganisationKeyId == message.Body.OrganisationKeyId);
 
-            organisationDocument.Keys.RemoveExistingListItems(x => x.OrganisationKeyId == message.Body.OrganisationKeyId);
-
-            organisationDocument.Keys.Add(
-                new OrganisationDocument.OrganisationKey(
-                    message.Body.OrganisationKeyId,
-                    message.Body.KeyTypeId,
-                    message.Body.KeyTypeName,
-                    message.Body.Value,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Keys.Add(
+                        new OrganisationDocument.OrganisationKey(
+                            message.Body.OrganisationKeyId,
+                            message.Body.KeyTypeId,
+                            message.Body.KeyTypeName,
+                            message.Body.Value,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
         }
     }
 }

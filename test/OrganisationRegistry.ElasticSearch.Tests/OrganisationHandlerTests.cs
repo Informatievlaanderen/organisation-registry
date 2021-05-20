@@ -44,8 +44,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 elasticSearchOptions: _fixture.ElasticSearchOptions);
 
             var organisationBankAccountHandler = new OrganisationBankAccount(
-                logger: _fixture.LoggerFactory.CreateLogger<OrganisationBankAccount>(),
-                elastic: _fixture.Elastic);
+                logger: _fixture.LoggerFactory.CreateLogger<OrganisationBankAccount>());
 
             var testContextFactory = new TestContextFactory(dbContextOptions);
             var serviceProvider = new ServiceCollection()

@@ -2,7 +2,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
@@ -18,7 +17,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     using Nest;
     using OrganisationRegistry.Infrastructure.Events;
     using SqlServer.ProjectionState;
-    using TimeUnit = Nest.TimeUnit;
 
     public class BodyRunner
     {
@@ -47,7 +45,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             IProjectionStates projectionStates,
             Elastic elastic,
             ElasticBus bus,
-            IMetricsRoot metrics)
+            IMetricsRoot metrics,
+            ElasticBusRegistrar busRegistrar)
         {
             _logger = logger;
             _store = store;
@@ -58,6 +57,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
             _batchSize = configuration.Value.BatchSize;
 
+            busRegistrar.RegisterEventHandlers(EventHandlers);
         }
 
         public async Task Run()
@@ -118,9 +118,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                     .ToList();
 
                 var changesPerDocument = changesByEnvelopeNumber
-                    .OfType<ElasticSingleChange>()
-                    .GroupBy(x => x.Id)
-                    .ToDictionary(x => x.Key, x => x.Select(y => y.Change));
+                    .OfType<ElasticPerDocumentChange<BodyDocument>>()
+                    .SelectMany(change => change.Changes)
+                    .GroupBy(x => x.Key)
+                    .ToDictionary(x => x.Key, x => x.Select(y => y.Value));
 
                 var massUpdates = changesByEnvelopeNumber
                     .OfType<ElasticMassChange>();
@@ -131,7 +132,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 {
                     var document = new BodyDocument();
 
-                    if (!documents.ContainsKey(document.Id))
+                    if (!documents.ContainsKey(changeSet.Key))
                     {
                         if ((await _elastic.TryGetAsync(() => _elastic.WriteClient.DocumentExistsAsync<BodyDocument>(changeSet.Key))).Exists)
                         {
@@ -141,6 +142,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                                 .Source;
                         }
                         documents.Add(changeSet.Key, document);
+                    }
+                    else
+                    {
+                        document = documents[changeSet.Key];
                     }
 
                     foreach (var change in changeSet.Value)
