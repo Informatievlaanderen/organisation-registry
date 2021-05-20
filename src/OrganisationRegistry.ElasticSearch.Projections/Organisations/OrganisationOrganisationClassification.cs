@@ -14,55 +14,57 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using Microsoft.Extensions.Logging;
     using OrganisationClassification.Events;
     using Common;
+    using Infrastructure.Change;
 
     public class OrganisationOrganisationClassification :
         BaseProjection<OrganisationOrganisationClassification>,
-        IEventHandler<OrganisationOrganisationClassificationAdded>,
-        IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
-        IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
-        IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationTerminationSyncedWithKbo>,
-        IEventHandler<OrganisationOrganisationClassificationUpdated>,
-        IEventHandler<OrganisationClassificationTypeUpdated>,
-        IEventHandler<OrganisationClassificationUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationOrganisationClassificationAdded>,
+        IElasticEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
+        IElasticEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
+        IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
+        IElasticEventHandler<OrganisationTerminationSyncedWithKbo>,
+        IElasticEventHandler<OrganisationOrganisationClassificationUpdated>,
+        IElasticEventHandler<OrganisationClassificationTypeUpdated>,
+        IElasticEventHandler<OrganisationClassificationUpdated>,
+        IElasticEventHandler<OrganisationTerminated>
     {
-        private readonly Elastic _elastic;
 
         public OrganisationOrganisationClassification(
-            ILogger<OrganisationOrganisationClassification> logger,
-            Elastic elastic) : base(logger)
+            ILogger<OrganisationOrganisationClassification> logger) : base(logger)
         {
-            _elastic = elastic;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationTypeUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationTypeUpdated> message)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.OrganisationClassifications.Single().OrganisationClassificationTypeId, message.Body.OrganisationClassificationTypeId,
-                    "organisationClassifications", "organisationClassificationTypeId",
-                    "organisationClassificationTypeName", message.Body.Name,
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.OrganisationClassifications.Single().OrganisationClassificationTypeId, message.Body.OrganisationClassificationTypeId,
+                        "organisationClassifications", "organisationClassificationTypeId",
+                        "organisationClassificationTypeName", message.Body.Name,
+                        message.Number,
+                        message.Timestamp))
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationUpdated> message)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.OrganisationClassifications.Single().OrganisationClassificationId, message.Body.OrganisationClassificationId,
-                    "organisationClassifications", "organisationClassificationId",
-                    "organisationClassificationName", message.Body.Name,
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.OrganisationClassifications.Single().OrganisationClassificationId, message.Body.OrganisationClassificationId,
+                        "organisationClassifications", "organisationClassificationId",
+                        "organisationClassificationName", message.Body.Name,
+                        message.Number,
+                        message.Timestamp))
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationAdded> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationAdded> message)
         {
-            AddOrganisationOrganisationClassification(
+            return await AddOrganisationOrganisationClassification(
                 message.Body.OrganisationId,
                 message.Body.OrganisationOrganisationClassificationId,
                 message.Body.OrganisationClassificationTypeId,
@@ -75,9 +77,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationAdded> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationAdded> message)
         {
-            AddOrganisationOrganisationClassification(
+            return await AddOrganisationOrganisationClassification(
                 message.Body.OrganisationId,
                 message.Body.OrganisationOrganisationClassificationId,
                 message.Body.OrganisationClassificationTypeId,
@@ -90,140 +92,148 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationRemoved> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationRemoved> message)
         {
-            RemoveOrganisationOrganisationClassification(
+            return await RemoveOrganisationOrganisationClassification(
                 message.Body.OrganisationId,
                 message.Body.OrganisationOrganisationClassificationId,
                 message.Number,
                 message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
             if (message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel == null)
-                return;
+                return new ElasticNoChange();
 
-            RemoveOrganisationOrganisationClassification(
+            return await RemoveOrganisationOrganisationClassification(
                 message.Body.OrganisationId,
                 message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel.Value,
                 message.Number,
                 message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
         {
             if (message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate == null)
-                return;
+                return new ElasticNoChange();
 
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    if (document.OrganisationClassifications == null)
+                        document.OrganisationClassifications = new List<OrganisationDocument.OrganisationOrganisationClassification>();
 
-            if (organisationDocument.OrganisationClassifications == null)
-                organisationDocument.OrganisationClassifications = new List<OrganisationDocument.OrganisationOrganisationClassification>();
+                    var legalFormOrganisationClassification = document.OrganisationClassifications.Single(label =>
+                        label.OrganisationOrganisationClassificationId == message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate);
 
-            var legalFormOrganisationClassification = organisationDocument.OrganisationClassifications.Single(label =>
-                label.OrganisationOrganisationClassificationId == message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate);
-
-            legalFormOrganisationClassification.Validity.End = message.Body.DateOfTermination;
-
-            _elastic.Try(async () => (await _elastic.WriteClient.IndexDocumentAsync(organisationDocument)).ThrowOnFailure());
+                    legalFormOrganisationClassification.Validity.End = message.Body.DateOfTermination;
+                }
+            );
         }
 
-        private void AddOrganisationOrganisationClassification(Guid organisationId, Guid organisationOrganisationClassificationId, Guid organisationClassificationTypeId, string organisationClassificationTypeName, Guid organisationClassificationId, string organisationClassificationName, DateTime? validFrom, DateTime? validTo, int messageNumber, DateTimeOffset messageTimestamp)
+        private static async Task<IElasticChange> AddOrganisationOrganisationClassification(Guid organisationId, Guid organisationOrganisationClassificationId, Guid organisationClassificationTypeId, string organisationClassificationTypeName, Guid organisationClassificationId, string organisationClassificationName, DateTime? validFrom, DateTime? validTo, int messageNumber, DateTimeOffset messageTimestamp)
         {
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(organisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                organisationId, async document =>
+                {
+                    document.ChangeId = messageNumber;
+                    document.ChangeTime = messageTimestamp;
 
-            organisationDocument.ChangeId = messageNumber;
-            organisationDocument.ChangeTime = messageTimestamp;
+                    if (document.OrganisationClassifications == null)
+                        document.OrganisationClassifications =
+                            new List<OrganisationDocument.OrganisationOrganisationClassification>();
 
-            if (organisationDocument.OrganisationClassifications == null)
-                organisationDocument.OrganisationClassifications =
-                    new List<OrganisationDocument.OrganisationOrganisationClassification>();
+                    document.OrganisationClassifications.RemoveExistingListItems(x =>
+                        x.OrganisationOrganisationClassificationId == organisationOrganisationClassificationId);
 
-            organisationDocument.OrganisationClassifications.RemoveExistingListItems(x =>
-                x.OrganisationOrganisationClassificationId == organisationOrganisationClassificationId);
+                    document.OrganisationClassifications.Add(
+                        new OrganisationDocument.OrganisationOrganisationClassification(
+                            organisationOrganisationClassificationId,
+                            organisationClassificationTypeId,
+                            organisationClassificationTypeName,
+                            organisationClassificationId,
+                            organisationClassificationName,
+                            new Period(validFrom, validTo)));
 
-            organisationDocument.OrganisationClassifications.Add(
-                new OrganisationDocument.OrganisationOrganisationClassification(
-                    organisationOrganisationClassificationId,
-                    organisationClassificationTypeId,
-                    organisationClassificationTypeName,
-                    organisationClassificationId,
-                    organisationClassificationName,
-                    new Period(validFrom, validTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                }
+            );
         }
 
-        private void RemoveOrganisationOrganisationClassification(Guid organisationId, Guid organisationOrganisationClassificationId, int messageNumber, DateTimeOffset messageTimestamp)
+        private static async Task<IElasticChange> RemoveOrganisationOrganisationClassification(Guid organisationId, Guid organisationOrganisationClassificationId, int messageNumber, DateTimeOffset messageTimestamp)
         {
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(organisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                organisationId, async document =>
+                {
+                    document.ChangeId = messageNumber;
+                    document.ChangeTime = messageTimestamp;
 
-            organisationDocument.ChangeId = messageNumber;
-            organisationDocument.ChangeTime = messageTimestamp;
+                    if (document.OrganisationClassifications == null)
+                        document.OrganisationClassifications =
+                            new List<OrganisationDocument.OrganisationOrganisationClassification>();
 
-            if (organisationDocument.OrganisationClassifications == null)
-                organisationDocument.OrganisationClassifications =
-                    new List<OrganisationDocument.OrganisationOrganisationClassification>();
+                    document.OrganisationClassifications.RemoveExistingListItems(x =>
+                        x.OrganisationOrganisationClassificationId == organisationOrganisationClassificationId);
 
-            organisationDocument.OrganisationClassifications.RemoveExistingListItems(x =>
-                x.OrganisationOrganisationClassificationId == organisationOrganisationClassificationId);
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationUpdated> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    document.OrganisationClassifications.RemoveExistingListItems(x => x.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId);
 
-            organisationDocument.OrganisationClassifications.RemoveExistingListItems(x => x.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId);
-
-            organisationDocument.OrganisationClassifications.Add(
-                new OrganisationDocument.OrganisationOrganisationClassification(
-                    message.Body.OrganisationOrganisationClassificationId,
-                    message.Body.OrganisationClassificationTypeId,
-                    message.Body.OrganisationClassificationTypeName,
-                    message.Body.OrganisationClassificationId,
-                    message.Body.OrganisationClassificationName,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.OrganisationClassifications.Add(
+                        new OrganisationDocument.OrganisationOrganisationClassification(
+                            message.Body.OrganisationOrganisationClassificationId,
+                            message.Body.OrganisationClassificationTypeId,
+                            message.Body.OrganisationClassificationTypeName,
+                            message.Body.OrganisationClassificationId,
+                            message.Body.OrganisationClassificationName,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            var organisationDocument =
-                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    var classificationsToTerminate =
+                        message.Body.FieldsToTerminate.Classifications;
 
-            var classificationsToTerminate =
-                message.Body.FieldsToTerminate.Classifications;
+                    if (message.Body.KboFieldsToTerminate.LegalForm.HasValue)
+                        classificationsToTerminate.Add(message.Body.KboFieldsToTerminate.LegalForm.Value.Key, message.Body.KboFieldsToTerminate.LegalForm.Value.Value);
 
-            if (message.Body.KboFieldsToTerminate.LegalForm.HasValue)
-                classificationsToTerminate.Add(message.Body.KboFieldsToTerminate.LegalForm.Value.Key, message.Body.KboFieldsToTerminate.LegalForm.Value.Value);
+                    foreach (var (key, value) in classificationsToTerminate)
+                    {
+                        var organisationOrganisationClassification =
+                            document
+                                .OrganisationClassifications
+                                .Single(x => x.OrganisationOrganisationClassificationId == key);
 
-            foreach (var (key, value) in classificationsToTerminate)
-            {
-                var organisationOrganisationClassification =
-                    organisationDocument
-                        .OrganisationClassifications
-                        .Single(x => x.OrganisationOrganisationClassificationId == key);
-
-                organisationOrganisationClassification.Validity.End = value;
-            }
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                        organisationOrganisationClassification.Validity.End = value;
+                    }
+                }
+            );
         }
     }
 }

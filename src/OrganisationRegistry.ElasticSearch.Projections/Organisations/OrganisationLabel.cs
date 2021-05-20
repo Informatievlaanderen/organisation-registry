@@ -5,7 +5,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Client;
     using ElasticSearch.Organisations;
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Infrastructure.Events;
@@ -13,169 +12,173 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Common;
+    using Infrastructure.Change;
 
     public class OrganisationLabel :
         BaseProjection<OrganisationLabel>,
-        IEventHandler<OrganisationLabelAdded>,
-        IEventHandler<KboFormalNameLabelAdded>,
-        IEventHandler<KboFormalNameLabelRemoved>,
-        IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationTerminationSyncedWithKbo>,
-        IEventHandler<OrganisationLabelUpdated>,
-        IEventHandler<LabelTypeUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationLabelAdded>,
+        IElasticEventHandler<KboFormalNameLabelAdded>,
+        IElasticEventHandler<KboFormalNameLabelRemoved>,
+        IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
+        IElasticEventHandler<OrganisationTerminationSyncedWithKbo>,
+        IElasticEventHandler<OrganisationLabelUpdated>,
+        IElasticEventHandler<LabelTypeUpdated>,
+        IElasticEventHandler<OrganisationTerminated>
     {
-        private readonly Elastic _elastic;
-
         public OrganisationLabel(
-            ILogger<OrganisationLabel> logger,
-            Elastic elastic) : base(logger)
+            ILogger<OrganisationLabel> logger) : base(logger)
         {
-            _elastic = elastic;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LabelTypeUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LabelTypeUpdated> message)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.Labels.Single().LabelTypeId, message.Body.LabelTypeId,
-                    "labels", "labelTypeId",
-                    "labelTypeName", message.Body.Name,
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.Labels.Single().LabelTypeId, message.Body.LabelTypeId,
+                        "labels", "labelTypeId",
+                        "labelTypeName", message.Body.Name,
+                        message.Number,
+                        message.Timestamp))
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLabelAdded> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLabelAdded> message)
         {
-            AddLabel(message.Body.OrganisationId, message.Body.OrganisationLabelId, message.Body.LabelTypeId, message.Body.LabelTypeName, message.Body.Value, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
+            return await AddLabel(message.Body.OrganisationId, message.Body.OrganisationLabelId, message.Body.LabelTypeId, message.Body.LabelTypeName, message.Body.Value, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboFormalNameLabelAdded> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboFormalNameLabelAdded> message)
         {
-            AddLabel(message.Body.OrganisationId, message.Body.OrganisationLabelId, message.Body.LabelTypeId, message.Body.LabelTypeName, message.Body.Value, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
+            return await AddLabel(message.Body.OrganisationId, message.Body.OrganisationLabelId, message.Body.LabelTypeId, message.Body.LabelTypeName, message.Body.Value, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboFormalNameLabelRemoved> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboFormalNameLabelRemoved> message)
         {
-            RemoveLabel(message.Body.OrganisationId, message.Body.OrganisationLabelId, message.Number, message.Timestamp);
+            return await RemoveLabel(message.Body.OrganisationId, message.Body.OrganisationLabelId, message.Number, message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
             if (message.Body.FormalNameOrganisationLabelIdToCancel == null)
-                return;
+                return new ElasticNoChange();
 
-            RemoveLabel(message.Body.OrganisationId, message.Body.FormalNameOrganisationLabelIdToCancel.Value, message.Number, message.Timestamp);
+            return await RemoveLabel(message.Body.OrganisationId, message.Body.FormalNameOrganisationLabelIdToCancel.Value, message.Number, message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
         {
             if (message.Body.FormalNameOrganisationLabelIdToTerminate == null)
-                return;
+                return new ElasticNoChange();
 
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    if (document.Labels == null)
+                        document.Labels = new List<OrganisationDocument.OrganisationLabel>();
 
-            if (organisationDocument.Labels == null)
-                organisationDocument.Labels = new List<OrganisationDocument.OrganisationLabel>();
+                    var formalNameLabel = document.Labels.Single(label =>
+                        label.OrganisationLabelId == message.Body.FormalNameOrganisationLabelIdToTerminate);
 
-            var formalNameLabel = organisationDocument.Labels.Single(label =>
-                label.OrganisationLabelId == message.Body.FormalNameOrganisationLabelIdToTerminate);
-
-            formalNameLabel.Validity.End = message.Body.DateOfTermination;
-
-            _elastic.Try(async () => (await _elastic.WriteClient.IndexDocumentAsync(organisationDocument)).ThrowOnFailure());
+                    formalNameLabel.Validity.End = message.Body.DateOfTermination;
+                }
+            );
         }
 
-        private void AddLabel(Guid organisationId, Guid organisationLabelId, Guid labelTypeId, string labelTypeName, string labelValue, DateTime? validFrom, DateTime? validTo, int documentChangeId, DateTimeOffset timestamp)
+        private async Task<IElasticChange> AddLabel(Guid organisationId, Guid organisationLabelId, Guid labelTypeId, string labelTypeName, string labelValue, DateTime? validFrom, DateTime? validTo, int documentChangeId, DateTimeOffset timestamp)
         {
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(organisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                organisationId, async document =>
+                {
+                    document.ChangeId = documentChangeId;
+                    document.ChangeTime = timestamp;
 
-            organisationDocument.ChangeId = documentChangeId;
-            organisationDocument.ChangeTime = timestamp;
+                    if (document.Labels == null)
+                        document.Labels = new List<OrganisationDocument.OrganisationLabel>();
 
-            if (organisationDocument.Labels == null)
-                organisationDocument.Labels = new List<OrganisationDocument.OrganisationLabel>();
+                    document.Labels.RemoveExistingListItems(x => x.OrganisationLabelId == organisationLabelId);
 
-            organisationDocument.Labels.RemoveExistingListItems(x => x.OrganisationLabelId == organisationLabelId);
-
-            organisationDocument.Labels.Add(
-                new OrganisationDocument.OrganisationLabel(
-                    organisationLabelId,
-                    labelTypeId,
-                    labelTypeName,
-                    labelValue,
-                    new Period(validFrom, validTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Labels.Add(
+                        new OrganisationDocument.OrganisationLabel(
+                            organisationLabelId,
+                            labelTypeId,
+                            labelTypeName,
+                            labelValue,
+                            new Period(validFrom, validTo)));
+                }
+            );
         }
 
-        private void RemoveLabel(Guid organisationId, Guid organisationLabelId, int documentChangeId, DateTimeOffset timestamp)
+        private async Task<IElasticChange> RemoveLabel(Guid organisationId, Guid organisationLabelId, int documentChangeId, DateTimeOffset timestamp)
         {
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(organisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                organisationId, async document =>
+                {
+                    document.ChangeId = documentChangeId;
+                    document.ChangeTime = timestamp;
 
-            organisationDocument.ChangeId = documentChangeId;
-            organisationDocument.ChangeTime = timestamp;
+                    if (document.Labels == null)
+                        document.Labels = new List<OrganisationDocument.OrganisationLabel>();
 
-            if (organisationDocument.Labels == null)
-                organisationDocument.Labels = new List<OrganisationDocument.OrganisationLabel>();
-
-            organisationDocument.Labels.RemoveExistingListItems(x => x.OrganisationLabelId == organisationLabelId);
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Labels.RemoveExistingListItems(x => x.OrganisationLabelId == organisationLabelId);
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLabelUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLabelUpdated> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    document.Labels.RemoveExistingListItems(x => x.OrganisationLabelId == message.Body.OrganisationLabelId);
 
-            organisationDocument.Labels.RemoveExistingListItems(x => x.OrganisationLabelId == message.Body.OrganisationLabelId);
-
-            organisationDocument.Labels.Add(
-                new OrganisationDocument.OrganisationLabel(
-                    message.Body.OrganisationLabelId,
-                    message.Body.LabelTypeId,
-                    message.Body.LabelTypeName,
-                    message.Body.Value,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Labels.Add(
+                        new OrganisationDocument.OrganisationLabel(
+                            message.Body.OrganisationLabelId,
+                            message.Body.LabelTypeId,
+                            message.Body.LabelTypeName,
+                            message.Body.Value,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            var organisationDocument =
-                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    var labelsToTerminate =
+                        message.Body.FieldsToTerminate.Labels;
 
-            var labelsToTerminate =
-                message.Body.FieldsToTerminate.Labels;
+                    if (message.Body.KboFieldsToTerminate.FormalName.HasValue)
+                        labelsToTerminate.Add(message.Body.KboFieldsToTerminate.FormalName.Value.Key, message.Body.KboFieldsToTerminate.FormalName.Value.Value);
 
-            if (message.Body.KboFieldsToTerminate.FormalName.HasValue)
-                labelsToTerminate.Add(message.Body.KboFieldsToTerminate.FormalName.Value.Key, message.Body.KboFieldsToTerminate.FormalName.Value.Value);
+                    foreach (var (key, value) in labelsToTerminate)
+                    {
+                        var organisationBankAccount =
+                            document
+                                .Labels
+                                .Single(x => x.OrganisationLabelId == key);
 
-            foreach (var (key, value) in labelsToTerminate)
-            {
-                var organisationBankAccount =
-                    organisationDocument
-                        .Labels
-                        .Single(x => x.OrganisationLabelId == key);
-
-                organisationBankAccount.Validity.End = value;
-            }
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                        organisationBankAccount.Validity.End = value;
+                    }                }
+            );
         }
     }
 }

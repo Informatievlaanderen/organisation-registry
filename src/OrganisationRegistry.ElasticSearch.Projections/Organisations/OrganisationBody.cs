@@ -1,107 +1,122 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 {
+    using System;
     using System.Data.Common;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Bodies;
     using OrganisationRegistry.Infrastructure.Events;
-    using Client;
     using ElasticSearch.Organisations;
     using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Common;
+    using Infrastructure.Change;
+    using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Body.Events;
+    using SqlServer;
 
     public class OrganisationBody :
         BaseProjection<OrganisationBody>,
-        IEventHandler<BodyInfoChanged>,
-        IEventHandler<BodyOrganisationAdded>,
-        IEventHandler<BodyOrganisationUpdated>
+        IElasticEventHandler<BodyInfoChanged>,
+        IElasticEventHandler<BodyOrganisationAdded>,
+        IElasticEventHandler<BodyOrganisationUpdated>
     {
-        private readonly Elastic _elastic;
+        private readonly IContextFactory _contextFactory;
 
         public OrganisationBody(
             ILogger<OrganisationBody> logger,
-            Elastic elastic) : base(logger)
+            IContextFactory contextFactory) : base(logger)
         {
-            _elastic = elastic;
+            _contextFactory = contextFactory;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.Bodies.Single().BodyId, message.Body.BodyId,
-                    "bodies", "bodyId",
-                    "bodyName", message.Body.Name,
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(async () => await elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.Bodies.Single().BodyId, message.Body.BodyId,
+                        "bodies", "bodyId",
+                        "bodyName", message.Body.Name,
+                        message.Number,
+                        message.Timestamp))
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationAdded> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationAdded> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    if (document.Bodies == null)
+                        document.Bodies = new List<OrganisationDocument.OrganisationBody>();
 
-            if (organisationDocument.Bodies == null)
-                organisationDocument.Bodies = new List<OrganisationDocument.OrganisationBody>();
+                    document.Bodies.RemoveExistingListItems(x => x.BodyOrganisationId == message.Body.BodyOrganisationId);
 
-            organisationDocument.Bodies.RemoveExistingListItems(x => x.BodyOrganisationId == message.Body.BodyOrganisationId);
-
-            organisationDocument.Bodies.Add(
-                new OrganisationDocument.OrganisationBody(
-                    message.Body.BodyOrganisationId,
-                    message.Body.BodyId,
-                    message.Body.BodyName,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Bodies.Add(
+                        new OrganisationDocument.OrganisationBody(
+                            message.Body.BodyOrganisationId,
+                            message.Body.BodyId,
+                            message.Body.BodyName,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
-            var previousOrganisationDocument =
-                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.PreviousOrganisationId).ThrowOnFailure().Source);
+            var changes = new Dictionary<Guid, Action<OrganisationDocument>>();
 
-            previousOrganisationDocument.ChangeId = message.Number;
-            previousOrganisationDocument.ChangeTime = message.Timestamp;
-
-            var bodyName = previousOrganisationDocument.Bodies.First(x => x.BodyOrganisationId == message.Body.BodyOrganisationId).BodyName;
-            previousOrganisationDocument.Bodies.RemoveExistingListItems(x => x.BodyOrganisationId == message.Body.BodyOrganisationId);
-
-            if (message.Body.PreviousOrganisationId == message.Body.OrganisationId)
+            changes.Add(message.Body.PreviousOrganisationId, document =>
             {
-                previousOrganisationDocument.Bodies.Add(
-                    new OrganisationDocument.OrganisationBody(
-                        message.Body.BodyOrganisationId,
-                        message.Body.BodyId,
-                        bodyName,
-                        new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-            }
-            else
+                document.ChangeId = message.Number;
+                document.ChangeTime = message.Timestamp;
+
+                var bodyName = document.Bodies.First(x => x.BodyOrganisationId == message.Body.BodyOrganisationId).BodyName;
+                document.Bodies.RemoveExistingListItems(x => x.BodyOrganisationId == message.Body.BodyOrganisationId);
+
+                if (message.Body.PreviousOrganisationId == message.Body.OrganisationId)
+                {
+                    document.Bodies.Add(
+                        new OrganisationDocument.OrganisationBody(
+                            message.Body.BodyOrganisationId,
+                            message.Body.BodyId,
+                            bodyName,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            });
+
+            if (message.Body.PreviousOrganisationId != message.Body.OrganisationId)
             {
-                var newOrganisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+                changes.Add(message.Body.OrganisationId, async document =>
+                {
+                    await using var organisationRegistryContext = _contextFactory.Create();
+                    var body = await organisationRegistryContext.BodyCache.SingleAsync(x => x.Id == message.Body.BodyId);
 
-                newOrganisationDocument.ChangeId = message.Number;
-                newOrganisationDocument.ChangeTime = message.Timestamp;
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-                if (newOrganisationDocument.Bodies == null)
-                    newOrganisationDocument.Bodies = new List<OrganisationDocument.OrganisationBody>();
+                    if (document.Bodies == null)
+                        document.Bodies = new List<OrganisationDocument.OrganisationBody>();
 
-                newOrganisationDocument.Bodies.Add(
-                    new OrganisationDocument.OrganisationBody(
-                        message.Body.BodyOrganisationId,
-                        message.Body.BodyId,
-                        bodyName,
-                        new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                    document.Bodies.Add(
+                        new OrganisationDocument.OrganisationBody(
+                            message.Body.BodyOrganisationId,
+                            message.Body.BodyId,
+                            body.Name,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
 
-                _elastic.Try(() => _elastic.WriteClient.IndexDocument(newOrganisationDocument).ThrowOnFailure());
+                });
             }
 
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(previousOrganisationDocument).ThrowOnFailure());
+            return new ElasticPerDocumentChange<OrganisationDocument>(changes);
         }
     }
 }

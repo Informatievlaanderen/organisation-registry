@@ -4,7 +4,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Client;
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Infrastructure.Events;
     using ContactType.Events;
@@ -12,97 +11,102 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Common;
+    using Infrastructure.Change;
 
     public class OrganisationContact :
         BaseProjection<OrganisationContact>,
-        IEventHandler<OrganisationContactAdded>,
-        IEventHandler<OrganisationContactUpdated>,
-        IEventHandler<ContactTypeUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationContactAdded>,
+        IElasticEventHandler<OrganisationContactUpdated>,
+        IElasticEventHandler<ContactTypeUpdated>,
+        IElasticEventHandler<OrganisationTerminated>
     {
-        private readonly Elastic _elastic;
 
         public OrganisationContact(
-            ILogger<OrganisationContact> logger,
-            Elastic elastic) : base(logger)
+            ILogger<OrganisationContact> logger) : base(logger)
         {
-            _elastic = elastic;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeUpdated> message)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.Contacts.Single().ContactTypeId, message.Body.ContactTypeId,
-                    "contacts", "contactTypeId",
-                    "contactTypeName", message.Body.Name,
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.Contacts.Single().ContactTypeId, message.Body.ContactTypeId,
+                        "contacts", "contactTypeId",
+                        "contactTypeName", message.Body.Name,
+                        message.Number,
+                        message.Timestamp))
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationContactAdded> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationContactAdded> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    if (document.Contacts == null)
+                        document.Contacts = new List<OrganisationDocument.OrganisationContact>();
 
-            if (organisationDocument.Contacts == null)
-                organisationDocument.Contacts = new List<OrganisationDocument.OrganisationContact>();
+                    document.Contacts.RemoveExistingListItems(x => x.OrganisationContactId == message.Body.OrganisationContactId);
 
-            organisationDocument.Contacts.RemoveExistingListItems(x => x.OrganisationContactId == message.Body.OrganisationContactId);
-
-            organisationDocument.Contacts.Add(
-                new OrganisationDocument.OrganisationContact(
-                    message.Body.OrganisationContactId,
-                    message.Body.ContactTypeId,
-                    message.Body.ContactTypeName,
-                    message.Body.Value,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Contacts.Add(
+                        new OrganisationDocument.OrganisationContact(
+                            message.Body.OrganisationContactId,
+                            message.Body.ContactTypeId,
+                            message.Body.ContactTypeName,
+                            message.Body.Value,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationContactUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationContactUpdated> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    document.Contacts.RemoveExistingListItems(x => x.OrganisationContactId == message.Body.OrganisationContactId);
 
-            organisationDocument.Contacts.RemoveExistingListItems(x => x.OrganisationContactId == message.Body.OrganisationContactId);
-
-            organisationDocument.Contacts.Add(
-                new OrganisationDocument.OrganisationContact(
-                    message.Body.OrganisationContactId,
-                    message.Body.ContactTypeId,
-                    message.Body.ContactTypeName,
-                    message.Body.Value,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Contacts.Add(
+                        new OrganisationDocument.OrganisationContact(
+                            message.Body.OrganisationContactId,
+                            message.Body.ContactTypeId,
+                            message.Body.ContactTypeName,
+                            message.Body.Value,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            var organisationDocument =
-                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    foreach (var (key, value) in message.Body.FieldsToTerminate.Contacts)
+                    {
+                        var organisationContact =
+                            document
+                                .Contacts
+                                .Single(x => x.OrganisationContactId == key);
 
-            foreach (var (key, value) in message.Body.FieldsToTerminate.Contacts)
-            {
-                var organisationContact =
-                    organisationDocument
-                        .Contacts
-                        .Single(x => x.OrganisationContactId == key);
-
-                organisationContact.Validity.End = value;
-            }
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                        organisationContact.Validity.End = value;
+                    }
+                }
+            );
         }
     }
 }

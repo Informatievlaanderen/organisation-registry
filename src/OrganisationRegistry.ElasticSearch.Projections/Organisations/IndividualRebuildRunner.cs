@@ -1,14 +1,13 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure.Config;
     using OrganisationRegistry.Infrastructure.Events;
-    using SqlServer.Infrastructure;
+    using SqlServer;
     using SqlServer.ProjectionState;
 
     public class IndividualRebuildRunner
@@ -17,27 +16,30 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         private readonly ILogger<IndividualRebuildRunner> _logger;
         private readonly IEventStore _store;
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
+        private readonly IContextFactory _contextFactory;
         private readonly IProjectionStates _projectionStates;
         private readonly IEventPublisher _bus;
 
         public IndividualRebuildRunner(
             ILogger<IndividualRebuildRunner> logger,
             IEventStore store,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
+            IContextFactory contextFactory,
             IProjectionStates projectionStates,
-            IEventPublisher bus)
+            IEventPublisher bus,
+            BusRegistrar busRegistrar)
         {
             _logger = logger;
             _store = store;
             _contextFactory = contextFactory;
             _projectionStates = projectionStates;
             _bus = bus;
+
+            busRegistrar.RegisterEventHandlers(OrganisationsRunner.EventHandlers);
         }
 
         public async Task Run()
         {
-            using var context = _contextFactory().Value;
+            await using var context = _contextFactory.Create();
 
             var lastProcessedEventNumber =
                 _projectionStates.GetLastProcessedEventNumber(OrganisationsRunner.ElasticSearchProjectionsProjectionName);

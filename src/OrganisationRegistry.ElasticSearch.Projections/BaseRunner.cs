@@ -5,39 +5,48 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
+    using App.Metrics;
+    using App.Metrics.Timer;
+    using Bodies;
+    using Client;
     using Configuration;
     using Infrastructure;
+    using Infrastructure.Change;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using SqlServer.ProjectionState;
+    using Nest;
     using OrganisationRegistry.Infrastructure.Events;
+    using SqlServer.ProjectionState;
+    using TimeUnit = App.Metrics.TimeUnit;
 
-    public abstract class BaseRunner
+    public abstract class BaseRunner<T> where T: class, IDocument, new()
     {
         public string ProjectionName { get; }
         public Type[] EventHandlers { get; }
-        public Type[] ReactionHandlers { get; }
 
         private readonly string _elasticSearchProjectionsProjectionName;
         private readonly string _projectionFullName;
+        private readonly Elastic _elastic;
+        private readonly IMetricsRoot _metrics;
 
         private readonly int _batchSize;
-        private readonly ILogger<BaseRunner> _logger;
+        private readonly ILogger<BaseRunner<T>> _logger;
         private readonly IEventStore _store;
         private readonly IProjectionStates _projectionStates;
-        private readonly IEventPublisher _bus;
+        private readonly ElasticBus _bus;
 
         protected BaseRunner(
-            ILogger<BaseRunner> logger,
+            ILogger<BaseRunner<T>> logger,
             IOptions<ElasticSearchConfiguration> configuration,
             IEventStore store,
             IProjectionStates projectionStates,
-            IEventPublisher bus,
             string elasticSearchProjectionsProjectionName,
             string projectionFullName,
             string projectionName,
             Type[] eventHandlers,
-            Type[] reactionHandlers)
+            Elastic elastic,
+            ElasticBus bus,
+            IMetricsRoot metrics)
         {
             _logger = logger;
             _store = store;
@@ -47,14 +56,31 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             _batchSize = configuration.Value.BatchSize;
             _elasticSearchProjectionsProjectionName = elasticSearchProjectionsProjectionName;
             _projectionFullName = projectionFullName;
+            _elastic = elastic;
+            _metrics = metrics;
 
             ProjectionName = projectionName;
             EventHandlers = eventHandlers;
-            ReactionHandlers = reactionHandlers;
         }
 
         public async Task Run()
         {
+                        var changeDocumentTimer = new TimerOptions
+            {
+                Name = "Change Document Timer",
+                MeasurementUnit = Unit.Calls,
+                DurationUnit = TimeUnit.Milliseconds,
+                RateUnit = TimeUnit.Milliseconds
+            };
+
+            var getEventsTimer = new TimerOptions
+            {
+                Name = "Get Events Timer",
+                MeasurementUnit = Unit.Calls,
+                DurationUnit = TimeUnit.Milliseconds,
+                RateUnit = TimeUnit.Milliseconds
+            };
+
             var lastProcessedEventNumber = _projectionStates.GetLastProcessedEventNumber(_elasticSearchProjectionsProjectionName);
             await InitialiseProjection(lastProcessedEventNumber);
 
@@ -67,26 +93,125 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     .Distinct()
                     .ToList();
 
-            var envelopes = _store.GetEventEnvelopesAfter(lastProcessedEventNumber, _batchSize, eventsBeingListenedTo.ToArray()).ToList();
+            var envelopes = new List<IEnvelope>();
+
+            _metrics.Measure.Timer.Time(getEventsTimer, () =>
+            {
+                envelopes = _store
+                    .GetEventEnvelopesAfter(lastProcessedEventNumber, _batchSize, eventsBeingListenedTo.ToArray())
+                    .ToList();
+            });
 
             LogEnvelopeCount(envelopes);
 
             var newLastProcessedEventNumber = new int?();
             try
             {
+                var allChanges = new List<ElasticChanges>();
                 foreach (var envelope in envelopes)
                 {
-                    newLastProcessedEventNumber = await ProcessEnvelope(envelope);
+                    var changes = await ProcessEnvelope(envelope);
+                    allChanges.Add(changes);
+                    newLastProcessedEventNumber = changes.EnvelopeNumber;
                 }
+
+                var changesByEnvelopeNumber = allChanges
+                    .OrderBy(x => x.EnvelopeNumber)
+                    .SelectMany(x => x.Changes)
+                    .ToList();
+
+                var changesPerDocument = changesByEnvelopeNumber
+                    .OfType<ElasticPerDocumentChange<T>>()
+                    .SelectMany(change => change.Changes)
+                    .GroupBy(x => x.Key)
+                    .ToDictionary(x => x.Key, x => x.Select(y => y.Value));
+
+                var massUpdates = changesByEnvelopeNumber
+                    .OfType<ElasticMassChange>();
+
+                var documents = new Dictionary<Guid, T>();
+
+                foreach (var changeSet in changesPerDocument)
+                {
+                    var document = new T();
+
+                    if (!documents.ContainsKey(changeSet.Key))
+                    {
+                        if ((await _elastic.TryGetAsync(() => _elastic.WriteClient.DocumentExistsAsync<T>(changeSet.Key))).Exists)
+                        {
+                            document = (await _elastic.TryGetAsync(() =>
+                                    _elastic.WriteClient.GetAsync<T>(changeSet.Key)))
+                                .ThrowOnFailure()
+                                .Source;
+                        }
+                        documents.Add(changeSet.Key, document);
+                    }
+                    else
+                    {
+                        document = documents[changeSet.Key];
+                    }
+
+                    foreach (var change in changeSet.Value)
+                    {
+                        _metrics.Measure.Timer.Time(changeDocumentTimer, () => change(document));
+                    }
+                }
+
+                if (documents.Any())
+                {
+                    (await _elastic.TryGetAsync(async () =>
+                            await _elastic.WriteClient.IndexManyAsync<T>(documents.Values)))
+                        .ThrowOnFailure();
+                }
+
+                foreach (var massUpdate in massUpdates)
+                {
+                    await massUpdate.Change(_elastic);
+                }
+
+                UpdateProjectionState(newLastProcessedEventNumber);
             }
             catch (Exception ex)
             {
-                _logger.LogCritical(0, ex, "[{ProjectionName}] An exception occurred while handling envelopes.", ProjectionName);
+                _logger.LogCritical(0, ex, "[{ProjectionName}] An exception occurred while handling envelopes.",
+                    ProjectionName);
             }
             finally
             {
-                UpdateProjectionState(newLastProcessedEventNumber);
+                await Task.WhenAll(_metrics.ReportRunner.RunAllAsync());
             }
+            // var lastProcessedEventNumber = _projectionStates.GetLastProcessedEventNumber(_elasticSearchProjectionsProjectionName);
+            // await InitialiseProjection(lastProcessedEventNumber);
+            //
+            // var eventsBeingListenedTo =
+            //     EventHandlers
+            //         .SelectMany(handler => handler
+            //             .GetTypeInfo()
+            //             .ImplementedInterfaces
+            //             .SelectMany(@interface => @interface.GenericTypeArguments))
+            //         .Distinct()
+            //         .ToList();
+            //
+            // var envelopes = _store.GetEventEnvelopesAfter(lastProcessedEventNumber, _batchSize, eventsBeingListenedTo.ToArray()).ToList();
+            //
+            // LogEnvelopeCount(envelopes);
+            //
+            // var newLastProcessedEventNumber = new int?();
+            // try
+            // {
+            //     foreach (var envelope in envelopes)
+            //     {
+            //         newLastProcessedEventNumber = await ProcessEnvelope(envelope);
+            //     }
+            // }
+            // catch (Exception ex)
+            // {
+            //     _logger.LogCritical(0, ex, "[{ProjectionName}] An exception occurred while handling envelopes.", ProjectionName);
+            // }
+            // finally
+            // {
+            //     UpdateProjectionState(newLastProcessedEventNumber);
+            // }
         }
 
         private async Task InitialiseProjection(int lastProcessedEventNumber)
@@ -107,12 +232,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             _projectionStates.UpdateProjectionState(_elasticSearchProjectionsProjectionName, newLastProcessedEventNumber.Value);
         }
 
-        private async Task<int?> ProcessEnvelope(IEnvelope envelope)
+        private async Task<ElasticChanges> ProcessEnvelope(IEnvelope envelope)
         {
             try
             {
-                await _bus.Publish(null, null, (dynamic)envelope);
-                return envelope.Number;
+                var changes = await _bus.Publish(null, null, (dynamic)envelope);
+                return new ElasticChanges(envelope.Number, changes);
             }
             catch
             {

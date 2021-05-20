@@ -4,7 +4,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Client;
     using ElasticSearch.Organisations;
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Infrastructure.Events;
@@ -13,129 +12,136 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using Microsoft.Extensions.Logging;
     using Person.Events;
     using Common;
+    using Infrastructure.Change;
     using Microsoft.EntityFrameworkCore;
     using SqlServer;
 
     public class OrganisationFunction :
         BaseProjection<OrganisationFunction>,
-        IEventHandler<OrganisationFunctionAdded>,
-        IEventHandler<OrganisationFunctionUpdated>,
-        IEventHandler<FunctionUpdated>,
-        IEventHandler<PersonUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationFunctionAdded>,
+        IElasticEventHandler<OrganisationFunctionUpdated>,
+        IElasticEventHandler<FunctionUpdated>,
+        IElasticEventHandler<PersonUpdated>,
+        IElasticEventHandler<OrganisationTerminated>
     {
-        private readonly Elastic _elastic;
         private readonly IContextFactory _contextFactory;
 
         public OrganisationFunction(
             ILogger<OrganisationFunction> logger,
-            Elastic elastic,
             IContextFactory contextFactory) : base(logger)
         {
-            _elastic = elastic;
             _contextFactory = contextFactory;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.Functions.Single().FunctionId, message.Body.FunctionId,
-                    "functions", "functionId",
-                    "functionName", message.Body.Name,
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.Functions.Single().FunctionId, message.Body.FunctionId,
+                        "functions", "functionId",
+                        "functionName", message.Body.Name,
+                        message.Number,
+                        message.Timestamp))
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.Functions.Single().PersonId, message.Body.PersonId,
-                    "functions", "personId",
-                    "personName", $"{message.Body.Name} {message.Body.FirstName}",
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.Functions.Single().PersonId, message.Body.PersonId,
+                        "functions", "personId",
+                        "personName", $"{message.Body.Name} {message.Body.FirstName}",
+                        message.Number,
+                        message.Timestamp))
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionAdded> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionAdded> message)
         {
-            await using var organisationRegistryContext = _contextFactory.Create();
-            var contactTypeNames = await organisationRegistryContext.ContactTypeList
-                .Select(x => new {x.Id, x.Name})
-                .ToDictionaryAsync(x => x.Id, x => x.Name);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    await using var organisationRegistryContext = _contextFactory.Create();
+                    var contactTypeNames = await organisationRegistryContext.ContactTypeList
+                        .Select(x => new {x.Id, x.Name})
+                        .ToDictionaryAsync(x => x.Id, x => x.Name);
 
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    if (document.Functions == null)
+                        document.Functions = new List<OrganisationDocument.OrganisationFunction>();
 
-            if (organisationDocument.Functions == null)
-                organisationDocument.Functions = new List<OrganisationDocument.OrganisationFunction>();
+                    document.Functions.RemoveExistingListItems(x => x.OrganisationFunctionId == message.Body.OrganisationFunctionId);
 
-            organisationDocument.Functions.RemoveExistingListItems(x => x.OrganisationFunctionId == message.Body.OrganisationFunctionId);
-
-            organisationDocument.Functions.Add(
-                new OrganisationDocument.OrganisationFunction(
-                    message.Body.OrganisationFunctionId,
-                    message.Body.FunctionId,
-                    message.Body.FunctionName,
-                    message.Body.PersonId,
-                    message.Body.PersonFullName,
-                    message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Functions.Add(
+                        new OrganisationDocument.OrganisationFunction(
+                            message.Body.OrganisationFunctionId,
+                            message.Body.FunctionId,
+                            message.Body.FunctionName,
+                            message.Body.PersonId,
+                            message.Body.PersonFullName,
+                            message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionUpdated> message)
         {
-            await using var organisationRegistryContext = _contextFactory.Create();
-            var contactTypeNames = await organisationRegistryContext.ContactTypeList
-                .Select(x => new {x.Id, x.Name})
-                .ToDictionaryAsync(x => x.Id, x => x.Name);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    await using var organisationRegistryContext = _contextFactory.Create();
+                    var contactTypeNames = await organisationRegistryContext.ContactTypeList
+                        .Select(x => new {x.Id, x.Name})
+                        .ToDictionaryAsync(x => x.Id, x => x.Name);
 
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    document.Functions.RemoveExistingListItems(x => x.OrganisationFunctionId == message.Body.OrganisationFunctionId);
 
-            organisationDocument.Functions.RemoveExistingListItems(x => x.OrganisationFunctionId == message.Body.OrganisationFunctionId);
-
-            organisationDocument.Functions.Add(
-                new OrganisationDocument.OrganisationFunction(
-                    message.Body.OrganisationFunctionId,
-                    message.Body.FunctionId,
-                    message.Body.FunctionName,
-                    message.Body.PersonId,
-                    message.Body.PersonFullName,
-                    message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Functions.Add(
+                        new OrganisationDocument.OrganisationFunction(
+                            message.Body.OrganisationFunctionId,
+                            message.Body.FunctionId,
+                            message.Body.FunctionName,
+                            message.Body.PersonId,
+                            message.Body.PersonFullName,
+                            message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            var organisationDocument =
-                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    foreach (var (key, value) in message.Body.FieldsToTerminate.Functions)
+                    {
+                        var organisationFunction =
+                            document
+                                .Functions
+                                .Single(x => x.OrganisationFunctionId == key);
 
-            foreach (var (key, value) in message.Body.FieldsToTerminate.Functions)
-            {
-                var organisationFunction =
-                    organisationDocument
-                        .Functions
-                        .Single(x => x.OrganisationFunctionId == key);
-
-                organisationFunction.Validity.End = value;
-            }
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                        organisationFunction.Validity.End = value;
+                    }
+                }
+            );
         }
     }
 }

@@ -7,91 +7,93 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using Client;
     using Common;
     using ElasticSearch.Organisations;
+    using Infrastructure.Change;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
 
     public class OrganisationOpeningHoursSpecification :
         BaseProjection<OrganisationOpeningHoursSpecification>,
-        IEventHandler<OrganisationOpeningHourAdded>,
-        IEventHandler<OrganisationOpeningHourUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationOpeningHourAdded>,
+        IElasticEventHandler<OrganisationOpeningHourUpdated>,
+        IElasticEventHandler<OrganisationTerminated>
     {
-        private readonly Elastic _elastic;
-
         public OrganisationOpeningHoursSpecification(
-            ILogger<OrganisationOpeningHoursSpecification> logger,
-            Elastic elastic)
+            ILogger<OrganisationOpeningHoursSpecification> logger)
             : base(logger)
         {
-            _elastic = elastic;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOpeningHourAdded> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOpeningHourAdded> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    if (document.OpeningHours == null)
+                        document.OpeningHours = new List<OrganisationDocument.OrganisationOpeningHour>();
+                    document.OpeningHours.RemoveExistingListItems(x => x.OrganisationOpeningHourId == message.Body.OrganisationOpeningHourId);
 
-            if (organisationDocument.OpeningHours == null)
-                organisationDocument.OpeningHours = new List<OrganisationDocument.OrganisationOpeningHour>();
-            organisationDocument.OpeningHours.RemoveExistingListItems(x => x.OrganisationOpeningHourId == message.Body.OrganisationOpeningHourId);
-
-            organisationDocument.OpeningHours.Add(
-                new OrganisationDocument.OrganisationOpeningHour(
-                    message.Body.OrganisationOpeningHourId,
-                    message.Body.Opens,
-                    message.Body.Closes,
-                    message.Body.DayOfWeek,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.OpeningHours.Add(
+                        new OrganisationDocument.OrganisationOpeningHour(
+                            message.Body.OrganisationOpeningHourId,
+                            message.Body.Opens,
+                            message.Body.Closes,
+                            message.Body.DayOfWeek,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOpeningHourUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOpeningHourUpdated> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    if (document.OpeningHours == null)
+                        document.OpeningHours = new List<OrganisationDocument.OrganisationOpeningHour>();
+                    document.OpeningHours.RemoveExistingListItems(x => x.OrganisationOpeningHourId == message.Body.OrganisationOpeningHourId);
 
-            if (organisationDocument.OpeningHours == null)
-                organisationDocument.OpeningHours = new List<OrganisationDocument.OrganisationOpeningHour>();
-            organisationDocument.OpeningHours.RemoveExistingListItems(x => x.OrganisationOpeningHourId == message.Body.OrganisationOpeningHourId);
+                    document.OpeningHours.Add(
+                        new OrganisationDocument.OrganisationOpeningHour(
+                            message.Body.OrganisationOpeningHourId,
+                            message.Body.Opens,
+                            message.Body.Closes,
+                            message.Body.DayOfWeek,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
 
-            organisationDocument.OpeningHours.Add(
-                new OrganisationDocument.OrganisationOpeningHour(
-                    message.Body.OrganisationOpeningHourId,
-                    message.Body.Opens,
-                    message.Body.Closes,
-                    message.Body.DayOfWeek,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            var organisationDocument =
-                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    foreach (var (key, value) in message.Body.FieldsToTerminate.OpeningHours)
+                    {
+                        var organisationOpeningHour =
+                            document
+                                .OpeningHours
+                                .Single(x => x.OrganisationOpeningHourId == key);
 
-            foreach (var (key, value) in message.Body.FieldsToTerminate.OpeningHours)
-            {
-                var organisationOpeningHour =
-                    organisationDocument
-                        .OpeningHours
-                        .Single(x => x.OrganisationOpeningHourId == key);
-
-                organisationOpeningHour.Validity.End = value;
-            }
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                        organisationOpeningHour.Validity.End = value;
+                    }
+                }
+            );
         }
     }
 }

@@ -5,7 +5,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Client;
     using ElasticSearch.Organisations;
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Infrastructure.Events;
@@ -13,129 +12,136 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Common;
+    using Infrastructure.Change;
 
     public class OrganisationFormalFramework :
         BaseProjection<OrganisationFormalFramework>,
-        IEventHandler<OrganisationFormalFrameworkAdded>,
-        IEventHandler<OrganisationFormalFrameworkUpdated>,
-        IEventHandler<FormalFrameworkUpdated>,
-        IEventHandler<OrganisationInfoUpdated>,
-        IEventHandler<OrganisationInfoUpdatedFromKbo>,
-        IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationFormalFrameworkAdded>,
+        IElasticEventHandler<OrganisationFormalFrameworkUpdated>,
+        IElasticEventHandler<FormalFrameworkUpdated>,
+        IElasticEventHandler<OrganisationInfoUpdated>,
+        IElasticEventHandler<OrganisationInfoUpdatedFromKbo>,
+        IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
+        IElasticEventHandler<OrganisationTerminated>
     {
-        private readonly Elastic _elastic;
-
         public OrganisationFormalFramework(
-            ILogger<OrganisationFormalFramework> logger,
-            Elastic elastic) : base(logger)
+            ILogger<OrganisationFormalFramework> logger) : base(logger)
         {
-            _elastic = elastic;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkUpdated> message)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.FormalFrameworks.Single().FormalFrameworkId, message.Body.FormalFrameworkId,
-                    "formalFrameworks", "formalFrameworkId",
-                    "formalFrameworkName", message.Body.Name,
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.FormalFrameworks.Single().FormalFrameworkId, message.Body.FormalFrameworkId,
+                        "formalFrameworks", "formalFrameworkId",
+                        "formalFrameworkName", message.Body.Name,
+                        message.Number,
+                        message.Timestamp))
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
-            MassUpdateOrganisationFormalFrameworkParentName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
+            return await MassUpdateOrganisationFormalFrameworkParentName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
-            MassUpdateOrganisationFormalFrameworkParentName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
+            return await MassUpdateOrganisationFormalFrameworkParentName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            MassUpdateOrganisationFormalFrameworkParentName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling, message.Number, message.Timestamp);
+            return await MassUpdateOrganisationFormalFrameworkParentName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling, message.Number, message.Timestamp);
         }
 
-        private void MassUpdateOrganisationFormalFrameworkParentName(Guid bodyOrganisationId, string bodyName, int messageNumber, DateTimeOffset dateTimeOffset)
+        private async Task<IElasticChange> MassUpdateOrganisationFormalFrameworkParentName(Guid bodyOrganisationId, string bodyName, int messageNumber, DateTimeOffset dateTimeOffset)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.FormalFrameworks.Single().ParentOrganisationId, bodyOrganisationId,
-                    "formalFrameworks", "parentOrganisationId",
-                    "parentOrganisationName", bodyName,
-                    messageNumber,
-                    dateTimeOffset));
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.FormalFrameworks.Single().ParentOrganisationId, bodyOrganisationId,
+                        "formalFrameworks", "parentOrganisationId",
+                        "parentOrganisationName", bodyName,
+                        messageNumber,
+                        dateTimeOffset))
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkAdded> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkAdded> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    if (document.FormalFrameworks == null)
+                        document.FormalFrameworks = new List<OrganisationDocument.OrganisationFormalFramework>();
 
-            if (organisationDocument.FormalFrameworks == null)
-                organisationDocument.FormalFrameworks = new List<OrganisationDocument.OrganisationFormalFramework>();
+                    document.FormalFrameworks.RemoveExistingListItems(x => x.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
 
-            organisationDocument.FormalFrameworks.RemoveExistingListItems(x => x.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
-
-            organisationDocument.FormalFrameworks.Add(
-                new OrganisationDocument.OrganisationFormalFramework(
-                    message.Body.OrganisationFormalFrameworkId,
-                    message.Body.FormalFrameworkId,
-                    message.Body.FormalFrameworkName,
-                    message.Body.ParentOrganisationId,
-                    message.Body.ParentOrganisationName,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.FormalFrameworks.Add(
+                        new OrganisationDocument.OrganisationFormalFramework(
+                            message.Body.OrganisationFormalFrameworkId,
+                            message.Body.FormalFrameworkId,
+                            message.Body.FormalFrameworkName,
+                            message.Body.ParentOrganisationId,
+                            message.Body.ParentOrganisationName,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkUpdated> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    document.FormalFrameworks.RemoveExistingListItems(x =>
+                        x.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
 
-            organisationDocument.FormalFrameworks.RemoveExistingListItems(x => x.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
-
-            organisationDocument.FormalFrameworks.Add(
-                new OrganisationDocument.OrganisationFormalFramework(
-                    message.Body.OrganisationFormalFrameworkId,
-                    message.Body.FormalFrameworkId,
-                    message.Body.FormalFrameworkName,
-                    message.Body.ParentOrganisationId,
-                    message.Body.ParentOrganisationName,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.FormalFrameworks.Add(
+                        new OrganisationDocument.OrganisationFormalFramework(
+                            message.Body.OrganisationFormalFrameworkId,
+                            message.Body.FormalFrameworkId,
+                            message.Body.FormalFrameworkName,
+                            message.Body.ParentOrganisationId,
+                            message.Body.ParentOrganisationName,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            var organisationDocument =
-                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    foreach (var (key, value) in message.Body.FieldsToTerminate.FormalFrameworks)
+                    {
+                        var organisationFormalFramework =
+                            document
+                                .FormalFrameworks
+                                .Single(x => x.OrganisationFormalFrameworkId == key);
 
-            foreach (var (key, value) in message.Body.FieldsToTerminate.FormalFrameworks)
-            {
-                var organisationFormalFramework =
-                    organisationDocument
-                        .FormalFrameworks
-                        .Single(x => x.OrganisationFormalFrameworkId == key);
-
-                organisationFormalFramework.Validity.End = value;
-            }
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                        organisationFormalFramework.Validity.End = value;
+                    }
+                }
+            );
         }
     }
 }

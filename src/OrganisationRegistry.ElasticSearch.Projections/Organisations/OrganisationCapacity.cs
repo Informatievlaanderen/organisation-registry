@@ -15,148 +15,155 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using Microsoft.Extensions.Logging;
     using Person.Events;
     using Common;
+    using Infrastructure.Change;
     using Microsoft.EntityFrameworkCore;
     using SqlServer;
 
     public class OrganisationCapacity :
         BaseProjection<OrganisationCapacity>,
-        IEventHandler<OrganisationCapacityAdded>,
-        IEventHandler<OrganisationCapacityUpdated>,
-        IEventHandler<CapacityUpdated>,
-        IEventHandler<FunctionUpdated>,
-        IEventHandler<PersonUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationCapacityAdded>,
+        IElasticEventHandler<OrganisationCapacityUpdated>,
+        IElasticEventHandler<CapacityUpdated>,
+        IElasticEventHandler<FunctionUpdated>,
+        IElasticEventHandler<PersonUpdated>,
+        IElasticEventHandler<OrganisationTerminated>
     {
-        private readonly Elastic _elastic;
         private readonly IContextFactory _contextFactory;
 
         public OrganisationCapacity(
             ILogger<OrganisationCapacity> logger,
-            Elastic elastic,
             IContextFactory contextFactory) : base(logger)
         {
-            _elastic = elastic;
             _contextFactory = contextFactory;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<CapacityUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<CapacityUpdated> message)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.Capacities.Single().CapacityId, message.Body.CapacityId,
-                    "capacities", "capacityId",
-                    "capacityName", message.Body.Name,
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.Capacities.Single().CapacityId, message.Body.CapacityId,
+                        "capacities", "capacityId",
+                        "capacityName", message.Body.Name,
+                        message.Number,
+                        message.Timestamp))
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.Capacities.Single().FunctionId, message.Body.FunctionId,
-                    "capacities", "functionId",
-                    "functionName", message.Body.Name,
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.Capacities.Single().FunctionId, message.Body.FunctionId,
+                        "capacities", "functionId",
+                        "functionName", message.Body.Name,
+                        message.Number,
+                        message.Timestamp))
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.Capacities.Single().PersonId, message.Body.PersonId,
-                    "capacities", "personId",
-                    "personName", $"{message.Body.Name} {message.Body.FirstName}",
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.Capacities.Single().PersonId, message.Body.PersonId,
+                        "capacities", "personId",
+                        "personName", $"{message.Body.Name} {message.Body.FirstName}",
+                        message.Number,
+                        message.Timestamp))
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityAdded> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityAdded> message)
         {
-            await using var organisationRegistryContext = _contextFactory.Create();
-            var contactTypeNames = await organisationRegistryContext.ContactTypeList
-                .Select(x => new {x.Id, x.Name})
-                .ToDictionaryAsync(x => x.Id, x => x.Name);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    await using var organisationRegistryContext = _contextFactory.Create();
+                    var contactTypeNames = await organisationRegistryContext.ContactTypeList
+                        .Select(x => new {x.Id, x.Name})
+                        .ToDictionaryAsync(x => x.Id, x => x.Name);
 
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+                    if (document.Capacities == null)
+                        document.Capacities = new List<OrganisationDocument.OrganisationCapacity>();
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    document.Capacities.RemoveExistingListItems(x => x.OrganisationCapacityId == message.Body.OrganisationCapacityId);
 
-            if (organisationDocument.Capacities == null)
-                organisationDocument.Capacities = new List<OrganisationDocument.OrganisationCapacity>();
-
-            organisationDocument.Capacities.RemoveExistingListItems(x => x.OrganisationCapacityId == message.Body.OrganisationCapacityId);
-
-            organisationDocument.Capacities.Add(
-                new OrganisationDocument.OrganisationCapacity(
-                    message.Body.OrganisationCapacityId,
-                    message.Body.CapacityId,
-                    message.Body.CapacityName,
-                    message.Body.PersonId,
-                    message.Body.PersonFullName,
-                    message.Body.FunctionId,
-                    message.Body.FunctionName,
-                    message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Capacities.Add(
+                        new OrganisationDocument.OrganisationCapacity(
+                            message.Body.OrganisationCapacityId,
+                            message.Body.CapacityId,
+                            message.Body.CapacityName,
+                            message.Body.PersonId,
+                            message.Body.PersonFullName,
+                            message.Body.FunctionId,
+                            message.Body.FunctionName,
+                            message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
         {
-            await using var organisationRegistryContext = _contextFactory.Create();
-            var contactTypeNames = await organisationRegistryContext.ContactTypeList
-                .Select(x => new {x.Id, x.Name})
-                .ToDictionaryAsync(x => x.Id, x => x.Name);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    await using var organisationRegistryContext = _contextFactory.Create();
+                    var contactTypeNames = await organisationRegistryContext.ContactTypeList
+                        .Select(x => new {x.Id, x.Name})
+                        .ToDictionaryAsync(x => x.Id, x => x.Name);
 
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+                    document.Capacities.RemoveExistingListItems(x => x.OrganisationCapacityId == message.Body.OrganisationCapacityId);
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
-
-            organisationDocument.Capacities.RemoveExistingListItems(x => x.OrganisationCapacityId == message.Body.OrganisationCapacityId);
-
-            organisationDocument.Capacities.Add(
-                new OrganisationDocument.OrganisationCapacity(
-                    message.Body.OrganisationCapacityId,
-                    message.Body.CapacityId,
-                    message.Body.CapacityName,
-                    message.Body.PersonId,
-                    message.Body.PersonFullName,
-                    message.Body.FunctionId,
-                    message.Body.FunctionName,
-                    message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Capacities.Add(
+                        new OrganisationDocument.OrganisationCapacity(
+                            message.Body.OrganisationCapacityId,
+                            message.Body.CapacityId,
+                            message.Body.CapacityName,
+                            message.Body.PersonId,
+                            message.Body.PersonFullName,
+                            message.Body.FunctionId,
+                            message.Body.FunctionName,
+                            message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            var organisationDocument =
-                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    foreach (var (key, value) in message.Body.FieldsToTerminate.Capacities)
+                    {
+                        var organisationCapacity =
+                            document
+                                .Capacities
+                                .Single(x => x.OrganisationCapacityId == key);
 
-            foreach (var (key, value) in message.Body.FieldsToTerminate.Capacities)
-            {
-                var organisationCapacity =
-                    organisationDocument
-                        .Capacities
-                        .Single(x => x.OrganisationCapacityId == key);
-
-                organisationCapacity.Validity.End = value;
-            }
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                        organisationCapacity.Validity.End = value;
+                    }
+                }
+            );
         }
     }
 }

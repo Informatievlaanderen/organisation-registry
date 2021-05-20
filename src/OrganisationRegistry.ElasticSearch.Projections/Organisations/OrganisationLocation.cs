@@ -13,179 +13,185 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Common;
+    using Infrastructure.Change;
 
     public class OrganisationLocation :
         BaseProjection<OrganisationLocation>,
-        IEventHandler<OrganisationLocationAdded>,
-        IEventHandler<KboRegisteredOfficeOrganisationLocationAdded>,
-        IEventHandler<KboRegisteredOfficeOrganisationLocationRemoved>,
-        IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationTerminationSyncedWithKbo>,
-        IEventHandler<OrganisationLocationUpdated>,
-        IEventHandler<LocationUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationLocationAdded>,
+        IElasticEventHandler<KboRegisteredOfficeOrganisationLocationAdded>,
+        IElasticEventHandler<KboRegisteredOfficeOrganisationLocationRemoved>,
+        IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
+        IElasticEventHandler<OrganisationTerminationSyncedWithKbo>,
+        IElasticEventHandler<OrganisationLocationUpdated>,
+        IElasticEventHandler<LocationUpdated>,
+        IElasticEventHandler<OrganisationTerminated>
     {
-        private readonly Elastic _elastic;
-
         public OrganisationLocation(
-            ILogger<OrganisationLocation> logger,
-            Elastic elastic) : base(logger)
+            ILogger<OrganisationLocation> logger) : base(logger)
         {
-            _elastic = elastic;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LocationUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<LocationUpdated> message)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.Locations.Single().LocationId, message.Body.LocationId,
-                    "locations", "locationId",
-                    "formattedAddress", message.Body.FormattedAddress,
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.Locations.Single().LocationId, message.Body.LocationId,
+                        "locations", "locationId",
+                        "formattedAddress", message.Body.FormattedAddress,
+                        message.Number,
+                        message.Timestamp))
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationAdded> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationAdded> message)
         {
-            AddOrganisationLocation(message.Body.OrganisationId, message.Body.LocationId, message.Body.LocationFormattedAddress, message.Body.IsMainLocation, message.Body.LocationTypeId, message.Body.LocationTypeName, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp, message.Body.OrganisationLocationId);
+            return await AddOrganisationLocation(message.Body.OrganisationId, message.Body.LocationId, message.Body.LocationFormattedAddress, message.Body.IsMainLocation, message.Body.LocationTypeId, message.Body.LocationTypeName, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp, message.Body.OrganisationLocationId);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationAdded> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationAdded> message)
         {
-            AddOrganisationLocation(message.Body.OrganisationId, message.Body.LocationId, message.Body.LocationFormattedAddress, message.Body.IsMainLocation, message.Body.LocationTypeId, message.Body.LocationTypeName, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp, message.Body.OrganisationLocationId);
+            return await AddOrganisationLocation(message.Body.OrganisationId, message.Body.LocationId, message.Body.LocationFormattedAddress, message.Body.IsMainLocation, message.Body.LocationTypeId, message.Body.LocationTypeName, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp, message.Body.OrganisationLocationId);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationRemoved> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationRemoved> message)
         {
-            RemoveOrganisationLocation(message.Body.OrganisationId, message.Number, message.Timestamp, message.Body.OrganisationLocationId);
+            return await RemoveOrganisationLocation(message.Body.OrganisationId, message.Number, message.Timestamp, message.Body.OrganisationLocationId);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
             if (message.Body.RegisteredOfficeOrganisationLocationIdToCancel == null)
-                return;
+                return new ElasticNoChange();
 
-            RemoveOrganisationLocation(message.Body.OrganisationId, message.Number, message.Timestamp, message.Body.RegisteredOfficeOrganisationLocationIdToCancel.Value);
+            return await RemoveOrganisationLocation(message.Body.OrganisationId, message.Number, message.Timestamp, message.Body.RegisteredOfficeOrganisationLocationIdToCancel.Value);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
         {
             if (message.Body.RegisteredOfficeOrganisationLocationIdToTerminate == null)
-                return;
+                return new ElasticNoChange();
 
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    if (document.Locations == null)
+                        document.Locations = new List<OrganisationDocument.OrganisationLocation>();
 
-            if (organisationDocument.Locations == null)
-                organisationDocument.Locations = new List<OrganisationDocument.OrganisationLocation>();
+                    var registeredOfficeLocation = document.Locations.Single(label =>
+                        label.OrganisationLocationId == message.Body.RegisteredOfficeOrganisationLocationIdToTerminate);
 
-            var registeredOfficeLocation = organisationDocument.Locations.Single(label =>
-                label.OrganisationLocationId == message.Body.RegisteredOfficeOrganisationLocationIdToTerminate);
-
-            registeredOfficeLocation.Validity.End = message.Body.DateOfTermination;
-
-            _elastic.Try(async () => (await _elastic.WriteClient.IndexDocumentAsync(organisationDocument)).ThrowOnFailure());
+                    registeredOfficeLocation.Validity.End = message.Body.DateOfTermination;
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationUpdated> message)
         {
-            UpdateOrganisationLocation(message.Body.OrganisationId, message.Number, message.Timestamp, message.Body.OrganisationLocationId, message.Body.LocationId, message.Body.LocationFormattedAddress, message.Body.IsMainLocation, message.Body.LocationTypeId, message.Body.LocationTypeName, message.Body.ValidFrom, message.Body.ValidTo);
+            return await UpdateOrganisationLocation(message.Body.OrganisationId, message.Number, message.Timestamp, message.Body.OrganisationLocationId, message.Body.LocationId, message.Body.LocationFormattedAddress, message.Body.IsMainLocation, message.Body.LocationTypeId, message.Body.LocationTypeName, message.Body.ValidFrom, message.Body.ValidTo);
         }
 
-        private void AddOrganisationLocation(Guid organisationId, Guid locationId, string locationFormattedAddress, bool isMainLocation, Guid? locationTypeId, string locationTypeName, DateTime? validFrom, DateTime? validTo, int documentChangeId, DateTimeOffset timestamp, Guid organisationLocationId)
+        private static async Task<IElasticChange> AddOrganisationLocation(Guid organisationId, Guid locationId, string locationFormattedAddress, bool isMainLocation, Guid? locationTypeId, string locationTypeName, DateTime? validFrom, DateTime? validTo, int documentChangeId, DateTimeOffset timestamp, Guid organisationLocationId)
         {
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(organisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                organisationId, async document =>
+                {
+                    document.ChangeId = documentChangeId;
+                    document.ChangeTime = timestamp;
 
-            organisationDocument.ChangeId = documentChangeId;
-            organisationDocument.ChangeTime = timestamp;
+                    if (document.Locations == null)
+                        document.Locations = new List<OrganisationDocument.OrganisationLocation>();
 
-            if (organisationDocument.Locations == null)
-                organisationDocument.Locations = new List<OrganisationDocument.OrganisationLocation>();
+                    document.Locations.RemoveExistingListItems(x =>
+                        x.OrganisationLocationId == organisationLocationId);
 
-            organisationDocument.Locations.RemoveExistingListItems(x =>
-                x.OrganisationLocationId == organisationLocationId);
-
-            organisationDocument.Locations.Add(
-                new OrganisationDocument.OrganisationLocation(
-                    organisationLocationId,
-                    locationId,
-                    locationFormattedAddress,
-                    isMainLocation,
-                    locationTypeId,
-                    locationTypeName,
-                    new Period(validFrom, validTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Locations.Add(
+                        new OrganisationDocument.OrganisationLocation(
+                            organisationLocationId,
+                            locationId,
+                            locationFormattedAddress,
+                            isMainLocation,
+                            locationTypeId,
+                            locationTypeName,
+                            new Period(validFrom, validTo)));
+                }
+            );
         }
 
-        private void UpdateOrganisationLocation(Guid bodyOrganisationId, int organisationDocumentChangeId, DateTimeOffset organisationDocumentChangeTime, Guid bodyOrganisationLocationId, Guid bodyLocationId, string bodyLocationFormattedAddress, bool bodyIsMainLocation, Guid? bodyLocationTypeId, string bodyLocationTypeName, DateTime? bodyValidFrom, DateTime? bodyValidTo)
+        private static async Task<IElasticChange> UpdateOrganisationLocation(Guid bodyOrganisationId, int organisationDocumentChangeId, DateTimeOffset organisationDocumentChangeTime, Guid bodyOrganisationLocationId, Guid bodyLocationId, string bodyLocationFormattedAddress, bool bodyIsMainLocation, Guid? bodyLocationTypeId, string bodyLocationTypeName, DateTime? bodyValidFrom, DateTime? bodyValidTo)
         {
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(bodyOrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                bodyOrganisationId, async document =>
+                {
+                    document.ChangeId = organisationDocumentChangeId;
+                    document.ChangeTime = organisationDocumentChangeTime;
 
-            organisationDocument.ChangeId = organisationDocumentChangeId;
-            organisationDocument.ChangeTime = organisationDocumentChangeTime;
+                    document.Locations.RemoveExistingListItems(x =>
+                        x.OrganisationLocationId == bodyOrganisationLocationId);
 
-            organisationDocument.Locations.RemoveExistingListItems(x =>
-                x.OrganisationLocationId == bodyOrganisationLocationId);
+                    document.Locations.Add(
+                        new OrganisationDocument.OrganisationLocation(
+                            bodyOrganisationLocationId,
+                            bodyLocationId,
+                            bodyLocationFormattedAddress,
+                            bodyIsMainLocation,
+                            bodyLocationTypeId,
+                            bodyLocationTypeName,
+                            new Period(bodyValidFrom, bodyValidTo)));
 
-            organisationDocument.Locations.Add(
-                new OrganisationDocument.OrganisationLocation(
-                    bodyOrganisationLocationId,
-                    bodyLocationId,
-                    bodyLocationFormattedAddress,
-                    bodyIsMainLocation,
-                    bodyLocationTypeId,
-                    bodyLocationTypeName,
-                    new Period(bodyValidFrom, bodyValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                }
+            );
         }
 
-        private void RemoveOrganisationLocation(Guid bodyOrganisationId, int organisationDocumentChangeId, DateTimeOffset organisationDocumentChangeTime, Guid bodyOrganisationLocationId)
+        private static async Task<IElasticChange> RemoveOrganisationLocation(Guid bodyOrganisationId, int organisationDocumentChangeId, DateTimeOffset organisationDocumentChangeTime, Guid bodyOrganisationLocationId)
         {
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(bodyOrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                bodyOrganisationId, async document =>
+                {
+                    document.ChangeId = organisationDocumentChangeId;
+                    document.ChangeTime = organisationDocumentChangeTime;
 
-            organisationDocument.ChangeId = organisationDocumentChangeId;
-            organisationDocument.ChangeTime = organisationDocumentChangeTime;
-
-            organisationDocument.Locations.RemoveExistingListItems(x =>
-                x.OrganisationLocationId == bodyOrganisationLocationId);
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Locations.RemoveExistingListItems(x =>
+                        x.OrganisationLocationId == bodyOrganisationLocationId);
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            var organisationDocument =
-                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    var locationsToTerminate =
+                        message.Body.FieldsToTerminate.Locations;
 
-            var locationsToTerminate =
-                message.Body.FieldsToTerminate.Locations;
+                    if (message.Body.KboFieldsToTerminate.RegisteredOffice.HasValue)
+                        locationsToTerminate.Add(message.Body.KboFieldsToTerminate.RegisteredOffice.Value.Key, message.Body.KboFieldsToTerminate.RegisteredOffice.Value.Value);
 
-            if (message.Body.KboFieldsToTerminate.RegisteredOffice.HasValue)
-                locationsToTerminate.Add(message.Body.KboFieldsToTerminate.RegisteredOffice.Value.Key, message.Body.KboFieldsToTerminate.RegisteredOffice.Value.Value);
+                    foreach (var (key, value) in locationsToTerminate)
+                    {
+                        var organisationLocation =
+                            document
+                                .Locations
+                                .Single(x => x.OrganisationLocationId == key);
 
-            foreach (var (key, value) in locationsToTerminate)
-            {
-                var organisationLocation =
-                    organisationDocument
-                        .Locations
-                        .Single(x => x.OrganisationLocationId == key);
-
-                organisationLocation.Validity.End = value;
-            }
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                        organisationLocation.Validity.End = value;
+                    }
+                }
+            );
         }
     }
 }

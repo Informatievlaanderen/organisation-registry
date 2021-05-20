@@ -7,123 +7,122 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Infrastructure.Events;
     using Building.Events;
-    using Client;
     using ElasticSearch.Organisations;
     using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Common;
+    using Infrastructure.Change;
 
     public class OrganisationBuilding :
         BaseProjection<OrganisationBuilding>,
-        IEventHandler<OrganisationBuildingAdded>,
-        IEventHandler<OrganisationBuildingUpdated>,
-        IEventHandler<BuildingUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationBuildingAdded>,
+        IElasticEventHandler<OrganisationBuildingUpdated>,
+        IElasticEventHandler<BuildingUpdated>,
+        IElasticEventHandler<OrganisationTerminated>
     {
-        private readonly Elastic _elastic;
-
         public OrganisationBuilding(
-            ILogger<OrganisationBuilding> logger,
-            Elastic elastic) : base(logger)
+            ILogger<OrganisationBuilding> logger) : base(logger)
         {
-            _elastic = elastic;
         }
 
-        public async Task Handle(
-            DbConnection dbConnection, 
+        public async Task<IElasticChange> Handle(
+            DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<BuildingUpdated> message)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.Buildings.Single().BuildingId, message.Body.BuildingId,
-                    "buildings", "buildingId",
-                    "buildingName", message.Body.Name,
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.Buildings.Single().BuildingId, message.Body.BuildingId,
+                        "buildings", "buildingId",
+                        "buildingName", message.Body.Name,
+                        message.Number,
+                        message.Timestamp))
+            );
         }
 
-        public async Task Handle(
-            DbConnection dbConnection, 
+        public async Task<IElasticChange> Handle(
+            DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationBuildingAdded> message)
         {
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    if (document.Buildings == null)
+                        document.Buildings = new List<OrganisationDocument.OrganisationBuilding>();
 
-            if (organisationDocument.Buildings == null)
-                organisationDocument.Buildings = new List<OrganisationDocument.OrganisationBuilding>();
+                    document.Buildings.RemoveExistingListItems(x =>
+                        x.OrganisationBuildingId == message.Body.OrganisationBuildingId);
 
-            organisationDocument.Buildings.RemoveExistingListItems(x =>
-                x.OrganisationBuildingId == message.Body.OrganisationBuildingId);
-
-            organisationDocument.Buildings.Add(
-                new OrganisationDocument.OrganisationBuilding(
-                    message.Body.OrganisationBuildingId,
-                    message.Body.BuildingId,
-                    message.Body.BuildingName,
-                    message.Body.IsMainBuilding,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Buildings.Add(
+                        new OrganisationDocument.OrganisationBuilding(
+                            message.Body.OrganisationBuildingId,
+                            message.Body.BuildingId,
+                            message.Body.BuildingName,
+                            message.Body.IsMainBuilding,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
         }
 
-        public async Task Handle(
-            DbConnection dbConnection, 
+        public async Task<IElasticChange> Handle(
+            DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationBuildingUpdated> message)
         {
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    document.Buildings.RemoveExistingListItems(x =>
+                        x.OrganisationBuildingId == message.Body.OrganisationBuildingId);
 
-            organisationDocument.Buildings.RemoveExistingListItems(x =>
-                x.OrganisationBuildingId == message.Body.OrganisationBuildingId);
-
-            organisationDocument.Buildings.Add(
-                new OrganisationDocument.OrganisationBuilding(
-                    message.Body.OrganisationBuildingId,
-                    message.Body.BuildingId,
-                    message.Body.BuildingName,
-                    message.Body.IsMainBuilding,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Buildings.Add(
+                        new OrganisationDocument.OrganisationBuilding(
+                            message.Body.OrganisationBuildingId,
+                            message.Body.BuildingId,
+                            message.Body.BuildingName,
+                            message.Body.IsMainBuilding,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
         }
 
-        public async Task Handle(
-            DbConnection dbConnection, 
+        public async Task<IElasticChange> Handle(
+            DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationTerminated> message)
         {
-            var organisationDocument =
-                _elastic.TryGet(() => 
-                    _elastic
-                        .WriteClient
-                        .Get<OrganisationDocument>(message.Body.OrganisationId)
-                        .ThrowOnFailure()
-                        .Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    foreach (var (key, value) in message.Body.FieldsToTerminate.Buildings)
+                    {
+                        var organisationBuilding =
+                            document
+                                .Buildings
+                                .Single(x => x.OrganisationBuildingId == key);
 
-            foreach (var (key, value) in message.Body.FieldsToTerminate.Buildings)
-            {
-                var organisationBuilding =
-                    organisationDocument
-                        .Buildings
-                        .Single(x => x.OrganisationBuildingId == key);
-
-                organisationBuilding.Validity.End = value;
-            }
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                        organisationBuilding.Validity.End = value;
+                    }
+                }
+            );
         }
     }
 }

@@ -1,14 +1,19 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 {
     using System;
+    using App.Metrics;
+    using Client;
     using Configuration;
+    using ElasticSearch.Organisations;
+    using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using OrganisationRegistry.Infrastructure.Config;
     using OrganisationRegistry.Infrastructure.Events;
     using SqlServer.Infrastructure;
     using SqlServer.ProjectionState;
 
-    public class OrganisationsRunner : BaseRunner
+    public class OrganisationsRunner : BaseRunner<OrganisationDocument>
     {
         public const string ElasticSearchProjectionsProjectionName = "ElasticSearchOrganisationsProjection";
         private static readonly string ProjectionFullName = typeof(Organisation).FullName;
@@ -33,26 +38,29 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             typeof(OrganisationOpeningHoursSpecification)
         };
 
-        private new static readonly Type[] ReactionHandlers = {};
-
         public OrganisationsRunner(
             ILogger<OrganisationsRunner> logger,
             IOptions<ElasticSearchConfiguration> configuration,
             IEventStore store,
             IProjectionStates projectionStates,
-            IEventPublisher bus) :
+            Elastic elastic,
+            ElasticBus bus,
+            IMetricsRoot metrics,
+            ElasticBusRegistrar busRegistrar) :
             base(
                 logger,
                 configuration,
                 store,
                 projectionStates,
-                bus,
                 ElasticSearchProjectionsProjectionName,
                 ProjectionFullName,
                 ProjectionName,
                 EventHandlers,
-                ReactionHandlers)
+                elastic,
+                bus,
+                metrics)
         {
+            busRegistrar.RegisterEventHandlers(EventHandlers);
         }
     }
 }

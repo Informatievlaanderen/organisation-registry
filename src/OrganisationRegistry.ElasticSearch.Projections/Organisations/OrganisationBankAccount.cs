@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 {
     using System;
-    using Client;
     using Common;
     using ElasticSearch.Organisations;
     using Infrastructure;
@@ -10,179 +9,192 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
+    using Infrastructure.Change;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
 
     public class OrganisationBankAccount :
         BaseProjection<OrganisationBankAccount>,
-        IEventHandler<OrganisationBankAccountAdded>,
-        IEventHandler<KboOrganisationBankAccountAdded>,
-        IEventHandler<KboOrganisationBankAccountRemoved>,
-        IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationTerminationSyncedWithKbo>,
-        IEventHandler<OrganisationBankAccountUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationBankAccountAdded>,
+        IElasticEventHandler<KboOrganisationBankAccountAdded>,
+        IElasticEventHandler<KboOrganisationBankAccountRemoved>,
+        IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
+        IElasticEventHandler<OrganisationTerminationSyncedWithKbo>,
+        IElasticEventHandler<OrganisationBankAccountUpdated>,
+        IElasticEventHandler<OrganisationTerminated>
     {
-        private readonly Elastic _elastic;
-
         public OrganisationBankAccount(
-            ILogger<OrganisationBankAccount> logger,
-            Elastic elastic)
+            ILogger<OrganisationBankAccount> logger)
             : base(logger)
         {
-            _elastic = elastic;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountAdded> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountAdded> message)
         {
-            AddBankAccount(message.Body.OrganisationId, message.Body.OrganisationBankAccountId, message.Body.BankAccountNumber, message.Body.IsIban, message.Body.Bic, message.Body.IsBic, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
+            return await AddBankAccount(message.Body.OrganisationId, message.Body.OrganisationBankAccountId, message.Body.BankAccountNumber, message.Body.IsIban, message.Body.Bic, message.Body.IsBic, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountAdded> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountAdded> message)
         {
-            AddBankAccount(message.Body.OrganisationId, message.Body.OrganisationBankAccountId, message.Body.BankAccountNumber, message.Body.IsIban, message.Body.Bic, message.Body.IsBic, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
+            return await AddBankAccount(message.Body.OrganisationId, message.Body.OrganisationBankAccountId, message.Body.BankAccountNumber, message.Body.IsIban, message.Body.Bic, message.Body.IsBic, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountRemoved> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountRemoved> message)
         {
-            RemoveBankAccount(message.Body.OrganisationId, message.Body.OrganisationBankAccountId, message.Number, message.Timestamp);
+            return await RemoveBankAccount(message.Body.OrganisationId, message.Body.OrganisationBankAccountId, message.Number, message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            RemoveBankAccounts(message.Body.OrganisationId, message.Body.OrganisationBankAccountIdsToCancel, message.Number, message.Timestamp);
+            return await RemoveBankAccounts(message.Body.OrganisationId, message.Body.OrganisationBankAccountIdsToCancel, message.Number, message.Timestamp);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
         {
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    if (document.BankAccounts == null)
+                        document.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
 
-            if (organisationDocument.BankAccounts == null)
-                organisationDocument.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
-
-            foreach (var bankAccountId in message.Body.OrganisationBankAccountIdsToTerminate)
-            {
-                var organisationBankAccount = organisationDocument.BankAccounts.Single(x => x.OrganisationBankAccountId == bankAccountId);
-                organisationBankAccount.Validity.End = message.Body.DateOfTermination;
-            }
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    foreach (var bankAccountId in message.Body.OrganisationBankAccountIdsToTerminate)
+                    {
+                        var organisationBankAccount = document.BankAccounts.Single(x => x.OrganisationBankAccountId == bankAccountId);
+                        organisationBankAccount.Validity.End = message.Body.DateOfTermination;
+                    }
+                }
+            );
         }
 
-        private void AddBankAccount(Guid organisationId, Guid organisationBankAccountId, string bankAccountNumber, bool isIban, string bic, bool isBic, DateTime? validFrom, DateTime? validTo, int changeId, DateTimeOffset timestamp)
+        private static async Task<IElasticChange> AddBankAccount(Guid organisationId, Guid organisationBankAccountId, string bankAccountNumber, bool isIban, string bic, bool isBic, DateTime? validFrom, DateTime? validTo, int changeId, DateTimeOffset timestamp)
         {
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(organisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                organisationId,
+                document =>
+                {
+                    if (document.BankAccounts == null)
+                        document.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
 
-            organisationDocument.ChangeId = changeId;
-            organisationDocument.ChangeTime = timestamp;
+                    document.ChangeId = changeId;
+                    document.ChangeTime = timestamp;
 
-            if (organisationDocument.BankAccounts == null)
-                organisationDocument.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
+                    if (document.BankAccounts == null)
+                        document.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
 
-            organisationDocument.BankAccounts.RemoveExistingListItems(x =>
-                x.OrganisationBankAccountId == organisationBankAccountId);
+                    document.BankAccounts.RemoveExistingListItems(x =>
+                        x.OrganisationBankAccountId == organisationBankAccountId);
 
-            organisationDocument.BankAccounts.Add(
-                new OrganisationDocument.OrganisationBankAccount(
-                    organisationBankAccountId,
-                    bankAccountNumber,
-                    isIban,
-                    bic,
-                    isBic,
-                    new Period(validFrom, validTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.BankAccounts.Add(
+                        new OrganisationDocument.OrganisationBankAccount(
+                            organisationBankAccountId,
+                            bankAccountNumber,
+                            isIban,
+                            bic,
+                            isBic,
+                            new Period(validFrom, validTo)));
+                }
+            );
         }
 
-        private void RemoveBankAccount(Guid organisationId, Guid organisationBankAccountId, int changeId, DateTimeOffset timestamp)
+        private static async Task<IElasticChange> RemoveBankAccount(Guid organisationId, Guid organisationBankAccountId, int changeId, DateTimeOffset timestamp)
         {
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(organisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                organisationId,
+                document =>
+                {
+                    document.ChangeId = changeId;
+                    document.ChangeTime = timestamp;
 
-            organisationDocument.ChangeId = changeId;
-            organisationDocument.ChangeTime = timestamp;
+                    if (document.BankAccounts == null)
+                        document.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
 
-            if (organisationDocument.BankAccounts == null)
-                organisationDocument.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
-
-            organisationDocument.BankAccounts.RemoveExistingListItems(x =>
-                x.OrganisationBankAccountId == organisationBankAccountId);
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.BankAccounts.RemoveExistingListItems(x =>
+                        x.OrganisationBankAccountId == organisationBankAccountId);
+                }
+            );
         }
 
-        private void RemoveBankAccounts(Guid organisationId, List<Guid> organisationBankAccountIdsToCancel, in int changeId, in DateTimeOffset timestamp)
+        private static async Task<IElasticChange> RemoveBankAccounts(Guid organisationId, List<Guid> organisationBankAccountIdsToCancel, int changeId, DateTimeOffset timestamp)
         {
-            var organisationDocument = _elastic.TryGet(() =>
-                _elastic.WriteClient.Get<OrganisationDocument>(organisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                organisationId,
+                document =>
+                {
+                    document.ChangeId = changeId;
+                    document.ChangeTime = timestamp;
 
-            organisationDocument.ChangeId = changeId;
-            organisationDocument.ChangeTime = timestamp;
+                    if (document.BankAccounts == null)
+                        document.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
 
-            if (organisationDocument.BankAccounts == null)
-                organisationDocument.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
-
-            foreach (var organisationBankAccountId in organisationBankAccountIdsToCancel)
-            {
-                organisationDocument.BankAccounts.RemoveExistingListItems(x =>
-                    x.OrganisationBankAccountId == organisationBankAccountId);
-            }
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountUpdated> message)
-        {
-            var organisationDocument =
-                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
-
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
-
-            if (organisationDocument.BankAccounts == null)
-                organisationDocument.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
-
-            organisationDocument.BankAccounts.RemoveExistingListItems(x => x.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
-
-            organisationDocument.BankAccounts.Add(
-                new OrganisationDocument.OrganisationBankAccount(
-                    message.Body.OrganisationBankAccountId,
-                    message.Body.BankAccountNumber,
-                    message.Body.IsIban,
-                    message.Body.Bic,
-                    message.Body.IsBic,
-                    new Period(message.Body.ValidFrom, message.Body.ValidTo)));
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    foreach (var organisationBankAccountId in organisationBankAccountIdsToCancel)
+                    {
+                        document.BankAccounts.RemoveExistingListItems(x =>
+                            x.OrganisationBankAccountId == organisationBankAccountId);
+                    }
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountUpdated> message)
         {
-            var organisationDocument =
-                _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    if (document.BankAccounts == null)
+                        document.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
 
-            var accountsToTerminate =
-                message.Body.FieldsToTerminate.BankAccounts
-                    .Union(message.Body.KboFieldsToTerminate.BankAccounts);
+                    document.BankAccounts.RemoveExistingListItems(x => x.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
 
-            foreach (var (key, value) in accountsToTerminate)
-            {
-                var organisationBankAccount =
-                    organisationDocument
-                        .BankAccounts
-                        .Single(x => x.OrganisationBankAccountId == key);
+                    document.BankAccounts.Add(
+                        new OrganisationDocument.OrganisationBankAccount(
+                            message.Body.OrganisationBankAccountId,
+                            message.Body.BankAccountNumber,
+                            message.Body.IsIban,
+                            message.Body.Bic,
+                            message.Body.IsBic,
+                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
+        }
 
-                organisationBankAccount.Validity.End = value;
-            }
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    var accountsToTerminate =
+                        message.Body.FieldsToTerminate.BankAccounts
+                            .Union(message.Body.KboFieldsToTerminate.BankAccounts);
+
+                    foreach (var (key, value) in accountsToTerminate)
+                    {
+                        var organisationBankAccount =
+                            document
+                                .BankAccounts
+                                .Single(x => x.OrganisationBankAccountId == key);
+
+                        organisationBankAccount.Validity.End = value;
+                    }
+                }
+            );
         }
     }
 }

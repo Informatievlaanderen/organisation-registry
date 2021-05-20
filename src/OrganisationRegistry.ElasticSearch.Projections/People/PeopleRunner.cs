@@ -1,16 +1,20 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.People
 {
     using System;
+    using App.Metrics;
     using Cache;
+    using Client;
     using Configuration;
+    using ElasticSearch.People;
     using Handlers;
+    using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using OrganisationRegistry.Infrastructure.Config;
     using OrganisationRegistry.Infrastructure.Events;
-    using SqlServer.Infrastructure;
     using SqlServer.ProjectionState;
 
-    public class PeopleRunner : BaseRunner
+    public class PeopleRunner : BaseRunner<PersonDocument>
     {
         private const string ElasticSearchProjectionsProjectionName = "ElasticSearchPeopleProjection";
         private static readonly string ProjectionFullName = typeof(Person).FullName;
@@ -25,26 +29,29 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People
             typeof(PersonMandate)
         };
 
-        private new static readonly Type[] ReactionHandlers = { };
-
         public PeopleRunner(
             ILogger<PeopleRunner> logger,
             IOptions<ElasticSearchConfiguration> configuration,
             IEventStore store,
             IProjectionStates projectionStates,
-            IEventPublisher bus) :
+            Elastic elastic,
+            ElasticBus bus,
+            IMetricsRoot metrics,
+            ElasticBusRegistrar busRegistrar) :
             base(
                 logger,
                 configuration,
                 store,
                 projectionStates,
-                bus,
                 ElasticSearchProjectionsProjectionName,
                 ProjectionFullName,
                 ProjectionName,
                 EventHandlers,
-                ReactionHandlers)
+                elastic,
+                bus,
+                metrics)
         {
+            busRegistrar.RegisterEventHandlers(EventHandlers);
         }
     }
 }

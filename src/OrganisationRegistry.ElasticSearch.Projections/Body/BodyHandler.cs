@@ -31,6 +31,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         BaseProjection<BodyHandler>,
         IElasticEventHandler<InitialiseProjection>,
         IElasticEventHandler<BodyRegistered>,
+        IElasticEventHandler<BodyNumberAssigned>,
         IElasticEventHandler<BodyInfoChanged>,
         IElasticEventHandler<BodyLifecyclePhaseAdded>,
         IElasticEventHandler<BodyLifecyclePhaseUpdated>,
@@ -143,7 +144,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyRegistered> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -165,7 +166,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyInfoChanged> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -179,10 +180,24 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             );
         }
 
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyNumberAssigned> message)
+        {
+            return new ElasticPerDocumentChange<BodyDocument>
+            (
+                message.Body.BodyId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+                    document.BodyNumber = message.Body.BodyNumber;
+                }
+            );
+        }
+
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyLifecyclePhaseAdded> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -203,7 +218,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyLifecyclePhaseUpdated> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -226,7 +241,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         {
             return new ElasticMassChange
             (
-                elastic => elastic.TryAsync(async () => await _elastic.WriteClient
+                elastic => elastic.TryAsync(() => elastic.WriteClient
                     .MassUpdateBodyAsync(
                         x => x.LifecyclePhases.Single().LifecyclePhaseTypeId, message.Body.LifecyclePhaseTypeId,
                         "lifecyclePhases", "lifecyclePhaseTypeId",
@@ -239,7 +254,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyFormalFrameworkAdded> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -260,7 +275,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyFormalFrameworkUpdated> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -281,7 +296,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyOrganisationAdded> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -302,7 +317,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyOrganisationUpdated> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -323,7 +338,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodySeatAdded> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -348,7 +363,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodySeatUpdated> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -370,7 +385,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<AssignedPersonToBodySeat> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -398,7 +413,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<ReassignedPersonToBodySeat> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -426,7 +441,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<AssignedOrganisationToBodySeat> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -454,7 +469,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<ReassignedOrganisationToBodySeat> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -482,7 +497,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<AssignedFunctionTypeToBodySeat> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -510,7 +525,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<ReassignedFunctionTypeToBodySeat> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -543,7 +558,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 .Select(x => new {x.Id, x.Name})
                 .ToDictionaryAsync(x => x.Id, x => x.Name);
 
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -579,7 +594,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 .Select(x => new {x.Id, x.Name})
                 .ToDictionaryAsync(x => x.Id, x => x.Name);
 
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -610,7 +625,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<PersonAssignedToDelegationRemoved> message)
         {
-            return new ElasticSingleChange
+            return new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>

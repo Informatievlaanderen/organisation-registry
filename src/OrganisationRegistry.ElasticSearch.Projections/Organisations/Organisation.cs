@@ -12,6 +12,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Infrastructure.Events;
     using Infrastructure;
+    using Infrastructure.Change;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Nest;
@@ -19,16 +20,16 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
     public class Organisation :
         BaseProjection<Organisation>,
-        IEventHandler<InitialiseProjection>,
-        IEventHandler<OrganisationCreated>,
-        IEventHandler<OrganisationCreatedFromKbo>,
-        IEventHandler<OrganisationInfoUpdated>,
-        IEventHandler<OrganisationInfoUpdatedFromKbo>,
-        IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationCoupledWithKbo>,
-        IEventHandler<PurposeUpdated>,
-        IEventHandler<OrganisationTerminationSyncedWithKbo>,
-        IEventHandler<OrganisationTerminated>
+        IElasticEventHandler<InitialiseProjection>,
+        IElasticEventHandler<OrganisationCreated>,
+        IElasticEventHandler<OrganisationCreatedFromKbo>,
+        IElasticEventHandler<OrganisationInfoUpdated>,
+        IElasticEventHandler<OrganisationInfoUpdatedFromKbo>,
+        IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
+        IElasticEventHandler<OrganisationCoupledWithKbo>,
+        IElasticEventHandler<PurposeUpdated>,
+        IElasticEventHandler<OrganisationTerminationSyncedWithKbo>,
+        IElasticEventHandler<OrganisationTerminated>
     {
         private readonly Elastic _elastic;
         private readonly ElasticSearchConfiguration _elasticSearchOptions;
@@ -40,123 +41,144 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         {
             _elastic = elastic;
             _elasticSearchOptions = elasticSearchOptions.Value;
-
-            PrepareIndex(elastic.WriteClient, false);
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreated> message)
         {
-            var organisationDocument = new OrganisationDocument
-            {
-                ChangeId = message.Number,
-                ChangeTime = message.Timestamp,
-                Id = message.Body.OrganisationId,
-                Name = message.Body.Name,
-                OvoNumber = message.Body.OvoNumber,
-                ShortName = message.Body.ShortName,
-                Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo),
-                Description = message.Body.Description,
-                ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites,
-                Purposes = message.Body.Purposes.Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList(),
-            };
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+                    document.Id = message.Body.OrganisationId;
+                    document.Name = message.Body.Name;
+                    document.OvoNumber = message.Body.OvoNumber;
+                    document.ShortName = message.Body.ShortName;
+                    document.Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo);
+                    document.Description = message.Body.Description;
+                    document.ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites;
+                    document.Purposes = message.Body.Purposes
+                        .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList();
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreatedFromKbo> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreatedFromKbo> message)
         {
-            var organisationDocument = new OrganisationDocument
-            {
-                ChangeId = message.Number,
-                ChangeTime = message.Timestamp,
-                Id = message.Body.OrganisationId,
-                Name = message.Body.Name,
-                OvoNumber = message.Body.OvoNumber,
-                ShortName = message.Body.ShortName,
-                Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo),
-                Description = message.Body.Description,
-                KboNumber = message.Body.KboNumber,
-                ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites,
-                Purposes = message.Body.Purposes.Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList(),
-            };
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+                    document.Id = message.Body.OrganisationId;
+                    document.Name = message.Body.Name;
+                    document.OvoNumber = message.Body.OvoNumber;
+                    document.ShortName = message.Body.ShortName;
+                    document.Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo);
+                    document.Description = message.Body.Description;
+                    document.KboNumber = message.Body.KboNumber;
+                    document.ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites;
+                    document.Purposes = message.Body.Purposes
+                        .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList();
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
-
-            organisationDocument.Name = message.Body.Name;
-            organisationDocument.ShortName = message.Body.ShortName;
-            organisationDocument.Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo);
-            organisationDocument.Description = message.Body.Description;
-            organisationDocument.ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites;
-            organisationDocument.Purposes = message.Body.Purposes.Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList();
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Name = message.Body.Name;
+                    document.ShortName = message.Body.ShortName;
+                    document.Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo);
+                    document.Description = message.Body.Description;
+                    document.ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites;
+                    document.Purposes = message.Body.Purposes
+                        .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList();
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
-
-            organisationDocument.Name = message.Body.Name;
-            organisationDocument.ShortName = message.Body.ShortName;
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Name = message.Body.Name;
+                    document.ShortName = message.Body.ShortName;
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
-
-            organisationDocument.Name = message.Body.NameBeforeKboCoupling;
-            organisationDocument.ShortName = message.Body.ShortNameBeforeKboCoupling;
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.Name = message.Body.NameBeforeKboCoupling;
+                    document.ShortName = message.Body.ShortNameBeforeKboCoupling;
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCoupledWithKbo> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCoupledWithKbo> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
-
-            organisationDocument.KboNumber = message.Body.KboNumber;
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.KboNumber = message.Body.KboNumber;
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PurposeUpdated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PurposeUpdated> message)
         {
-            // Update all which use this type, and put the changeId on them too!
-            _elastic.Try(() => _elastic.WriteClient
-                .MassUpdateOrganisation(
-                    x => x.Purposes.Single().PurposeId, message.Body.PurposeId,
-                    "purposes", "purposeId",
-                    "purposeName", message.Body.Name,
-                    message.Number,
-                    message.Timestamp));
+            return new ElasticMassChange
+            (
+                elastic => elastic.TryAsync(() => elastic.WriteClient
+                    .MassUpdateOrganisationAsync(
+                        x => x.Purposes.Single().PurposeId, message.Body.PurposeId,
+                        "purposes", "purposeId",
+                        "purposeName", message.Body.Name,
+                        message.Number,
+                        message.Timestamp))
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<InitialiseProjection> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<InitialiseProjection> message)
         {
             if (message.Body.ProjectionName != typeof(Organisation).FullName)
-                return;
+                return new ElasticNoChange();
 
             Logger.LogInformation("Rebuilding index for {ProjectionName}.", message.Body.ProjectionName);
-            PrepareIndex(_elastic.WriteClient, true);
+            await PrepareIndex(_elastic.WriteClient, true);
+
+            return new ElasticNoChange();
         }
 
         private async Task PrepareIndex(IElasticClient client, bool deleteIndex)
@@ -165,7 +187,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             if (deleteIndex && await client.DoesIndexExist(indexName))
             {
-                var deleteResult = client.Indices.Delete(
+                var deleteResult = await client.Indices.DeleteAsync(
                     new DeleteIndexRequest(Indices.Index(new List<IndexName> { indexName })));
 
                 if (!deleteResult.IsValid)
@@ -174,7 +196,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             if (!await client.DoesIndexExist(indexName))
             {
-                var indexResult = client.Indices.Create(
+                var indexResult = await client.Indices.CreateAsync(
                     indexName,
                     index => index
                         .Map<OrganisationDocument>(OrganisationDocument.Mapping)
@@ -187,35 +209,41 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
         {
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
-
-            organisationDocument.KboNumber = string.Empty;
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    document.KboNumber = string.Empty;
+                }
+            );
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
             if (!message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
-                return;
+                return new ElasticNoChange();
 
-            var organisationDocument = _elastic.TryGet(() => _elastic.WriteClient.Get<OrganisationDocument>(message.Body.OrganisationId).ThrowOnFailure().Source);
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
 
-            organisationDocument.ChangeId = message.Number;
-            organisationDocument.ChangeTime = message.Timestamp;
+                    document.Validity =
+                        new Period(document.Validity.Start, message.Body.FieldsToTerminate.OrganisationValidity);
 
-            organisationDocument.Validity =
-                new Period(organisationDocument.Validity.Start, message.Body.FieldsToTerminate.OrganisationValidity);
-
-            if (message.Body.ForcedKboTermination)
-                organisationDocument.KboNumber = string.Empty;
-
-            _elastic.Try(() => _elastic.WriteClient.IndexDocument(organisationDocument).ThrowOnFailure());
+                    if (message.Body.ForcedKboTermination)
+                        document.KboNumber = string.Empty;
+                }
+            );
         }
     }
 }

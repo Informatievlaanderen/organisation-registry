@@ -8,7 +8,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Cache
     using Autofac.Features.OwnedInstances;
     using Infrastructure;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure.Config;
     using OrganisationRegistry.Infrastructure.Events;
+    using SqlServer;
     using SqlServer.Infrastructure;
     using SqlServer.ProjectionState;
 
@@ -25,22 +27,22 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Cache
 
         private readonly ILogger<CacheRunner> _logger;
         private readonly IEventStore _store;
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFactory;
+        private readonly IContextFactory _contextFactory;
         private readonly IProjectionStates _projectionStates;
         private readonly IEventPublisher _bus;
 
-        public CacheRunner(
-            ILogger<CacheRunner> logger,
+        public CacheRunner(ILogger<CacheRunner> logger,
             IEventStore store,
-            Func<Owned<OrganisationRegistryContext>> contextFactory,
+            IContextFactory contextFactory,
             IProjectionStates projectionStates,
-            IEventPublisher bus)
+            IEventPublisher bus, BusRegistrar busRegistrar)
         {
             _logger = logger;
             _store = store;
             _contextFactory = contextFactory;
             _projectionStates = projectionStates;
             _bus = bus;
+            busRegistrar.RegisterEventHandlers(EventHandlers);
         }
 
         public async Task Run()
@@ -54,7 +56,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Cache
                     .Distinct()
                     .ToList();
 
-            await using var context = _contextFactory().Value;
+            await using var context = _contextFactory.Create();
 
             var lastEvent = _store.GetLastEvent();
             var lastProcessedEventNumber = _projectionStates.GetLastProcessedEventNumber(ProjectionName);
