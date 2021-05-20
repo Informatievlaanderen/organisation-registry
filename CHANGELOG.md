@@ -1,3 +1,10 @@
+## [1.79.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.79.0...v1.79.1) (2021-05-20)
+
+
+### Bug Fixes
+
+* use db for config ([789aa62](https://github.com/informatievlaanderen/organisation-registry/commit/789aa62ae75a547b4030925f824e4ab95c8e732b))
+
 # [1.79.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.78.0...v1.79.0) (2021-05-20)
 
 
