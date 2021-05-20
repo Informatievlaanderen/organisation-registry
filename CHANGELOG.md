@@ -1,3 +1,16 @@
+# [1.79.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.78.0...v1.79.0) (2021-05-20)
+
+
+### Bug Fixes
+
+* don't prepare index in ctor ([86c273e](https://github.com/informatievlaanderen/organisation-registry/commit/86c273ee42b2eb97a0c29aebe376757d9ad1d3d8))
+
+
+### Features
+
+* use async overloads wherever possible ([f3a1620](https://github.com/informatievlaanderen/organisation-registry/commit/f3a1620f3cbf1d3992ba609ec1e8fd1361252a9b))
+* use batching for es people and orgs handlers ([632a357](https://github.com/informatievlaanderen/organisation-registry/commit/632a357671d35d55d4025cfa127fcd1fdf1f7375))
+
 # [1.78.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.77.0...v1.78.0) (2021-05-10)
 
 
