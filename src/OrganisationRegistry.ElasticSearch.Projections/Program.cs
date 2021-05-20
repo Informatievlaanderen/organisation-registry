@@ -93,6 +93,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                         .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", true, false)
                         .AddEnvironmentVariables()
                         .AddCommandLine(args);
+
+                    var sqlConfiguration = builder.Build().GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>();
+                    builder.AddEntityFramework(x =>
+                        x.UseSqlServer(
+                            sqlConfiguration.ConnectionString,
+                            y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")));
                 })
                 .ConfigureLogging((hostContext, builder) =>
                 {
