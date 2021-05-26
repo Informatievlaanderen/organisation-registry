@@ -1,23 +1,16 @@
 namespace OrganisationRegistry.Api.Kbo
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using System.Net;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
-    using global::Magda.RegistreerInschrijving;
     using Infrastructure;
     using Infrastructure.Security;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Organisation;
     using Security;
-    using SqlServer.Infrastructure;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
