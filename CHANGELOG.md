@@ -1,3 +1,10 @@
+## [1.81.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.81.0...v1.81.1) (2021-05-26)
+
+
+### Bug Fixes
+
+* update projection state in batch ([24c4ba6](https://github.com/informatievlaanderen/organisation-registry/commit/24c4ba63acf2e78cf5d8efc13340e6cc09b65ab3))
+
 # [1.81.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.80.0...v1.81.0) (2021-05-26)
 
 
