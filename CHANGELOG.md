@@ -1,3 +1,10 @@
+# [1.80.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.79.1...v1.80.0) (2021-05-26)
+
+
+### Features
+
+* unify runners to use slow approach to rebuilding ([0287f23](https://github.com/informatievlaanderen/organisation-registry/commit/0287f230e439c7383c02ea8a0c373282a6fd0a0a))
+
 ## [1.79.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.79.0...v1.79.1) (2021-05-20)
 
 
