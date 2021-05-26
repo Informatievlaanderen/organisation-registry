@@ -223,7 +223,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                                 provider.GetRequiredService<IProjectionStates>(),
                                 provider.GetRequiredService<Elastic>(),
                                 bus,
-                                provider.GetRequiredService<IMetricsRoot>(),
                                 new ElasticBusRegistrar(provider.GetRequiredService<ILogger<ElasticBusRegistrar>>(),
                                     bus,
                                     provider.GetRequiredService<Func<IServiceProvider>>())
@@ -239,7 +238,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                                 provider.GetRequiredService<IProjectionStates>(),
                                 provider.GetRequiredService<Elastic>(),
                                 bus,
-                                provider.GetRequiredService<IMetricsRoot>(),
                                 new ElasticBusRegistrar(provider.GetRequiredService<ILogger<ElasticBusRegistrar>>(),
                                     bus,
                                     provider.GetRequiredService<Func<IServiceProvider>>())
@@ -249,12 +247,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                         .AddSingleton<IMetricsRoot>(new MetricsBuilder()
                             .Report.ToConsole().Build())
 
-                        // .AddSingleton<BodyHandler>()
-                        //
-                        // .AddSingleton<Person>()
-                        // .AddSingleton<PersonCapacity>()
-                        // .AddSingleton<PersonFunction>()
-                        // .AddSingleton<PersonMandate>()
+                        .AddSingleton<IDateTimeProvider, DateTimeProvider>()
 
                         .AddSingleton<Elastic>()
 

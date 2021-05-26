@@ -59,7 +59,7 @@ namespace OrganisationRegistry.Projections.Delegations
             if (!_togglesConfiguration.DelegationsRunnerAvailable)
                 return false;
 
-            var lastProcessedEventNumber = _projectionStates.GetLastProcessedEventNumber(DelegationsRunnerProjectionName);
+            var lastProcessedEventNumber = await _projectionStates.GetLastProcessedEventNumber(DelegationsRunnerProjectionName);
             await InitialiseProjection(lastProcessedEventNumber);
 
             var eventsBeingListenedTo =
@@ -91,7 +91,7 @@ namespace OrganisationRegistry.Projections.Delegations
             }
             finally
             {
-                UpdateProjectionState(newLastProcessedEventNumber);
+                await UpdateProjectionState(newLastProcessedEventNumber);
             }
 
             return true;
@@ -106,13 +106,13 @@ namespace OrganisationRegistry.Projections.Delegations
             await ProcessEnvelope(new InitialiseProjection(typeof(DelegationListProjection).FullName).ToTypedEnvelope());
         }
 
-        private void UpdateProjectionState(int? newLastProcessedEventNumber)
+        private async Task UpdateProjectionState(int? newLastProcessedEventNumber)
         {
             if (!newLastProcessedEventNumber.HasValue)
                 return;
 
             _logger.LogInformation("Processed up until envelope #{LastProcessedEnvelopeNumber}, writing number to db...", newLastProcessedEventNumber);
-            _projectionStates.UpdateProjectionState(DelegationsRunnerProjectionName, newLastProcessedEventNumber.Value);
+            await _projectionStates.UpdateProjectionState(DelegationsRunnerProjectionName, newLastProcessedEventNumber.Value);
         }
 
         private async Task<int?> ProcessEnvelope(IEnvelope envelope)

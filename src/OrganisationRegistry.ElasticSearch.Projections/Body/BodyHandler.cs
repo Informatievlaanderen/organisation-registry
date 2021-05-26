@@ -658,10 +658,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         private async Task UpdatePersonForDelegations(IEnvelope<PersonUpdated> message, Elastic elastic)
         {
-            using(_metrics.Measure.Timer.Time(_indexTimer))
-            {
-                (await elastic.TryGetAsync(() => elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>()))).ThrowOnFailure();
-            }
+
+            (await elastic.TryGetAsync(() => elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>())))
+                .ThrowOnFailure();
 
             var searchResponse = (await elastic.TryGetAsync(() => elastic.WriteClient.SearchAsync<BodyDocument>(
                 s => s.Query(
@@ -701,10 +700,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         private async Task UpdatePersonForMandates(IEnvelope<PersonUpdated> message, Elastic elastic)
         {
-            using(_metrics.Measure.Timer.Time(_indexTimer))
-            {
+
                 (await elastic.TryGetAsync(() => elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>()))).ThrowOnFailure();
-            }
 
             var searchResponse = (await elastic.TryGetAsync(() => elastic.WriteClient.SearchAsync<BodyDocument>(
                 s => s.Query(

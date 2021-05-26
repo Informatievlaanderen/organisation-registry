@@ -50,7 +50,7 @@ namespace OrganisationRegistry.Projections.Reporting
 
         public async Task Run()
         {
-            var lastProcessedEventNumber = _projectionStates.GetLastProcessedEventNumber(_dbProjectionsProjectionName);
+            var lastProcessedEventNumber = await _projectionStates.GetLastProcessedEventNumber(_dbProjectionsProjectionName);
             await InitialiseProjection(lastProcessedEventNumber);
 
             var eventsBeingListenedTo =
@@ -82,7 +82,7 @@ namespace OrganisationRegistry.Projections.Reporting
             }
             finally
             {
-                UpdateProjectionState(newLastProcessedEventNumber);
+                await UpdateProjectionState(newLastProcessedEventNumber);
             }
         }
 
@@ -96,14 +96,14 @@ namespace OrganisationRegistry.Projections.Reporting
             await ProcessEnvelope(new InitialiseProjection(_projectionFullName).ToTypedEnvelope());
         }
 
-        private void UpdateProjectionState(int? newLastProcessedEventNumber)
+        private async Task UpdateProjectionState(int? newLastProcessedEventNumber)
         {
             if (!newLastProcessedEventNumber.HasValue)
                 return;
 
             _logger.LogInformation("[{ProjectionName}] Processed up until envelope #{LastProcessedEnvelopeNumber}, writing number to db...", ProjectionName, newLastProcessedEventNumber);
 
-            _projectionStates.UpdateProjectionState(_dbProjectionsProjectionName, newLastProcessedEventNumber.Value);
+            await _projectionStates.UpdateProjectionState(_dbProjectionsProjectionName, newLastProcessedEventNumber.Value);
         }
 
         private async Task<int?> ProcessEnvelope(IEnvelope envelope)
