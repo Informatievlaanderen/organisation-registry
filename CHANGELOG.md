@@ -1,3 +1,11 @@
+# [1.81.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.80.0...v1.81.0) (2021-05-26)
+
+
+### Features
+
+* add kbo raw controller for debugging purposes ([8bc3c81](https://github.com/informatievlaanderen/organisation-registry/commit/8bc3c8102e7b9436cb55611ea3da086d027e03a7))
+* update projection state immediately after flushing to ES ([77e57c4](https://github.com/informatievlaanderen/organisation-registry/commit/77e57c4e4a565c846932418229e4447c2d314d69))
+
 # [1.80.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.79.1...v1.80.0) (2021-05-26)
 
 
