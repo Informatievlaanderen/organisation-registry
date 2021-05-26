@@ -2,46 +2,50 @@
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Infrastructure;
 
     public class ProjectionStates : IProjectionStates
     {
         private readonly IContextFactory _contextFactory;
-        public ProjectionStates(IContextFactory contextFactory)
+        private readonly IDateTimeProvider _dateTimeProvider;
+
+        public ProjectionStates(IContextFactory contextFactory, IDateTimeProvider dateTimeProvider)
         {
             _contextFactory = contextFactory;
+            _dateTimeProvider = dateTimeProvider;
         }
 
-        public int GetLastProcessedEventNumber(string projectionName)
+        public async Task<int> GetLastProcessedEventNumber(string projectionName)
         {
-            using (var context = _contextFactory.Create())
-            {
-                var state =
-                    context.ProjectionStates
-                        .SingleOrDefault(item => item.Name == projectionName);
+            await using var context = _contextFactory.Create();
+            var state =
+                context.ProjectionStates
+                    .SingleOrDefault(item => item.Name == projectionName);
 
-                if (state != null)
-                    return state.EventNumber;
+            if (state != null)
+                return state.EventNumber;
 
-                var newState = new ProjectionStateItem { Name = projectionName, EventNumber = -1 };
-                context.Add(newState);
-                context.SaveChanges();
-                return newState.EventNumber;
-            }
+            var newState = new ProjectionStateItem { Name = projectionName, EventNumber = -1 };
+            context.Add(newState);
+            await context.SaveChangesAsync();
+            return newState.EventNumber;
         }
 
-        public void UpdateProjectionState(string projectionName, int lastEventNumber)
+        public async Task UpdateProjectionState(string projectionName, int lastEventNumber)
         {
-            using (var context = _contextFactory.Create())
-            {
-                var state =
-                    context.ProjectionStates
-                        .SingleOrDefault(item => item.Name == projectionName);
+            await using var context = _contextFactory.Create();
+            var state =
+                context.ProjectionStates
+                    .SingleOrDefault(item => item.Name == projectionName);
 
+            if (state.EventNumber != lastEventNumber)
+            {
                 state.EventNumber = lastEventNumber;
-                context.SaveChanges();
+                state.LastUpdatedUtc = _dateTimeProvider.UtcNow;
             }
+            await context.SaveChangesAsync();
         }
     }
 }

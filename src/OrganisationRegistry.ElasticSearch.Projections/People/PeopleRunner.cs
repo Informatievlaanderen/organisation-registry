@@ -48,8 +48,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People
                 ProjectionName,
                 EventHandlers,
                 elastic,
-                bus,
-                metrics)
+                bus)
         {
             busRegistrar.RegisterEventHandlers(EventHandlers);
         }

@@ -137,6 +137,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
                     document.Name = message.Body.NameBeforeKboCoupling;
                     document.ShortName = message.Body.ShortNameBeforeKboCoupling;
+
+                    document.KboNumber = string.Empty;
                 }
             );
         }

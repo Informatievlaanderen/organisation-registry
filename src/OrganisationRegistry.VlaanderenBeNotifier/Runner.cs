@@ -46,7 +46,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             if (!_togglesConfiguration.VlaanderenBeNotifierAvailable)
                 return false;
 
-            var lastProcessedEventNumber = _projectionStates.GetLastProcessedEventNumber(VlaanderenbeNotifierProjectionName);
+            var lastProcessedEventNumber = await _projectionStates.GetLastProcessedEventNumber(VlaanderenbeNotifierProjectionName);
             var envelopes = _store.GetEventEnvelopesAfter(lastProcessedEventNumber).ToList();
 
             LogEnvelopeCount(envelopes);
@@ -66,19 +66,19 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             }
             finally
             {
-                UpdateProjectionState(newLastProcessedEventNumber);
+                await UpdateProjectionState(newLastProcessedEventNumber);
             }
 
             return true;
         }
 
-        private void UpdateProjectionState(int? newLastProcessedEventNumber)
+        private async Task UpdateProjectionState(int? newLastProcessedEventNumber)
         {
             if (!newLastProcessedEventNumber.HasValue)
                 return;
 
             _logger.LogInformation("Processed up until envelope #{LastProcessedEnvelopeNumber}, writing number to db...", newLastProcessedEventNumber);
-            _projectionStates.UpdateProjectionState(VlaanderenbeNotifierProjectionName, newLastProcessedEventNumber.Value);
+            await _projectionStates.UpdateProjectionState(VlaanderenbeNotifierProjectionName, newLastProcessedEventNumber.Value);
         }
 
         private async Task<int?> ProcessEnvelope(IEnvelope envelope)

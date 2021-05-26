@@ -49,54 +49,72 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
             if (message.Body.ProjectionName != typeof(T).FullName)
                 return;
 
-            var eventTypes = this
-                .GetType()
-                .GetInterfaces()
-                .Where(x => x.GetTypeInfo().IsGenericType)
-                .Where(x => x.GetGenericTypeDefinition() == typeof(IEventHandler<>))
-                .Select(x => x.GetGenericArguments().First())
-                .Except(new[] { typeof(RebuildProjection), typeof(Rollback), typeof(ResetMemoryCache) })
-                .ToArray();
-
-            Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} started.", ProjectionTableNames, message.Body.ProjectionName);
-
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            try
             {
-                customResetLogic(context);
+                var eventTypes = this
+                    .GetType()
+                    .GetInterfaces()
+                    .Where(x => x.GetTypeInfo().IsGenericType)
+                    .Where(x => x.GetGenericTypeDefinition() == typeof(IEventHandler<>))
+                    .Select(x => x.GetGenericArguments().First())
+                    .Except(new[] {typeof(RebuildProjection), typeof(Rollback), typeof(ResetMemoryCache)})
+                    .ToArray();
 
-                while (DeleteRows(context) > 0)
-                { }
-            }
+                Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} started.",
+                    ProjectionTableNames, message.Body.ProjectionName);
 
-            Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} finished.", ProjectionTableNames, message.Body.ProjectionName);
-
-            //get last event number
-            var lastEvent = eventStore.GetLastEvent();
-
-            //theoretical maximum of iterations
-            var iterations = (int)Math.Ceiling((double)lastEvent / (double)BatchSize);
-
-            Logger.LogInformation("Projection rebuild for {ProjectionName} started.", message.Body.ProjectionName);
-
-            var lastProcessed = 0;
-            for (var iteration = 0; iteration <= iterations; iteration++)
-            {
-                var envelopes = eventStore.GetEventEnvelopesAfter(lastProcessed, BatchSize, eventTypes.ToArray()).ToList();
-                var envelopeCount = envelopes.Count;
-
-                foreach (var envelope in envelopes)
+                using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
                 {
-                    await ((dynamic)this).Handle(dbConnection, dbTransaction, (dynamic)envelope);
+                    customResetLogic(context);
 
-                    lastProcessed = envelope.Number;
+                    while (DeleteRows(context) > 0)
+                    {
+                    }
                 }
 
-                //if envelopeCount is smaller than BatchSize, the last event was processed
-                if (envelopeCount < BatchSize)
-                    break;
-            }
+                Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} finished.",
+                    ProjectionTableNames, message.Body.ProjectionName);
 
-            Logger.LogInformation("Projection rebuild for {ProjectionName} finished.", message.Body.ProjectionName);
+                //get last event number
+                var lastEvent = eventStore.GetLastEvent();
+
+                //theoretical maximum of iterations
+                var iterations = (int) Math.Ceiling((double) lastEvent / (double) BatchSize);
+
+                Logger.LogInformation("Projection rebuild for {ProjectionName} started.", message.Body.ProjectionName);
+                Logger.LogInformation(
+                    "Projection rebuild for {ProjectionName} expecting {Iterations} iterations of {BatchSize} events.",
+                    message.Body.ProjectionName, iterations, BatchSize);
+
+                var lastProcessed = 0;
+                for (var iteration = 0; iteration <= iterations; iteration++)
+                {
+                    var envelopes = eventStore
+                        .GetEventEnvelopesAfter(lastProcessed, BatchSize, eventTypes.ToArray())
+                        .ToList();
+
+                    var envelopeCount = envelopes.Count;
+
+                    foreach (var envelope in envelopes)
+                    {
+                        await ((dynamic) this).Handle(dbConnection, dbTransaction, (dynamic) envelope);
+
+                        lastProcessed = envelope.Number;
+                    }
+                    Logger.LogInformation("Projection rebuild for {ProjectionName} processed up until #{LastProcessed}, batch {Iteration} of {Iterations}.", message.Body.ProjectionName, lastProcessed, iteration+1, iterations);
+
+                    //if envelopeCount is smaller than BatchSize, the last event was processed
+                    if (envelopeCount < BatchSize)
+                        break;
+                }
+
+                Logger.LogInformation("Projection rebuild for {ProjectionName} finished.", message.Body.ProjectionName);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError("Projection rebuild for {ProjectionName} failed.", ex, message.Body.ProjectionName);
+                throw;
+            }
         }
 
         private int DeleteRows(DbContext context)

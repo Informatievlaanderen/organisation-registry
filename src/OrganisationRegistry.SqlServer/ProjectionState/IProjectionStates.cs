@@ -1,9 +1,11 @@
 ﻿namespace OrganisationRegistry.SqlServer.ProjectionState
 {
+    using System.Threading.Tasks;
+
     public interface IProjectionStates
     {
-        int GetLastProcessedEventNumber(string projectionName);
+        Task<int> GetLastProcessedEventNumber(string projectionName);
 
-        void UpdateProjectionState(string projectionName, int lastEventNumber);
+        Task UpdateProjectionState(string projectionName, int lastEventNumber);
     }
 }

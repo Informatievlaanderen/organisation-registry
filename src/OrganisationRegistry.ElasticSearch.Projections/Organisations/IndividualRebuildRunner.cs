@@ -42,7 +42,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             await using var context = _contextFactory.Create();
 
             var lastProcessedEventNumber =
-                _projectionStates.GetLastProcessedEventNumber(OrganisationsRunner.ElasticSearchProjectionsProjectionName);
+                await _projectionStates.GetLastProcessedEventNumber(OrganisationsRunner.ElasticSearchProjectionsProjectionName);
 
             var organisationToRebuilds = await context.OrganisationsToRebuild.ToListAsync();
 

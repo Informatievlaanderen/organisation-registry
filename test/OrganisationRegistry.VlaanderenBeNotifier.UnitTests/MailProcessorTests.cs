@@ -2,6 +2,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.UnitTests
 {
     using System;
     using System.Data.Common;
+    using System.Threading.Tasks;
     using Configuration;
     using Infrastructure.Configuration;
     using Infrastructure.Events;
@@ -35,7 +36,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.UnitTests
             var projectionStates = new Mock<IProjectionStates>();
             projectionStates
                 .Setup(states => states.GetLastProcessedEventNumber(Runner.VlaanderenbeNotifierProjectionName))
-                .Returns(lastEventNumber);
+                .Returns(Task.FromResult(lastEventNumber));
 
             var eventStore = new Mock<IEventStore>();
             eventStore
@@ -67,7 +68,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.UnitTests
             var projectionStates = new Mock<IProjectionStates>();
             projectionStates
                 .Setup(states => states.GetLastProcessedEventNumber(Runner.VlaanderenbeNotifierProjectionName))
-                .Returns(lastEventNumber);
+                .Returns(Task.FromResult(lastEventNumber));
 
             var eventStore = new Mock<IEventStore>();
             eventStore
@@ -106,7 +107,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.UnitTests
             var projectionStates = new Mock<IProjectionStates>();
             projectionStates
                 .Setup(states => states.GetLastProcessedEventNumber(Runner.VlaanderenbeNotifierProjectionName))
-                .Returns(lastEventNumber);
+                .Returns(Task.FromResult(lastEventNumber));
 
             var eventStore = new Mock<IEventStore>();
             eventStore

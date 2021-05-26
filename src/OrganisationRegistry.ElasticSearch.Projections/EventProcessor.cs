@@ -1,15 +1,9 @@
 namespace OrganisationRegistry.ElasticSearch.Projections
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
     using System.Threading;
     using System.Threading.Channels;
     using System.Threading.Tasks;
-    using App.Metrics;
-    using App.Metrics.Timer;
-    using Bodies;
     using Body;
     using Cache;
     using Client;
@@ -17,13 +11,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using Infrastructure.Change;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using Nest;
     using OrganisationRegistry.Infrastructure.Events;
     using Organisations;
     using People;
     using SqlServer.ProjectionState;
-    using SqlStreamStore.Streams;
-    using Position = OrganisationRegistry.Infrastructure.EventStore.Position;
 
     public class EventProcessor : IHostedService
     {
@@ -37,7 +28,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
         private readonly IProjectionStates _projectionStates;
         private readonly Elastic _elastic;
         private readonly ElasticBus _bus;
-        private readonly IMetricsRoot _metrics;
 
         private static readonly TimeSpan CatchUpAfter = TimeSpan.FromSeconds(5);
         private static readonly TimeSpan ResumeAfter = TimeSpan.FromSeconds(2);
@@ -61,7 +51,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             IProjectionStates projectionStates,
             Elastic elastic,
             ElasticBus bus,
-            IMetricsRoot metrics,
             BodyRunner bodyRunner,
             PeopleRunner peopleRunner,
             CacheRunner cacheRunner,
@@ -74,23 +63,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             _projectionStates = projectionStates;
             _elastic = elastic;
             _bus = bus;
-            _metrics = metrics;
-
-            var changeDocumentTimer = new TimerOptions
-            {
-                Name = "Change Document Timer",
-                MeasurementUnit = Unit.Calls,
-                DurationUnit = App.Metrics.TimeUnit.Milliseconds,
-                RateUnit = App.Metrics.TimeUnit.Milliseconds
-            };
-
-            var getEventsTimer = new TimerOptions
-            {
-                Name = "Get Events Timer",
-                MeasurementUnit = Unit.Calls,
-                DurationUnit = App.Metrics.TimeUnit.Milliseconds,
-                RateUnit = App.Metrics.TimeUnit.Milliseconds
-            };
 
             _messagePumpCancellation = new CancellationTokenSource();
             _messageChannel = Channel.CreateUnbounded<object>(new UnboundedChannelOptions
@@ -115,7 +87,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                                     case Resume _:
                                         logger.LogInformation("[{Context}] Resuming ...", "body");
                                         var projectionPosition =
-                                            projectionStates.GetLastProcessedEventNumber(
+                                            await projectionStates.GetLastProcessedEventNumber(
                                                 ElasticSearchProjectionsProjectionName);
 
                                         await _messageChannel.Writer
@@ -158,10 +130,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                                                         .ConfigureAwait(false);
                                                 }
                                             }, ResumeAfter).ConfigureAwait(false);
-                                        }
-                                        finally
-                                        {
-                                            await Task.WhenAll(_metrics.ReportRunner.RunAllAsync());
                                         }
 
                                         break;
@@ -217,18 +185,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             await ProcessEnvelope(new InitialiseProjection(ProjectionFullName).ToTypedEnvelope());
         }
 
-
-        private void UpdateProjectionState(int? newLastProcessedEventNumber)
-        {
-            if (!newLastProcessedEventNumber.HasValue)
-                return;
-
-            _logger.LogInformation(
-                "[{ProjectionName}] Processed up until envelope #{LastProcessedEnvelopeNumber}, writing number to db...",
-                ProjectionName, newLastProcessedEventNumber);
-            _projectionStates.UpdateProjectionState(ElasticSearchProjectionsProjectionName,
-                newLastProcessedEventNumber.Value);
-        }
 
         private class Resume
         {

@@ -10,6 +10,7 @@
         public Guid Id { get; set; }
         public string Name { get; set; }
         public int EventNumber { get; set; }
+        public DateTimeOffset? LastUpdatedUtc { get; set; }
     }
 
     public class ProjectionStateListConfiguration : EntityMappingConfiguration<ProjectionStateItem>
@@ -24,6 +25,7 @@
 
             b.Property(p => p.Name).IsRequired();
             b.Property(p => p.EventNumber).IsRequired();
+            b.Property(p => p.LastUpdatedUtc);
 
             b.HasIndex(x => x.Name).IsUnique().IsClustered();
         }

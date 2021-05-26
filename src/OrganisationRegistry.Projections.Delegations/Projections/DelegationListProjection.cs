@@ -379,7 +379,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
 
         private static CachedOrganisationBody GetOrganisationForBodyFromCache(OrganisationRegistryContext context, Guid bodyId)

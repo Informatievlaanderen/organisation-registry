@@ -59,7 +59,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Cache
             await using var context = _contextFactory.Create();
 
             var lastEvent = _store.GetLastEvent();
-            var lastProcessedEventNumber = _projectionStates.GetLastProcessedEventNumber(ProjectionName);
+            var lastProcessedEventNumber = await _projectionStates.GetLastProcessedEventNumber(ProjectionName);
             await InitialiseProjection(lastProcessedEventNumber);
 
             var previousLastProcessedEventNumber = (int?)null;
@@ -85,10 +85,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Cache
                 }
                 finally
                 {
-                    UpdateProjectionState(newLastProcessedEventNumber);
+                    await UpdateProjectionState(newLastProcessedEventNumber);
                 }
 
-                lastProcessedEventNumber = _projectionStates.GetLastProcessedEventNumber(ProjectionName);
+                lastProcessedEventNumber = await _projectionStates.GetLastProcessedEventNumber(ProjectionName);
             }
         }
 
@@ -101,13 +101,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Cache
             await ProcessEnvelope(new InitialiseProjection(ProjectionName).ToTypedEnvelope());
         }
 
-        private void UpdateProjectionState(int? newLastProcessedEventNumber)
+        private async Task UpdateProjectionState(int? newLastProcessedEventNumber)
         {
             if (!newLastProcessedEventNumber.HasValue)
                 return;
 
             _logger.LogInformation("[{ProjectionName}] Processed up until envelope #{LastProcessedEnvelopeNumber}, writing number to db...", ProjectionName, newLastProcessedEventNumber);
-            _projectionStates.UpdateProjectionState(ProjectionName, newLastProcessedEventNumber.Value);
+            await _projectionStates.UpdateProjectionState(ProjectionName, newLastProcessedEventNumber.Value);
         }
 
         private async Task<int?> ProcessEnvelope(IEnvelope envelope)
