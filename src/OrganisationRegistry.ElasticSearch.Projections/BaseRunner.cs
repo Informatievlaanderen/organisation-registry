@@ -70,88 +70,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     .Distinct()
                     .ToList();
 
-            // var envelopes = new List<IEnvelope>();
-            //
-            // envelopes = _store
-            //     .GetEventEnvelopesAfter(lastProcessedEventNumber, _batchSize, eventsBeingListenedTo.ToArray())
-            //     .ToList();
-            //
-            // LogEnvelopeCount(envelopes);
-            //
-            // var newLastProcessedEventNumber = new int?();
-            // try
-            // {
-            //     var allChanges = new List<ElasticChanges>();
-            //     foreach (var envelope in envelopes)
-            //     {
-            //         var changes = await ProcessEnvelope(envelope);
-            //         allChanges.Add(changes);
-            //         newLastProcessedEventNumber = changes.EnvelopeNumber;
-            //     }
-            //
-            //     var changesByEnvelopeNumber = allChanges
-            //         .OrderBy(x => x.EnvelopeNumber)
-            //         .SelectMany(x => x.Changes)
-            //         .ToList();
-            //
-            //     var changesPerDocument = changesByEnvelopeNumber
-            //         .OfType<ElasticPerDocumentChange<T>>()
-            //         .SelectMany(change => change.Changes)
-            //         .GroupBy(x => x.Key)
-            //         .ToDictionary(x => x.Key, x => x.Select(y => y.Value));
-            //
-            //     var massUpdates = changesByEnvelopeNumber
-            //         .OfType<ElasticMassChange>();
-            //
-            //     var documents = new Dictionary<Guid, T>();
-            //
-            //     foreach (var changeSet in changesPerDocument)
-            //     {
-            //         var document = new T();
-            //
-            //         if (!documents.ContainsKey(changeSet.Key))
-            //         {
-            //             if ((await _elastic.TryGetAsync(() => _elastic.WriteClient.DocumentExistsAsync<T>(changeSet.Key))).Exists)
-            //             {
-            //                 document = (await _elastic.TryGetAsync(() =>
-            //                         _elastic.WriteClient.GetAsync<T>(changeSet.Key)))
-            //                     .ThrowOnFailure()
-            //                     .Source;
-            //             }
-            //             documents.Add(changeSet.Key, document);
-            //         }
-            //         else
-            //         {
-            //             document = documents[changeSet.Key];
-            //         }
-            //
-            //         foreach (var change in changeSet.Value)
-            //         {
-            //             change(document);
-            //         }
-            //     }
-            //
-            //     if (documents.Any())
-            //     {
-            //         (await _elastic.TryGetAsync(async () =>
-            //                 await _elastic.WriteClient.IndexManyAsync<T>(documents.Values)))
-            //             .ThrowOnFailure();
-            //     }
-            //
-            //     foreach (var massUpdate in massUpdates)
-            //     {
-            //         await massUpdate.Change(_elastic);
-            //     }
-            //
-            //     UpdateProjectionState(newLastProcessedEventNumber);
-
-                        List<IEnvelope> envelopes = _store
+            var envelopes = _store
                 .GetEventEnvelopesAfter(lastProcessedEventNumber, _batchSize, eventsBeingListenedTo.ToArray())
                 .ToList();
 
             LogEnvelopeCount(envelopes);
 
-            var newLastProcessedEventNumber = new int?();
             try
             {
                 var allChanges = new List<ElasticChanges>();
@@ -159,71 +83,75 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 {
                     var changes = await ProcessEnvelope(envelope);
                     allChanges.Add(changes);
-                    newLastProcessedEventNumber = changes.EnvelopeNumber;
                 }
 
                 var documentCache = new Dictionary<Guid, T>();
 
                 foreach (var changeSet in allChanges)
                 {
+                    int? newLastProcessedEventNumber = changeSet.EnvelopeNumber;
+
                     foreach (var changeSetChange in changeSet.Changes)
                     {
-                        if (changeSetChange is ElasticPerDocumentChange<T> perDocumentChange)
+                        switch (changeSetChange)
                         {
-                            foreach (var documentChange in perDocumentChange.Changes)
+                            case ElasticPerDocumentChange<T> perDocumentChange:
                             {
-                                var document = new T();
-
-                                if (!documentCache.ContainsKey(documentChange.Key))
+                                foreach (var documentChange in perDocumentChange.Changes)
                                 {
-                                    if ((await _elastic.TryGetAsync(() => _elastic.WriteClient.DocumentExistsAsync<T>(documentChange.Key))).Exists)
+                                    var document = new T();
+
+                                    if (!documentCache.ContainsKey(documentChange.Key))
                                     {
-                                        document = (await _elastic.TryGetAsync(() =>
-                                                _elastic.WriteClient.GetAsync<T>(documentChange.Key)))
-                                            .ThrowOnFailure()
-                                            .Source;
+                                        if ((await _elastic.TryGetAsync(() => _elastic.WriteClient.DocumentExistsAsync<T>(documentChange.Key))).Exists)
+                                        {
+                                            document = (await _elastic.TryGetAsync(() =>
+                                                    _elastic.WriteClient.GetAsync<T>(documentChange.Key)))
+                                                .ThrowOnFailure()
+                                                .Source;
+                                        }
+                                        documentCache.Add(documentChange.Key, document);
                                     }
-                                    documentCache.Add(documentChange.Key, document);
-                                }
-                                else
-                                {
-                                    document = documentCache[documentChange.Key];
+                                    else
+                                    {
+                                        document = documentCache[documentChange.Key];
+                                    }
+
+                                    documentChange.Value(document);
                                 }
 
-                                documentChange.Value(document);
+                                break;
                             }
-                        }
-                        else if (changeSetChange is ElasticMassChange massChange)
-                        {
-                            if (documentCache.Any())
+                            case ElasticMassChange massChange:
                             {
+                                await FlushDocuments(documentCache, newLastProcessedEventNumber);
+                                await massChange.Change(_elastic);
                                 (await _elastic.TryGetAsync(async () =>
-                                        await _elastic.WriteClient.IndexManyAsync(documentCache.Values)))
+                                        await _elastic.WriteClient.Indices.RefreshAsync(Indices.Index<T>())))
                                     .ThrowOnFailure();
-                                documentCache.Clear();
+                                break;
                             }
-
-                            await massChange.Change(_elastic);
-                            (await _elastic.TryGetAsync(async () =>
-                                    await _elastic.WriteClient.Indices.RefreshAsync(Indices.Index<T>())))
-                                .ThrowOnFailure();
                         }
                     }
-                    if (documentCache.Any())
-                    {
-                        (await _elastic.TryGetAsync(async () =>
-                                await _elastic.WriteClient.IndexManyAsync(documentCache.Values)))
-                            .ThrowOnFailure();
-                        documentCache.Clear();
-                    }
+                    await FlushDocuments(documentCache, newLastProcessedEventNumber);
                 }
-
-                UpdateProjectionState(newLastProcessedEventNumber);
             }
             catch (Exception ex)
             {
                 _logger.LogCritical(0, ex, "[{ProjectionName}] An exception occurred while handling envelopes.",
                     ProjectionName);
+            }
+        }
+
+        private async Task FlushDocuments(Dictionary<Guid, T> documentCache, int? newLastProcessedEventNumber)
+        {
+            if (documentCache.Any())
+            {
+                (await _elastic.TryGetAsync(async () =>
+                        await _elastic.WriteClient.IndexManyAsync(documentCache.Values)))
+                    .ThrowOnFailure();
+                await UpdateProjectionState(newLastProcessedEventNumber);
+                documentCache.Clear();
             }
         }
 
