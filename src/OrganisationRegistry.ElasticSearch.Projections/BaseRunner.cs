@@ -87,10 +87,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections
 
                 var documentCache = new Dictionary<Guid, T>();
 
+                int? newLastProcessedEventNumber = null;
                 foreach (var changeSet in allChanges)
                 {
-                    int? newLastProcessedEventNumber = changeSet.EnvelopeNumber;
-
+                    newLastProcessedEventNumber = changeSet.EnvelopeNumber;
                     foreach (var changeSetChange in changeSet.Changes)
                     {
                         switch (changeSetChange)
@@ -133,8 +133,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                             }
                         }
                     }
-                    await FlushDocuments(documentCache, newLastProcessedEventNumber);
                 }
+                await FlushDocuments(documentCache, newLastProcessedEventNumber);
             }
             catch (Exception ex)
             {
