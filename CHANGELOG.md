@@ -1,3 +1,10 @@
+# [1.82.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.81.4...v1.82.0) (2021-05-27)
+
+
+### Features
+
+* log event number with exception ([16074f2](https://github.com/informatievlaanderen/organisation-registry/commit/16074f298642196c2b9ffc64d4bb0e0290c147fb))
+
 ## [1.81.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.81.3...v1.81.4) (2021-05-27)
 
 
