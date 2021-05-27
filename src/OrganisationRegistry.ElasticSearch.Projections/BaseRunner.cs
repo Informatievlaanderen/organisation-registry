@@ -124,8 +124,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                             }
                             case ElasticMassChange massChange:
                             {
-                                await FlushDocuments(documentCache, newLastProcessedEventNumber);
+                                await FlushDocuments(documentCache);
                                 await massChange.Change(_elastic);
+                                await UpdateProjectionState(newLastProcessedEventNumber);
                                 await _elastic.TryGetAsync(async () =>
                                     (await _elastic.WriteClient.Indices.RefreshAsync(Indices.Index<T>())).ThrowOnFailure());
                                 break;
@@ -133,7 +134,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                         }
                     }
                 }
-                await FlushDocuments(documentCache, newLastProcessedEventNumber);
+                await FlushDocuments(documentCache);
+                await UpdateProjectionState(newLastProcessedEventNumber);
             }
             catch (Exception ex)
             {
@@ -142,14 +144,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             }
         }
 
-        private async Task FlushDocuments(Dictionary<Guid, T> documentCache, int? newLastProcessedEventNumber)
+        private async Task FlushDocuments(Dictionary<Guid, T> documentCache)
         {
             if (documentCache.Any())
             {
                 (await _elastic.TryGetAsync(async () =>
                         await _elastic.WriteClient.IndexManyAsync(documentCache.Values)))
                     .ThrowOnFailure();
-                await UpdateProjectionState(newLastProcessedEventNumber);
                 documentCache.Clear();
             }
         }
