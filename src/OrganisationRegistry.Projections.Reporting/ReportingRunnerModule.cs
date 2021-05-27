@@ -57,6 +57,10 @@ namespace OrganisationRegistry.Projections.Reporting
                 .As<ISecurityService>()
                 .InstancePerLifetimeScope();
 
+            builder.RegisterType<DateTimeProvider>()
+                .As<IDateTimeProvider>()
+                .SingleInstance();
+
             builder.Populate(_services);
         }
 
