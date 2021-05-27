@@ -1,3 +1,10 @@
+## [1.81.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.81.3...v1.81.4) (2021-05-27)
+
+
+### Bug Fixes
+
+* only update projection state after applying mass change ([6c8b3d6](https://github.com/informatievlaanderen/organisation-registry/commit/6c8b3d64567f373442bc384e2bd5e6d49004642f))
+
 ## [1.81.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.81.2...v1.81.3) (2021-05-27)
 
 
