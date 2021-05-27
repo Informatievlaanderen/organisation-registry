@@ -58,282 +58,267 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedFunctionTypeToBodySeat> message)
         {
-            using (var context = ContextFactory.Create())
+            await using var context = ContextFactory.Create();
+            var organisationForBody = await GetOrganisationForBodyFromCache(context, message.Body.BodyId);
+            var bodySeat = await context.BodySeatCacheForBodyMandateList.SingleAsync(item => item.BodySeatId == message.Body.BodySeatId);
+
+            var delegationListItem = new DelegationListItem
             {
-                var organisationForBody = GetOrganisationForBodyFromCache(context, message.Body.BodyId);
+                Id = message.Body.BodyMandateId,
 
-                var delegationListItem = new DelegationListItem
-                {
-                    Id = message.Body.BodyMandateId,
+                OrganisationId = message.Body.OrganisationId,
+                OrganisationName = message.Body.OrganisationName,
 
-                    OrganisationId = message.Body.OrganisationId,
-                    OrganisationName = message.Body.OrganisationName,
+                FunctionTypeId = message.Body.FunctionTypeId,
+                FunctionTypeName = message.Body.FunctionTypeName,
 
-                    FunctionTypeId = message.Body.FunctionTypeId,
-                    FunctionTypeName = message.Body.FunctionTypeName,
+                BodyId = message.Body.BodyId,
+                BodyName = _memoryCaches.BodyNames[message.Body.BodyId],
 
-                    BodyId = message.Body.BodyId,
-                    BodyName = _memoryCaches.BodyNames[message.Body.BodyId],
+                BodyOrganisationId = organisationForBody.OrganisationId,
+                BodyOrganisationName = organisationForBody.OrganisationName,
 
-                    BodyOrganisationId = organisationForBody.OrganisationId,
-                    BodyOrganisationName = organisationForBody.OrganisationName,
+                BodySeatId = message.Body.BodySeatId,
+                BodySeatName = message.Body.BodySeatName,
+                BodySeatNumber = message.Body.BodySeatNumber,
+                BodySeatTypeName = bodySeat.SeatTypeName,
 
-                    BodySeatId = message.Body.BodySeatId,
-                    BodySeatName = message.Body.BodySeatName,
-                    BodySeatNumber = message.Body.BodySeatNumber,
+                IsDelegated = false,
 
-                    IsDelegated = false,
+                ValidFrom = message.Body.ValidFrom,
+                ValidTo = message.Body.ValidTo
+            };
 
-                    ValidFrom = message.Body.ValidFrom,
-                    ValidTo = message.Body.ValidTo
-                };
-
-                context.DelegationList.Add(delegationListItem);
-                context.SaveChanges();
-            }
+            context.DelegationList.Add(delegationListItem);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedOrganisationToBodySeat> message)
         {
-            using (var context = ContextFactory.Create())
+            await using var context = ContextFactory.Create();
+            var organisationForBody = await GetOrganisationForBodyFromCache(context, message.Body.BodyId);
+            var bodySeat = await context.BodySeatCacheForBodyMandateList.SingleAsync(item => item.BodySeatId == message.Body.BodySeatId);
+
+            var delegationListItem = new DelegationListItem
             {
-                var organisationForBody = GetOrganisationForBodyFromCache(context, message.Body.BodyId);
+                Id = message.Body.BodyMandateId,
 
-                var delegationListItem = new DelegationListItem
-                {
-                    Id = message.Body.BodyMandateId,
+                OrganisationId = message.Body.OrganisationId,
+                OrganisationName = message.Body.OrganisationName,
 
-                    OrganisationId = message.Body.OrganisationId,
-                    OrganisationName = message.Body.OrganisationName,
+                FunctionTypeId = null,
+                FunctionTypeName = string.Empty,
 
-                    FunctionTypeId = null,
-                    FunctionTypeName = string.Empty,
+                BodyId = message.Body.BodyId,
+                BodyName = _memoryCaches.BodyNames[message.Body.BodyId],
 
-                    BodyId = message.Body.BodyId,
-                    BodyName = _memoryCaches.BodyNames[message.Body.BodyId],
+                BodyOrganisationId = organisationForBody.OrganisationId,
+                BodyOrganisationName = organisationForBody.OrganisationName,
 
-                    BodyOrganisationId = organisationForBody.OrganisationId,
-                    BodyOrganisationName = organisationForBody.OrganisationName,
+                BodySeatId = message.Body.BodySeatId,
+                BodySeatName = message.Body.BodySeatName,
+                BodySeatNumber = message.Body.BodySeatNumber,
+                BodySeatTypeName = bodySeat.SeatTypeName,
 
-                    BodySeatId = message.Body.BodySeatId,
-                    BodySeatName = message.Body.BodySeatName,
-                    BodySeatNumber = message.Body.BodySeatNumber,
+                IsDelegated = false,
 
-                    IsDelegated = false,
+                ValidFrom = message.Body.ValidFrom,
+                ValidTo = message.Body.ValidTo
+            };
 
-                    ValidFrom = message.Body.ValidFrom,
-                    ValidTo = message.Body.ValidTo
-                };
-
-                context.DelegationList.Add(delegationListItem);
-                context.SaveChanges();
-            }
+            context.DelegationList.Add(delegationListItem);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedFunctionTypeToBodySeat> message)
         {
-            using (var context = ContextFactory.Create())
-            {
-                var organisationForBody = GetOrganisationForBodyFromCache(context, message.Body.BodyId);
+            await using var context = ContextFactory.Create();
+            var organisationForBody = await GetOrganisationForBodyFromCache(context, message.Body.BodyId);
+            var bodySeat = await context.BodySeatCacheForBodyMandateList.SingleAsync(item => item.BodySeatId == message.Body.BodySeatId);
 
-                var delegationListItem = context.DelegationList.SingleOrDefault(item => item.Id == message.Body.BodyMandateId);
+            var delegationListItem = await context.DelegationList.SingleOrDefaultAsync(item => item.Id == message.Body.BodyMandateId);
 
-                delegationListItem.OrganisationId = message.Body.OrganisationId;
-                delegationListItem.OrganisationName = message.Body.OrganisationName;
+            delegationListItem.OrganisationId = message.Body.OrganisationId;
+            delegationListItem.OrganisationName = message.Body.OrganisationName;
 
-                delegationListItem.FunctionTypeId = message.Body.FunctionTypeId;
-                delegationListItem.FunctionTypeName = message.Body.FunctionTypeName;
+            delegationListItem.FunctionTypeId = message.Body.FunctionTypeId;
+            delegationListItem.FunctionTypeName = message.Body.FunctionTypeName;
 
-                delegationListItem.BodyId = message.Body.BodyId;
-                delegationListItem.BodyName = _memoryCaches.BodyNames[message.Body.BodyId];
+            delegationListItem.BodyId = message.Body.BodyId;
+            delegationListItem.BodyName = _memoryCaches.BodyNames[message.Body.BodyId];
 
-                delegationListItem.BodyOrganisationId = organisationForBody.OrganisationId;
-                delegationListItem.BodyOrganisationName = organisationForBody.OrganisationName;
+            delegationListItem.BodyOrganisationId = organisationForBody.OrganisationId;
+            delegationListItem.BodyOrganisationName = organisationForBody.OrganisationName;
 
-                delegationListItem.BodySeatId = message.Body.BodySeatId;
-                delegationListItem.BodySeatName = message.Body.BodySeatName;
-                delegationListItem.BodySeatNumber = message.Body.BodySeatNumber;
+            delegationListItem.BodySeatId = message.Body.BodySeatId;
+            delegationListItem.BodySeatName = message.Body.BodySeatName;
+            delegationListItem.BodySeatNumber = message.Body.BodySeatNumber;
+            delegationListItem.BodySeatTypeName = bodySeat.SeatTypeName;
 
-                delegationListItem.ValidFrom = message.Body.ValidFrom;
-                delegationListItem.ValidTo = message.Body.ValidTo;
+            delegationListItem.ValidFrom = message.Body.ValidFrom;
+            delegationListItem.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedOrganisationToBodySeat> message)
         {
-            using (var context = ContextFactory.Create())
-            {
-                var organisationForBody = GetOrganisationForBodyFromCache(context, message.Body.BodyId);
+            await using var context = ContextFactory.Create();
+            var organisationForBody = await GetOrganisationForBodyFromCache(context, message.Body.BodyId);
+            var bodySeat = await context.BodySeatCacheForBodyMandateList.SingleAsync(item => item.BodySeatId == message.Body.BodySeatId);
 
-                var delegationListItem = context.DelegationList.SingleOrDefault(item => item.Id == message.Body.BodyMandateId);
+            var delegationListItem = await context.DelegationList.SingleOrDefaultAsync(item => item.Id == message.Body.BodyMandateId);
 
-                delegationListItem.OrganisationId = message.Body.OrganisationId;
-                delegationListItem.OrganisationName = message.Body.OrganisationName;
+            delegationListItem.OrganisationId = message.Body.OrganisationId;
+            delegationListItem.OrganisationName = message.Body.OrganisationName;
 
-                delegationListItem.BodyId = message.Body.BodyId;
-                delegationListItem.BodyName = _memoryCaches.BodyNames[message.Body.BodyId];
+            delegationListItem.BodyId = message.Body.BodyId;
+            delegationListItem.BodyName = _memoryCaches.BodyNames[message.Body.BodyId];
 
-                delegationListItem.BodyOrganisationId = organisationForBody.OrganisationId;
-                delegationListItem.BodyOrganisationName = organisationForBody.OrganisationName;
+            delegationListItem.BodyOrganisationId = organisationForBody.OrganisationId;
+            delegationListItem.BodyOrganisationName = organisationForBody.OrganisationName;
 
-                delegationListItem.BodySeatId = message.Body.BodySeatId;
-                delegationListItem.BodySeatName = message.Body.BodySeatName;
-                delegationListItem.BodySeatNumber = message.Body.BodySeatNumber;
+            delegationListItem.BodySeatId = message.Body.BodySeatId;
+            delegationListItem.BodySeatName = message.Body.BodySeatName;
+            delegationListItem.BodySeatNumber = message.Body.BodySeatNumber;
+            delegationListItem.BodySeatTypeName = bodySeat.SeatTypeName;
 
-                delegationListItem.ValidFrom = message.Body.ValidFrom;
-                delegationListItem.ValidTo = message.Body.ValidTo;
 
-                context.SaveChanges();
-            }
+            delegationListItem.ValidFrom = message.Body.ValidFrom;
+            delegationListItem.ValidTo = message.Body.ValidTo;
+
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
         {
-            using (var context = ContextFactory.Create())
-            {
-                var delegationListItem = context.DelegationList.SingleOrDefault(item => item.Id == message.Body.BodyMandateId);
+            await using var context = ContextFactory.Create();
+            var delegationListItem = await context.DelegationList.SingleOrDefaultAsync(item => item.Id == message.Body.BodyMandateId);
 
-                delegationListItem.NumberOfDelegationAssignments++;
-                delegationListItem.IsDelegated = delegationListItem.NumberOfDelegationAssignments > 0;
+            delegationListItem.NumberOfDelegationAssignments++;
+            delegationListItem.IsDelegated = delegationListItem.NumberOfDelegationAssignments > 0;
 
-                context.SaveChanges();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
         {
-            using (var context = ContextFactory.Create())
-            {
-                var delegationListItem = context.DelegationList.SingleOrDefault(item => item.Id == message.Body.BodyMandateId);
+            await using var context = ContextFactory.Create();
+            var delegationListItem = await context.DelegationList.SingleOrDefaultAsync(item => item.Id == message.Body.BodyMandateId);
 
-                delegationListItem.NumberOfDelegationAssignments--;
-                delegationListItem.IsDelegated = delegationListItem.NumberOfDelegationAssignments > 0;
+            delegationListItem.NumberOfDelegationAssignments--;
+            delegationListItem.IsDelegated = delegationListItem.NumberOfDelegationAssignments > 0;
 
-                context.SaveChanges();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
-            UpdateOrganisationName(message.Body.OrganisationId, message.Body.Name);
+            await UpdateOrganisationName(message.Body.OrganisationId, message.Body.Name);
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
-            UpdateOrganisationName(message.Body.OrganisationId, message.Body.Name);
+            await UpdateOrganisationName(message.Body.OrganisationId, message.Body.Name);
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            UpdateOrganisationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
+            await UpdateOrganisationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
         }
 
-        private void UpdateOrganisationName(Guid organisationId, string organisationName)
+        private async Task UpdateOrganisationName(Guid organisationId, string organisationName)
         {
-            using (var context = ContextFactory.Create())
-            {
-                var organisationNames =
-                    context.DelegationList.Where(item => item.OrganisationId == organisationId);
+            await using var context = ContextFactory.Create();
+            var organisationNames =
+                context.DelegationList.Where(item => item.OrganisationId == organisationId);
 
-                foreach (var delegationListItem in organisationNames)
-                    delegationListItem.OrganisationName = organisationName;
+            foreach (var delegationListItem in organisationNames)
+                delegationListItem.OrganisationName = organisationName;
 
-                var bodyOrganisationNames =
-                    context.DelegationList.Where(item => item.BodyOrganisationId == organisationId);
+            var bodyOrganisationNames =
+                context.DelegationList.Where(item => item.BodyOrganisationId == organisationId);
 
-                foreach (var delegationListItem in bodyOrganisationNames)
-                    delegationListItem.BodyOrganisationName = organisationName;
+            foreach (var delegationListItem in bodyOrganisationNames)
+                delegationListItem.BodyOrganisationName = organisationName;
 
-                context.SaveChanges();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
         {
-            using (var context = ContextFactory.Create())
-            {
-                var delegationListItems = context.DelegationList.Where(item => item.BodyId == message.Body.BodyId);
+            await using var context = ContextFactory.Create();
+            var delegationListItems = context.DelegationList.Where(item => item.BodyId == message.Body.BodyId);
 
-                foreach (var delegationListItem in delegationListItems)
-                    delegationListItem.BodyName = message.Body.Name;
+            foreach (var delegationListItem in delegationListItems)
+                delegationListItem.BodyName = message.Body.Name;
 
-                context.SaveChanges();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatNumberAssigned> message)
         {
-            using (var context = ContextFactory.Create())
-            {
-                var delegationListItems = context.DelegationList.Where(item => item.BodySeatId == message.Body.BodySeatId);
+            await using var context = ContextFactory.Create();
+            var delegationListItems = context.DelegationList.Where(item => item.BodySeatId == message.Body.BodySeatId);
 
-                foreach (var delegationListItem in delegationListItems)
-                    delegationListItem.BodySeatNumber = message.Body.BodySeatNumber;
+            foreach (var delegationListItem in delegationListItems)
+                delegationListItem.BodySeatNumber = message.Body.BodySeatNumber;
 
-                context.SaveChanges();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
         {
-            using (var context = ContextFactory.Create())
-            {
-                var delegationListItems = context.DelegationList.Where(item => item.BodySeatId == message.Body.BodySeatId);
+            await using var context = ContextFactory.Create();
+            var delegationListItems = context.DelegationList.Where(item => item.BodySeatId == message.Body.BodySeatId);
 
-                foreach (var delegationListItem in delegationListItems)
-                    delegationListItem.BodySeatName = message.Body.Name;
+            foreach (var delegationListItem in delegationListItems)
+                delegationListItem.BodySeatName = message.Body.Name;
 
-                context.SaveChanges();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
-            using (var context = ContextFactory.Create())
+            await using var context = ContextFactory.Create();
+            var body = new OrganisationPerBody
             {
-                var body = new OrganisationPerBody
-                {
-                    BodyId = message.Body.BodyId,
-                    BodyOrganisationId = message.Body.BodyOrganisationId,
-                    OrganisationId = message.Body.OrganisationId,
-                    OrganisationName = message.Body.OrganisationName,
-                };
+                BodyId = message.Body.BodyId,
+                BodyOrganisationId = message.Body.BodyOrganisationId,
+                OrganisationId = message.Body.OrganisationId,
+                OrganisationName = message.Body.OrganisationName,
+            };
 
-                context.OrganisationPerBodyList.Add(body);
+            context.OrganisationPerBodyList.Add(body);
 
-                foreach (var delegationListItem in context.DelegationList.Where(item => item.BodyId == message.Body.BodyId))
-                {
-                    delegationListItem.BodyOrganisationId = message.Body.OrganisationId;
-                    delegationListItem.BodyOrganisationName = message.Body.OrganisationName;
-                }
-
-                context.SaveChanges();
+            foreach (var delegationListItem in context.DelegationList.Where(item => item.BodyId == message.Body.BodyId))
+            {
+                delegationListItem.BodyOrganisationId = message.Body.OrganisationId;
+                delegationListItem.BodyOrganisationName = message.Body.OrganisationName;
             }
+
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
-            using (var context = ContextFactory.Create())
+            await using var context = ContextFactory.Create();
+            var body = await context
+                .OrganisationPerBodyList
+                .SingleOrDefaultAsync(x => x.BodyId == message.Body.BodyId);
+
+            if (body == null)
+                return;
+
+            context.OrganisationPerBodyList.Remove(body);
+
+            foreach (var delegationListItem in context.DelegationList.Where(item => item.BodyId == message.Body.BodyId))
             {
-                var body = context
-                    .OrganisationPerBodyList
-                    .SingleOrDefault(x => x.BodyId == message.Body.BodyId);
-
-                if (body == null)
-                    return;
-
-                context.OrganisationPerBodyList.Remove(body);
-
-                foreach (var delegationListItem in context.DelegationList.Where(item => item.BodyId == message.Body.BodyId))
-                {
-                    delegationListItem.BodyOrganisationId = null;
-                    delegationListItem.BodyOrganisationName = string.Empty;
-                }
-
-                context.SaveChanges();
+                delegationListItem.BodyOrganisationId = null;
+                delegationListItem.BodyOrganisationName = string.Empty;
             }
+
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
@@ -341,28 +326,26 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             if (message.Body.OrganisationId == message.Body.PreviousOrganisationId)
                 return;
 
-            using (var context = ContextFactory.Create())
+            await using var context = ContextFactory.Create();
+            var body = await context
+                .OrganisationPerBodyList
+                .SingleOrDefaultAsync(x =>
+                    x.BodyId == message.Body.BodyId &&
+                    x.BodyOrganisationId == message.Body.BodyOrganisationId);
+
+            if (body == null)
+                return;
+
+            body.OrganisationId = message.Body.OrganisationId;
+            body.OrganisationName = message.Body.OrganisationName;
+
+            foreach (var delegationListItem in context.DelegationList.Where(item => item.BodyId == message.Body.BodyId))
             {
-                var body = context
-                    .OrganisationPerBodyList
-                    .SingleOrDefault(x =>
-                        x.BodyId == message.Body.BodyId &&
-                        x.BodyOrganisationId == message.Body.BodyOrganisationId);
-
-                if (body == null)
-                    return;
-
-                body.OrganisationId = message.Body.OrganisationId;
-                body.OrganisationName = message.Body.OrganisationName;
-
-                foreach (var delegationListItem in context.DelegationList.Where(item => item.BodyId == message.Body.BodyId))
-                {
-                    delegationListItem.BodyOrganisationId = message.Body.OrganisationId;
-                    delegationListItem.BodyOrganisationName = message.Body.OrganisationName;
-                }
-
-                context.SaveChanges();
+                delegationListItem.BodyOrganisationId = message.Body.OrganisationId;
+                delegationListItem.BodyOrganisationName = message.Body.OrganisationName;
             }
+
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<InitialiseProjection> message)
@@ -372,9 +355,9 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
 
             Logger.LogInformation("Clearing tables for {ProjectionName}.", message.Body.ProjectionName);
 
-            using (var context = ContextFactory.Create())
-                context.Database.ExecuteSqlRaw(
-                    string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [OrganisationRegistry].[{tableName}];")));
+            await using var context = ContextFactory.Create();
+            await context.Database.ExecuteSqlRawAsync(
+                string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [OrganisationRegistry].[{tableName}];")));
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
@@ -382,11 +365,11 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
 
-        private static CachedOrganisationBody GetOrganisationForBodyFromCache(OrganisationRegistryContext context, Guid bodyId)
+        private static async Task<CachedOrganisationBody> GetOrganisationForBodyFromCache(OrganisationRegistryContext context, Guid bodyId)
         {
-            var organisationPerBody = context
+            var organisationPerBody = await context
                 .OrganisationPerBodyList
-                .SingleOrDefault(x => x.BodyId == bodyId);
+                .SingleOrDefaultAsync(x => x.BodyId == bodyId);
 
             return organisationPerBody != null
                 ? CachedOrganisationBody.FromCache(organisationPerBody)

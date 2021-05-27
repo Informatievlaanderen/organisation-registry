@@ -33,14 +33,14 @@ namespace OrganisationRegistry.Api.Delegations.Queries
 
         public string BodySeatName { get; }
         public string BodySeatNumber { get; }
+        public string? BodySeatTypeName { get; }
 
         public bool IsDelegated { get; }
 
         public DateTime? ValidFrom { get; }
         public DateTime? ValidTo { get; }
 
-        public DelegationListQueryResult(
-            Guid id,
+        public DelegationListQueryResult(Guid id,
             Guid organisationId,
             string organisationName,
             Guid? functionTypeId,
@@ -51,6 +51,7 @@ namespace OrganisationRegistry.Api.Delegations.Queries
             string bodyOrganisationName,
             string bodySeatName,
             string bodySeatNumber,
+            string? bodySeatTypeName,
             bool isDelegated,
             DateTime? validFrom,
             DateTime? validTo)
@@ -65,6 +66,7 @@ namespace OrganisationRegistry.Api.Delegations.Queries
             ValidFrom = validFrom;
             ValidTo = validTo;
             BodySeatNumber = bodySeatNumber;
+            BodySeatTypeName = bodySeatTypeName;
             FunctionTypeId = functionTypeId;
             FunctionTypeName = functionTypeName;
             BodyOrganisationId = bodyOrganisationId;
@@ -92,6 +94,7 @@ namespace OrganisationRegistry.Api.Delegations.Queries
                 x.BodyOrganisationName,
                 x.BodySeatName,
                 x.BodySeatNumber,
+                x.BodySeatTypeName,
                 x.IsDelegated,
                 x.ValidFrom,
                 x.ValidTo);

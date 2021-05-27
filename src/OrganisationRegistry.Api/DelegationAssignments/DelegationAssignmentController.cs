@@ -11,7 +11,6 @@ namespace OrganisationRegistry.Api.DelegationAssignments
     using Infrastructure.Security;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Authorization;
     using Queries;
     using Requests;
