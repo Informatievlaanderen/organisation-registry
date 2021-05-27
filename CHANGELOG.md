@@ -1,3 +1,10 @@
+## [1.81.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.81.2...v1.81.3) (2021-05-27)
+
+
+### Bug Fixes
+
+* throw from inside async closure ([6c06643](https://github.com/informatievlaanderen/organisation-registry/commit/6c06643afd6ba805c387a6d29cae91b1a1a279ac))
+
 ## [1.81.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.81.1...v1.81.2) (2021-05-27)
 
 
