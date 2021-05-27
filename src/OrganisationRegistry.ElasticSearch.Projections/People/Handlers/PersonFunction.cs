@@ -122,7 +122,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         {
             return new ElasticMassChange
             (
-                async elastic => await elastic.WriteClient
+                async elastic => await elastic
                     .MassUpdatePersonAsync(
                         x => x.Functions.Single().FunctionId, message.Body.FunctionId,
                         "functions", "functionId",
@@ -151,7 +151,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         {
             return new ElasticMassChange
             (
-                async elastic => await elastic.WriteClient
+                async elastic => await elastic
                     .MassUpdatePersonAsync(
                         x => x.Functions.Single().OrganisationId, organisationId,
                         "functions", "organisationId",

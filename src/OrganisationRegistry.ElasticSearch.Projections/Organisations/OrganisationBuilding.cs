@@ -32,7 +32,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         {
             return new ElasticMassChange
             (
-                elastic => elastic.TryAsync(() => elastic.WriteClient
+                elastic => elastic.TryAsync(() => elastic
                     .MassUpdateOrganisationAsync(
                         x => x.Buildings.Single().BuildingId, message.Body.BuildingId,
                         "buildings", "buildingId",

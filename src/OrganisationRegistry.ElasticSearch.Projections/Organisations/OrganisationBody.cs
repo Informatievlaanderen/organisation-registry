@@ -35,7 +35,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         {
             return new ElasticMassChange
             (
-                elastic => elastic.TryAsync(async () => await elastic.WriteClient
+                elastic => elastic.TryAsync(async () => await elastic
                     .MassUpdateOrganisationAsync(
                         x => x.Bodies.Single().BodyId, message.Body.BodyId,
                         "bodies", "bodyId",

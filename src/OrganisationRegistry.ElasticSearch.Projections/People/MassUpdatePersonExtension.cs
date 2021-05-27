@@ -48,7 +48,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People
         }
 
         public static async Task MassUpdatePersonAsync(
-            this ElasticClient client,
+            this Elastic client,
             Expression<Func<PersonDocument, object>> queryFieldSelector,
             object queryFieldValue,
             string listPropertyName,
@@ -59,9 +59,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People
             DateTimeOffset changeTime,
             int scrollSize = 100)
         {
-            await client.Indices.RefreshAsync(Indices.Index<PersonDocument>());
+            await client.TryGetAsync(async () =>
+                (await client.WriteClient.Indices.RefreshAsync(Indices.Index<PersonDocument>())).ThrowOnFailure());
 
-            (await client
+            (await client.WriteClient
                     .UpdateByQueryAsync<PersonDocument>(x => x
                         .Query(q => q
                             .Term(t => t

@@ -38,7 +38,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         {
             return new ElasticMassChange
             (
-                elastic => elastic.TryAsync(() => elastic.WriteClient
+                elastic => elastic.TryAsync(() => elastic
                     .MassUpdateOrganisationAsync(
                         x => x.OrganisationClassifications.Single().OrganisationClassificationTypeId, message.Body.OrganisationClassificationTypeId,
                         "organisationClassifications", "organisationClassificationTypeId",
@@ -52,7 +52,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         {
             return new ElasticMassChange
             (
-                elastic => elastic.TryAsync(() => elastic.WriteClient
+                elastic => elastic.TryAsync(() => elastic
                     .MassUpdateOrganisationAsync(
                         x => x.OrganisationClassifications.Single().OrganisationClassificationId, message.Body.OrganisationClassificationId,
                         "organisationClassifications", "organisationClassificationId",

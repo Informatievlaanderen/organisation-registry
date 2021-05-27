@@ -52,7 +52,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         {
             return new ElasticMassChange
             (
-                elastic => elastic.TryAsync(async () => await elastic.WriteClient
+                elastic => elastic.TryAsync(async () => await elastic
                     .MassUpdatePersonAsync(
                         x => x.Capacities.Single().CapacityId, message.Body.CapacityId,
                         "capacities", "capacityId",
@@ -66,7 +66,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         {
             return new ElasticMassChange
             (
-                elastic => elastic.TryAsync(async () => await elastic.WriteClient
+                elastic => elastic.TryAsync(async () => await elastic
                     .MassUpdatePersonAsync(
                         x => x.Capacities.Single().FunctionId, message.Body.FunctionId,
                         "capacities", "functionId",
@@ -162,7 +162,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
         private async Task MassUpdateOrganisationName(Elastic elastic, Guid organisationId, string name, int messageNumber, DateTimeOffset timestamp)
         {
-            await elastic.TryAsync(async () => await elastic.WriteClient
+            await elastic.TryAsync(async () => await elastic
                 .MassUpdatePersonAsync(
                     x => x.Capacities.Single().OrganisationId, organisationId,
                     "capacities", "organisationId",
@@ -400,7 +400,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                 {
                     foreach (var (key, value) in message.Body.FieldsToTerminate.Capacities)
                     {
-                        await elastic.TryAsync(() => elastic.WriteClient
+                        await elastic.TryAsync(() => elastic
                             .MassUpdatePersonAsync(
                                 queryFieldSelector: x => x.Capacities.Single().CapacityId, queryFieldValue: key,
                                 listPropertyName: "capacities", idPropertyName: "capacityId",
