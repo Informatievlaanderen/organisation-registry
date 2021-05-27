@@ -48,7 +48,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         }
 
         public static async Task MassUpdateOrganisationAsync(
-            this ElasticClient client,
+            this Elastic client,
             Expression<Func<OrganisationDocument, object>> queryFieldSelector,
             object queryFieldValue,
             string listPropertyName,
@@ -59,9 +59,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             DateTimeOffset changeTime,
             int scrollSize = 100)
         {
-            await client.Indices.RefreshAsync(Indices.Index<OrganisationDocument>());
+            await client.TryGetAsync(async () =>
+                (await client.WriteClient.Indices.RefreshAsync(Indices.Index<OrganisationDocument>())).ThrowOnFailure());
 
-            (await client
+            (await client.WriteClient
                     .UpdateByQueryAsync<OrganisationDocument>(x => x
                         .Query(q => q
                             .Term(t => t

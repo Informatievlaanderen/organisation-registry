@@ -162,7 +162,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         {
             return new ElasticMassChange
             (
-                elastic => elastic.TryAsync(() => elastic.WriteClient
+                elastic => elastic.TryAsync(() => elastic
                     .MassUpdateOrganisationAsync(
                         x => x.Purposes.Single().PurposeId, message.Body.PurposeId,
                         "purposes", "purposeId",

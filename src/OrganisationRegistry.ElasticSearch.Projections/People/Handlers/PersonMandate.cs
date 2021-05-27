@@ -148,7 +148,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         {
             return new ElasticMassChange
             (
-                async elastic => await elastic.WriteClient
+                async elastic => await elastic
                     .MassUpdatePersonAsync(
                         x => x.Mandates.Single().BodyId, message.Body.BodyId,
                         "mandates", "bodyId",
@@ -167,7 +167,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     await using var organisationRegistryContext = _contextFactory.Create();
                     var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
 
-                    await elastic.TryAsync(() => elastic.WriteClient
+                    await elastic.TryAsync(() => elastic
                         .MassUpdatePersonAsync(
                             x => x.Mandates.Single().BodyId, message.Body.BodyId,
                             "mandates", "bodyId",
@@ -175,7 +175,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             message.Number,
                             message.Timestamp));
 
-                    await elastic.TryAsync(() => elastic.WriteClient
+                    await elastic.TryAsync(() => elastic
                         .MassUpdatePersonAsync(
                             x => x.Mandates.Single().BodyId, message.Body.BodyId,
                             "mandates", "bodyId",
@@ -193,7 +193,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             (
                 async elastic =>
                 {
-                    await elastic.TryAsync(() => elastic.WriteClient
+                    await elastic.TryAsync(() => elastic
                         .MassUpdatePersonAsync(
                             x => x.Mandates.Single().BodySeatId, message.Body.BodySeatId,
                             "mandates", "bodySeatId",
@@ -201,7 +201,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             message.Number,
                             message.Timestamp));
 
-                    await elastic.TryAsync(() => elastic.WriteClient
+                    await elastic.TryAsync(() => elastic
                         .MassUpdatePersonAsync(
                             x => x.Mandates.Single().BodySeatId, message.Body.BodySeatId,
                             "mandates", "bodySeatId",
@@ -232,7 +232,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         {
             return new ElasticMassChange
             (
-                async elastic => await elastic.WriteClient
+                async elastic => await elastic
                     .MassUpdatePersonAsync(
                         x => x.Mandates.Single().BodyOrganisationId, organisationId,
                         "mandates", "bodyOrganisationId",
@@ -372,7 +372,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     await using var organisationRegistryContext = _contextFactory.Create();
                     var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
 
-                    await elastic.TryAsync(() => elastic.WriteClient
+                    await elastic.TryAsync(() => elastic
                         .MassUpdatePersonAsync(
                             x => x.Mandates.Single().BodyId, message.Body.BodyId,
                             "mandates", "BodyId",
@@ -380,7 +380,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             message.Number,
                             message.Timestamp));
 
-                    await elastic.TryAsync(() => elastic.WriteClient
+                    await elastic.TryAsync(() => elastic
                         .MassUpdatePersonAsync(
                             x => x.Mandates.Single().BodyId, message.Body.BodyId,
                             "mandates", "BodyId",
@@ -397,7 +397,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             return new ElasticMassChange(
                 async elastic =>
                 {
-                    await elastic.TryAsync(() => elastic.WriteClient
+                    await elastic.TryAsync(() => elastic
                         .MassUpdatePersonAsync(
                             x => x.Mandates.Single().BodyId, message.Body.BodyId,
                             "mandates", "bodyId",
@@ -405,7 +405,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             message.Number,
                             message.Timestamp));
 
-                    await elastic.TryAsync(() => elastic.WriteClient
+                    await elastic.TryAsync(() => elastic
                         .MassUpdatePersonAsync(
                             x => x.Mandates.Single().BodyId, message.Body.BodyId,
                             "mandates", "bodyId",

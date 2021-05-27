@@ -126,9 +126,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                             {
                                 await FlushDocuments(documentCache, newLastProcessedEventNumber);
                                 await massChange.Change(_elastic);
-                                (await _elastic.TryGetAsync(async () =>
-                                        await _elastic.WriteClient.Indices.RefreshAsync(Indices.Index<T>())))
-                                    .ThrowOnFailure();
+                                await _elastic.TryGetAsync(async () =>
+                                    (await _elastic.WriteClient.Indices.RefreshAsync(Indices.Index<T>())).ThrowOnFailure());
                                 break;
                             }
                         }

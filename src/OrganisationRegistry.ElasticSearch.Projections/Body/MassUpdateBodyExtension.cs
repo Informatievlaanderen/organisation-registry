@@ -80,7 +80,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         /// <param name="changeTime"></param>
         /// <param name="scrollSize"></param>
         public static async Task MassUpdateBodyAsync(
-            this ElasticClient client,
+            this Elastic client,
             Expression<Func<BodyDocument, object>> queryFieldSelector,
             object queryFieldValue,
             string listPropertyName,
@@ -91,9 +91,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             DateTimeOffset changeTime,
             int scrollSize = 100)
         {
-            await client.Indices.RefreshAsync(Indices.Index<BodyDocument>());
+            await client.TryGetAsync(async () =>
+                (await client.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>())).ThrowOnFailure());
 
-            (await client
+            (await client.WriteClient
                     .UpdateByQueryAsync<BodyDocument>(x => x
                         .Query(q => q
                             .Term(t => t

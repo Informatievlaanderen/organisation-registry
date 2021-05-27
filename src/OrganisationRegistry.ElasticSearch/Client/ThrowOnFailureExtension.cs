@@ -40,6 +40,14 @@
             return response;
         }
 
+        public static RefreshResponse ThrowOnFailure<T>(this RefreshResponse response) where T : class
+        {
+            if (!response.IsValid)
+                throw new ElasticsearchException(response.DebugInformation, response.OriginalException);
+
+            return response;
+        }
+
         public static ShardsOperationResponseBase ThrowOnFailure(this ShardsOperationResponseBase response)
         {
             if (!response.IsValid)
