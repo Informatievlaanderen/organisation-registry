@@ -16,7 +16,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using Autofac.Util;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
-    using Be.Vlaanderen.Basisregisters.EventHandling;
     using Body;
     using Cache;
     using Client;
@@ -30,17 +29,14 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using Nest;
     using Newtonsoft.Json;
     using NodaTime;
     using Serilog;
     using OrganisationRegistry.Configuration.Database;
     using OrganisationRegistry.Configuration.Database.Configuration;
     using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Bus;
-    using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Config;
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Domain;
@@ -49,7 +45,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
     using Organisations;
     using People;
-    using People.Handlers;
     using SqlServer;
     using SqlServer.Configuration;
     using SqlServer.Infrastructure;
@@ -60,7 +55,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     {
         public static async Task Main(string[] args)
         {
-            Console.WriteLine("Starting RoadRegistry.Product.ProjectionHost");
+            Console.WriteLine("Starting OrganisationRegistry ElasticSearch Projections.");
 
             AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
                 Log.Debug(eventArgs.Exception, "FirstChanceException event raised in {AppDomain}.", AppDomain.CurrentDomain.FriendlyName);

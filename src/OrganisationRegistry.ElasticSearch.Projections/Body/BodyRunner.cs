@@ -7,14 +7,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using OrganisationRegistry.Body;
     using OrganisationRegistry.Infrastructure.Events;
     using SqlServer.ProjectionState;
 
     public class BodyRunner : BaseRunner<BodyDocument>
     {
         public const string ElasticSearchProjectionsProjectionName = "ElasticSearchBodiesProjection";
-        private static readonly string ProjectionFullName = typeof(Body).FullName;
+        private static readonly string ProjectionFullName = typeof(BodyHandler).FullName;
         private new const string ProjectionName = nameof(Projections.Body);
 
         public new static readonly Type[] EventHandlers =
