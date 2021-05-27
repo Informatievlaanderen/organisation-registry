@@ -6,12 +6,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using System.Linq;
     using System.Reflection;
     using System.Text;
-    using System.Threading;
     using System.Threading.Tasks;
-    using Amazon;
     using App.Metrics;
-    using Autofac;
-    using Autofac.Extensions.DependencyInjection;
     using Autofac.Features.OwnedInstances;
     using Autofac.Util;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
@@ -20,7 +16,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using Cache;
     using Client;
     using Configuration;
-    using Destructurama;
     using Infrastructure;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;
@@ -29,7 +24,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using Newtonsoft.Json;
     using NodaTime;
     using Serilog;
     using OrganisationRegistry.Configuration.Database;
@@ -42,7 +36,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using OrganisationRegistry.Infrastructure.Domain;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Infrastructure.EventStore;
-    using OrganisationRegistry.Infrastructure.Infrastructure.Json;
     using Organisations;
     using People;
     using SqlServer;
@@ -57,10 +50,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections
         {
             Console.WriteLine("Starting OrganisationRegistry ElasticSearch Projections.");
 
-            AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
+            AppDomain.CurrentDomain.FirstChanceException += (_, eventArgs) =>
                 Log.Debug(eventArgs.Exception, "FirstChanceException event raised in {AppDomain}.", AppDomain.CurrentDomain.FriendlyName);
 
-            AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
+            AppDomain.CurrentDomain.UnhandledException += (_, eventArgs) =>
                 Log.Fatal((Exception)eventArgs.ExceptionObject, "Encountered a fatal exception, exiting program.");
 
             var host = new HostBuilder()
@@ -256,7 +249,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                         .AddTransient<ElasticBusRegistrar>()
                         .AddSingleton<Func<IServiceProvider>>(provider => () => provider)
 
-                        .AddScoped<DbConnection>(s =>
+                        .AddScoped<DbConnection>(_ =>
                         {
                             var hostConfiguration = hostContext.Configuration;
                             return new TraceDbConnection<OrganisationRegistryContext>(
@@ -313,441 +306,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             {
                 Log.CloseAndFlush();
             }
-        }
-    }
-
-    internal class Program2
-    {
-        public static async Task Main2(string[] args)
-        {
-            Console.WriteLine("Starting ElasticSearch Projections Runner");
-
-            JsonConvert.DefaultSettings =
-                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
-
-            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "development";
-            var builder =
-                new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                    .AddJsonFile($"appsettings.{env.ToLowerInvariant()}.json", optional: true)
-                    .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
-                    .AddEnvironmentVariables();
-
-            var sqlConfiguration = builder.Build().GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>();
-            var configuration = builder
-                .AddEntityFramework(x => x.UseSqlServer(
-                    sqlConfiguration.ConnectionString,
-                    y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")))
-                .Build();
-
-            // await RunCacheRunner(configuration);
-            // await RunIndividualRunner(configuration);
-            // await RunProgram<PeopleRunner>(configuration);
-            // await RunProgram<OrganisationsRunner>(configuration);
-            await RunBodyRunner(configuration);
-        }
-
-        private static async Task RunProgram<T, U>(IConfiguration configuration)
-            where T : BaseRunner<U>
-            where U: class, IDocument, new()
-        {
-            var runnerName = typeof(T).Name;
-            var services = new ServiceCollection();
-
-            services.AddLogging(loggingBuilder =>
-            {
-                var loggerConfiguration = new LoggerConfiguration()
-                    .ReadFrom.Configuration(configuration)
-                    .Enrich.FromLogContext()
-                    .Enrich.WithMachineName()
-                    .Enrich.WithThreadId()
-                    .Enrich.WithEnvironmentUserName()
-                    .Destructure.JsonNetTypes();
-
-                Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
-
-                Log.Logger = loggerConfiguration.CreateLogger();
-
-                loggingBuilder.AddSerilog();
-            });
-
-            var app = ConfigureServices(services, configuration);
-
-            var logger = app.GetService<ILogger<Program>>();
-
-            if (!app.GetService<IOptions<TogglesConfiguration>>().Value.ApplicationAvailable)
-            {
-                logger.LogInformation("[{RunnerName}] Application offline, exiting program.", runnerName);
-                return;
-            }
-
-            var elasticSearchOptions = app.GetService<IOptions<ElasticSearchConfiguration>>().Value;
-
-            var distributedLock = new DistributedLock<T>(
-                new DistributedLockOptions
-                {
-                    Region = RegionEndpoint.GetBySystemName(elasticSearchOptions.LockRegionEndPoint),
-                    AwsAccessKeyId = elasticSearchOptions.LockAccessKeyId,
-                    AwsSecretAccessKey = elasticSearchOptions.LockAccessKeySecret,
-                    TableName = elasticSearchOptions.LockTableName,
-                    LeasePeriod = TimeSpan.FromMinutes(elasticSearchOptions.LockLeasePeriodInMinutes),
-                    ThrowOnFailedRenew = true,
-                    TerminateApplicationOnFailedRenew = true,
-                    Enabled = elasticSearchOptions.LockEnabled,
-                }, logger);
-
-            var acquiredLock = false;
-            try
-            {
-                logger.LogInformation("[{RunnerName}] Trying to acquire lock.", runnerName);
-                acquiredLock = distributedLock.AcquireLock();
-
-                if (!acquiredLock)
-                {
-                    logger.LogInformation("[{RunnerName}] Could not get lock, another instance is busy", runnerName);
-                    return;
-                }
-
-                if (app.GetService<IOptions<TogglesConfiguration>>().Value.ElasticSearchProjectionsAvailable)
-                {
-                    var runner = app.GetService<T>();
-                    // UseOrganisationRegistryEventSourcing(app, runner);
-
-                    await runner.Run();
-                    logger.LogInformation("[{RunnerName}] Processing completed successfully, exiting program.", runnerName);
-                }
-                else
-                {
-                    logger.LogInformation("[{RunnerName}] ElasticSearch Projections Toggle not enabled, exiting program.", runnerName);
-                }
-
-                FlushLoggerAndTelemetry();
-            }
-            catch (Exception e)
-            {
-                logger.LogCritical(0, e, "[{RunnerName}] Encountered a fatal exception, exiting program."); // dotnet core only supports global exceptionhandler starting from 1.2
-                FlushLoggerAndTelemetry();
-                throw;
-            }
-            finally
-            {
-                if (acquiredLock)
-                    distributedLock.ReleaseLock();
-            }
-        }
-
-        private static async Task RunCacheRunner(IConfiguration configuration)
-        {
-            var runnerName = nameof(CacheRunner);
-            var services = new ServiceCollection();
-
-            services.AddLogging(loggingBuilder =>
-            {
-                var loggerConfiguration = new LoggerConfiguration()
-                    .ReadFrom.Configuration(configuration)
-                    .Enrich.FromLogContext()
-                    .Enrich.WithMachineName()
-                    .Enrich.WithThreadId()
-                    .Enrich.WithEnvironmentUserName()
-                    .Destructure.JsonNetTypes();
-
-                Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
-
-                Log.Logger = loggerConfiguration.CreateLogger();
-
-                loggingBuilder.AddSerilog();
-            });
-
-            var app = ConfigureServices(services, configuration);
-
-            var logger = app.GetService<ILogger<Program>>();
-
-            if (!app.GetService<IOptions<TogglesConfiguration>>().Value.ApplicationAvailable)
-            {
-                logger.LogInformation("[{RunnerName}] Application offline, exiting program.", runnerName);
-                return;
-            }
-
-            var elasticSearchOptions = app.GetService<IOptions<ElasticSearchConfiguration>>().Value;
-
-            var distributedLock = new DistributedLock<CacheRunner>(
-                new DistributedLockOptions
-                {
-                    Region = RegionEndpoint.GetBySystemName(elasticSearchOptions.LockRegionEndPoint),
-                    AwsAccessKeyId = elasticSearchOptions.LockAccessKeyId,
-                    AwsSecretAccessKey = elasticSearchOptions.LockAccessKeySecret,
-                    TableName = elasticSearchOptions.LockTableName,
-                    LeasePeriod = TimeSpan.FromMinutes(elasticSearchOptions.LockLeasePeriodInMinutes),
-                    ThrowOnFailedRenew = true,
-                    TerminateApplicationOnFailedRenew = true,
-                    Enabled = elasticSearchOptions.LockEnabled,
-                }, logger);
-
-            var acquiredLock = false;
-            try
-            {
-                logger.LogInformation("[{RunnerName}] Trying to acquire lock.", runnerName);
-                acquiredLock = distributedLock.AcquireLock();
-
-                if (!acquiredLock)
-                {
-                    logger.LogInformation("[{RunnerName}] Could not get lock, another instance is busy", runnerName);
-                    return;
-                }
-
-                if (app.GetService<IOptions<TogglesConfiguration>>().Value.ElasticSearchProjectionsAvailable)
-                {
-                    var runner = app.GetService<CacheRunner>();
-                    UseOrganisationRegistryEventSourcing(app, runner);
-
-                    await runner.Run();
-                    logger.LogInformation("[{RunnerName}] Processing completed successfully, exiting program.", runnerName);
-                }
-                else
-                {
-                    logger.LogInformation("[{RunnerName}] ElasticSearch Projections Toggle not enabled, exiting program.", runnerName);
-                }
-
-                FlushLoggerAndTelemetry();
-            }
-            catch (Exception e)
-            {
-                logger.LogCritical(0, e, "[{RunnerName}] Encountered a fatal exception, exiting program."); // dotnet core only supports global exceptionhandler starting from 1.2
-                FlushLoggerAndTelemetry();
-                throw;
-            }
-            finally
-            {
-                if (acquiredLock)
-                    distributedLock.ReleaseLock();
-            }
-        }
-
-        private static async Task RunBodyRunner(IConfiguration configuration)
-        {
-            var runnerName = nameof(BodyRunner);
-            var services = new ServiceCollection();
-
-            services.AddLogging(loggingBuilder =>
-            {
-                var loggerConfiguration = new LoggerConfiguration()
-                    .ReadFrom.Configuration(configuration)
-                    .Enrich.FromLogContext()
-                    .Enrich.WithMachineName()
-                    .Enrich.WithThreadId()
-                    .Enrich.WithEnvironmentUserName()
-                    .Destructure.JsonNetTypes();
-
-                Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
-
-                Log.Logger = loggerConfiguration.CreateLogger();
-
-                loggingBuilder.AddSerilog();
-            });
-
-            var app = ConfigureServices(services, configuration);
-
-            var logger = app.GetService<ILogger<Program>>();
-
-            if (!app.GetService<IOptions<TogglesConfiguration>>().Value.ApplicationAvailable)
-            {
-                logger.LogInformation("[{RunnerName}] Application offline, exiting program.", runnerName);
-                return;
-            }
-
-            var elasticSearchOptions = app.GetService<IOptions<ElasticSearchConfiguration>>().Value;
-
-            var distributedLock = new DistributedLock<CacheRunner>(
-                new DistributedLockOptions
-                {
-                    Region = RegionEndpoint.GetBySystemName(elasticSearchOptions.LockRegionEndPoint),
-                    AwsAccessKeyId = elasticSearchOptions.LockAccessKeyId,
-                    AwsSecretAccessKey = elasticSearchOptions.LockAccessKeySecret,
-                    TableName = elasticSearchOptions.LockTableName,
-                    LeasePeriod = TimeSpan.FromMinutes(elasticSearchOptions.LockLeasePeriodInMinutes),
-                    ThrowOnFailedRenew = true,
-                    TerminateApplicationOnFailedRenew = true,
-                    Enabled = elasticSearchOptions.LockEnabled,
-                }, logger);
-
-            var acquiredLock = false;
-            try
-            {
-                logger.LogInformation("[{RunnerName}] Trying to acquire lock.", runnerName);
-                acquiredLock = distributedLock.AcquireLock();
-
-                if (!acquiredLock)
-                {
-                    logger.LogInformation("[{RunnerName}] Could not get lock, another instance is busy", runnerName);
-                    return;
-                }
-
-                if (app.GetService<IOptions<TogglesConfiguration>>().Value.ElasticSearchProjectionsAvailable)
-                {
-                    var runner = app.GetService<BodyRunner>();
-                    UseOrganisationRegistryEventSourcing(app, runner);
-
-                    await runner.Run();
-                    logger.LogInformation("[{RunnerName}] Processing completed successfully, exiting program.", runnerName);
-                }
-                else
-                {
-                    logger.LogInformation("[{RunnerName}] ElasticSearch Projections Toggle not enabled, exiting program.", runnerName);
-                }
-
-                FlushLoggerAndTelemetry();
-            }
-            catch (Exception e)
-            {
-                logger.LogCritical(0, e, "[{RunnerName}] Encountered a fatal exception, exiting program."); // dotnet core only supports global exceptionhandler starting from 1.2
-                FlushLoggerAndTelemetry();
-                throw;
-            }
-            finally
-            {
-                if (acquiredLock)
-                    distributedLock.ReleaseLock();
-            }
-        }
-
-
-        private static async Task RunIndividualRunner(IConfiguration configuration)
-        {
-            var runnerName = nameof(IndividualRebuildRunner);
-            var services = new ServiceCollection();
-
-            services.AddLogging(loggingBuilder =>
-            {
-                var loggerConfiguration = new LoggerConfiguration()
-                    .ReadFrom.Configuration(configuration)
-                    .Enrich.FromLogContext()
-                    .Enrich.WithMachineName()
-                    .Enrich.WithThreadId()
-                    .Enrich.WithEnvironmentUserName()
-                    .Destructure.JsonNetTypes();
-
-                Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
-
-                Log.Logger = loggerConfiguration.CreateLogger();
-
-                loggingBuilder.AddSerilog();
-            });
-
-            var app = ConfigureServices(services, configuration);
-
-            var logger = app.GetService<ILogger<Program>>();
-
-            if (!app.GetService<IOptions<TogglesConfiguration>>().Value.ApplicationAvailable)
-            {
-                logger.LogInformation("[{RunnerName}] Application offline, exiting program.", runnerName);
-                return;
-            }
-
-            var elasticSearchOptions = app.GetService<IOptions<ElasticSearchConfiguration>>().Value;
-
-            var distributedLock = new DistributedLock<IndividualRebuildRunner>(
-                new DistributedLockOptions
-                {
-                    Region = RegionEndpoint.GetBySystemName(elasticSearchOptions.LockRegionEndPoint),
-                    AwsAccessKeyId = elasticSearchOptions.LockAccessKeyId,
-                    AwsSecretAccessKey = elasticSearchOptions.LockAccessKeySecret,
-                    TableName = elasticSearchOptions.LockTableName,
-                    LeasePeriod = TimeSpan.FromMinutes(elasticSearchOptions.LockLeasePeriodInMinutes),
-                    ThrowOnFailedRenew = true,
-                    TerminateApplicationOnFailedRenew = true,
-                    Enabled = elasticSearchOptions.LockEnabled,
-                }, logger);
-
-            var acquiredLock = false;
-            try
-            {
-                logger.LogInformation("[{RunnerName}] Trying to acquire lock.", runnerName);
-                acquiredLock = distributedLock.AcquireLock();
-
-                if (!acquiredLock)
-                {
-                    logger.LogInformation("[{RunnerName}] Could not get lock, another instance is busy", runnerName);
-                    return;
-                }
-
-                if (app.GetService<IOptions<TogglesConfiguration>>().Value.ElasticSearchProjectionsAvailable)
-                {
-                    var runner = app.GetService<IndividualRebuildRunner>();
-                    UseOrganisationRegistryEventSourcing(app, runner);
-
-                    await runner.Run();
-                    logger.LogInformation("[{RunnerName}] Processing completed successfully, exiting program.", runnerName);
-                }
-                else
-                {
-                    logger.LogInformation("[{RunnerName}] ElasticSearch Projections Toggle not enabled, exiting program.", runnerName);
-                }
-
-                FlushLoggerAndTelemetry();
-            }
-            catch (Exception e)
-            {
-                logger.LogCritical(0, e, "[{RunnerName}] Encountered a fatal exception, exiting program."); // dotnet core only supports global exceptionhandler starting from 1.2
-                FlushLoggerAndTelemetry();
-                throw;
-            }
-            finally
-            {
-                if (acquiredLock)
-                    distributedLock.ReleaseLock();
-            }
-        }
-
-        private static void FlushLoggerAndTelemetry()
-        {
-            Log.CloseAndFlush();
-
-            // Allow some time for flushing before shutdown.
-            Thread.Sleep(1000);
-        }
-
-        private static IServiceProvider ConfigureServices(
-            IServiceCollection services,
-            IConfiguration configuration)
-        {
-            services.AddOptions();
-
-            services.AddHostedService<EventProcessor>();
-
-            var serviceProvider = services.BuildServiceProvider();
-
-            var builder = new ContainerBuilder();
-            builder.RegisterModule(new ElasticSearchProjectionsModule(configuration, services, serviceProvider.GetRequiredService<ILoggerFactory>()));
-            return new AutofacServiceProvider(builder.Build());
-        }
-
-        // private static void UseOrganisationRegistryEventSourcing(IServiceProvider app, BaseRunner runner)
-        // {
-        //     var registrar = app.GetRequiredService<BusRegistrar>();
-        //
-        //     registrar.RegisterEventHandlers(runner.EventHandlers);
-        // }
-
-        private static void UseOrganisationRegistryEventSourcing(IServiceProvider app, IndividualRebuildRunner _)
-        {
-            var registrar = app.GetRequiredService<BusRegistrar>();
-
-            registrar.RegisterEventHandlers(OrganisationsRunner.EventHandlers);
-        }
-
-        private static void UseOrganisationRegistryEventSourcing(IServiceProvider app, CacheRunner _)
-        {
-            var registrar = app.GetRequiredService<BusRegistrar>();
-
-            registrar.RegisterEventHandlers(CacheRunner.EventHandlers);
-        }
-
-        private static void UseOrganisationRegistryEventSourcing(IServiceProvider app, BodyRunner _)
-        {
-            var registrar = app.GetRequiredService<ElasticBusRegistrar>();
-
-            registrar.RegisterEventHandlers(BodyRunner.EventHandlers);
         }
     }
 }
