@@ -1,3 +1,10 @@
+## [1.81.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.81.1...v1.81.2) (2021-05-27)
+
+
+### Bug Fixes
+
+* use correct handler for ProjectionFullName ([7ebba2f](https://github.com/informatievlaanderen/organisation-registry/commit/7ebba2fddf96ee1806aeec9ce9af39a66e94a14f))
+
 ## [1.81.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.81.0...v1.81.1) (2021-05-26)
 
 
