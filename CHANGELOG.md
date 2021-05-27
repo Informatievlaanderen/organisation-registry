@@ -1,3 +1,10 @@
+# [1.83.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.82.0...v1.83.0) (2021-05-27)
+
+
+### Features
+
+* add seat type name to delegations ([530564b](https://github.com/informatievlaanderen/organisation-registry/commit/530564b232a94bdc33a165b5135048356a341174))
+
 # [1.82.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.81.4...v1.82.0) (2021-05-27)
 
 
