@@ -7,7 +7,7 @@ namespace OrganisationRegistry.Import.Piavo
     using Models;
 
     /// <summary>
-    /// OrganisationRegistry API - Informatie Vlaanderen
+    /// OrganisationRegistry API - Digitaal Vlaanderen
     /// </summary>
     public partial interface IOrganisationRegistryAPI : System.IDisposable
     {

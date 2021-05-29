@@ -119,8 +119,8 @@ namespace OrganisationRegistry.Api.Infrastructure
                                 Description = GetApiLeadingText(description),
                                 Contact = new OpenApiContact
                                 {
-                                    Name = "Informatie Vlaanderen",
-                                    Email = "informatie.vlaanderen@vlaanderen.be",
+                                    Name = "Digitaal Vlaanderen",
+                                    Email = "digitaal.vlaanderen@vlaanderen.be",
                                     Url = new Uri("https://legacy.basisregisters.vlaanderen")
                                 }
                             },

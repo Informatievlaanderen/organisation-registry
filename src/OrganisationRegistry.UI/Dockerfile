@@ -1,6 +1,6 @@
 FROM nginx:stable-alpine as production-stage
 
-LABEL maintainer "agentschap Informatie Vlaanderen <informatie.vlaanderen@vlaanderen.be>"
+LABEL maintainer "Digitaal Vlaanderen <digitaal.vlaanderen@vlaanderen.be>"
 
 COPY default.conf /etc/nginx/conf.d/default.conf
 COPY /wwwroot /usr/share/nginx/html
