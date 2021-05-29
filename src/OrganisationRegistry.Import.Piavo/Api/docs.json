@@ -3,7 +3,7 @@
   "info": {
     "version": "",
     "title": "OrganisationRegistry API",
-    "description": "OrganisationRegistry API - Informatie Vlaanderen"
+    "description": "OrganisationRegistry API - Digitaal Vlaanderen"
   },
   "basePath": "/",
   "paths": {
