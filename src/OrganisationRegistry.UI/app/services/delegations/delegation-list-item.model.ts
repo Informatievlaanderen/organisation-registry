@@ -7,6 +7,7 @@ export class DelegationListItem {
     public bodyId: string = '',
     public bodyName: string = '',
     public bodySeatName: string = '',
+    public bodySeatTypeName: string = '',
     public isDelegated: boolean = false
   ) { }
 }
