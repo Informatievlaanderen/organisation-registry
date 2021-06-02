@@ -101,46 +101,19 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         return;
 
                     await UpdateCacheShowOnVlaamseOverheidSites(message);
-                    await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<PersonDocument>());
 
-                    var searchResponse = (await elastic.TryGetAsync(() => elastic.WriteClient.SearchAsync<PersonDocument>(
-                            search => search
-                                .From(0)
-                                .Size(Elastic.MaxResultWindow)
-                                .Query(query => query.Nested(
-                                    nested => nested.Path(
-                                        path => path.Capacities).Query(
-                                        innerQuery => innerQuery.Bool(
-                                            b => b.Must(
-                                                must => must.Match(
-                                                    match => match
-                                                        .Field("capacities.organisationId")
-                                                        .Query(message.Body.OrganisationId.ToString())))))))
-                                .Scroll(new Time(ScrollTimeout))))).ThrowOnFailure();
-
-                    var documents = new List<PersonDocument>();
-
-                    while (searchResponse.Documents.Any())
-                    {
-                        searchResponse.Documents
-                            .ToList()
-                            .ForEach(async document => document.ShowOnVlaamseOverheidSites = await ShouldPersonBeShownOnVlaamseOverheidSites(document));
-
-                        documents.AddRange(searchResponse.Documents);
-
-                        var response = searchResponse;
-                        searchResponse = (await elastic.TryGetAsync(() =>
-                            elastic.WriteClient.ScrollAsync<PersonDocument>(new Time(ScrollTimeout),
-                                response.ScrollId))).ThrowOnFailure();
-
-                    }
-                    (await elastic.TryGetAsync(() => elastic.WriteClient.ClearScrollAsync(new ClearScrollRequest(searchResponse.ScrollId)))).ThrowOnFailure();
-
-                    if (!documents.Any())
-                        return;
-
-                    (await elastic.TryGetAsync(() => elastic.WriteClient.IndexManyAsync(documents))).ThrowOnFailure();
-
+                    await ElasticWriter.UpdateByScroll<PersonDocument>(elastic,
+                        query => query.Nested(
+                            nested => nested.Path(
+                                path => path.Capacities).Query(
+                                innerQuery => innerQuery.Bool(
+                                    b => b.Must(
+                                        must => must.Match(
+                                            match => match
+                                                .Field("capacities.organisationId")
+                                                .Query(message.Body.OrganisationId.ToString())))))),
+                        async document => document.ShowOnVlaamseOverheidSites =
+                            await ShouldPersonBeShownOnVlaamseOverheidSites(document));
                 });
         }
 
