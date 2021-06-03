@@ -1,3 +1,18 @@
+# [1.84.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.83.0...v1.84.0) (2021-06-03)
+
+
+### Bug Fixes
+
+* move to 5.0.6 ([1746140](https://github.com/informatievlaanderen/organisation-registry/commit/17461402b2a663338d41a5641f60f52e8729a808))
+* register missing problem details helper ([540ee30](https://github.com/informatievlaanderen/organisation-registry/commit/540ee30a10045ac4e308213e05922263f864fe95))
+* update seat cache for body mandates ([cbef748](https://github.com/informatievlaanderen/organisation-registry/commit/cbef748dcfe6be097924bd6253fd0a0226a80872))
+
+
+### Features
+
+* add body seat type name to body report ([e68f48e](https://github.com/informatievlaanderen/organisation-registry/commit/e68f48e03180cbe5859b00d8e57bf5351ae0944d))
+* extract scroll to separate method ([ddd9efd](https://github.com/informatievlaanderen/organisation-registry/commit/ddd9efd968cf1d6baed5bc79c01f00b13bdb4cfe))
+
 # [1.83.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.82.0...v1.83.0) (2021-05-27)
 
 
