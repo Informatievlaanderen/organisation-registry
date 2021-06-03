@@ -4,6 +4,7 @@ namespace OrganisationRegistry.Api
     using System.Reflection;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Configuration;
     using ElasticSearch;
@@ -59,6 +60,9 @@ namespace OrganisationRegistry.Api
             builder
                 .RegisterAssemblyTypes(typeof(OrganisationRegistryApiAssemblyTokenClass).GetTypeInfo().Assembly)
                 .AsImplementedInterfaces();
+
+            builder.RegisterType<ProblemDetailsHelper>()
+                .AsSelf();
 
             builder
                 .Register(_ =>
