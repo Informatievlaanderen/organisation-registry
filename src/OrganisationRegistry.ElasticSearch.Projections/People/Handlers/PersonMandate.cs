@@ -51,7 +51,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         {
             return new ElasticPerDocumentChange<PersonDocument>
             (
-                message.Body.BodyId, async document =>
+                message.Body.PersonId, async document =>
                 {
                     await using var organisationRegistryContext = _contextFactory.Create();
                     var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
@@ -66,7 +66,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         x.BodyMandateId == message.Body.BodyMandateId &&
                         x.DelegationAssignmentId == null);
 
-                    var organisationForBody = GetOrganisationForBodyFromCache(message.Body.BodyId);
+                    var organisationForBody = await GetOrganisationForBodyFromCache(message.Body.BodyId);
 
                     document.Mandates.Add(
                         new PersonDocument.PersonMandate(
@@ -123,7 +123,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     x.BodyMandateId == message.Body.BodyMandateId &&
                     x.DelegationAssignmentId == null);
 
-                var organisationForBody = GetOrganisationForBodyFromCache(message.Body.BodyId);
+                var organisationForBody = await GetOrganisationForBodyFromCache(message.Body.BodyId);
 
                 document.Mandates.Add(
                     new PersonDocument.PersonMandate(
@@ -263,7 +263,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         x.BodyMandateId == message.Body.BodyMandateId &&
                         x.DelegationAssignmentId == message.Body.DelegationAssignmentId);
 
-                    var organisationForBody = GetOrganisationForBodyFromCache(message.Body.BodyId);
+                    var organisationForBody = await GetOrganisationForBodyFromCache(message.Body.BodyId);
 
                     document.Mandates.Add(
                         new PersonDocument.PersonMandate(
@@ -322,7 +322,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     x.BodyMandateId == message.Body.BodyMandateId &&
                     x.DelegationAssignmentId == message.Body.DelegationAssignmentId);
 
-                var organisationForBody = GetOrganisationForBodyFromCache(message.Body.BodyId);
+                var organisationForBody = await GetOrganisationForBodyFromCache(message.Body.BodyId);
 
                 document.Mandates.Add(
                     new PersonDocument.PersonMandate(
@@ -416,19 +416,17 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             );
         }
 
-        private CachedOrganisationBody GetOrganisationForBodyFromCache(Guid bodyId)
+        private async Task<CachedOrganisationBody> GetOrganisationForBodyFromCache(Guid bodyId)
         {
-            using (var context = _contextFactory.Create())
-            {
-                var organisationPerBody =
-                    context
-                        .OrganisationPerBodyListForES
-                        .SingleOrDefault(x => x.BodyId == bodyId);
+            await using var context = _contextFactory.Create();
+            var organisationPerBody =
+                await context
+                    .OrganisationPerBodyListForES
+                    .SingleOrDefaultAsync(x => x.BodyId == bodyId);
 
-                return organisationPerBody != null
-                    ? CachedOrganisationBody.FromCache(organisationPerBody)
-                    : CachedOrganisationBody.Empty();
-            }
+            return organisationPerBody != null
+                ? CachedOrganisationBody.FromCache(organisationPerBody)
+                : CachedOrganisationBody.Empty();
         }
     }
 }

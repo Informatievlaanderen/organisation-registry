@@ -106,7 +106,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             }
         }
 
-        private async Task ProcessChange(IElasticChange? changeSetChange, Dictionary<Guid, T>? documentCache,
+        private async Task ProcessChange(IElasticChange? changeSetChange, Dictionary<Guid, T> documentCache,
             int? eventNumber)
         {
                 switch (changeSetChange)
