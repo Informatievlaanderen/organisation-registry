@@ -392,6 +392,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
+
                     var bodySeat = document.Seats.Single(
                         x => x.BodySeatId == message.Body.BodySeatId);
 
