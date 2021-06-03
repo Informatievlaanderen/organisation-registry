@@ -1,3 +1,10 @@
+## [1.84.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.84.0...v1.84.1) (2021-06-03)
+
+
+### Bug Fixes
+
+* use person id i/o body id for person doc ([4dd32e3](https://github.com/informatievlaanderen/organisation-registry/commit/4dd32e3918be050ccb8d771c298abf9e76e4ca93))
+
 # [1.84.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.83.0...v1.84.0) (2021-06-03)
 
 
