@@ -45,47 +45,45 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreated> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return new ElasticDocumentCreation<OrganisationDocument>
             (
                 message.Body.OrganisationId,
-                document =>
+                () => new OrganisationDocument
                 {
-                    document.ChangeId = message.Number;
-                    document.ChangeTime = message.Timestamp;
-                    document.Id = message.Body.OrganisationId;
-                    document.Name = message.Body.Name;
-                    document.OvoNumber = message.Body.OvoNumber;
-                    document.ShortName = message.Body.ShortName;
-                    document.Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo);
-                    document.Description = message.Body.Description;
-                    document.ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites;
-                    document.Purposes = message.Body.Purposes
-                        .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList();
-                }
-            );
+                    ChangeId = message.Number,
+                    ChangeTime = message.Timestamp,
+                    Id = message.Body.OrganisationId,
+                    Name = message.Body.Name,
+                    OvoNumber = message.Body.OvoNumber,
+                    ShortName = message.Body.ShortName,
+                    Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo),
+                    Description = message.Body.Description,
+                    ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites,
+                    Purposes = message.Body.Purposes
+                        .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList()
+                });
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreatedFromKbo> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return new ElasticDocumentCreation<OrganisationDocument>
             (
                 message.Body.OrganisationId,
-                document =>
+                () => new OrganisationDocument
                 {
-                    document.ChangeId = message.Number;
-                    document.ChangeTime = message.Timestamp;
-                    document.Id = message.Body.OrganisationId;
-                    document.Name = message.Body.Name;
-                    document.OvoNumber = message.Body.OvoNumber;
-                    document.ShortName = message.Body.ShortName;
-                    document.Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo);
-                    document.Description = message.Body.Description;
-                    document.KboNumber = message.Body.KboNumber;
-                    document.ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites;
-                    document.Purposes = message.Body.Purposes
-                        .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList();
-                }
-            );
+                    ChangeId = message.Number,
+                    ChangeTime = message.Timestamp,
+                    Id = message.Body.OrganisationId,
+                    Name = message.Body.Name,
+                    OvoNumber = message.Body.OvoNumber,
+                    ShortName = message.Body.ShortName,
+                    Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo),
+                    Description = message.Body.Description,
+                    KboNumber = message.Body.KboNumber,
+                    ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites,
+                    Purposes = message.Body.Purposes
+                        .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList()
+                });
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)

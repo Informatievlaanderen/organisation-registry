@@ -6,15 +6,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using System.Threading.Tasks;
     using Body;
     using Cache;
-    using Client;
-    using Infrastructure;
-    using Infrastructure.Change;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure.Events;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using Organisations;
     using People;
-    using SqlServer.ProjectionState;
+    using SqlServer;
 
     public class EventProcessor : IHostedService
     {
@@ -22,47 +20,25 @@ namespace OrganisationRegistry.ElasticSearch.Projections
         private readonly CancellationTokenSource _messagePumpCancellation;
         private readonly Task _messagePump;
 
-        private readonly IEventStore _store;
         private readonly Scheduler _scheduler;
         private readonly ILogger<EventProcessor> _logger;
-        private readonly IProjectionStates _projectionStates;
-        private readonly Elastic _elastic;
-        private readonly ElasticBus _bus;
 
-        private static readonly TimeSpan CatchUpAfter = TimeSpan.FromSeconds(5);
         private static readonly TimeSpan ResumeAfter = TimeSpan.FromSeconds(2);
-
-        private const string ElasticSearchProjectionsProjectionName = "ElasticSearchBodiesProjection";
-        private static readonly string ProjectionFullName = typeof(BodyHandler).FullName;
-        private new const string ProjectionName = nameof(BodyHandler);
-
+        private static readonly TimeSpan WhenNotEnabledResumeAfter = TimeSpan.FromMinutes(2);
 
         private const int CatchUpBatchSize = 2000;
 
-        public static readonly Type[] EventHandlers =
-        {
-            typeof(BodyHandler)
-        };
-
-        public EventProcessor(
-            IEventStore store,
-            Scheduler scheduler,
+        public EventProcessor(Scheduler scheduler,
             ILogger<EventProcessor> logger,
-            IProjectionStates projectionStates,
-            Elastic elastic,
-            ElasticBus bus,
             BodyRunner bodyRunner,
             PeopleRunner peopleRunner,
             CacheRunner cacheRunner,
             IndividualRebuildRunner individualRebuildRunner,
-            OrganisationsRunner organisationsRunner)
+            OrganisationsRunner organisationsRunner,
+            IContextFactory contextFactory)
         {
-            _store = store;
             _scheduler = scheduler ?? throw new ArgumentNullException(nameof(scheduler));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _projectionStates = projectionStates;
-            _elastic = elastic;
-            _bus = bus;
 
             _messagePumpCancellation = new CancellationTokenSource();
             _messageChannel = Channel.CreateUnbounded<object>(new UnboundedChannelOptions
@@ -86,14 +62,33 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                                 {
                                     case Resume _:
                                         logger.LogInformation("[{Context}] Resuming ...", "body");
-                                        var projectionPosition =
-                                            await projectionStates.GetLastProcessedEventNumber(
-                                                ElasticSearchProjectionsProjectionName);
 
-                                        await _messageChannel.Writer
-                                            .WriteAsync(new CatchUp(projectionPosition, CatchUpBatchSize),
-                                                _messagePumpCancellation.Token)
-                                            .ConfigureAwait(false);
+                                        using (var context = contextFactory.Create())
+                                        {
+                                            var toggle = await context.Configuration.SingleOrDefaultAsync(item =>
+                                                item.Key == $"{TogglesConfiguration.Section}:{nameof(TogglesConfiguration.ElasticSearchProjectionsAvailable)}");
+                                            if (!bool.TryParse(toggle?.Value, out var enabled) || enabled)
+                                            {
+                                                await _messageChannel.Writer
+                                                    .WriteAsync(new CatchUp(CatchUpBatchSize),
+                                                        _messagePumpCancellation.Token)
+                                                    .ConfigureAwait(false);
+                                            }
+                                            else
+                                            {
+                                                await scheduler.Schedule(async token =>
+                                                {
+                                                    if (!_messagePumpCancellation.IsCancellationRequested)
+                                                    {
+                                                        await _messageChannel.Writer
+                                                            .WriteAsync(
+                                                                new Resume(), _messagePumpCancellation.Token)
+                                                            .ConfigureAwait(false);
+                                                    }
+                                                }, WhenNotEnabledResumeAfter).ConfigureAwait(false);
+                                            }
+                                        }
+
                                         break;
                                     case CatchUp catchUp:
                                         try
@@ -118,8 +113,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                                         catch (Exception ex)
                                         {
                                             _logger.LogCritical(0, ex,
-                                                "[{ProjectionName}] An exception occurred while handling envelopes.",
-                                                ProjectionName);
+                                                "An exception occurred while handling envelopes.");
 
                                             await scheduler.Schedule(async token =>
                                             {
@@ -139,50 +133,19 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     }
                     catch (TaskCanceledException)
                     {
-                        logger.LogInformation("[{Context}] EventProcessor message pump is exiting due to cancellation",
-                            "body");
+                        logger.LogInformation("EventProcessor message pump is exiting due to cancellation");
                     }
                     catch (OperationCanceledException)
                     {
-                        logger.LogInformation("[{Context}] EventProcessor message pump is exiting due to cancellation",
-                            "body");
+                        logger.LogInformation("EventProcessor message pump is exiting due to cancellation");
                     }
                     catch (Exception exception)
                     {
-                        logger.LogError(exception, "[{Context}] EventProcessor message pump is exiting due to a bug",
-                            "body");
+                        logger.LogError(exception, "EventProcessor message pump is exiting due to a bug");
                     }
                 }, _messagePumpCancellation.Token,
                 TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach,
                 TaskScheduler.Default);
-        }
-
-        private async Task<ElasticChanges> ProcessEnvelope(IEnvelope envelope)
-        {
-            try
-            {
-                var changes = await _bus.Publish(null, null, (dynamic) envelope);
-                return new ElasticChanges(envelope.Number, changes);
-            }
-            catch
-            {
-                _logger.LogCritical(
-                    "[{ProjectionName}] An exception occurred while processing envelope #{EnvelopeNumber}:{@EnvelopeJson}",
-                    ProjectionName,
-                    envelope.Number,
-                    envelope);
-
-                throw;
-            }
-        }
-
-        private async Task InitialiseProjection(int lastProcessedEventNumber)
-        {
-            if (lastProcessedEventNumber != -1)
-                return;
-
-            _logger.LogInformation("[{ProjectionName}] First run, initialising projections!", ProjectionName);
-            await ProcessEnvelope(new InitialiseProjection(ProjectionFullName).ToTypedEnvelope());
         }
 
 
@@ -192,13 +155,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections
 
         private class CatchUp
         {
-            public CatchUp(int? afterPosition, int batchSize)
+            public CatchUp(int batchSize)
             {
-                AfterPosition = afterPosition;
                 BatchSize = batchSize;
             }
 
-            public int? AfterPosition { get; }
             public int BatchSize { get; }
         }
 
