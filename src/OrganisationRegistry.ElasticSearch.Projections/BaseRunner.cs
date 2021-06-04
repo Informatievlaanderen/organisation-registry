@@ -98,6 +98,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 }
                 await FlushDocuments(documentCache);
                 await UpdateProjectionState(newLastProcessedEventNumber);
+                _logger.LogInformation("[{ProjectionName}] Processed up until envelope #{LastProcessedEnvelopeNumber}.", ProjectionName, newLastProcessedEventNumber);
             }
             catch (Exception ex)
             {
@@ -163,7 +164,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             {
                 if (documentCache.Any(x => x.Key == Guid.Empty || string.IsNullOrEmpty(x.Value.Name)))
                 {
-                    throw new Exception("Found document without key or name");
+                    throw new Exception("Found document without key or name.");
                 }
 
                 await _elastic.TryAsync(async () =>
@@ -186,7 +187,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             if (!newLastProcessedEventNumber.HasValue)
                 return;
 
-            _logger.LogInformation("[{ProjectionName}] Processed up until envelope #{LastProcessedEnvelopeNumber}, writing number to db...", ProjectionName, newLastProcessedEventNumber);
             await _projectionStates.UpdateProjectionState(_elasticSearchProjectionsProjectionName, newLastProcessedEventNumber.Value);
         }
 
