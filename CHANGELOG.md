@@ -1,3 +1,11 @@
+# [1.85.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.84.1...v1.85.0) (2021-06-04)
+
+
+### Features
+
+* don't log updates to the projection state ([f2dc4b5](https://github.com/informatievlaanderen/organisation-registry/commit/f2dc4b59b4f3b981e6a272ec913fa10543862e4d))
+* separate document creation from changes ([412eef9](https://github.com/informatievlaanderen/organisation-registry/commit/412eef9c1f91ff0a56cb62b6d8193a822d78566a))
+
 ## [1.84.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.84.0...v1.84.1) (2021-06-03)
 
 
