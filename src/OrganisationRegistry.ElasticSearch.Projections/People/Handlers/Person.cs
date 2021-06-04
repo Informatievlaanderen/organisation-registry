@@ -52,16 +52,16 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<PersonCreated> message)
         {
-            return new ElasticPerDocumentChange<PersonDocument>
+            return new ElasticDocumentCreation<PersonDocument>
             (
                 message.Body.PersonId,
-                document =>
+                () => new PersonDocument
                 {
-                    document.ChangeId = message.Number;
-                    document.ChangeTime = message.Timestamp;
-                    document.Id = message.Body.PersonId;
-                    document.FirstName = message.Body.FirstName;
-                    document.Name = message.Body.Name;
+                    ChangeId = message.Number,
+                    ChangeTime = message.Timestamp,
+                    Id = message.Body.PersonId,
+                    FirstName = message.Body.FirstName,
+                    Name = message.Body.Name
                 });
         }
 

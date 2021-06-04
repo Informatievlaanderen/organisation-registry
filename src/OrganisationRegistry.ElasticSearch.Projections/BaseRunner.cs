@@ -111,22 +111,27 @@ namespace OrganisationRegistry.ElasticSearch.Projections
         {
                 switch (changeSetChange)
                 {
+                    case ElasticDocumentCreation<T> elasticDocumentCreation:
+                    {
+                        foreach (var documentChange in elasticDocumentCreation.Changes)
+                        {
+                            var document = documentChange.Value();
+                            documentCache.Add(documentChange.Key, document);
+                        }
+                        break;
+                    }
                     case ElasticPerDocumentChange<T> perDocumentChange:
                     {
                         foreach (var documentChange in perDocumentChange.Changes)
                         {
-                            var document = new T();
+                            T? document;
 
                             if (!documentCache.ContainsKey(documentChange.Key))
                             {
-                                if ((await _elastic.TryGetAsync(() => _elastic.WriteClient.DocumentExistsAsync<T>(documentChange.Key)))
-                                    .Exists)
-                                {
-                                    document = (await _elastic.TryGetAsync(() =>
-                                            _elastic.WriteClient.GetAsync<T>(documentChange.Key)))
-                                        .ThrowOnFailure()
-                                        .Source;
-                                }
+                                document = (await _elastic.TryGetAsync(async () =>
+                                        (await _elastic.WriteClient.GetAsync<T>(documentChange.Key))
+                                        .ThrowOnFailure()))
+                                    .Source;
 
                                 documentCache.Add(documentChange.Key, document);
                             }
@@ -156,9 +161,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections
         {
             if (documentCache.Any())
             {
-                (await _elastic.TryGetAsync(async () =>
-                        await _elastic.WriteClient.IndexManyAsync(documentCache.Values)))
-                    .ThrowOnFailure();
+                if (documentCache.Any(x => x.Key == Guid.Empty || string.IsNullOrEmpty(x.Value.Name)))
+                {
+                    throw new Exception("Found document without key or name");
+                }
+
+                await _elastic.TryAsync(async () =>
+                    (await _elastic.WriteClient.IndexManyAsync(documentCache.Values)).ThrowOnFailure());
                 documentCache.Clear();
             }
         }

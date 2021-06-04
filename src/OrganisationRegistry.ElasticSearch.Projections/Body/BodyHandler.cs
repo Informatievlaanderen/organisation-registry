@@ -7,6 +7,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     using System.Threading.Tasks;
     using App.Metrics;
     using App.Metrics.Timer;
+    using Be.Vlaanderen.Basisregisters.AspNetCore.Swagger.ReDoc;
     using Bodies;
     using Client;
     using Common;
@@ -144,23 +145,22 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyRegistered> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return new ElasticDocumentCreation<BodyDocument>
             (
                 message.Body.BodyId,
-                document =>
+                () => new BodyDocument
                 {
-                    document.ChangeId = message.Number;
-                    document.ChangeTime = message.Timestamp;
-                    document.Id = message.Body.BodyId;
-                    document.BodyNumber = message.Body.BodyNumber;
-                    document.Name = message.Body.Name;
-                    document.ShortName = message.Body.ShortName;
-                    document.Description = message.Body.Description;
-                    document.FormalValidity = new Period(
+                    ChangeId = message.Number,
+                    ChangeTime = message.Timestamp,
+                    Id = message.Body.BodyId,
+                    BodyNumber = message.Body.BodyNumber,
+                    Name = message.Body.Name,
+                    ShortName = message.Body.ShortName,
+                    Description = message.Body.Description,
+                    FormalValidity = new Period(
                         message.Body.FormalValidFrom,
-                        message.Body.FormalValidTo);
-                }
-            );
+                        message.Body.FormalValidTo)
+                });
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
