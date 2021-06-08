@@ -287,15 +287,25 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
             await using var context = ContextFactory.Create();
-            var body = new OrganisationPerBody
+            var body = context.OrganisationPerBodyList.SingleOrDefault(x => x.BodyId == message.Body.BodyId);
+            if (body == null)
             {
-                BodyId = message.Body.BodyId,
-                BodyOrganisationId = message.Body.BodyOrganisationId,
-                OrganisationId = message.Body.OrganisationId,
-                OrganisationName = message.Body.OrganisationName,
-            };
+                body = new OrganisationPerBody
+                {
+                    BodyId = message.Body.BodyId,
+                    BodyOrganisationId = message.Body.BodyOrganisationId,
+                    OrganisationId = message.Body.OrganisationId,
+                    OrganisationName = message.Body.OrganisationName,
+                };
 
-            context.OrganisationPerBodyList.Add(body);
+                context.OrganisationPerBodyList.Add(body);
+            }
+            else
+            {
+                body.BodyOrganisationId = message.Body.BodyOrganisationId;
+                body.OrganisationId = message.Body.OrganisationId;
+                body.OrganisationName = message.Body.OrganisationName;
+            }
 
             foreach (var delegationListItem in context.DelegationList.Where(item => item.BodyId == message.Body.BodyId))
             {
