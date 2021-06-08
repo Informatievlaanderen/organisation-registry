@@ -14,6 +14,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
     using SqlServer.Infrastructure;
     using SqlServer.Person;
     using OrganisationRegistry.Infrastructure.AppSpecific;
+    using SeatType.Events;
     using SqlServer;
 
     public class DelegationListProjection :
@@ -30,6 +31,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
         IEventHandler<BodyInfoChanged>,
         IEventHandler<BodySeatNumberAssigned>,
         IEventHandler<BodySeatUpdated>,
+        IEventHandler<SeatTypeUpdated>,
         IEventHandler<BodyAssignedToOrganisation>,
         IEventHandler<BodyClearedFromOrganisation>,
         IEventHandler<BodyOrganisationUpdated>,
@@ -81,6 +83,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
                 BodySeatId = message.Body.BodySeatId,
                 BodySeatName = message.Body.BodySeatName,
                 BodySeatNumber = message.Body.BodySeatNumber,
+                BodySeatTypeId = bodySeat.SeatTypeId,
                 BodySeatTypeName = bodySeat.SeatTypeName,
 
                 IsDelegated = false,
@@ -118,6 +121,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
                 BodySeatId = message.Body.BodySeatId,
                 BodySeatName = message.Body.BodySeatName,
                 BodySeatNumber = message.Body.BodySeatNumber,
+                BodySeatTypeId = bodySeat.SeatTypeId,
                 BodySeatTypeName = bodySeat.SeatTypeName,
 
                 IsDelegated = false,
@@ -153,6 +157,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             delegationListItem.BodySeatId = message.Body.BodySeatId;
             delegationListItem.BodySeatName = message.Body.BodySeatName;
             delegationListItem.BodySeatNumber = message.Body.BodySeatNumber;
+            delegationListItem.BodySeatTypeId = bodySeat.SeatTypeId;
             delegationListItem.BodySeatTypeName = bodySeat.SeatTypeName;
 
             delegationListItem.ValidFrom = message.Body.ValidFrom;
@@ -181,6 +186,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             delegationListItem.BodySeatId = message.Body.BodySeatId;
             delegationListItem.BodySeatName = message.Body.BodySeatName;
             delegationListItem.BodySeatNumber = message.Body.BodySeatNumber;
+            delegationListItem.BodySeatTypeId = bodySeat.SeatTypeId;
             delegationListItem.BodySeatTypeName = bodySeat.SeatTypeName;
 
 
@@ -344,6 +350,17 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
                 delegationListItem.BodyOrganisationId = message.Body.OrganisationId;
                 delegationListItem.BodyOrganisationName = message.Body.OrganisationName;
             }
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeUpdated> message)
+        {
+            await using var context = ContextFactory.Create();
+            var delegationListItems = context.DelegationList.Where(item => item.BodySeatTypeId == message.Body.SeatTypeId);
+
+            foreach (var delegationListItem in delegationListItems)
+                delegationListItem.BodySeatName = message.Body.Name;
 
             await context.SaveChangesAsync();
         }
