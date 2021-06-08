@@ -27,6 +27,7 @@
         public Guid BodySeatId { get; set; } // Het postje die ingevuld wordt
         public string? BodySeatName { get; set; }
         public string? BodySeatNumber { get; set; }
+        public Guid? BodySeatTypeId { get; set; }
         public string? BodySeatTypeName { get; set; }
 
 
@@ -71,6 +72,7 @@
             b.HasIndex(x => x.BodyName);
             b.HasIndex(x => x.BodySeatName);
             b.HasIndex(x => x.BodySeatNumber);
+            b.HasIndex(x => x.BodySeatTypeId);
             b.HasIndex(x => x.BodySeatTypeName);
             b.HasIndex(x => x.IsDelegated);
             b.HasIndex(x => x.ValidFrom);
