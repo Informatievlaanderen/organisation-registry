@@ -1,3 +1,10 @@
+## [1.85.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.85.1...v1.85.2) (2021-06-08)
+
+
+### Bug Fixes
+
+* check existing organisationperbody ([3d9f0d1](https://github.com/informatievlaanderen/organisation-registry/commit/3d9f0d10d8e9a5c1919646f68e783f453e8969c5))
+
 ## [1.85.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.85.0...v1.85.1) (2021-06-08)
 
 
