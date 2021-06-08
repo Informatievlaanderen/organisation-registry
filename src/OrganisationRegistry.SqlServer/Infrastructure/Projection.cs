@@ -75,38 +75,32 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                 Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} finished.",
                     ProjectionTableNames, message.Body.ProjectionName);
 
-                //get last event number
-                var lastEvent = eventStore.GetLastEvent();
-
-                //theoretical maximum of iterations
-                var iterations = (int) Math.Ceiling((double) lastEvent / (double) BatchSize);
-
-                Logger.LogInformation("Projection rebuild for {ProjectionName} started.", message.Body.ProjectionName);
-                Logger.LogInformation(
-                    "Projection rebuild for {ProjectionName} expecting {Iterations} iterations of {BatchSize} events.",
-                    message.Body.ProjectionName, iterations, BatchSize);
+                Logger.LogInformation("Projection rebuild for {ProjectionName} started in batches of {BatchSize} events.",
+                    message.Body.ProjectionName, BatchSize);
 
                 var lastProcessed = 0;
-                for (var iteration = 0; iteration <= iterations; iteration++)
+                int envelopeCount;
+                do
                 {
                     var envelopes = eventStore
                         .GetEventEnvelopesAfter(lastProcessed, BatchSize, eventTypes.ToArray())
                         .ToList();
 
-                    var envelopeCount = envelopes.Count;
+                    envelopeCount = envelopes.Count;
 
                     foreach (var envelope in envelopes)
                     {
-                        await ((dynamic) this).Handle(dbConnection, dbTransaction, (dynamic) envelope);
-
+                        await ((dynamic)this).Handle(dbConnection, dbTransaction, (dynamic)envelope);
                         lastProcessed = envelope.Number;
                     }
-                    Logger.LogInformation("Projection rebuild for {ProjectionName} processed up until #{LastProcessed}, batch {Iteration} of {Iterations}.", message.Body.ProjectionName, lastProcessed, iteration+1, iterations);
 
-                    //if envelopeCount is smaller than BatchSize, the last event was processed
-                    if (envelopeCount < BatchSize)
-                        break;
-                }
+                    Logger.LogInformation(
+                        "Projection rebuild for {ProjectionName} processed up until #{LastProcessed}.",
+                        message.Body.ProjectionName, lastProcessed);
+
+
+                } while (envelopeCount == BatchSize); //if envelopeCount is smaller than BatchSize, the last event was processed
+
 
                 Logger.LogInformation("Projection rebuild for {ProjectionName} finished.", message.Body.ProjectionName);
             }
