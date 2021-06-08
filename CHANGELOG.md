@@ -1,3 +1,12 @@
+## [1.85.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.85.0...v1.85.1) (2021-06-08)
+
+
+### Bug Fixes
+
+* don't log incorrect number of batches ([d397134](https://github.com/informatievlaanderen/organisation-registry/commit/d397134625b5a1aba59862d07bb0beb9f493d063))
+* handle BodySeatUpdated ([ba7a2be](https://github.com/informatievlaanderen/organisation-registry/commit/ba7a2be0f1d7b23f94fd5c3b06afa5f4b904e293))
+* update cache on BodySeatUpdated ([e281700](https://github.com/informatievlaanderen/organisation-registry/commit/e281700906734161130d712c4ed20a7f96e8c99c))
+
 # [1.85.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.84.1...v1.85.0) (2021-06-04)
 
 
