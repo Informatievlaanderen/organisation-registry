@@ -470,6 +470,12 @@ namespace OrganisationRegistry.SqlServer.Body
                 bodyMandateListItem.BodySeatTypeOrder = message.Body.SeatTypeOrder ?? int.MaxValue;
             }
 
+            foreach (var cacheItem in context.BodySeatCacheForBodyMandateList.Where(item => item.BodySeatId == message.Body.BodySeatId))
+            {
+                cacheItem.SeatTypeId = message.Body.SeatTypeId;
+                cacheItem.SeatTypeName = message.Body.SeatTypeName;
+            }
+
             await context.SaveChangesAsync();
         }
 
