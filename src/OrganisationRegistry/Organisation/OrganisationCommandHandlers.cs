@@ -23,6 +23,7 @@ namespace OrganisationRegistry.Organisation
     using System.Linq;
     using System.Threading.Tasks;
     using Infrastructure.Authorization;
+    using RegulationType;
 
     public class OrganisationCommandHandlers :
         BaseCommandHandler<OrganisationCommandHandlers>,
@@ -30,6 +31,8 @@ namespace OrganisationRegistry.Organisation
         ICommandHandler<UpdateOrganisationInfo>,
         ICommandHandler<AddOrganisationKey>,
         ICommandHandler<UpdateOrganisationKey>,
+        ICommandHandler<AddOrganisationRegulation>,
+        ICommandHandler<UpdateOrganisationRegulation>,
         ICommandHandler<AddOrganisationBuilding>,
         ICommandHandler<UpdateOrganisationBuilding>,
         ICommandHandler<AddOrganisationLocation>,
@@ -286,6 +289,43 @@ namespace OrganisationRegistry.Organisation
                 message.OrganisationKeyId,
                 keyType,
                 message.Value,
+                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+
+            await Session.Commit();
+        }
+
+
+        public async Task Handle(AddOrganisationRegulation message)
+        {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+
+            var regulationType = message.RegulationTypeId != Guid.Empty ?
+                Session.Get<RegulationType>(message.RegulationTypeId) : null;
+
+            organisation.AddRegulation(
+                message.OrganisationRegulationId,
+                regulationType,
+                message.Link,
+                message.Date,
+                message.Description,
+                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+
+            await Session.Commit();
+        }
+
+        public async Task Handle(UpdateOrganisationRegulation message)
+        {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+
+            var regulationType = message.RegulationTypeId != Guid.Empty ?
+                Session.Get<RegulationType>(message.RegulationTypeId) : null;
+
+            organisation.UpdateRegulation(
+                message.OrganisationRegulationId,
+                regulationType,
+                message.Link,
+                message.Date,
+                message.Description,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
             await Session.Commit();

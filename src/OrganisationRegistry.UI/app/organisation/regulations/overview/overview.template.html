@@ -1,0 +1,20 @@
+<div class="regulation-card__content-wrapper">
+    <div class="cta-title">
+        <h3 class="h3 cta-title__title">Regulationen</h3>
+        <ww-organisation-regulation-filter
+            [isBusy]="isLoading"
+            (filter)="search($event)">
+        </ww-organisation-regulation-filter>
+        <div class="cta-title__cta">
+            <a *ngIf="(store.isEditableChanged | async)" class="button cta-title__cta" [routerLink]="['./create']">Regelgeving toevoegen</a>
+            <div class="u-align-right" style="clear: both;"></div>
+        </div>
+    </div>
+
+    <ww-organisation-regulation-list
+      [items]="organisationRegulations"
+      [isBusy]="isLoading"
+      (changePage)="changePage($event)"
+      [canEdit]="store.isEditableChanged">
+    </ww-organisation-regulation-list>
+</div>

@@ -1,0 +1,73 @@
+<div class="grid">
+  <div class="col--8-12 col--10-12--m col--1-1--s">
+    <div>
+      <h1 class="h2">Nieuwe regelgeving</h1>
+    </div>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="create(form.value)" autocomplete="off">
+      <div class="form__group">
+        <ww-form-group-select
+          [id]="'regulationTypeId'"
+          [name]="'Regulation type'"
+          [label]="'Regulation type'"
+          [control]="form.get('regulationTypeId')"
+          [placeholder]="'Selecteer regelgevingstypes...'"
+          [values]="regulationTypes">
+        </ww-form-group-select>
+
+        <ww-form-group-textbox
+          [id]="'link'"
+          [name]="'Regulation'"
+          [label]="'Regulation'"
+          [placeholder]="'Regulation'"
+          [control]="form.get('link')">
+        </ww-form-group-textbox>
+
+        <ww-form-group-datepicker
+          [id]="'date'"
+          [name]="'Datum regelgeving'"
+          [label]="'Datum regelgeving'"
+          [placeholder]="'Datum regelgeving'"
+          [control]="form.get('date')">
+        </ww-form-group-datepicker>
+
+        <ww-form-group-textarea
+          [id]="'description'"
+          [name]="'Omschrijving'"
+          [label]="'Omschrijving'"
+          [placeholder]="'Omschrijving'"
+          [control]="form.get('description')">
+        </ww-form-group-textarea>
+
+        <ww-form-group-datepicker-range
+          [fromId]="'validFrom'"
+          [fromName]="'Geldig vanaf'"
+          [fromLabel]="'Geldig vanaf'"
+          [fromPlaceholder]="'Geldig vanaf'"
+          [fromControl]="form.get('validFrom')"
+          [toId]="'validTo'"
+          [toName]="'Geldig tot'"
+          [toLabel]="'Geldig tot'"
+          [toPlaceholder]="'Geldig tot'"
+          [toControl]="form.get('validTo')">
+        </ww-form-group-datepicker-range>
+
+        <div class="form__row">
+          <div class="form__buttons">
+            <div class="form__buttons__left">
+              <a [routerLink]="['./..']" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>
+            </div>
+            <div class="form__buttons__right">
+              <button class="button form__button"
+                      type="submit"
+                      [ngClass]="{'button--disabled': !isFormValid, 'button--loading': form.disabled}"
+                      [disabled]="!isFormValid || form.disabled">
+                <span>Voeg regulation toe</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
