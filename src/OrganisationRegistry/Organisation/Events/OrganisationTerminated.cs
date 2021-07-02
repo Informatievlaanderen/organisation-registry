@@ -63,7 +63,8 @@ namespace OrganisationRegistry.Organisation.Events
                     parents: organisationTermination.Parents,
                     relations: organisationTermination.Relations,
                     formalFrameworks: organisationTermination.FormalFrameworks,
-                    openingHours: organisationTermination.OpeningHours),
+                    openingHours: organisationTermination.OpeningHours,
+                    regulations: organisationTermination.Regulations),
                 new KboFieldsToTerminate(
                     bankAccounts: organisationTerminationKboSummary.KboBankAccounts,
                     registeredOffice: organisationTerminationKboSummary.KboRegisteredOfficeLocation,
@@ -90,7 +91,8 @@ namespace OrganisationRegistry.Organisation.Events
         public Dictionary<Guid, DateTime> Relations { get; }
         public Dictionary<Guid, DateTime> FormalFrameworks { get; }
         public Dictionary<Guid, DateTime> OpeningHours { get; }
-        
+        public Dictionary<Guid, DateTime> Regulations { get; }
+
         public FieldsToTerminate(
             DateTime? organisationValidity,
             Dictionary<Guid, DateTime> buildings,
@@ -104,7 +106,8 @@ namespace OrganisationRegistry.Organisation.Events
             Dictionary<Guid, DateTime> parents,
             Dictionary<Guid, DateTime> relations,
             Dictionary<Guid, DateTime> formalFrameworks,
-            Dictionary<Guid, DateTime> openingHours)
+            Dictionary<Guid, DateTime> openingHours,
+            Dictionary<Guid, DateTime> regulations)
         {
             OrganisationValidity = organisationValidity;
             Buildings = buildings;
@@ -119,6 +122,7 @@ namespace OrganisationRegistry.Organisation.Events
             Relations = relations;
             FormalFrameworks = formalFrameworks;
             OpeningHours = openingHours;
+            Regulations = regulations;
         }
     }
 
@@ -128,7 +132,7 @@ namespace OrganisationRegistry.Organisation.Events
         public KeyValuePair<Guid, DateTime>? RegisteredOffice { get; }
         public KeyValuePair<Guid, DateTime>? FormalName { get; }
         public KeyValuePair<Guid, DateTime>? LegalForm { get; }
-        
+
         public KboFieldsToTerminate(
             Dictionary<Guid, DateTime> bankAccounts,
             KeyValuePair<Guid, DateTime>? registeredOffice,

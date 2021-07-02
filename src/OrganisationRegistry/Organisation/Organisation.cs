@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Organisation
     using Building;
     using Capacity;
     using ContactType;
+    using RegulationType;
     using Events;
     using FormalFramework;
     using Function;
@@ -19,10 +20,8 @@ namespace OrganisationRegistry.Organisation
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
     using Commands;
     using Infrastructure.Authorization;
-    using Infrastructure.Commands;
     using OrganisationTermination;
     using State;
     using Purpose = Purpose.Purpose;
@@ -56,9 +55,9 @@ namespace OrganisationRegistry.Organisation
             string name,
             string ovoNumber,
             string shortName,
-            Organisation parentOrganisation,
+            Organisation? parentOrganisation,
             string description,
-            List<Purpose> purposes,
+            IEnumerable<Purpose> purposes,
             bool showOnVlaamseOverheidSites,
             Period validity,
             IDateTimeProvider dateTimeProvider) : this()
@@ -122,9 +121,9 @@ namespace OrganisationRegistry.Organisation
             string name,
             string ovoNumber,
             string shortName,
-            Organisation parentOrganisation,
+            Organisation? parentOrganisation,
             string description,
-            List<Purpose> purposes,
+            IEnumerable<Purpose> purposes,
             bool showOnVlaamseOverheidSites,
             Period validity,
             IDateTimeProvider dateTimeProvider) : this()
@@ -1214,6 +1213,56 @@ namespace OrganisationRegistry.Organisation
                 previousOpeningHour.Validity?.End));
         }
 
+        public void AddRegulation(
+            Guid organisationRegulationId,
+            RegulationType? regulationType,
+            string? link,
+            DateTime? date,
+            string? description,
+            Period validity)
+        {
+            ApplyChange(new OrganisationRegulationAdded(
+                Id,
+                organisationRegulationId,
+                regulationType?.Id,
+                regulationType?.Name,
+                link,
+                date,
+                description,
+                validity.Start,
+                validity.End));
+        }
+
+        public void UpdateRegulation(
+            Guid organisationRegulationId,
+            RegulationType? regulationType,
+            string? link,
+            DateTime? date,
+            string? description,
+            Period validity)
+        {
+            var previousRegulation =
+                State.OrganisationRegulations.Single(regulation => regulation.OrganisationRegulationId == organisationRegulationId);
+
+            ApplyChange(new OrganisationRegulationUpdated(
+                Id,
+                organisationRegulationId,
+                regulationType?.Id,
+                regulationType?.Name,
+                link,
+                date,
+                description,
+                validity.Start, validity.End,
+                previousRegulation.RegulationTypeId,
+                previousRegulation.RegulationTypeName,
+                previousRegulation.Validity.Start,
+                previousRegulation.Validity.End,
+                previousRegulation.Link,
+                previousRegulation.Date,
+                previousRegulation.Description));
+        }
+
+
         public void AddBankAccount(
             Guid organisationBankAccountId,
             BankAccountNumber bankAccountNumber,
@@ -2000,6 +2049,34 @@ namespace OrganisationRegistry.Organisation
                     @event.KeyTypeId,
                     @event.KeyTypeName,
                     @event.Value,
+                    new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
+        }
+
+        private void Apply(OrganisationRegulationAdded @event)
+        {
+            State.OrganisationRegulations.Add(new OrganisationRegulation(
+                @event.OrganisationRegulationId,
+                @event.OrganisationId,
+                @event.RegulationTypeId,
+                @event.RegulationTypeName,
+                @event.Link,
+                @event.Date,
+                @event.Description,
+                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
+        }
+
+        private void Apply(OrganisationRegulationUpdated @event)
+        {
+            State.OrganisationRegulations.Remove(State.OrganisationRegulations.Single(ob => ob.OrganisationRegulationId == @event.OrganisationRegulationId));
+            State.OrganisationRegulations.Add(
+                new OrganisationRegulation(
+                    @event.OrganisationRegulationId,
+                    @event.OrganisationId,
+                    @event.RegulationTypeId,
+                    @event.RegulationTypeName,
+                    @event.Link,
+                    @event.Date,
+                    @event.Description,
                     new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
         }
 

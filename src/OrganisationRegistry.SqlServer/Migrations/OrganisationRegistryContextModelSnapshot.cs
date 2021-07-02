@@ -2296,6 +2296,53 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.ToTable("OrganisationParentList", "OrganisationRegistry");
                 });
 
+            modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationRegulationListItem", b =>
+                {
+                    b.Property<Guid>("OrganisationRegulationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Link")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("OrganisationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("RegulationTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RegulationTypeName")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("ValidFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ValidTo")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("OrganisationRegulationId")
+                        .IsClustered(false);
+
+                    b.HasIndex("Link");
+
+                    b.HasIndex("RegulationTypeName")
+                        .IsClustered();
+
+                    b.HasIndex("ValidFrom");
+
+                    b.HasIndex("ValidTo");
+
+                    b.ToTable("OrganisationRegulationList", "OrganisationRegistry");
+                });
+
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationRelationListItem", b =>
                 {
                     b.Property<Guid>("OrganisationRelationId")
@@ -2842,6 +2889,27 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsClustered();
 
                     b.ToTable("PurposeList", "OrganisationRegistry");
+                });
+
+            modelBuilder.Entity("OrganisationRegistry.SqlServer.RegulationType.RegulationTypeListItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id")
+                        .IsClustered(false);
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .IsClustered();
+
+                    b.ToTable("RegulationTypeList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioAssignmentItem", b =>

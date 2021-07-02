@@ -39,7 +39,8 @@ namespace OrganisationRegistry.Organisation.OrganisationTermination
                 FormalFrameworks = FieldsToTerminateWithEndOfNextYear(formalFrameworkIdsToTerminateEndOfNextYear,
                     state.OrganisationFormalFrameworks,
                     dateOfTermination,
-                    field => field.FormalFrameworkId)
+                    field => field.FormalFrameworkId),
+                Regulations = FieldsToTerminate(state.OrganisationRegulations, dateOfTermination),
             };
         }
 

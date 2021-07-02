@@ -160,6 +160,33 @@ namespace OrganisationRegistry.UnitTests
         }
 
         [Fact]
+        public void ThrowsWhenAnyRegulationValidityIsInFutureOfTerminationDate()
+        {
+            var fixture = new Fixture();
+
+            var dateOfTermination = fixture.Create<DateTime>();
+
+            var organisationState = new OrganisationState
+            {
+                OrganisationRegulations =
+                {
+                    fixture.Create<OrganisationRegulation>()
+                        .WithValidity(new Period(
+                            new ValidFrom(dateOfTermination.AddDays(1)),
+                            new ValidTo()))
+                }
+            };
+
+            Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
+                () => OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
+                    Enumerable.Empty<Guid>(),
+                    Enumerable.Empty<Guid>(),
+                    Enumerable.Empty<Guid>(),
+                    organisationState));
+        }
+
+
+        [Fact]
         public void ThrowsWhenAnyFormalFrameworkValidityIsInFutureOfTerminationDate()
         {
             var fixture = new Fixture();
@@ -368,6 +395,7 @@ namespace OrganisationRegistry.UnitTests
             var overlappingCapacities = CreateFieldsOverlappingWith<OrganisationCapacity>(dateOfTermination, fixture);
             var overlappingClassifications = CreateFieldsOverlappingWith<OrganisationOrganisationClassification>(dateOfTermination, fixture);
             var overlappingFormalFrameworks = CreateFieldsOverlappingWith<OrganisationFormalFramework>(dateOfTermination, fixture);
+            var overlappingRegulations = CreateFieldsOverlappingWith<OrganisationRegulation>(dateOfTermination, fixture);
 
             var organisationState = new OrganisationState();
             organisationState.OrganisationContacts.AddRange(overlappingContacts);
@@ -394,6 +422,8 @@ namespace OrganisationRegistry.UnitTests
             organisationState.OrganisationOrganisationClassifications.AddRange(CreateFieldsInThePastOf<OrganisationOrganisationClassification>(dateOfTermination, fixture));
             organisationState.OrganisationFormalFrameworks.AddRange(overlappingFormalFrameworks);
             organisationState.OrganisationFormalFrameworks.AddRange(CreateFieldsInThePastOf<OrganisationFormalFramework>(dateOfTermination, fixture));
+            organisationState.OrganisationRegulations.AddRange(overlappingRegulations);
+            organisationState.OrganisationRegulations.AddRange(CreateFieldsInThePastOf<OrganisationRegulation>(dateOfTermination, fixture));
 
             OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
                     Enumerable.Empty<Guid>(),
@@ -416,6 +446,7 @@ namespace OrganisationRegistry.UnitTests
                         Capacities = overlappingCapacities.ToDictionary(x => x.OrganisationCapacityId, _ => dateOfTermination),
                         Classifications = overlappingClassifications.ToDictionary(x => x.OrganisationOrganisationClassificationId, _ => dateOfTermination),
                         FormalFrameworks = overlappingFormalFrameworks.ToDictionary(x => x.OrganisationFormalFrameworkId, _ => dateOfTermination),
+                        Regulations = overlappingRegulations.ToDictionary(x => x.OrganisationRegulationId, _ => dateOfTermination)
                     });
         }
 

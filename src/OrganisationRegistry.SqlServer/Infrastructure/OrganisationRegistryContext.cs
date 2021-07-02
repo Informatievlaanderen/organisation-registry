@@ -37,6 +37,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     using Person;
     using ProjectionState;
     using Purpose;
+    using RegulationType;
     using Reporting;
     using SeatType;
     using Security;
@@ -87,6 +88,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         public DbSet<MandateRoleTypeListItem> MandateRoleTypeList { get; set; }
         public DbSet<SeatTypeListItem> SeatTypeList { get; set; }
         public DbSet<LocationTypeListItem> LocationTypeList { get; set; }
+        public DbSet<RegulationTypeListItem> RegulationTypeList { get; set; }
 
         public DbSet<OrganisationDetailItem> OrganisationDetail { get; set; }
         public DbSet<OrganisationListItem> OrganisationList { get; set; }
@@ -103,6 +105,8 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         public DbSet<OrganisationLocationListItem> OrganisationLocationList { get; set; }
         public DbSet<OrganisationOrganisationClassificationListItem> OrganisationOrganisationClassificationList { get; set; }
         public DbSet<OrganisationParentListItem> OrganisationParentList { get; set; }
+        public DbSet<OrganisationRegulationListItem> OrganisationRegulationList { get; set; }
+
         public DbSet<OrganisationFormalFrameworkListItem> OrganisationFormalFrameworkList { get; set; }
         public DbSet<OrganisationBankAccountListItem> OrganisationBankAccountList { get; set; }
         public DbSet<OrganisationOpeningHourListItem> OrganisationOpeningHourList { get; set; }

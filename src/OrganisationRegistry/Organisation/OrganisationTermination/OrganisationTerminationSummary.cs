@@ -18,6 +18,7 @@ namespace OrganisationRegistry.Organisation.OrganisationTermination
         public Dictionary<Guid, DateTime> OpeningHours { get; init; }
         public Dictionary<Guid, DateTime> Classifications { get; init; }
         public Dictionary<Guid, DateTime> FormalFrameworks { get; init; }
+        public Dictionary<Guid, DateTime> Regulations { get; init; }
 
         public OrganisationTerminationSummary()
         {
@@ -33,6 +34,7 @@ namespace OrganisationRegistry.Organisation.OrganisationTermination
             OpeningHours = new Dictionary<Guid, DateTime>();
             Classifications = new Dictionary<Guid, DateTime>();
             FormalFrameworks = new Dictionary<Guid, DateTime>();
+            Regulations = new Dictionary<Guid, DateTime>();
         }
     }
 }

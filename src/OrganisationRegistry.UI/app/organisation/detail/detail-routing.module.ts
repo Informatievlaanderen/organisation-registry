@@ -61,6 +61,13 @@ import {
 } from 'organisation/keys';
 
 import {
+  OrganisationRegulationsComponent,
+  OrganisationRegulationsOverviewComponent,
+  OrganisationRegulationsCreateOrganisationRegulationComponent,
+  OrganisationRegulationsUpdateOrganisationRegulationComponent
+} from 'organisation/regulations';
+
+import {
     OrganisationLabelsComponent,
     OrganisationLabelsOverviewComponent,
     OrganisationLabelsCreateOrganisationLabelComponent,
@@ -408,6 +415,42 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Sleutels - Bewerken sleutel',
+              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              organisationGuard: {
+                params: 'route.parent.parent.params',
+                idPart: 'id'
+              }
+            }
+          }
+        ]
+      },
+      {
+        path: 'regulations', component: OrganisationRegulationsComponent,
+        children: [
+          {
+            path: '',
+            component: OrganisationRegulationsOverviewComponent,
+            data: { title: 'Organisatie - Regelgevingen' }
+          },
+          {
+            path: 'create',
+            component: OrganisationRegulationsCreateOrganisationRegulationComponent,
+            canActivate: [RoleGuard, OrganisationGuard],
+            data: {
+              title: 'Organisatie - Regelgevingen - Nieuwe regelgeving',
+              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              organisationGuard: {
+                params: 'route.parent.parent.params',
+                idPart: 'id'
+              }
+            }
+          },
+          {
+            path: 'edit/:id',
+            component: OrganisationRegulationsUpdateOrganisationRegulationComponent,
+            canActivate: [RoleGuard, OrganisationGuard],
+            data: {
+              title: 'Organisatie - Regelgevingen - Bewerken regelgeving',
               roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',

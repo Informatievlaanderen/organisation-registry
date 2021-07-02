@@ -26,6 +26,8 @@ namespace OrganisationRegistry.Organisation.State
         public Dictionary<Guid, OrganisationFormalFramework> OrganisationFormalFrameworkParentsPerFormalFramework { get; }
         public OrganisationBuildings OrganisationBuildings { get; }
         public OrganisationLocations OrganisationLocations { get; }
+        public List<OrganisationRegulation> OrganisationRegulations { get; }
+
 
         public OrganisationState()
         {
@@ -49,6 +51,7 @@ namespace OrganisationRegistry.Organisation.State
             OrganisationFormalFrameworkParentsPerFormalFramework = new Dictionary<Guid, OrganisationFormalFramework>();
             OrganisationBuildings = new OrganisationBuildings();
             OrganisationLocations = new OrganisationLocations();
+            OrganisationRegulations = new List<OrganisationRegulation>();
         }
     }
 }

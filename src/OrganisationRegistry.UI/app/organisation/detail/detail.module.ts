@@ -11,6 +11,7 @@ import { OrganisationContactsModule } from 'organisation/contacts';
 import { OrganisationFunctionsModule } from 'organisation/functions';
 import { OrganisationClassificationsModule } from 'organisation/classifications';
 import { OrganisationKeysModule } from 'organisation/keys';
+import { OrganisationRegulationsModule } from 'organisation/regulations';
 import { OrganisationLabelsModule } from 'organisation/labels';
 import { OrganisationLocationsModule } from 'organisation/locations';
 import { OrganisationParentsModule } from 'organisation/parents';
@@ -38,6 +39,7 @@ import { OrganisationDetailComponent } from './detail.component';
     OrganisationFunctionsModule,
     OrganisationClassificationsModule,
     OrganisationKeysModule,
+    OrganisationRegulationsModule,
     OrganisationLabelsModule,
     OrganisationLabelsModule,
     OrganisationLocationsModule,
