@@ -1,3 +1,10 @@
+# [1.86.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.85.2...v1.86.0) (2021-07-02)
+
+
+### Features
+
+* add regulation and regulation types ([8e686a6](https://github.com/informatievlaanderen/organisation-registry/commit/8e686a67e601c7ae5be8a06bf041f17729b00a92))
+
 ## [1.85.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.85.1...v1.85.2) (2021-06-08)
 
 
