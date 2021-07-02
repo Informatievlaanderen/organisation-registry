@@ -159,7 +159,7 @@
     "url-loader": "0.6.2",
     "webpack": "2.1.0-beta.22",
     "webpack-dev-middleware": "1.12.2",
-    "webpack-dev-server": "2.1.0-beta.9",
+    "webpack-dev-server": "2.1.0-beta.10",
     "webpack-md5-hash": "0.0.6",
     "webpack-merge": "0.20.0"
   },
