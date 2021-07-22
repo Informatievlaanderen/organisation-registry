@@ -54,6 +54,8 @@ nuget Microsoft.Extensions.Http 5.0.0
 nuget Microsoft.Rest.ClientRuntime 2.3.23 // TODO: Can we remove this if AutoRest depends on it?
 nuget Microsoft.DotNet.InternalAbstractions 1.0.0
 
+nuget Microsoft.FeatureManagement.AspNetCore 2.3.0
+
 nuget AspNetCore.HealthChecks.SqlServer 5.0.3
 
 nuget Microsoft.Data.SqlClient 2.1.3

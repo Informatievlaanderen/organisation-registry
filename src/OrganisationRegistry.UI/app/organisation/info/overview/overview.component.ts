@@ -10,7 +10,6 @@ import { OidcService, Role } from 'core/auth';
 
 import { OrganisationChild, Organisation } from 'services/organisations';
 import { OrganisationInfoService } from 'services/organisationinfo';
-import { TogglesService } from "services/toggles";
 
 @Component({
   templateUrl: 'overview.template.html',
@@ -21,7 +20,6 @@ export class OrganisationInfoOverviewComponent implements OnInit, OnDestroy {
   public children: PagedResult<OrganisationChild> = new PagedResult<Organisation>();
   public organisation: Organisation;
   public isOrganisationRegistryBeheerder: Observable<boolean>;
-  public organisationCancelKboCouplingEnabled: Observable<boolean>;
 
   private id: string;
 
@@ -32,7 +30,6 @@ export class OrganisationInfoOverviewComponent implements OnInit, OnDestroy {
     private router: Router,
     private alertService: AlertService,
     private oidcService: OidcService,
-    private togglesService: TogglesService,
     public store: OrganisationInfoService
   ) {
     this.organisation = new Organisation();
@@ -46,12 +43,9 @@ export class OrganisationInfoOverviewComponent implements OnInit, OnDestroy {
     let childrenChangedObservable =
       this.store.organisationChildrenChanged;
 
-    this.organisationCancelKboCouplingEnabled = this.togglesService
-      .getAllToggles()
-      .map(toggles => toggles.enableOrganisationCancelKboCoupling);
-
-    Observable.zip(organisationChangedObservable, childrenChangedObservable)
-      .subscribe((res) => this.isBusy = false);
+    this.subscriptions.push(
+      Observable.zip(organisationChangedObservable, childrenChangedObservable)
+      .subscribe((res) => this.isBusy = false));
 
     this.subscriptions.push(organisationChangedObservable
       .subscribe(organisation => {

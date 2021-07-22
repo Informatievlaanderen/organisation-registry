@@ -15,11 +15,13 @@
     using Queries;
     using System.Net;
     using Infrastructure.Security;
+    using Microsoft.FeatureManagement.Mvc;
     using OrganisationRegistry.Infrastructure.Authorization;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
     [OrganisationRegistryRoute("organisations/{organisationId}/regulations")]
+    [FeatureGate(FeatureFlags.RegulationsManagement)]
     public class OrganisationRegulationController : OrganisationRegistryController
     {
         public OrganisationRegulationController(ICommandSender commandSender)

@@ -16,7 +16,22 @@ namespace OrganisationRegistry.Import.Piavo.Models
         /// <summary>
         /// Initializes a new instance of the TogglesConfiguration class.
         /// </summary>
-        public TogglesConfiguration(System.DateTime? created = default(System.DateTime?), bool? applicationAvailable = default(bool?), bool? logToElasticSearch = default(bool?), bool? apiAvailable = default(bool?), bool? elasticSearchProjectionsAvailable = default(bool?), bool? vlaanderenBeNotifierAvailable = default(bool?), bool? delegationsRunnerAvailable = default(bool?), bool? elasticSearchJanitorAvailable = default(bool?), bool? agentschapZorgEnGezondheidFtpDumpAvailable = default(bool?), bool? sendVlaanderenBeNotifierMails = default(bool?), bool? reportingRunnerAvailable = default(bool?), bool? enableReporting = default(bool?), bool? enableVademecumParticipationReporting = default(bool?), bool? enableFormalFrameworkBodiesReporting = default(bool?), bool? enableMonitoring = default(bool?), bool? enableOrganisationRelations = default(bool?))
+        public TogglesConfiguration(System.DateTime? created = default(System.DateTime?),
+            bool? applicationAvailable = default(bool?),
+            bool? logToElasticSearch = default(bool?),
+            bool? apiAvailable = default(bool?),
+            bool? elasticSearchProjectionsAvailable = default(bool?),
+            bool? vlaanderenBeNotifierAvailable = default(bool?),
+            bool? delegationsRunnerAvailable = default(bool?),
+            bool? elasticSearchJanitorAvailable = default(bool?),
+            bool? agentschapZorgEnGezondheidFtpDumpAvailable = default(bool?),
+            bool? sendVlaanderenBeNotifierMails = default(bool?),
+            bool? reportingRunnerAvailable = default(bool?),
+            bool? enableReporting = default(bool?),
+            bool? enableVademecumParticipationReporting = default(bool?),
+            bool? enableFormalFrameworkBodiesReporting = default(bool?),
+            bool? enableMonitoring = default(bool?),
+            bool? enableOrganisationRelations = default(bool?))
         {
             Created = created;
             ApplicationAvailable = applicationAvailable;

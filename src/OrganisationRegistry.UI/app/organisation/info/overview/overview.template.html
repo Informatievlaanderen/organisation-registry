@@ -9,7 +9,6 @@
            [routerLink]="'./couplewithkbo'">Koppel met KBO</a>
 
         <a *ngIf="organisation.kboNumber &&
-                  (organisationCancelKboCouplingEnabled | async) &&
                   (isOrganisationRegistryBeheerder | async)"
            class="button button--secondary button--notice"
            [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
