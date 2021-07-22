@@ -1,3 +1,15 @@
+# [1.87.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.86.1...v1.87.0) (2021-07-22)
+
+
+### Bug Fixes
+
+* typo ([4f3fdf5](https://github.com/informatievlaanderen/organisation-registry/commit/4f3fdf546a76892ce59399581295992788db4670))
+
+
+### Features
+
+* add feature flag for regulations ([53d8809](https://github.com/informatievlaanderen/organisation-registry/commit/53d88093149089cd5258d0f906ee3e4a0ff0294a))
+
 ## [1.86.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.86.0...v1.86.1) (2021-07-22)
 
 
