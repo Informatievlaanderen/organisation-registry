@@ -2,6 +2,7 @@
 {
     using System.Data.Common;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
@@ -65,7 +66,7 @@
             await using var context = _contextFactory.Create();
             var organisation = await context
                 .OrganisationCache
-                .SingleAsync(x => x.Id == message.Body.OrganisationId);
+                .FindAsync(message.Body.OrganisationId);
 
             organisation.Name = message.Body.Name;
 
@@ -78,7 +79,7 @@
             await using var context = _contextFactory.Create();
             var organisation = await context
                 .OrganisationCache
-                .SingleAsync(x => x.Id == message.Body.OrganisationId);
+                .FindAsync(message.Body.OrganisationId);
 
             organisation.Name = message.Body.Name;
 
@@ -91,7 +92,7 @@
             await using var context = _contextFactory.Create();
             var organisation = await context
                 .OrganisationCache
-                .SingleAsync(x => x.Id == message.Body.OrganisationId);
+                .FindAsync(message.Body.OrganisationId);
 
             organisation.Name = message.Body.NameBeforeKboCoupling;
 
