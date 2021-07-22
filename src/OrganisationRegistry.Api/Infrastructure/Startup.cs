@@ -26,6 +26,8 @@ namespace OrganisationRegistry.Api.Infrastructure
     using OrganisationRegistry.Infrastructure.Configuration;
     using Microsoft.Extensions.Diagnostics.HealthChecks;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.FeatureManagement;
+    using Microsoft.FeatureManagement.FeatureFilters;
     using Microsoft.Net.Http.Headers;
     using Microsoft.OpenApi.Models;
     using Newtonsoft.Json;
@@ -87,6 +89,9 @@ namespace OrganisationRegistry.Api.Infrastructure
                 //.AddTransient<IPrincipal>(provider => provider.GetService<IHttpContextAccessor>().HttpContext.User)
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
                 .AddScoped<ISecurityService, SecurityService>()
+
+                .AddFeatureManagement()
+                .Services
 
                 .AddHttpClient()
 

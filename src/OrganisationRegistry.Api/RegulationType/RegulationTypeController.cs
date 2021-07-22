@@ -15,11 +15,13 @@
     using SqlServer.RegulationType;
     using System.Net;
     using Infrastructure.Security;
+    using Microsoft.FeatureManagement.Mvc;
     using Security;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
     [OrganisationRegistryRoute("regulationtypes")]
+    [FeatureGate(FeatureFlags.RegulationsManagement)]
     public class RegulationTypeController : OrganisationRegistryController
     {
         public RegulationTypeController(ICommandSender commandSender)

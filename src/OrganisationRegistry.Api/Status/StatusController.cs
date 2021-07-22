@@ -7,10 +7,12 @@ namespace OrganisationRegistry.Api.Status
     using Configuration;
     using ElasticSearch.Configuration;
     using Infrastructure;
+    using Infrastructure.Helpers;
     using Infrastructure.Security;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
+    using Microsoft.FeatureManagement;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
     using Security;
@@ -37,11 +39,23 @@ namespace OrganisationRegistry.Api.Status
 
         [HttpGet]
         [Route("toggles")]
-        //[OrganisationRegistryAuthorize(Roles = Roles.Developer)] // don't authorize here, we use this one to determine UI functionalities.
         [ProducesResponseType(typeof(TogglesConfiguration), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetToggles([FromServices] IOptions<TogglesConfiguration> toggles)
         {
             return Ok(toggles.Value);
+        }
+
+        [HttpGet]
+        [Route("features")]
+        [ProducesResponseType(typeof(TogglesConfiguration), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetFeatures([FromServices] IFeatureManager featureManager)
+        {
+            var features = new Dictionary<string, bool>();
+            await foreach (var featureName in featureManager.GetFeatureNamesAsync())
+            {
+                features.Add(featureName.ToCamelCase(), await featureManager.IsEnabledAsync(featureName));
+            }
+            return Ok(features);
         }
 
         [HttpGet]

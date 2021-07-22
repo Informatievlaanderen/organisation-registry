@@ -3,7 +3,7 @@ import { SharedModule } from 'shared';
 
 import { KboServiceModule } from 'services/kbo';
 import { OrganisationsServiceModule } from 'services/organisations';
-import { TogglesServiceModule } from 'services/toggles';
+import { TogglesServiceModule, FeaturesServiceModule } from 'services';
 
 import { OrganisationRoutingModule } from './organisation-routing.module';
 
@@ -16,6 +16,7 @@ import { OrganisationDetailModule } from './detail';
     SharedModule,
     KboServiceModule,
     TogglesServiceModule,
+    FeaturesServiceModule,
     OrganisationRoutingModule,
     OrganisationsServiceModule,
     OrganisationDetailModule

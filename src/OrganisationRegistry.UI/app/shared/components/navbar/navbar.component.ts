@@ -2,15 +2,10 @@
 
 import { Observable } from 'rxjs/Observable';
 
-import { OidcClient } from 'oidc-client';
-
 import { Role, OidcService } from 'core/auth';
 import { ConfigurationService } from 'core/configuration';
 
-import {
-  TogglesService,
-} from 'services/toggles';
-import { Http } from '@angular/http';
+import {FeaturesService} from "../../../services/features";
 
 @Component({
   selector: 'ww-navbar',
@@ -26,14 +21,8 @@ export class NavbarComponent implements OnInit {
   public isOrgaanBeheerder: Observable<boolean>;
   public userName: Observable<string>;
   public role: Observable<string>;
-  public enableReporting: Observable<boolean>;
-
-  private securityInfoUrl = `${this.configurationService.apiUrl}/v1/security/info`;
-
   constructor(
     private oidcService: OidcService,
-    private configurationService: ConfigurationService,
-    private togglesService: TogglesService,
   ) {
    }
 
@@ -72,10 +61,6 @@ export class NavbarComponent implements OnInit {
 
       return role;
     });
-
-    this.enableReporting = this.togglesService
-      .getAllToggles()
-      .map(toggles => toggles.enableReporting);
   }
 
   loginClicked(): void {

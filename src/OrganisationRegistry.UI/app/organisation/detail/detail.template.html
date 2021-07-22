@@ -53,16 +53,16 @@
                 <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['keys']">Sleutels</a>
               </li>
               <li class="side-navigation__item">
-                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['regulations']">Regelgevingen</a>
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['regulations']" *ngIf="(enableRegulations | async)">Regelgevingen</a>
               </li>
               <li class="side-navigation__item">
                 <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['bodies']">Organen</a>
               </li>
               <li class="side-navigation__item">
-                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['relations']" *ngIf="(enableOrganisationRelations | async)">Relaties</a>
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['relations']">Relaties</a>
               </li>
               <li class="side-navigation__item">
-                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['openinghours']" *ngIf="(enableOrganisationOpeningHours | async)">Openingsuren</a>
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['openinghours']">Openingsuren</a>
               </li>
               <li class="side-navigation__item" *ngIf="(enableSync | async)">
                 <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['manage']">KBO-koppeling</a>

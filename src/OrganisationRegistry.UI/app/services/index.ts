@@ -17,6 +17,7 @@ export * from './delegationassignments';
 export * from './delegations';
 export * from './events';
 export * from './exceptions';
+export * from './features';
 export * from './formalframeworkcategories';
 export * from './formalframeworks';
 export * from './functions';

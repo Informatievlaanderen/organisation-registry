@@ -34,7 +34,7 @@
             <li *ngIf="(isLoggedIn | async) && ((isOrganisationRegistryBeheerder | async) || (isOrganisatieBeheerder | async))" class="tab" [routerLinkActive]="['tab--active']">
               <a class="tab__link" [routerLink]="['./manage/delegations']">Delegaties</a>
             </li>
-            <li *ngIf="(enableReporting | async)" class="tab" [routerLinkActive]="['tab--active']">
+            <li class="tab" [routerLinkActive]="['tab--active']">
               <a class="tab__link" [routerLink]="['./report']">Rapportering</a>
             </li>
             <li *ngIf="(isLoggedIn | async) && (isOrganisationRegistryBeheerder | async)" class="tab" [routerLinkActive]="['tab--active']">

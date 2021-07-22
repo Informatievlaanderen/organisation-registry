@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { OrganisationGuard, RoleGuard, Role, ToggleGuard } from 'core/auth';
+import { OrganisationGuard, RoleGuard, Role, FeatureGuard } from 'core/auth';
 
 import { OrganisationDetailComponent } from './detail.component';
 
@@ -426,6 +426,10 @@ const routes: Routes = [
       },
       {
         path: 'regulations', component: OrganisationRegulationsComponent,
+        canActivate: [FeatureGuard],
+        data: {
+          features: ['regulationsManagement']
+        },
         children: [
           {
             path: '',

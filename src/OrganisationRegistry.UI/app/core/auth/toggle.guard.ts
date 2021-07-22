@@ -1,25 +1,14 @@
-import { Toggles } from '../../services/toggles/toggles.model';
-import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-  CanActivateChild,
-  Router,
-  RouterStateSnapshot
-} from '@angular/router';
+import {Injectable} from '@angular/core';
+import {ActivatedRouteSnapshot, CanActivate, CanActivateChild, RouterStateSnapshot} from '@angular/router';
 
-import { Observable } from 'rxjs/Observable';
-import { ConfigurationService } from './../configuration';
+import {Observable} from 'rxjs/Observable';
 
-import { TogglesService } from 'services/toggles';
-import { Role } from './role.model';
+import {TogglesService} from 'services/toggles';
 
 @Injectable()
 export class ToggleGuard implements CanActivate, CanActivateChild {
   constructor(
     private togglesService: TogglesService,
-    private router: Router,
-    private configurationService: ConfigurationService
   ) { }
 
   public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
@@ -40,3 +29,4 @@ export class ToggleGuard implements CanActivate, CanActivateChild {
         desiredToggles.every(dt => toggle[dt]));
   }
 }
+

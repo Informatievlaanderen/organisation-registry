@@ -1,5 +1,5 @@
-import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
-import { Router, Routes, RouterModule, ActivatedRoute } from '@angular/router';
+import { NgModule, Optional, SkipSelf } from '@angular/core';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpModule, JsonpModule, Http, XHRBackend, RequestOptions, Jsonp, JSONPBackend } from '@angular/http';
 
@@ -12,7 +12,8 @@ import {
   JsonpInterceptor,
   OidcService,
   RolesResolver,
-  ToggleGuard
+  ToggleGuard,
+  FeatureGuard
 } from './auth';
 
 import { AlertComponent, AlertService } from './alert';
@@ -55,6 +56,7 @@ export function jsonpInterceptor(
     BodyGuard,
     RoleGuard,
     ToggleGuard,
+    FeatureGuard,
     RolesResolver,
     AlertService,
     FileSaverService,

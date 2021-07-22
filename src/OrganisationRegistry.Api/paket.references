@@ -26,6 +26,8 @@ Microsoft.EntityFrameworkCore.InMemory
 Microsoft.EntityFrameworkCore.SqlServer
 Microsoft.Data.SqlClient
 
+Microsoft.FeatureManagement.AspNetCore
+
 IdentityModel
 EPPlus
 FluentValidation.AspNetCore
