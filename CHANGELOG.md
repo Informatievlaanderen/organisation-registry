@@ -1,3 +1,10 @@
+## [1.86.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.86.0...v1.86.1) (2021-07-22)
+
+
+### Bug Fixes
+
+* use findasync io single to lookup in local ([f7154bb](https://github.com/informatievlaanderen/organisation-registry/commit/f7154bb07ad3d2e9f63e79b5c1780494483f44e7))
+
 # [1.86.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.85.2...v1.86.0) (2021-07-02)
 
 
