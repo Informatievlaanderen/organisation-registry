@@ -54,7 +54,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                 message.Body.PersonId, async document =>
                 {
                     await using var organisationRegistryContext = _contextFactory.Create();
-                    var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
+                    var bodySeat = await organisationRegistryContext.BodySeatCache.FindAsync(message.Body.BodySeatId);
 
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -111,7 +111,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             changes.Add(message.Body.PersonId, async document =>
             {
                 await using var organisationRegistryContext = _contextFactory.Create();
-                var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
+                var bodySeat = await organisationRegistryContext.BodySeatCache.FindAsync(message.Body.BodySeatId);
 
                 document.ChangeId = message.Number;
                 document.ChangeTime = message.Timestamp;
@@ -250,7 +250,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                 async document =>
                 {
                     await using var organisationRegistryContext = _contextFactory.Create();
-                    var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
+                    var bodySeat = await organisationRegistryContext.BodySeatCache.FindAsync(message.Body.BodySeatId);
                     var body = await organisationRegistryContext.BodyCache.SingleAsync(x => x.Id == message.Body.BodyId);
 
                     document.ChangeId = message.Number;
@@ -309,7 +309,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             changes.Add(message.Body.PersonId, async document =>
             {
                 await using var organisationRegistryContext = _contextFactory.Create();
-                var bodySeat = await organisationRegistryContext.BodySeatCache.SingleAsync(x => x.Id == message.Body.BodySeatId);
+                var bodySeat = await organisationRegistryContext.BodySeatCache.FindAsync(message.Body.BodySeatId);
                 var body = await organisationRegistryContext.BodyCache.SingleAsync(x => x.Id == message.Body.BodyId);
 
                 document.ChangeId = message.Number;
