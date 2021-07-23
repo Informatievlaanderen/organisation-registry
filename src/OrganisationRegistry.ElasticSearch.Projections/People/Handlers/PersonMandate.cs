@@ -251,7 +251,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                 {
                     await using var organisationRegistryContext = _contextFactory.Create();
                     var bodySeat = await organisationRegistryContext.BodySeatCache.FindAsync(message.Body.BodySeatId);
-                    var body = await organisationRegistryContext.BodyCache.SingleAsync(x => x.Id == message.Body.BodyId);
+                    var body = await organisationRegistryContext.BodyCache.FindAsync(message.Body.BodyId);
 
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -310,7 +310,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             {
                 await using var organisationRegistryContext = _contextFactory.Create();
                 var bodySeat = await organisationRegistryContext.BodySeatCache.FindAsync(message.Body.BodySeatId);
-                var body = await organisationRegistryContext.BodyCache.SingleAsync(x => x.Id == message.Body.BodyId);
+                var body = await organisationRegistryContext.BodyCache.FindAsync(message.Body.BodyId);
 
                 document.ChangeId = message.Number;
                 document.ChangeTime = message.Timestamp;
@@ -370,7 +370,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                 async elastic =>
                 {
                     await using var organisationRegistryContext = _contextFactory.Create();
-                    var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
+                    var organisation = await organisationRegistryContext.OrganisationCache.FindAsync(message.Body.OrganisationId);
 
                     await elastic.TryAsync(() => elastic
                         .MassUpdatePersonAsync(
@@ -422,7 +422,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             var organisationPerBody =
                 await context
                     .OrganisationPerBodyListForES
-                    .SingleOrDefaultAsync(x => x.BodyId == bodyId);
+                    .FindAsync(bodyId);
 
             return organisationPerBody != null
                 ? CachedOrganisationBody.FromCache(organisationPerBody)

@@ -48,7 +48,7 @@
             await using var context = _contextFactory.Create();
             var body = await context
                 .OrganisationPerBodyListForES
-                .SingleOrDefaultAsync(x => x.BodyId == message.Body.BodyId);
+                .FindAsync(message.Body.BodyId);
 
             if (body == null)
                 return;
@@ -62,10 +62,10 @@
         {
             await using var context = _contextFactory.Create();
 
-            var organisation = await context.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
+            var organisation = await context.OrganisationCache.FindAsync(message.Body.OrganisationId);
             var body = await context
                 .OrganisationPerBodyListForES
-                .SingleOrDefaultAsync(x => x.BodyId == message.Body.BodyId);
+                .FindAsync(message.Body.BodyId);
 
             if (body == null)
                 return;
