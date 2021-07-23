@@ -49,7 +49,7 @@
             await using var context = _contextFactory.Create();
             var organisation = await context
                 .BodySeatCache
-                .SingleAsync(x => x.Id == message.Body.BodySeatId);
+                .FindAsync(message.Body.BodySeatId);
 
             organisation.Name = message.Body.Name;
             organisation.IsPaid = message.Body.PaidSeat;

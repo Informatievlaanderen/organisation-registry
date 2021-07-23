@@ -47,7 +47,7 @@
             await using var context = _contextFactory.Create();
             var organisation = await context
                 .BodyCache
-                .SingleAsync(x => x.Id == message.Body.BodyId);
+                .FindAsync(message.Body.BodyId);
 
             organisation.Name = message.Body.Name;
 

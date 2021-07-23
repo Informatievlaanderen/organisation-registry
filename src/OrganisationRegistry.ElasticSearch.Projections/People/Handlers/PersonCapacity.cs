@@ -220,8 +220,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     {
                         await using var organisationRegistryContext = _contextFactory.Create();
                         var organisation =
-                            await organisationRegistryContext.OrganisationCache.SingleAsync(x =>
-                                x.Id == message.Body.OrganisationId);
+                            await organisationRegistryContext.OrganisationCache.FindAsync(message.Body.OrganisationId);
                         var contactTypeNames = await organisationRegistryContext.ContactTypeList
                             .Select(x => new {x.Id, x.Name})
                             .ToDictionaryAsync(x => x.Id, x => x.Name);
@@ -330,9 +329,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         {
             await using var context = _contextFactory.Create();
             var showOnVlaamseOverheidSitesPerOrganisation =
-                context
+                await context
                     .ShowOnVlaamseOverheidSitesPerOrganisationList
-                    .Single(organisation => organisation.Id == message.Body.OrganisationId);
+                    .FindAsync(message.Body.OrganisationId);
 
             showOnVlaamseOverheidSitesPerOrganisation.ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites;
 
@@ -343,9 +342,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         {
             await using var context = _contextFactory.Create();
             var isActivePerOrganisationCapacity =
-                context
+                await context
                     .IsActivePerOrganisationCapacityList
-                    .SingleOrDefault(capacity => capacity.OrganisationCapacityId == organisationCapacityId);
+                    .FindAsync(organisationCapacityId);
 
             if (isActivePerOrganisationCapacity == null)
             {
