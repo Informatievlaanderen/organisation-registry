@@ -1,3 +1,11 @@
+## [1.87.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.87.2...v1.87.3) (2021-07-26)
+
+
+### Bug Fixes
+
+* rename feature toggle ([1f90fd8](https://github.com/informatievlaanderen/organisation-registry/commit/1f90fd8daec6d2b082649f2d66d9d0fb436c66d7))
+* typo ([705d508](https://github.com/informatievlaanderen/organisation-registry/commit/705d5085c290b2031bf53e7746eedd47f7b684bd))
+
 ## [1.87.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.87.1...v1.87.2) (2021-07-23)
 
 
