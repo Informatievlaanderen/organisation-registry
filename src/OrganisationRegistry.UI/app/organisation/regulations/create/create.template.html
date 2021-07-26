@@ -9,7 +9,7 @@
         <ww-form-group-select
           [id]="'regulationTypeId'"
           [name]="'Regulation type'"
-          [label]="'Regulation type'"
+          [label]="'Regelgevingstype'"
           [control]="form.get('regulationTypeId')"
           [placeholder]="'Selecteer regelgevingstypes...'"
           [values]="regulationTypes">
@@ -18,8 +18,8 @@
         <ww-form-group-textbox
           [id]="'link'"
           [name]="'Regulation'"
-          [label]="'Regulation'"
-          [placeholder]="'Regulation'"
+          [label]="'Regelgeving'"
+          [placeholder]="'Regelgeving'"
           [control]="form.get('link')">
         </ww-form-group-textbox>
 
@@ -62,7 +62,7 @@
                       type="submit"
                       [ngClass]="{'button--disabled': !isFormValid, 'button--loading': form.disabled}"
                       [disabled]="!isFormValid || form.disabled">
-                <span>Voeg regulation toe</span>
+                <span>Voeg regelgeving toe</span>
               </button>
             </div>
           </div>
