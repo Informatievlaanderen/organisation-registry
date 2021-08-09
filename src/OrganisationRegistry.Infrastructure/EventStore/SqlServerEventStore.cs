@@ -27,6 +27,7 @@ namespace OrganisationRegistry.Infrastructure.EventStore
         public const int UserIdLength = 100;
 
         private readonly IEventPublisher _publisher;
+        private readonly ISecurityService _securityService;
         private readonly IEventDataReader _eventDataReader;
         private readonly string _connectionString;
         private readonly string _administrationConnectionString;
@@ -48,13 +49,14 @@ namespace OrganisationRegistry.Infrastructure.EventStore
             return new SqlConnection(_administrationConnectionString);
         }
 
-        public SqlServerEventStore(IOptions<InfrastructureConfiguration> infrastructureOptions, IEventPublisher publisher, IEventDataReader eventDataReader = null)
+        public SqlServerEventStore(IOptions<InfrastructureConfiguration> infrastructureOptions, IEventPublisher publisher, ISecurityService securityService, IEventDataReader eventDataReader = null)
         {
             var options = infrastructureOptions.Value;
 
             _connectionString = options.EventStoreConnectionString;
             _administrationConnectionString = options.EventStoreAdministrationConnectionString;
             _publisher = publisher;
+            _securityService = securityService;
 
             _jsonSerializerSettings = new JsonSerializerSettings().ConfigureForOrganisationRegistryEventStore();
             _eventDataReader = eventDataReader ?? new SqlServerEventReader(GetConnection);
@@ -102,11 +104,11 @@ IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Events_Number' AND obj
             if (eventsToSave.Count == 0)
                 return;
 
-            var principal = ClaimsPrincipal.Current;
-            var ip = principal?.FindFirst(OrganisationRegistryClaims.ClaimIp)?.Value;
-            var firstName = principal?.FindFirst(ClaimTypes.GivenName)?.Value;
-            var lastName = principal?.FindFirst(ClaimTypes.Surname)?.Value;
-            var userId = principal?.FindFirst(OrganisationRegistryClaims.ClaimAcmId)?.Value;
+            var user = _securityService.GetUser(ClaimsPrincipal.Current);
+            var ip = user.Ip;
+            var firstName = user.FirstName;
+            var lastName = user.LastName;
+            var userId = user.UserId;
 
             var envelopes =
                 eventsToSave
@@ -167,7 +169,7 @@ SELECT CAST(SCOPE_IDENTITY() as int)",
                     }
 
                     foreach (var envelope in envelopes)
-                        await _publisher.ProcessReactions((dynamic)envelope);
+                        await _publisher.ProcessReactions((dynamic)envelope, user);
                 }
             }
         }
