@@ -10,6 +10,7 @@ namespace OrganisationRegistry.Organisation.Events
         public string Name { get; }
         public string OvoNumber { get; }
         public string ShortName { get; }
+        public string? Article { get; }
         public string Description { get; }
         public List<Purpose> Purposes { get; }
         public bool ShowOnVlaamseOverheidSites { get; }
@@ -17,12 +18,12 @@ namespace OrganisationRegistry.Organisation.Events
         public DateTime? ValidTo { get; }
         public string KboNumber { get; }
 
-        public OrganisationCreatedFromKbo(
-            Guid organisationId,
+        public OrganisationCreatedFromKbo(Guid organisationId,
             string kboNumber,
             string name,
             string ovoNumber,
             string shortName,
+            string? article,
             string description,
             List<Purpose> purposes,
             bool showOnVlaamseOverheidSites,
@@ -35,6 +36,7 @@ namespace OrganisationRegistry.Organisation.Events
             Name = name;
             OvoNumber = ovoNumber;
             ShortName = shortName;
+            Article = article;
             Description = description;
             Purposes = purposes;
             ShowOnVlaamseOverheidSites = showOnVlaamseOverheidSites;

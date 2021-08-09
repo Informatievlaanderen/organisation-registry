@@ -98,6 +98,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
                     document.Name = message.Body.Name;
                     document.ShortName = message.Body.ShortName;
+                    document.Article = message.Body.Article;
                     document.Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo);
                     document.Description = message.Body.Description;
                     document.ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites;

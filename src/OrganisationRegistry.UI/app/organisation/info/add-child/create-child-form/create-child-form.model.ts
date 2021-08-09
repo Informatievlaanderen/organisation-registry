@@ -6,6 +6,7 @@ export class CreateOrganisationFormValues implements ICrudItem<CreateOrganisatio
     public id: string = UUID.UUID(),
     public name: string = '',
     public shortName: string = '',
+    public article: string = '',
     public parentOrganisationId: string = '',
     public description: string = '',
     public purposeIds: Array<string> = [],

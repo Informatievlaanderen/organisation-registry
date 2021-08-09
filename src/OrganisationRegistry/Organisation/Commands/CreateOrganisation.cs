@@ -10,6 +10,7 @@
         public string Name { get; }
         public string OvoNumber { get; }
         public string ShortName { get; }
+        public Article Article { get; }
         public OrganisationId ParentOrganisationId { get; }
         public string Description { get; }
         public List<PurposeId> Purposes { get; }
@@ -22,12 +23,12 @@
             string name,
             string ovoNumber,
             string shortName,
+            Article article,
             OrganisationId parentOrganisationId,
             string description,
             List<PurposeId> purposes,
             bool showOnVlaamseOverheidSites,
-            ValidFrom validFrom,
-            ValidTo validTo)
+            ValidFrom validFrom, ValidTo validTo)
         {
             Id = organisationId;
 
@@ -40,6 +41,7 @@
             ShowOnVlaamseOverheidSites = showOnVlaamseOverheidSites;
             ValidFrom = validFrom;
             ValidTo = validTo;
+            Article = article;
         }
     }
 }

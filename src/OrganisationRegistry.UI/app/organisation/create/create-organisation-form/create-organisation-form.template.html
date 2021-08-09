@@ -45,6 +45,14 @@
       [control]="form.get('shortName')">
     </ww-form-group-textbox>
 
+    <ww-form-group-select
+      [id]="'article'"
+      [name]="'Lidwoord'"
+      [label]="'Lidwoord'"
+      [control]="form.get('article')"
+      [values]="articles">
+    </ww-form-group-select>
+
     <ww-form-group-textarea
       [id]="'description'"
       [name]="'Omschrijving'"

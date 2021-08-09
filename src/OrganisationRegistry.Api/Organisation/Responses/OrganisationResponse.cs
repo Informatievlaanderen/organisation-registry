@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using OrganisationRegistry.Organisation;
     using SqlServer.Organisation;
 
     public class OrganisationResponse
@@ -15,6 +16,7 @@
 
         public string Name { get; }
         public string? ShortName { get; }
+        public string? Article { get; }
 
         public string? ParentOrganisation { get; }
         public Guid? ParentOrganisationId { get; }
@@ -37,6 +39,7 @@
             KboNumber = projectionItem.KboNumber;
             Name = projectionItem.Name;
             ShortName = projectionItem.ShortName;
+            Article = projectionItem.Article;
             ParentOrganisation = projectionItem.ParentOrganisation;
             ParentOrganisationId = projectionItem.ParentOrganisationId;
             FormalFrameworkId = projectionItem.FormalFrameworkId;

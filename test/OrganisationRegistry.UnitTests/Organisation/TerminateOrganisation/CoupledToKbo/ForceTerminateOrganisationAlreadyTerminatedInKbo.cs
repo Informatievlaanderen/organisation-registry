@@ -45,12 +45,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.Coup
                     _organisationId,
                     "organisation X",
                     "OVO001234",
-                    "org",
-                    "",
-                    new List<Purpose>(),
-                    false,
-                    new ValidFrom(),
-                    new ValidTo()),
+                    "org", Article.None, "", new List<Purpose>(), false, new ValidFrom(), new ValidTo()),
                 new OrganisationTerminationFoundInKbo(
                     _organisationId,
                     fixture.Create<string>(),

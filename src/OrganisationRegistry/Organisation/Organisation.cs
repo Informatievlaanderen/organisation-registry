@@ -55,6 +55,7 @@ namespace OrganisationRegistry.Organisation
             string name,
             string ovoNumber,
             string shortName,
+            Article article,
             Organisation? parentOrganisation,
             string description,
             IEnumerable<Purpose> purposes,
@@ -67,8 +68,11 @@ namespace OrganisationRegistry.Organisation
                 name,
                 ovoNumber,
                 shortName,
+                article,
                 description,
-                purposes.Select(x => new Events.Purpose(x.Id, x.Name)).ToList(),
+                purposes.Select(x => new Events.Purpose(x.Id,
+                        x.Name))
+                    .ToList(),
                 showOnVlaamseOverheidSites,
                 validity.Start,
                 validity.End));
@@ -107,6 +111,7 @@ namespace OrganisationRegistry.Organisation
                 kboOrganisation.FormalName.Value,
                 ovoNumber,
                 kboOrganisation.ShortName.Value,
+                message.Article,
                 parentOrganisation,
                 message.Description,
                 purposes,
@@ -121,6 +126,7 @@ namespace OrganisationRegistry.Organisation
             string name,
             string ovoNumber,
             string shortName,
+            Article article,
             Organisation? parentOrganisation,
             string description,
             IEnumerable<Purpose> purposes,
@@ -134,6 +140,7 @@ namespace OrganisationRegistry.Organisation
                 name,
                 ovoNumber,
                 shortName,
+                article,
                 description,
                 purposes.Select(x => new Events.Purpose(x.Id, x.Name)).ToList(),
                 showOnVlaamseOverheidSites,
@@ -162,8 +169,8 @@ namespace OrganisationRegistry.Organisation
 
         // TODO: discuss => Can we make name a Value Object, and put validation there as well?
 
-        public void UpdateInfo(
-            string name,
+        public void UpdateInfo(string name,
+            Article article,
             string description,
             string shortName,
             List<Purpose> purposes,
@@ -183,6 +190,7 @@ namespace OrganisationRegistry.Organisation
             ApplyChange(new OrganisationInfoUpdated(
                 Id,
                 name,
+                article,
                 description,
                 State.OvoNumber,
                 shortName,
@@ -1759,6 +1767,7 @@ namespace OrganisationRegistry.Organisation
             Id = @event.OrganisationId;
             State.Name = @event.Name;
             State.ShortName = @event.ShortName;
+            State.Article = @event.Article;
             State.OvoNumber = @event.OvoNumber;
             State.Description = @event.Description;
             _purposes = @event.Purposes;
@@ -1771,6 +1780,7 @@ namespace OrganisationRegistry.Organisation
             Id = @event.OrganisationId;
             State.Name = @event.Name;
             State.ShortName = @event.ShortName;
+            State.Article = @event.Article;
             State.OvoNumber = @event.OvoNumber;
             State.Description = @event.Description;
             _purposes = @event.Purposes;
@@ -1800,6 +1810,7 @@ namespace OrganisationRegistry.Organisation
         {
             State.Name = @event.Name;
             State.Description = @event.Description;
+            State.Article = @event.Article;
             State.ShortName = @event.ShortName;
             _purposes = @event.Purposes;
             State.ShowOnVlaamseOverheidSites = @event.ShowOnVlaamseOverheidSites;

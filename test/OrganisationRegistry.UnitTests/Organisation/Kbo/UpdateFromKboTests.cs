@@ -75,6 +75,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     "organisation X",
                     "OVO001234",
                     "org",
+                    Article.None,
                     "",
                     new List<Purpose>(),
                     false,

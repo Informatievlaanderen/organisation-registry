@@ -65,6 +65,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     "KBO formele naam",
                     "OVO001234",
                     "Korte naam",
+                    Article.None,
                     "",
                     new List<Purpose>(),
                     false,

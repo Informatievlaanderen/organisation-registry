@@ -55,12 +55,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     _organisationId,
                     "organisation X",
                     "OVO001234",
-                    "org",
-                    "",
-                    new List<Purpose>(),
-                    false,
-                    new ValidFrom(),
-                    new ValidTo()),
+                    "org", Article.None, "", new List<Purpose>(), false, new ValidFrom(), new ValidTo()),
 
                 new KeyTypeCreated(
                     _organisationRegistryConfigurationStub.KboKeyTypeId,

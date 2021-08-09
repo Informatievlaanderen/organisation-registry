@@ -10,6 +10,7 @@ namespace OrganisationRegistry.Organisation.Commands
         public string Name { get; }
         public string OvoNumber { get; }
         public string ShortName { get; }
+        public Article Article { get; }
         public OrganisationId ParentOrganisationId { get; }
         public string Description { get; }
         public List<PurposeId> Purposes { get; }
@@ -28,13 +29,13 @@ namespace OrganisationRegistry.Organisation.Commands
             string name,
             string ovoNumber,
             string shortName,
+            Article article,
             OrganisationId parentOrganisationId,
             string description,
             List<PurposeId> purposes,
             bool showOnVlaamseOverheidSites,
             ValidFrom validFrom,
-            ValidTo validTo,
-            KboNumber kboNumber)
+            ValidTo validTo, KboNumber kboNumber)
         {
             Id = organisationId;
 
@@ -48,6 +49,7 @@ namespace OrganisationRegistry.Organisation.Commands
             ValidFrom = validFrom;
             ValidTo = validTo;
             KboNumber = kboNumber;
+            Article = article;
         }
     }
 }

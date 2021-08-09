@@ -56,6 +56,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
             return new UpdateOrganisationInfo(
                 _organisationCreatedTestDataBuilder.Id,
                 "Test",
+                Article.None,
                 "testing",
                 "",
                 new List<PurposeId>(),

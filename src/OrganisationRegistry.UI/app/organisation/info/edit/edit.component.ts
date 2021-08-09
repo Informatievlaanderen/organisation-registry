@@ -20,6 +20,7 @@ import { PurposeService } from 'services/purposes';
 export class OrganisationInfoEditComponent implements OnInit {
   public form: FormGroup;
   public purposes: SelectItem[];
+  public articles: SelectItem[];
 
   private organisationId: string;
 
@@ -37,6 +38,7 @@ export class OrganisationInfoEditComponent implements OnInit {
       ovoNumber: ['', required],
       kboNumber: [''],
       shortName: [''],
+      article: [''],
       description: ['', Validators.nullValidator],
       formalFrameworkId: ['', Validators.nullValidator],
       organisationClassificationId: ['', Validators.nullValidator],
@@ -48,7 +50,12 @@ export class OrganisationInfoEditComponent implements OnInit {
       showOnVlaamseOverheidSites: [false],
       validFrom: [''],
       validTo: [''],
+      isTerminated: [false]
     });
+    this.articles = [
+      new SelectItem('de', 'de'),
+      new SelectItem('het', 'het'),
+    ]
   }
 
   ngOnInit() {

@@ -12,6 +12,7 @@ import {
 import { required } from 'core/validation';
 
 import { CreateOrganisationFormValues } from './create-child-form.model';
+import {SelectItem} from "../../../../shared/components/form/form-group-select";
 
 @Component({
   selector: 'ww-create-child-form',
@@ -38,6 +39,7 @@ export class CreateChildOrganisationFormComponent implements OnInit, OnChanges {
   @Output('onSubmit') onSubmit: EventEmitter<CreateOrganisationFormValues> = new EventEmitter<CreateOrganisationFormValues>();
 
   public form: FormGroup;
+  public articles: SelectItem[];
 
   constructor(
     private formBuilder: FormBuilder
@@ -46,6 +48,7 @@ export class CreateChildOrganisationFormComponent implements OnInit, OnChanges {
       id: ['', required],
       name: ['', required],
       shortName: ['', Validators.nullValidator],
+      article: [''],
       description: ['', Validators.nullValidator],
       parentOrganisationId: ['', required],
       purposeIds: [[]],
@@ -54,6 +57,10 @@ export class CreateChildOrganisationFormComponent implements OnInit, OnChanges {
       validFrom: [''],
       validTo: [''],
     });
+    this.articles = [
+      new SelectItem('de', 'de'),
+      new SelectItem('het', 'het'),
+    ]
   }
 
   ngOnInit() {

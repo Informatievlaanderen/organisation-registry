@@ -39,10 +39,6 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
                 Name,
                 Number,
                 ShortName,
-                Description,
-                new List<Purpose>(),
-                false,
-                ValidFrom,
-                ValidTo);
+                Article.None, Description, new List<Purpose>(), false, ValidFrom, ValidTo);
     }
 }

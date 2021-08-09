@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
 {
     using System;
     using System.Collections.Generic;
+    using Organisation;
     using Organisation.Events;
 
     public class OrganisationInfoUpdatedTestDataBuilder
@@ -55,6 +56,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
             => new OrganisationInfoUpdated(
                 Id,
                 Name,
+                Article.None,
                 Description,
                 Number,
                 ShortName,

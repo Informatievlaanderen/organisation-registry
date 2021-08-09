@@ -30,6 +30,7 @@
         public bool ShowOnVlaamseOverheidSites { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
+        public string? Article { get; set; }
     }
 
     public class UpdateOrganisationInfoRequestValidator : AbstractValidator<UpdateOrganisationInfoInternalRequest>
@@ -62,6 +63,7 @@
             return new UpdateOrganisationInfo(
                 new OrganisationId(message.OrganisationId),
                 message.Body.Name,
+                Article.Parse(message.Body.Article),
                 message.Body.Description,
                 message.Body.ShortName,
                 message.Body.PurposeIds?.Select(x => new PurposeId(x)).ToList(),
