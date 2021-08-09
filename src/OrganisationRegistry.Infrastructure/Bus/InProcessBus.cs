@@ -98,7 +98,7 @@ namespace OrganisationRegistry.Infrastructure.Bus
                 await handler(dbConnection, dbTransaction, envelope);
         }
 
-        public async Task ProcessReactions<T>(IEnvelope<T> envelope) where T : IEvent<T>
+        public async Task ProcessReactions<T>(IEnvelope<T> envelope, IUser user) where T : IEvent<T>
         {
             if (!_reactionRoutes.TryGetValue(envelope.Body.GetType(), out var reactions))
                 reactions = new List<Func<IMessage, Task<List<ICommand>>>>();
@@ -115,7 +115,11 @@ namespace OrganisationRegistry.Infrastructure.Bus
                 {
                     reactions
                         .ForEach(async reaction => (await reaction(envelope))
-                            .ForEach(async command => await Send(command)));
+                            .ForEach(async command =>
+                            {
+                                command.User = user;
+                                await Send(command);
+                            }));
 
                     if (reactions.Count > 0)
                         _logger.LogInformation("Processed all reactions.");

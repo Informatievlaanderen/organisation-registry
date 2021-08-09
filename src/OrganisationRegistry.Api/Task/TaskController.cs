@@ -17,6 +17,7 @@ namespace OrganisationRegistry.Api.Task
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
+    using OrganisationRegistry.Infrastructure.Authorization;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
@@ -40,6 +41,7 @@ namespace OrganisationRegistry.Api.Task
         public async Task<IActionResult> Post(
             [FromServices] Func<Owned<OrganisationRegistryContext>> contextFactory,
             [FromServices] IKboSync kboSync,
+            [FromServices] ISecurityService securityService,
             [FromBody] TaskRequest task)
         {
             if (!ModelState.IsValid)
@@ -48,7 +50,7 @@ namespace OrganisationRegistry.Api.Task
             switch (task.Type)
             {
                 case TaskType.CheckIfDayHasPassed:
-                    await CommandSender.Send(new CheckIfDayHasPassed());
+                    await CommandSender.Send(new CheckIfDayHasPassed {User = securityService.GetUser(User)});
                     break;
 
                 case TaskType.RebuildProjection:
