@@ -61,12 +61,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     _parentOrganisationId,
                     "parent",
                     "OVO001234",
-                    "ouder",
-                    "",
-                    new List<Purpose>(),
-                    false,
-                    new ValidFrom(),
-                    new ValidTo()),
+                    "ouder", Article.None, "", new List<Purpose>(), false, new ValidFrom(), new ValidTo()),
 
                 new PurposeCreated(
                     _purposeId,
@@ -114,6 +109,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 "Naam",
                 "OVO000070",
                 "Korte naam",
+                Article.None,
                 _parentOrganisationId,
                 "Mijn omschrijving",
                 new List<PurposeId> { _purposeId },

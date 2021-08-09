@@ -107,6 +107,7 @@ namespace OrganisationRegistry.Organisation
                 message.Name,
                 ovoNumber,
                 message.ShortName,
+                message.Article,
                 parentOrganisation,
                 message.Description,
                 purposes,
@@ -131,6 +132,7 @@ namespace OrganisationRegistry.Organisation
 
             organisation.UpdateInfo(
                 message.Name,
+                message.Article,
                 message.Description,
                 message.ShortName,
                 purposes,

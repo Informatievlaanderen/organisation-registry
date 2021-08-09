@@ -23,6 +23,7 @@ namespace OrganisationRegistry.Api.Organisation.Requests
 
         public string ShortName { get; set; }
 
+        public string? Article { get; set; }
         public Guid? ParentOrganisationId { get; set; }
 
         public List<Guid> PurposeIds { get; set; }
@@ -185,6 +186,7 @@ namespace OrganisationRegistry.Api.Organisation.Requests
                 message.Name,
                 message.OvoNumber,
                 message.ShortName,
+                Article.Parse(message.Article),
                 message.ParentOrganisationId.HasValue ? new OrganisationId(message.ParentOrganisationId.Value) : null,
                 message.Description,
                 message.PurposeIds?.Select(x => new PurposeId(x)).ToList(),
@@ -202,6 +204,7 @@ namespace OrganisationRegistry.Api.Organisation.Requests
                 message.Name,
                 message.OvoNumber,
                 message.ShortName,
+                Article.Parse(message.Article),
                 message.ParentOrganisationId.HasValue ? new OrganisationId(message.ParentOrganisationId.Value) : null,
                 message.Description,
                 message.PurposeIds?.Select(x => new PurposeId(x)).ToList(),

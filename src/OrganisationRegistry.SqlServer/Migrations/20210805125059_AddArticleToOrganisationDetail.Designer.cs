@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrganisationRegistry.SqlServer.Infrastructure;
 
 namespace OrganisationRegistry.SqlServer.Migrations
 {
     [DbContext(typeof(OrganisationRegistryContext))]
-    partial class OrganisationRegistryContextModelSnapshot : ModelSnapshot
+    [Migration("20210805125059_AddArticleToOrganisationDetail")]
+    partial class AddArticleToOrganisationDetail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1587,9 +1589,6 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.Property<string>("FunctionName")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
-
-                    b.Property<bool?>("IsActive")
-                        .HasColumnType("bit");
 
                     b.Property<Guid?>("LocationId")
                         .HasColumnType("uniqueidentifier");

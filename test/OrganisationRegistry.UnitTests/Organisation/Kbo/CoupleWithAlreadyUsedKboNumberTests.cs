@@ -58,23 +58,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     _organisationId,
                     "organisation X",
                     "OVO001234",
-                    "org",
-                    "",
-                    new List<Purpose>(),
-                    false,
-                    new ValidFrom(),
-                    new ValidTo()),
+                    "org", Article.None, "", new List<Purpose>(), false, new ValidFrom(), new ValidTo()),
 
                 new OrganisationCreated(
                     _anotherOrganisationId,
                     "organisation Y",
                     "OVO001235",
-                    "org y",
-                    "",
-                    new List<Purpose>(),
-                    false,
-                    new ValidFrom(),
-                    new ValidTo()),
+                    "org y", Article.None, "", new List<Purpose>(), false, new ValidFrom(), new ValidTo()),
 
                 new KeyTypeCreated(
                     _organisationRegistryConfigurationStub.KboKeyTypeId,

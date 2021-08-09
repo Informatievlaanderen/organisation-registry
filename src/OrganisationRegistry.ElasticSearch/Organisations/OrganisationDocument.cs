@@ -17,6 +17,7 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
         public string Name { get; set; }
         public string OvoNumber { get; set; }
         public string ShortName { get; set; }
+        public string? Article { get; set; }
         public Period Validity { get; set; }
         public string Description { get; set; }
         public string KboNumber { get; set; }
@@ -44,6 +45,10 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
 
                 .Text(t => t
                     .Name(p => p.ShortName)
+                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
+
+                .Text(t => t
+                    .Name(p => p.Article)
                     .Fields(x => x.Keyword(y => y.Name("keyword"))))
 
                 .Object<Period>(o => o

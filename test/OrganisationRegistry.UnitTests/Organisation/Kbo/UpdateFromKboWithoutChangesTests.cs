@@ -72,6 +72,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     "NAME FROM KBO",
                     "OVO001234",
                     "SHORT NAME FROM KBO",
+                    Article.None,
                     "",
                     new List<Purpose>(),
                     false,

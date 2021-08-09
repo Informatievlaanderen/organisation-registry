@@ -10,17 +10,18 @@ namespace OrganisationRegistry.Organisation.Events
         public string Name { get; }
         public string OvoNumber { get; }
         public string ShortName { get; }
+        public string? Article { get; }
         public string Description { get; }
         public List<Purpose> Purposes { get; }
         public bool ShowOnVlaamseOverheidSites { get; }
         public DateTime? ValidFrom { get; }
         public DateTime? ValidTo { get; }
 
-        public OrganisationCreated(
-            Guid organisationId,
+        public OrganisationCreated(Guid organisationId,
             string name,
             string ovoNumber,
             string shortName,
+            string? article,
             string description,
             List<Purpose> purposes,
             bool showOnVlaamseOverheidSites,
@@ -37,6 +38,7 @@ namespace OrganisationRegistry.Organisation.Events
             ShowOnVlaamseOverheidSites = showOnVlaamseOverheidSites;
             ValidFrom = validFrom;
             ValidTo = validTo;
+            Article = article;
         }
     }
 }

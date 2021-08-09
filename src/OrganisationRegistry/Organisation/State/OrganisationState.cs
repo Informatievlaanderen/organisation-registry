@@ -8,6 +8,7 @@ namespace OrganisationRegistry.Organisation.State
         public string Name { get; set; }
         public string OvoNumber { get; set; }
         public string ShortName { get; set; }
+        public string? Article { get; set; }
         public string Description { get; set; }
         public Period Validity { get; set; }
         public bool ShowOnVlaamseOverheidSites { get; set; }

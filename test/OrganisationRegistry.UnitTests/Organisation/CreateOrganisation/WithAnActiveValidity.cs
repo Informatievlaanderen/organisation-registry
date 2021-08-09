@@ -29,6 +29,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
                 "Test",
                 "OVO0001234",
                 "",
+                Article.None,
                 null,
                 "",
                 new List<PurposeId>(),

@@ -8,6 +8,7 @@ import {
   Kbo,
   KboService
 } from 'services/kbo';
+import {SelectItem} from "../../../shared/components/form/form-group-select";
 
 @Component({
   selector: 'ww-create-organisation-form',
@@ -26,6 +27,7 @@ export class CreateOrganisationFormComponent implements OnInit {
   public form: FormGroup;
   public kboForm: FormGroup;
   public kboNumber: string;
+  public articles: SelectItem[];
 
   @Input('isBusy')
   public set isBusy(value: boolean) {
@@ -55,6 +57,7 @@ export class CreateOrganisationFormComponent implements OnInit {
       id: ['', required],
       name: ['', required],
       shortName: ['', Validators.nullValidator],
+      article: [''],
       parentOrganisationId: ['', Validators.nullValidator],
       description: ['', Validators.nullValidator],
       purposeIds: [[]],
@@ -67,6 +70,11 @@ export class CreateOrganisationFormComponent implements OnInit {
       legalForms: [[]],
       addresses: [[]]
     });
+
+    this.articles = [
+      new SelectItem('de', 'de'),
+      new SelectItem('het', 'het'),
+    ]
 
     this.kboForm = formBuilder.group({
       kboNumber: ['', isKboNumber]

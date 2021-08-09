@@ -8,6 +8,7 @@ export class Organisation implements ICrudItem<Organisation>, ICreateOrganisatio
     public kboNumber: string = '',
     public shortName: string = '',
     public name: string = '',
+    public article: string = '',
     public parentOrganisation: string = '',
     public parentOrganisationId: string = '',
     public description: string = '',

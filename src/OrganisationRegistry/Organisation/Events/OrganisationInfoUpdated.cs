@@ -8,6 +8,7 @@ namespace OrganisationRegistry.Organisation.Events
         public Guid OrganisationId => Id;
 
         public string Name { get; }
+        public string? Article { get; }
         public string PreviousName { get; }
 
         public string Description { get; }
@@ -33,6 +34,7 @@ namespace OrganisationRegistry.Organisation.Events
         public OrganisationInfoUpdated(
             Guid organisationId,
             string name,
+            string? article,
             string description,
             string ovoNumber,
             string shortName,
@@ -51,6 +53,7 @@ namespace OrganisationRegistry.Organisation.Events
             Id = organisationId;
 
             Name = name;
+            Article = article;
             Description = description;
             OvoNumber = ovoNumber;
             ShortName = shortName;

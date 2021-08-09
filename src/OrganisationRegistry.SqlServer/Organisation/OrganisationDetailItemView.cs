@@ -31,6 +31,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public string Name { get; set; }
         public string? ShortName { get; set; }
+        public string? Article { get; set; }
 
         public string? ParentOrganisation { get; set; }
         public Guid? ParentOrganisationId { get; set; }
@@ -68,6 +69,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             b.Property(p => p.Name).HasMaxLength(OrganisationListConfiguration.NameLength).IsRequired();
             b.Property(p => p.ShortName);
+            b.Property(p => p.Article).HasMaxLength(3);
 
             b.Property(p => p.ParentOrganisation);
             b.Property(p => p.ParentOrganisationId);
@@ -130,6 +132,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 Id = message.Body.OrganisationId,
                 Name = message.Body.Name,
                 ShortName = message.Body.ShortName,
+                Article = message.Body.Article,
                 OvoNumber = message.Body.OvoNumber,
                 Description = message.Body.Description,
                 PurposeIds = message.Body.Purposes.ToSeparatedList("|", x => x.Id.ToString()),
@@ -154,6 +157,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 Id = message.Body.OrganisationId,
                 Name = message.Body.Name,
                 ShortName = message.Body.ShortName,
+                Article = message.Body.Article,
                 OvoNumber = message.Body.OvoNumber,
                 Description = message.Body.Description,
                 PurposeIds = message.Body.Purposes.ToSeparatedList("|", x => x.Id.ToString()),
@@ -227,6 +231,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
                 organisationListItem.Name = message.Body.Name;
                 organisationListItem.ShortName = message.Body.ShortName;
+                organisationListItem.Article = message.Body.Article;
                 organisationListItem.Description = message.Body.Description;
                 organisationListItem.ValidFrom = message.Body.ValidFrom;
                 organisationListItem.ValidTo = message.Body.ValidTo;

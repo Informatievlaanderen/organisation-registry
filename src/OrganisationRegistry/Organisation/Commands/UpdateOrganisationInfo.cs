@@ -9,15 +9,16 @@
 
         public string Description { get; }
         public string Name { get; }
+        public Article Article { get; }
         public string ShortName { get; }
         public List<PurposeId> Purposes { get; }
         public ValidFrom ValidFrom { get; }
         public ValidTo ValidTo { get; }
         public bool ShowOnVlaamseOverheidSites { get; }
 
-        public UpdateOrganisationInfo(
-            OrganisationId organisationId,
+        public UpdateOrganisationInfo(OrganisationId organisationId,
             string name,
+            Article article,
             string description,
             string shortName,
             List<PurposeId> purposes,
@@ -28,6 +29,7 @@
             Id = organisationId;
 
             Name = name;
+            Article = article;
             Description = description;
             ShortName = shortName;
             Purposes = purposes;
