@@ -12,6 +12,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using System.Linq;
     using System.Threading.Tasks;
     using Capacity;
+    using Day.Events;
     using FunctionType;
     using Location;
     using Microsoft.Extensions.Logging;
@@ -19,8 +20,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using Person;
     using Function.Events;
     using OrganisationRegistry.Capacity.Events;
+    using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Location.Events;
+    using OrganisationRegistry.Organisation;
+    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Person.Events;
+    using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
 
     public class OrganisationCapacityListItem
     {
@@ -43,6 +48,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
+        public bool? IsActive { get; set; }
     }
 
     public class OrganisationCapacityListConfiguration : EntityMappingConfiguration<OrganisationCapacityListItem>
@@ -71,6 +77,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
+            b.Property(p => p.IsActive);
 
             b.HasIndex(x => x.CapacityName).IsClustered();
             b.HasIndex(x => x.PersonName);
@@ -89,7 +96,10 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<FunctionUpdated>,
         IEventHandler<PersonUpdated>,
         IEventHandler<LocationUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IEventHandler<OrganisationTerminated>,
+        IEventHandler<OrganisationCapacityBecameActive>,
+        IEventHandler<OrganisationCapacityBecameInactive>,
+        IReactionHandler<DayHasPassed>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -232,9 +242,70 @@ namespace OrganisationRegistry.SqlServer.Organisation
             }
         }
 
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationCapacityBecameActive> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var capacity = await context.OrganisationCapacityList.SingleAsync(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
+                capacity.IsActive = true;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityBecameInactive> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var capacity = await context.OrganisationCapacityList.SingleAsync(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
+                capacity.IsActive = false;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
             await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+        }
+
+        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
+        {
+            using (var context = ContextFactory.Create())
+            {
+                var undetermined =
+                    context.OrganisationCapacityList
+                        .Where(item =>
+                            !item.IsActive.HasValue)
+                        .Select(item => item.OrganisationId)
+                        .Distinct();
+
+                var shouldBeActive =
+                    context.OrganisationCapacityList
+                        .Where(item => item.IsActive.HasValue &&
+                                       !item.IsActive.Value &&
+                                       ((item.ValidFrom == null || item.ValidFrom <= message.Body.Date) &&
+                                        (item.ValidTo == null || item.ValidTo >= message.Body.Date)))
+                        .Select(item => item.OrganisationId)
+                        .Distinct();
+
+                var shouldBeInactive =
+                    context.OrganisationCapacityList
+                        .Where(item => item.IsActive.HasValue &&
+                                       item.IsActive.Value &&
+                                       ((item.ValidFrom != null && item.ValidFrom > message.Body.Date) &&
+                                        (item.ValidTo != null && item.ValidTo < message.Body.Date)))
+                        .Select(item => item.OrganisationId)
+                        .Distinct();
+
+                return undetermined
+                    .Union(shouldBeActive)
+                    .Union(shouldBeInactive)
+                    .Select(id => new UpdateRelationshipValidities(new OrganisationId(id), message.Body.NextDate))
+                    .Cast<ICommand>()
+                    .ToList();
+            }
         }
     }
 }

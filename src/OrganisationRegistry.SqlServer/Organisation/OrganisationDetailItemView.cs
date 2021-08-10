@@ -105,9 +105,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<ParentAssignedToOrganisation>,
         IEventHandler<ParentClearedFromOrganisation>,
         IEventHandler<PurposeUpdated>,
-        IEventHandler<OrganisationTerminated>,
-        IReactionHandler<DayHasPassed>
-    {
+        IEventHandler<OrganisationTerminated>{
         private readonly IEventStore _eventStore;
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -372,19 +370,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
             IEnvelope<RebuildProjection> message)
         {
             await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
-        }
-
-        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
-        {
-            using (var context = ContextFactory.Create())
-            {
-                var organisationDetails = context.OrganisationDetail.ToList();
-                return organisationDetails
-                    .Select(item =>
-                        new UpdateRelationshipValidities(new OrganisationId(item.Id), message.Body.NextDate))
-                    .Cast<ICommand>()
-                    .ToList();
-            }
         }
     }
 }
