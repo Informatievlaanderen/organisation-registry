@@ -6,6 +6,7 @@ namespace OrganisationRegistry.Infrastructure.Domain
     using Factories;
     using System.Linq;
     using System.Threading.Tasks;
+    using Authorization;
     using EventStore;
     using Microsoft.Extensions.Logging;
 
@@ -23,13 +24,13 @@ namespace OrganisationRegistry.Infrastructure.Domain
             logger.LogTrace("Creating Repository.");
         }
 
-        public async Task Save<T>(T aggregate, int? expectedVersion = null) where T : AggregateRoot
+        public async Task Save<T>(T aggregate, int? expectedVersion = null, IUser user = null) where T : AggregateRoot
         {
             if (expectedVersion != null && _eventStore.Get<T>(aggregate.Id, expectedVersion.Value).Any())
                 throw new ConcurrencyException(aggregate.Id, expectedVersion.Value);
 
             var changes = aggregate.FlushUncommitedChanges();
-            await _eventStore.Save<T>(changes);
+            await _eventStore.Save<T>(changes, user);
         }
 
         public T Get<T>(Guid aggregateId) where T : AggregateRoot

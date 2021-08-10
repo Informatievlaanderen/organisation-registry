@@ -98,13 +98,13 @@ IF NOT EXISTS (SELECT * FROM sys.indexes WHERE name = 'IX_Events_Number' AND obj
             }
         }
 
-        public async Task Save<T>(IEnumerable<IEvent> events)
+        public async Task Save<T>(IEnumerable<IEvent> events, IUser? user = null)
         {
             var eventsToSave = events.ToList();
             if (eventsToSave.Count == 0)
                 return;
 
-            var user = _securityService.GetUser(ClaimsPrincipal.Current);
+            user ??= _securityService.GetUser(ClaimsPrincipal.Current);
             var ip = user.Ip;
             var firstName = user.FirstName;
             var lastName = user.LastName;

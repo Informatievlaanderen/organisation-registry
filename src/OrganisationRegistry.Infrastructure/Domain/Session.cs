@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Infrastructure.Domain
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Authorization;
     using Exception;
     using Microsoft.Extensions.Logging;
 
@@ -54,10 +55,10 @@ namespace OrganisationRegistry.Infrastructure.Domain
         private bool IsTracked(Guid id)
             => _trackedAggregates.ContainsKey(id);
 
-        public async Task Commit()
+        public async Task Commit(IUser user = null)
         {
             foreach (var descriptor in _trackedAggregates.Values)
-                await _repository.Save(descriptor.Aggregate, descriptor.Version);
+                await _repository.Save(descriptor.Aggregate, descriptor.Version, user);
 
             Reset();
         }

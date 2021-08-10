@@ -737,7 +737,7 @@ namespace OrganisationRegistry.Organisation
 
             organisation.UpdateRelationshipValidities(message.Date);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddOrganisationOpeningHour message)
