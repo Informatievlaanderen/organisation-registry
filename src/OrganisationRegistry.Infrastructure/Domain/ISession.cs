@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Authorization;
 
     public interface ISession
     {
@@ -9,6 +10,6 @@
 
         T Get<T>(Guid id, int? expectedVersion = null) where T : AggregateRoot;
 
-        Task Commit();
+        Task Commit(IUser? user = null);
     }
 }
