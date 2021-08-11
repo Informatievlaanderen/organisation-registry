@@ -28,7 +28,7 @@ namespace OrganisationRegistry.SeatType
 
             var seatType = new SeatType(message.SeatTypeId, message.Name, message.Order, message.IsEffective);
             Session.Add(seatType);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateSeatType message)
@@ -38,7 +38,7 @@ namespace OrganisationRegistry.SeatType
 
             var seatType = Session.Get<SeatType>(message.SeatTypeId);
             seatType.Update(message.Name, message.Order, message.IsEffective);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

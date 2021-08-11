@@ -28,7 +28,7 @@
 
             var purpose = new Purpose(message.PurposeId, message.Name);
             Session.Add(purpose);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdatePurpose message)
@@ -38,7 +38,7 @@
 
             var purpose = Session.Get<Purpose>(message.PurposeId);
             purpose.Update(message.Name);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace OrganisationRegistry.Day
                 Session.Add(day);
             }
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

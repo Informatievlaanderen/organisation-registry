@@ -39,7 +39,7 @@
                 message.Status);
 
             Session.Add(lifecyclePhaseType);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateLifecyclePhaseType message)
@@ -57,7 +57,7 @@
                 message.LifecyclePhaseTypeIsRepresentativeFor,
                 message.Status);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

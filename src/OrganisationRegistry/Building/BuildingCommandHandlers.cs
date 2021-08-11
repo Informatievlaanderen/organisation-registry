@@ -28,7 +28,7 @@
 
             var building = new Building(message.BuildingId, message.Name, message.VimId);
             Session.Add(building);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateBuilding message)
@@ -38,7 +38,7 @@
 
             var building = Session.Get<Building>(message.BuildingId);
             building.Update(message.Name, message.VimId);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

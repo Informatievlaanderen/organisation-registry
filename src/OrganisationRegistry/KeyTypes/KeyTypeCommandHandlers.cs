@@ -28,7 +28,7 @@
 
             var keyType = new KeyType(message.KeyTypeId, message.Name);
             Session.Add(keyType);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateKeyType message)
@@ -38,7 +38,7 @@
 
             var keyType = Session.Get<KeyType>(message.KeyTypeId);
             keyType.Update(message.Name);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

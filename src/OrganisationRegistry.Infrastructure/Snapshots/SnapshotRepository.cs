@@ -28,10 +28,10 @@ namespace OrganisationRegistry.Infrastructure.Snapshots
             _eventStore = eventStore ?? throw new ArgumentNullException(nameof(eventStore));
         }
 
-        public async Task Save<T>(T aggregate, int? expectedVersion = null, IUser? user = null) where T : AggregateRoot
+        public async Task Save<T>(T aggregate, IUser user, int? expectedVersion = null) where T : AggregateRoot
         {
             TryMakeSnapshot(aggregate);
-            await _repository.Save(aggregate, expectedVersion);
+            await _repository.Save(aggregate, user, expectedVersion);
         }
 
         public T Get<T>(Guid aggregateId) where T : AggregateRoot

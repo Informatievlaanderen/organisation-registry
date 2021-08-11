@@ -20,14 +20,14 @@
         {
             var person = new Person(message.PersonId, message.FirstName, message.Name, message.Sex, message.DateOfBirth);
             Session.Add(person);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdatePerson message)
         {
             var person = Session.Get<Person>(message.PersonId);
             person.Update(message.FirstName, message.Name, message.Sex, message.DateOfBirth);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

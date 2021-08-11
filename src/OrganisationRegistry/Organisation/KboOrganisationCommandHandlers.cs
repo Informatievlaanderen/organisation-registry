@@ -98,7 +98,7 @@ namespace OrganisationRegistry.Organisation
 
             var location = GetOrAddLocations(kboOrganisation.Address);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
 
             var organisation = Organisation.CreateFromKbo(
                 message,
@@ -118,7 +118,7 @@ namespace OrganisationRegistry.Organisation
 
             AddLabel(organisation, kboOrganisation);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(CoupleOrganisationToKbo message)
@@ -159,7 +159,7 @@ namespace OrganisationRegistry.Organisation
 
             AddLabel(organisation, kboOrganisation);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(SyncOrganisationWithKbo message)
@@ -190,7 +190,7 @@ namespace OrganisationRegistry.Organisation
 
             var location = GetOrAddLocations(kboOrganisation.Address);
 
-            await Session.Commit();
+            await Session.Commit(user);
 
             // IMPORTANT: Need to re-Get the organisation, otherwise the Session will not properly handle the events.
             organisation = Session.Get<Organisation>(organisationId);
@@ -214,7 +214,7 @@ namespace OrganisationRegistry.Organisation
 
             organisation.MarkAsSynced(kboSyncItemId);
 
-            await Session.Commit();
+            await Session.Commit(user);
         }
 
         public async Task Handle(CancelCouplingWithKbo message)
@@ -223,7 +223,7 @@ namespace OrganisationRegistry.Organisation
 
             organisation.CancelCouplingWithKbo();
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(SyncOrganisationTerminationWithKbo message)
@@ -234,7 +234,7 @@ namespace OrganisationRegistry.Organisation
 
             organisation.SyncKboTermination();
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         private KboRegisteredOffice GetOrAddLocations(IMagdaAddress address)

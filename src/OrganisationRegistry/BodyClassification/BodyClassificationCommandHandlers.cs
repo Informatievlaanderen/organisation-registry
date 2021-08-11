@@ -31,7 +31,7 @@ namespace OrganisationRegistry.BodyClassification
 
             var bodyClassification = new BodyClassification(message.BodyClassificationId, message.Name, message.Order, message.Active, bodyClassificationType);
             Session.Add(bodyClassification);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateBodyClassification message)
@@ -42,7 +42,7 @@ namespace OrganisationRegistry.BodyClassification
             var bodyClassificationType = Session.Get<BodyClassificationType>(message.BodyClassificationTypeId);
             var bodyClassification = Session.Get<BodyClassification>(message.BodyClassificationId);
             bodyClassification.Update(message.Name, message.Order, message.Active, bodyClassificationType);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

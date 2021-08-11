@@ -28,7 +28,7 @@
 
             var contactType = new ContactType(message.ContactTypeId, message.Name);
             Session.Add(contactType);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateContactType message)
@@ -38,7 +38,7 @@
 
             var contactType = Session.Get<ContactType>(message.ContactTypeId);
             contactType.Update(message.Name);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

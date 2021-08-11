@@ -28,7 +28,7 @@ namespace OrganisationRegistry.OrganisationRelationType
 
             var organisationRelationType = new OrganisationRelationType(message.OrganisationRelationTypeId, message.Name, message.InverseName);
             Session.Add(organisationRelationType);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationRelationType message)
@@ -38,7 +38,7 @@ namespace OrganisationRegistry.OrganisationRelationType
 
             var organisationRelationType = Session.Get<OrganisationRelationType>(message.OrganisationRelationTypeId);
             organisationRelationType.Update(message.Name, message.InverseName);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

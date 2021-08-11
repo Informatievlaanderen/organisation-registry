@@ -28,7 +28,7 @@
 
             var mandateRoleType = new MandateRoleType(message.MandateRoleTypeId, message.Name);
             Session.Add(mandateRoleType);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateMandateRoleType message)
@@ -38,7 +38,7 @@
 
             var mandateRoleType = Session.Get<MandateRoleType>(message.MandateRoleTypeId);
             mandateRoleType.Update(message.Name);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

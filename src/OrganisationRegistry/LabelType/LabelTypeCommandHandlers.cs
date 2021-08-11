@@ -28,7 +28,7 @@
 
             var labelType = new LabelType(message.LabelTypeId, message.Name);
             Session.Add(labelType);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateLabelType message)
@@ -38,7 +38,7 @@
 
             var labelType = Session.Get<LabelType>(message.LabelTypeId);
             labelType.Update(message.Name);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

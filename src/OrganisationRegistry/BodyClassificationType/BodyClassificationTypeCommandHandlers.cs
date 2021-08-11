@@ -28,7 +28,7 @@ namespace OrganisationRegistry.BodyClassificationType
 
             var bodyClassificationType = new BodyClassificationType(message.BodyClassificationTypeId, message.Name);
             Session.Add(bodyClassificationType);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateBodyClassificationType message)
@@ -38,7 +38,7 @@ namespace OrganisationRegistry.BodyClassificationType
 
             var bodyClassificationType = Session.Get<BodyClassificationType>(message.BodyClassificationTypeId);
             bodyClassificationType.Update(message.Name);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

@@ -10,6 +10,6 @@
 
         T Get<T>(Guid id, int? expectedVersion = null) where T : AggregateRoot;
 
-        Task Commit(IUser? user = null);
+        Task Commit(IUser user);
     }
 }
