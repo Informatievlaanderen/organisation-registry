@@ -1,3 +1,18 @@
+# [1.88.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.87.3...v1.88.0) (2021-08-11)
+
+
+### Bug Fixes
+
+* allow AutomatedTasks to change orgs even when terminated ([960c31b](https://github.com/informatievlaanderen/organisation-registry/commit/960c31ba600714a40f8755bad8ca1471d9a3664e))
+* pass user i/o relying on ambient context ([733e5fe](https://github.com/informatievlaanderen/organisation-registry/commit/733e5fe96bd493cb4a27f614cb19d5e68122eea1))
+
+
+### Features
+
+* allow passing user explicitly to store ([5100e3f](https://github.com/informatievlaanderen/organisation-registry/commit/5100e3fb0eca3a7de23cd5dae3dd743f11aa3a98))
+* require User to be passed to Session on commit ([a1b87e0](https://github.com/informatievlaanderen/organisation-registry/commit/a1b87e0c8778dec08efc9cf8f4d42e2be987d4f1))
+* track IsActive in OrganisationCapacityListItemView ([df09b0f](https://github.com/informatievlaanderen/organisation-registry/commit/df09b0fae97a1f515ebb406fda2db57a38ee6d0a))
+
 ## [1.87.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.87.2...v1.87.3) (2021-07-26)
 
 
