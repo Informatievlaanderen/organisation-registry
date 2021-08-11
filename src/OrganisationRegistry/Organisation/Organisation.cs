@@ -2487,7 +2487,9 @@ namespace OrganisationRegistry.Organisation
 
         public void ThrowIfTerminated(IUser user)
         {
-            if (IsTerminated && !user.IsInRole(Role.OrganisationRegistryBeheerder))
+            if (IsTerminated &&
+                !user.IsInRole(Role.OrganisationRegistryBeheerder) &&
+                !user.IsInRole(Role.AutomatedTask))
                 throw new OrganisationAlreadyTerminated();
         }
     }
