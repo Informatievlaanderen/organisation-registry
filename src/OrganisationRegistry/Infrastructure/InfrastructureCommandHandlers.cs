@@ -30,7 +30,7 @@
                 projection.RebuildProjection(message.ProjectionName);
             }
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

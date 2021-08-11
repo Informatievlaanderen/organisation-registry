@@ -28,7 +28,7 @@
 
             var organisationClassificationType = new OrganisationClassificationType(message.OrganisationClassificationTypeId, message.Name);
             Session.Add(organisationClassificationType);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationClassificationType message)
@@ -38,7 +38,7 @@
 
             var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
             organisationClassificationType.Update(message.Name);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

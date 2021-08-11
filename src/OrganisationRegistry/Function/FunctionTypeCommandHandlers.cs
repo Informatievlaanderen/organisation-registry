@@ -29,7 +29,7 @@
             var functionType = new FunctionType(message.FunctionTypeId, message.Name);
 
             Session.Add(functionType);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateFunctionType message)
@@ -40,7 +40,7 @@
             var functionType = Session.Get<FunctionType>(message.FunctionTypeId);
 
             functionType.Update(message.Name);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

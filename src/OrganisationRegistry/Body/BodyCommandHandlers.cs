@@ -104,7 +104,7 @@ namespace OrganisationRegistry.Body
                 inActiveLifecyclePhaseType);
 
             Session.Add(body);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateBodyInfo message)
@@ -116,7 +116,7 @@ namespace OrganisationRegistry.Body
                 message.ShortName,
                 message.Description);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateBodyValidity message)
@@ -127,7 +127,7 @@ namespace OrganisationRegistry.Body
                 message.FormalValidity,
                 _dateTimeProvider);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateBodyBalancedParticipation message)
@@ -139,7 +139,7 @@ namespace OrganisationRegistry.Body
                 message.BalancedParticipationExtraRemark,
                 message.BalancedParticipationExceptionMeasure);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddBodyFormalFramework message)
@@ -152,7 +152,7 @@ namespace OrganisationRegistry.Body
                 formalFramework,
                 message.Validity);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateBodyFormalFramework message)
@@ -165,7 +165,7 @@ namespace OrganisationRegistry.Body
                 formalFramework,
                 message.Validity);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddBodyOrganisation message)
@@ -179,7 +179,7 @@ namespace OrganisationRegistry.Body
                 message.Validity,
                 _dateTimeProvider);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateBodyOrganisation message)
@@ -193,7 +193,7 @@ namespace OrganisationRegistry.Body
                 message.Validity,
                 _dateTimeProvider);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateCurrentBodyOrganisation message)
@@ -201,7 +201,7 @@ namespace OrganisationRegistry.Body
             var body = Session.Get<Body>(message.BodyId);
             body.UpdateCurrentOrganisation(_dateTimeProvider.Today);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddBodyLifecyclePhase message)
@@ -214,7 +214,7 @@ namespace OrganisationRegistry.Body
                 lifecyclePhaseType,
                 message.Validity);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateBodyLifecyclePhase message)
@@ -227,7 +227,7 @@ namespace OrganisationRegistry.Body
                 lifecyclePhaseType,
                 message.Validity);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddBodySeat message)
@@ -245,7 +245,7 @@ namespace OrganisationRegistry.Body
                 message.EntitledToVote,
                 message.Validity);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateBodySeat message)
@@ -261,7 +261,7 @@ namespace OrganisationRegistry.Body
                 message.EntitledToVote,
                 message.Validity);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AssignBodyNumber message)
@@ -270,7 +270,7 @@ namespace OrganisationRegistry.Body
 
             body.AssignBodyNumber(_bodyNumberGenerator.GenerateNumber());
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AssignBodySeatNumber message)
@@ -282,7 +282,7 @@ namespace OrganisationRegistry.Body
                 message.BodySeatId,
                 bodySeatNumber);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AssignPersonToBodySeat message)
@@ -303,7 +303,7 @@ namespace OrganisationRegistry.Body
                 contacts,
                 message.Validity);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AssignFunctionTypeToBodySeat message)
@@ -319,7 +319,7 @@ namespace OrganisationRegistry.Body
                 message.BodySeatId,
                 message.Validity);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AssignOrganisationToBodySeat message)
@@ -333,7 +333,7 @@ namespace OrganisationRegistry.Body
                 message.BodySeatId,
                 message.Validity);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(ReassignPersonToBodySeat message)
@@ -354,7 +354,7 @@ namespace OrganisationRegistry.Body
                 contacts,
                 message.Validity);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(ReassignFunctionTypeToBodySeat message)
@@ -370,7 +370,7 @@ namespace OrganisationRegistry.Body
                 message.BodySeatId,
                 message.Validity);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(ReassignOrganisationToBodySeat message)
@@ -384,7 +384,7 @@ namespace OrganisationRegistry.Body
                 message.BodySeatId,
                 message.Validity);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddDelegationAssignment message)
@@ -407,7 +407,7 @@ namespace OrganisationRegistry.Body
                 message.Validity,
                 _dateTimeProvider.Today);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateDelegationAssignment message)
@@ -430,7 +430,7 @@ namespace OrganisationRegistry.Body
                 message.Validity,
                 _dateTimeProvider.Today);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateCurrentPersonAssignedToBodyMandate message)
@@ -442,7 +442,7 @@ namespace OrganisationRegistry.Body
                 message.BodyMandateId,
                 _dateTimeProvider.Today);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(RemoveDelegationAssignment message)
@@ -455,7 +455,7 @@ namespace OrganisationRegistry.Body
                 message.DelegationAssignmentId,
                 _dateTimeProvider.Today);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddBodyContact message)
@@ -469,7 +469,7 @@ namespace OrganisationRegistry.Body
                 message.ContactValue,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateBodyContact message)
@@ -483,7 +483,7 @@ namespace OrganisationRegistry.Body
                 message.Value,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddBodyBodyClassification message)
@@ -498,7 +498,7 @@ namespace OrganisationRegistry.Body
                 bodyClassification,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateBodyBodyClassification message)
@@ -513,7 +513,7 @@ namespace OrganisationRegistry.Body
                 bodyClassification,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

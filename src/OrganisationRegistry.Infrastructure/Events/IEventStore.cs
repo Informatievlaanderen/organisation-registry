@@ -7,7 +7,7 @@ namespace OrganisationRegistry.Infrastructure.Events
 
     public interface IEventStore
     {
-        Task Save<T>(IEnumerable<IEvent> events, IUser? user = null);
+        Task Save<T>(IEnumerable<IEvent> events, IUser user);
 
         IEnumerable<IEvent> Get<T>(Guid aggregateId, int fromVersion);
 

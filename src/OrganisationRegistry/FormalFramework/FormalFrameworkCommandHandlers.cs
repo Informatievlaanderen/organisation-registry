@@ -37,7 +37,7 @@ namespace OrganisationRegistry.FormalFramework
 
             var formalFramework = new FormalFramework(message.FormalFrameworkId, message.Name, message.Code, formalFrameworkCategory);
             Session.Add(formalFramework);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateFormalFramework message)
@@ -52,7 +52,7 @@ namespace OrganisationRegistry.FormalFramework
 
             var formalFramework = Session.Get<FormalFramework>(message.FormalFrameworkId);
             formalFramework.Update(message.Name, message.Code, formalFrameworkCategory);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

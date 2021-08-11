@@ -45,7 +45,7 @@ namespace OrganisationRegistry.OrganisationClassification
                     organisationClassificationType);
 
             Session.Add(organisationClassification);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationClassification message)
@@ -60,7 +60,7 @@ namespace OrganisationRegistry.OrganisationClassification
             var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
             var organisationClassification = Session.Get<OrganisationClassification>(message.OrganisationClassificationId);
             organisationClassification.Update(message.Name, message.Order, message.ExternalKey, message.Active, organisationClassificationType);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

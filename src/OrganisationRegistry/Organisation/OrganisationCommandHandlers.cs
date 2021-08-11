@@ -115,7 +115,7 @@ namespace OrganisationRegistry.Organisation
                 _dateTimeProvider);
 
             Session.Add(organisation);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationInfo message)
@@ -138,7 +138,7 @@ namespace OrganisationRegistry.Organisation
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
                 _dateTimeProvider);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddOrganisationParent message)
@@ -158,7 +158,7 @@ namespace OrganisationRegistry.Organisation
                 validity,
                 _dateTimeProvider);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationParent message)
@@ -178,7 +178,7 @@ namespace OrganisationRegistry.Organisation
                 validity,
                 _dateTimeProvider);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddOrganisationFormalFramework message)
@@ -201,7 +201,7 @@ namespace OrganisationRegistry.Organisation
                 validity,
                 _dateTimeProvider);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationFormalFramework message)
@@ -224,7 +224,7 @@ namespace OrganisationRegistry.Organisation
                 validity,
                 _dateTimeProvider);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         private bool ParentTreeHasOrganisationInIt(
@@ -276,7 +276,7 @@ namespace OrganisationRegistry.Organisation
                 message.KeyValue,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationKey message)
@@ -291,7 +291,7 @@ namespace OrganisationRegistry.Organisation
                 message.Value,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
 
@@ -310,7 +310,7 @@ namespace OrganisationRegistry.Organisation
                 message.Description,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationRegulation message)
@@ -328,7 +328,7 @@ namespace OrganisationRegistry.Organisation
                 message.Description,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddOrganisationCapacity message)
@@ -357,7 +357,7 @@ namespace OrganisationRegistry.Organisation
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
                 _dateTimeProvider);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationCapacity message)
@@ -386,7 +386,7 @@ namespace OrganisationRegistry.Organisation
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
                 _dateTimeProvider);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddOrganisationFunction message)
@@ -410,7 +410,7 @@ namespace OrganisationRegistry.Organisation
                 contacts,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationFunction message)
@@ -434,7 +434,7 @@ namespace OrganisationRegistry.Organisation
                 contacts,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddOrganisationRelation message)
@@ -451,7 +451,7 @@ namespace OrganisationRegistry.Organisation
                 relatedOrganisation,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationRelation message)
@@ -468,7 +468,7 @@ namespace OrganisationRegistry.Organisation
                 relatedOrganisation,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddOrganisationBuilding message)
@@ -485,7 +485,7 @@ namespace OrganisationRegistry.Organisation
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
                 _dateTimeProvider);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationBuilding message)
@@ -502,7 +502,7 @@ namespace OrganisationRegistry.Organisation
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
                 _dateTimeProvider);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddOrganisationLocation message)
@@ -523,7 +523,7 @@ namespace OrganisationRegistry.Organisation
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
                 _dateTimeProvider);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationLocation message)
@@ -544,7 +544,7 @@ namespace OrganisationRegistry.Organisation
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
                 _dateTimeProvider);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddOrganisationContact message)
@@ -560,7 +560,7 @@ namespace OrganisationRegistry.Organisation
                 message.ContactValue,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationContact message)
@@ -576,7 +576,7 @@ namespace OrganisationRegistry.Organisation
                 message.Value,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddOrganisationLabel message)
@@ -594,7 +594,7 @@ namespace OrganisationRegistry.Organisation
                 message.LabelValue,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationLabel message)
@@ -612,7 +612,7 @@ namespace OrganisationRegistry.Organisation
                 message.Value,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddOrganisationOrganisationClassification message)
@@ -630,7 +630,7 @@ namespace OrganisationRegistry.Organisation
                 organisationClassification,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationOrganisationClassification message)
@@ -649,7 +649,7 @@ namespace OrganisationRegistry.Organisation
                 organisationClassification,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(AddOrganisationBankAccount message)
@@ -668,7 +668,7 @@ namespace OrganisationRegistry.Organisation
                 bankAccountBic,
                 validity);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationBankAccount message)
@@ -687,7 +687,7 @@ namespace OrganisationRegistry.Organisation
                 bankAccountBic,
                 validity);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateMainBuilding message)
@@ -697,7 +697,7 @@ namespace OrganisationRegistry.Organisation
 
             organisation.UpdateMainBuilding(_dateTimeProvider.Today);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateMainLocation message)
@@ -707,7 +707,7 @@ namespace OrganisationRegistry.Organisation
 
             organisation.UpdateMainLocation(_dateTimeProvider.Today);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationFormalFrameworkParents message)
@@ -717,7 +717,7 @@ namespace OrganisationRegistry.Organisation
 
             organisation.UpdateOrganisationFormalFrameworkParent(_dateTimeProvider.Today, message.FormalFrameworkId);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateCurrentOrganisationParent message)
@@ -727,7 +727,7 @@ namespace OrganisationRegistry.Organisation
 
             organisation.UpdateCurrentOrganisationParent(_dateTimeProvider.Today);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateRelationshipValidities message)
@@ -752,7 +752,7 @@ namespace OrganisationRegistry.Organisation
                 message.DayOfWeek,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateOrganisationOpeningHour message)
@@ -767,7 +767,7 @@ namespace OrganisationRegistry.Organisation
                 message.DayOfWeek,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(TerminateOrganisation message)
@@ -783,7 +783,7 @@ namespace OrganisationRegistry.Organisation
                 _dateTimeProvider,
                 message.ForceKboTermination);
 
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

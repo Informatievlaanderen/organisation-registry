@@ -53,8 +53,7 @@ namespace OrganisationRegistry.Api.Organisation
         {
             await CommandSender.Send(
                 new CancelCouplingWithKbo(
-                    new OrganisationId(id),
-                    User));
+                    new OrganisationId(id)));
 
             return Ok();
         }

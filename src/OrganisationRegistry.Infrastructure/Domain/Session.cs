@@ -55,10 +55,10 @@ namespace OrganisationRegistry.Infrastructure.Domain
         private bool IsTracked(Guid id)
             => _trackedAggregates.ContainsKey(id);
 
-        public async Task Commit(IUser user = null)
+        public async Task Commit(IUser user)
         {
             foreach (var descriptor in _trackedAggregates.Values)
-                await _repository.Save(descriptor.Aggregate, descriptor.Version, user);
+                await _repository.Save(descriptor.Aggregate, user, descriptor.Version);
 
             Reset();
         }

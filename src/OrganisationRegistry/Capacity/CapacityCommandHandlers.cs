@@ -28,7 +28,7 @@
 
             var capacity = new Capacity(message.CapacityId, message.Name);
             Session.Add(capacity);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateCapacity message)
@@ -38,7 +38,7 @@
 
             var capacity = Session.Get<Capacity>(message.CapacityId);
             capacity.Update(message.Name);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

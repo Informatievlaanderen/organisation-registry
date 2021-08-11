@@ -24,7 +24,7 @@ namespace OrganisationRegistry.Infrastructure.Domain
             logger.LogTrace("Creating Repository.");
         }
 
-        public async Task Save<T>(T aggregate, int? expectedVersion = null, IUser user = null) where T : AggregateRoot
+        public async Task Save<T>(T aggregate, IUser user, int? expectedVersion = null) where T : AggregateRoot
         {
             if (expectedVersion != null && _eventStore.Get<T>(aggregate.Id, expectedVersion.Value).Any())
                 throw new ConcurrencyException(aggregate.Id, expectedVersion.Value);

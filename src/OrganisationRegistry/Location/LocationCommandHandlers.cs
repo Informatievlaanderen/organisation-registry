@@ -28,7 +28,7 @@
 
             var location = new Location(message.LocationId, message.CrabLocationId, message.Address);
             Session.Add(location);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateLocation message)
@@ -38,7 +38,7 @@
 
             var location = Session.Get<Location>(message.LocationId);
             location.Update(message.CrabLocationId, message.Address);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

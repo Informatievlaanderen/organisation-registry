@@ -28,7 +28,7 @@
 
             var regulationType = new RegulationType(message.RegulationTypeId, message.Name);
             Session.Add(regulationType);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateRegulationType message)
@@ -38,7 +38,7 @@
 
             var regulationType = Session.Get<RegulationType>(message.RegulationTypeId);
             regulationType.Update(message.Name);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

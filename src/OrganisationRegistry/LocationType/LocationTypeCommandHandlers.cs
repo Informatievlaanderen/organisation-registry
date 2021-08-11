@@ -28,7 +28,7 @@
 
             var locationType = new LocationType(message.LocationTypeId, message.Name);
             Session.Add(locationType);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateLocationType message)
@@ -38,7 +38,7 @@
 
             var locationType = Session.Get<LocationType>(message.LocationTypeId);
             locationType.Update(message.Name);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }

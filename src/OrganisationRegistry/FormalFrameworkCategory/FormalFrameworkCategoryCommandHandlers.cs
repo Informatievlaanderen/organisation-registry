@@ -28,7 +28,7 @@
 
             var formalFrameworkCategory = new FormalFrameworkCategory(message.FormalFrameworkCategoryId, message.Name);
             Session.Add(formalFrameworkCategory);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
 
         public async Task Handle(UpdateFormalFrameworkCategory message)
@@ -38,7 +38,7 @@
 
             var formalFrameworkCategory = Session.Get<FormalFrameworkCategory>(message.FormalFrameworkCategoryId);
             formalFrameworkCategory.Update(message.Name);
-            await Session.Commit();
+            await Session.Commit(message.User);
         }
     }
 }
