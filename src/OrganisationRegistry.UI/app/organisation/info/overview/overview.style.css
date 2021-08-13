@@ -40,6 +40,20 @@ div.properties__column_full .properties__label {
   width: 14.5%;
 }
 
+.properties__label {
+  width: 35%;
+}
+
+@media screen and (max-width:767px) {
+  .properties__label {
+    width: 50%;
+  }
+}
+
+.properties__data {
+  width: 65%;
+}
+
 @media screen and (max-width: 767px) {
   div.properties__column_full {
     width: 100%;
