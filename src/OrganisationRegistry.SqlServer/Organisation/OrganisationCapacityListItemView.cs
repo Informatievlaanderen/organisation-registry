@@ -120,62 +120,54 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<CapacityUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationCapacities = context.OrganisationCapacityList.Where(x => x.CapacityId == message.Body.CapacityId);
-                if (!organisationCapacities.Any())
-                    return;
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationCapacities = context.OrganisationCapacityList.Where(x => x.CapacityId == message.Body.CapacityId);
+            if (!organisationCapacities.Any())
+                return;
 
-                foreach (var organisationCapacity in organisationCapacities)
-                    organisationCapacity.CapacityName = message.Body.Name;
+            foreach (var organisationCapacity in organisationCapacities)
+                organisationCapacity.CapacityName = message.Body.Name;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationCapacities = context.OrganisationCapacityList.Where(x => x.FunctionId == message.Body.FunctionId);
-                if (!organisationCapacities.Any())
-                    return;
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationCapacities = context.OrganisationCapacityList.Where(x => x.FunctionId == message.Body.FunctionId);
+            if (!organisationCapacities.Any())
+                return;
 
-                foreach (var organisationCapacity in organisationCapacities)
-                    organisationCapacity.FunctionName = message.Body.Name;
+            foreach (var organisationCapacity in organisationCapacities)
+                organisationCapacity.FunctionName = message.Body.Name;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationCapacities = context.OrganisationCapacityList.Where(x => x.PersonId == message.Body.PersonId);
-                if (!organisationCapacities.Any())
-                    return;
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationCapacities = context.OrganisationCapacityList.Where(x => x.PersonId == message.Body.PersonId);
+            if (!organisationCapacities.Any())
+                return;
 
-                foreach (var organisationCapacity in organisationCapacities)
-                    organisationCapacity.PersonName = $"{message.Body.FirstName} {message.Body.Name}";
+            foreach (var organisationCapacity in organisationCapacities)
+                organisationCapacity.PersonName = $"{message.Body.FirstName} {message.Body.Name}";
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LocationUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationCapacities = context.OrganisationCapacityList.Where(x => x.LocationId == message.Body.LocationId);
-                if (!organisationCapacities.Any())
-                    return;
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationCapacities = context.OrganisationCapacityList.Where(x => x.LocationId == message.Body.LocationId);
+            if (!organisationCapacities.Any())
+                return;
 
-                foreach (var organisationCapacity in organisationCapacities)
-                    organisationCapacity.LocationName = message.Body.FormattedAddress;
+            foreach (var organisationCapacity in organisationCapacities)
+                organisationCapacity.LocationName = message.Body.FormattedAddress;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityAdded> message)
@@ -197,72 +189,62 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.OrganisationCapacityList.AddAsync(organisationCapacityListItem);
-                await context.SaveChangesAsync();
-            }
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            await context.OrganisationCapacityList.AddAsync(organisationCapacityListItem);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var capacity = context.OrganisationCapacityList.SingleOrDefault(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var capacity = await context.OrganisationCapacityList.SingleAsync(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
 
-                capacity.OrganisationCapacityId = message.Body.OrganisationCapacityId;
-                capacity.OrganisationId = message.Body.OrganisationId;
-                capacity.CapacityId = message.Body.CapacityId;
-                capacity.PersonId = message.Body.PersonId;
-                capacity.FunctionId = message.Body.FunctionId;
-                capacity.LocationId = message.Body.LocationId;
-                capacity.CapacityName = message.Body.CapacityName;
-                capacity.PersonName = message.Body.PersonId.HasValue ? message.Body.PersonFullName : string.Empty;
-                capacity.FunctionName = message.Body.FunctionId.HasValue ? message.Body.FunctionName : string.Empty;
-                capacity.LocationName = message.Body.LocationId.HasValue ? message.Body.LocationName : string.Empty;
-                capacity.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts ?? new Dictionary<Guid, string>());
-                capacity.ValidFrom = message.Body.ValidFrom;
-                capacity.ValidTo = message.Body.ValidTo;
+            capacity.OrganisationCapacityId = message.Body.OrganisationCapacityId;
+            capacity.OrganisationId = message.Body.OrganisationId;
+            capacity.CapacityId = message.Body.CapacityId;
+            capacity.PersonId = message.Body.PersonId;
+            capacity.FunctionId = message.Body.FunctionId;
+            capacity.LocationId = message.Body.LocationId;
+            capacity.CapacityName = message.Body.CapacityName;
+            capacity.PersonName = message.Body.PersonId.HasValue ? message.Body.PersonFullName : string.Empty;
+            capacity.FunctionName = message.Body.FunctionId.HasValue ? message.Body.FunctionName : string.Empty;
+            capacity.LocationName = message.Body.LocationId.HasValue ? message.Body.LocationName : string.Empty;
+            capacity.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts ?? new Dictionary<Guid, string>());
+            capacity.ValidFrom = message.Body.ValidFrom;
+            capacity.ValidTo = message.Body.ValidTo;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var capacities = context.OrganisationCapacityList.Where(item =>
-                    message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var capacities = context.OrganisationCapacityList.Where(item =>
+                message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
 
-                foreach (var capacity in capacities)
-                    capacity.ValidTo = message.Body.FieldsToTerminate.Capacities[capacity.OrganisationCapacityId];
+            foreach (var capacity in capacities)
+                capacity.ValidTo = message.Body.FieldsToTerminate.Capacities[capacity.OrganisationCapacityId];
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<OrganisationCapacityBecameActive> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var capacity = await context.OrganisationCapacityList.SingleAsync(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
-                capacity.IsActive = true;
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var capacity = await context.OrganisationCapacityList.SingleAsync(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
+            capacity.IsActive = true;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityBecameInactive> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var capacity = await context.OrganisationCapacityList.SingleAsync(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
-                capacity.IsActive = false;
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var capacity = await context.OrganisationCapacityList.SingleAsync(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
+            capacity.IsActive = false;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
@@ -272,40 +254,39 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = ContextFactory.Create())
-            {
-                var undetermined =
-                    context.OrganisationCapacityList
-                        .Where(item =>
-                            !item.IsActive.HasValue)
-                        .Select(item => item.OrganisationId)
-                        .Distinct();
+            await using var context = ContextFactory.Create();
+            var undetermined =
+                context.OrganisationCapacityList
+                    .Where(item =>
+                        !item.IsActive.HasValue)
+                    .Select(item => item.OrganisationId)
+                    .Distinct();
 
-                var shouldBeActive =
-                    context.OrganisationCapacityList
-                        .Where(item => item.IsActive.HasValue &&
-                                       !item.IsActive.Value &&
-                                       ((item.ValidFrom == null || item.ValidFrom <= message.Body.Date) &&
-                                        (item.ValidTo == null || item.ValidTo >= message.Body.Date)))
-                        .Select(item => item.OrganisationId)
-                        .Distinct();
+            var shouldBeActive =
+                context.OrganisationCapacityList
+                    .Where(item => item.IsActive.HasValue &&
+                                   !item.IsActive.Value &&
+                                   ((item.ValidFrom == null || item.ValidFrom <= message.Body.Date) &&
+                                    (item.ValidTo == null || item.ValidTo >= message.Body.Date)))
+                    .Select(item => item.OrganisationId)
+                    .Distinct();
 
-                var shouldBeInactive =
-                    context.OrganisationCapacityList
-                        .Where(item => item.IsActive.HasValue &&
-                                       item.IsActive.Value &&
-                                       ((item.ValidFrom != null && item.ValidFrom > message.Body.Date) &&
-                                        (item.ValidTo != null && item.ValidTo < message.Body.Date)))
-                        .Select(item => item.OrganisationId)
-                        .Distinct();
+            var shouldBeInactive =
+                context.OrganisationCapacityList
+                    .Where(item => item.IsActive.HasValue &&
+                                   item.IsActive.Value &&
+                                   ((item.ValidFrom != null && item.ValidFrom > message.Body.Date) &&
+                                    (item.ValidTo != null && item.ValidTo < message.Body.Date)))
+                    .Select(item => item.OrganisationId)
+                    .Distinct();
 
-                return undetermined
-                    .Union(shouldBeActive)
-                    .Union(shouldBeInactive)
-                    .Select(id => new UpdateRelationshipValidities(new OrganisationId(id), message.Body.NextDate))
-                    .Cast<ICommand>()
-                    .ToList();
-            }
+            return await undetermined
+                .Union(shouldBeActive)
+                .Union(shouldBeInactive)
+                .Distinct()
+                .Select(id => new UpdateRelationshipValidities(new OrganisationId(id), message.Body.NextDate))
+                .Cast<ICommand>()
+                .ToListAsync();
         }
     }
 }
