@@ -17,7 +17,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
         IEventHandler<BodyRegistered>,
         IEventHandler<BodyAssignedToOrganisation>,
         IEventHandler<BodyFormalFrameworkAdded>,
-        IEventHandler<BodyFormalFrameworkUpdated>
+        IEventHandler<BodyFormalFrameworkUpdated>,
+        IEventHandler<BodyBalancedParticipationChanged>
     {
         private readonly IMemoryCaches _memoryCaches;
         private readonly IMailer _mailer;
@@ -122,6 +123,25 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             }
         }
 
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyBalancedParticipationChanged> message)
+        {
+            if (message.Body.BalancedParticipationObligatory != message.Body.PreviousBalancedParticipationObligatory)
+                return;
+
+            var bodyName = _memoryCaches.BodyNames[message.Body.BodyId];
+
+            var subject = $"OrganisationRegistry: MEP-PLICHTIGHEID ORGAAN '{bodyName}' GEWIJZIGD";
+            var body =
+                new StringBuilder()
+                    .AppendLine("De mep-plichtigheid van een orgaan werd gewijzigd:")
+                    .AppendLine($"{bodyName} werd aangepast op {message.Body.Timestamp:yy-MM-dd HH:mm:ss}.")
+                    .AppendLine($"Vorige waarde: {message.Body.PreviousBalancedParticipationObligatory}")
+                    .AppendLine($"Nieuwe waarde: {message.Body.BalancedParticipationObligatory}")
+                    .ToString();
+
+            SendMails(new Mail(subject, body));
+        }
+
         private void SendMails(params Mail[] mails)
         {
             if (!_toggles.SendVlaanderenBeNotifierMails)
@@ -138,8 +158,6 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                             categories: new List<string> { "OrganisationRegistry VlaanderenBeNotifier" }
                         )
                         .Wait());
-            //_telemetryClient.TrackEvent("VlaanderenBeNotifier::MailSent");
-            //_telemetryClient.TrackEvent("VlaanderenBeNotifier::MailSent::Body");
         }
     }
 }

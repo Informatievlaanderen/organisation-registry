@@ -25,7 +25,6 @@ namespace OrganisationRegistry.Organisation.Events
             KboFieldsToTerminate kboFieldsToTerminate,
             bool forcedKboTermination,
             DateTime? dateOfTerminationAccordingToKbo = null)
-
         {
             Id = organisationId;
 
