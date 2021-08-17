@@ -1,3 +1,17 @@
+# [1.89.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.88.0...v1.89.0) (2021-08-17)
+
+
+### Bug Fixes
+
+* make sure organisations are distinct ([eded4c9](https://github.com/informatievlaanderen/organisation-registry/commit/eded4c94af810851c5d261f0f755e7193240117a))
+
+
+### Features
+
+* add article to organisation ([135f36c](https://github.com/informatievlaanderen/organisation-registry/commit/135f36c12f9e0203cc8d7db1756698a5b0196125))
+* add formal validity and operational validity ([e658911](https://github.com/informatievlaanderen/organisation-registry/commit/e6589115bc688ec9f451815c46d9d201ac93d05a))
+* rename validity to formal validity (ui only) ([38b6c1c](https://github.com/informatievlaanderen/organisation-registry/commit/38b6c1c4723881416683bb64d73593825017590a))
+
 # [1.88.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.87.3...v1.88.0) (2021-08-11)
 
 
