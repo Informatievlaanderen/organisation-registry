@@ -45,9 +45,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
 
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationAId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null),
-                new OrganisationCreated(_organisationBId, "Ouder en Gezin", "OVO000012346", "O&G", Article.None, "Moeder", new List<Purpose>(), false, null, null),
-                new OrganisationCreated(_organisationCId, "Grootouder en gezin", "OVO000012347", "K&G", Article.None, "Oma", new List<Purpose>(), false, null, null),
+                new OrganisationCreated(_organisationAId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(_organisationBId, "Ouder en Gezin", "OVO000012346", "O&G", Article.None, "Moeder", new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(_organisationCId, "Grootouder en gezin", "OVO000012347", "K&G", Article.None, "Oma", new List<Purpose>(), false, null, null, null, null),
                 new OrganisationParentAdded(_organisationAId, _organisationOrganisationParentId, _organisationBId, "Ouder en Gezin", null, null),
                 new ParentAssignedToOrganisation(_organisationAId, _organisationBId, _organisationOrganisationParentId),
             };

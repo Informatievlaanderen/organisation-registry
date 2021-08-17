@@ -41,7 +41,7 @@ div.properties__column_full .properties__label {
 }
 
 .properties__label {
-  width: 35%;
+  width: 40%;
 }
 
 @media screen and (max-width:767px) {
@@ -51,7 +51,7 @@ div.properties__column_full .properties__label {
 }
 
 .properties__data {
-  width: 65%;
+  width: 60%;
 }
 
 @media screen and (max-width: 767px) {

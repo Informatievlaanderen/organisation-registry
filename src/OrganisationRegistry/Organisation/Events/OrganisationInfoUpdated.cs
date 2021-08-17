@@ -25,11 +25,18 @@ namespace OrganisationRegistry.Organisation.Events
         public bool ShowOnVlaamseOverheidSites { get; }
         public bool PreviouslyShownInVlaanderenBe { get; }
 
-        public DateTime? ValidFrom { get; set; }
+        public DateTime? ValidFrom { get; }
         public DateTime? PreviouslyValidFrom { get; }
 
-        public DateTime? ValidTo { get; set; }
+        public DateTime? ValidTo { get; }
         public DateTime? PreviouslyValidTo { get; }
+
+        public DateTime? OperationalValidFrom { get; }
+        public DateTime? PreviouslyOperationalValidFrom { get; }
+
+        public DateTime? OperationalValidTo { get; }
+        public DateTime? PreviouslyOperationalValidTo { get; }
+
 
         public OrganisationInfoUpdated(
             Guid organisationId,
@@ -42,13 +49,17 @@ namespace OrganisationRegistry.Organisation.Events
             bool showOnVlaamseOverheidSites,
             DateTime? validFrom,
             DateTime? validTo,
+            DateTime? operationalValidFrom,
+            DateTime? operationalValidTo,
             string previousName,
             string previousDescription,
             string previousShortName,
             List<Purpose> previousPurposes,
             bool previouslyShownInVlaanderenBe,
             DateTime? previouslyValidFrom,
-            DateTime? previouslyValidTo)
+            DateTime? previouslyValidTo,
+            DateTime? previouslyOperationalValidFrom,
+            DateTime? previouslyOperationalValidTo)
         {
             Id = organisationId;
 
@@ -61,6 +72,8 @@ namespace OrganisationRegistry.Organisation.Events
             ShowOnVlaamseOverheidSites = showOnVlaamseOverheidSites;
             ValidFrom = validFrom;
             ValidTo = validTo;
+            OperationalValidFrom = operationalValidFrom;
+            OperationalValidTo = operationalValidTo;
 
             PreviousName = previousName;
             PreviousDescription = previousDescription;
@@ -69,6 +82,8 @@ namespace OrganisationRegistry.Organisation.Events
             PreviouslyShownInVlaanderenBe = previouslyShownInVlaanderenBe;
             PreviouslyValidFrom = previouslyValidFrom;
             PreviouslyValidTo = previouslyValidTo;
+            PreviouslyOperationalValidFrom = previouslyOperationalValidFrom;
+            PreviouslyOperationalValidTo = previouslyOperationalValidTo;
         }
     }
 }

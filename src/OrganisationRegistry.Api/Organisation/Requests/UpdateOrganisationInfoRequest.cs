@@ -31,6 +31,8 @@
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
         public string? Article { get; set; }
+        public DateTime? OperationalValidFrom { get; set; }
+        public DateTime? OperationalValidTo { get; set; }
     }
 
     public class UpdateOrganisationInfoRequestValidator : AbstractValidator<UpdateOrganisationInfoInternalRequest>
@@ -69,7 +71,9 @@
                 message.Body.PurposeIds?.Select(x => new PurposeId(x)).ToList(),
                 message.Body.ShowOnVlaamseOverheidSites,
                 new ValidFrom(message.Body.ValidFrom),
-                new ValidTo(message.Body.ValidTo));
+                new ValidTo(message.Body.ValidTo),
+                new ValidFrom(message.Body.OperationalValidFrom),
+                new ValidTo(message.Body.OperationalValidTo));
         }
     }
 }

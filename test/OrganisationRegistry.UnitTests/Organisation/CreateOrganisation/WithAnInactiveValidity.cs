@@ -41,7 +41,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
                 new List<PurposeId>(),
                 false,
                 new ValidFrom(_yesterday),
-                new ValidTo(_yesterday));
+                new ValidTo(_yesterday),
+                new ValidFrom(),
+                new ValidTo());
         }
 
         protected override OrganisationCommandHandlers BuildHandler()

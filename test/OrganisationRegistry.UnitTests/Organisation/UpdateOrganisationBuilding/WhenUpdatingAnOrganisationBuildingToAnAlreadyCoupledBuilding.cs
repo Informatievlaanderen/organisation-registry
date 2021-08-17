@@ -45,7 +45,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
 
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null),
+                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
                 new BuildingCreated(_buildingAId, "Gebouw A", 12345),
                 _organisationBuildingAdded,
                 _anotherOrganisationBuildingAdded

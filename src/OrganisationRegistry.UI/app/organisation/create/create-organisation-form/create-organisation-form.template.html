@@ -72,15 +72,28 @@
 
     <ww-form-group-datepicker-range
       [fromId]="'validFrom'"
-      [fromName]="'Formaal geldig vanaf'"
-      [fromLabel]="'Formaal geldig vanaf'"
-      [fromPlaceholder]="'Formaal geldig vanaf'"
+      [fromName]="'Formeel geldig vanaf'"
+      [fromLabel]="'Formeel geldig vanaf'"
+      [fromPlaceholder]="'Formeel geldig vanaf'"
       [fromControl]="form.get('validFrom')"
       [toId]="'validTo'"
-      [toName]="'Formaal geldig tot'"
-      [toLabel]="'Formaal geldig tot'"
-      [toPlaceholder]="'Formaal geldig tot'"
+      [toName]="'Formeel geldig tot'"
+      [toLabel]="'Formeel geldig tot'"
+      [toPlaceholder]="'Formeel geldig tot'"
       [toControl]="form.get('validTo')">
+    </ww-form-group-datepicker-range>
+
+    <ww-form-group-datepicker-range
+      [fromId]="'operationalValidFrom'"
+      [fromName]="'Operationeel geldig vanaf'"
+      [fromLabel]="'Operationeel geldig vanaf'"
+      [fromPlaceholder]="'Operationeel geldig vanaf'"
+      [fromControl]="form.get('operationalValidFrom')"
+      [toId]="'operationalValidTo'"
+      [toName]="'Operationeel geldig tot'"
+      [toLabel]="'Operationeel geldig tot'"
+      [toPlaceholder]="'Operationeel geldig tot'"
+      [toControl]="form.get('operationalValidTo')">
     </ww-form-group-datepicker-range>
 
     <ww-organisation-autocomplete

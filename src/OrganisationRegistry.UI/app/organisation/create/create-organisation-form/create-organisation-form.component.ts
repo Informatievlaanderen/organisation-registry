@@ -65,6 +65,8 @@ export class CreateOrganisationFormComponent implements OnInit {
       showOnVlaamseOverheidSites: [false],
       validFrom: [''],
       validTo: [''],
+      operationalValidFrom: [''],
+      operationalValidTo: [''],
       kboNumber: ['', Validators.nullValidator],
       bankAccounts: [[]],
       legalForms: [[]],

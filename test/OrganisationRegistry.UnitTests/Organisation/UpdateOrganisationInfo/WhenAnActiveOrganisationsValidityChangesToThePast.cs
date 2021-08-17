@@ -56,7 +56,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                 new List<PurposeId>(),
                 false,
                 new ValidFrom(_yesterday),
-                new ValidTo(_yesterday));
+                new ValidTo(_yesterday),
+                new ValidFrom(),
+                new ValidTo());
         }
 
         protected override int ExpectedNumberOfEvents => 2;

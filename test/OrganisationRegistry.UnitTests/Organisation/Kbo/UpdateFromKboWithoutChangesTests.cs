@@ -77,7 +77,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     new List<Purpose>(),
                     false,
                     new ValidFrom(),
-                    new ValidTo()),
+                    new ValidTo(),
+                    new ValidFrom(), new ValidTo()),
                 new KboRegisteredOfficeOrganisationLocationAdded(
                     _organisationId,
                     Guid.NewGuid(),

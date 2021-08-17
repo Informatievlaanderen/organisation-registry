@@ -5,5 +5,7 @@ export class UpdateOrganisationRequest {
     public description: string = '',
     public validFrom: Date = null,
     public validTo: Date = null,
+    public operationalValidFrom: Date = null,
+    public operationalValidTo: Date = null,
   ) { }
 }

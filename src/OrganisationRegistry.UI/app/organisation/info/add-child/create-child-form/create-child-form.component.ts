@@ -56,6 +56,8 @@ export class CreateChildOrganisationFormComponent implements OnInit, OnChanges {
       showOnVlaamseOverheidSites: [false],
       validFrom: [''],
       validTo: [''],
+      operationalValidFrom: [''],
+      operationalValidTo: [''],
     });
     this.articles = [
       new SelectItem('de', 'de'),

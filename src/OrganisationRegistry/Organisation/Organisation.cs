@@ -20,6 +20,7 @@ namespace OrganisationRegistry.Organisation
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Resources;
     using Commands;
     using Infrastructure.Authorization;
     using OrganisationTermination;
@@ -61,6 +62,7 @@ namespace OrganisationRegistry.Organisation
             IEnumerable<Purpose> purposes,
             bool showOnVlaamseOverheidSites,
             Period validity,
+            Period operationalValidity,
             IDateTimeProvider dateTimeProvider) : this()
         {
             ApplyChange(new OrganisationCreated(
@@ -75,7 +77,9 @@ namespace OrganisationRegistry.Organisation
                     .ToList(),
                 showOnVlaamseOverheidSites,
                 validity.Start,
-                validity.End));
+                validity.End,
+                operationalValidity.Start,
+                operationalValidity.End));
 
             if (validity.OverlapsWith(dateTimeProvider.Today))
                 ApplyChange(new OrganisationBecameActive(Id));
@@ -117,6 +121,7 @@ namespace OrganisationRegistry.Organisation
                 purposes,
                 message.ShowOnVlaamseOverheidSites,
                 new Period(new ValidFrom(kboOrganisation.ValidFrom), new ValidTo(message.ValidTo)),
+                new Period(new ValidFrom(message.OperationalValidFrom), new ValidTo(message.OperationalValidTo)),
                 dateTimeProvider);
         }
 
@@ -132,6 +137,7 @@ namespace OrganisationRegistry.Organisation
             IEnumerable<Purpose> purposes,
             bool showOnVlaamseOverheidSites,
             Period validity,
+            Period operationalValidity,
             IDateTimeProvider dateTimeProvider) : this()
         {
             ApplyChange(new OrganisationCreatedFromKbo(
@@ -145,7 +151,9 @@ namespace OrganisationRegistry.Organisation
                 purposes.Select(x => new Events.Purpose(x.Id, x.Name)).ToList(),
                 showOnVlaamseOverheidSites,
                 validity.Start,
-                validity.End));
+                validity.End,
+                operationalValidity.Start,
+                operationalValidity.End));
 
             if (validity.OverlapsWith(dateTimeProvider.Today))
                 ApplyChange(new OrganisationBecameActive(Id));
@@ -176,6 +184,7 @@ namespace OrganisationRegistry.Organisation
             List<Purpose> purposes,
             bool showOnVlaamseOverheidSites,
             Period validity,
+            Period operationalValidity,
             IDateTimeProvider dateTimeProvider)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -198,13 +207,17 @@ namespace OrganisationRegistry.Organisation
                 showOnVlaamseOverheidSites,
                 validity.Start,
                 validity.End,
+                operationalValidity.Start,
+                operationalValidity.End,
                 State.Name,
                 State.Description,
                 State.ShortName,
                 _purposes,
                 State.ShowOnVlaamseOverheidSites,
                 State.Validity.Start,
-                State.Validity.End));
+                State.Validity.End,
+                State.OperationalValidity.Start,
+                State.OperationalValidity.End));
 
             var validityOverlapsWithToday = validity.OverlapsWith(dateTimeProvider.Today);
             if (State.IsActive && !validityOverlapsWithToday)

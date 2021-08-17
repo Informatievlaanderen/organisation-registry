@@ -16,6 +16,9 @@ namespace OrganisationRegistry.Organisation.Commands
         public List<PurposeId> Purposes { get; }
         public bool ShowOnVlaamseOverheidSites { get; }
         public ValidFrom ValidFrom { get; }
+        public ValidFrom OperationalValidFrom { get; }
+        public ValidTo OperationalValidTo { get; }
+
         public ValidTo ValidTo { get; }
 
         public List<AddOrganisationKey> Keys { get; set; } = new List<AddOrganisationKey>();
@@ -35,7 +38,10 @@ namespace OrganisationRegistry.Organisation.Commands
             List<PurposeId> purposes,
             bool showOnVlaamseOverheidSites,
             ValidFrom validFrom,
-            ValidTo validTo, KboNumber kboNumber)
+            ValidTo validTo,
+            KboNumber kboNumber,
+            ValidFrom operationalValidFrom,
+            ValidTo operationalValidTo)
         {
             Id = organisationId;
 
@@ -49,6 +55,8 @@ namespace OrganisationRegistry.Organisation.Commands
             ValidFrom = validFrom;
             ValidTo = validTo;
             KboNumber = kboNumber;
+            OperationalValidFrom = operationalValidFrom;
+            OperationalValidTo = operationalValidTo;
             Article = article;
         }
     }

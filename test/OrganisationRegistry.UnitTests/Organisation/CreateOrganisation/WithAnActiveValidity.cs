@@ -35,6 +35,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
                 new List<PurposeId>(),
                 false,
                 new ValidFrom(),
+                new ValidTo(),
+                new ValidFrom(),
                 new ValidTo());
         }
 
