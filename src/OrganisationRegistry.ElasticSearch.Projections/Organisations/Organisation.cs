@@ -244,6 +244,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.Validity =
                         new Period(document.Validity.Start, message.Body.FieldsToTerminate.OrganisationValidity);
 
+                    document.OperationalValidity =
+                        new Period(document.OperationalValidity.Start, message.Body.FieldsToTerminate.OrganisationValidity);
+
                     if (message.Body.ForcedKboTermination)
                         document.KboNumber = string.Empty;
                 }

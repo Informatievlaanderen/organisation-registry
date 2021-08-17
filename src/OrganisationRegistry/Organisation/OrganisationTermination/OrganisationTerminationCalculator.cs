@@ -16,9 +16,10 @@ namespace OrganisationRegistry.Organisation.OrganisationTermination
             if (state.Validity.Start.IsInFutureOf(dateOfTermination))
                 throw new OrganisationCannotBeTerminatedWithFieldsInTheFuture();
 
+            var newValidTo = state.Validity.End.IsInFutureOf(dateOfTermination) ? dateOfTermination : (DateTime?)null;
             return new OrganisationTerminationSummary
             {
-                OrganisationNewValidTo = state.Validity.End.IsInFutureOf(dateOfTermination) ? dateOfTermination : null,
+                OrganisationNewValidTo = newValidTo,
                 Contacts = FieldsToTerminate(state.OrganisationContacts, dateOfTermination),
                 BankAccounts = FieldsToTerminate(state.OrganisationBankAccounts, dateOfTermination),
                 Functions = FieldsToTerminate(state.OrganisationFunctionTypes, dateOfTermination),
