@@ -1,3 +1,10 @@
+# [1.90.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.89.0...v1.90.0) (2021-08-17)
+
+
+### Features
+
+* end operational validity on organisation termination ([061eea8](https://github.com/informatievlaanderen/organisation-registry/commit/061eea82bd1c4768f38f24ade0c8196a084a6c10))
+
 # [1.89.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.88.0...v1.89.0) (2021-08-17)
 
 
