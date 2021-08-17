@@ -1,3 +1,10 @@
+# [1.91.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.90.0...v1.91.0) (2021-08-17)
+
+
+### Features
+
+* send mail when balanced participation changes ([8f52b2d](https://github.com/informatievlaanderen/organisation-registry/commit/8f52b2d49dfe44382ce06607ba69b487f513ff24))
+
 # [1.90.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.89.0...v1.90.0) (2021-08-17)
 
 
