@@ -1786,6 +1786,7 @@ namespace OrganisationRegistry.Organisation
             _purposes = @event.Purposes;
             State.ShowOnVlaamseOverheidSites = @event.ShowOnVlaamseOverheidSites;
             State.Validity = new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo));
+            State.OperationalValidity = new Period(new ValidFrom(@event.OperationalValidFrom), new ValidTo(@event.OperationalValidTo));
         }
 
         private void Apply(OrganisationCreatedFromKbo @event)
@@ -1799,6 +1800,7 @@ namespace OrganisationRegistry.Organisation
             _purposes = @event.Purposes;
             State.ShowOnVlaamseOverheidSites = @event.ShowOnVlaamseOverheidSites;
             State.Validity = new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo));
+            State.OperationalValidity = new Period(new ValidFrom(@event.OperationalValidFrom), new ValidTo(@event.OperationalValidTo));
             KboState.KboNumber = new KboNumber(@event.KboNumber);
             CoupledToKboFromCreation = true;
         }
@@ -1828,6 +1830,7 @@ namespace OrganisationRegistry.Organisation
             _purposes = @event.Purposes;
             State.ShowOnVlaamseOverheidSites = @event.ShowOnVlaamseOverheidSites;
             State.Validity = new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo));
+            State.OperationalValidity = new Period(new ValidFrom(@event.OperationalValidFrom), new ValidTo(@event.OperationalValidTo));
         }
 
         private void Apply(OrganisationKeyAdded @event)
@@ -2379,6 +2382,7 @@ namespace OrganisationRegistry.Organisation
         {
             _dateOfTermination = @event.DateOfTermination;
             State.Validity = new Period(State.Validity.Start, new ValidTo(@event.DateOfTermination));
+            State.OperationalValidity = new Period(State.OperationalValidity.Start, new ValidTo(@event.DateOfTermination));
 
             foreach (var (key, value) in @event.FieldsToTerminate.Buildings)
             {
