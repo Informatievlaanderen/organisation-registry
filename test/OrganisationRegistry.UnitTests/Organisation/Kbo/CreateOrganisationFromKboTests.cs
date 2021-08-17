@@ -61,7 +61,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     _parentOrganisationId,
                     "parent",
                     "OVO001234",
-                    "ouder", Article.None, "", new List<Purpose>(), false, new ValidFrom(), new ValidTo()),
+                    "ouder", Article.None, "", new List<Purpose>(), false, new ValidFrom(), new ValidTo(), new ValidFrom(), new ValidTo()),
 
                 new PurposeCreated(
                     _purposeId,
@@ -116,7 +116,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 true,
                 new ValidFrom(),
                 new ValidTo(),
-                new KboNumber("BE0123456789"));
+                new KboNumber("BE0123456789"),
+                new ValidFrom(), new ValidTo());
         }
 
         protected override KboOrganisationCommandHandlers BuildHandler()

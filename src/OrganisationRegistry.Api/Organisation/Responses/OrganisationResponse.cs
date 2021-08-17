@@ -30,6 +30,8 @@
         public bool ShowOnVlaamseOverheidSites { get; }
         public DateTime? ValidFrom { get; }
         public DateTime? ValidTo { get; }
+        public DateTime? OperationalValidFrom { get; }
+        public DateTime? OperationalValidTo { get; }
         public bool IsTerminated { get; set; }
 
         public OrganisationResponse(OrganisationDetailItem projectionItem)
@@ -51,6 +53,8 @@
             ShowOnVlaamseOverheidSites = projectionItem.ShowOnVlaamseOverheidSites;
             ValidFrom = projectionItem.ValidFrom;
             ValidTo = projectionItem.ValidTo;
+            OperationalValidFrom = projectionItem.OperationalValidFrom;
+            OperationalValidTo = projectionItem.OperationalValidTo;
             IsTerminated = projectionItem.IsTerminated;
         }
     }

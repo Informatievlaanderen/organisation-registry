@@ -64,12 +64,16 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
                 false,
                 ValidFrom,
                 ValidTo,
+                null,
+                null,
                 PreviousName,
                 PreviousDescription,
                 PreviousShortName,
                 new List<Purpose>(),
                 false,
                 PreviouslyValidFrom,
-                PreviouslyValidTo);
+                PreviouslyValidTo,
+                null,
+                null);
     }
 }

@@ -14,5 +14,7 @@ export class CreateOrganisationFormValues implements ICrudItem<CreateOrganisatio
     public showOnVlaamseOverheidSites: boolean = false,
     public validFrom: Date = null,
     public validTo: Date = null,
+    public operationalValidFrom: Date = null,
+    public operationalValidTo: Date = null,
   ) { }
 }

@@ -11,6 +11,7 @@ namespace OrganisationRegistry.Organisation.State
         public string? Article { get; set; }
         public string Description { get; set; }
         public Period Validity { get; set; }
+        public Period OperationalValidity { get; set; }
         public bool ShowOnVlaamseOverheidSites { get; set; }
         public bool IsActive { get; set; }
         public List<OrganisationKey> OrganisationKeys { get; }
@@ -37,6 +38,7 @@ namespace OrganisationRegistry.Organisation.State
             ShortName = string.Empty;
             Description = string.Empty;
             Validity = new Period();
+            OperationalValidity = new Period();
 
             OrganisationKeys = new List<OrganisationKey>();
             OrganisationContacts = new List<OrganisationContact>();

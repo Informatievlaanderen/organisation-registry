@@ -16,6 +16,8 @@ namespace OrganisationRegistry.Organisation.Events
         public bool ShowOnVlaamseOverheidSites { get; }
         public DateTime? ValidFrom { get; }
         public DateTime? ValidTo { get; }
+        public DateTime? OperationalValidFrom { get; }
+        public DateTime? OperationalValidTo { get; }
         public string KboNumber { get; }
 
         public OrganisationCreatedFromKbo(Guid organisationId,
@@ -28,7 +30,9 @@ namespace OrganisationRegistry.Organisation.Events
             List<Purpose> purposes,
             bool showOnVlaamseOverheidSites,
             DateTime? validFrom,
-            DateTime? validTo)
+            DateTime? validTo,
+            DateTime? operationalValidFrom,
+            DateTime? operationalValidTo)
         {
             Id = organisationId;
 
@@ -42,6 +46,8 @@ namespace OrganisationRegistry.Organisation.Events
             ShowOnVlaamseOverheidSites = showOnVlaamseOverheidSites;
             ValidFrom = validFrom;
             ValidTo = validTo;
+            OperationalValidFrom = operationalValidFrom;
+            OperationalValidTo = operationalValidTo;
         }
     }
 }

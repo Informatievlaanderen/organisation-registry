@@ -113,6 +113,7 @@ namespace OrganisationRegistry.Organisation
                 purposes,
                 message.ShowOnVlaamseOverheidSites,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                new Period(new ValidFrom(message.OperationalValidFrom), new ValidTo(message.OperationalValidTo)),
                 _dateTimeProvider);
 
             Session.Add(organisation);
@@ -138,6 +139,7 @@ namespace OrganisationRegistry.Organisation
                 purposes,
                 message.ShowOnVlaamseOverheidSites,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                new Period(new ValidFrom(message.OperationalValidFrom), new ValidTo(message.OperationalValidTo)),
                 _dateTimeProvider);
 
             await Session.Commit(message.User);

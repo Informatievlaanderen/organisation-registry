@@ -43,6 +43,8 @@ namespace OrganisationRegistry.Api.Organisation.Requests
         public List<LegalForm> LegalForms { get; set; }
 
         public List<Address> Addresses { get; set; }
+        public DateTime? OperationalValidFrom { get; set; }
+        public DateTime? OperationalValidTo { get; set; }
     }
 
     public class BankAccount
@@ -192,7 +194,9 @@ namespace OrganisationRegistry.Api.Organisation.Requests
                 message.PurposeIds?.Select(x => new PurposeId(x)).ToList(),
                 message.ShowOnVlaamseOverheidSites,
                 new ValidFrom(message.ValidFrom),
-                new ValidTo(message.ValidTo));
+                new ValidTo(message.ValidTo),
+                new ValidFrom(message.OperationalValidFrom),
+                new ValidTo(message.OperationalValidTo));
         }
 
         public static CreateOrganisationFromKbo MapToCreateKboOrganisation(
@@ -211,7 +215,9 @@ namespace OrganisationRegistry.Api.Organisation.Requests
                 message.ShowOnVlaamseOverheidSites,
                 new ValidFrom(message.ValidFrom),
                 new ValidTo(message.ValidTo),
-                new KboNumber(message.KboNumber));
+                new KboNumber(message.KboNumber),
+                new ValidFrom(message.OperationalValidFrom),
+                new ValidTo(message.OperationalValidTo));
         }
     }
 }

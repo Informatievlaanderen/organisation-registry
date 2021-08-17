@@ -37,11 +37,19 @@
         <dt class="properties__label">Naam:</dt>
         <dd id="organisationName" class="properties__data">{{organisation.name}}</dd>
 
-        <dt class="properties__label">Formaal geldig vanaf:</dt>
+        <dt class="properties__label">Formeel geldig vanaf:</dt>
         <dd id="organisationValidFrom" class="properties__data" *ngIf="organisation.validFrom">
           {{organisation.validFrom}}
         </dd>
         <dd class="properties__data properties--disabled" *ngIf="!organisation.validFrom">
+          Niet bekend
+        </dd>
+
+        <dt class="properties__label">Operationeel geldig vanaf:</dt>
+        <dd id="organisationOperationalValidFrom" class="properties__data" *ngIf="organisation.operationalValidFrom">
+          {{organisation.operationalValidFrom}}
+        </dd>
+        <dd class="properties__data properties--disabled" *ngIf="!organisation.operationalValidFrom">
           Niet bekend
         </dd>
 
@@ -60,9 +68,15 @@
         <dt class="properties__label">Code:</dt>
         <dd id="organisationOvoNumber" class="properties__data">{{organisation.ovoNumber}}</dd>
 
-        <dt class="properties__label">Formaal geldig tot:</dt>
+        <dt class="properties__label">Formeel geldig tot:</dt>
         <dd id="organisationValidTo" class="properties__data" *ngIf="organisation.validTo">{{organisation.validTo}}</dd>
         <dd class="properties__data properties--disabled" *ngIf="!organisation.validTo">Niet
+          bekend
+        </dd>
+
+        <dt class="properties__label">Operationeel geldig tot:</dt>
+        <dd id="organisationOperationalValidTo" class="properties__data" *ngIf="organisation.operationalValidTo">{{organisation.operationalValidTo}}</dd>
+        <dd class="properties__data properties--disabled" *ngIf="!organisation.operationalValidTo">Niet
           bekend
         </dd>
 

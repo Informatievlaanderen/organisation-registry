@@ -50,6 +50,8 @@ export class OrganisationInfoEditComponent implements OnInit {
       showOnVlaamseOverheidSites: [false],
       validFrom: [''],
       validTo: [''],
+      operationalValidFrom: [''],
+      operationalValidTo: [''],
       isTerminated: [false]
     });
     this.articles = [

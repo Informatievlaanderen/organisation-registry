@@ -14,6 +14,8 @@
         public List<PurposeId> Purposes { get; }
         public ValidFrom ValidFrom { get; }
         public ValidTo ValidTo { get; }
+        public ValidFrom OperationalValidFrom { get; }
+        public ValidTo OperationalValidTo { get; }
         public bool ShowOnVlaamseOverheidSites { get; }
 
         public UpdateOrganisationInfo(OrganisationId organisationId,
@@ -24,7 +26,9 @@
             List<PurposeId> purposes,
             bool showOnVlaamseOverheidSites,
             ValidFrom validFrom,
-            ValidTo validTo)
+            ValidTo validTo,
+            ValidFrom operationalValidFrom,
+            ValidTo operationalValidTo)
         {
             Id = organisationId;
 
@@ -36,6 +40,8 @@
             ShowOnVlaamseOverheidSites = showOnVlaamseOverheidSites;
             ValidFrom = validFrom;
             ValidTo = validTo;
+            OperationalValidFrom = operationalValidFrom;
+            OperationalValidTo = operationalValidTo;
         }
     }
 }

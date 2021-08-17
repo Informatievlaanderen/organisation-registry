@@ -19,6 +19,7 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
         public string ShortName { get; set; }
         public string? Article { get; set; }
         public Period Validity { get; set; }
+        public Period OperationalValidity { get; set; }
         public string Description { get; set; }
         public string KboNumber { get; set; }
         public bool? ShowOnVlaamseOverheidSites { get; set; }
@@ -53,6 +54,10 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
 
                 .Object<Period>(o => o
                     .Name(p => p.Validity)
+                    .Properties(Period.Mapping))
+
+                .Object<Period>(o => o
+                    .Name(p => p.OperationalValidity)
                     .Properties(Period.Mapping))
 
                 .Text(t => t

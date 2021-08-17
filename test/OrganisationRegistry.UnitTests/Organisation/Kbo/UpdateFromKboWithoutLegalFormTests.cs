@@ -70,6 +70,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     new List<Purpose>(),
                     false,
                     new ValidFrom(),
+                    new ValidTo(),
+                    new ValidFrom(),
                     new ValidTo()),
                 new KboFormalNameLabelAdded(
                     _organisationId,

@@ -89,6 +89,9 @@ ww-organisation-autocomplete+.form__row,
 ww-building-autocomplete+.form__row,
 ww-crab-location-autocomplete+.form__row,
 ww-create-organisation-fields+.form__row,
+ww-form-group-select+.form__row,
+ww-form-group-select+ww-form-group-textarea,
+ww-form-group-textarea+ww-form-group-taglist,
 ww-form-group-taglist+.form__row,
 .ww-form-group-textboxes+.form__row {
   margin-top: 1.5rem;

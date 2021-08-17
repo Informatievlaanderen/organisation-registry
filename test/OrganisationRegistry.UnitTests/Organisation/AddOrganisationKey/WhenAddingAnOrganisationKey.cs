@@ -47,7 +47,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationKey
             _organisationId = Guid.NewGuid();
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null),
+                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
                 new KeyTypeCreated(_keyId, "Key A")
             };
         }

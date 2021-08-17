@@ -45,7 +45,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
                     _organisationId,
                     "organisation X",
                     "OVO001234",
-                    "org", Article.None, "", new List<Purpose>(), false, new ValidFrom(), new ValidTo()),
+                    "org", Article.None, "", new List<Purpose>(), false, new ValidFrom(), new ValidTo(),
+                    new ValidFrom(),
+                    new ValidTo()),
                 new OrganisationBecameActive(
                     _organisationId),
             };

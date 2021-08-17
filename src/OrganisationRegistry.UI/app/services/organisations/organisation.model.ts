@@ -14,6 +14,8 @@ export class Organisation implements ICrudItem<Organisation>, ICreateOrganisatio
     public description: string = '',
     public validFrom: Date = null,
     public validTo: Date = null,
+    public operationalValidFrom: Date = null,
+    public operationalValidTo: Date = null,
     public purposeIds: Array<string> = [],
     public purposes: Array<string> = [],
     public showOnVlaamseOverheidSites: boolean = false,
@@ -49,4 +51,6 @@ export interface ICreateOrganisation {
   showOnVlaamseOverheidSites: boolean;
   validFrom: Date;
   validTo: Date;
+  operationalValidFrom: Date;
+  operationalValidTo: Date;
 }
