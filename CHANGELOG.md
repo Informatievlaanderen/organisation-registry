@@ -1,3 +1,10 @@
+## [1.91.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.91.0...v1.91.1) (2021-08-30)
+
+
+### Bug Fixes
+
+* make operational validity optional in es doc ([524aa92](https://github.com/informatievlaanderen/organisation-registry/commit/524aa922f4bc7a98a575c76b34f8ba62d148ec0b))
+
 # [1.91.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.90.0...v1.91.0) (2021-08-17)
 
 
