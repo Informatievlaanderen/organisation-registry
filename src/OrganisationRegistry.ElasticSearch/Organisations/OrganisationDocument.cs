@@ -19,7 +19,7 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
         public string ShortName { get; set; }
         public string? Article { get; set; }
         public Period Validity { get; set; }
-        public Period OperationalValidity { get; set; }
+        public Period? OperationalValidity { get; set; }
         public string Description { get; set; }
         public string KboNumber { get; set; }
         public bool? ShowOnVlaamseOverheidSites { get; set; }
