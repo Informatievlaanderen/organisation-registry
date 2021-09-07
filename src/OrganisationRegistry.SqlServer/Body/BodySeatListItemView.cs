@@ -40,7 +40,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public override void Map(EntityTypeBuilder<BodySeatListItem> b)
         {
-            b.ToTable(nameof(BodySeatListView.ProjectionTables.BodySeatList), "OrganisationRegistry")
+            b.ToTable(nameof(BodySeatListView.ProjectionTables.BodySeatList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.BodySeatId)
                 .IsClustered(false);
 

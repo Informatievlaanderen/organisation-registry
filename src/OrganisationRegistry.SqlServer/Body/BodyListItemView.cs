@@ -45,7 +45,7 @@
 
         public override void Map(EntityTypeBuilder<BodyListItem> b)
         {
-            b.ToTable(nameof(BodyListView.ProjectionTables.BodyList), "OrganisationRegistry")
+            b.ToTable(nameof(BodyListView.ProjectionTables.BodyList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 
@@ -74,7 +74,7 @@
     {
         public override void Map(EntityTypeBuilder<BodyLifecyclePhaseValidity> b)
         {
-            b.ToTable(nameof(BodyListView.ProjectionTables.BodyLifecyclePhaseValidity), "OrganisationRegistry")
+            b.ToTable(nameof(BodyListView.ProjectionTables.BodyLifecyclePhaseValidity), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.BodyLifecyclePhaseId)
                 .IsClustered(false);
 

@@ -55,7 +55,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationBankAccountListItem> b)
         {
-            b.ToTable(nameof(OrganisationBankAccountListView.ProjectionTables.OrganisationBankAccountList), "OrganisationRegistry")
+            b.ToTable(nameof(OrganisationBankAccountListView.ProjectionTables.OrganisationBankAccountList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OrganisationBankAccountId)
                 .IsClustered(false);
 

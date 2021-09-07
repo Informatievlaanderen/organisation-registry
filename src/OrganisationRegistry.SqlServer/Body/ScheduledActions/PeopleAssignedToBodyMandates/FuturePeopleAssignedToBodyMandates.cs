@@ -40,7 +40,7 @@
     {
         public override void Map(EntityTypeBuilder<FuturePeopleAssignedToBodyMandatesListItem> b)
         {
-            b.ToTable(nameof(FuturePeopleAssignedToBodyMandatesListView.ProjectionTables.FuturePeopleAssignedToBodyMandatesList), "OrganisationRegistry")
+            b.ToTable(nameof(FuturePeopleAssignedToBodyMandatesListView.ProjectionTables.FuturePeopleAssignedToBodyMandatesList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.DelegationAssignmentId)
                 .IsClustered(false);
 

@@ -36,7 +36,7 @@ namespace OrganisationRegistry.SqlServer.Person
     {
         public override void Map(EntityTypeBuilder<PersonFunctionListItem> b)
         {
-            b.ToTable(nameof(PersonFunctionListView.ProjectionTables.PersonFunctionList), "OrganisationRegistry")
+            b.ToTable(nameof(PersonFunctionListView.ProjectionTables.PersonFunctionList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OrganisationFunctionId)
                 .IsClustered(false);
 

@@ -24,7 +24,7 @@
 
         public override void Map(EntityTypeBuilder<MandateRoleTypeListItem> b)
         {
-            b.ToTable(nameof(MandateRoleTypeListView.ProjectionTables.MandateRoleTypeList), "OrganisationRegistry")
+            b.ToTable(nameof(MandateRoleTypeListView.ProjectionTables.MandateRoleTypeList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

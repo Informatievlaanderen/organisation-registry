@@ -59,7 +59,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationLocationListItem> b)
         {
-            b.ToTable(nameof(OrganisationLocationListView.ProjectionTables.OrganisationLocationList), "OrganisationRegistry")
+            b.ToTable(nameof(OrganisationLocationListView.ProjectionTables.OrganisationLocationList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OrganisationLocationId)
                 .IsClustered(false);
 

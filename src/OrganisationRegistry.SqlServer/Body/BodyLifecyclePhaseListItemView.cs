@@ -32,7 +32,7 @@
     {
         public override void Map(EntityTypeBuilder<BodyLifecyclePhaseListItem> b)
         {
-            b.ToTable(nameof(BodyLifecyclePhaseListView.ProjectionTables.BodyLifecyclePhaseList), "OrganisationRegistry")
+            b.ToTable(nameof(BodyLifecyclePhaseListView.ProjectionTables.BodyLifecyclePhaseList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.BodyLifecyclePhaseId)
                 .IsClustered(false);
 

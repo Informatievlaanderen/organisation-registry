@@ -69,7 +69,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public override void Map(EntityTypeBuilder<OrganisationListItem> b)
         {
-            b.ToTable(nameof(OrganisationListItemView.ProjectionTables.OrganisationList), "OrganisationRegistry")
+            b.ToTable(nameof(OrganisationListItemView.ProjectionTables.OrganisationList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 
@@ -110,7 +110,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationFormalFrameworkValidity> b)
         {
-            b.ToTable(nameof(OrganisationListItemView.ProjectionTables.OrganisationFormalFrameworkValidity), "OrganisationRegistry")
+            b.ToTable(nameof(OrganisationListItemView.ProjectionTables.OrganisationFormalFrameworkValidity), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered();
 
@@ -129,7 +129,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationClassificationValidity> b)
         {
-            b.ToTable(nameof(OrganisationListItemView.ProjectionTables.OrganisationClassificationValidity), "OrganisationRegistry")
+            b.ToTable(nameof(OrganisationListItemView.ProjectionTables.OrganisationClassificationValidity), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

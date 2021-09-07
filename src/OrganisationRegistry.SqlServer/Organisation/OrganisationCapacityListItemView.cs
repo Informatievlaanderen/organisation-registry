@@ -55,7 +55,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationCapacityListItem> b)
         {
-            b.ToTable(nameof(OrganisationCapacityListView.ProjectionTables.OrganisationCapacityList), "OrganisationRegistry")
+            b.ToTable(nameof(OrganisationCapacityListView.ProjectionTables.OrganisationCapacityList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OrganisationCapacityId)
                 .IsClustered(false);
 

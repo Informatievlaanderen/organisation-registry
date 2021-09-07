@@ -28,7 +28,7 @@ namespace OrganisationRegistry.SqlServer.Security
     {
         public override void Map(EntityTypeBuilder<OrganisationTreeItem> b)
         {
-            b.ToTable(nameof(OrganisationTreeView.ProjectionTables.OrganisationTreeList), "OrganisationRegistry")
+            b.ToTable(nameof(OrganisationTreeView.ProjectionTables.OrganisationTreeList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OvoNumber);
 
             b.Property(p => p.OvoNumber).HasMaxLength(OrganisationListConfiguration.OvoNumberLength);

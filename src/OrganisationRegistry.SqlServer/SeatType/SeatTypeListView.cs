@@ -28,7 +28,7 @@ namespace OrganisationRegistry.SqlServer.SeatType
 
         public override void Map(EntityTypeBuilder<SeatTypeListItem> b)
         {
-            b.ToTable(nameof(SeatTypeListView.ProjectionTables.SeatTypeList), "OrganisationRegistry")
+            b.ToTable(nameof(SeatTypeListView.ProjectionTables.SeatTypeList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

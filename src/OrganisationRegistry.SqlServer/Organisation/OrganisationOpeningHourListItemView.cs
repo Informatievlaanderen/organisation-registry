@@ -52,7 +52,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationOpeningHourListItem> b)
         {
-            b.ToTable(nameof(OrganisationOpeningHourListItemView.ProjectionTables.OrganisationOpeningHourList), "OrganisationRegistry")
+            b.ToTable(nameof(OrganisationOpeningHourListItemView.ProjectionTables.OrganisationOpeningHourList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OrganisationOpeningHourId)
                 .IsClustered(false);
 
