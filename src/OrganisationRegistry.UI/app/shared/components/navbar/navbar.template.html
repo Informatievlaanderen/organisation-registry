@@ -15,7 +15,7 @@
     </div>
 
     <div class="functional-header__content">
-      <a class="functional-header__title" [routerLink]="['./']">Wegwijs Organisatie</a>
+      <a class="functional-header__title" [routerLink]="['./']">Wegwijs Organisatie <span *ngIf="showEnvironment"> - {{environment}}</span></a>
     </div>
 
     <div class="functional-header__sub">
