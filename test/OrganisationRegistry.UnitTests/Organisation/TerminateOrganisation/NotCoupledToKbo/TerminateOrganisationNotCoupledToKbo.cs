@@ -92,7 +92,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
         [Fact]
         public void TerminatesTheOrganisation()
         {
-            var organisationTerminated = PublishedEvents[0].UnwrapBody<OrganisationTerminated>();
+            var organisationTerminated = PublishedEvents[0].UnwrapBody<OrganisationTerminatedV2>();
             organisationTerminated.Should().NotBeNull();
 
             organisationTerminated.OrganisationId.Should().Be((Guid) _organisationId);
@@ -110,7 +110,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
             organisationTerminated.KboFieldsToTerminate.RegisteredOffice.Should().BeNull();
             organisationTerminated.FieldsToTerminate.Labels.Should().HaveCount(2);
             organisationTerminated.FieldsToTerminate.Locations.Should().BeEmpty();
-            organisationTerminated.FieldsToTerminate.Parents.Should().BeEmpty();
             organisationTerminated.FieldsToTerminate.Relations.Should().BeEmpty();
             organisationTerminated.FieldsToTerminate.BankAccounts.Should().BeEmpty();
             organisationTerminated.FieldsToTerminate.FormalFrameworks.Should().BeEmpty();

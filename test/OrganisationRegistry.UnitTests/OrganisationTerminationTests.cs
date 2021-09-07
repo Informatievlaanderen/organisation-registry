@@ -440,7 +440,6 @@ namespace OrganisationRegistry.UnitTests
                         Functions = overlappingFunctions.ToDictionary(x => x.OrganisationFunctionId, _ => dateOfTermination),
                         Locations = overlappingLocations.ToDictionary(x => x.OrganisationLocationId, _ => dateOfTermination),
                         Buildings = overlappingBuildings.ToDictionary(x => x.OrganisationBuildingId, _ => dateOfTermination),
-                        Parents = overlappingParents.ToDictionary(x => x.OrganisationOrganisationParentId, _ => dateOfTermination),
                         BankAccounts = overlappingBankAccounts.ToDictionary(x => x.OrganisationBankAccountId, _ => dateOfTermination),
                         Relations = overlappingRelations.ToDictionary(x => x.OrganisationRelationId, _ => dateOfTermination),
                         Capacities = overlappingCapacities.ToDictionary(x => x.OrganisationCapacityId, _ => dateOfTermination),

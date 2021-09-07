@@ -68,7 +68,8 @@
         IEventHandler<BuildingUpdated>,
         IEventHandler<OrganisationBuildingAdded>,
         IEventHandler<OrganisationBuildingUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IEventHandler<OrganisationTerminated>,
+        IEventHandler<OrganisationTerminatedV2>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -89,17 +90,15 @@
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BuildingUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationBuildings = context.OrganisationBuildingList.Where(x => x.BuildingId == message.Body.BuildingId);
-                if (!organisationBuildings.Any())
-                    return;
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationBuildings = context.OrganisationBuildingList.Where(x => x.BuildingId == message.Body.BuildingId);
+            if (!organisationBuildings.Any())
+                return;
 
-                foreach (var organisationBuilding in organisationBuildings)
-                    organisationBuilding.BuildingName = message.Body.Name;
+            foreach (var organisationBuilding in organisationBuildings)
+                organisationBuilding.BuildingName = message.Body.Name;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingAdded> message)
@@ -113,41 +112,47 @@
                 message.Body.ValidFrom,
                 message.Body.ValidTo);
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.OrganisationBuildingList.AddAsync(organisationBuildingListItem);
-                await context.SaveChangesAsync();
-            }
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            await context.OrganisationBuildingList.AddAsync(organisationBuildingListItem);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBuildingUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationBuildingListItem = context.OrganisationBuildingList.Single(b => b.OrganisationBuildingId == message.Body.OrganisationBuildingId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationBuildingListItem = context.OrganisationBuildingList.Single(b => b.OrganisationBuildingId == message.Body.OrganisationBuildingId);
 
-                organisationBuildingListItem.IsMainBuilding = message.Body.IsMainBuilding;
-                organisationBuildingListItem.BuildingId = message.Body.BuildingId;
-                organisationBuildingListItem.BuildingName = message.Body.BuildingName;
-                organisationBuildingListItem.ValidFrom = message.Body.ValidFrom;
-                organisationBuildingListItem.ValidTo = message.Body.ValidTo;
+            organisationBuildingListItem.IsMainBuilding = message.Body.IsMainBuilding;
+            organisationBuildingListItem.BuildingId = message.Body.BuildingId;
+            organisationBuildingListItem.BuildingName = message.Body.BuildingName;
+            organisationBuildingListItem.ValidFrom = message.Body.ValidFrom;
+            organisationBuildingListItem.ValidTo = message.Body.ValidTo;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var buildings = context.OrganisationBuildingList.Where(item =>
-                    message.Body.FieldsToTerminate.Buildings.Keys.Contains(item.OrganisationBuildingId));
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var buildings = context.OrganisationBuildingList.Where(item =>
+                message.Body.FieldsToTerminate.Buildings.Keys.Contains(item.OrganisationBuildingId));
 
-                foreach (var building in buildings)
-                    building.ValidTo = message.Body.FieldsToTerminate.Buildings[building.OrganisationBuildingId];
+            foreach (var building in buildings)
+                building.ValidTo = message.Body.FieldsToTerminate.Buildings[building.OrganisationBuildingId];
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var buildings = context.OrganisationBuildingList.Where(item =>
+                message.Body.FieldsToTerminate.Buildings.Keys.Contains(item.OrganisationBuildingId));
+
+            foreach (var building in buildings)
+                building.ValidTo = message.Body.FieldsToTerminate.Buildings[building.OrganisationBuildingId];
+
+            await context.SaveChangesAsync();
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)

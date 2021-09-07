@@ -35,7 +35,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
         IElasticEventHandler<OrganisationCapacityBecameActive>,
         IElasticEventHandler<OrganisationCapacityBecameInactive>,
-        IElasticEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationTerminated>,
+        IElasticEventHandler<OrganisationTerminatedV2>
+
     {
         private readonly IContextFactory _contextFactory;
 
@@ -365,6 +367,25 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            return new ElasticMassChange
+            (
+                async elastic =>
+                {
+                    foreach (var (key, value) in message.Body.FieldsToTerminate.Capacities)
+                    {
+                        await elastic.TryAsync(() => elastic
+                            .MassUpdatePersonAsync(
+                                queryFieldSelector: x => x.Capacities.Single().CapacityId, queryFieldValue: key,
+                                listPropertyName: "capacities", idPropertyName: "capacityId",
+                                namePropertyName: "validity.end", newName: value,
+                                changeId: message.Number,
+                                changeTime: message.Timestamp));
+                    }
+                });
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
             return new ElasticMassChange
             (

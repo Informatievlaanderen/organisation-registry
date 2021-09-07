@@ -64,7 +64,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationTerminated>
+        IEventHandler<OrganisationTerminated>,
+        IEventHandler<OrganisationTerminatedV2>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -88,20 +89,18 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationTypeUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationRelations = context.OrganisationRelationList.Where(x => x.RelationId == message.Body.OrganisationRelationTypeId);
+            if (!organisationRelations.Any())
+                return;
+
+            foreach (var organisationRelation in organisationRelations)
             {
-                var organisationRelations = context.OrganisationRelationList.Where(x => x.RelationId == message.Body.OrganisationRelationTypeId);
-                if (!organisationRelations.Any())
-                    return;
-
-                foreach (var organisationRelation in organisationRelations)
-                {
-                    organisationRelation.RelationName = message.Body.Name;
-                    organisationRelation.RelationInverseName = message.Body.InverseName;
-                }
-
-                await context.SaveChangesAsync();
+                organisationRelation.RelationName = message.Body.Name;
+                organisationRelation.RelationInverseName = message.Body.InverseName;
             }
+
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationAdded> message)
@@ -121,35 +120,31 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.OrganisationRelationList.AddAsync(organisationRelationListItem);
-                await context.SaveChangesAsync();
-            }
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            await context.OrganisationRelationList.AddAsync(organisationRelationListItem);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var key = context.OrganisationRelationList.SingleOrDefault(item => item.OrganisationRelationId == message.Body.OrganisationRelationId);
-                if (key == null)
-                    return;
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var key = context.OrganisationRelationList.SingleOrDefault(item => item.OrganisationRelationId == message.Body.OrganisationRelationId);
+            if (key == null)
+                return;
 
-                key.OrganisationRelationId = message.Body.OrganisationRelationId;
-                key.OrganisationId = message.Body.OrganisationId;
+            key.OrganisationRelationId = message.Body.OrganisationRelationId;
+            key.OrganisationId = message.Body.OrganisationId;
 
-                key.RelatedOrganisationId = message.Body.RelatedOrganisationId;
-                key.RelatedOrganisationName = _memoryCaches.OrganisationNames[message.Body.RelatedOrganisationId];
+            key.RelatedOrganisationId = message.Body.RelatedOrganisationId;
+            key.RelatedOrganisationName = _memoryCaches.OrganisationNames[message.Body.RelatedOrganisationId];
 
-                key.RelationId = message.Body.RelationId;
-                key.RelationName = message.Body.RelationName;
-                key.RelationInverseName = message.Body.RelationInverseName;
-                key.ValidFrom = message.Body.ValidFrom;
-                key.ValidTo = message.Body.ValidTo;
+            key.RelationId = message.Body.RelationId;
+            key.RelationName = message.Body.RelationName;
+            key.RelationInverseName = message.Body.RelationInverseName;
+            key.ValidFrom = message.Body.ValidFrom;
+            key.ValidTo = message.Body.ValidTo;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
@@ -174,31 +169,39 @@ namespace OrganisationRegistry.SqlServer.Organisation
             Guid organisationId,
             string organisationName)
         {
-            using (var context = contextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationRelations = context.OrganisationRelationList.Where(x => x.RelatedOrganisationId == organisationId);
-                if (!organisationRelations.Any())
-                    return;
+            using var context = contextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationRelations = context.OrganisationRelationList.Where(x => x.RelatedOrganisationId == organisationId);
+            if (!organisationRelations.Any())
+                return;
 
-                foreach (var organisationRelation in organisationRelations)
-                    organisationRelation.RelatedOrganisationName = organisationName;
+            foreach (var organisationRelation in organisationRelations)
+                organisationRelation.RelatedOrganisationName = organisationName;
 
-                context.SaveChanges();
-            }
+            context.SaveChanges();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var relations = context.OrganisationRelationList.Where(item =>
-                    message.Body.FieldsToTerminate.Relations.Keys.Contains(item.OrganisationRelationId));
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var relations = context.OrganisationRelationList.Where(item =>
+                message.Body.FieldsToTerminate.Relations.Keys.Contains(item.OrganisationRelationId));
 
-                foreach (var relation in relations)
-                    relation.ValidTo = message.Body.FieldsToTerminate.Relations[relation.OrganisationRelationId];
+            foreach (var relation in relations)
+                relation.ValidTo = message.Body.FieldsToTerminate.Relations[relation.OrganisationRelationId];
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var relations = context.OrganisationRelationList.Where(item =>
+                message.Body.FieldsToTerminate.Relations.Keys.Contains(item.OrganisationRelationId));
+
+            foreach (var relation in relations)
+                relation.ValidTo = message.Body.FieldsToTerminate.Relations[relation.OrganisationRelationId];
+
+            await context.SaveChangesAsync();
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)

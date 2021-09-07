@@ -85,7 +85,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<OrganisationBankAccountUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IEventHandler<OrganisationTerminated>,
+        IEventHandler<OrganisationTerminatedV2>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -115,11 +116,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 message.Body.ValidFrom,
                 message.Body.ValidTo);
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.OrganisationBankAccountList.AddAsync(organisationBankAccountListItem);
-                await context.SaveChangesAsync();
-            }
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            await context.OrganisationBankAccountList.AddAsync(organisationBankAccountListItem);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountAdded> message)
@@ -135,23 +134,19 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 message.Body.ValidTo,
                 Sources.Kbo);
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.OrganisationBankAccountList.AddAsync(organisationBankAccountListItem);
-                await context.SaveChangesAsync();
-            }
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            await context.OrganisationBankAccountList.AddAsync(organisationBankAccountListItem);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountRemoved> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationBankAccountListItem = await context.OrganisationBankAccountList.SingleAsync(b => b.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationBankAccountListItem = await context.OrganisationBankAccountList.SingleAsync(b => b.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
 
-                context.OrganisationBankAccountList.Remove(organisationBankAccountListItem);
+            context.OrganisationBankAccountList.Remove(organisationBankAccountListItem);
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
@@ -159,17 +154,15 @@ namespace OrganisationRegistry.SqlServer.Organisation
             if (!message.Body.OrganisationBankAccountIdsToCancel.Any())
                 return;
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            foreach (var bankAccountId in message.Body.OrganisationBankAccountIdsToCancel)
             {
-                foreach (var bankAccountId in message.Body.OrganisationBankAccountIdsToCancel)
-                {
-                    var organisationBankAccountListItem = await context.OrganisationBankAccountList.SingleAsync(b => b.OrganisationBankAccountId == bankAccountId);
+                var organisationBankAccountListItem = await context.OrganisationBankAccountList.SingleAsync(b => b.OrganisationBankAccountId == bankAccountId);
 
-                    context.OrganisationBankAccountList.Remove(organisationBankAccountListItem);
-                }
-
-                await context.SaveChangesAsync();
+                context.OrganisationBankAccountList.Remove(organisationBankAccountListItem);
             }
+
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
@@ -177,54 +170,66 @@ namespace OrganisationRegistry.SqlServer.Organisation
             if (!message.Body.OrganisationBankAccountIdsToTerminate.Any())
                 return;
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            foreach (var bankAccountId in message.Body.OrganisationBankAccountIdsToTerminate)
             {
-                foreach (var bankAccountId in message.Body.OrganisationBankAccountIdsToTerminate)
-                {
-                    var organisationBankAccountListItem = await context.OrganisationBankAccountList.SingleAsync(b => b.OrganisationBankAccountId == bankAccountId);
+                var organisationBankAccountListItem = await context.OrganisationBankAccountList.SingleAsync(b => b.OrganisationBankAccountId == bankAccountId);
 
-                    organisationBankAccountListItem.ValidTo = message.Body.DateOfTermination;
-                }
-
-                await context.SaveChangesAsync();
+                organisationBankAccountListItem.ValidTo = message.Body.DateOfTermination;
             }
+
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationBankAccountListItem = context.OrganisationBankAccountList.Single(b => b.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationBankAccountListItem = context.OrganisationBankAccountList.Single(b => b.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
 
-                organisationBankAccountListItem.IsIban = message.Body.IsIban;
-                organisationBankAccountListItem.BankAccountNumber = message.Body.BankAccountNumber;
-                organisationBankAccountListItem.IsBic = message.Body.IsBic;
-                organisationBankAccountListItem.Bic = message.Body.Bic;
-                organisationBankAccountListItem.ValidFrom = message.Body.ValidFrom;
-                organisationBankAccountListItem.ValidTo = message.Body.ValidTo;
+            organisationBankAccountListItem.IsIban = message.Body.IsIban;
+            organisationBankAccountListItem.BankAccountNumber = message.Body.BankAccountNumber;
+            organisationBankAccountListItem.IsBic = message.Body.IsBic;
+            organisationBankAccountListItem.Bic = message.Body.Bic;
+            organisationBankAccountListItem.ValidFrom = message.Body.ValidFrom;
+            organisationBankAccountListItem.ValidTo = message.Body.ValidTo;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationBankAccountListItems =
-                    context.OrganisationBankAccountList.Where(item => message.Body.FieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationBankAccountListItems =
+                context.OrganisationBankAccountList.Where(item => message.Body.FieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
 
-                foreach (var bankAccount in organisationBankAccountListItems)
-                    bankAccount.ValidTo = message.Body.FieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
+            foreach (var bankAccount in organisationBankAccountListItems)
+                bankAccount.ValidTo = message.Body.FieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
 
-                var kboOrganisationBankAccountListItems =
-                    context.OrganisationBankAccountList.Where(item => message.Body.KboFieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
+            var kboOrganisationBankAccountListItems =
+                context.OrganisationBankAccountList.Where(item => message.Body.KboFieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
 
-                foreach (var bankAccount in kboOrganisationBankAccountListItems)
-                    bankAccount.ValidTo = message.Body.KboFieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
+            foreach (var bankAccount in kboOrganisationBankAccountListItems)
+                bankAccount.ValidTo = message.Body.KboFieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationBankAccountListItems =
+                context.OrganisationBankAccountList.Where(item => message.Body.FieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
+
+            foreach (var bankAccount in organisationBankAccountListItems)
+                bankAccount.ValidTo = message.Body.FieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
+
+            var kboOrganisationBankAccountListItems =
+                context.OrganisationBankAccountList.Where(item => message.Body.KboFieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
+
+            foreach (var bankAccount in kboOrganisationBankAccountListItems)
+                bankAccount.ValidTo = message.Body.KboFieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
+
+            await context.SaveChangesAsync();
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)

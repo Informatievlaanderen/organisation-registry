@@ -18,7 +18,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IElasticEventHandler<OrganisationBuildingAdded>,
         IElasticEventHandler<OrganisationBuildingUpdated>,
         IElasticEventHandler<BuildingUpdated>,
-        IElasticEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationTerminated>,
+        IElasticEventHandler<OrganisationTerminatedV2>
     {
         public OrganisationBuilding(
             ILogger<OrganisationBuilding> logger) : base(logger)
@@ -103,6 +104,32 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationTerminated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    foreach (var (key, value) in message.Body.FieldsToTerminate.Buildings)
+                    {
+                        var organisationBuilding =
+                            document
+                                .Buildings
+                                .Single(x => x.OrganisationBuildingId == key);
+
+                        organisationBuilding.Validity.End = value;
+                    }
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(
+            DbConnection dbConnection,
+            DbTransaction dbTransaction,
+            IEnvelope<OrganisationTerminatedV2> message)
         {
             return new ElasticPerDocumentChange<OrganisationDocument>
             (

@@ -56,7 +56,8 @@
         IEventHandler<OrganisationContactAdded>,
         IEventHandler<OrganisationContactUpdated>,
         IEventHandler<ContactTypeUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IEventHandler<OrganisationTerminated>,
+        IEventHandler<OrganisationTerminatedV2>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -77,17 +78,15 @@
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationContacts = context.OrganisationContactList.Where(x => x.ContactTypeId == message.Body.ContactTypeId);
-                if (!organisationContacts.Any())
-                    return;
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationContacts = context.OrganisationContactList.Where(x => x.ContactTypeId == message.Body.ContactTypeId);
+            if (!organisationContacts.Any())
+                return;
 
-                foreach (var organisationContact in organisationContacts)
-                    organisationContact.ContactTypeName = message.Body.Name;
+            foreach (var organisationContact in organisationContacts)
+                organisationContact.ContactTypeName = message.Body.Name;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationContactAdded> message)
@@ -103,43 +102,49 @@
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.OrganisationContactList.AddAsync(organisationContactListItem);
-                await context.SaveChangesAsync();
-            }
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            await context.OrganisationContactList.AddAsync(organisationContactListItem);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationContactUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var contact = context.OrganisationContactList.SingleOrDefault(item => item.OrganisationContactId == message.Body.OrganisationContactId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var contact = context.OrganisationContactList.SingleOrDefault(item => item.OrganisationContactId == message.Body.OrganisationContactId);
 
-                contact.OrganisationContactId = message.Body.OrganisationContactId;
-                contact.OrganisationId = message.Body.OrganisationId;
-                contact.ContactTypeId = message.Body.ContactTypeId;
-                contact.ContactValue = message.Body.Value;
-                contact.ContactTypeName = message.Body.ContactTypeName;
-                contact.ValidFrom = message.Body.ValidFrom;
-                contact.ValidTo = message.Body.ValidTo;
+            contact.OrganisationContactId = message.Body.OrganisationContactId;
+            contact.OrganisationId = message.Body.OrganisationId;
+            contact.ContactTypeId = message.Body.ContactTypeId;
+            contact.ContactValue = message.Body.Value;
+            contact.ContactTypeName = message.Body.ContactTypeName;
+            contact.ValidFrom = message.Body.ValidFrom;
+            contact.ValidTo = message.Body.ValidTo;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var contacts = context.OrganisationContactList.Where(item =>
-                    message.Body.FieldsToTerminate.Contacts.Keys.Contains(item.OrganisationContactId));
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var contacts = context.OrganisationContactList.Where(item =>
+                message.Body.FieldsToTerminate.Contacts.Keys.Contains(item.OrganisationContactId));
 
-                foreach (var contact in contacts)
-                    contact.ValidTo = message.Body.FieldsToTerminate.Contacts[contact.OrganisationContactId];
+            foreach (var contact in contacts)
+                contact.ValidTo = message.Body.FieldsToTerminate.Contacts[contact.OrganisationContactId];
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var contacts = context.OrganisationContactList.Where(item =>
+                message.Body.FieldsToTerminate.Contacts.Keys.Contains(item.OrganisationContactId));
+
+            foreach (var contact in contacts)
+                contact.ValidTo = message.Body.FieldsToTerminate.Contacts[contact.OrganisationContactId];
+
+            await context.SaveChangesAsync();
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)

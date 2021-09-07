@@ -60,7 +60,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationRegulationAdded>,
         IEventHandler<OrganisationRegulationUpdated>,
         IEventHandler<RegulationTypeUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IEventHandler<OrganisationTerminated>,
+        IEventHandler<OrganisationTerminatedV2>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -131,6 +132,22 @@ namespace OrganisationRegistry.SqlServer.Organisation
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            if (message.Body.FieldsToTerminate.Regulations == null ||
+                !message.Body.FieldsToTerminate.Regulations.Any())
+                return;
+
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var regulations = context.OrganisationRegulationList.Where(item =>
+                message.Body.FieldsToTerminate.Regulations.Keys.Contains(item.OrganisationRegulationId));
+
+            foreach (var regulation in regulations)
+                regulation.ValidTo = message.Body.FieldsToTerminate.Regulations[regulation.OrganisationRegulationId];
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
             if (message.Body.FieldsToTerminate.Regulations == null ||
                 !message.Body.FieldsToTerminate.Regulations.Any())

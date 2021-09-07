@@ -29,7 +29,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IElasticEventHandler<OrganisationCoupledWithKbo>,
         IElasticEventHandler<PurposeUpdated>,
         IElasticEventHandler<OrganisationTerminationSyncedWithKbo>,
-        IElasticEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationTerminated>,
+        IElasticEventHandler<OrganisationTerminatedV2>
     {
         private readonly Elastic _elastic;
         private readonly ElasticSearchConfiguration _elasticSearchOptions;
@@ -229,6 +230,31 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            if (!message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
+                return new ElasticNoChange();
+
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    document.Validity =
+                        new Period(document.Validity.Start, message.Body.FieldsToTerminate.OrganisationValidity);
+
+                    document.OperationalValidity =
+                        new Period(document.OperationalValidity?.Start, message.Body.FieldsToTerminate.OrganisationValidity);
+
+                    if (message.Body.ForcedKboTermination)
+                        document.KboNumber = string.Empty;
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
             if (!message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
                 return new ElasticNoChange();

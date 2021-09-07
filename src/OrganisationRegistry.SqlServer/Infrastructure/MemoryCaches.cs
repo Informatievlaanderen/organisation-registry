@@ -221,7 +221,8 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         IEventHandler<BodySeatAdded>,
         IEventHandler<BodySeatUpdated>,
         IEventHandler<ResetMemoryCache>,
-        IEventHandler<OrganisationTerminated>
+        IEventHandler<OrganisationTerminated>,
+        IEventHandler<OrganisationTerminatedV2>
     {
     }
 
@@ -327,6 +328,13 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationTerminated> message)
+        {
+            if (message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
+                _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidTos)
+                    .UpdateMemoryCache(message.Body.OrganisationId, message.Body.FieldsToTerminate.OrganisationValidity);
+        }
+
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationTerminatedV2> message)
         {
             if (message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
                 _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidTos)

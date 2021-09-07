@@ -115,12 +115,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
                 _organisationRegistryConfigurationStub);
         }
 
-        protected override int ExpectedNumberOfEvents => 4;
+        protected override int ExpectedNumberOfEvents => 3;
 
         [Fact]
         public void TerminatesTheOrganisation()
         {
-            var organisationTerminated = PublishedEvents[0].UnwrapBody<OrganisationTerminated>();
+            var organisationTerminated = PublishedEvents[0].UnwrapBody<OrganisationTerminatedV2>();
             organisationTerminated.Should().NotBeNull();
 
             organisationTerminated.OrganisationId.Should().Be((Guid) _organisationId);
@@ -138,7 +138,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
             organisationTerminated.KboFieldsToTerminate.RegisteredOffice.Should().BeNull();
             organisationTerminated.FieldsToTerminate.Labels.Should().HaveCount(2);
             organisationTerminated.FieldsToTerminate.Locations.Should().BeEmpty();
-            organisationTerminated.FieldsToTerminate.Parents.Should().HaveCount(1);
             organisationTerminated.FieldsToTerminate.Relations.Should().BeEmpty();
             organisationTerminated.FieldsToTerminate.BankAccounts.Should().BeEmpty();
             organisationTerminated.FieldsToTerminate.FormalFrameworks.Should().HaveCount(1);
@@ -157,18 +156,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
         }
 
         [Fact]
-        public void ParentClearedFromOrganisation()
-        {
-            var parentClearedFromOrganisation = PublishedEvents[2].UnwrapBody<ParentClearedFromOrganisation>();
-            parentClearedFromOrganisation.Should().NotBeNull();
-
-            parentClearedFromOrganisation.OrganisationId.Should().Be((Guid) _organisationId);
-        }
-
-        [Fact]
         public void FormalFrameworkClearedFromOrganisation()
         {
-            var frameworkClearedFromOrganisation = PublishedEvents[3].UnwrapBody<FormalFrameworkClearedFromOrganisation>();
+            var frameworkClearedFromOrganisation = PublishedEvents[2].UnwrapBody<FormalFrameworkClearedFromOrganisation>();
             frameworkClearedFromOrganisation.Should().NotBeNull();
 
             frameworkClearedFromOrganisation.OrganisationId.Should().Be((Guid) _organisationId);

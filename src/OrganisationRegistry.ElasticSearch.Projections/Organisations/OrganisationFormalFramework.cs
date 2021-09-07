@@ -22,7 +22,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IElasticEventHandler<OrganisationInfoUpdated>,
         IElasticEventHandler<OrganisationInfoUpdatedFromKbo>,
         IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
-        IElasticEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationTerminated>,
+        IElasticEventHandler<OrganisationTerminatedV2>
     {
         public OrganisationFormalFramework(
             ILogger<OrganisationFormalFramework> logger) : base(logger)
@@ -123,6 +124,28 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    foreach (var (key, value) in message.Body.FieldsToTerminate.FormalFrameworks)
+                    {
+                        var organisationFormalFramework =
+                            document
+                                .FormalFrameworks
+                                .Single(x => x.OrganisationFormalFrameworkId == key);
+
+                        organisationFormalFramework.Validity.End = value;
+                    }
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
             return new ElasticPerDocumentChange<OrganisationDocument>
             (
