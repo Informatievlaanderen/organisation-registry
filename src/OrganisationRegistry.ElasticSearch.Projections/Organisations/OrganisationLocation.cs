@@ -24,7 +24,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IElasticEventHandler<OrganisationTerminationSyncedWithKbo>,
         IElasticEventHandler<OrganisationLocationUpdated>,
         IElasticEventHandler<LocationUpdated>,
-        IElasticEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationTerminated>,
+        IElasticEventHandler<OrganisationTerminatedV2>
     {
         public OrganisationLocation(
             ILogger<OrganisationLocation> logger) : base(logger)
@@ -167,6 +168,34 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    var locationsToTerminate =
+                        message.Body.FieldsToTerminate.Locations;
+
+                    if (message.Body.KboFieldsToTerminate.RegisteredOffice.HasValue)
+                        locationsToTerminate.Add(message.Body.KboFieldsToTerminate.RegisteredOffice.Value.Key, message.Body.KboFieldsToTerminate.RegisteredOffice.Value.Value);
+
+                    foreach (var (key, value) in locationsToTerminate)
+                    {
+                        var organisationLocation =
+                            document
+                                .Locations
+                                .Single(x => x.OrganisationLocationId == key);
+
+                        organisationLocation.Validity.End = value;
+                    }
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
             return new ElasticPerDocumentChange<OrganisationDocument>
             (

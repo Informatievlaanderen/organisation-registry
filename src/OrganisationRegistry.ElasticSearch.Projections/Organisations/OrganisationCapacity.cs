@@ -26,7 +26,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IElasticEventHandler<CapacityUpdated>,
         IElasticEventHandler<FunctionUpdated>,
         IElasticEventHandler<PersonUpdated>,
-        IElasticEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationTerminated>,
+        IElasticEventHandler<OrganisationTerminatedV2>
     {
         private readonly IContextFactory _contextFactory;
 
@@ -145,6 +146,28 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    foreach (var (key, value) in message.Body.FieldsToTerminate.Capacities)
+                    {
+                        var organisationCapacity =
+                            document
+                                .Capacities
+                                .Single(x => x.OrganisationCapacityId == key);
+
+                        organisationCapacity.Validity.End = value;
+                    }
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
             return new ElasticPerDocumentChange<OrganisationDocument>
             (

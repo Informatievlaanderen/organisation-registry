@@ -66,7 +66,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<LabelTypeUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IEventHandler<OrganisationTerminated>,
+        IEventHandler<OrganisationTerminatedV2>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -86,17 +87,15 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LabelTypeUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationLabels = context.OrganisationLabelList.Where(x => x.LabelTypeId == message.Body.LabelTypeId);
-                if (!organisationLabels.Any())
-                    return;
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationLabels = context.OrganisationLabelList.Where(x => x.LabelTypeId == message.Body.LabelTypeId);
+            if (!organisationLabels.Any())
+                return;
 
-                foreach (var organisationLable in organisationLabels)
-                    organisationLable.LabelTypeName = message.Body.Name;
+            foreach (var organisationLable in organisationLabels)
+                organisationLable.LabelTypeName = message.Body.Name;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLabelAdded> message)
@@ -112,11 +111,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.OrganisationLabelList.AddAsync(organisationLabelListItem);
-                await context.SaveChangesAsync();
-            }
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            await context.OrganisationLabelList.AddAsync(organisationLabelListItem);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboFormalNameLabelAdded> message)
@@ -134,11 +131,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             organisationLabelListItem.Source = Sources.Kbo;
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.OrganisationLabelList.AddAsync(organisationLabelListItem);
-                await context.SaveChangesAsync();
-            }
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            await context.OrganisationLabelList.AddAsync(organisationLabelListItem);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
@@ -146,15 +141,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
             if (message.Body.FormalNameOrganisationLabelIdToCancel == null)
                 return;
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var formalNameLabel = await context.OrganisationLabelList
-                    .SingleAsync(item => item.OrganisationLabelId == message.Body.FormalNameOrganisationLabelIdToCancel);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var formalNameLabel = await context.OrganisationLabelList
+                .SingleAsync(item => item.OrganisationLabelId == message.Body.FormalNameOrganisationLabelIdToCancel);
 
-                context.OrganisationLabelList.Remove(formalNameLabel);
+            context.OrganisationLabelList.Remove(formalNameLabel);
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
@@ -162,68 +155,81 @@ namespace OrganisationRegistry.SqlServer.Organisation
             if (message.Body.FormalNameOrganisationLabelIdToTerminate == null)
                 return;
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var formalNameLabel = await context.OrganisationLabelList
-                    .SingleAsync(item => item.OrganisationLabelId == message.Body.FormalNameOrganisationLabelIdToTerminate);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var formalNameLabel = await context.OrganisationLabelList
+                .SingleAsync(item => item.OrganisationLabelId == message.Body.FormalNameOrganisationLabelIdToTerminate);
 
-                formalNameLabel.ValidTo = message.Body.DateOfTermination;
+            formalNameLabel.ValidTo = message.Body.DateOfTermination;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboFormalNameLabelRemoved> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var label = context.OrganisationLabelList.SingleOrDefault(item => item.OrganisationLabelId == message.Body.OrganisationLabelId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var label = context.OrganisationLabelList.SingleOrDefault(item => item.OrganisationLabelId == message.Body.OrganisationLabelId);
 
-                context.OrganisationLabelList.Remove(label);
+            context.OrganisationLabelList.Remove(label);
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLabelUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var label = context.OrganisationLabelList.SingleOrDefault(item => item.OrganisationLabelId == message.Body.OrganisationLabelId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var label = context.OrganisationLabelList.SingleOrDefault(item => item.OrganisationLabelId == message.Body.OrganisationLabelId);
 
-                label.OrganisationLabelId = message.Body.OrganisationLabelId;
-                label.OrganisationId = message.Body.OrganisationId;
-                label.LabelTypeId = message.Body.LabelTypeId;
-                label.LabelValue = message.Body.Value;
-                label.LabelTypeName = message.Body.LabelTypeName;
-                label.ValidFrom = message.Body.ValidFrom;
-                label.ValidTo = message.Body.ValidTo;
+            label.OrganisationLabelId = message.Body.OrganisationLabelId;
+            label.OrganisationId = message.Body.OrganisationId;
+            label.LabelTypeId = message.Body.LabelTypeId;
+            label.LabelValue = message.Body.Value;
+            label.LabelTypeName = message.Body.LabelTypeName;
+            label.ValidFrom = message.Body.ValidFrom;
+            label.ValidTo = message.Body.ValidTo;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var labels = context.OrganisationLabelList.Where(item =>
+                message.Body.FieldsToTerminate.Labels.Keys.Contains(item.OrganisationLabelId));
+
+            foreach (var label in labels)
+                label.ValidTo = message.Body.FieldsToTerminate.Labels[label.OrganisationLabelId];
+
+            if (message.Body.KboFieldsToTerminate.FormalName.HasValue)
             {
-                var labels = context.OrganisationLabelList.Where(item =>
-                    message.Body.FieldsToTerminate.Labels.Keys.Contains(item.OrganisationLabelId));
+                var kboFormalName =
+                    await context.OrganisationLabelList.SingleAsync(item =>
+                        message.Body.KboFieldsToTerminate.FormalName.Value.Key == item.OrganisationLabelId);
 
-                foreach (var label in labels)
-                    label.ValidTo = message.Body.FieldsToTerminate.Labels[label.OrganisationLabelId];
-
-                if (message.Body.KboFieldsToTerminate.FormalName.HasValue)
-                {
-                    var kboFormalName =
-                        await context.OrganisationLabelList.SingleAsync(item =>
-                            message.Body.KboFieldsToTerminate.FormalName.Value.Key == item.OrganisationLabelId);
-
-                    kboFormalName.ValidTo = message.Body.KboFieldsToTerminate.FormalName.Value.Value;
-                }
-
-                await context.SaveChangesAsync();
+                kboFormalName.ValidTo = message.Body.KboFieldsToTerminate.FormalName.Value.Value;
             }
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var labels = context.OrganisationLabelList.Where(item =>
+                message.Body.FieldsToTerminate.Labels.Keys.Contains(item.OrganisationLabelId));
+
+            foreach (var label in labels)
+                label.ValidTo = message.Body.FieldsToTerminate.Labels[label.OrganisationLabelId];
+
+            if (message.Body.KboFieldsToTerminate.FormalName.HasValue)
+            {
+                var kboFormalName =
+                    await context.OrganisationLabelList.SingleAsync(item =>
+                        message.Body.KboFieldsToTerminate.FormalName.Value.Key == item.OrganisationLabelId);
+
+                kboFormalName.ValidTo = message.Body.KboFieldsToTerminate.FormalName.Value.Value;
+            }
+
+            await context.SaveChangesAsync();
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)

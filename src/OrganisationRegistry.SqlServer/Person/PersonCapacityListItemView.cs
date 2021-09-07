@@ -76,7 +76,8 @@ namespace OrganisationRegistry.SqlServer.Person
         IEventHandler<OrganisationInfoUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationTerminated>
+        IEventHandler<OrganisationTerminated>,
+        IEventHandler<OrganisationTerminatedV2>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -100,67 +101,61 @@ namespace OrganisationRegistry.SqlServer.Person
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
-            UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+            await UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
-            UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+            await UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
+            await UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
         }
 
-        private static void UpdateOrganisationName(
+        private static async Task UpdateOrganisationName(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IContextFactory contextFactory,
             Guid organisationId,
             string organisationName)
         {
-            using (var context = contextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var personCapacities = context.PersonCapacityList.Where(x => x.OrganisationId == organisationId);
-                if (!personCapacities.Any())
-                    return;
+            await using var context = contextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var personCapacities = context.PersonCapacityList.Where(x => x.OrganisationId == organisationId);
+            if (!personCapacities.Any())
+                return;
 
-                foreach (var personCapacity in personCapacities)
-                    personCapacity.OrganisationName = organisationName;
+            foreach (var personCapacity in personCapacities)
+                personCapacity.OrganisationName = organisationName;
 
-                context.SaveChanges();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<CapacityUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var personCapacities = context.PersonCapacityList.Where(x => x.CapacityId == message.Body.CapacityId);
-                if (!personCapacities.Any())
-                    return;
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var personCapacities = context.PersonCapacityList.Where(x => x.CapacityId == message.Body.CapacityId);
+            if (!personCapacities.Any())
+                return;
 
-                foreach (var personCapacity in personCapacities)
-                    personCapacity.CapacityName = message.Body.Name;
+            foreach (var personCapacity in personCapacities)
+                personCapacity.CapacityName = message.Body.Name;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var personCapacities = context.PersonCapacityList.Where(x => x.FunctionId == message.Body.FunctionId);
-                if (!personCapacities.Any())
-                    return;
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var personCapacities = context.PersonCapacityList.Where(x => x.FunctionId == message.Body.FunctionId);
+            if (!personCapacities.Any())
+                return;
 
-                foreach (var personCapacity in personCapacities)
-                    personCapacity.FunctionName = message.Body.Name;
+            foreach (var personCapacity in personCapacities)
+                personCapacity.FunctionName = message.Body.Name;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityAdded> message)
@@ -182,22 +177,20 @@ namespace OrganisationRegistry.SqlServer.Person
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.PersonCapacityList.AddAsync(personCapacityListItem);
-                await context.SaveChangesAsync();
-            }
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            await context.PersonCapacityList.AddAsync(personCapacityListItem);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
         {
             if (message.Body.PersonId.HasValue)
             {
-                AddOrUpdatePersonCapacity(dbConnection, dbTransaction, message);
+                await AddOrUpdatePersonCapacity(dbConnection, dbTransaction, message);
             }
             else
             {
-                RemovePersonCapacity(dbConnection, dbTransaction, message);
+                await RemovePersonCapacity(dbConnection, dbTransaction, message);
             }
         }
 
@@ -206,59 +199,65 @@ namespace OrganisationRegistry.SqlServer.Person
             await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }
 
-        private void AddOrUpdatePersonCapacity(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
+        private async Task AddOrUpdatePersonCapacity(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var personCapacityListItem = context.PersonCapacityList.SingleOrDefault(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
+
+            if (personCapacityListItem == null)
             {
-                var personCapacityListItem = context.PersonCapacityList.SingleOrDefault(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
-
-                if (personCapacityListItem == null)
-                {
-                    personCapacityListItem = new PersonCapacityListItem();
-                    context.PersonCapacityList.Add(personCapacityListItem);
-                }
-
-                personCapacityListItem.OrganisationCapacityId = message.Body.OrganisationCapacityId;
-                personCapacityListItem.OrganisationId = message.Body.OrganisationId;
-                personCapacityListItem.OrganisationName = _memoryCaches.OrganisationNames[message.Body.OrganisationId];
-                personCapacityListItem.CapacityId = message.Body.CapacityId;
-                personCapacityListItem.CapacityName = message.Body.CapacityName;
-                personCapacityListItem.PersonId = message.Body.PersonId;
-                personCapacityListItem.FunctionId = message.Body.FunctionId;
-                personCapacityListItem.FunctionName = message.Body.FunctionId.HasValue ? message.Body.FunctionName : string.Empty;
-                personCapacityListItem.ValidFrom = message.Body.ValidFrom;
-                personCapacityListItem.ValidTo = message.Body.ValidTo;
-
-                context.SaveChanges();
+                personCapacityListItem = new PersonCapacityListItem();
+                context.PersonCapacityList.Add(personCapacityListItem);
             }
+
+            personCapacityListItem.OrganisationCapacityId = message.Body.OrganisationCapacityId;
+            personCapacityListItem.OrganisationId = message.Body.OrganisationId;
+            personCapacityListItem.OrganisationName = _memoryCaches.OrganisationNames[message.Body.OrganisationId];
+            personCapacityListItem.CapacityId = message.Body.CapacityId;
+            personCapacityListItem.CapacityName = message.Body.CapacityName;
+            personCapacityListItem.PersonId = message.Body.PersonId;
+            personCapacityListItem.FunctionId = message.Body.FunctionId;
+            personCapacityListItem.FunctionName = message.Body.FunctionId.HasValue ? message.Body.FunctionName : string.Empty;
+            personCapacityListItem.ValidFrom = message.Body.ValidFrom;
+            personCapacityListItem.ValidTo = message.Body.ValidTo;
+
+            await context.SaveChangesAsync();
         }
 
-        private void RemovePersonCapacity(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
+        private async Task RemovePersonCapacity(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var personCapacityListItem = context.PersonCapacityList.SingleOrDefault(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var personCapacityListItem = context.PersonCapacityList.SingleOrDefault(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
 
-                if (personCapacityListItem == null)
-                    return;
+            if (personCapacityListItem == null)
+                return;
 
-                context.PersonCapacityList.Remove(personCapacityListItem);
-                context.SaveChanges();
-            }
+            context.PersonCapacityList.Remove(personCapacityListItem);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var capacityListItems = context.PersonCapacityList.Where(item =>
-                    message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var capacityListItems = context.PersonCapacityList.Where(item =>
+                message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
 
-                foreach (var capacityListItem in capacityListItems)
-                    capacityListItem.ValidTo = message.Body.FieldsToTerminate.Capacities[capacityListItem.OrganisationCapacityId];
+            foreach (var capacityListItem in capacityListItems)
+                capacityListItem.ValidTo = message.Body.FieldsToTerminate.Capacities[capacityListItem.OrganisationCapacityId];
 
-                context.SaveChanges();
-            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var capacityListItems = context.PersonCapacityList.Where(item =>
+                message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
+
+            foreach (var capacityListItem in capacityListItems)
+                capacityListItem.ValidTo = message.Body.FieldsToTerminate.Capacities[capacityListItem.OrganisationCapacityId];
+
+            await context.SaveChangesAsync();
         }
     }
 }

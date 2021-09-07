@@ -12,7 +12,6 @@ namespace OrganisationRegistry.Organisation.OrganisationTermination
         public Dictionary<Guid, DateTime> Locations { get; init; }
         public Dictionary<Guid, DateTime> Capacities { get; init; }
         public Dictionary<Guid, DateTime> Buildings { get; init; }
-        public Dictionary<Guid, DateTime> Parents { get; init; }
         public Dictionary<Guid, DateTime> Labels { get; init; }
         public Dictionary<Guid, DateTime> Relations { get; init; }
         public Dictionary<Guid, DateTime> OpeningHours { get; init; }
@@ -28,7 +27,6 @@ namespace OrganisationRegistry.Organisation.OrganisationTermination
             Locations = new Dictionary<Guid, DateTime>();
             Capacities = new Dictionary<Guid, DateTime>();
             Buildings = new Dictionary<Guid, DateTime>();
-            Parents = new Dictionary<Guid, DateTime>();
             Labels = new Dictionary<Guid, DateTime>();
             Relations = new Dictionary<Guid, DateTime>();
             OpeningHours = new Dictionary<Guid, DateTime>();

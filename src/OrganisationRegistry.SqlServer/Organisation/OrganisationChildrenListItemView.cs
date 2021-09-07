@@ -70,7 +70,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationParentAdded>,
         IEventHandler<OrganisationParentUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IEventHandler<OrganisationTerminated>,
+        IEventHandler<OrganisationTerminatedV2>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -184,6 +185,24 @@ namespace OrganisationRegistry.SqlServer.Organisation
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            if (!message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
+                return;
+
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var organisations = context.OrganisationChildrenList.Where(x => x.Id == message.Body.OrganisationId);
+                if (!organisations.Any())
+                    return;
+
+                foreach (var organisation in organisations)
+                    organisation.OrganisationValidTo = message.Body.FieldsToTerminate.OrganisationValidity;
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
             if (!message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
                 return;

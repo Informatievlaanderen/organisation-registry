@@ -23,7 +23,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IElasticEventHandler<OrganisationTerminationSyncedWithKbo>,
         IElasticEventHandler<OrganisationLabelUpdated>,
         IElasticEventHandler<LabelTypeUpdated>,
-        IElasticEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationTerminated>,
+        IElasticEventHandler<OrganisationTerminatedV2>
     {
         public OrganisationLabel(
             ILogger<OrganisationLabel> logger) : base(logger)
@@ -177,7 +178,36 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                                 .Single(x => x.OrganisationLabelId == key);
 
                         organisationBankAccount.Validity.End = value;
-                    }                }
+                    }
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    var labelsToTerminate =
+                        message.Body.FieldsToTerminate.Labels;
+
+                    if (message.Body.KboFieldsToTerminate.FormalName.HasValue)
+                        labelsToTerminate.Add(message.Body.KboFieldsToTerminate.FormalName.Value.Key, message.Body.KboFieldsToTerminate.FormalName.Value.Value);
+
+                    foreach (var (key, value) in labelsToTerminate)
+                    {
+                        var organisationBankAccount =
+                            document
+                                .Labels
+                                .Single(x => x.OrganisationLabelId == key);
+
+                        organisationBankAccount.Validity.End = value;
+                    }
+                }
             );
         }
     }

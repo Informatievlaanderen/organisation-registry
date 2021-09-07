@@ -21,7 +21,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
         IElasticEventHandler<OrganisationTerminationSyncedWithKbo>,
         IElasticEventHandler<OrganisationBankAccountUpdated>,
-        IElasticEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationTerminated>,
+        IElasticEventHandler<OrganisationTerminatedV2>
     {
         public OrganisationBankAccount(
             ILogger<OrganisationBankAccount> logger)
@@ -171,6 +172,33 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    var accountsToTerminate =
+                        message.Body.FieldsToTerminate.BankAccounts
+                            .Union(message.Body.KboFieldsToTerminate.BankAccounts);
+
+                    foreach (var (key, value) in accountsToTerminate)
+                    {
+                        var organisationBankAccount =
+                            document
+                                .BankAccounts
+                                .Single(x => x.OrganisationBankAccountId == key);
+
+                        organisationBankAccount.Validity.End = value;
+                    }
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
             return new ElasticPerDocumentChange<OrganisationDocument>
             (

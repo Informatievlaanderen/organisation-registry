@@ -97,6 +97,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<PersonUpdated>,
         IEventHandler<LocationUpdated>,
         IEventHandler<OrganisationTerminated>,
+        IEventHandler<OrganisationTerminatedV2>,
         IEventHandler<OrganisationCapacityBecameActive>,
         IEventHandler<OrganisationCapacityBecameInactive>,
         IReactionHandler<DayHasPassed>
@@ -227,6 +228,17 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             await context.SaveChangesAsync();
         }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var capacities = context.OrganisationCapacityList.Where(item =>
+                message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
+
+            foreach (var capacity in capacities)
+                capacity.ValidTo = message.Body.FieldsToTerminate.Capacities[capacity.OrganisationCapacityId];
+
+            await context.SaveChangesAsync();        }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<OrganisationCapacityBecameActive> message)

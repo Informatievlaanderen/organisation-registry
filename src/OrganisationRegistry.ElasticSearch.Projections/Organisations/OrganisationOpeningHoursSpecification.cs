@@ -17,7 +17,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         BaseProjection<OrganisationOpeningHoursSpecification>,
         IElasticEventHandler<OrganisationOpeningHourAdded>,
         IElasticEventHandler<OrganisationOpeningHourUpdated>,
-        IElasticEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationTerminated>,
+        IElasticEventHandler<OrganisationTerminatedV2>
     {
         public OrganisationOpeningHoursSpecification(
             ILogger<OrganisationOpeningHoursSpecification> logger)
@@ -75,6 +76,28 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    foreach (var (key, value) in message.Body.FieldsToTerminate.OpeningHours)
+                    {
+                        var organisationOpeningHour =
+                            document
+                                .OpeningHours
+                                .Single(x => x.OrganisationOpeningHourId == key);
+
+                        organisationOpeningHour.Validity.End = value;
+                    }
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
             return new ElasticPerDocumentChange<OrganisationDocument>
             (

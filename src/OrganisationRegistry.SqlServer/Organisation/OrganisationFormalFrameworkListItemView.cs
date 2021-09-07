@@ -63,7 +63,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<FormalFrameworkUpdated>,
-        IEventHandler<OrganisationTerminated>
+        IEventHandler<OrganisationTerminated>,
+        IEventHandler<OrganisationTerminatedV2>
     {
         public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
 
@@ -102,30 +103,26 @@ namespace OrganisationRegistry.SqlServer.Organisation
             Guid organisationId,
             string organisationName)
         {
-            using (var context = contextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                context.OrganisationFormalFrameworkList
-                    .Where(x => x.ParentOrganisationId == organisationId)
-                    .ToList()
-                    .ForEach(item => item.ParentOrganisationName = organisationName);
+            using var context = contextFactory.CreateTransactional(dbConnection, dbTransaction);
+            context.OrganisationFormalFrameworkList
+                .Where(x => x.ParentOrganisationId == organisationId)
+                .ToList()
+                .ForEach(item => item.ParentOrganisationName = organisationName);
 
-                context.SaveChanges();
-            }
+            context.SaveChanges();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationFormalFrameworks = context.OrganisationFormalFrameworkList.Where(x => x.FormalFrameworkId == message.Body.FormalFrameworkId);
-                if (!organisationFormalFrameworks.Any())
-                    return;
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationFormalFrameworks = context.OrganisationFormalFrameworkList.Where(x => x.FormalFrameworkId == message.Body.FormalFrameworkId);
+            if (!organisationFormalFrameworks.Any())
+                return;
 
-                foreach (var organisationFormalFramework in organisationFormalFrameworks)
-                    organisationFormalFramework.FormalFrameworkName = message.Body.Name;
+            foreach (var organisationFormalFramework in organisationFormalFrameworks)
+                organisationFormalFramework.FormalFrameworkName = message.Body.Name;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkAdded> message)
@@ -142,44 +139,50 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.OrganisationFormalFrameworkList.AddAsync(organisationFormalFrameworkListItem);
-                await context.SaveChangesAsync();
-            }
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            await context.OrganisationFormalFrameworkList.AddAsync(organisationFormalFrameworkListItem);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationFormalFramework = await context.OrganisationFormalFrameworkList.SingleOrDefaultAsync(item => item.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationFormalFramework = await context.OrganisationFormalFrameworkList.SingleOrDefaultAsync(item => item.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
 
-                organisationFormalFramework.OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId;
-                organisationFormalFramework.OrganisationId = message.Body.OrganisationId;
-                organisationFormalFramework.FormalFrameworkId = message.Body.FormalFrameworkId;
-                organisationFormalFramework.FormalFrameworkName = message.Body.FormalFrameworkName ?? string.Empty;
-                organisationFormalFramework.ParentOrganisationId = message.Body.ParentOrganisationId;
-                organisationFormalFramework.ParentOrganisationName = message.Body.ParentOrganisationName;
-                organisationFormalFramework.ValidFrom = message.Body.ValidFrom;
-                organisationFormalFramework.ValidTo = message.Body.ValidTo;
+            organisationFormalFramework.OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId;
+            organisationFormalFramework.OrganisationId = message.Body.OrganisationId;
+            organisationFormalFramework.FormalFrameworkId = message.Body.FormalFrameworkId;
+            organisationFormalFramework.FormalFrameworkName = message.Body.FormalFrameworkName ?? string.Empty;
+            organisationFormalFramework.ParentOrganisationId = message.Body.ParentOrganisationId;
+            organisationFormalFramework.ParentOrganisationName = message.Body.ParentOrganisationName;
+            organisationFormalFramework.ValidFrom = message.Body.ValidFrom;
+            organisationFormalFramework.ValidTo = message.Body.ValidTo;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var formalFrameworks = context.OrganisationFormalFrameworkList.Where(item =>
-                    message.Body.FieldsToTerminate.FormalFrameworks.Keys.Contains(item.OrganisationFormalFrameworkId));
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var formalFrameworks = context.OrganisationFormalFrameworkList.Where(item =>
+                message.Body.FieldsToTerminate.FormalFrameworks.Keys.Contains(item.OrganisationFormalFrameworkId));
 
-                foreach (var formalFramework in formalFrameworks)
-                    formalFramework.ValidTo = message.Body.FieldsToTerminate.FormalFrameworks[formalFramework.OrganisationFormalFrameworkId];
+            foreach (var formalFramework in formalFrameworks)
+                formalFramework.ValidTo = message.Body.FieldsToTerminate.FormalFrameworks[formalFramework.OrganisationFormalFrameworkId];
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var formalFrameworks = context.OrganisationFormalFrameworkList.Where(item =>
+                message.Body.FieldsToTerminate.FormalFrameworks.Keys.Contains(item.OrganisationFormalFrameworkId));
+
+            foreach (var formalFramework in formalFrameworks)
+                formalFramework.ValidTo = message.Body.FieldsToTerminate.FormalFrameworks[formalFramework.OrganisationFormalFrameworkId];
+
+            await context.SaveChangesAsync();
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)

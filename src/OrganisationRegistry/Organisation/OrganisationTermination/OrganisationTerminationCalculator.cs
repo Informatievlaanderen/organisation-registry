@@ -25,7 +25,6 @@ namespace OrganisationRegistry.Organisation.OrganisationTermination
                 Functions = FieldsToTerminate(state.OrganisationFunctionTypes, dateOfTermination),
                 Locations = FieldsToTerminate(state.OrganisationLocations, dateOfTermination),
                 Buildings = FieldsToTerminate(state.OrganisationBuildings, dateOfTermination),
-                Parents = FieldsToTerminate(state.OrganisationParents, dateOfTermination),
                 Labels = FieldsToTerminate(state.OrganisationLabels, dateOfTermination),
                 Relations = FieldsToTerminate(state.OrganisationRelations, dateOfTermination),
                 OpeningHours = FieldsToTerminate(state.OrganisationOpeningHours, dateOfTermination),

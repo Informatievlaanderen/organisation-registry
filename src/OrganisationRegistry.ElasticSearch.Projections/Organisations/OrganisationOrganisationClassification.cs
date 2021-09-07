@@ -26,7 +26,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IElasticEventHandler<OrganisationOrganisationClassificationUpdated>,
         IElasticEventHandler<OrganisationClassificationTypeUpdated>,
         IElasticEventHandler<OrganisationClassificationUpdated>,
-        IElasticEventHandler<OrganisationTerminated>
+        IElasticEventHandler<OrganisationTerminated>,
+        IElasticEventHandler<OrganisationTerminatedV2>
     {
 
         public OrganisationOrganisationClassification(
@@ -209,6 +210,34 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    var classificationsToTerminate =
+                        message.Body.FieldsToTerminate.Classifications;
+
+                    if (message.Body.KboFieldsToTerminate.LegalForm.HasValue)
+                        classificationsToTerminate.Add(message.Body.KboFieldsToTerminate.LegalForm.Value.Key, message.Body.KboFieldsToTerminate.LegalForm.Value.Value);
+
+                    foreach (var (key, value) in classificationsToTerminate)
+                    {
+                        var organisationOrganisationClassification =
+                            document
+                                .OrganisationClassifications
+                                .Single(x => x.OrganisationOrganisationClassificationId == key);
+
+                        organisationOrganisationClassification.Validity.End = value;
+                    }
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
             return new ElasticPerDocumentChange<OrganisationDocument>
             (

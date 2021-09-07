@@ -5,8 +5,7 @@ namespace OrganisationRegistry.Organisation.Events
     using OrganisationTermination;
     using State;
 
-    [Obsolete("Use OrganisationTerminatedV2 instead.")]
-    public class OrganisationTerminated : BaseEvent<OrganisationTerminated>
+    public class OrganisationTerminatedV2 : BaseEvent<OrganisationTerminatedV2>
     {
         public Guid OrganisationId => Id;
 
@@ -14,16 +13,16 @@ namespace OrganisationRegistry.Organisation.Events
         public string OvoNumber { get; }
         public DateTime DateOfTermination { get; }
         public DateTime? DateOfTerminationAccordingToKbo { get; }
-        public FieldsToTerminate FieldsToTerminate { get; }
-        public KboFieldsToTerminate KboFieldsToTerminate { get; }
+        public FieldsToTerminateV2 FieldsToTerminate { get; }
+        public KboFieldsToTerminateV2 KboFieldsToTerminate { get; }
         public bool ForcedKboTermination { get; }
 
-        public OrganisationTerminated(Guid organisationId,
+        public OrganisationTerminatedV2(Guid organisationId,
             string name,
             string ovoNumber,
             DateTime dateOfTermination,
-            FieldsToTerminate fieldsToTerminate,
-            KboFieldsToTerminate kboFieldsToTerminate,
+            FieldsToTerminateV2 fieldsToTerminate,
+            KboFieldsToTerminateV2 kboFieldsToTerminate,
             bool forcedKboTermination,
             DateTime? dateOfTerminationAccordingToKbo = null)
         {
@@ -38,20 +37,19 @@ namespace OrganisationRegistry.Organisation.Events
             DateOfTerminationAccordingToKbo = dateOfTerminationAccordingToKbo;
         }
 
-        [Obsolete("Use OrganisationTerminatedV2 instead.")]
-        public static OrganisationTerminated Create(Guid id,
+        public static OrganisationTerminatedV2 Create(Guid id,
             OrganisationState state,
             KboState kboState,
             OrganisationTerminationSummary organisationTermination,
             bool forceKboTermination,
             OrganisationTerminationKboSummary organisationTerminationKboSummary, DateTime dateOfTermination)
         {
-            return new OrganisationTerminated(
+            return new OrganisationTerminatedV2(
                 id,
                 state.Name,
                 state.OvoNumber,
                 dateOfTermination,
-                new FieldsToTerminate(
+                new FieldsToTerminateV2(
                     organisationValidity: organisationTermination.OrganisationNewValidTo,
                     buildings: organisationTermination.Buildings,
                     bankAccounts: organisationTermination.BankAccounts,
@@ -61,12 +59,11 @@ namespace OrganisationRegistry.Organisation.Events
                     functions: organisationTermination.Functions,
                     labels: organisationTermination.Labels,
                     locations: organisationTermination.Locations,
-                    parents: new Dictionary<Guid, DateTime>(),
                     relations: organisationTermination.Relations,
                     formalFrameworks: organisationTermination.FormalFrameworks,
                     openingHours: organisationTermination.OpeningHours,
                     regulations: organisationTermination.Regulations),
-                new KboFieldsToTerminate(
+                new KboFieldsToTerminateV2(
                     bankAccounts: organisationTerminationKboSummary.KboBankAccounts,
                     registeredOffice: organisationTerminationKboSummary.KboRegisteredOfficeLocation,
                     formalName: organisationTerminationKboSummary.KboFormalNameLabel,
@@ -77,7 +74,7 @@ namespace OrganisationRegistry.Organisation.Events
         }
     }
 
-    public class FieldsToTerminate
+    public class FieldsToTerminateV2
     {
         public DateTime? OrganisationValidity { get; }
         public Dictionary<Guid, DateTime> Buildings { get; }
@@ -88,13 +85,12 @@ namespace OrganisationRegistry.Organisation.Events
         public Dictionary<Guid, DateTime> Functions { get; }
         public Dictionary<Guid, DateTime> Labels { get; }
         public Dictionary<Guid, DateTime> Locations { get; }
-        public Dictionary<Guid, DateTime> Parents { get; }
         public Dictionary<Guid, DateTime> Relations { get; }
         public Dictionary<Guid, DateTime> FormalFrameworks { get; }
         public Dictionary<Guid, DateTime> OpeningHours { get; }
         public Dictionary<Guid, DateTime> Regulations { get; }
 
-        public FieldsToTerminate(
+        public FieldsToTerminateV2(
             DateTime? organisationValidity,
             Dictionary<Guid, DateTime> buildings,
             Dictionary<Guid, DateTime> bankAccounts,
@@ -104,7 +100,6 @@ namespace OrganisationRegistry.Organisation.Events
             Dictionary<Guid, DateTime> functions,
             Dictionary<Guid, DateTime> labels,
             Dictionary<Guid, DateTime> locations,
-            Dictionary<Guid, DateTime> parents,
             Dictionary<Guid, DateTime> relations,
             Dictionary<Guid, DateTime> formalFrameworks,
             Dictionary<Guid, DateTime> openingHours,
@@ -119,7 +114,6 @@ namespace OrganisationRegistry.Organisation.Events
             Functions = functions;
             Labels = labels;
             Locations = locations;
-            Parents = parents;
             Relations = relations;
             FormalFrameworks = formalFrameworks;
             OpeningHours = openingHours;
@@ -127,14 +121,14 @@ namespace OrganisationRegistry.Organisation.Events
         }
     }
 
-    public class KboFieldsToTerminate
+    public class KboFieldsToTerminateV2
     {
         public Dictionary<Guid, DateTime> BankAccounts { get; }
         public KeyValuePair<Guid, DateTime>? RegisteredOffice { get; }
         public KeyValuePair<Guid, DateTime>? FormalName { get; }
         public KeyValuePair<Guid, DateTime>? LegalForm { get; }
 
-        public KboFieldsToTerminate(
+        public KboFieldsToTerminateV2(
             Dictionary<Guid, DateTime> bankAccounts,
             KeyValuePair<Guid, DateTime>? registeredOffice,
             KeyValuePair<Guid, DateTime>? formalName,

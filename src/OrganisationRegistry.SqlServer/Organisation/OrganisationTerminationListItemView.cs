@@ -49,6 +49,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationTerminationFoundInKbo>,
         IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<OrganisationTerminated>,
+        IEventHandler<OrganisationTerminatedV2>,
         IEventHandler<OrganisationCouplingWithKboCancelled>
     {
         private readonly IMemoryCaches _memoryCaches;
@@ -87,42 +88,36 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 Reason = message.Body.TerminationReason,
             };
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.OrganisationTerminationList.AddAsync(organisationListItem);
-                await context.SaveChangesAsync();
-            }
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            await context.OrganisationTerminationList.AddAsync(organisationListItem);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<OrganisationTerminationSyncedWithKbo> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationTerminationListItem = await context.OrganisationTerminationList.SingleAsync(item =>
-                    item.Id == message.Body.OrganisationId && item.KboNumber == message.Body.KboNumber);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationTerminationListItem = await context.OrganisationTerminationList.SingleAsync(item =>
+                item.Id == message.Body.OrganisationId && item.KboNumber == message.Body.KboNumber);
 
-                context.OrganisationTerminationList.Remove(organisationTerminationListItem);
+            context.OrganisationTerminationList.Remove(organisationTerminationListItem);
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationTerminationListItem = await context.OrganisationTerminationList.SingleOrDefaultAsync(item =>
-                    item.Id == message.Body.OrganisationId && item.KboNumber == message.Body.PreviousKboNumber);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationTerminationListItem = await context.OrganisationTerminationList.SingleOrDefaultAsync(item =>
+                item.Id == message.Body.OrganisationId && item.KboNumber == message.Body.PreviousKboNumber);
 
-                if (organisationTerminationListItem == null)
-                    return;
+            if (organisationTerminationListItem == null)
+                return;
 
-                context.OrganisationTerminationList.Remove(organisationTerminationListItem);
+            context.OrganisationTerminationList.Remove(organisationTerminationListItem);
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
@@ -130,18 +125,33 @@ namespace OrganisationRegistry.SqlServer.Organisation
             if (!message.Body.ForcedKboTermination)
                 return;
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationTerminationListItem = await context.OrganisationTerminationList.SingleOrDefaultAsync(item =>
-                    item.Id == message.Body.OrganisationId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationTerminationListItem = await context.OrganisationTerminationList.SingleOrDefaultAsync(item =>
+                item.Id == message.Body.OrganisationId);
 
-                if (organisationTerminationListItem == null)
-                    return;
+            if (organisationTerminationListItem == null)
+                return;
 
-                context.OrganisationTerminationList.Remove(organisationTerminationListItem);
+            context.OrganisationTerminationList.Remove(organisationTerminationListItem);
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+        {
+            if (!message.Body.ForcedKboTermination)
+                return;
+
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationTerminationListItem = await context.OrganisationTerminationList.SingleOrDefaultAsync(item =>
+                item.Id == message.Body.OrganisationId);
+
+            if (organisationTerminationListItem == null)
+                return;
+
+            context.OrganisationTerminationList.Remove(organisationTerminationListItem);
+
+            await context.SaveChangesAsync();
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
