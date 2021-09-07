@@ -1,3 +1,10 @@
+# [1.93.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.92.0...v1.93.0) (2021-09-07)
+
+
+### Features
+
+* show user a warning if on dev/staging ([ee70bed](https://github.com/informatievlaanderen/organisation-registry/commit/ee70bedf6fb4aca5638439deea6f61e1971618cb))
+
 # [1.92.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.91.1...v1.92.0) (2021-09-07)
 
 
