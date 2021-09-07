@@ -24,7 +24,7 @@
 
         public override void Map(EntityTypeBuilder<CapacityListItem> b)
         {
-            b.ToTable(nameof(CapacityListView.ProjectionTables.CapacityList), "OrganisationRegistry")
+            b.ToTable(nameof(CapacityListView.ProjectionTables.CapacityList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

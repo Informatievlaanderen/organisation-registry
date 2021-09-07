@@ -24,7 +24,7 @@
 
         public override void Map(EntityTypeBuilder<FunctionTypeListItem> b)
         {
-            b.ToTable(nameof(FunctionTypeListView.ProjectionTables.FunctionList), "OrganisationRegistry")
+            b.ToTable(nameof(FunctionTypeListView.ProjectionTables.FunctionList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

@@ -24,7 +24,7 @@
 
         public override void Map(EntityTypeBuilder<FormalFrameworkCategoryListItem> b)
         {
-            b.ToTable(nameof(FormalFrameworkCategoryListView.ProjectionTables.FormalFrameworkCategoryList), "OrganisationRegistry")
+            b.ToTable(nameof(FormalFrameworkCategoryListView.ProjectionTables.FormalFrameworkCategoryList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

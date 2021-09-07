@@ -24,7 +24,7 @@
 
         public override void Map(EntityTypeBuilder<ContactTypeListItem> b)
         {
-            b.ToTable(nameof(ContactTypeListView.ProjectionTables.ContactTypeList), "OrganisationRegistry")
+            b.ToTable(nameof(ContactTypeListView.ProjectionTables.ContactTypeList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

@@ -26,7 +26,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationRelationType
 
         public override void Map(EntityTypeBuilder<OrganisationRelationTypeListItem> b)
         {
-            b.ToTable(nameof(OrganisationRelationTypeListView.ProjectionTables.OrganisationRelationTypeList), "OrganisationRegistry")
+            b.ToTable(nameof(OrganisationRelationTypeListView.ProjectionTables.OrganisationRelationTypeList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

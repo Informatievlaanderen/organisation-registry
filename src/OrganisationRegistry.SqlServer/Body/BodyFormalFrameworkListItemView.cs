@@ -30,7 +30,7 @@
     {
         public override void Map(EntityTypeBuilder<BodyFormalFrameworkListItem> b)
         {
-            b.ToTable(nameof(BodyFormalFrameworkListView.ProjectionTables.BodyFormalFrameworkList), "OrganisationRegistry")
+            b.ToTable(nameof(BodyFormalFrameworkListView.ProjectionTables.BodyFormalFrameworkList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.BodyFormalFrameworkId)
                 .IsClustered(false);
 

@@ -33,7 +33,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationFormalFrameworkListItem> b)
         {
-            b.ToTable(nameof(OrganisationFormalFrameworkListView.ProjectionTables.OrganisationFormalFrameworkList), "OrganisationRegistry")
+            b.ToTable(nameof(OrganisationFormalFrameworkListView.ProjectionTables.OrganisationFormalFrameworkList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OrganisationFormalFrameworkId)
                 .IsClustered(false);
 
