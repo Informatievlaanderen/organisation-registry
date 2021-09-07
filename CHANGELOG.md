@@ -1,3 +1,10 @@
+# [1.92.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.91.1...v1.92.0) (2021-09-07)
+
+
+### Features
+
+* parents are no longer terminated ([c9da676](https://github.com/informatievlaanderen/organisation-registry/commit/c9da676cddca92bd6f2afce776abf3d6861bcbda))
+
 ## [1.91.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.91.0...v1.91.1) (2021-08-30)
 
 
