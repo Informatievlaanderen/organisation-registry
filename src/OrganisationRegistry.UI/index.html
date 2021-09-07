@@ -75,7 +75,7 @@
   <script type="text/javascript">
     String.prototype.trim = String.prototype.trim || function trim() { return this.replace(/^\s\s*/, '').replace(/\s\s*$/, ''); };
     window.addEventListener('load', function() {
-      document.getElementById("version").innerHTML = ', versie ' + window.organisationRegistryVersion;
+      document.getElementById("version").innerHTML = ', versie ' + (window.organisationRegistryVersion || 'development');
 
       document.getElementById("authorlink").href = window.organisationRegistryInformatieVlaanderenLink;
     });

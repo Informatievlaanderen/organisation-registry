@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+﻿import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
 
@@ -6,6 +6,7 @@ import { Role, OidcService } from 'core/auth';
 import { ConfigurationService } from 'core/configuration';
 
 import {FeaturesService} from "../../../services/features";
+import {Environments} from "../../../environments";
 
 @Component({
   selector: 'ww-navbar',
@@ -14,6 +15,8 @@ import {FeaturesService} from "../../../services/features";
   templateUrl: 'navbar.template.html'
 })
 export class NavbarComponent implements OnInit {
+  @Input('environment') environment: string;
+
   public isLoggedIn: Observable<boolean>;
   public isOrganisationRegistryBeheerder: Observable<boolean>;
   public isOrganisatieBeheerder: Observable<boolean>;
@@ -21,12 +24,15 @@ export class NavbarComponent implements OnInit {
   public isOrgaanBeheerder: Observable<boolean>;
   public userName: Observable<string>;
   public role: Observable<string>;
+  public showEnvironment: boolean;
   constructor(
     private oidcService: OidcService,
   ) {
    }
 
   ngOnInit() {
+    this.showEnvironment = this.environment != Environments.production;
+
     this.isLoggedIn = this.oidcService.isLoggedIn;
 
     const roles = this.oidcService.roles;

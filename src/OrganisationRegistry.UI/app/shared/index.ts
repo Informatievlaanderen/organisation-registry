@@ -7,6 +7,7 @@ import { TogglesServiceModule } from 'services/toggles';
 
 import { FormGroupAutocomplete } from './components/form/form-group-autocomplete';
 import { FormGroupDatepicker } from './components/form/form-group-datepicker';
+import { EnvironmentWarningComponent } from './components/environment-warning';
 import { FormGroupDatepickerRange } from './components/form/form-group-datepicker-range';
 import { FormGroupSelect } from './components/form/form-group-select';
 import { FormGroupTextbox } from './components/form/form-group-textbox';
@@ -48,6 +49,7 @@ import { BaseListComponent } from 'shared/components/list';
     DatepickerDirective,
     FormGroupAutocomplete,
     FormGroupDatepicker,
+    EnvironmentWarningComponent,
     FormGroupDatepickerRange,
     FormGroupSelect,
     FormGroupTextbox,
@@ -70,7 +72,7 @@ import { BaseListComponent } from 'shared/components/list';
     CrabLocationAutoComplete,
     SmartLinkComponent,
     KeysPipe,
-    BaseListComponent
+    BaseListComponent,
   ],
   exports: [
     CommonModule,
@@ -78,6 +80,7 @@ import { BaseListComponent } from 'shared/components/list';
     DatepickerDirective,
     FormGroupAutocomplete,
     FormGroupDatepicker,
+    EnvironmentWarningComponent,
     FormGroupDatepickerRange,
     FormGroupSelect,
     FormGroupTextbox,

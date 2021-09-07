@@ -1,8 +1,10 @@
-import { Component, ViewEncapsulation, OnInit } from '@angular/core';
-import { Router, NavigationStart, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { Title } from '@angular/platform-browser';
+import {Component, ViewEncapsulation, OnInit} from '@angular/core';
+import {Router, NavigationStart, NavigationEnd, ActivatedRoute} from '@angular/router';
+import {Title} from '@angular/platform-browser';
 
-import { AlertService } from './core/alert';
+import {AlertService} from './core/alert';
+import {ConfigurationService} from "./core/configuration";
+import {Environments} from "./environments";
 
 @Component({
   selector: 'wegwijs',
@@ -14,13 +16,24 @@ import { AlertService } from './core/alert';
   ],
   templateUrl: './app.template.html'
 })
-export class App implements OnInit  {
+export class App implements OnInit {
+  public environment: string;
+
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private titleService: Title,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private configurationService: ConfigurationService
   ) {
+
+    if (configurationService.apiUrl.includes('dev-vlaanderen')) {
+      this.environment = Environments.staging;
+    }
+    if (configurationService.apiUrl.includes('local')) {
+      this.environment = Environments.development;
+    }
+
     router.events
       .filter(event => event instanceof NavigationStart)
       .subscribe(() => alertService.clearAlert());
