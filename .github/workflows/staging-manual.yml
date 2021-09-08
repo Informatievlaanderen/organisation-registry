@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version"
+        description: 'Version'
         required: true
 
 jobs:
