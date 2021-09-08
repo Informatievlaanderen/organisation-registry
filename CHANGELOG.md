@@ -1,3 +1,15 @@
+# [1.94.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.93.0...v1.94.0) (2021-09-08)
+
+
+### Bug Fixes
+
+* use correct name for gezondheidenzorg ([f8cfca2](https://github.com/informatievlaanderen/organisation-registry/commit/f8cfca2e18df791c85bf8fc5e8c0b98e09880f04))
+
+
+### Features
+
+* add github action to deploy to staging ([01fe5bc](https://github.com/informatievlaanderen/organisation-registry/commit/01fe5bc66b28fb3729b6c0aae105fe4778d26209))
+
 # [1.93.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.92.0...v1.93.0) (2021-09-07)
 
 
