@@ -1,4 +1,4 @@
-name: CD Staging
+name: Manual Staging
 
 on:
   workflow_dispatch:
