@@ -1,3 +1,10 @@
+## [1.94.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.1...v1.94.2) (2021-09-08)
+
+
+### Bug Fixes
+
+* use personal access token ([19e3dfc](https://github.com/informatievlaanderen/organisation-registry/commit/19e3dfcd1642453f83d48529cc05e491f96047f2))
+
 ## [1.94.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.0...v1.94.1) (2021-09-08)
 
 # [1.94.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.93.0...v1.94.0) (2021-09-08)
