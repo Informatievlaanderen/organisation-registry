@@ -1,3 +1,5 @@
+## [1.94.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.0...v1.94.1) (2021-09-08)
+
 # [1.94.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.93.0...v1.94.0) (2021-09-08)
 
 
