@@ -1,3 +1,10 @@
+## [1.94.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.2...v1.94.3) (2021-09-17)
+
+
+### Bug Fixes
+
+* use gezondheidenzorg ([04e44aa](https://github.com/informatievlaanderen/organisation-registry/commit/04e44aa7983456617f8ab94b7dfc8c004d212801))
+
 ## [1.94.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.1...v1.94.2) (2021-09-08)
 
 
