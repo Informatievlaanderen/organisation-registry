@@ -19,7 +19,7 @@ jobs:
             'organisation-registry-scheduler',
             'organisation-registry-ui',
             'organisation-registry-vlaanderenbe',
-            'organisation-registry-agentschapzorgengezondheidftpdump',
+            'applications/organisation-registry-zorgengezondheid',
           ]
     steps:
       - uses: actions/github-script@v4
