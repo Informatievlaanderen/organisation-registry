@@ -22,7 +22,7 @@ jobs:
             'organisation-registry-scheduler',
             'organisation-registry-ui',
             'organisation-registry-vlaanderenbe',
-            'organisation-registry-agentschapzorgengezondheidftpdump',
+            'organisation-registry-zorgengezondheid',
           ]
     steps:
       - name: CD
