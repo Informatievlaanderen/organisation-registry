@@ -1,3 +1,10 @@
+## [1.94.8](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.7...v1.94.8) (2021-09-20)
+
+
+### Bug Fixes
+
+* use correct name ([243c147](https://github.com/informatievlaanderen/organisation-registry/commit/243c147611f325218b787419664d7fa47d802847))
+
 ## [1.94.7](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.6...v1.94.7) (2021-09-20)
 
 
