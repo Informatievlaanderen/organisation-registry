@@ -1,3 +1,10 @@
+## [1.94.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.3...v1.94.4) (2021-09-20)
+
+
+### Bug Fixes
+
+* use different syntax for GITHUB_REF ([43339a3](https://github.com/informatievlaanderen/organisation-registry/commit/43339a39a06f581c71d20827908ca8e1b8726970))
+
 ## [1.94.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.2...v1.94.3) (2021-09-17)
 
 
