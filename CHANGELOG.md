@@ -1,3 +1,10 @@
+## [1.94.7](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.6...v1.94.7) (2021-09-20)
+
+
+### Bug Fixes
+
+* set output ([05501af](https://github.com/informatievlaanderen/organisation-registry/commit/05501afe4a5a55caade4336378736cd5340874e9))
+
 ## [1.94.6](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.5...v1.94.6) (2021-09-20)
 
 
