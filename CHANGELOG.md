@@ -1,3 +1,10 @@
+## [1.94.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.4...v1.94.5) (2021-09-20)
+
+
+### Bug Fixes
+
+* pass env vars explicitly ([1f65519](https://github.com/informatievlaanderen/organisation-registry/commit/1f65519b927aaac26cad4130b4716dd70de31a80))
+
 ## [1.94.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.3...v1.94.4) (2021-09-20)
 
 
