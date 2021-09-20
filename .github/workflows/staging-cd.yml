@@ -27,7 +27,7 @@ jobs:
         env:
           VERSION: $GITHUB_REF
         run: |
-          echo ${GITHUB_REF} | sed 's/v//'
+          echo ::set-output name=VERSION::${GITHUB_REF} | sed 's/refs\/tags\/v//'
       - name: CD
         env:
           BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
@@ -35,7 +35,7 @@ jobs:
         uses: informatievlaanderen/awscurl-polling-action@main
         with:
           environment: stg
-          version: ${{ steps.get-version.outputs.result }}
+          version: ${{ steps.get-version.outputs.VERSION }}
           status-url: $STATUS_URL
           deploy-url: $BUILD_URL
           access-key: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID }}
