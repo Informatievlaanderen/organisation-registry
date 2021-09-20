@@ -24,8 +24,12 @@ jobs:
     steps:
       - uses: actions/github-script@v4
         id: get-version
+        env:
+          VERSION: $GITHUB_REF
         with:
-          script: echo ${GITHUB_REF} | sed 's/v//'
+          script: |
+            const { VERSION } = process.env
+            echo ${GITHUB_REF} | sed 's/v//'
           result-encoding: string
       - name: CD
         env:
