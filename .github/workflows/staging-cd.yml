@@ -19,7 +19,7 @@ jobs:
             'organisation-registry-scheduler',
             'organisation-registry-ui',
             'organisation-registry-vlaanderenbe',
-            'applications/organisation-registry-zorgengezondheid',
+            'organisation-registry-zorgengezondheid',
           ]
     steps:
       - id: get-version
