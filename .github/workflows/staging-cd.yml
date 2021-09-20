@@ -22,15 +22,12 @@ jobs:
             'applications/organisation-registry-zorgengezondheid',
           ]
     steps:
-      - uses: actions/github-script@v4
-        id: get-version
+      - id: get-version
+        shell: bash
         env:
           VERSION: $GITHUB_REF
-        with:
-          script: |
-            const { VERSION } = process.env
-            echo ${GITHUB_REF} | sed 's/v//'
-          result-encoding: string
+        run: |
+          echo ${GITHUB_REF} | sed 's/v//'
       - name: CD
         env:
           BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
