@@ -1,3 +1,10 @@
+## [1.94.6](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.5...v1.94.6) (2021-09-20)
+
+
+### Bug Fixes
+
+* use bash ([516755e](https://github.com/informatievlaanderen/organisation-registry/commit/516755e64110b4af28e46847d751008826a44402))
+
 ## [1.94.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.4...v1.94.5) (2021-09-20)
 
 
