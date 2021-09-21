@@ -24,16 +24,22 @@ jobs:
             'organisation-registry-zorgengezondheid',
           ]
     steps:
+      - id: latest-release
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: informatievlaanderen
+          repo: organisation-repository
+          excludes: prerelease, draft
       - name: debug_output
         shell: bash
         run: |
-          echo ${{ github.event.workflow_run }}
+          echo ${{ steps.latest-release.outputs.release }}
       - id: get-version
         shell: bash
         env:
           VERSION: $GITHUB_REF
         run: |
-          echo ::set-output name=VERSION::${GITHUB_REF} | sed 's/refs\/tags\/v//'
+          echo ::set-output name=VERSION::${steps.latest-release.outputs.release} | sed 's/v//'
       - name: CD
         env:
           BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
