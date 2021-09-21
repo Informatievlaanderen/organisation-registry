@@ -24,6 +24,10 @@ jobs:
             'organisation-registry-zorgengezondheid',
           ]
     steps:
+      - name: debug_output
+        shell: bash
+        run: |
+          echo ${{ github.event.workflow_run }}
       - id: get-version
         shell: bash
         env:
