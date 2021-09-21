@@ -1,9 +1,11 @@
-name: CD Staging
+name: Continuous Staging
 
 on:
-  release:
-    types: [published]
-
+  workflow_run:
+    workflows: ["CI"]
+    branches: [main]
+    types:
+      - completed
 jobs:
   deployment:
     runs-on: ubuntu-latest
