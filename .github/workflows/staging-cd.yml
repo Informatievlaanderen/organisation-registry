@@ -28,7 +28,7 @@ jobs:
         uses: pozetroninc/github-action-get-latest-release@master
         with:
           owner: informatievlaanderen
-          repo: organisation-repository
+          repo: organisation-registry
           excludes: prerelease, draft
       - name: debug_output
         shell: bash
