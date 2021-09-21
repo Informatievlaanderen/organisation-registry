@@ -1,3 +1,13 @@
+## [1.94.11](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.10...v1.94.11) (2021-09-21)
+
+
+### Bug Fixes
+
+* bad substitution ([cbbb69b](https://github.com/informatievlaanderen/organisation-registry/commit/cbbb69bb391afc5c5de990d37353c94acbfd9e0f))
+* bad substitution ([168b99a](https://github.com/informatievlaanderen/organisation-registry/commit/168b99a88f25259acac77401ef6e4df7c379993e))
+* repo name ([fa48c25](https://github.com/informatievlaanderen/organisation-registry/commit/fa48c252534ff89557a3079baeed1f32f55ddef7))
+* try latest-release ([b9445c1](https://github.com/informatievlaanderen/organisation-registry/commit/b9445c1434b128ba35edc1c3a3cb28988993f121))
+
 ## [1.94.10](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.9...v1.94.10) (2021-09-21)
 
 
