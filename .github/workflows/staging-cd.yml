@@ -39,7 +39,7 @@ jobs:
         env:
           VERSION: $GITHUB_REF
         run: |
-          echo ::set-output name=VERSION::${steps.latest-release.outputs.release} | sed 's/v//'
+          echo ::set-output name=VERSION::${{steps.latest-release.outputs.release}} | sed 's/v//'
       - name: CD
         env:
           BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
