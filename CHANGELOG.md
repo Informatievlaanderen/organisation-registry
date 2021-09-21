@@ -1,3 +1,10 @@
+## [1.94.10](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.9...v1.94.10) (2021-09-21)
+
+
+### Bug Fixes
+
+* try dependent workflow & debug workflow_run ([e268bf5](https://github.com/informatievlaanderen/organisation-registry/commit/e268bf50073612ec0940f9da8015bf3f6c00ef19))
+
 ## [1.94.9](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.8...v1.94.9) (2021-09-21)
 
 
