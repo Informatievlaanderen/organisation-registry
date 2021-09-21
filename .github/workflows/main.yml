@@ -244,13 +244,13 @@ jobs:
       - name: debug_output
         shell: bash
         run: |
-          echo ${{ github.event.workflow_run }}
+          echo ${{ env.RELEASE_VERSION }}
       - id: get-version
         shell: bash
         env:
           VERSION: $GITHUB_REF
         run: |
-          echo ::set-output name=VERSION::${env.RELEASE_VERSION} | sed 's/refs\/tags\/v//'
+          echo ::set-output name=VERSION::${{ env.RELEASE_VERSION }} | sed 's/refs\/tags\/v//'
       - name: CD
         env:
           BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
