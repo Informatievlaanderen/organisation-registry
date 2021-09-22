@@ -1,3 +1,10 @@
+## [1.94.13](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.12...v1.94.13) (2021-09-22)
+
+
+### Bug Fixes
+
+* debug passing outputs ([b90d8a4](https://github.com/informatievlaanderen/organisation-registry/commit/b90d8a4af1ec19839ac6623f8552d0dbcb1e553a))
+
 ## [1.94.12](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.11...v1.94.12) (2021-09-22)
 
 
