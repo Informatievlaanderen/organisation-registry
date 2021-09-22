@@ -7,6 +7,7 @@
     using Body;
     using FunctionType;
     using Organisation;
+    using OrganisationRegistry.Infrastructure;
 
     public class PersonMandateListItem
     {
@@ -45,7 +46,7 @@
 
         public override void Map(EntityTypeBuilder<PersonMandateListItem> b)
         {
-            b.ToTable(TableName, "OrganisationRegistry")
+            b.ToTable(TableName, WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.PersonMandateId)
                 .IsClustered(false);
 

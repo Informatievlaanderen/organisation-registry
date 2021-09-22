@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Configuration.Database
 {
     using System;
     using System.Linq;
+    using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
 
@@ -38,9 +39,9 @@ namespace OrganisationRegistry.Configuration.Database
             {
                 context.Database.EnsureCreated();
 
-                context.Database.ExecuteSqlRaw(@"
+                context.Database.ExecuteSqlRaw(@$"
 IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = N'OrganisationRegistry')
-    EXEC('CREATE SCHEMA [OrganisationRegistry] AUTHORIZATION [dbo]');
+    EXEC('CREATE SCHEMA [{WellknownSchemas.OrganisationRegistrySchema}] AUTHORIZATION [dbo]');
 
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Configuration' AND xtype = 'U')
     CREATE TABLE [OrganisationRegistry].[Configuration] (

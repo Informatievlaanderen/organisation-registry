@@ -11,6 +11,7 @@ namespace OrganisationRegistry.SqlServer.Security
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
     using Organisation;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Infrastructure.EventStore;
@@ -28,7 +29,7 @@ namespace OrganisationRegistry.SqlServer.Security
     {
         public override void Map(EntityTypeBuilder<OrganisationTreeItem> b)
         {
-            b.ToTable(nameof(OrganisationTreeView.ProjectionTables.OrganisationTreeList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(OrganisationTreeView.ProjectionTables.OrganisationTreeList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.OvoNumber);
 
             b.Property(p => p.OvoNumber).HasMaxLength(OrganisationListConfiguration.OvoNumberLength);

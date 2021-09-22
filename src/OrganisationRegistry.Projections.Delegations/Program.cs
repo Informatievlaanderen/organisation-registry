@@ -21,6 +21,7 @@ namespace OrganisationRegistry.Projections.Delegations
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Configuration.Database;
     using OrganisationRegistry.Configuration.Database.Configuration;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Config;
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
@@ -48,7 +49,7 @@ namespace OrganisationRegistry.Projections.Delegations
             var configuration = builder
                 .AddEntityFramework(x => x.UseSqlServer(
                     sqlConfiguration.ConnectionString,
-                    y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")))
+                    y => y.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)))
                 .Build();
 
             var services = new ServiceCollection();

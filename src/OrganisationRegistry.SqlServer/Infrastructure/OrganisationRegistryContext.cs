@@ -33,6 +33,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     using Organisation.ScheduledActions.Parent;
     using OrganisationClassification;
     using OrganisationClassificationType;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRelationType;
     using Person;
     using ProjectionState;
@@ -171,7 +172,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
             if (!optionsBuilder.IsConfigured)
                 optionsBuilder.UseSqlServer(
                     @"Server=localhost,21433;Database=OrganisationRegistry;User ID=sa;Password=E@syP@ssw0rd;",
-                    x => x.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry"));
+                    x => x.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -182,24 +183,13 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
     public class TemporaryDbContextFactory : IDesignTimeDbContextFactory<OrganisationRegistryContext>
     {
-        //public OrganisationRegistryContext Create(DbContextFactoryOptions options)
-        //{
-        //    var builder = new DbContextOptionsBuilder<OrganisationRegistryContext>();
-
-        //    builder.UseSqlServer(
-        //        @"Server=.;Database=wegwijstemp;Trusted_Connection=True;",
-        //        x => x.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry"));
-
-        //    return new OrganisationRegistryContext(builder.Options);
-        //}
-
         public OrganisationRegistryContext CreateDbContext(string[] args)
         {
             var builder = new DbContextOptionsBuilder<OrganisationRegistryContext>();
 
             builder.UseSqlServer(
                 @"Server=localhost,21433;Database=OrganisationRegistry;User ID=sa;Password=E@syP@ssw0rd;",
-                x => x.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry"));
+                x => x.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema));
 
             return new OrganisationRegistryContext(builder.Options);
         }

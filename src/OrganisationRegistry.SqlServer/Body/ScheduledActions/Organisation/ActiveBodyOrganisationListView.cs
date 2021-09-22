@@ -14,6 +14,7 @@
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
     using OrganisationRegistry.Body.Events;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Events;
     using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
@@ -33,7 +34,7 @@
     {
         public override void Map(EntityTypeBuilder<ActiveBodyOrganisationListItem> b)
         {
-            b.ToTable(nameof(ActiveBodyOrganisationListView.ProjectionTables.ActiveBodyOrganisationList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(ActiveBodyOrganisationListView.ProjectionTables.ActiveBodyOrganisationList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.BodyOrganisationId)
                 .IsClustered(false);
 

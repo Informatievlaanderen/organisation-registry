@@ -4,6 +4,7 @@ namespace OrganisationRegistry.SqlServer.Magda
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
+    using OrganisationRegistry.Infrastructure;
 
     public class MagdaCallReference
     {

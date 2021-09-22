@@ -8,6 +8,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
@@ -35,7 +36,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationChildListItem> b)
         {
-            b.ToTable(nameof(OrganisationChildListView.ProjectionTables.OrganisationChildList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(OrganisationChildListView.ProjectionTables.OrganisationChildList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.OrganisationOrganisationParentId)
                 .IsClustered(false);
 
