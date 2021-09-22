@@ -1,3 +1,10 @@
+## [1.94.12](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.11...v1.94.12) (2021-09-22)
+
+
+### Bug Fixes
+
+* try passing info between jobs ([bb78411](https://github.com/informatievlaanderen/organisation-registry/commit/bb78411400a5bfdd6a08aa631ea34087c75be777))
+
 ## [1.94.11](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.10...v1.94.11) (2021-09-21)
 
 
