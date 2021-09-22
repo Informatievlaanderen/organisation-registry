@@ -96,7 +96,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.UnitTests
 
             Assert.ThrowsAsync<Exception>(() => runner.Run());
 
-            projectionStates.Verify(states => states.UpdateProjectionState(Runner.VlaanderenbeNotifierProjectionName, It.IsAny<int>()), Times.Never, null, null);
+            projectionStates.Verify(states => states.UpdateProjectionState(Runner.VlaanderenbeNotifierProjectionName, It.IsAny<int>(), null, null), Times.Never);
         }
 
         [Fact]
