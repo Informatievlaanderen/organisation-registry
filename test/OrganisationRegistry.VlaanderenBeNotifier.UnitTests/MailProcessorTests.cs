@@ -57,7 +57,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.UnitTests
 
             runner.Run();
 
-            projectionStates.Verify(states => states.UpdateProjectionState(Runner.VlaanderenbeNotifierProjectionName, 3));
+            projectionStates.Verify(states => states.UpdateProjectionState(Runner.VlaanderenbeNotifierProjectionName, 3, null, null));
         }
 
         [Fact]
@@ -96,7 +96,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.UnitTests
 
             Assert.ThrowsAsync<Exception>(() => runner.Run());
 
-            projectionStates.Verify(states => states.UpdateProjectionState(Runner.VlaanderenbeNotifierProjectionName, It.IsAny<int>()), Times.Never);
+            projectionStates.Verify(states => states.UpdateProjectionState(Runner.VlaanderenbeNotifierProjectionName, It.IsAny<int>()), Times.Never, null, null);
         }
 
         [Fact]
@@ -139,7 +139,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.UnitTests
 
             Assert.ThrowsAsync<Exception>(() => runner.Run());
 
-            projectionStates.Verify(states => states.UpdateProjectionState(Runner.VlaanderenbeNotifierProjectionName, 2));
+            projectionStates.Verify(states => states.UpdateProjectionState(Runner.VlaanderenbeNotifierProjectionName, 2, null, null));
         }
     }
 }
