@@ -23,6 +23,7 @@ jobs:
 
     outputs:
       version: ${{ steps.set-version.outputs.version }}
+      test: "test"
 
     steps:
     - name: Checkout Code
@@ -114,14 +115,16 @@ jobs:
       run: |
         [ ! -f semver ] && echo none > semver
         echo $(cat semver)
-        echo ::set-output name=version::$(cat semver) | sed 's/v//'
+        echo ::set-output name=version::$(cat semver)
         echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
       shell: bash
 
     - name: debug_output
       shell: bash
       run: |
+        echo 'BEGIN VERSION'
         echo ${{ steps.set-version.outputs.version }}
+        echo 'END VERSION'
 
     - name: Configure AWS credentials (Staging)
       if: env.RELEASE_VERSION != 'none'
