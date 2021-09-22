@@ -8,6 +8,7 @@
     using Microsoft.EntityFrameworkCore;
     using Infrastructure;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.RegulationType.Events;
 
@@ -24,7 +25,7 @@
 
         public override void Map(EntityTypeBuilder<RegulationTypeListItem> b)
         {
-            b.ToTable(nameof(RegulationTypeListView.ProjectionTables.RegulationTypeList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(RegulationTypeListView.ProjectionTables.RegulationTypeList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

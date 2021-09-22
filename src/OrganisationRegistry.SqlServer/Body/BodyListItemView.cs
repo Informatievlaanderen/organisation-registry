@@ -12,6 +12,7 @@
     using Microsoft.Extensions.Logging;
     using Organisation;
     using OrganisationRegistry.Body.Events;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.LifecyclePhaseType;
 
@@ -45,7 +46,7 @@
 
         public override void Map(EntityTypeBuilder<BodyListItem> b)
         {
-            b.ToTable(nameof(BodyListView.ProjectionTables.BodyList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(BodyListView.ProjectionTables.BodyList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 
@@ -74,7 +75,7 @@
     {
         public override void Map(EntityTypeBuilder<BodyLifecyclePhaseValidity> b)
         {
-            b.ToTable(nameof(BodyListView.ProjectionTables.BodyLifecyclePhaseValidity), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(BodyListView.ProjectionTables.BodyLifecyclePhaseValidity), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.BodyLifecyclePhaseId)
                 .IsClustered(false);
 

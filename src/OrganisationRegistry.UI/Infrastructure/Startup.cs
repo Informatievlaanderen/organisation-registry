@@ -15,6 +15,7 @@ namespace OrganisationRegistry.UI.Infrastructure
     using Configuration.Database.Configuration;
     using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.EntityFrameworkCore;
+    using OrganisationRegistry.Infrastructure;
 
     public class Startup
     {
@@ -33,7 +34,7 @@ namespace OrganisationRegistry.UI.Infrastructure
             Configuration = builder
                 .AddEntityFramework(x => x.UseSqlServer(
                     sqlConfiguration.ConnectionString,
-                    y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")))
+                    y => y.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)))
                 .Build();
         }
 

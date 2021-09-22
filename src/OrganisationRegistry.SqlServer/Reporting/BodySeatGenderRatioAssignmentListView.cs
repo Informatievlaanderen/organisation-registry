@@ -4,6 +4,7 @@
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Person;
 
     public class BodySeatGenderRatioAssignmentItem
@@ -29,7 +30,7 @@
 
         public override void Map(EntityTypeBuilder<BodySeatGenderRatioAssignmentItem> b)
         {
-            b.ToTable(TableName, "OrganisationRegistry")
+            b.ToTable(TableName, WellknownSchemas.ReportingSchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

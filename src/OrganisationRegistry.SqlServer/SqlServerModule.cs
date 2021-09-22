@@ -42,7 +42,7 @@ namespace OrganisationRegistry.SqlServer
                 "\tSchema: {Schema}" +
                 Environment.NewLine +
                 "\tTableName: {TableName}",
-                nameof(OrganisationRegistryContext), Schema.Default, MigrationTables.Default);
+                nameof(OrganisationRegistryContext), WellknownSchemas.BackofficeSchema, MigrationTables.Default);
         }
 
         private static void RunOnSqlServer(
@@ -62,7 +62,7 @@ namespace OrganisationRegistry.SqlServer
                         sqlServerOptions
                             .EnableRetryOnFailure()
                             .MigrationsAssembly("OrganisationRegistry.SqlServer")
-                            .MigrationsHistoryTable(MigrationTables.Default, Schema.Default);
+                            .MigrationsHistoryTable(MigrationTables.Default, WellknownSchemas.BackofficeSchema);
                     }));
         }
 

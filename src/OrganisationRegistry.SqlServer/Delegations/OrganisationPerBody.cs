@@ -4,6 +4,7 @@
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
+    using OrganisationRegistry.Infrastructure;
 
     /// <summary>
     /// Cache for the Delegation projection.
@@ -25,7 +26,7 @@
 
         public override void Map(EntityTypeBuilder<OrganisationPerBody> b)
         {
-            b.ToTable(TableName, "OrganisationRegistry")
+            b.ToTable(TableName, WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.BodyId)
                 .IsClustered(false);
 

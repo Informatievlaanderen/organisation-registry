@@ -8,6 +8,7 @@ namespace OrganisationRegistry.SqlServer.SeatType
     using Microsoft.EntityFrameworkCore;
     using Infrastructure;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.SeatType.Events;
 
@@ -28,7 +29,7 @@ namespace OrganisationRegistry.SqlServer.SeatType
 
         public override void Map(EntityTypeBuilder<SeatTypeListItem> b)
         {
-            b.ToTable(nameof(SeatTypeListView.ProjectionTables.SeatTypeList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(SeatTypeListView.ProjectionTables.SeatTypeList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

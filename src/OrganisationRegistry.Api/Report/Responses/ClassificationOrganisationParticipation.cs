@@ -93,7 +93,7 @@ namespace OrganisationRegistry.Api.Report.Responses
                     .Where(body => body.LifecyclePhaseValidities.Any(y =>
                         y.RepresentsActivePhase &&
                         (!y.ValidFrom.HasValue || y.ValidFrom <= DateTime.Today) &&
-                        (!y.ValidTo.HasValue || y.ValidFrom >= DateTime.Today)));
+                        (!y.ValidTo.HasValue || y.ValidTo >= DateTime.Today)));
 
                 var activePostsPerTypeQuery =
                     seatGenderRatioBodyItems

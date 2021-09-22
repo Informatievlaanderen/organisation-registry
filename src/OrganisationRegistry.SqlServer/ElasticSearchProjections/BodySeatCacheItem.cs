@@ -4,6 +4,7 @@ namespace OrganisationRegistry.SqlServer.ElasticSearchProjections
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
+    using OrganisationRegistry.Infrastructure;
     using SqlServer;
 
     public class BodySeatCacheItem

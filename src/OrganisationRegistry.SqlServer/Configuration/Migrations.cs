@@ -3,6 +3,7 @@
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure;
 
     public static class Migrations
     {
@@ -11,7 +12,7 @@
             var migratorOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
                 .UseSqlServer(
                     sqlServerConfiguration.MigrationsConnectionString,
-                    x => x.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry"));
+                    x => x.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema));
 
             if (loggerFactory != null)
                 migratorOptions = migratorOptions.UseLoggerFactory(loggerFactory);
