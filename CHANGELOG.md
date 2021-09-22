@@ -1,3 +1,10 @@
+## [1.95.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.95.1...v1.95.2) (2021-09-22)
+
+
+### Bug Fixes
+
+* only output specific output ([1051780](https://github.com/informatievlaanderen/organisation-registry/commit/1051780856351fc57e1a4ffa2cb3c4b21614abca))
+
 ## [1.95.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.95.0...v1.95.1) (2021-09-22)
 
 
