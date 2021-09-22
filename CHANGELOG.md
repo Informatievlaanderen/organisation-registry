@@ -1,3 +1,18 @@
+# [1.95.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.13...v1.95.0) (2021-09-22)
+
+
+### Bug Fixes
+
+* explicitly pass optional arguments in expression ([11805d7](https://github.com/informatievlaanderen/organisation-registry/commit/11805d7916b0c2f995430093a2a382d347ff9523))
+* invocation of verify ([f69faf1](https://github.com/informatievlaanderen/organisation-registry/commit/f69faf105c65511b603c72b0e34fc0e797f2a2da))
+* try toJson needs ([132e54a](https://github.com/informatievlaanderen/organisation-registry/commit/132e54a9e5c431c5d79d2d934f3c179cf4f4b1be))
+* use correct date to compare with ([1ef9c85](https://github.com/informatievlaanderen/organisation-registry/commit/1ef9c850552e928986687cf66cee9a9a7096acbb))
+
+
+### Features
+
+* move tables into more specific schemas ([f06757f](https://github.com/informatievlaanderen/organisation-registry/commit/f06757f2685d86776af2f9cefbe5f7e101a19646))
+
 ## [1.94.13](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.12...v1.94.13) (2021-09-22)
 
 
