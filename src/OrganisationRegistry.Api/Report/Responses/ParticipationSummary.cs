@@ -77,7 +77,7 @@ namespace OrganisationRegistry.Api.Report.Responses
                 .Where(body => body.LifecyclePhaseValidities.Any(y =>
                     y.RepresentsActivePhase &&
                     (!y.ValidFrom.HasValue || y.ValidFrom <= today) &&
-                    (!y.ValidTo.HasValue || y.ValidFrom >= today)))
+                    (!y.ValidTo.HasValue || y.ValidTo >= today)))
                 .Where(body => bodyIdsForMep.Contains(body.BodyId))
                 .ToListAsync();
 
