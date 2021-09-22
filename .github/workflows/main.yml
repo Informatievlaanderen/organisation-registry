@@ -118,6 +118,11 @@ jobs:
         echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
       shell: bash
 
+    - name: debug_output
+      shell: bash
+      run: |
+        echo ${{ steps.set-version.outputs.version }}
+
     - name: Configure AWS credentials (Staging)
       if: env.RELEASE_VERSION != 'none'
       uses: aws-actions/configure-aws-credentials@v1
@@ -251,12 +256,6 @@ jobs:
         shell: bash
         run: |
           echo ${{ needs.build.outputs.version }}
-      - id: get-version
-        shell: bash
-        env:
-          VERSION: $GITHUB_REF
-        run: |
-          echo ::set-output name=VERSION::${{ env.RELEASE_VERSION }} | sed 's/refs\/tags\/v//'
       - name: CD
         env:
           BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
