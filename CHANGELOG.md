@@ -1,3 +1,11 @@
+## [1.95.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.95.2...v1.95.3) (2021-09-22)
+
+
+### Bug Fixes
+
+* choose schema for migrations ([a34365c](https://github.com/informatievlaanderen/organisation-registry/commit/a34365c287b375535dc12af7b5e83e989f91b707))
+* revert moving to separate schemas for now ([53d233d](https://github.com/informatievlaanderen/organisation-registry/commit/53d233d1e94a5ab3105ae3c0eac76c94980f5070))
+
 ## [1.95.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.95.1...v1.95.2) (2021-09-22)
 
 
