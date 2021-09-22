@@ -1,3 +1,10 @@
+## [1.95.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.95.0...v1.95.1) (2021-09-22)
+
+
+### Bug Fixes
+
+* test with static string ([94940da](https://github.com/informatievlaanderen/organisation-registry/commit/94940dab0d77e20f4f2265359c85806697053580))
+
 # [1.95.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.94.13...v1.95.0) (2021-09-22)
 
 
