@@ -255,7 +255,7 @@ jobs:
       - name: debug_output
         shell: bash
         run: |
-          echo ${{ needs.build.outputs.version }}
+          echo ${{ toJson(needs) }}
       - name: CD
         env:
           BUILD_URL: ${{ secrets.VBR_AWS_BUILD_API }}/${{matrix.services}}
