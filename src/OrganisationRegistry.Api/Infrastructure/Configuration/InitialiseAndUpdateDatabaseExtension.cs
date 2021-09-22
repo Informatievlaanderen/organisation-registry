@@ -1,11 +1,11 @@
 namespace OrganisationRegistry.Api.Infrastructure.Configuration
 {
     using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using SqlServer.Configuration;
     using OrganisationRegistry.Infrastructure.EventStore;
+    using SqlServer.Configuration;
 
     public static class InitialiseAndUpdateDatabaseExtension
     {
