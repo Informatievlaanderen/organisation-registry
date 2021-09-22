@@ -51,6 +51,7 @@ Target.create "Build_Solution" (fun _ ->
   buildSource "OrganisationRegistry.Projections.Reporting"
   buildSource "OrganisationRegistry.UI"
   buildSource "OrganisationRegistry.VlaanderenBeNotifier"
+  buildSource "OrganisationRegistry.Rebuilder"
   buildTest "OrganisationRegistry.Api.IntegrationTests"
   buildTest "OrganisationRegistry.ElasticSearch.Tests"
   buildTest "OrganisationRegistry.KboMutations.UnitTests"
@@ -92,6 +93,7 @@ Target.create "Publish_Solution" (fun _ ->
     "OrganisationRegistry.Projections.Delegations"
     "OrganisationRegistry.Projections.Reporting"
     "OrganisationRegistry.KboMutations"
+    "OrganisationRegistry.Rebuilder"
   ] |> List.iter publishSource
 
   let dist = (buildDir @@ "OrganisationRegistry.Scheduler" @@ "linux")
@@ -132,6 +134,9 @@ Target.create "PushContainer_Reporting" (fun _ -> push "projections-reporting")
 
 Target.create "Containerize_KboMutations" (fun _ -> containerize "OrganisationRegistry.KboMutations" "kbo-mutations")
 Target.create "PushContainer_KboMutations" (fun _ -> push "kbo-mutations")
+
+Target.create "Containerize_Rebuilder" (fun _ -> containerize "OrganisationRegistry.Rebuilder" "rebuilder")
+Target.create "PushContainer_Rebuilder" (fun _ -> push "rebuilder")
 
 Target.create "Containerize_Site" (fun _ -> containerize "OrganisationRegistry.UI" "ui")
 Target.create "PushContainer_Site" (fun _ -> push "ui")
@@ -177,6 +182,7 @@ Target.create "Push" ignore
   ==> "Containerize_Delegations"
   ==> "Containerize_Reporting"
   ==> "Containerize_KboMutations"
+  ==> "Containerize_Rebuilder"
   ==> "Containerize_Site"
   ==> "Containerize_Scheduler"
   ==> "Containerize"
@@ -191,6 +197,7 @@ Target.create "Push" ignore
   ==> "PushContainer_Delegations"
   ==> "PushContainer_Reporting"
   ==> "PushContainer_KboMutations"
+  ==> "PushContainer_Rebuilder"
   ==> "PushContainer_Site"
   ==> "PushContainer_Scheduler"
   ==> "Push"
