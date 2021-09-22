@@ -21,6 +21,9 @@ jobs:
         ports:
           - 21433:21433
 
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+
     steps:
     - name: Checkout Code
       uses: actions/checkout@v2.3.4
@@ -107,8 +110,11 @@ jobs:
         GIT_COMMITTER_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
 
     - name: Set Release Version
+      id: set-version
       run: |
         [ ! -f semver ] && echo none > semver
+        echo $(cat semver)
+        echo ::set-output name=version::$(cat semver) | sed 's/v//'
         echo RELEASE_VERSION=$(cat semver) >> $GITHUB_ENV
       shell: bash
 
@@ -244,7 +250,7 @@ jobs:
       - name: debug_output
         shell: bash
         run: |
-          echo ${{ env.RELEASE_VERSION }}
+          echo ${{ needs.build.outputs.version }}
       - id: get-version
         shell: bash
         env:
@@ -258,7 +264,7 @@ jobs:
         uses: informatievlaanderen/awscurl-polling-action@main
         with:
           environment: stg
-          version: ${{ steps.get-version.outputs.VERSION }}
+          version: ${{ needs.build.outputs.version }}
           status-url: $STATUS_URL
           deploy-url: $BUILD_URL
           access-key: ${{ secrets.VBR_AWS_BUILD_USER_ACCESS_KEY_ID }}
