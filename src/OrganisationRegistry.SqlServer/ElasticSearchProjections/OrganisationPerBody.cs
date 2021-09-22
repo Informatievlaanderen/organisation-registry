@@ -4,7 +4,6 @@
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using OrganisationRegistry.Infrastructure;
 
     /// <summary>
     /// Cache for the ElasticSearch projection.

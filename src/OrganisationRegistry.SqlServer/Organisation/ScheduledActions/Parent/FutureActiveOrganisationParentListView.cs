@@ -11,7 +11,6 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
@@ -34,7 +33,7 @@
     {
         public override void Map(EntityTypeBuilder<FutureActiveOrganisationParentListItem> b)
         {
-            b.ToTable(nameof(FutureActiveOrganisationParentListView.ProjectionTables.FutureActiveOrganisationParentList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(FutureActiveOrganisationParentListView.ProjectionTables.FutureActiveOrganisationParentList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OrganisationOrganisationParentId)
                 .IsClustered(false);
 

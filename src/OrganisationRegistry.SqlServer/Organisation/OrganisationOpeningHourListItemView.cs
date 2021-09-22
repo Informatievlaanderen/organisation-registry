@@ -8,7 +8,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
 
@@ -53,7 +52,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationOpeningHourListItem> b)
         {
-            b.ToTable(nameof(OrganisationOpeningHourListItemView.ProjectionTables.OrganisationOpeningHourList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(OrganisationOpeningHourListItemView.ProjectionTables.OrganisationOpeningHourList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OrganisationOpeningHourId)
                 .IsClustered(false);
 

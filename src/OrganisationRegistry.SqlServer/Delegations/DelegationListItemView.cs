@@ -7,7 +7,6 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Organisation;
-    using OrganisationRegistry.Infrastructure;
 
     public class DelegationListItem
     {
@@ -45,7 +44,7 @@
 
         public override void Map(EntityTypeBuilder<DelegationListItem> b)
         {
-            b.ToTable(TableName, WellknownSchemas.BackofficeSchema)
+            b.ToTable(TableName, "OrganisationRegistry")
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

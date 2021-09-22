@@ -1,6 +1,5 @@
 ﻿namespace OrganisationRegistry.Configuration.Database
 {
-    using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -24,7 +23,7 @@
     {
         public override void Map(EntityTypeBuilder<ConfigurationValue> b)
         {
-            b.ToTable("Configuration", WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable("Configuration", "OrganisationRegistry")
                 .HasKey(p => p.Key)
                 .IsClustered();
 

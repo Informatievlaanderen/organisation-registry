@@ -14,7 +14,6 @@ namespace OrganisationRegistry.SqlServer.Person
     using Microsoft.Extensions.Logging;
     using Organisation;
     using Function.Events;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.AppSpecific;
 
     public class PersonFunctionListItem
@@ -37,7 +36,7 @@ namespace OrganisationRegistry.SqlServer.Person
     {
         public override void Map(EntityTypeBuilder<PersonFunctionListItem> b)
         {
-            b.ToTable(nameof(PersonFunctionListView.ProjectionTables.PersonFunctionList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(PersonFunctionListView.ProjectionTables.PersonFunctionList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OrganisationFunctionId)
                 .IsClustered(false);
 

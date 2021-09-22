@@ -8,7 +8,6 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.LifecyclePhaseType;
     using OrganisationRegistry.LifecyclePhaseType.Events;
@@ -30,7 +29,7 @@
 
         public override void Map(EntityTypeBuilder<LifecyclePhaseTypeListItem> b)
         {
-            b.ToTable(nameof(LifecyclePhaseTypeListView.ProjectionTables.LifecyclePhaseTypeList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(LifecyclePhaseTypeListView.ProjectionTables.LifecyclePhaseTypeList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

@@ -13,7 +13,6 @@
     using KeyType;
     using KeyTypes.Events;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
 
     public class OrganisationKeyListItem
     {
@@ -32,7 +31,7 @@
 
         public override void Map(EntityTypeBuilder<OrganisationKeyListItem> b)
         {
-            b.ToTable(nameof(OrganisationKeyListView.ProjectionTables.OrganisationKeyList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(OrganisationKeyListView.ProjectionTables.OrganisationKeyList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OrganisationKeyId)
                 .IsClustered(false);
 

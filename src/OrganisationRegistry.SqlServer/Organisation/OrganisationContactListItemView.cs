@@ -12,7 +12,6 @@
     using ContactType;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.ContactType.Events;
-    using OrganisationRegistry.Infrastructure;
 
     public class OrganisationContactListItem
     {
@@ -31,7 +30,7 @@
 
         public override void Map(EntityTypeBuilder<OrganisationContactListItem> b)
         {
-            b.ToTable(nameof(OrganisationContactListView.ProjectionTables.OrganisationContactList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(OrganisationContactListView.ProjectionTables.OrganisationContactList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OrganisationContactId)
                 .IsClustered(false);
 

@@ -12,7 +12,6 @@
     using Newtonsoft.Json;
     using Person;
     using OrganisationRegistry.Body.Events;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
 
     public class DelegationAssignmentListItem
@@ -39,7 +38,7 @@
 
         public override void Map(EntityTypeBuilder<DelegationAssignmentListItem> b)
         {
-            b.ToTable(TableName, WellknownSchemas.BackofficeSchema)
+            b.ToTable(TableName, "OrganisationRegistry")
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

@@ -8,7 +8,6 @@ namespace OrganisationRegistry.Api.Infrastructure
     using Microsoft.Extensions.Configuration;
     using OrganisationRegistry.Configuration.Database;
     using OrganisationRegistry.Configuration.Database.Configuration;
-    using OrganisationRegistry.Infrastructure;
 
     public class Program
     {
@@ -48,7 +47,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                                     .AddEntityFramework(x =>
                                         x.UseSqlServer(
                                             sqlConfiguration.ConnectionString,
-                                            y => y.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)))
+                                            y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")))
                                     .Build();
                             }
                         }

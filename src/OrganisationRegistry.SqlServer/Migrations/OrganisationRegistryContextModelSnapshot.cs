@@ -62,7 +62,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("BodyBodyClassificationList", "Backoffice");
+                    b.ToTable("BodyBodyClassificationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.BodyContactListItem", b =>
@@ -105,7 +105,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("BodyContactList", "Backoffice");
+                    b.ToTable("BodyContactList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.BodyDetail", b =>
@@ -168,7 +168,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ShortName");
 
-                    b.ToTable("BodyDetail", "Backoffice");
+                    b.ToTable("BodyDetail", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.BodyFormalFrameworkListItem", b =>
@@ -204,7 +204,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("BodyFormalFrameworkList", "Backoffice");
+                    b.ToTable("BodyFormalFrameworkList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.BodyLifecyclePhaseListItem", b =>
@@ -243,7 +243,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("BodyLifecyclePhaseList", "Backoffice");
+                    b.ToTable("BodyLifecyclePhaseList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.BodyLifecyclePhaseValidity", b =>
@@ -280,7 +280,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("BodyLifecyclePhaseValidity", "Backoffice");
+                    b.ToTable("BodyLifecyclePhaseValidity", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.BodyListItem", b =>
@@ -320,7 +320,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ShortName");
 
-                    b.ToTable("BodyList", "Backoffice");
+                    b.ToTable("BodyList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.BodyMandateListItem", b =>
@@ -400,7 +400,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("BodyMandateList", "Backoffice");
+                    b.ToTable("BodyMandateList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.BodyOrganisationListItem", b =>
@@ -436,7 +436,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("BodyOrganisationList", "Backoffice");
+                    b.ToTable("BodyOrganisationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.BodySeatCacheItemForBodyMandateList", b =>
@@ -456,7 +456,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("BodySeatId")
                         .IsClustered(false);
 
-                    b.ToTable("BodySeatCacheForBodyMandateList", "Backoffice");
+                    b.ToTable("BodySeatCacheForBodyMandateList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.BodySeatListItem", b =>
@@ -507,7 +507,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("BodySeatList", "Backoffice");
+                    b.ToTable("BodySeatList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.ScheduledActions.Organisation.ActiveBodyOrganisationListItem", b =>
@@ -530,7 +530,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("ActiveBodyOrganisationList", "Backoffice");
+                    b.ToTable("ActiveBodyOrganisationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.ScheduledActions.Organisation.FutureActiveBodyOrganisationListItem", b =>
@@ -553,7 +553,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidFrom");
 
-                    b.ToTable("FutureActiveBodyOrganisationList", "Backoffice");
+                    b.ToTable("FutureActiveBodyOrganisationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.ScheduledActions.PeopleAssignedToBodyMandates.ActivePeopleAssignedToBodyMandateListItem", b =>
@@ -586,7 +586,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("ActivePeopleAssignedToBodyMandatesList", "Backoffice");
+                    b.ToTable("ActivePeopleAssignedToBodyMandatesList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.ScheduledActions.PeopleAssignedToBodyMandates.FuturePeopleAssignedToBodyMandatesListItem", b =>
@@ -619,7 +619,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidFrom");
 
-                    b.ToTable("FuturePeopleAssignedToBodyMandatesList", "Backoffice");
+                    b.ToTable("FuturePeopleAssignedToBodyMandatesList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.BodyClassification.BodyClassificationListItem", b =>
@@ -662,7 +662,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasIndex("Name", "BodyClassificationTypeId")
                         .IsUnique();
 
-                    b.ToTable("BodyClassificationList", "Backoffice");
+                    b.ToTable("BodyClassificationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.BodyClassificationType.BodyClassificationTypeListItem", b =>
@@ -683,7 +683,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("BodyClassificationTypeList", "Backoffice");
+                    b.ToTable("BodyClassificationTypeList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Building.BuildingListItem", b =>
@@ -709,7 +709,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("VimId");
 
-                    b.ToTable("BuildingList", "Backoffice");
+                    b.ToTable("BuildingList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Capacity.CapacityListItem", b =>
@@ -730,7 +730,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("CapacityList", "Backoffice");
+                    b.ToTable("CapacityList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Configuration.ConfigurationListItem", b =>
@@ -769,7 +769,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("ContactTypeList", "Backoffice");
+                    b.ToTable("ContactTypeList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.DelegationAssignments.DelegationAssignmentListItem", b =>
@@ -817,7 +817,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasIndex("BodyMandateId", "PersonName")
                         .IsClustered();
 
-                    b.ToTable("DelegationAssignmentList", "Backoffice");
+                    b.ToTable("DelegationAssignmentList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Delegations.DelegationListItem", b =>
@@ -905,7 +905,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("DelegationList", "Backoffice");
+                    b.ToTable("DelegationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Delegations.OrganisationPerBody", b =>
@@ -927,7 +927,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("BodyId")
                         .IsClustered(false);
 
-                    b.ToTable("OrganisationPerBodyList", "Backoffice");
+                    b.ToTable("OrganisationPerBodyList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.ElasticSearchProjections.BodyCacheItem", b =>
@@ -1140,7 +1140,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasIndex("Name", "FormalFrameworkCategoryId")
                         .IsUnique();
 
-                    b.ToTable("FormalFrameworkList", "Backoffice");
+                    b.ToTable("FormalFrameworkList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.FormalFrameworkCategory.FormalFrameworkCategoryListItem", b =>
@@ -1161,7 +1161,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("FormalFrameworkCategoryList", "Backoffice");
+                    b.ToTable("FormalFrameworkCategoryList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.FunctionType.FunctionTypeListItem", b =>
@@ -1182,7 +1182,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("FunctionList", "Backoffice");
+                    b.ToTable("FunctionList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.KboSyncQueue.KboSyncQueueItem", b =>
@@ -1245,7 +1245,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("KeyTypeList", "Backoffice");
+                    b.ToTable("KeyTypeList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.LabelType.LabelTypeListItem", b =>
@@ -1266,7 +1266,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("LabelTypeList", "Backoffice");
+                    b.ToTable("LabelTypeList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.LifecyclePhaseType.LifecyclePhaseTypeListItem", b =>
@@ -1295,7 +1295,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("RepresentsActivePhase", "IsDefaultPhase");
 
-                    b.ToTable("LifecyclePhaseTypeList", "Backoffice");
+                    b.ToTable("LifecyclePhaseTypeList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Location.LocationListItem", b =>
@@ -1350,7 +1350,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ZipCode");
 
-                    b.ToTable("LocationList", "Backoffice");
+                    b.ToTable("LocationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.LocationType.LocationTypeListItem", b =>
@@ -1371,7 +1371,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("LocationTypeList", "Backoffice");
+                    b.ToTable("LocationTypeList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Log.Log", b =>
@@ -1443,7 +1443,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("MandateRoleTypeList", "Backoffice");
+                    b.ToTable("MandateRoleTypeList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationBankAccountListItem", b =>
@@ -1484,7 +1484,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationBankAccountList", "Backoffice");
+                    b.ToTable("OrganisationBankAccountList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationBodyListItem", b =>
@@ -1520,7 +1520,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationBodyList", "Backoffice");
+                    b.ToTable("OrganisationBodyList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationBuildingListItem", b =>
@@ -1561,7 +1561,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationBuildingList", "Backoffice");
+                    b.ToTable("OrganisationBuildingList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationCapacityListItem", b =>
@@ -1630,7 +1630,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationCapacityList", "Backoffice");
+                    b.ToTable("OrganisationCapacityList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationChildListItem", b =>
@@ -1682,7 +1682,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationChildList", "Backoffice");
+                    b.ToTable("OrganisationChildList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationClassificationValidity", b =>
@@ -1723,7 +1723,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationClassificationValidity", "Backoffice");
+                    b.ToTable("OrganisationClassificationValidity", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationContactListItem", b =>
@@ -1766,7 +1766,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationContactList", "Backoffice");
+                    b.ToTable("OrganisationContactList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationDetailItem", b =>
@@ -1851,7 +1851,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ParentOrganisation");
 
-                    b.ToTable("OrganisationDetail", "Backoffice");
+                    b.ToTable("OrganisationDetail", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationFormalFrameworkListItem", b =>
@@ -1897,7 +1897,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationFormalFrameworkList", "Backoffice");
+                    b.ToTable("OrganisationFormalFrameworkList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationFormalFrameworkValidity", b =>
@@ -1930,7 +1930,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationFormalFrameworkValidity", "Backoffice");
+                    b.ToTable("OrganisationFormalFrameworkValidity", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationFunctionListItem", b =>
@@ -1979,7 +1979,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationFunctionList", "Backoffice");
+                    b.ToTable("OrganisationFunctionList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationKeyListItem", b =>
@@ -2022,7 +2022,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationKeyList", "Backoffice");
+                    b.ToTable("OrganisationKeyList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationLabelListItem", b =>
@@ -2068,7 +2068,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationLabelList", "Backoffice");
+                    b.ToTable("OrganisationLabelList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationListItem", b =>
@@ -2140,7 +2140,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .HasFilter("[FormalFrameworkId] IS NOT NULL");
 
-                    b.ToTable("OrganisationList", "Backoffice");
+                    b.ToTable("OrganisationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationLocationListItem", b =>
@@ -2191,7 +2191,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationLocationList", "Backoffice");
+                    b.ToTable("OrganisationLocationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationOpeningHourListItem", b =>
@@ -2221,7 +2221,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("OrganisationOpeningHourId")
                         .IsClustered(false);
 
-                    b.ToTable("OrganisationOpeningHourList", "Backoffice");
+                    b.ToTable("OrganisationOpeningHourList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationOrganisationClassificationListItem", b =>
@@ -2270,7 +2270,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationOrganisationClassificationList", "Backoffice");
+                    b.ToTable("OrganisationOrganisationClassificationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationParentListItem", b =>
@@ -2306,7 +2306,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationParentList", "Backoffice");
+                    b.ToTable("OrganisationParentList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationRegulationListItem", b =>
@@ -2353,7 +2353,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationRegulationList", "Backoffice");
+                    b.ToTable("OrganisationRegulationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationRelationListItem", b =>
@@ -2401,7 +2401,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("OrganisationRelationList", "Backoffice");
+                    b.ToTable("OrganisationRelationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.OrganisationTerminationListItem", b =>
@@ -2445,7 +2445,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasIndex("OvoNumber")
                         .IsUnique();
 
-                    b.ToTable("OrganisationTerminationList", "Backoffice");
+                    b.ToTable("OrganisationTerminationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.ScheduledActions.FormalFramework.ActiveOrganisationFormalFrameworkListItem", b =>
@@ -2468,7 +2468,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("ActiveOrganisationFormalFrameworkList", "Backoffice");
+                    b.ToTable("ActiveOrganisationFormalFrameworkList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.ScheduledActions.FormalFramework.FutureActiveOrganisationFormalFrameworkListItem", b =>
@@ -2491,7 +2491,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidFrom");
 
-                    b.ToTable("FutureActiveOrganisationFormalFrameworkList", "Backoffice");
+                    b.ToTable("FutureActiveOrganisationFormalFrameworkList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.ScheduledActions.Parent.ActiveOrganisationParentListItem", b =>
@@ -2514,7 +2514,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("ActiveOrganisationParentList", "Backoffice");
+                    b.ToTable("ActiveOrganisationParentList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.ScheduledActions.Parent.FutureActiveOrganisationParentListItem", b =>
@@ -2537,7 +2537,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidFrom");
 
-                    b.ToTable("FutureActiveOrganisationParentList", "Backoffice");
+                    b.ToTable("FutureActiveOrganisationParentList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.OrganisationClassification.OrganisationClassificationListItem", b =>
@@ -2583,7 +2583,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasIndex("Name", "OrganisationClassificationTypeId")
                         .IsUnique();
 
-                    b.ToTable("OrganisationClassificationList", "Backoffice");
+                    b.ToTable("OrganisationClassificationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.OrganisationClassificationType.OrganisationClassificationTypeListItem", b =>
@@ -2604,7 +2604,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("OrganisationClassificationTypeList", "Backoffice");
+                    b.ToTable("OrganisationClassificationTypeList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.OrganisationRelationType.OrganisationRelationTypeListItem", b =>
@@ -2630,7 +2630,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("OrganisationRelationTypeList", "Backoffice");
+                    b.ToTable("OrganisationRelationTypeList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Person.PersonCapacityListItem", b =>
@@ -2686,7 +2686,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("PersonCapacityList", "Backoffice");
+                    b.ToTable("PersonCapacityList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Person.PersonFunctionListItem", b =>
@@ -2732,7 +2732,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("PersonFunctionList", "Backoffice");
+                    b.ToTable("PersonFunctionList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Person.PersonListItem", b =>
@@ -2772,7 +2772,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasIndex("Name")
                         .IsClustered();
 
-                    b.ToTable("PersonList", "Backoffice");
+                    b.ToTable("PersonList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Person.PersonMandateListItem", b =>
@@ -2854,7 +2854,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .HasFilter("[DelegationAssignmentId] IS NOT NULL");
 
-                    b.ToTable("PersonMandateList", "Backoffice");
+                    b.ToTable("PersonMandateList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.ProjectionState.ProjectionStateItem", b =>
@@ -2880,7 +2880,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("ProjectionStateList", "Backoffice");
+                    b.ToTable("ProjectionStateList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Purpose.PurposeListItem", b =>
@@ -2901,7 +2901,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("PurposeList", "Backoffice");
+                    b.ToTable("PurposeList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.RegulationType.RegulationTypeListItem", b =>
@@ -2922,7 +2922,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("RegulationTypeList", "Backoffice");
+                    b.ToTable("RegulationTypeList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioAssignmentItem", b =>
@@ -2954,7 +2954,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("BodyMandateId");
 
-                    b.ToTable("BodySeatGenderRatioAssignmentList", "Reporting");
+                    b.ToTable("BodySeatGenderRatioAssignmentList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioBodyItem", b =>
@@ -2981,7 +2981,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("BodyId")
                         .IsClustered(false);
 
-                    b.ToTable("BodySeatGenderRatioBodyList", "Reporting");
+                    b.ToTable("BodySeatGenderRatioBodyList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioBodyLifecyclePhaseValidityItem", b =>
@@ -3006,7 +3006,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("BodyId");
 
-                    b.ToTable("BodySeatGenderRatioLifecyclePhaseValidityList", "Reporting");
+                    b.ToTable("BodySeatGenderRatioLifecyclePhaseValidityList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioBodyMandateItem", b =>
@@ -3036,7 +3036,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("BodyMandateId")
                         .IsClustered(false);
 
-                    b.ToTable("BodySeatGenderRatioBodyMandateList", "Reporting");
+                    b.ToTable("BodySeatGenderRatioBodyMandateList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioOrganisationClassificationItem", b =>
@@ -3063,7 +3063,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("OrganisationOrganisationClassificationId")
                         .IsClustered(false);
 
-                    b.ToTable("BodySeatGenderRatioOrganisationClassificationList", "Reporting");
+                    b.ToTable("BodySeatGenderRatioOrganisationClassificationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioOrganisationListItem", b =>
@@ -3082,7 +3082,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("OrganisationId")
                         .IsClustered(false);
 
-                    b.ToTable("BodySeatGenderRatio_OrganisationList", "Reporting");
+                    b.ToTable("BodySeatGenderRatio_OrganisationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioOrganisationPerBodyListItem", b =>
@@ -3107,7 +3107,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("BodyId")
                         .IsClustered(false);
 
-                    b.ToTable("BodySeatGenderRatio_OrganisationPerBodyList", "Reporting");
+                    b.ToTable("BodySeatGenderRatio_OrganisationPerBodyList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioPersonListItem", b =>
@@ -3122,7 +3122,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("PersonId")
                         .IsClustered(false);
 
-                    b.ToTable("BodySeatGenderRatio_PersonList", "Reporting");
+                    b.ToTable("BodySeatGenderRatio_PersonList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioPostsPerTypeItem", b =>
@@ -3163,7 +3163,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("BodyId");
 
-                    b.ToTable("BodySeatGenderRatioPostsPerTypeList", "Reporting");
+                    b.ToTable("BodySeatGenderRatioPostsPerTypeList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.SeatType.SeatTypeListItem", b =>
@@ -3191,7 +3191,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("SeatTypeList", "Backoffice");
+                    b.ToTable("SeatTypeList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Security.OrganisationTreeItem", b =>
@@ -3205,7 +3205,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasKey("OvoNumber");
 
-                    b.ToTable("OrganisationTreeList", "Backoffice");
+                    b.ToTable("OrganisationTreeList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.BodyLifecyclePhaseValidity", b =>

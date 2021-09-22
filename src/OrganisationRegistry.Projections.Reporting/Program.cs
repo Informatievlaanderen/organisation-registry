@@ -22,7 +22,6 @@ namespace OrganisationRegistry.Projections.Reporting
     using Configuration;
     using OrganisationRegistry.Configuration.Database;
     using OrganisationRegistry.Configuration.Database.Configuration;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Config;
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
@@ -49,7 +48,7 @@ namespace OrganisationRegistry.Projections.Reporting
             var configuration = builder
                 .AddEntityFramework(x => x.UseSqlServer(
                     sqlConfiguration.ConnectionString,
-                    y => y.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)))
+                    y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")))
                 .Build();
 
             await RunProgram<GenderRatioRunner>(configuration);

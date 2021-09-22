@@ -7,7 +7,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
@@ -33,7 +32,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public override void Map(EntityTypeBuilder<OrganisationTerminationListItem> b)
         {
             b.ToTable(nameof(OrganisationTerminationListItemView.ProjectionTables.OrganisationTerminationList),
-                    WellknownSchemas.BackofficeSchema)
+                    "OrganisationRegistry")
                 .HasKey(p => new {p.Id, p.KboNumber})
                 .IsClustered(false);
 

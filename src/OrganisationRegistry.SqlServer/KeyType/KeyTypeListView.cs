@@ -9,7 +9,6 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
 
     public class KeyTypeListItem
@@ -25,7 +24,7 @@
 
         public override void Map(EntityTypeBuilder<KeyTypeListItem> b)
         {
-            b.ToTable(nameof(KeyTypeListView.ProjectionTables.KeyTypeList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(KeyTypeListView.ProjectionTables.KeyTypeList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

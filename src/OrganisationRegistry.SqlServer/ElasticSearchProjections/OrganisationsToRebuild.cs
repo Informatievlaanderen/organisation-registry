@@ -4,8 +4,6 @@
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using OrganisationRegistry.Infrastructure;
-
     public class OrganisationToRebuild
     {
         public Guid OrganisationId { get; set; }

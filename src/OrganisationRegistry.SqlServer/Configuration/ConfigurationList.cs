@@ -3,7 +3,6 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Infrastructure;
-    using OrganisationRegistry.Infrastructure;
 
     public class ConfigurationListItem
     {
@@ -16,7 +15,7 @@
     {
         public override void Map(EntityTypeBuilder<ConfigurationListItem> b)
         {
-            b.ToTable("Configuration", WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable("Configuration", "OrganisationRegistry")
                 .HasKey(p => p.Key)
                 .IsClustered();
 

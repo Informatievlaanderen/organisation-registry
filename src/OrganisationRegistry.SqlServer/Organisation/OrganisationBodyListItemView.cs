@@ -11,7 +11,6 @@
     using Body;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Body.Events;
-    using OrganisationRegistry.Infrastructure;
 
     public class OrganisationBodyListItem
     {
@@ -27,7 +26,7 @@
     {
         public override void Map(EntityTypeBuilder<OrganisationBodyListItem> b)
         {
-            b.ToTable(nameof(OrganisationBodyListItemView.ProjectionTables.OrganisationBodyList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(OrganisationBodyListItemView.ProjectionTables.OrganisationBodyList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OrganisationBodyId)
                 .IsClustered(false);
 

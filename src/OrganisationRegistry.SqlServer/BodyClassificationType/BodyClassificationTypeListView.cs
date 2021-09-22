@@ -9,7 +9,6 @@ namespace OrganisationRegistry.SqlServer.BodyClassificationType
     using System.Linq;
     using System.Threading.Tasks;
     using OrganisationRegistry.BodyClassificationType.Events;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
 
     public class BodyClassificationTypeListItem
@@ -25,7 +24,7 @@ namespace OrganisationRegistry.SqlServer.BodyClassificationType
 
         public override void Map(EntityTypeBuilder<BodyClassificationTypeListItem> b)
         {
-            b.ToTable(nameof(BodyClassificationTypeListView.ProjectionTables.BodyClassificationTypeList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(BodyClassificationTypeListView.ProjectionTables.BodyClassificationTypeList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

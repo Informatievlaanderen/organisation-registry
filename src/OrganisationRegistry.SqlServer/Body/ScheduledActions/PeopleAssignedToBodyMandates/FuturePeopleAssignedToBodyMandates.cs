@@ -15,7 +15,6 @@
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
     using OrganisationRegistry.Body.Events;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Events;
     using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
@@ -41,7 +40,7 @@
     {
         public override void Map(EntityTypeBuilder<FuturePeopleAssignedToBodyMandatesListItem> b)
         {
-            b.ToTable(nameof(FuturePeopleAssignedToBodyMandatesListView.ProjectionTables.FuturePeopleAssignedToBodyMandatesList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(FuturePeopleAssignedToBodyMandatesListView.ProjectionTables.FuturePeopleAssignedToBodyMandatesList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.DelegationAssignmentId)
                 .IsClustered(false);
 

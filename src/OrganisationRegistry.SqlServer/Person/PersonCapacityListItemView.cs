@@ -16,7 +16,6 @@ namespace OrganisationRegistry.SqlServer.Person
     using Organisation;
     using OrganisationRegistry.Capacity.Events;
     using Function.Events;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.AppSpecific;
 
     public class PersonCapacityListItem
@@ -42,7 +41,7 @@ namespace OrganisationRegistry.SqlServer.Person
     {
         public override void Map(EntityTypeBuilder<PersonCapacityListItem> b)
         {
-            b.ToTable(nameof(PersonCapacityListView.ProjectionTables.PersonCapacityList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(PersonCapacityListView.ProjectionTables.PersonCapacityList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OrganisationCapacityId)
                 .IsClustered(false);
 

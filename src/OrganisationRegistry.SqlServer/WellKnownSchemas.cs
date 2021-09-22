@@ -1,10 +1,8 @@
-namespace OrganisationRegistry.Infrastructure
+namespace OrganisationRegistry.SqlServer
 {
-    public static class WellknownSchemas
+    internal static class WellknownSchemas
     {
         public const string OrganisationRegistrySchema = "OrganisationRegistry";
-        public const string BackofficeSchema = "Backoffice";
-        public const string ReportingSchema = "Reporting";
         public const string ElasticSearchProjectionsSchema = "ElasticSearchProjections";
         public const string MagdaSchema = "Magda";
     }

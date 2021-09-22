@@ -10,7 +10,6 @@
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Capacity.Events;
-    using OrganisationRegistry.Infrastructure;
 
     public class CapacityListItem
     {
@@ -25,7 +24,7 @@
 
         public override void Map(EntityTypeBuilder<CapacityListItem> b)
         {
-            b.ToTable(nameof(CapacityListView.ProjectionTables.CapacityList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(CapacityListView.ProjectionTables.CapacityList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

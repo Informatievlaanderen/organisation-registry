@@ -2,7 +2,6 @@
 {
     using System.Data.Common;
     using Microsoft.EntityFrameworkCore;
-    using OrganisationRegistry.Infrastructure;
 
     public sealed class OrganisationRegistryTransactionalContext : OrganisationRegistryContext
     {
@@ -11,7 +10,7 @@
                   new DbContextOptionsBuilder<OrganisationRegistryContext>()
                     .UseSqlServer(
                         dbConnection,
-                        x => x.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)).Options)
+                        x => x.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")).Options)
         {
             Database.UseTransaction(dbTransaction);
         }

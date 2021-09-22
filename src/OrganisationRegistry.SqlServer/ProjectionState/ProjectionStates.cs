@@ -1,12 +1,10 @@
 ﻿namespace OrganisationRegistry.SqlServer.ProjectionState
 {
     using System;
-    using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Infrastructure;
-    using Microsoft.EntityFrameworkCore;
 
     public class ProjectionStates : IProjectionStates
     {
@@ -23,8 +21,8 @@
         {
             await using var context = _contextFactory.Create();
             var state =
-                await context.ProjectionStates
-                    .SingleOrDefaultAsync(item => item.Name == projectionName);
+                context.ProjectionStates
+                    .SingleOrDefault(item => item.Name == projectionName);
 
             if (state != null)
                 return state.EventNumber;
@@ -35,14 +33,12 @@
             return newState.EventNumber;
         }
 
-        public async Task UpdateProjectionState(string projectionName, int lastEventNumber, DbConnection? connection = null, DbTransaction? transaction = null)
+        public async Task UpdateProjectionState(string projectionName, int lastEventNumber)
         {
-            await using var context = connection != null && transaction != null ?
-                _contextFactory.CreateTransactional(connection, transaction) :
-                _contextFactory.Create();
+            await using var context = _contextFactory.Create();
             var state =
-                await context.ProjectionStates
-                    .SingleOrDefaultAsync(item => item.Name == projectionName);
+                context.ProjectionStates
+                    .SingleOrDefault(item => item.Name == projectionName);
 
             if (state.EventNumber != lastEventNumber)
             {
@@ -50,23 +46,6 @@
                 state.LastUpdatedUtc = _dateTimeProvider.UtcNow;
             }
             await context.SaveChangesAsync();
-        }
-
-        public async Task<bool> Exists(string projectionName)
-        {
-            await using var context = _contextFactory.Create();
-            return await context.ProjectionStates.AnyAsync(x => x.Name == projectionName);
-        }
-
-        public async Task Remove(string projectionName)
-        {
-            await using var context = _contextFactory.Create();
-            var projectionStateItem = await context.ProjectionStates.SingleOrDefaultAsync(x => x.Name == projectionName);
-
-            if (projectionStateItem == null)
-                return;
-
-            context.ProjectionStates.Remove(projectionStateItem);
         }
     }
 }

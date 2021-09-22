@@ -8,7 +8,6 @@ namespace OrganisationRegistry.SqlServer.Person
     using Microsoft.EntityFrameworkCore;
     using Infrastructure;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Person.Events;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Person;
@@ -36,7 +35,7 @@ namespace OrganisationRegistry.SqlServer.Person
 
         public override void Map(EntityTypeBuilder<PersonListItem> b)
         {
-            b.ToTable(nameof(PersonListView.ProjectionTables.PersonList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(PersonListView.ProjectionTables.PersonList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

@@ -8,7 +8,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRelationType;
     using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Events;
@@ -35,7 +34,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationRelationListItem> b)
         {
-            b.ToTable(nameof(OrganisationRelationListView.ProjectionTables.OrganisationRelationList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(OrganisationRelationListView.ProjectionTables.OrganisationRelationList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OrganisationRelationId)
                 .IsClustered(false);
 

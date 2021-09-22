@@ -16,7 +16,6 @@
     using Newtonsoft.Json;
     using Person;
     using OrganisationRegistry.Function.Events;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Person.Events;
 
     public class OrganisationFunctionListItem
@@ -40,7 +39,7 @@
     {
         public override void Map(EntityTypeBuilder<OrganisationFunctionListItem> b)
         {
-            b.ToTable(nameof(OrganisationFunctionListView.ProjectionTables.OrganisationFunctionList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(OrganisationFunctionListView.ProjectionTables.OrganisationFunctionList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OrganisationFunctionId)
                 .IsClustered(false);
 

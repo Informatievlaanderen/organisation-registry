@@ -86,7 +86,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     builder.AddEntityFramework(x =>
                         x.UseSqlServer(
                             sqlConfiguration.ConnectionString,
-                            y => y.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)));
+                            y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")));
                 })
                 .ConfigureLogging((hostContext, builder) =>
                 {
@@ -278,7 +278,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                                 sqlServerOptions
                                     .EnableRetryOnFailure()
                                     .MigrationsAssembly("OrganisationRegistry.SqlServer")
-                                    .MigrationsHistoryTable(MigrationTables.Default, WellknownSchemas.OrganisationRegistrySchema);
+                                    .MigrationsHistoryTable(MigrationTables.Default, Schema.Default);
                             }));
                         ;
                 })

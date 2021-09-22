@@ -13,7 +13,6 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
 
     public class BodyLifecyclePhaseListItem
     {
@@ -33,7 +32,7 @@
     {
         public override void Map(EntityTypeBuilder<BodyLifecyclePhaseListItem> b)
         {
-            b.ToTable(nameof(BodyLifecyclePhaseListView.ProjectionTables.BodyLifecyclePhaseList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(BodyLifecyclePhaseListView.ProjectionTables.BodyLifecyclePhaseList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.BodyLifecyclePhaseId)
                 .IsClustered(false);
 

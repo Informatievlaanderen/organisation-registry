@@ -4,7 +4,6 @@ namespace OrganisationRegistry.SqlServer.Event
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Infrastructure;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.EventStore;
 
     public class EventListItem
@@ -25,7 +24,7 @@ namespace OrganisationRegistry.SqlServer.Event
     {
         public override void Map(EntityTypeBuilder<EventListItem> b)
         {
-            b.ToTable("Events", WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable("Events", "OrganisationRegistry")
                 .HasKey(p => new { p.Id, p.Version })
                 .IsClustered();
 

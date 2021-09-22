@@ -12,7 +12,6 @@ namespace OrganisationRegistry.SqlServer.Body
     using ContactType;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.ContactType.Events;
-    using OrganisationRegistry.Infrastructure;
 
     public class BodyContactListItem
     {
@@ -31,7 +30,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public override void Map(EntityTypeBuilder<BodyContactListItem> b)
         {
-            b.ToTable(nameof(BodyContactListView.ProjectionTables.BodyContactList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(BodyContactListView.ProjectionTables.BodyContactList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.BodyContactId)
                 .IsClustered(false);
 

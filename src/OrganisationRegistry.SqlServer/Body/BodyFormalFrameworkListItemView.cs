@@ -13,7 +13,6 @@
     using FormalFramework;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.FormalFramework.Events;
-    using OrganisationRegistry.Infrastructure;
 
     public class BodyFormalFrameworkListItem
     {
@@ -31,7 +30,7 @@
     {
         public override void Map(EntityTypeBuilder<BodyFormalFrameworkListItem> b)
         {
-            b.ToTable(nameof(BodyFormalFrameworkListView.ProjectionTables.BodyFormalFrameworkList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(BodyFormalFrameworkListView.ProjectionTables.BodyFormalFrameworkList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.BodyFormalFrameworkId)
                 .IsClustered(false);
 

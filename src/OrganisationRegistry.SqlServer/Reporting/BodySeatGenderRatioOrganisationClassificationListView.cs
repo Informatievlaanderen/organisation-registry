@@ -4,7 +4,6 @@ namespace OrganisationRegistry.SqlServer.Reporting
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using OrganisationRegistry.Infrastructure;
 
     public class BodySeatGenderRatioOrganisationClassificationItem
     {
@@ -23,7 +22,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
 
         public override void Map(EntityTypeBuilder<BodySeatGenderRatioOrganisationClassificationItem> b)
         {
-            b.ToTable(TableName, WellknownSchemas.ReportingSchema)
+            b.ToTable(TableName, "OrganisationRegistry")
                 .HasKey(p => p.OrganisationOrganisationClassificationId)
                 .IsClustered(false);
 

@@ -36,7 +36,7 @@ namespace OrganisationRegistry.Configuration.Database
                 "\tSchema: {Schema}" +
                 Environment.NewLine +
                 "\tTableName: {TableName}",
-                nameof(ConfigurationContext), WellknownSchemas.OrganisationRegistrySchema, MigrationTables.Default);
+                nameof(ConfigurationContext), Schema.Default, MigrationTables.Default);
         }
 
         private static void RunOnSqlServer(
@@ -55,7 +55,7 @@ namespace OrganisationRegistry.Configuration.Database
                     {
                         sqlServerOptions
                             .EnableRetryOnFailure()
-                            .MigrationsHistoryTable(MigrationTables.Default, WellknownSchemas.BackofficeSchema);
+                            .MigrationsHistoryTable(MigrationTables.Default, Schema.Default);
                     }));
         }
 

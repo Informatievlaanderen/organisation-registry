@@ -13,7 +13,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using FormalFramework;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.FormalFramework.Events;
-    using OrganisationRegistry.Infrastructure;
 
     public class OrganisationFormalFrameworkListItem
     {
@@ -34,7 +33,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationFormalFrameworkListItem> b)
         {
-            b.ToTable(nameof(OrganisationFormalFrameworkListView.ProjectionTables.OrganisationFormalFrameworkList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(OrganisationFormalFrameworkListView.ProjectionTables.OrganisationFormalFrameworkList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.OrganisationFormalFrameworkId)
                 .IsClustered(false);
 

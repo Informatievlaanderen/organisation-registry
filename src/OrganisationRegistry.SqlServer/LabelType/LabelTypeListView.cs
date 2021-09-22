@@ -8,7 +8,6 @@
     using Microsoft.EntityFrameworkCore;
     using Infrastructure;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.LabelType.Events;
 
@@ -25,7 +24,7 @@
 
         public override void Map(EntityTypeBuilder<LabelTypeListItem> b)
         {
-            b.ToTable(nameof(LabelTypeListView.ProjectionTables.LabelTypeList), WellknownSchemas.BackofficeSchema)
+            b.ToTable(nameof(LabelTypeListView.ProjectionTables.LabelTypeList), WellknownSchemas.OrganisationRegistrySchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 
