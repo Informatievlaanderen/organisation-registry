@@ -41,7 +41,6 @@ namespace OrganisationRegistry.Rebuilder
 
                 _logger.LogInformation("Found desired projection state");
 
-
                 var number = await _projectionStates.GetLastProcessedEventNumber(ProjectionName)
                     .ConfigureAwait(false);
                 var lastNumber = _store.GetLastEvent();
