@@ -33,12 +33,18 @@
                 using var conn = new SqlConnection(connectionString);
                 conn.Open();
 
-                using var cmd = new SqlCommand(
+                using var ensureSchema = new SqlCommand(
+                    $"IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = '{schema}')\n" +
+                    $"BEGIN EXEC('CREATE SCHEMA {schema}')\n" +
+                    "END");
+                ensureSchema.ExecuteNonQuery();
+
+                using var moveSchema = new SqlCommand(
                     "IF (EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'OrganisationRegistry'" +
                     "AND TABLE_NAME = '__EFMigrationsHistory'))\n" +
                     $"ALTER SCHEMA {schema} TRANSFER OrganisationRegistry.__EFMigrationsHistory",
                     conn);
-                cmd.ExecuteNonQuery();
+                moveSchema.ExecuteNonQuery();
             }
             catch (Exception ex)
             {
