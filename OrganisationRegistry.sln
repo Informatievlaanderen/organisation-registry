@@ -82,6 +82,8 @@ ProjectSection(SolutionItems) = preProject
 	.github\workflows\staging-manual.yml = .github\workflows\staging-manual.yml
 EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganisationRegistry.Rebuilder", "src\OrganisationRegistry.Rebuilder\OrganisationRegistry.Rebuilder.csproj", "{9AAC8AB4-6540-4513-8DC4-597C2E54CAF0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -180,6 +182,10 @@ Global
 		{3757D695-6832-4FAF-B4E2-4B02262956F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3757D695-6832-4FAF-B4E2-4B02262956F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3757D695-6832-4FAF-B4E2-4B02262956F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AAC8AB4-6540-4513-8DC4-597C2E54CAF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AAC8AB4-6540-4513-8DC4-597C2E54CAF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AAC8AB4-6540-4513-8DC4-597C2E54CAF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AAC8AB4-6540-4513-8DC4-597C2E54CAF0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -213,5 +219,6 @@ Global
 		{3757D695-6832-4FAF-B4E2-4B02262956F8} = {6DE8E902-CCF9-4158-8686-33816FC5EE44}
 		{7CA3FAD8-5352-4788-9A94-6519B5BFBDD6} = {B060FE93-603A-4BFC-85E2-A5324FB97851}
 		{C31A5E2C-7DFC-48B0-97BB-0D870EE713BD} = {7CA3FAD8-5352-4788-9A94-6519B5BFBDD6}
+		{9AAC8AB4-6540-4513-8DC4-597C2E54CAF0} = {6DE8E902-CCF9-4158-8686-33816FC5EE44}
 	EndGlobalSection
 EndGlobal

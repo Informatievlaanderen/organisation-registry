@@ -19,6 +19,7 @@
                     x => x.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema));
 
 
+
             if (loggerFactory != null)
                 migratorOptions = migratorOptions.UseLoggerFactory(loggerFactory);
 
