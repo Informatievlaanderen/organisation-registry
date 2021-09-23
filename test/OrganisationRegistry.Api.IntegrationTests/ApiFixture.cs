@@ -11,6 +11,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
+    using OrganisationRegistry.Infrastructure;
     using SqlServer.Configuration;
     using SqlServer.Infrastructure;
 
@@ -38,7 +39,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
             var dbContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
                 .UseSqlServer(
                     connectionString,
-                    x => x.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry"))
+                    x => x.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema))
                 .Options;
 
             new OrganisationRegistryContext(dbContextOptions).Database.EnsureDeleted();
