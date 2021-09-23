@@ -36,7 +36,8 @@
                 using var ensureSchema = new SqlCommand(
                     $"IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = '{schema}')\n" +
                     $"BEGIN EXEC('CREATE SCHEMA {schema}')\n" +
-                    "END");
+                    "END",
+                    conn);
                 ensureSchema.ExecuteNonQuery();
 
                 using var moveSchema = new SqlCommand(
