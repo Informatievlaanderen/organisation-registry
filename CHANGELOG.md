@@ -1,3 +1,10 @@
+# [1.97.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.96.2...v1.97.0) (2021-09-23)
+
+
+### Features
+
+* push rebuilder to staging ecr ([383b03f](https://github.com/informatievlaanderen/organisation-registry/commit/383b03f54de8989f6f9af18ab903d5dbc831c131))
+
 ## [1.96.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.96.1...v1.96.2) (2021-09-23)
 
 
