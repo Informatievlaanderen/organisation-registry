@@ -1,3 +1,10 @@
+## [1.96.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.96.1...v1.96.2) (2021-09-23)
+
+
+### Bug Fixes
+
+* pass connection string ([9ca6202](https://github.com/informatievlaanderen/organisation-registry/commit/9ca620272689ad6acd11161a7f1a93c3e9600b9f))
+
 ## [1.96.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.96.0...v1.96.1) (2021-09-23)
 
 
