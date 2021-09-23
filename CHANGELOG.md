@@ -1,3 +1,21 @@
+# [1.96.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.95.3...v1.96.0) (2021-09-23)
+
+
+### Bug Fixes
+
+* ensure migrations history moved before migrating ([0c5b12c](https://github.com/informatievlaanderen/organisation-registry/commit/0c5b12c9f47504dee402c20f0d05d462d2551885))
+* invocation of verify ([b977951](https://github.com/informatievlaanderen/organisation-registry/commit/b977951110a9f9235784f69196062f0e76032c47))
+
+
+### Features
+
+* add rebuilder project ([bcb9891](https://github.com/informatievlaanderen/organisation-registry/commit/bcb9891df9bc82f41300227f9db00889a4082d59))
+
+
+### Reverts
+
+* Revert "fix: revert moving to separate schemas for now" ([713a26e](https://github.com/informatievlaanderen/organisation-registry/commit/713a26ee4d5f28bf4d91e9ea2a7586bc2f5ad9c4))
+
 ## [1.95.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.95.2...v1.95.3) (2021-09-22)
 
 
