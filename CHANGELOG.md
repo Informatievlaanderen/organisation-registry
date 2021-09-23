@@ -1,3 +1,10 @@
+## [1.96.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.96.0...v1.96.1) (2021-09-23)
+
+
+### Bug Fixes
+
+* ensure schema ([65e2610](https://github.com/informatievlaanderen/organisation-registry/commit/65e26104b2c90d2b968a0c815127b08efbea61ca))
+
 # [1.96.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.95.3...v1.96.0) (2021-09-23)
 
 
