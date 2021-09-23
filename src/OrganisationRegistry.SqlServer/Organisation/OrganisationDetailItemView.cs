@@ -13,6 +13,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using Day.Events;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Building.Events;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Location.Events;
     using OrganisationRegistry.Organisation;
@@ -64,7 +65,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationDetailItem> b)
         {
-            b.ToTable(nameof(OrganisationDetailItemView.ProjectionTables.OrganisationDetail), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(OrganisationDetailItemView.ProjectionTables.OrganisationDetail), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

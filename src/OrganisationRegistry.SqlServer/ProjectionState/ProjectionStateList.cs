@@ -4,6 +4,7 @@
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
+    using OrganisationRegistry.Infrastructure;
 
     public class ProjectionStateItem
     {
@@ -19,7 +20,7 @@
 
         public override void Map(EntityTypeBuilder<ProjectionStateItem> b)
         {
-            b.ToTable("ProjectionStateList", "OrganisationRegistry")
+            b.ToTable("ProjectionStateList", WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

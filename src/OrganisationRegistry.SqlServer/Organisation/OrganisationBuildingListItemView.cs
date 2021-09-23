@@ -13,6 +13,7 @@
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Building.Events;
+    using OrganisationRegistry.Infrastructure;
 
     public class OrganisationBuildingListItem
     {
@@ -42,7 +43,7 @@
     {
         public override void Map(EntityTypeBuilder<OrganisationBuildingListItem> b)
         {
-            b.ToTable(nameof(OrganisationBuildingListView.ProjectionTables.OrganisationBuildingList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(OrganisationBuildingListView.ProjectionTables.OrganisationBuildingList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.OrganisationBuildingId)
                 .IsClustered(false);
 

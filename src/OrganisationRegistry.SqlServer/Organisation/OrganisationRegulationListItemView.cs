@@ -11,6 +11,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using System.Threading.Tasks;
     using RegulationType;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.RegulationType.Events;
 
     public class OrganisationRegulationListItem
@@ -32,7 +33,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public override void Map(EntityTypeBuilder<OrganisationRegulationListItem> b)
         {
-            b.ToTable(nameof(OrganisationRegulationListView.ProjectionTables.OrganisationRegulationList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(OrganisationRegulationListView.ProjectionTables.OrganisationRegulationList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.OrganisationRegulationId)
                 .IsClustered(false);
 

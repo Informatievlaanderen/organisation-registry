@@ -10,6 +10,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure;
 
     public class OrganisationParentListItem
     {
@@ -27,7 +28,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationParentListItem> b)
         {
-            b.ToTable(nameof(OrganisationParentListView.ProjectionTables.OrganisationParentList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(OrganisationParentListView.ProjectionTables.OrganisationParentList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.OrganisationOrganisationParentId)
                 .IsClustered(false);
 

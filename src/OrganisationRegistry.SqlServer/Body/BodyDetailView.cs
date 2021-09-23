@@ -10,6 +10,7 @@ namespace OrganisationRegistry.SqlServer.Body
     using Microsoft.Extensions.Logging;
     using Organisation;
     using OrganisationRegistry.Body.Events;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
 
     public class BodyDetail
@@ -39,7 +40,7 @@ namespace OrganisationRegistry.SqlServer.Body
     {
         public override void Map(EntityTypeBuilder<BodyDetail> b)
         {
-            b.ToTable(nameof(BodyDetailView.ProjectionTables.BodyDetail), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(BodyDetailView.ProjectionTables.BodyDetail), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

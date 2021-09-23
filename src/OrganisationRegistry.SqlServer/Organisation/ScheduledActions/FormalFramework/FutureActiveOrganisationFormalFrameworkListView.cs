@@ -12,6 +12,7 @@
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.FormalFramework;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
@@ -34,7 +35,7 @@
     {
         public override void Map(EntityTypeBuilder<FutureActiveOrganisationFormalFrameworkListItem> b)
         {
-            b.ToTable(nameof(FutureActiveOrganisationFormalFrameworkListView.ProjectionTables.FutureActiveOrganisationFormalFrameworkList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(FutureActiveOrganisationFormalFrameworkListView.ProjectionTables.FutureActiveOrganisationFormalFrameworkList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.OrganisationFormalFrameworkId)
                 .IsClustered(false);
 

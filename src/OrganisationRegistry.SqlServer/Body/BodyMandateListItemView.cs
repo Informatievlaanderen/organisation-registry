@@ -17,6 +17,7 @@ namespace OrganisationRegistry.SqlServer.Body
     using System.Threading.Tasks;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Events;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Person.Events;
@@ -69,7 +70,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public override void Map(EntityTypeBuilder<BodyMandateListItem> b)
         {
-            b.ToTable(nameof(BodyMandateListView.ProjectionTables.BodyMandateList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(BodyMandateListView.ProjectionTables.BodyMandateList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.BodyMandateId)
                 .IsClustered(false);
 
@@ -123,7 +124,7 @@ namespace OrganisationRegistry.SqlServer.Body
         public override void Map(EntityTypeBuilder<BodySeatCacheItemForBodyMandateList> b)
         {
             b.ToTable(nameof(BodyMandateListView.ProjectionTables.BodySeatCacheForBodyMandateList),
-                    "OrganisationRegistry")
+                    WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.BodySeatId)
                 .IsClustered(false);
 
