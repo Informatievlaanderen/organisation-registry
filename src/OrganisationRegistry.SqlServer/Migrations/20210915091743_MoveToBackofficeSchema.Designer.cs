@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrganisationRegistry.SqlServer.Infrastructure;
 
 namespace OrganisationRegistry.SqlServer.Migrations
 {
     [DbContext(typeof(OrganisationRegistryContext))]
-    partial class OrganisationRegistryContextModelSnapshot : ModelSnapshot
+    [Migration("20210915091743_MoveToBackofficeSchema")]
+    partial class MoveToBackofficeSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -456,7 +458,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("BodySeatId")
                         .IsClustered(false);
 
-                    b.ToTable("BodySeatCacheForBodyMandateList", "Backoffice");
+                    b.ToTable("BodySeatCacheForBodyMandateList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Body.BodySeatListItem", b =>
@@ -817,7 +819,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasIndex("BodyMandateId", "PersonName")
                         .IsClustered();
 
-                    b.ToTable("DelegationAssignmentList", "Backoffice");
+                    b.ToTable("DelegationAssignmentList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Delegations.DelegationListItem", b =>
@@ -905,7 +907,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("ValidTo");
 
-                    b.ToTable("DelegationList", "Backoffice");
+                    b.ToTable("DelegationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Delegations.OrganisationPerBody", b =>
@@ -927,7 +929,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("BodyId")
                         .IsClustered(false);
 
-                    b.ToTable("OrganisationPerBodyList", "Backoffice");
+                    b.ToTable("OrganisationPerBodyList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.ElasticSearchProjections.BodyCacheItem", b =>
@@ -2445,7 +2447,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasIndex("OvoNumber")
                         .IsUnique();
 
-                    b.ToTable("OrganisationTerminationList", "Backoffice");
+                    b.ToTable("OrganisationTerminationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Organisation.ScheduledActions.FormalFramework.ActiveOrganisationFormalFrameworkListItem", b =>
@@ -2854,7 +2856,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .HasFilter("[DelegationAssignmentId] IS NOT NULL");
 
-                    b.ToTable("PersonMandateList", "Backoffice");
+                    b.ToTable("PersonMandateList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.ProjectionState.ProjectionStateItem", b =>
@@ -2880,7 +2882,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("ProjectionStateList", "Backoffice");
+                    b.ToTable("ProjectionStateList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Purpose.PurposeListItem", b =>
@@ -2954,7 +2956,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("BodyMandateId");
 
-                    b.ToTable("BodySeatGenderRatioAssignmentList", "Reporting");
+                    b.ToTable("BodySeatGenderRatioAssignmentList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioBodyItem", b =>
@@ -2981,7 +2983,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("BodyId")
                         .IsClustered(false);
 
-                    b.ToTable("BodySeatGenderRatioBodyList", "Reporting");
+                    b.ToTable("BodySeatGenderRatioBodyList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioBodyLifecyclePhaseValidityItem", b =>
@@ -3006,7 +3008,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("BodyId");
 
-                    b.ToTable("BodySeatGenderRatioLifecyclePhaseValidityList", "Reporting");
+                    b.ToTable("BodySeatGenderRatioLifecyclePhaseValidityList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioBodyMandateItem", b =>
@@ -3036,7 +3038,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("BodyMandateId")
                         .IsClustered(false);
 
-                    b.ToTable("BodySeatGenderRatioBodyMandateList", "Reporting");
+                    b.ToTable("BodySeatGenderRatioBodyMandateList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioOrganisationClassificationItem", b =>
@@ -3063,7 +3065,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("OrganisationOrganisationClassificationId")
                         .IsClustered(false);
 
-                    b.ToTable("BodySeatGenderRatioOrganisationClassificationList", "Reporting");
+                    b.ToTable("BodySeatGenderRatioOrganisationClassificationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioOrganisationListItem", b =>
@@ -3082,7 +3084,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("OrganisationId")
                         .IsClustered(false);
 
-                    b.ToTable("BodySeatGenderRatio_OrganisationList", "Reporting");
+                    b.ToTable("BodySeatGenderRatio_OrganisationList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioOrganisationPerBodyListItem", b =>
@@ -3107,7 +3109,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("BodyId")
                         .IsClustered(false);
 
-                    b.ToTable("BodySeatGenderRatio_OrganisationPerBodyList", "Reporting");
+                    b.ToTable("BodySeatGenderRatio_OrganisationPerBodyList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioPersonListItem", b =>
@@ -3122,7 +3124,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.HasKey("PersonId")
                         .IsClustered(false);
 
-                    b.ToTable("BodySeatGenderRatio_PersonList", "Reporting");
+                    b.ToTable("BodySeatGenderRatio_PersonList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioPostsPerTypeItem", b =>
@@ -3163,7 +3165,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("BodyId");
 
-                    b.ToTable("BodySeatGenderRatioPostsPerTypeList", "Reporting");
+                    b.ToTable("BodySeatGenderRatioPostsPerTypeList", "OrganisationRegistry");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.SeatType.SeatTypeListItem", b =>

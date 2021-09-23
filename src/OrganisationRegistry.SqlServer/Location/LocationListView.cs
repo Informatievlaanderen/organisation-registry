@@ -8,6 +8,7 @@
     using Microsoft.EntityFrameworkCore;
     using Infrastructure;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Location.Events;
 
@@ -34,7 +35,7 @@
 
         public override void Map(EntityTypeBuilder<LocationListItem> b)
         {
-            b.ToTable(nameof(LocationListView.ProjectionTables.LocationList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(LocationListView.ProjectionTables.LocationList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

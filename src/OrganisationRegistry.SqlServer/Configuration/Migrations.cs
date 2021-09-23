@@ -16,7 +16,7 @@
             var migratorOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
                 .UseSqlServer(
                     sqlServerConfiguration.MigrationsConnectionString,
-                    x => x.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry"));
+                    x => x.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema));
 
 
             if (loggerFactory != null)

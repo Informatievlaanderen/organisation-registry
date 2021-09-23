@@ -12,6 +12,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using Microsoft.Extensions.Logging;
     using OrganisationClassification;
     using OrganisationClassificationType;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.OrganisationClassificationType.Events;
     using OrganisationRegistry.OrganisationClassification.Events;
 
@@ -38,7 +39,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationOrganisationClassificationListItem> b)
         {
-            b.ToTable(nameof(OrganisationOrganisationClassificationListView.ProjectionTables.OrganisationOrganisationClassificationList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(OrganisationOrganisationClassificationListView.ProjectionTables.OrganisationOrganisationClassificationList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.OrganisationOrganisationClassificationId)
                 .IsClustered(false);
 

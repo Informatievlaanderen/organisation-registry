@@ -10,6 +10,7 @@
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.FormalFrameworkCategory.Events;
+    using OrganisationRegistry.Infrastructure;
 
     public class FormalFrameworkCategoryListItem
     {
@@ -24,7 +25,7 @@
 
         public override void Map(EntityTypeBuilder<FormalFrameworkCategoryListItem> b)
         {
-            b.ToTable(nameof(FormalFrameworkCategoryListView.ProjectionTables.FormalFrameworkCategoryList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(FormalFrameworkCategoryListView.ProjectionTables.FormalFrameworkCategoryList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

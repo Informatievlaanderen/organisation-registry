@@ -12,6 +12,7 @@ namespace OrganisationRegistry.SqlServer.Body
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure;
 
     public class BodySeatListItem
     {
@@ -40,7 +41,7 @@ namespace OrganisationRegistry.SqlServer.Body
 
         public override void Map(EntityTypeBuilder<BodySeatListItem> b)
         {
-            b.ToTable(nameof(BodySeatListView.ProjectionTables.BodySeatList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(BodySeatListView.ProjectionTables.BodySeatList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.BodySeatId)
                 .IsClustered(false);
 

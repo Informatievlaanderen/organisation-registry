@@ -8,6 +8,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Infrastructure;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
 
@@ -55,7 +56,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationBankAccountListItem> b)
         {
-            b.ToTable(nameof(OrganisationBankAccountListView.ProjectionTables.OrganisationBankAccountList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(OrganisationBankAccountListView.ProjectionTables.OrganisationBankAccountList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.OrganisationBankAccountId)
                 .IsClustered(false);
 

@@ -11,6 +11,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using System.Threading.Tasks;
     using LabelType;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.LabelType.Events;
 
     public class OrganisationLabelListItem
@@ -34,7 +35,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public override void Map(EntityTypeBuilder<OrganisationLabelListItem> b)
         {
-            b.ToTable(nameof(OrganisationLabelListView.ProjectionTables.OrganisationLabelList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(OrganisationLabelListView.ProjectionTables.OrganisationLabelList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.OrganisationLabelId)
                 .IsClustered(false);
 

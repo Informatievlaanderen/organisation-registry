@@ -9,6 +9,7 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Configuration;
     using Destructurama;
+    using Infrastructure;
     using Infrastructure.Configuration;
     using Infrastructure.Infrastructure.Json;
     using Microsoft.EntityFrameworkCore;
@@ -40,7 +41,7 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
             var configuration = builder
                 .AddEntityFramework(x => x.UseSqlServer(
                     sqlConfiguration.ConnectionString,
-                    y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")))
+                    y => y.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)))
                 .Build();
 
             RunProgram<Runner>(configuration);
