@@ -9,6 +9,7 @@
     using Infrastructure;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Building.Events;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
 
     public class BuildingListItem
@@ -26,7 +27,7 @@
 
         public override void Map(EntityTypeBuilder<BuildingListItem> b)
         {
-            b.ToTable(nameof(BuildingListView.ProjectionTables.BuildingList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(BuildingListView.ProjectionTables.BuildingList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

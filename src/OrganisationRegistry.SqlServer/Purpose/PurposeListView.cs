@@ -8,6 +8,7 @@
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Infrastructure;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Purpose.Events;
 
@@ -24,7 +25,7 @@
 
         public override void Map(EntityTypeBuilder<PurposeListItem> b)
         {
-            b.ToTable(nameof(PurposeListView.ProjectionTables.PurposeList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(PurposeListView.ProjectionTables.PurposeList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

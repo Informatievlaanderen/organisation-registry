@@ -10,6 +10,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Configuration;
     using Destructurama;
+    using Infrastructure;
     using Infrastructure.Config;
     using Infrastructure.Configuration;
     using Infrastructure.Infrastructure.Json;
@@ -46,7 +47,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             var configuration = builder
                 .AddEntityFramework(x => x.UseSqlServer(
                     sqlConfiguration.ConnectionString,
-                    y => y.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry")))
+                    y => y.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)))
                 .Build();
 
             await RunProgram<Runner>(configuration);

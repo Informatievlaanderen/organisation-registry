@@ -20,6 +20,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using Person;
     using Function.Events;
     using OrganisationRegistry.Capacity.Events;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Location.Events;
     using OrganisationRegistry.Organisation;
@@ -55,7 +56,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationCapacityListItem> b)
         {
-            b.ToTable(nameof(OrganisationCapacityListView.ProjectionTables.OrganisationCapacityList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(OrganisationCapacityListView.ProjectionTables.OrganisationCapacityList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.OrganisationCapacityId)
                 .IsClustered(false);
 

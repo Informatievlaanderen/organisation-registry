@@ -8,6 +8,7 @@
     using Microsoft.EntityFrameworkCore;
     using Infrastructure;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.MandateRoleType.Events;
 
@@ -24,7 +25,7 @@
 
         public override void Map(EntityTypeBuilder<MandateRoleTypeListItem> b)
         {
-            b.ToTable(nameof(MandateRoleTypeListView.ProjectionTables.MandateRoleTypeList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(MandateRoleTypeListView.ProjectionTables.MandateRoleTypeList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 

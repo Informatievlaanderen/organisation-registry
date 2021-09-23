@@ -12,6 +12,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using Location;
     using LocationType;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Location.Events;
     using OrganisationRegistry.LocationType.Events;
 
@@ -59,7 +60,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public override void Map(EntityTypeBuilder<OrganisationLocationListItem> b)
         {
-            b.ToTable(nameof(OrganisationLocationListView.ProjectionTables.OrganisationLocationList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(OrganisationLocationListView.ProjectionTables.OrganisationLocationList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.OrganisationLocationId)
                 .IsClustered(false);
 

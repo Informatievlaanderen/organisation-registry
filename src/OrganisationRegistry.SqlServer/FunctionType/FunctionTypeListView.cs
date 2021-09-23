@@ -10,6 +10,7 @@
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Function.Events;
+    using OrganisationRegistry.Infrastructure;
 
     public class FunctionTypeListItem
     {
@@ -24,7 +25,7 @@
 
         public override void Map(EntityTypeBuilder<FunctionTypeListItem> b)
         {
-            b.ToTable(nameof(FunctionTypeListView.ProjectionTables.FunctionList), WellknownSchemas.OrganisationRegistrySchema)
+            b.ToTable(nameof(FunctionTypeListView.ProjectionTables.FunctionList), WellknownSchemas.BackofficeSchema)
                 .HasKey(p => p.Id)
                 .IsClustered(false);
 
