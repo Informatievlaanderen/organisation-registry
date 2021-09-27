@@ -42,7 +42,7 @@ namespace OrganisationRegistry.Rebuilder
     {
         public static async Task Main(string[] args)
         {
-            Console.WriteLine("Starting OrganisationRegistry ElasticSearch Projections.");
+            Console.WriteLine("Starting OrganisationRegistry Rebuilder.");
 
             AppDomain.CurrentDomain.FirstChanceException += (_, eventArgs) =>
                 Log.Debug(eventArgs.Exception, "FirstChanceException event raised in {AppDomain}.", AppDomain.CurrentDomain.FriendlyName);
