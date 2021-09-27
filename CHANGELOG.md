@@ -1,3 +1,10 @@
+## [1.97.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.97.0...v1.97.1) (2021-09-27)
+
+
+### Bug Fixes
+
+* use bulk index for large nr of docs ([58fa750](https://github.com/informatievlaanderen/organisation-registry/commit/58fa7501cbb948c7650dd1ec8eb83a0789eaba50))
+
 # [1.97.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.96.2...v1.97.0) (2021-09-23)
 
 
