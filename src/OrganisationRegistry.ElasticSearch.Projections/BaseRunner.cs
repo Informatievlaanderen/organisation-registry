@@ -98,7 +98,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 }
                 await FlushDocuments(documentCache);
                 await UpdateProjectionState(newLastProcessedEventNumber);
-                _logger.LogInformation("[{ProjectionName}] Processed up until envelope #{LastProcessedEnvelopeNumber}.", ProjectionName, newLastProcessedEventNumber);
             }
             catch (Exception ex)
             {
@@ -168,7 +167,19 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 }
 
                 await _elastic.TryAsync(async () =>
-                    (await _elastic.WriteClient.IndexManyAsync(documentCache.Values)).ThrowOnFailure());
+                {
+                    _elastic.WriteClient.BulkAll(documentCache.Values, b => b
+                        .BackOffTime("30s")
+                        .BackOffRetries(5)
+                        .RefreshOnCompleted(false)
+                        .MaxDegreeOfParallelism(Environment.ProcessorCount)
+                        .Size(1000)
+                    )
+                    .Wait(TimeSpan.FromMinutes(15), next =>
+                    {
+                        _logger.LogInformation("Wrote page {PageNumber}", next.Page);
+                    });
+                });
                 documentCache.Clear();
             }
         }
@@ -187,6 +198,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             if (!newLastProcessedEventNumber.HasValue)
                 return;
 
+            _logger.LogInformation("[{ProjectionName}] Processed up until envelope #{LastProcessedEnvelopeNumber}.", ProjectionName, newLastProcessedEventNumber);
             await _projectionStates.UpdateProjectionState(_elasticSearchProjectionsProjectionName, newLastProcessedEventNumber.Value);
         }
 
