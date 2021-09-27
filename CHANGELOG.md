@@ -1,3 +1,10 @@
+## [1.97.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.97.1...v1.97.2) (2021-09-27)
+
+
+### Bug Fixes
+
+* temp disable pushing rebuilder to ecr ([015dd69](https://github.com/informatievlaanderen/organisation-registry/commit/015dd69a717202a785c77dacad80ffd0d9e56afc))
+
 ## [1.97.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.97.0...v1.97.1) (2021-09-27)
 
 
