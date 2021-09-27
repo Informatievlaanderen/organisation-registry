@@ -5,6 +5,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using System.Linq;
     using System.Threading.Tasks;
     using Client;
+    using Microsoft.Extensions.Logging;
     using Nest;
 
     public static class ElasticWriter
@@ -13,6 +14,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
 
         public static async Task UpdateByScroll<T>(
             Elastic elastic,
+            ILogger logger,
             Func<QueryContainerDescriptor<T>, QueryContainer> query,
             Func<T, Task> updateAction) where T : class
         {
@@ -51,7 +53,19 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 return;
 
             await elastic.TryAsync(async () =>
-                (await elastic.WriteClient.IndexManyAsync(documents)).ThrowOnFailure());
+            {
+                elastic.WriteClient.BulkAll(documents, b => b
+                    .BackOffTime("30s")
+                    .BackOffRetries(5)
+                    .RefreshOnCompleted(false)
+                    .MaxDegreeOfParallelism(Environment.ProcessorCount)
+                    .Size(1000)
+                )
+                .Wait(TimeSpan.FromMinutes(15), next =>
+                {
+                    logger.LogInformation("Writing page {PageNumber}", next.Page);
+                });
+            });
         }
     }
 }

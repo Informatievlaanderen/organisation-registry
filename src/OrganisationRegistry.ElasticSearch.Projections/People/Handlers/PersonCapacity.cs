@@ -104,7 +104,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
                     await UpdateCacheShowOnVlaamseOverheidSites(message);
 
-                    await ElasticWriter.UpdateByScroll<PersonDocument>(elastic,
+                    await ElasticWriter.UpdateByScroll<PersonDocument>(elastic, Logger,
                         query => query.Nested(
                             nested => nested.Path(
                                 path => path.Capacities).Query(
@@ -223,6 +223,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         await using var organisationRegistryContext = _contextFactory.Create();
                         var organisation =
                             await organisationRegistryContext.OrganisationCache.FindAsync(message.Body.OrganisationId);
+
+                        // TODO: build local cache
                         var contactTypeNames = await organisationRegistryContext.ContactTypeList
                             .Select(x => new {x.Id, x.Name})
                             .ToDictionaryAsync(x => x.Id, x => x.Name);

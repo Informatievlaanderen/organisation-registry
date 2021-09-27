@@ -696,13 +696,23 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             if (!bodyDocuments.Any())
                 return;
 
-            (await elastic.TryGetAsync(() => elastic.WriteClient.IndexManyAsync(bodyDocuments))).ThrowOnFailure();
+            elastic.WriteClient.BulkAll(bodyDocuments, b => b
+                .BackOffTime("30s")
+                .BackOffRetries(5)
+                .RefreshOnCompleted(false)
+                .MaxDegreeOfParallelism(Environment.ProcessorCount)
+                .Size(1000)
+            )
+            .Wait(TimeSpan.FromMinutes(15), next =>
+            {
+                Logger.LogInformation("Writing page {PageNumber}", next.Page);
+            });
         }
 
         private async Task UpdatePersonForMandates(IEnvelope<PersonUpdated> message, Elastic elastic)
         {
-            await _elastic.TryGetAsync(async () =>
-                (await _elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>())).ThrowOnFailure());
+            await elastic.TryGetAsync(async () =>
+                (await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>())).ThrowOnFailure());
 
             var searchResponse = (await elastic.TryGetAsync(() => elastic.WriteClient.SearchAsync<BodyDocument>(
                 s => s.Query(
@@ -736,7 +746,17 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             if (!bodyDocuments.Any())
                 return;
 
-            elastic.Try(() => elastic.WriteClient.IndexMany(bodyDocuments));
+            elastic.WriteClient.BulkAll(bodyDocuments, b => b
+                .BackOffTime("30s")
+                .BackOffRetries(5)
+                .RefreshOnCompleted(false)
+                .MaxDegreeOfParallelism(Environment.ProcessorCount)
+                .Size(1000)
+            )
+            .Wait(TimeSpan.FromMinutes(15), next =>
+            {
+                Logger.LogInformation("Writing page {PageNumber}", next.Page);
+            });
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
@@ -765,8 +785,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 {
                     using (_metrics.Measure.Timer.Time(_indexTimer))
                     {
-                        await _elastic.TryGetAsync(async () =>
-                            (await _elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>())).ThrowOnFailure());
+                        await elastic.TryGetAsync(async () =>
+                            (await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>())).ThrowOnFailure());
                     }
 
                     var searchResponse = (await elastic.TryGetAsync(() => elastic.WriteClient.SearchAsync<BodyDocument>(
@@ -800,7 +820,17 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                     if (!bodyDocuments.Any())
                         return;
 
-                    (await elastic.TryGetAsync(() => elastic.WriteClient.IndexManyAsync(bodyDocuments))).ThrowOnFailure();
+                    elastic.WriteClient.BulkAll(bodyDocuments, b => b
+                        .BackOffTime("30s")
+                        .BackOffRetries(5)
+                        .RefreshOnCompleted(false)
+                        .MaxDegreeOfParallelism(Environment.ProcessorCount)
+                        .Size(1000)
+                    )
+                    .Wait(TimeSpan.FromMinutes(15), next =>
+                    {
+                        Logger.LogInformation("Writing page {PageNumber}", next.Page);
+                    });
                 }
             );
         }
@@ -814,8 +844,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 {
                     using (_metrics.Measure.Timer.Time(_indexTimer))
                     {
-                        await _elastic.TryGetAsync(async () =>
-                            (await _elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>())).ThrowOnFailure());
+                        await elastic.TryGetAsync(async () =>
+                            (await elastic.WriteClient.Indices.RefreshAsync(Indices.Index<BodyDocument>()))
+                            .ThrowOnFailure());
                     }
 
                     var searchResponse = (await elastic.TryGetAsync(() => elastic.WriteClient.SearchAsync<BodyDocument>(
@@ -845,14 +876,26 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                                 response.ScrollId))).ThrowOnFailure();
                     }
 
-                    (await elastic.TryGetAsync(() => elastic.WriteClient.ClearScrollAsync(new ClearScrollRequest(searchResponse.ScrollId)))).ThrowOnFailure();
+                    (await elastic.TryGetAsync(() =>
+                            elastic.WriteClient.ClearScrollAsync(new ClearScrollRequest(searchResponse.ScrollId))))
+                        .ThrowOnFailure();
 
                     if (!bodyDocuments.Any())
                         return;
 
-                    (await elastic.TryGetAsync(() => elastic.WriteClient.IndexManyAsync(bodyDocuments))).ThrowOnFailure();
-                }
-            );
+                    elastic.WriteClient.BulkAll(bodyDocuments, b => b
+                        .BackOffTime("30s")
+                        .BackOffRetries(5)
+                        .RefreshOnCompleted(false)
+                        .MaxDegreeOfParallelism(Environment.ProcessorCount)
+                        .Size(1000)
+                    )
+                    .Wait(TimeSpan.FromMinutes(15),
+                        next =>
+                        {
+                            Logger.LogInformation("Writing page {PageNumber}", next.Page);
+                        });
+                });
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
