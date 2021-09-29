@@ -5,6 +5,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization
         OrganisationRegistryBeheerder,
         OrganisatieBeheerder,
         OrgaanBeheerder,
+        Orafin,
         Developer,
         AutomatedTask
     }
