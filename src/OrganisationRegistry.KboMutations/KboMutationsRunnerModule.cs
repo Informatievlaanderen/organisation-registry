@@ -2,8 +2,6 @@ namespace OrganisationRegistry.KboMutations
 {
     using System;
     using System.Reflection;
-    using Api.Configuration;
-    using Api.Status;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using ElasticSearch;

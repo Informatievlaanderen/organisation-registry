@@ -2,7 +2,7 @@ namespace OrganisationRegistry.UnitTests
 {
     using System;
     using System.Security.Claims;
-    using Api.Task;
+    using Api.Backoffice.Admin.Task;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging.Abstractions;

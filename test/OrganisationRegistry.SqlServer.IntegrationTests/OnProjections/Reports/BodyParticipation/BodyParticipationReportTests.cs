@@ -3,9 +3,9 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Api.Backoffice.Report.Responses;
     using Api.Infrastructure.Search.Filtering;
     using Api.Infrastructure.Search.Sorting;
-    using Api.Report.Responses;
     using FluentAssertions;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;

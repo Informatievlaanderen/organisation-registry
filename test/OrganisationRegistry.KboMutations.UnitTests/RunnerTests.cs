@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using Api.Status;
     using Configuration;
     using FluentAssertions;
     using Infrastructure;

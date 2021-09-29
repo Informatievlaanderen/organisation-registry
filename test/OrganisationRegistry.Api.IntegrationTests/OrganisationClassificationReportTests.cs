@@ -3,10 +3,10 @@ namespace OrganisationRegistry.Api.IntegrationTests
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Backoffice.Report.Responses;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Infrastructure.Configuration;
-    using Report.Responses;
     using SqlServer.Body;
     using SqlServer.Infrastructure;
     using SqlServer.Reporting;

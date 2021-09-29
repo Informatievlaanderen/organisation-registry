@@ -6,7 +6,6 @@ namespace OrganisationRegistry.Api
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
-    using Configuration;
     using ElasticSearch;
     using Infrastructure;
     using Infrastructure.Search;
