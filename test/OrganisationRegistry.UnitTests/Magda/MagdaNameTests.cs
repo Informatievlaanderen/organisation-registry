@@ -1,6 +1,6 @@
 namespace OrganisationRegistry.UnitTests.Magda
 {
-    using Api.Kbo.Responses;
+    using Api.Backoffice.Kbo.Responses;
     using FluentAssertions;
     using global::Magda.GeefOnderneming;
     using Xunit;

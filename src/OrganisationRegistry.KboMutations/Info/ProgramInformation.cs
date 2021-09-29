@@ -1,7 +1,6 @@
 ﻿﻿namespace OrganisationRegistry.KboMutations.Info
 {
     using System.Text;
-    using Api.Status;
     using Configuration;
 
     public class ProgramInformation

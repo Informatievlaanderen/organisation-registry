@@ -4,14 +4,13 @@ namespace OrganisationRegistry.Api.Infrastructure
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
-    using Api.Configuration;
     using Api.Security;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Backoffice.Kbo;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Configuration;
-    using Kbo;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
