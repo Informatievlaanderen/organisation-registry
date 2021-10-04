@@ -1,3 +1,11 @@
+# [1.98.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.97.2...v1.98.0) (2021-10-04)
+
+
+### Features
+
+* check if user is allowed to edit key type ([60ddb70](https://github.com/informatievlaanderen/organisation-registry/commit/60ddb7024c09e89da71532df79da368a1e0e9cdf))
+* introduce edit api for organisation keys ([4f6d234](https://github.com/informatievlaanderen/organisation-registry/commit/4f6d234fea6da6b579668533d21aeedb54c5762f))
+
 ## [1.97.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.97.1...v1.97.2) (2021-09-27)
 
 
