@@ -26,11 +26,9 @@ namespace OrganisationRegistry.Api.Infrastructure
     using Microsoft.Extensions.Diagnostics.HealthChecks;
     using Microsoft.Extensions.Hosting;
     using Microsoft.FeatureManagement;
-    using Microsoft.FeatureManagement.FeatureFilters;
     using Microsoft.Net.Http.Headers;
     using Microsoft.OpenApi.Models;
     using Newtonsoft.Json;
-    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Authorization;
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
@@ -64,6 +62,7 @@ namespace OrganisationRegistry.Api.Infrastructure
             Migrations.Run(_configuration.GetSection(SqlServerConfiguration.Section).Get<SqlServerConfiguration>());
             var openIdConfiguration = _configuration.GetSection(OpenIdConnectConfiguration.Section).Get<OpenIdConnectConfiguration>();
             var apiConfiguration = _configuration.GetSection(ApiConfiguration.Section).Get<ApiConfiguration>();
+            var editApiConfiguration = _configuration.GetSection(EditApiConfiguration.Section).Get<EditApiConfiguration>();
 
             var magdaClientCertificate = MagdaClientCertificate.Create(
                 apiConfiguration.KboCertificate,
@@ -83,9 +82,15 @@ namespace OrganisationRegistry.Api.Infrastructure
                     options.TokenValidationParameters =
                         new OrganisationRegistryTokenValidationParameters(openIdConfiguration);
                 })
+                .AddOAuth2Introspection(AuthenticationSchemes.EditApi, options =>
+                {
+                    options.ClientId = editApiConfiguration.ClientId;
+                    options.ClientSecret = editApiConfiguration.ClientSecret;
+                    options.Authority = editApiConfiguration.Authority;
+                    options.IntrospectionEndpoint = editApiConfiguration.IntrospectionEndpoint;
+                })
                 .Services
 
-                //.AddTransient<IPrincipal>(provider => provider.GetService<IHttpContextAccessor>().HttpContext.User)
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
                 .AddScoped<ISecurityService, SecurityService>()
 

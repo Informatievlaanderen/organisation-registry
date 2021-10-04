@@ -14,6 +14,7 @@ nuget System.ServiceModel.Security 4.8.1
 nuget System.IdentityModel.Tokens.Jwt 6.8.0
 nuget Microsoft.IdentityModel.Tokens 6.8.0
 
+nuget IdentityModel.AspNetCore.OAuth2Introspection 5.1.0
 nuget Microsoft.AspNetCore.Authentication.JwtBearer 5.0.6
 nuget Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore 5.0.6
 nuget Microsoft.AspNetCore.AzureAppServicesIntegration 5.0.6

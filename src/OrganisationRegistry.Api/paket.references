@@ -14,6 +14,7 @@ Microsoft.Extensions.Logging
 
 Microsoft.Extensions.Http
 
+IdentityModel.AspNetCore.OAuth2Introspection
 Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore
 Microsoft.AspNetCore.Mvc.Versioning
 Microsoft.AspNetCore.Authentication.JwtBearer

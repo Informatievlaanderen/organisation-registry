@@ -12,5 +12,9 @@ namespace OrganisationRegistry.Infrastructure.Configuration
         public DateTime Created => DateTime.Now;
 
         public Guid Orafin { get; set; }
+        public string ClientId { get; set; }
+        public string ClientSecret { get; set; }
+        public string Authority { get; set; }
+        public string IntrospectionEndpoint { get; set; }
     }
 }
