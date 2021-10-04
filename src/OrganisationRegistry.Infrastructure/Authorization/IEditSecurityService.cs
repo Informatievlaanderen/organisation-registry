@@ -5,6 +5,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization
 
     public interface IEditSecurityService
     {
-
+        bool CanAddKey(Guid keyTypeId);
+        bool CanEditKey(Guid keyTypeId);
     }
 }
