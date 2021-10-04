@@ -13,7 +13,7 @@
     [FeatureGate(FeatureFlags.EditApi)]
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
-    [OrganisationRegistryRoute("edit/organisations/{organisationId}/keys")]
+    [OrganisationRegistryRoute("edit/organisations/{organisationId:guid}/keys")]
     public class OrganisationKeyController : OrganisationRegistryController
     {
         public OrganisationKeyController(ICommandSender commandSender)
@@ -34,6 +34,9 @@
         {
             var internalMessage = new AddOrganisationKeyInternalRequest(organisationId, message);
 
+            if (!securityService.CanAddKey(message.KeyTypeId))
+                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor dit sleuteltype.");
+
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
@@ -47,15 +50,22 @@
         /// <summary>Update a key for an organisation.</summary>
         /// <response code="201">If the key is updated, together with the location.</response>
         /// <response code="400">If the key information does not pass validation.</response>
-        [HttpPut("{organisationId:guid}")]
+        [HttpPut("{organisationKeyId:guid}")]
         [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Put(
-            [FromServices] ISecurityService securityService,
+            [FromServices] IEditSecurityService securityService,
+            [FromRoute] Guid organisationKeyId,
             [FromRoute] Guid organisationId,
             [FromBody] UpdateOrganisationKeyRequest message)
         {
-            var internalMessage = new UpdateOrganisationKeyInternalRequest(organisationId, message);
+            var internalMessage = new UpdateOrganisationKeyInternalRequest(
+                organisationId,
+                organisationKeyId,
+                message);
+
+            if (!securityService.CanEditKey(message.KeyTypeId))
+                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor dit sleuteltype.");
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);

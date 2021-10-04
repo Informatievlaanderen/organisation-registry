@@ -10,18 +10,21 @@
     public class UpdateOrganisationKeyInternalRequest
     {
         public Guid OrganisationId { get; set; }
+        public Guid OrganisationKeyId { get; set; }
         public UpdateOrganisationKeyRequest Body { get; }
 
-        public UpdateOrganisationKeyInternalRequest(Guid organisationId, UpdateOrganisationKeyRequest message)
+        public UpdateOrganisationKeyInternalRequest(Guid organisationId,
+            Guid organisationKeyId,
+            UpdateOrganisationKeyRequest message)
         {
             OrganisationId = organisationId;
             Body = message;
+            OrganisationKeyId = organisationKeyId;
         }
     }
 
     public class UpdateOrganisationKeyRequest
     {
-        public Guid OrganisationKeyId { get; set; }
         public Guid KeyTypeId { get; set; }
         public string KeyValue { get; set; }
         public DateTime? ValidFrom { get; set; }
@@ -64,7 +67,7 @@
         public static UpdateOrganisationKey Map(UpdateOrganisationKeyInternalRequest message)
         {
             return new UpdateOrganisationKey(
-                message.Body.OrganisationKeyId,
+                new OrganisationKeyId(message.OrganisationKeyId),
                 new OrganisationId(message.OrganisationId),
                 new KeyTypeId(message.Body.KeyTypeId),
                 message.Body.KeyValue,

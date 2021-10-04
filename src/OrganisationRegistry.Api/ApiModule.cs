@@ -37,6 +37,7 @@ namespace OrganisationRegistry.Api
 
             _services
                 .Configure<ApiConfiguration>(_configuration.GetSection(ApiConfiguration.Section))
+                .Configure<EditApiConfiguration>(_configuration.GetSection(EditApiConfiguration.Section))
                 .Configure<OpenIdConnectConfiguration>(_configuration.GetSection(OpenIdConnectConfiguration.Section));
         }
 
