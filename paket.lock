@@ -386,6 +386,8 @@ NUGET
     IdentityModel (5.0)
       System.Text.Encodings.Web (>= 5.0)
       System.Text.Json (>= 5.0)
+    IdentityModel.AspNetCore.OAuth2Introspection (5.1)
+      IdentityModel (>= 5.0)
     Microsoft.AspNetCore.Authentication.JwtBearer (5.0.6)
       Microsoft.IdentityModel.Protocols.OpenIdConnect (>= 6.7.1)
     Microsoft.AspNetCore.Authorization (5.0.6)
