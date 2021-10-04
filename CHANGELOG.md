@@ -1,3 +1,10 @@
+# [1.99.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.98.0...v1.99.0) (2021-10-04)
+
+
+### Features
+
+* allow machine-to-machine auth ([e21c859](https://github.com/informatievlaanderen/organisation-registry/commit/e21c859d97543f5893ea9c36fbfa7e64909f82de))
+
 # [1.98.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.97.2...v1.98.0) (2021-10-04)
 
 
