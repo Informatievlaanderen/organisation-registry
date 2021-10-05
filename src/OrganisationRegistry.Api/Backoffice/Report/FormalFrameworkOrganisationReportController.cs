@@ -9,6 +9,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report
     using Infrastructure;
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
     using OrganisationRegistry.Infrastructure.Commands;
@@ -40,9 +41,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report
         /// <param name="id">A formal framework GUID identifier</param>
         /// <returns></returns>
         [HttpGet("formalframeworkorganisations/{id}")]
-        [ProducesResponseType(typeof(IEnumerable<FormalFrameworkOrganisationBase>), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int) HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(BadRequestResult), (int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetFormalFrameworkOrganisations(
             [FromServices] Elastic elastic,
             [FromServices] IDateTimeProvider dateTimeProvider,
@@ -95,9 +96,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report
         /// <param name="id">A formal framework GUID identifier</param>
         /// <returns></returns>
         [HttpGet("formalframeworkorganisations/{id}/extended")]
-        [ProducesResponseType(typeof(IEnumerable<FormalFrameworkOrganisationExtended>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetFormalFrameworkOrganisationsExtended(
             [FromServices] Elastic elastic,
             [FromServices] IDateTimeProvider dateTimeProvider,
@@ -149,9 +150,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report
         /// <param name="id">A formal framework GUID identifier</param>
         /// <returns></returns>
         [HttpGet("formalframeworkorganisations/vademecum/{id}")]
-        [ProducesResponseType(typeof(IEnumerable<FormalFrameworkOrganisation>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetFormalFrameworkOrganisationsVademecum(
             [FromServices] Elastic elastic,
             [FromRoute] Guid id)

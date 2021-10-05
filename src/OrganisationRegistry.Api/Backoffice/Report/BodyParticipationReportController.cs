@@ -9,6 +9,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using OrganisationRegistry.Infrastructure.Commands;
     using Responses;
@@ -32,9 +33,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report
         /// <param name="bodyId">A body GUID identifier</param>
         /// <returns></returns>
         [HttpGet("bodyparticipation/{bodyId}")]
-        [ProducesResponseType(typeof(IEnumerable<BodyParticipation>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetBodyParticipation(
             [FromServices] OrganisationRegistryContext context,
             [FromServices] IDateTimeProvider dateTimeProvider,
@@ -85,9 +86,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report
         /// <param name="bodyId">A body GUID identifier</param>
         /// <returns></returns>
         [HttpGet("bodyparticipation/{bodyId}/totals")]
-        [ProducesResponseType(typeof(BodyParticipationTotals), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetBodyParticipationTotals(
             [FromServices] OrganisationRegistryContext context,
             [FromServices] IDateTimeProvider dateTimeProvider,

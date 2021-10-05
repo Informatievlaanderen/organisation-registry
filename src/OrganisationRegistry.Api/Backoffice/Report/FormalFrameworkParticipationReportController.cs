@@ -8,6 +8,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report
     using Infrastructure;
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
     using OrganisationRegistry.Infrastructure.Commands;
@@ -32,9 +33,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report
         /// <param name="formalFrameworkId">A formal framework GUID identifier</param>
         /// <returns></returns>
         [HttpGet("formalframeworkparticipation/{formalFrameworkId}")]
-        [ProducesResponseType(typeof(IEnumerable<FormalFrameworkParticipation>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetFormalFrameworkParticipation(
             [FromServices] OrganisationRegistryContext context,
             [FromRoute] Guid formalFrameworkId)
@@ -81,9 +82,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report
         /// <param name="dateTimeProvider"></param>
         /// <returns></returns>
         [HttpGet("participationsummary")]
-        [ProducesResponseType(typeof(IEnumerable<FormalFrameworkParticipation>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetParticipationSummary(
             [FromServices] OrganisationRegistryContext context,
             [FromServices] IOptions<ApiConfiguration> apiConfiguration,

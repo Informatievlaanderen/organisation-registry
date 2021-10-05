@@ -8,6 +8,7 @@
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.FeatureManagement.Mvc;
@@ -49,8 +50,8 @@
         /// <response code="200">If the regulation is found.</response>
         /// <response code="404">If the regulation cannot be found.</response>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(OrganisationRegulationListItem), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId, [FromRoute] Guid id)
         {
             var organisation = await context.OrganisationRegulationList.FirstOrDefaultAsync(x => x.OrganisationRegulationId == id);
@@ -66,8 +67,8 @@
         /// <response code="400">If the regulation information does not pass validation.</response>
         [HttpPost]
         [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationRegulationRequest message)
         {
             var internalMessage = new AddOrganisationRegulationInternalRequest(organisationId, message);
@@ -88,8 +89,8 @@
         /// <response code="400">If the regulation information does not pass validation.</response>
         [HttpPut("{id}")]
         [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationRegulationRequest message)
         {
             var internalMessage = new UpdateOrganisationRegulationInternalRequest(organisationId, message);

@@ -16,6 +16,8 @@
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
     [OrganisationRegistryRoute("edit")]
+    [ApiController]
+    [ApiExplorerSettings(GroupName = "Test Authenticatie")]
     public class OrganisationTestAuthController : OrganisationRegistryController
     {
         public OrganisationTestAuthController(ICommandSender commandSender)
@@ -23,6 +25,11 @@
         {
         }
 
+        /// <summary>
+        /// Test de authenticatie.
+        /// </summary>
+        /// <remarks>Tijdelijk endpoint bedoeld om de authenticatie te testen.</remarks>
+        /// <returns></returns>
         [HttpGet("auth")]
         [Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi)]
         public async Task<IActionResult> TestAuthorization()

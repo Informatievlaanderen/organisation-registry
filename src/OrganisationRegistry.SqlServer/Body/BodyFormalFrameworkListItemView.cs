@@ -9,12 +9,14 @@
     using OrganisationRegistry.Body.Events;
 
     using System.Linq;
+    using System.Runtime.Serialization;
     using System.Threading.Tasks;
     using FormalFramework;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.FormalFramework.Events;
     using OrganisationRegistry.Infrastructure;
 
+    [DataContract]
     public class BodyFormalFrameworkListItem
     {
         public Guid BodyFormalFrameworkId { get; set; }

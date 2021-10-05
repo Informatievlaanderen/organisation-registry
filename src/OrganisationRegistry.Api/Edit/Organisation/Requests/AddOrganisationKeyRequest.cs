@@ -6,6 +6,7 @@
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using SqlServer.Organisation;
+    using Swashbuckle.AspNetCore.Annotations;
 
     public class AddOrganisationKeyInternalRequest
     {
@@ -22,10 +23,27 @@
 
     public class AddOrganisationKeyRequest
     {
+        /// <summary>
+        /// Unieke id van de organisatie sleutel. Wordt gegenereerd indien niet meegegeven.
+        /// </summary>
         public Guid? OrganisationKeyId { get; set; }
+        /// <summary>
+        /// Id van het sleuteltype.
+        /// </summary>
         public Guid KeyTypeId { get; set; }
+        /// <summary>
+        /// Waarde van de sleutel.
+        /// </summary>
         public string KeyValue { get; set; }
+        /// <summary>
+        /// Geldig vanaf.
+        /// </summary>
+        [SwaggerSchema(Format = "date")]
         public DateTime? ValidFrom { get; set; }
+        /// <summary>
+        /// Geldig tot.
+        /// </summary>
+        [SwaggerSchema(Format = "date")]
         public DateTime? ValidTo { get; set; }
     }
 

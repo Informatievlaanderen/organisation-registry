@@ -9,6 +9,7 @@
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Infrastructure.Authorization;
@@ -31,7 +32,7 @@
         /// <summary>Get a list of available delegations.</summary>
         [HttpGet]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.OrganisatieBeheerder)]
-        [ProducesResponseType(typeof(List<DelegationListQueryResult>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromServices] ISecurityService securityService)
         {
             var filtering = Request.ExtractFilteringRequest<DelegationListItemFilter>();
@@ -58,8 +59,8 @@
         /// <response code="404">If the delegation cannot be found.</response>
         [HttpGet("{id}")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.OrganisatieBeheerder)]
-        [ProducesResponseType(typeof(DelegationResponse), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get([FromServices] ISecurityService securityService, [FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)
         {
             var delegation = await context.DelegationList.FirstOrDefaultAsync(x => x.Id == id);

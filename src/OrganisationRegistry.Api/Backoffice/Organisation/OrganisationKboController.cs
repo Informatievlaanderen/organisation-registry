@@ -9,6 +9,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Infrastructure.Commands;
@@ -31,7 +32,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <response code="200">If the organisation was coupled.</response>
         [HttpPut("{id}/kbo/number/{kboNumber}")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
-        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> CoupleToKboNumber(
             [FromRoute] Guid id,
             [FromRoute] string kboNumber)
@@ -48,7 +49,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <response code="200">If the organisation coupling was cancelled.</response>
         [HttpPut("{id}/kbo/cancel")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
-        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> CancelCouplingWithKbo([FromRoute] Guid id)
         {
             await CommandSender.Send(
@@ -62,7 +63,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <response code="200">If the organisation was updated.</response>
         [HttpPut("{id}/kbo/sync")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
-        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateFromKbo([FromRoute] Guid id)
         {
             await CommandSender.Send(
@@ -78,7 +79,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <response code="200">If the organisation was terminated.</response>
         [HttpPut("{id}/kbo/terminate")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
-        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> TerminateKboCoupling([FromRoute] Guid id)
         {
             await CommandSender.Send(
@@ -91,7 +92,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <summary>Gets the termination status of an organisation coupled with the KBO.</summary>
         [HttpGet("{id}/kbo/{kboNumber}/termination")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
-        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetTerminationStatus(
             [FromServices] OrganisationRegistryContext context,
             [FromRoute] string kboNumber,
@@ -108,7 +109,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <summary>Get a list of organisations to be terminated according to the KBO.</summary>
         [HttpGet("kbo/terminated")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
-        [ProducesResponseType(typeof(List<OrganisationTerminationResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
         {
             var filtering = Request.ExtractFilteringRequest<OrganisationTerminationListItemFilter>();

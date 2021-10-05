@@ -8,6 +8,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Infrastructure.Authorization;
@@ -47,8 +48,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <response code="200">If the relation is found.</response>
         /// <response code="404">If the relation cannot be found.</response>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(OrganisationRelationResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId, [FromRoute] Guid id)
         {
             var organisation = await context.OrganisationRelationList.FirstOrDefaultAsync(x => x.OrganisationRelationId == id);
@@ -64,8 +65,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <response code="400">If the relation information does not pass validation.</response>
         [HttpPost]
         [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationRelationRequest message)
         {
             var internalMessage = new AddOrganisationRelationInternalRequest(organisationId, message);
@@ -86,8 +87,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <response code="400">If the relation information does not pass validation.</response>
         [HttpPut("{id}")]
         [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationRelationRequest message)
         {
             var internalMessage = new UpdateOrganisationRelationInternalRequest(organisationId, message);

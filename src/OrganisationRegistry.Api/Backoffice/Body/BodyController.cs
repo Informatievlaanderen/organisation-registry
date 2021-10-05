@@ -10,6 +10,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Infrastructure.Authorization;
@@ -32,7 +33,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body
 
         /// <summary>Get a list of available bodies.</summary>
         [HttpGet]
-        [ProducesResponseType(typeof(List<BodyListQueryResult>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
         {
             var filtering = Request.ExtractFilteringRequest<BodyListItemFilter>();
@@ -52,8 +53,8 @@ namespace OrganisationRegistry.Api.Backoffice.Body
         /// <response code="200">If the body is found.</response>
         /// <response code="404">If the body cannot be found.</response>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(BodyResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)
         {
             var body =
@@ -75,8 +76,8 @@ namespace OrganisationRegistry.Api.Backoffice.Body
         /// <response code="400">If the body information does not pass validation.</response>
         [HttpPost]
         [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromServices] OrganisationRegistryContext context, [FromBody] RegisterBodyRequest message)
         {
             if (message.OrganisationId.HasValue && !securityService.CanAddBody(User, message.OrganisationId))

@@ -8,6 +8,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
     using Autofac.Features.OwnedInstances;
     using Infrastructure;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
@@ -35,7 +36,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
         /// <response code="404">If the kbo number does not exist</response>
         [HttpGet("{kboNumberInput}")]
         [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(NotFoundResult), (int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(
             [FromServices] Func<Owned<OrganisationRegistryContext>> contextFactory,
             [FromServices] IKboOrganisationRetriever kboOrganisationRetriever,

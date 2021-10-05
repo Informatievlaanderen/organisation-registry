@@ -121,6 +121,13 @@ namespace OrganisationRegistry.Api.Infrastructure
                         },
                         Swagger =
                         {
+                            MiddlewareHooks =
+                            {
+                                AfterSwaggerGen = x =>
+                                {
+                                    x.EnableAnnotations();
+                                }
+                            },
                             ApiInfo = (provider, description) => new OpenApiInfo
                             {
                                 Version = description.ApiVersion.ToString(),
@@ -133,7 +140,10 @@ namespace OrganisationRegistry.Api.Infrastructure
                                     Url = new Uri("https://legacy.basisregisters.vlaanderen")
                                 }
                             },
-                            XmlCommentPaths = new[] {typeof(Startup).GetTypeInfo().Assembly.GetName().Name}
+                            XmlCommentPaths = new[]
+                            {
+                                typeof(Startup).GetTypeInfo().Assembly.GetName().Name,
+                            }!
                         },
                         Server =
                         {
@@ -148,7 +158,12 @@ namespace OrganisationRegistry.Api.Infrastructure
                                 cfg.FormatterMappings.SetMediaTypeMappingForFormat("csv", MediaTypeHeaderValue.Parse("text/csv"));
                                 cfg.EnableEndpointRouting = false;
                             },
-                            AfterMvc = builder => builder.AddFormatterMappings(),
+                            AfterMvc = builder => builder
+                                .AddFormatterMappings()
+                                .ConfigureApiBehaviorOptions(options =>
+                                {
+                                    options.SuppressModelStateInvalidFilter = true;
+                                }),
                             AfterHealthChecks = health =>
                             {
                                 var connectionStrings = _configuration
@@ -164,7 +179,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                                 health.AddDbContextCheck<OrganisationRegistryContext>(
                                     $"dbcontext-{nameof(OrganisationRegistryContext).ToLowerInvariant()}",
                                     tags: new[] {DatabaseTag, "sql", "sqlserver"});
-                            }
+                            },
                         }
                     });
 
@@ -245,7 +260,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                             .UseOrganisationRegistryEventSourcing()
                             //.UseOrganisationRegistryCookieAuthentication(tokenValidationParameters)
                             //.UseOrganisationRegistryJwtBearerAuthentication(tokenValidationParameters)
-                            .UseAuthentication()
+                            .UseAuthentication(),
                     }
                 });
         }

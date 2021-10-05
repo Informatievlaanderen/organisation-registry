@@ -8,6 +8,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Status
     using Infrastructure;
     using Infrastructure.Helpers;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
@@ -38,7 +39,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Status
 
         [HttpGet]
         [Route("toggles")]
-        [ProducesResponseType(typeof(TogglesConfiguration), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetToggles([FromServices] IOptions<TogglesConfiguration> toggles)
         {
             return Ok(toggles.Value);
@@ -46,7 +47,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Status
 
         [HttpGet]
         [Route("features")]
-        [ProducesResponseType(typeof(TogglesConfiguration), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetFeatures([FromServices] IFeatureManager featureManager)
         {
             var features = new Dictionary<string, bool>();

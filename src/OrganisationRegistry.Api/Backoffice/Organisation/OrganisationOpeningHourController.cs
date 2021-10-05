@@ -8,6 +8,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Infrastructure.Authorization;
@@ -45,8 +46,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         }
 
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(OrganisationOpeningHourListItem), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(
             [FromServices] OrganisationRegistryContext context,
             [FromRoute] Guid organisationId,
@@ -61,8 +62,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
 
         [HttpPost]
         [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post(
             [FromServices] ISecurityService securityService,
             [FromRoute] Guid organisationId,
@@ -83,8 +84,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
 
         [HttpPut("{id}")]
         [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put(
             [FromServices] ISecurityService securityService,
             [FromRoute] Guid organisationId,
