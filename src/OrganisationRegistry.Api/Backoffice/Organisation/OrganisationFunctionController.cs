@@ -8,6 +8,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Infrastructure.Authorization;
@@ -47,8 +48,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <response code="200">If the function is found.</response>
         /// <response code="404">If the function cannot be found.</response>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(OrganisationFunctionResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId, [FromRoute] Guid id)
         {
             var organisation = await context.OrganisationFunctionList.FirstOrDefaultAsync(x => x.OrganisationFunctionId == id);
@@ -64,8 +65,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <response code="400">If the function information does not pass validation.</response>
         [HttpPost]
         [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationFunctionRequest message)
         {
             var internalMessage = new AddOrganisationFunctionInternalRequest(organisationId, message);
@@ -86,8 +87,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <response code="400">If the function information does not pass validation.</response>
         [HttpPut("{id}")]
         [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationFunctionRequest message)
         {
             var internalMessage = new UpdateOrganisationFunctionInternalRequest(organisationId, message);

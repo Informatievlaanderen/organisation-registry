@@ -4,6 +4,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
     using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
@@ -36,7 +37,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
         /// <response code="200">The raw request/response from magda kbo lookup.</response>
         [HttpGet("{kboNumberInput}")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
-        [ProducesResponseType(typeof(NotFoundResult), (int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(
             [FromServices] ISecurityService securityService,
             [FromRoute] string kboNumberInput)

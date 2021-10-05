@@ -8,6 +8,7 @@
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
@@ -50,8 +51,8 @@
         /// <response code="200">If the configuration value is found.</response>
         /// <response code="404">If the configuration value cannot be found.</response>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(ConfigurationValue), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get([FromServices] ConfigurationContext context, [FromRoute] string id)
         {
             var configurationValue =
@@ -69,8 +70,8 @@
         /// <response code="201">If the configuration value is created, together with the location.</response>
         /// <response code="400">If the configuration value does not pass validation.</response>
         [HttpPost]
-        [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromServices] ConfigurationContext context, [FromBody] CreateConfigurationValueRequest message)
         {
             if (!ModelState.IsValid)
@@ -86,8 +87,8 @@
         /// <response code="200">If the configuration value is updated, together with the location.</response>
         /// <response code="400">If the configuration value does not pass validation.</response>
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put([FromServices] ConfigurationContext context, [FromRoute] string id, [FromBody] UpdateConfigurationValueRequest message)
         {
             var internalMessage = new UpdateConfigurationValueInternalRequest(id, message);

@@ -4,6 +4,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Events.Queries
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
     using Infrastructure.Search;
@@ -15,6 +16,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Events.Queries
     using SqlServer.Event;
     using SqlServer.Infrastructure;
 
+    [DataContract]
     public class EventWithData
     {
         public Guid Id { get; }

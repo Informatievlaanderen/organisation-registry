@@ -14,6 +14,7 @@ namespace OrganisationRegistry.Api.Dump
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
     using System.Xml;
     using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
+    using Microsoft.AspNetCore.Http;
     using Newtonsoft.Json.Serialization;
 
     [ApiVersion("1.0")]
@@ -41,7 +42,7 @@ namespace OrganisationRegistry.Api.Dump
         /// <returns></returns>
         [HttpGet("agentschap-zorg-en-gezondheid/full")]
         [HttpGet("agentschap-zorg-en-gezondheid/full.{format}")]
-        [ProducesResponseType(typeof(IEnumerable<OrganisationDump>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetOrganisations([FromServices] Elastic elastic)
         {
             var format = _actionContextAccessor.ActionContext.GetValueFromHeader("format")

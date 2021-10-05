@@ -9,6 +9,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Infrastructure.Authorization;
@@ -32,7 +33,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
         /// <summary>Get a list of available delegation assignments.</summary>
         [HttpGet("{delegationId}/assignments")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.OrganisatieBeheerder)]
-        [ProducesResponseType(typeof(List<DelegationAssignmentListQueryResult>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromServices] ISecurityService securityService, [FromRoute] Guid delegationId)
         {
             var delegation = await context.DelegationList.FirstOrDefaultAsync(x => x.Id == delegationId);
@@ -61,8 +62,8 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
         /// <response code="404">If the delegation assignment cannot be found.</response>
         [HttpGet("{delegationId}/assignments/{id}")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.OrganisatieBeheerder)]
-        [ProducesResponseType(typeof(DelegationAssignmentListQueryResult), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(
             [FromServices] OrganisationRegistryContext context,
             [FromServices] ISecurityService securityService,
@@ -90,8 +91,8 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
         /// <response code="400">If the delegation assignment information does not pass validation.</response>
         [HttpPost("{delegationId}/assignments")]
         [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(CreatedResult), (int) HttpStatusCode.Created)]
-        [ProducesResponseType(typeof(BadRequestResult), (int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post(
             [FromServices] OrganisationRegistryContext context,
             [FromServices] ISecurityService securityService,
@@ -122,8 +123,8 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
         /// <response code="400">If the delegation assignment information does not pass validation.</response>
         [HttpPut("{delegationId}/assignments/{id}")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.OrganisatieBeheerder)]
-        [ProducesResponseType(typeof(OkResult), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestResult), (int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put(
             [FromServices] OrganisationRegistryContext context,
             [FromServices] ISecurityService securityService,
@@ -155,8 +156,8 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
         /// <response code="400">If the delegation assignment information does not pass validation.</response>
         [HttpDelete("{delegationId}/assignments/{delegationAssignmentId}/{bodyId}/{bodySeatId}")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
-        [ProducesResponseType(typeof(OkResult), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestResult), (int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(
             [FromServices] OrganisationRegistryContext context,
             [FromServices] ISecurityService securityService,

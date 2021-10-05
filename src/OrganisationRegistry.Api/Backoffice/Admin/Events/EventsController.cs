@@ -8,6 +8,7 @@
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Infrastructure.Commands;
@@ -29,7 +30,7 @@
         /// <summary>Get a list of events.</summary>
         [HttpGet]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
-        [ProducesResponseType(typeof(List<EventListItem>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
         {
             var filtering = Request.ExtractFilteringRequest<EventListItemFilter>();
@@ -49,8 +50,8 @@
         /// <response code="404">If the event cannot be found.</response>
         [HttpGet("{id}")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
-        [ProducesResponseType(typeof(EventWithData), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] int id)
         {
             var eventData = await context.Events.FirstOrDefaultAsync(x => x.Number == id);

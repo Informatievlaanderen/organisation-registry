@@ -1,12 +1,14 @@
 namespace OrganisationRegistry.SqlServer.Event
 {
     using System;
+    using System.Runtime.Serialization;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Infrastructure;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.EventStore;
 
+    [DataContract]
     public class EventListItem
     {
         public Guid Id { get; set; }

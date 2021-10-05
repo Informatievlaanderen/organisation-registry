@@ -1,11 +1,13 @@
 ﻿namespace OrganisationRegistry.SqlServer.ProjectionState
 {
     using System;
+    using System.Runtime.Serialization;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using OrganisationRegistry.Infrastructure;
 
+    [DataContract]
     public class ProjectionStateItem
     {
         public Guid Id { get; set; }

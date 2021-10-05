@@ -1,13 +1,10 @@
 namespace OrganisationRegistry.Api.Infrastructure
 {
-    using Microsoft.AspNetCore.Mvc;
+    using Be.Vlaanderen.Basisregisters.Api;
 
-    public class OrganisationRegistryRouteAttribute : RouteAttribute
+    public class OrganisationRegistryRouteAttribute : ApiRouteAttribute
     {
-        //private const string Prefix = "";
-        private const string Prefix = "v{version:apiVersion}/";
-
-        public OrganisationRegistryRouteAttribute(string template) : base(Prefix + template)
+        public OrganisationRegistryRouteAttribute(string template) : base(template)
         {
         }
     }

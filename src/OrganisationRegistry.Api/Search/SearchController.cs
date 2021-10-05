@@ -25,6 +25,7 @@ namespace OrganisationRegistry.Api.Search
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using ElasticSearch;
+    using Microsoft.AspNetCore.Http;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
@@ -60,7 +61,7 @@ namespace OrganisationRegistry.Api.Search
         /// <param name="sort">Elasticsearch sorting.</param>
         /// <param name="scroll">Enable Elasticsearch scrolling.</param>
         [HttpGet("{indexName}")]
-        [ProducesResponseType(typeof(IEnumerable<OrganisationDocument>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetApiSearch(
             string indexName,
             [FromServices] Elastic elastic,
@@ -113,7 +114,7 @@ namespace OrganisationRegistry.Api.Search
         /// <param name="sort">Elasticsearch sorting.</param>
         /// <param name="scroll">Enable Elasticsearch scrolling.</param>
         [HttpGet("box/{indexName}")]
-        [ProducesResponseType(typeof(IEnumerable<OrganisationDocument>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetSearch(
             string indexName,
             [FromServices] Elastic elastic,
@@ -228,7 +229,7 @@ namespace OrganisationRegistry.Api.Search
 
         /// <summary>Search all organisations.</summary>
         [HttpPost("{indexName}")]
-        [ProducesResponseType(typeof(IEnumerable<OrganisationDocument>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> PostApiSearch(
             string indexName,
             [FromServices] Elastic elastic,
@@ -276,7 +277,7 @@ namespace OrganisationRegistry.Api.Search
         /// <param name="elastic"></param>
         /// <param name="id">Elasticsearch scroll id.</param>
         [HttpGet("{indexName}/scroll")]
-        [ProducesResponseType(typeof(IEnumerable<OrganisationDocument>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> ScrollApiSearch(
             string indexName,
             [FromServices] Elastic elastic,

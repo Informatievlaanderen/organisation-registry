@@ -9,6 +9,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report
     using Infrastructure;
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
@@ -42,9 +43,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report
         /// <param name="id">A formal framework GUID identifier</param>
         /// <returns></returns>
         [HttpGet("buildingorganisations/{id}")]
-        [ProducesResponseType(typeof(IEnumerable<BuildingOrganisation>), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int) HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(BadRequestResult), (int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetBuildingOrganisations(
             [FromServices] Elastic elastic,
             [FromRoute] Guid id)

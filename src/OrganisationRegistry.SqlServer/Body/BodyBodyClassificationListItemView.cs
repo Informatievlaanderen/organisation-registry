@@ -9,6 +9,7 @@ namespace OrganisationRegistry.SqlServer.Body
     using System;
     using System.Data.Common;
     using System.Linq;
+    using System.Runtime.Serialization;
     using System.Threading.Tasks;
     using OrganisationRegistry.Body.Events;
     using OrganisationRegistry.BodyClassification.Events;
@@ -16,6 +17,7 @@ namespace OrganisationRegistry.SqlServer.Body
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
 
+    [DataContract]
     public class BodyBodyClassificationListItem
     {
         public Guid BodyBodyClassificationId { get; set; }

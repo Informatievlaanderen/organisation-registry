@@ -9,6 +9,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Infrastructure.Authorization;
@@ -32,7 +33,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
 
         /// <summary>Get a list of available organisations.</summary>
         [HttpGet]
-        [ProducesResponseType(typeof(List<OrganisationListQueryResult>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromServices] ISecurityService securityService)
         {
             var filtering = Request.ExtractFilteringRequest<OrganisationListItemFilter>();
@@ -59,8 +60,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <response code="200">If the organisation is found.</response>
         /// <response code="404">If the organisation cannot be found.</response>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(OrganisationResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)
         {
             var organisation = await context.OrganisationDetail.FirstOrDefaultAsync(x => x.Id == id);
@@ -76,8 +77,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <response code="400">If the organisation information does not pass validation.</response>
         [HttpPost]
         [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post(
             [FromServices] ISecurityService securityService,
             [FromBody] CreateOrganisationRequest message)
@@ -107,8 +108,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <response code="400">If the organisation information does not pass validation.</response>
         [HttpPut("{id}")]
         [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid id, [FromBody] UpdateOrganisationInfoRequest message)
         {
             var internalMessage = new UpdateOrganisationInfoInternalRequest(id, message);
@@ -128,8 +129,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <response code="200">If the organisation is terminated.</response>
         [HttpPut("{id}/terminate")]
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
-        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete([FromRoute] Guid id, [FromBody] OrganisationTerminationRequest message)
         {
             await CommandSender.Send(

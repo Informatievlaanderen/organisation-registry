@@ -1,9 +1,11 @@
 namespace OrganisationRegistry.Infrastructure.Configuration
 {
     using System;
+    using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
     using Newtonsoft.Json;
 
+    [DataContract]
     public class TogglesConfiguration
     {
         public static string Section = "Toggles";

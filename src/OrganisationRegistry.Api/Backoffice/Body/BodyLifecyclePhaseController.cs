@@ -3,11 +3,13 @@
     using System;
     using System.Net;
     using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.Api;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Infrastructure.Authorization;
@@ -47,8 +49,8 @@
         /// <response code="200">If the lifecycle phase is found.</response>
         /// <response code="404">If the lifecycle phase cannot be found.</response>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(BodyLifecyclePhaseListItem), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid bodyId, [FromRoute] Guid id)
         {
             var bodyLifecyclePhase = await context.BodyLifecyclePhaseList.FirstOrDefaultAsync(x => x.BodyLifecyclePhaseId == id);
@@ -64,8 +66,8 @@
         /// <response code="400">If the lifecycle phase information does not pass validation.</response>
         [HttpPost]
         [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(CreatedResult), (int)HttpStatusCode.Created)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] AddBodyLifecyclePhaseRequest message)
         {
             var internalMessage = new AddBodyLifecyclePhaseInternalRequest(bodyId, message);
@@ -86,8 +88,8 @@
         /// <response code="400">If the lifecycle phase information does not pass validation.</response>
         [HttpPut("{id}")]
         [OrganisationRegistryAuthorize]
-        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] UpdateBodyLifecyclePhaseRequest message)
         {
             var internalMessage = new UpdateBodyLifecyclePhaseInternalRequest(bodyId, message);

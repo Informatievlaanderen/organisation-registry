@@ -8,6 +8,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
     using Day.Commands;
     using Infrastructure;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
@@ -36,8 +37,8 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
         /// <response code="400">If the task information does not pass validation.</response>
         [HttpPost]
         [OrganisationRegistryAuthorize(Roles = Roles.AutomatedTask + "," + Roles.Developer)]
-        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post(
             [FromServices] Func<Owned<OrganisationRegistryContext>> contextFactory,
             [FromServices] IKboSync kboSync,

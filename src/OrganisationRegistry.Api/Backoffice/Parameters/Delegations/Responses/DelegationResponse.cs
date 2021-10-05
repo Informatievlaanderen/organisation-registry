@@ -1,8 +1,10 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.Delegations.Responses
 {
     using System;
+    using System.Runtime.Serialization;
     using SqlServer.Delegations;
 
+    [DataContract]
     public class DelegationResponse
     {
         public Guid Id { get; set; }

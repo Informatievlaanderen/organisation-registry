@@ -75,8 +75,6 @@ namespace OrganisationRegistry.UI.Infrastructure
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-
             // TODO: redirect index.html to / (and remove from web.config)
 
             app.Use(async (context, next) =>
@@ -103,8 +101,6 @@ namespace OrganisationRegistry.UI.Infrastructure
             app.UseResponseCompression();
             app.UseDefaultFiles();
             app.UseStaticFiles();
-
-            //app.UseSwaggerUi("docs", $"{Configuration["Api:Endpoint"]}/docs/v1/docs.json");
 
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();

@@ -5,6 +5,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Queries
     using System.ComponentModel;
     using System.Linq;
     using System.Linq.Expressions;
+    using System.Runtime.Serialization;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Infrastructure;
     using Infrastructure.Search;
@@ -13,6 +14,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Queries
     using SqlServer.Body;
     using SqlServer.Infrastructure;
 
+    [DataContract]
     public class BodyListQueryResult
     {
         [ExcludeFromCsv]

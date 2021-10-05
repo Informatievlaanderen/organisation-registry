@@ -8,6 +8,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Projections
     using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Infrastructure.Commands;
@@ -30,7 +31,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Projections
         /// <summary>Get a list of projections.</summary>
         [HttpGet]
         [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
-        [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get()
         {
             var projections = typeof(OrganisationRegistrySqlServerAssemblyTokenClass)
@@ -54,7 +55,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Projections
         /// <summary>Get a list of available projection states.</summary>
         [HttpGet("states")]
         [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
-        [ProducesResponseType(typeof(IEnumerable<ProjectionStateItem>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
         {
             return Ok(await context.ProjectionStates
@@ -65,7 +66,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Projections
         /// <summary>Get a projection state by its id.</summary>
         [HttpGet("states/{id}")]
         [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
-        [ProducesResponseType(typeof(ProjectionStateItem), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, Guid id)
         {
             var state = await context.ProjectionStates
@@ -80,7 +81,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Projections
         /// <summary>Get the max event number.</summary>
         [HttpGet("states/last-event")]
         [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
-        [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> LastEvent([FromServices] OrganisationRegistryContext context)
         {
             return Ok(await context.Events
@@ -90,8 +91,8 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Projections
 
         [HttpPut("states/{id}")]
         [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
-        [ProducesResponseType(typeof(OkResult), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put([FromServices] OrganisationRegistryContext context, Guid id, [FromBody] UpdateProjectionStateRequest message)
         {
             var state = await context.ProjectionStates

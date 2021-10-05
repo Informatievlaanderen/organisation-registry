@@ -10,6 +10,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
@@ -48,9 +49,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("classificationorganisations/{id}")]
-        [ProducesResponseType(typeof(IEnumerable<ClassificationOrganisation>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetClassificationOrganisations(
             [FromServices] Elastic elastic,
             [FromRoute] Guid id)
@@ -99,9 +100,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report
         /// <param name="context"></param>
         /// <returns></returns>
         [HttpGet("policydomainclassifications")]
-        [ProducesResponseType(typeof(PagedQueryable<OrganisationClassificationListQueryResult>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetOrganisationClassificationsForPolicyDomain(
             [FromServices] OrganisationRegistryContext context)
         {
@@ -127,9 +128,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report
         /// <param name="context"></param>
         /// <returns></returns>
         [HttpGet("responsibleministerclassifications")]
-        [ProducesResponseType(typeof(PagedQueryable<OrganisationClassificationListQueryResult>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetOrganisationClassificationsForResponsibleMinister(
             [FromServices] OrganisationRegistryContext context)
         {
@@ -157,9 +158,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report
         /// <param name="classificationOrganisationId">A classification organisation GUID identifier</param>
         /// <returns></returns>
         [HttpGet("classificationorganisationsparticipation/{classificationOrganisationId}")]
-        [ProducesResponseType(typeof(IEnumerable<ClassificationOrganisationParticipation>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(NotFoundResult), (int)HttpStatusCode.NotFound)]
-        [ProducesResponseType(typeof(BadRequestResult), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetClassificationOrganisationParticipation(
             [FromServices] OrganisationRegistryContext context,
             [FromServices] IDateTimeProvider dateTimeProvider,
