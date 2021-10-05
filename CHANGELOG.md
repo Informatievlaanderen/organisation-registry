@@ -1,3 +1,10 @@
+# [1.100.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.99.0...v1.100.0) (2021-10-05)
+
+
+### Features
+
+* make swagger docs work again ([78028a3](https://github.com/informatievlaanderen/organisation-registry/commit/78028a391acf26bbb69dbd655fa9cda90b496c69))
+
 # [1.99.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.98.0...v1.99.0) (2021-10-04)
 
 
