@@ -16,7 +16,6 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Events.Queries
     using SqlServer.Event;
     using SqlServer.Infrastructure;
 
-    [DataContract]
     public class EventWithData
     {
         public Guid Id { get; }

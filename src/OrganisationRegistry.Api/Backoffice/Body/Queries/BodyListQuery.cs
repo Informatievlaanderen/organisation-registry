@@ -14,7 +14,6 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Queries
     using SqlServer.Body;
     using SqlServer.Infrastructure;
 
-    [DataContract]
     public class BodyListQueryResult
     {
         [ExcludeFromCsv]

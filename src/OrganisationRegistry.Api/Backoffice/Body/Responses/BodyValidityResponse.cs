@@ -4,7 +4,6 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Responses
     using System.Runtime.Serialization;
     using SqlServer.Body;
 
-    [DataContract]
     public class BodyValidityResponse
     {
         public Guid Id { get; }
