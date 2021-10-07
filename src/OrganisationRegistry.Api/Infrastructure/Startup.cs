@@ -33,6 +33,7 @@ namespace OrganisationRegistry.Api.Infrastructure
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
     using Search;
+    using Swagger;
     using IContainer = Autofac.IContainer;
 
     public class Startup
@@ -69,7 +70,6 @@ namespace OrganisationRegistry.Api.Infrastructure
                 apiConfiguration.RijksRegisterCertificatePwd);
 
             services
-
                 .AddAuthentication(options =>
                 {
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -126,6 +126,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                                 AfterSwaggerGen = x =>
                                 {
                                     x.EnableAnnotations();
+                                    x.OperationFilter<ProblemJsonResponseFilter>();
                                 }
                             },
                             ApiInfo = (provider, description) => new OpenApiInfo
@@ -231,7 +232,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                         ServiceProvider = serviceProvider,
                         HostingEnvironment = env,
                         ApplicationLifetime = appLifetime,
-                        LoggerFactory = loggerFactory
+                        LoggerFactory = loggerFactory,
                     },
                     Api =
                     {
