@@ -4,8 +4,10 @@
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Infrastructure;
+    using Infrastructure.Security;
     using Infrastructure.Swagger;
     using Infrastructure.Swagger.Examples;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.FeatureManagement.Mvc;
@@ -24,6 +26,7 @@
     [ApiExplorerSettings(GroupName = "Organisatiesleutels")]
     [Consumes("application/json")]
     [Produces("application/json")]
+    [Authorize(AuthenticationSchemes = AuthenticationSchemes.EditApi)]
     public class OrganisationKeyController : OrganisationRegistryController
     {
         public OrganisationKeyController(ICommandSender commandSender)
@@ -38,15 +41,12 @@
         /// <param name="organisationId">Id van de organisatie.</param>
         /// <response code="201">Als het verzoek aanvaard is.</response>
         /// <response code="400">Als het verzoek ongeldige data bevat.<example>a;sdlf</example></response>
-        /// <response code="403">Als u onvoldoende rechten heeft op dit sleuteltype.</response>
         /// <response code="500">Als er een interne fout is opgetreden.</response>
         [HttpPost]
         [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationErrors), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [SwaggerResponseExample(StatusCodes.Status201Created, typeof(EmptyResponseExamples))]
-        [SwaggerResponseExample(StatusCodes.Status403Forbidden, typeof(ForbiddenResponseExamples))]
         [SwaggerResponseExample(StatusCodes.Status500InternalServerError, typeof(InternalServerErrorResponseExamples))]
         [SwaggerLocationHeader]
         public async Task<IActionResult> Post(
