@@ -1,3 +1,17 @@
+# [1.101.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.100.0...v1.101.0) (2021-10-07)
+
+
+### Bug Fixes
+
+* remove datacontracts attribute ([fd0f1fe](https://github.com/informatievlaanderen/organisation-registry/commit/fd0f1fe32d91d5290d8e09e65781d1f3cf263612))
+
+
+### Features
+
+* improve swagger docs ([f629997](https://github.com/informatievlaanderen/organisation-registry/commit/f629997e220f4006df04fa5c166542b3da284068))
+* make edit api require authorization ([8726659](https://github.com/informatievlaanderen/organisation-registry/commit/872665915bc672fc40cacd05c3d4b0a2966f44a3))
+* upgrade build pipeline ([19add00](https://github.com/informatievlaanderen/organisation-registry/commit/19add0005a229deefc7f7581f7cb3ff22dfdbc26))
+
 # [1.100.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.99.0...v1.100.0) (2021-10-05)
 
 
