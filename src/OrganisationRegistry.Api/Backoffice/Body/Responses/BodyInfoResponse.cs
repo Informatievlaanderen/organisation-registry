@@ -4,7 +4,6 @@
     using System.Runtime.Serialization;
     using SqlServer.Body;
 
-    [DataContract]
     public class BodyInfoResponse
     {
         public Guid Id { get; }

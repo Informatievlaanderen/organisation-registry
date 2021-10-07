@@ -4,7 +4,6 @@
     using System.Runtime.Serialization;
     using SqlServer.Delegations;
 
-    [DataContract]
     public class DelegationResponse
     {
         public Guid Id { get; set; }
