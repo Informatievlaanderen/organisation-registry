@@ -1,3 +1,15 @@
+# [1.102.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.101.0...v1.102.0) (2021-10-10)
+
+
+### Bug Fixes
+
+* remove datacontract ([a65df7f](https://github.com/informatievlaanderen/organisation-registry/commit/a65df7f9993714455bffe0b9b5ccc04ab3eeea5c))
+
+
+### Features
+
+* add first draft of search docs ([6a293fc](https://github.com/informatievlaanderen/organisation-registry/commit/6a293fc9546c1957c5436006f8aa2d59bb245c8b))
+
 # [1.101.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.100.0...v1.101.0) (2021-10-07)
 
 
