@@ -7,7 +7,6 @@
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using OrganisationRegistry.Infrastructure;
 
-    [DataContract]
     public class ProjectionStateItem
     {
         public Guid Id { get; set; }
