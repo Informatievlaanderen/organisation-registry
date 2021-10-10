@@ -15,7 +15,6 @@
     using OrganisationRegistry.Infrastructure.Commands;
     using Requests;
     using Swashbuckle.AspNetCore.Filters;
-    using ForbiddenResponseExamples = Infrastructure.Swagger.Examples.ForbiddenResponseExamples;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 
     [FeatureGate(FeatureFlags.EditApi)]

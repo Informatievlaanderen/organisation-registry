@@ -30,6 +30,8 @@ namespace OrganisationRegistry.Api.Search
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
     [OrganisationRegistryRoute("search")]
+    [ApiController]
+    [ApiExplorerSettings(GroupName = "Zoeken")]
     public class SearchController : OrganisationRegistryController
     {
         // TODO: Add to configuration
@@ -51,15 +53,34 @@ namespace OrganisationRegistry.Api.Search
             _log = log;
         }
 
-        /// <summary>Search all organisations.</summary>
-        /// <param name="indexName">Elasticsearch index name</param>
+        /// <summary>Entiteiten opzoeken.</summary>
+        /// <remarks>Dit endpoint laat toe entiteiten op te vragen op de ElasticSearch indexes.
+        /// <br />
+        /// De volgende indexes zijn beschikbaar: <br />
+        ///     - `organisations` <br />
+        ///     - `people` <br />
+        ///     - `bodies`
+        /// <br /><br />
+        /// Voor het ophalen van grote hoeveelheden data, gebruiken we de <b>scroll</b> functionaliteit.
+        /// <br /><br />
+        /// Maak een request zoals je normaal doet, maar maak geen gebruik van `offset` of `limit`.
+        /// Gebruik in plaats daarvan `scroll=true`.
+        /// <br />
+        /// Dit geeft 500 resultaten die je gewoon kan verwerken. In aanvulling krijg je hierdoor ook een `http-header x-search-metadata` die een <b>scrollId</b> bevat, samen met nog wat andere info. (deze header is een json-string).
+        /// <br /><br />
+        /// Na deze request heb je 30 seconden de tijd om een call te doen naar `v1/search/people/scroll?id={SCROLLID}`
+        /// Deze zal je de volgende pagina geven (opnieuw 500 items), samen met de `x-search-metadata` header en een nieuwe <b>scrollId</b>.
+        /// Herhaal dit proces tot je geen nieuwe items meer krijgt.
+        /// </remarks>
+        /// <param name="indexName">ElasticSearch index naam.
+        /// Keuze tussen `organisations`, `people`, and `bodies`.</param>
         /// <param name="elastic"></param>
-        /// <param name="q">Elasticsearch querystring search.</param>
-        /// <param name="offset">Elasticsearch starting index position.</param>
-        /// <param name="limit">Elasticsearch number of hits to return.</param>
-        /// <param name="fields">Elasticsearch source filter.</param>
-        /// <param name="sort">Elasticsearch sorting.</param>
-        /// <param name="scroll">Enable Elasticsearch scrolling.</param>
+        /// <param name="q">ElasticSearch querystring.</param>
+        /// <param name="offset">Startpunt van de zoekresultaten (voor paginering).</param>
+        /// <param name="limit">Aantal resultaten, 100 indien niet meegegeven (voor paginering).</param>
+        /// <param name="fields">Veldnamen die in respons zullen zitten.</param>
+        /// <param name="sort">Sortering van de resultaten.</param>
+        /// <param name="scroll">Maak gebruik van de scrolling functionaliteit.</param>
         [HttpGet("{indexName}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetApiSearch(
