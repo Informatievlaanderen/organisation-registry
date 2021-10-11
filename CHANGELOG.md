@@ -1,3 +1,10 @@
+# [1.103.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.102.0...v1.103.0) (2021-10-11)
+
+
+### Features
+
+* add user info to body notification mails ([7e10917](https://github.com/informatievlaanderen/organisation-registry/commit/7e10917025de901287b821ec4ee7718a67b89e34))
+
 # [1.102.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.101.0...v1.102.0) (2021-10-10)
 
 
