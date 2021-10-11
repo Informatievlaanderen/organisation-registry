@@ -49,6 +49,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     .AppendLine("Er werd onlangs een nieuwe orgaan toegevoegd:")
                     .AppendLine($"{message.Body.BodyNumber} - {message.Body.Name} werd toegevoegd op {message.Body.Timestamp:yy-MM-dd HH:mm:ss}.")
                     .AppendLine($"Formele geldigheidsduur: {new Period(new ValidFrom(message.Body.FormalValidFrom), new ValidTo(message.Body.FormalValidTo))}")
+                    .AppendLine($"Uitvoerder: {message.FirstName} {message.LastName}")
                     .AppendLine(string.Format(_bodyUriTemplate, message.Body.BodyId))
                     .ToString();
 
@@ -62,6 +63,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                 new StringBuilder()
                     .AppendLine("Er werd onlangs een orgaan gekoppeld aan een organisatie:")
                     .AppendLine($"Orgaan {_memoryCaches.BodyNames[message.Body.BodyId]} werd gekoppeld aan organisatie {_memoryCaches.OvoNumbers[message.Body.OrganisationId]} - {message.Body.OrganisationName} op {message.Body.Timestamp:yy-MM-dd HH:mm:ss}.")
+                    .AppendLine($"Uitvoerder: {message.FirstName} {message.LastName}")
                     .AppendLine(string.Format(_bodyUriTemplate, message.Body.BodyId))
                     .ToString();
 
@@ -79,6 +81,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     .AppendLine("Het MEP toepassingsgebied werd onlangs orgaan gekoppeld aan een orgaan:")
                     .AppendLine($"Toepassingsgebied MEP werd gekoppeld aan orgaan {_memoryCaches.BodyNames[message.Body.BodyId]} op {message.Body.Timestamp:yy-MM-dd HH:mm:ss}.")
                     .AppendLine($"Geldigheidsduur: {new Period(new ValidFrom(message.Body.ValidFrom), new ValidTo(message.Body.ValidTo))}")
+                    .AppendLine($"Uitvoerder: {message.FirstName} {message.LastName}")
                     .AppendLine(string.Format(_bodyFormalFrameworkUriTemplate, message.Body.BodyId))
                     .ToString();
 
@@ -98,6 +101,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                         .AppendLine("Het MEP toepassingsgebied werd onlangs gekoppeld aan een orgaan:")
                         .AppendLine($"Toepassingsgebied MEP werd gekoppeld aan orgaan {_memoryCaches.BodyNames[message.Body.BodyId]} op {message.Body.Timestamp:yy-MM-dd HH:mm:ss}.")
                         .AppendLine($"Geldigheidsduur: {new Period(new ValidFrom(message.Body.ValidFrom), new ValidTo(message.Body.ValidTo))}")
+                        .AppendLine($"Uitvoerder: {message.FirstName} {message.LastName}")
                         .AppendLine(string.Format(_bodyFormalFrameworkUriTemplate, message.Body.BodyId))
                         .ToString();
 
@@ -116,6 +120,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                         .AppendLine("De geldigheid van het MEP toepassingsgebied werd onlangs gewijzigd voor een orgaan:")
                         .AppendLine($"Geldigheid toepassingsgebied MEP werd gewijzigd voor orgaan {_memoryCaches.BodyNames[message.Body.BodyId]} op {message.Body.Timestamp:yy-MM-dd HH:mm:ss}.")
                         .AppendLine($"Geldigheidsduur: {new Period(new ValidFrom(message.Body.ValidFrom), new ValidTo(message.Body.ValidTo))}")
+                        .AppendLine($"Uitvoerder: {message.FirstName} {message.LastName}")
                         .AppendLine(string.Format(_bodyFormalFrameworkUriTemplate, message.Body.BodyId))
                         .ToString();
 
@@ -137,6 +142,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     .AppendLine($"{bodyName} werd aangepast op {message.Body.Timestamp:yy-MM-dd HH:mm:ss}.")
                     .AppendLine($"Vorige waarde: {message.Body.PreviousBalancedParticipationObligatory}")
                     .AppendLine($"Nieuwe waarde: {message.Body.BalancedParticipationObligatory}")
+                    .AppendLine($"Uitvoerder: {message.FirstName} {message.LastName}")
                     .ToString();
 
             SendMails(new Mail(subject, body));
