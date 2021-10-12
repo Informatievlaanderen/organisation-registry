@@ -1,3 +1,10 @@
+## [1.103.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.103.0...v1.103.1) (2021-10-12)
+
+
+### Bug Fixes
+
+* clear and assign body organisations ([bd74c2b](https://github.com/informatievlaanderen/organisation-registry/commit/bd74c2b37f50bbea994b3dffbb8b0cfc3abb7940))
+
 # [1.103.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.102.0...v1.103.0) (2021-10-11)
 
 
