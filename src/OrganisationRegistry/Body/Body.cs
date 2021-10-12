@@ -939,6 +939,23 @@ namespace OrganisationRegistry.Body
                     Id,
                     bodyOrganisation.OrganisationId));
             }
+            else if (Equals(_currentBodyOrganisation, bodyOrganisation) &&
+                     bodyOrganisation.Validity.OverlapsWith(today))
+            {
+                if (!Equals(_currentBodyOrganisation.OrganisationId, bodyOrganisation.OrganisationId))
+                {
+                    ApplyChange(new BodyClearedFromOrganisation(
+                        Id,
+                        _currentBodyOrganisation.OrganisationId));
+
+                    ApplyChange(new BodyAssignedToOrganisation(
+                        Id,
+                        _name,
+                        bodyOrganisation.OrganisationId,
+                        bodyOrganisation.OrganisationName,
+                        bodyOrganisation.BodyOrganisationId));
+                }
+            }
         }
 
         private void CheckIfCurrentPersonAssignedToDelegationChanged(
