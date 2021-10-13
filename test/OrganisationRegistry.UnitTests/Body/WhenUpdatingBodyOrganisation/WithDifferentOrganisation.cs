@@ -16,7 +16,7 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingBodyOrganisationWithDifferentOrganisation : Specification<Body, BodyCommandHandlers, UpdateBodyOrganisation>
+    public class WithDifferentOrganisation : Specification<Body, BodyCommandHandlers, UpdateBodyOrganisation>
     {
         private Guid _bodyId;
         private Guid _bodyOrganisationId;
@@ -91,6 +91,6 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
             bodyBalancedParticipationChanged.OrganisationId.Should().Be(_newOrganisationId);
         }
 
-        public WhenUpdatingBodyOrganisationWithDifferentOrganisation(ITestOutputHelper helper) : base(helper) { }
+        public WithDifferentOrganisation(ITestOutputHelper helper) : base(helper) { }
     }
 }

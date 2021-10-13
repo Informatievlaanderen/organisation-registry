@@ -16,18 +16,18 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WithSameOrganisation : Specification<Body, BodyCommandHandlers, UpdateBodyOrganisation>
+    public class WhenValidityBecomesInvalid : Specification<Body, BodyCommandHandlers, UpdateBodyOrganisation>
     {
         private Guid _bodyId;
         private Guid _bodyOrganisationId;
-        private Guid _previousOrganisationId;
+        private Guid _organisationId;
 
         protected override BodyCommandHandlers BuildHandler()
         {
             return new BodyCommandHandlers(
                 new Mock<ILogger<BodyCommandHandlers>>().Object,
                 Session,
-                Mock.Of<IDateTimeProvider>(),
+                new DateTimeProviderStub(DateTime.Today),
                 new SequentialBodyNumberGenerator(),
                 Mock.Of<IUniqueBodyNumberValidator>(),
                 Mock.Of<IBodySeatNumberGenerator>());
@@ -36,16 +36,16 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
         protected override IEnumerable<IEvent> Given()
         {
             _bodyId = Guid.NewGuid();
-            _previousOrganisationId = Guid.NewGuid();
+            _organisationId = Guid.NewGuid();
             _bodyOrganisationId = Guid.NewGuid();
             return new List<IEvent>
             {
                 new BodyRegistered(_bodyId, "Body", "1", "bod", "some body", DateTime.Now, DateTime.Now),
-                new OrganisationCreated(_previousOrganisationId, "orgName", "ovoNumber", "shortName", string.Empty, "description",
+                new OrganisationCreated(_organisationId, "orgName", "ovoNumber", "shortName", string.Empty, "description",
                     new List<Purpose>(), false, null, null, null, null),
-                new BodyOrganisationAdded(_bodyId, _bodyOrganisationId, "bodyName", _previousOrganisationId, "orgName",
+                new BodyOrganisationAdded(_bodyId, _bodyOrganisationId, "bodyName", _organisationId, "orgName",
                     null, null),
-                new BodyAssignedToOrganisation(_bodyId, "Body", _previousOrganisationId, "orgName", _bodyOrganisationId)
+                new BodyAssignedToOrganisation(_bodyId, "Body", _organisationId, "orgName", _bodyOrganisationId)
             };
         }
 
@@ -54,11 +54,11 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
             return new UpdateBodyOrganisation(
                 new BodyId(_bodyId),
                 new BodyOrganisationId(_bodyOrganisationId),
-                new OrganisationId(_previousOrganisationId),
-                new Period());
+                new OrganisationId(_organisationId),
+                new Period(new ValidFrom(DateTime.MinValue), new ValidTo(DateTime.MinValue)));
         }
 
-        protected override int ExpectedNumberOfEvents => 1;
+        protected override int ExpectedNumberOfEvents => 2;
 
         [Fact]
         public void UpdatesTheBodyOrganisation()
@@ -66,9 +66,18 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
             var bodyBalancedParticipationChanged = PublishedEvents[0].UnwrapBody<BodyOrganisationUpdated>();
             bodyBalancedParticipationChanged.BodyId.Should().Be(_bodyId);
 
-            bodyBalancedParticipationChanged.OrganisationId.Should().Be(_previousOrganisationId);
+            bodyBalancedParticipationChanged.OrganisationId.Should().Be(_organisationId);
         }
 
-        public WithSameOrganisation(ITestOutputHelper helper) : base(helper) { }
+        [Fact]
+        public void ClearsTheBodyOrganisation()
+        {
+            var bodyBalancedParticipationChanged = PublishedEvents[1].UnwrapBody<BodyClearedFromOrganisation>();
+            bodyBalancedParticipationChanged.BodyId.Should().Be(_bodyId);
+
+            bodyBalancedParticipationChanged.OrganisationId.Should().Be(_organisationId);
+        }
+
+        public WhenValidityBecomesInvalid(ITestOutputHelper helper) : base(helper) { }
     }
 }
