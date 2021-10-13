@@ -16,18 +16,20 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WithSameOrganisation : Specification<Body, BodyCommandHandlers, UpdateBodyOrganisation>
+    public class ThatIsNotTheCurrentOrganisation : Specification<Body, BodyCommandHandlers, UpdateBodyOrganisation>
     {
         private Guid _bodyId;
         private Guid _bodyOrganisationId;
+        private Guid _otherOrganisationId;
         private Guid _previousOrganisationId;
+        private Guid _otherBodyOrganisationId;
 
         protected override BodyCommandHandlers BuildHandler()
         {
             return new BodyCommandHandlers(
                 new Mock<ILogger<BodyCommandHandlers>>().Object,
                 Session,
-                Mock.Of<IDateTimeProvider>(),
+                new DateTimeProviderStub(DateTime.Today),
                 new SequentialBodyNumberGenerator(),
                 Mock.Of<IUniqueBodyNumberValidator>(),
                 Mock.Of<IBodySeatNumberGenerator>());
@@ -37,14 +39,20 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
         {
             _bodyId = Guid.NewGuid();
             _previousOrganisationId = Guid.NewGuid();
+            _otherOrganisationId = Guid.NewGuid();
             _bodyOrganisationId = Guid.NewGuid();
+            _otherBodyOrganisationId = Guid.NewGuid();
             return new List<IEvent>
             {
                 new BodyRegistered(_bodyId, "Body", "1", "bod", "some body", DateTime.Now, DateTime.Now),
                 new OrganisationCreated(_previousOrganisationId, "orgName", "ovoNumber", "shortName", string.Empty, "description",
                     new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(_otherOrganisationId, "orgName", "ovoNumber", "shortName", string.Empty, "description",
+                    new List<Purpose>(), false, null, null, null, null),
                 new BodyOrganisationAdded(_bodyId, _bodyOrganisationId, "bodyName", _previousOrganisationId, "orgName",
                     null, null),
+                new BodyOrganisationAdded(_bodyId, _otherBodyOrganisationId, "other body name", _otherOrganisationId, "other orgName",
+                    DateTime.MinValue, DateTime.MinValue),
                 new BodyAssignedToOrganisation(_bodyId, "Body", _previousOrganisationId, "orgName", _bodyOrganisationId)
             };
         }
@@ -53,9 +61,9 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
         {
             return new UpdateBodyOrganisation(
                 new BodyId(_bodyId),
-                new BodyOrganisationId(_bodyOrganisationId),
-                new OrganisationId(_previousOrganisationId),
-                new Period());
+                new BodyOrganisationId(_otherBodyOrganisationId),
+                new OrganisationId(_otherOrganisationId),
+                new Period(new ValidFrom(DateTime.MaxValue), new ValidTo(DateTime.MaxValue)));
         }
 
         protected override int ExpectedNumberOfEvents => 1;
@@ -66,9 +74,9 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
             var bodyBalancedParticipationChanged = PublishedEvents[0].UnwrapBody<BodyOrganisationUpdated>();
             bodyBalancedParticipationChanged.BodyId.Should().Be(_bodyId);
 
-            bodyBalancedParticipationChanged.OrganisationId.Should().Be(_previousOrganisationId);
+            bodyBalancedParticipationChanged.OrganisationId.Should().Be(_otherOrganisationId);
         }
 
-        public WithSameOrganisation(ITestOutputHelper helper) : base(helper) { }
+        public ThatIsNotTheCurrentOrganisation(ITestOutputHelper helper) : base(helper) { }
     }
 }
