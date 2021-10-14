@@ -52,7 +52,8 @@ namespace OrganisationRegistry.SqlServer.SeatType
         IEventHandler<SeatTypeCreated>,
         IEventHandler<SeatTypeUpdated>
     {
-        public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+        public override string Schema => WellknownSchemas.BackofficeSchema;
 
         public enum ProjectionTables
         {

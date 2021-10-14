@@ -10,6 +10,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Organisation.Events;
+    using OrganisationRegistry.Infrastructure;
     using SqlServer.Delegations;
     using SqlServer.Infrastructure;
     using SqlServer.Person;
@@ -37,13 +38,15 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
         IEventHandler<BodyOrganisationUpdated>,
         IEventHandler<InitialiseProjection>
     {
-        public override string[] ProjectionTableNames =>
+        protected override string[] ProjectionTableNames =>
             new[]
             {
                 DelegationListConfiguration.TableName,
                 OrganisationPerBodyListConfiguration.TableName,
                 PersonMandateListConfiguration.TableName
             };
+
+        public override string Schema => WellknownSchemas.BackofficeSchema;
 
         private readonly IEventStore _eventStore;
         private readonly IMemoryCaches _memoryCaches;
@@ -384,7 +387,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
 
             await using var context = ContextFactory.Create();
             await context.Database.ExecuteSqlRawAsync(
-                string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [OrganisationRegistry].[{tableName}];")));
+                string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [{Schema}].[{tableName}];")));
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
