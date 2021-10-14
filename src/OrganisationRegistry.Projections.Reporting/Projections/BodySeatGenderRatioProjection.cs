@@ -44,6 +44,8 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         IEventHandler<BodySeatAdded>,
         IEventHandler<BodySeatUpdated>,
 
+        IEventHandler<BodyOrganisationUpdated>,
+
         IEventHandler<AssignedPersonToBodySeat>,
         IEventHandler<ReassignedPersonToBodySeat>,
 
@@ -121,6 +123,17 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
             await context.SaveChangesAsync();
         }
 
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
+        {
+            await using var context = ContextFactory.Create();
+
+            var body = await context.BodySeatGenderRatioBodyList.SingleAsync(x => x.BodyId == message.Body.BodyId);
+
+            body.OrganisationId = message.Body.BodyId;
+            body.OrganisationName = message.Body.OrganisationName;
+
+            await context.SaveChangesAsync();
+        }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
