@@ -23,13 +23,14 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
         private Guid _otherOrganisationId;
         private Guid _previousOrganisationId;
         private Guid _otherBodyOrganisationId;
+        private DateTimeProviderStub _dateTimeProviderStub;
 
         protected override BodyCommandHandlers BuildHandler()
         {
             return new BodyCommandHandlers(
                 new Mock<ILogger<BodyCommandHandlers>>().Object,
                 Session,
-                new DateTimeProviderStub(DateTime.Today),
+                _dateTimeProviderStub,
                 new SequentialBodyNumberGenerator(),
                 Mock.Of<IUniqueBodyNumberValidator>(),
                 Mock.Of<IBodySeatNumberGenerator>());
@@ -37,6 +38,8 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
 
         protected override IEnumerable<IEvent> Given()
         {
+            _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today);
+
             _bodyId = Guid.NewGuid();
             _previousOrganisationId = Guid.NewGuid();
             _otherOrganisationId = Guid.NewGuid();
@@ -50,7 +53,7 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
                 new OrganisationCreated(_otherOrganisationId, "orgName", "ovoNumber", "shortName", string.Empty, "description",
                     new List<Purpose>(), false, null, null, null, null),
                 new BodyOrganisationAdded(_bodyId, _bodyOrganisationId, "bodyName", _previousOrganisationId, "orgName",
-                    null, null),
+                    _dateTimeProviderStub.Today, _dateTimeProviderStub.Today),
                 new BodyOrganisationAdded(_bodyId, _otherBodyOrganisationId, "other body name", _otherOrganisationId, "other orgName",
                     DateTime.MinValue, DateTime.MinValue),
                 new BodyAssignedToOrganisation(_bodyId, "Body", _previousOrganisationId, "orgName", _bodyOrganisationId)
