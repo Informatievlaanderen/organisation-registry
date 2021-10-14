@@ -16,7 +16,7 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WithDifferentOrganisation : Specification<Body, BodyCommandHandlers, UpdateBodyOrganisation>
+    public class WhenUpdatingBodyOrganisationWithDifferentOrganisation : Specification<Body, BodyCommandHandlers, UpdateBodyOrganisation>
     {
         private Guid _bodyId;
         private Guid _bodyOrganisationId;
@@ -62,7 +62,7 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
                 new Period());
         }
 
-        protected override int ExpectedNumberOfEvents => 3;
+        protected override int ExpectedNumberOfEvents => 1;
 
         [Fact]
         public void UpdatesTheBodyOrganisation()
@@ -73,24 +73,6 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
             bodyBalancedParticipationChanged.OrganisationId.Should().Be(_newOrganisationId);
         }
 
-        [Fact]
-        public void ClearsThePreviousOrganisation()
-        {
-            var bodyBalancedParticipationChanged = PublishedEvents[1].UnwrapBody<BodyClearedFromOrganisation>();
-            bodyBalancedParticipationChanged.BodyId.Should().Be(_bodyId);
-
-            bodyBalancedParticipationChanged.OrganisationId.Should().Be(_previousOrganisationId);
-        }
-
-        [Fact]
-        public void AssignsTheNewOrganisation()
-        {
-            var bodyBalancedParticipationChanged = PublishedEvents[2].UnwrapBody<BodyAssignedToOrganisation>();
-            bodyBalancedParticipationChanged.BodyId.Should().Be(_bodyId);
-
-            bodyBalancedParticipationChanged.OrganisationId.Should().Be(_newOrganisationId);
-        }
-
-        public WithDifferentOrganisation(ITestOutputHelper helper) : base(helper) { }
+        public WhenUpdatingBodyOrganisationWithDifferentOrganisation(ITestOutputHelper helper) : base(helper) { }
     }
 }
