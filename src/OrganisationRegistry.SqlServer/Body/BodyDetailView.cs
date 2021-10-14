@@ -86,7 +86,10 @@ namespace OrganisationRegistry.SqlServer.Body
         IEventHandler<BodyFormalValidityChanged>,
         IEventHandler<BodyLifecycleBecameValid>,
         IEventHandler<BodyLifecycleBecameInvalid>,
-        IEventHandler<BodyBalancedParticipationChanged>
+        IEventHandler<BodyBalancedParticipationChanged>,
+        IEventHandler<OrganisationInfoUpdated>,
+        IEventHandler<OrganisationInfoUpdatedFromKbo>
+
     {
         protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
         public override string Schema => WellknownSchemas.BackofficeSchema;
@@ -118,127 +121,133 @@ namespace OrganisationRegistry.SqlServer.Body
                 FormalValidTo = message.Body.FormalValidTo,
             };
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.BodyDetail.AddAsync(bodyDetailItem);
-                await context.SaveChangesAsync();
-            }
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            await context.BodyDetail.AddAsync(bodyDetailItem);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyNumberAssigned> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
-                bodyDetailItem.BodyNumber = message.Body.BodyNumber;
+            bodyDetailItem.BodyNumber = message.Body.BodyNumber;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
-                bodyDetailItem.OrganisationId = message.Body.OrganisationId;
-                bodyDetailItem.Organisation = message.Body.OrganisationName;
+            bodyDetailItem.OrganisationId = message.Body.OrganisationId;
+            bodyDetailItem.Organisation = message.Body.OrganisationName;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
-                bodyDetailItem.OrganisationId = null;
-                bodyDetailItem.Organisation = null;
+            bodyDetailItem.OrganisationId = null;
+            bodyDetailItem.Organisation = null;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
-                bodyDetailItem.OrganisationId = message.Body.OrganisationId;
-                bodyDetailItem.Organisation = message.Body.OrganisationName;
+            bodyDetailItem.OrganisationId = message.Body.OrganisationId;
+            bodyDetailItem.Organisation = message.Body.OrganisationName;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
-                bodyDetailItem.Name = message.Body.Name;
-                bodyDetailItem.ShortName = message.Body.ShortName;
-                bodyDetailItem.Description = message.Body.Description;
+            bodyDetailItem.Name = message.Body.Name;
+            bodyDetailItem.ShortName = message.Body.ShortName;
+            bodyDetailItem.Description = message.Body.Description;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalValidityChanged> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
-                bodyDetailItem.FormalValidFrom = message.Body.FormalValidFrom;
-                bodyDetailItem.FormalValidTo = message.Body.FormalValidTo;
+            bodyDetailItem.FormalValidFrom = message.Body.FormalValidFrom;
+            bodyDetailItem.FormalValidTo = message.Body.FormalValidTo;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecycleBecameValid> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
-                bodyDetailItem.IsLifecycleValid = true;
+            bodyDetailItem.IsLifecycleValid = true;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyLifecycleBecameInvalid> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
 
-                bodyDetailItem.IsLifecycleValid = false;
+            bodyDetailItem.IsLifecycleValid = false;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyBalancedParticipationChanged> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
+
+            bodyDetailItem.IsBalancedParticipationObligatory = message.Body.BalancedParticipationObligatory;
+            bodyDetailItem.BalancedParticipationExtraRemark = message.Body.BalancedParticipationExtraRemark;
+            bodyDetailItem.BalancedParticipationExceptionMeasure = message.Body.BalancedParticipationExceptionMeasure;
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var bodyDetailItemDetails = context.BodyDetail.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+            foreach (var bodyDetail in bodyDetailItemDetails)
             {
-                var bodyDetailItem = context.BodyDetail.Single(item => item.Id == message.Body.BodyId);
-
-                bodyDetailItem.IsBalancedParticipationObligatory = message.Body.BalancedParticipationObligatory;
-                bodyDetailItem.BalancedParticipationExtraRemark = message.Body.BalancedParticipationExtraRemark;
-                bodyDetailItem.BalancedParticipationExceptionMeasure = message.Body.BalancedParticipationExceptionMeasure;
-
-                await context.SaveChangesAsync();
+                bodyDetail.Organisation = message.Body.Name;
             }
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var bodyDetailItemDetails = context.BodyDetail.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+            foreach (var bodyDetail in bodyDetailItemDetails)
+            {
+                bodyDetail.Organisation = message.Body.Name;
+            }
+
+            await context.SaveChangesAsync();
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
