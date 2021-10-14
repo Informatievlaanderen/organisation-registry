@@ -1,3 +1,16 @@
+## [1.103.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.103.1...v1.103.2) (2021-10-14)
+
+
+### Bug Fixes
+
+* listen to relevant events for body organisation ([80a26d3](https://github.com/informatievlaanderen/organisation-registry/commit/80a26d3f43f4a46e15abd34620fea3b18d4782cf))
+* use correct schema when rebuilding ([2e797bf](https://github.com/informatievlaanderen/organisation-registry/commit/2e797bf32bfe179c01982866c43732f966bff8aa))
+
+
+### Reverts
+
+* Revert "fix: clear and assign body organisations" ([f176074](https://github.com/informatievlaanderen/organisation-registry/commit/f1760747eaa7512942d9ad190373fc05a1473da1))
+
 ## [1.103.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.103.0...v1.103.1) (2021-10-12)
 
 
