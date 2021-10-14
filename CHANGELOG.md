@@ -1,3 +1,10 @@
+## [1.103.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.103.2...v1.103.3) (2021-10-14)
+
+
+### Bug Fixes
+
+* make sure to detect prd ([4ad48d2](https://github.com/informatievlaanderen/organisation-registry/commit/4ad48d21d6ad69b3bbd90b36905d83e8e3760e29))
+
 ## [1.103.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.103.1...v1.103.2) (2021-10-14)
 
 
