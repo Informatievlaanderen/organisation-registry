@@ -78,7 +78,8 @@
     {
         private readonly IEventStore _eventStore;
 
-        public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+        public override string Schema => WellknownSchemas.BackofficeSchema;
 
         public enum ProjectionTables
         {

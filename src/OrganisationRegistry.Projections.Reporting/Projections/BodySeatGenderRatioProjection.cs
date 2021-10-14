@@ -14,6 +14,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using SeatType.Events;
     using SqlServer;
@@ -74,7 +75,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         {
         }
 
-        public override string[] ProjectionTableNames =>
+        protected override string[] ProjectionTableNames =>
             new[]
             {
                 BodySeatGenderRatioAssignmentListConfiguration.TableName,
@@ -87,6 +88,8 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
                 BodySeatGenderRatioPersonListConfiguration.TableName,
                 BodySeatGenderRatioPostsPerTypeListConfiguration.TableName
             };
+
+        public override string Schema => WellknownSchemas.ReportingSchema;
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
@@ -932,7 +935,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
             await using var context = ContextFactory.Create();
             await context.Database.ExecuteSqlRawAsync(
-                string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [OrganisationRegistry].[{tableName}];")));
+                string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [{Schema}].[{tableName}];")));
         }
 
         private static CachedPerson GetPersonFromCache(OrganisationRegistryContext context, Guid personId)

@@ -28,7 +28,8 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     public abstract class Projection<T> : BaseProjection<T>, IProjectionMarker, IEventHandler<RebuildProjection>
     {
         protected readonly IContextFactory ContextFactory;
-        public abstract string[] ProjectionTableNames { get; }
+        protected abstract string[] ProjectionTableNames { get; }
+        public abstract string Schema { get; }
 
         protected Projection(ILogger<T> logger, IContextFactory contextFactory) : base(logger)
         {
@@ -115,7 +116,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         {
             return context.Database.ExecuteSqlRaw(
                 string.Concat(ProjectionTableNames.Select(tableName =>
-                    $"DELETE TOP(500) FROM [OrganisationRegistry].[{tableName}];")));
+                    $"DELETE TOP(500) FROM [{Schema}].[{tableName}];")));
         }
     }
 }

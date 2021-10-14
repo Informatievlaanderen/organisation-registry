@@ -67,7 +67,8 @@ namespace OrganisationRegistry.SqlServer.FormalFramework
         IEventHandler<FormalFrameworkUpdated>,
         IEventHandler<FormalFrameworkCategoryUpdated>
     {
-        public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+        public override string Schema => WellknownSchemas.BackofficeSchema;
 
         public enum ProjectionTables
         {

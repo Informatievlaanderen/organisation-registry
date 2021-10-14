@@ -12,6 +12,7 @@ namespace OrganisationRegistry.SqlServer.Body
     using OrganisationRegistry.Body.Events;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
+    using OrganisationRegistry.Organisation.Events;
 
     public class BodyDetail
     {
@@ -87,7 +88,8 @@ namespace OrganisationRegistry.SqlServer.Body
         IEventHandler<BodyLifecycleBecameInvalid>,
         IEventHandler<BodyBalancedParticipationChanged>
     {
-        public override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+        public override string Schema => WellknownSchemas.BackofficeSchema;
 
         public enum ProjectionTables
         {
