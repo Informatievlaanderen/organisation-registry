@@ -27,11 +27,13 @@ export class App implements OnInit {
     private configurationService: ConfigurationService
   ) {
 
-    if (configurationService.apiUrl.includes('dev-vlaanderen')) {
+    if (configurationService.apiUrl.includes('dev-vlaanderen.be')) {
       this.environment = Environments.staging;
     }
-    if (configurationService.apiUrl.includes('local')) {
+    else if (configurationService.apiUrl.includes('dev-vlaanderen.local')) {
       this.environment = Environments.development;
+    }else {
+      this.environment = Environments.production;
     }
 
     router.events
