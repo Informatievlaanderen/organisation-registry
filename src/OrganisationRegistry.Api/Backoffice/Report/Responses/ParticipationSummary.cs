@@ -68,7 +68,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
                 .AsAsyncQueryable()
                 .Where(body => body.FormalFrameworkId == apiConfiguration.Mep_FormalFrameworkId &&
                        (!body.ValidFrom.HasValue || body.ValidFrom <= today) &&
-                       (!body.ValidTo.HasValue || body.ValidFrom >= today))
+                       (!body.ValidTo.HasValue || body.ValidTo >= today))
                 .Select(body => body.BodyId);
 
             var bodies = await context.BodySeatGenderRatioBodyList
