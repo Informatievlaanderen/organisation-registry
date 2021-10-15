@@ -15,7 +15,6 @@ namespace OrganisationRegistry.SqlServer.Body
     using OrganisationRegistry.ContactType.Events;
     using OrganisationRegistry.Infrastructure;
 
-    [DataContract]
     public class BodyContactListItem
     {
         public Guid BodyContactId { get; set; }

@@ -8,7 +8,6 @@ namespace OrganisationRegistry.SqlServer.Event
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.EventStore;
 
-    [DataContract]
     public class EventListItem
     {
         public Guid Id { get; set; }
