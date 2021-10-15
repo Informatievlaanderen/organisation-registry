@@ -16,7 +16,6 @@
     using OrganisationRegistry.FormalFramework.Events;
     using OrganisationRegistry.Infrastructure;
 
-    [DataContract]
     public class BodyFormalFrameworkListItem
     {
         public Guid BodyFormalFrameworkId { get; set; }

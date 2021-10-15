@@ -17,7 +17,6 @@ namespace OrganisationRegistry.SqlServer.Body
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
 
-    [DataContract]
     public class BodyBodyClassificationListItem
     {
         public Guid BodyBodyClassificationId { get; set; }
