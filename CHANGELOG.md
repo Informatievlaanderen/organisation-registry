@@ -1,3 +1,10 @@
+## [1.103.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.103.3...v1.103.4) (2021-10-15)
+
+
+### Bug Fixes
+
+* use correct date ([2d68bc6](https://github.com/informatievlaanderen/organisation-registry/commit/2d68bc6ae451593a5ee8f621a1f22c9022393edb))
+
 ## [1.103.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.103.2...v1.103.3) (2021-10-14)
 
 
