@@ -1,3 +1,10 @@
+## [1.103.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.103.4...v1.103.5) (2021-10-15)
+
+
+### Bug Fixes
+
+* remove remaining datacontract attrs ([c429f25](https://github.com/informatievlaanderen/organisation-registry/commit/c429f25ef6793991f120dbb6bba37634fa73764c))
+
 ## [1.103.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.103.3...v1.103.4) (2021-10-15)
 
 
