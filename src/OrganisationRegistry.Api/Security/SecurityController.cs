@@ -131,8 +131,7 @@ namespace OrganisationRegistry.Api.Security
                 Subject = identity,
                 SigningCredentials = signingCredentials,
                 IssuedAt = DateTime.UtcNow,
-                Expires = DateTimeOffset.FromUnixTimeSeconds(long.Parse(identity.GetClaim(JwtClaimTypes.Expiration)))
-                    .UtcDateTime,
+                Expires = DateTimeOffset.Now.AddMinutes(_configuration.JwtExpiresInMinutes).UtcDateTime,
                 NotBefore = DateTime.UtcNow
             };
 
