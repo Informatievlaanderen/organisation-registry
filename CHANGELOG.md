@@ -1,3 +1,10 @@
+# [1.104.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.103.5...v1.104.0) (2021-10-20)
+
+
+### Features
+
+* allow jwt timeout to be increased through config ([728d642](https://github.com/informatievlaanderen/organisation-registry/commit/728d642f34f289cf260ae5483905038b06b33241))
+
 ## [1.103.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.103.4...v1.103.5) (2021-10-15)
 
 
