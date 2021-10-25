@@ -1,3 +1,10 @@
+# [1.105.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.104.0...v1.105.0) (2021-10-25)
+
+
+### Features
+
+* use elastic bus for individual rebuild runner ([defd7c5](https://github.com/informatievlaanderen/organisation-registry/commit/defd7c544a3b856f3379ffe558950a0a90b9c8fb))
+
 # [1.104.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.103.5...v1.104.0) (2021-10-20)
 
 
