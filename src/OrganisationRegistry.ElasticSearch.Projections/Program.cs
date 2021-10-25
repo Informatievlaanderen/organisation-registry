@@ -172,16 +172,16 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                         })
                         .AddSingleton(provider =>
                         {
-                            var inProcessBus = new InProcessBus(provider.GetRequiredService<ILogger<InProcessBus>>(),
-                                provider.GetRequiredService<ISecurityService>());
+                            var bus = new ElasticBus(provider.GetRequiredService<ILogger<ElasticBus>>());
                             return new IndividualRebuildRunner(
                                 provider.GetRequiredService<ILogger<IndividualRebuildRunner>>(),
                                 provider.GetRequiredService<IEventStore>(),
                                 provider.GetRequiredService<IContextFactory>(),
                                 provider.GetRequiredService<IProjectionStates>(),
-                                inProcessBus,
-                                new BusRegistrar(provider.GetRequiredService<ILogger<BusRegistrar>>(),
-                                    inProcessBus,
+                                bus,
+                                provider.GetRequiredService<Elastic>(),
+                                new ElasticBusRegistrar(provider.GetRequiredService<ILogger<ElasticBusRegistrar>>(),
+                                    bus,
                                     provider.GetRequiredService<Func<IServiceProvider>>())
                             );
                         })
