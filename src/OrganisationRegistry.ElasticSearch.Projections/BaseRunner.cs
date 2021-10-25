@@ -177,7 +177,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     )
                     .Wait(TimeSpan.FromMinutes(15), next =>
                     {
-                        _logger.LogInformation("Wrote page {PageNumber}", next.Page);
+                        _logger.LogInformation("[{ProjectionName}] Flushed documents, page {PageNumber}", ProjectionName, next.Page);
                     });
                 });
                 documentCache.Clear();
