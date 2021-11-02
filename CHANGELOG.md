@@ -1,3 +1,10 @@
+# [1.106.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.105.0...v1.106.0) (2021-11-02)
+
+
+### Features
+
+* no longer use base64 for certs ([a1aef23](https://github.com/informatievlaanderen/organisation-registry/commit/a1aef23a3b475213a7cbb0461a7b97535afd3f4a))
+
 # [1.105.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.104.0...v1.105.0) (2021-10-25)
 
 
