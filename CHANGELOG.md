@@ -1,3 +1,15 @@
+# [1.107.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.106.0...v1.107.0) (2021-11-03)
+
+
+### Features
+
+* support providing key type ([524b27b](https://github.com/informatievlaanderen/organisation-registry/commit/524b27bb08e5ea4193b9bec3796b9cd6648a84d0))
+
+
+### Reverts
+
+* Revert "feat: no longer use base64 for certs" ([d836728](https://github.com/informatievlaanderen/organisation-registry/commit/d8367281b2af8c862c275f7ed300712cb9972b32))
+
 # [1.106.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.105.0...v1.106.0) (2021-11-02)
 
 
