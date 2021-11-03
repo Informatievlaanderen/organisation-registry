@@ -34,7 +34,7 @@ namespace OrganisationRegistry.KboMutations.Ftps
                     Arguments = $"--ftp-ssl " +
                                 $"--user {_kboMutationsConfiguration.Username}:{_kboMutationsConfiguration.Password} " +
                                 $"--cert {_kboMutationsConfiguration.CertPath} " +
-                                $"--key {_kboMutationsConfiguration.KeyPath} " +
+                                $"--key {_kboMutationsConfiguration.KeyPath} --key-type {_kboMutationsConfiguration.KeyType} " +
                                 $"--cacert {_kboMutationsConfiguration.CaCertPath} " +
                                 $"{sourceDirectory} --fail --silent --show-error",
                     RedirectStandardOutput = true,
@@ -67,7 +67,7 @@ namespace OrganisationRegistry.KboMutations.Ftps
                     Arguments = $"--ftp-ssl " +
                                 $"--user {_kboMutationsConfiguration.Username}:{_kboMutationsConfiguration.Password} " +
                                 $"--cert {_kboMutationsConfiguration.CertPath} " +
-                                $"--key {_kboMutationsConfiguration.KeyPath} " +
+                                $"--key {_kboMutationsConfiguration.KeyPath} --key-type {_kboMutationsConfiguration.KeyType} " +
                                 $"--cacert {_kboMutationsConfiguration.CaCertPath} " +
                                 $"{sourceFilePath} " +
                                 $"-o {fileName} --fail --silent --show-error",
@@ -106,7 +106,7 @@ namespace OrganisationRegistry.KboMutations.Ftps
                     Arguments = $"--ftp-ssl " +
                                 $"--user {_kboMutationsConfiguration.Username}:{_kboMutationsConfiguration.Password} " +
                                 $"--cert {_kboMutationsConfiguration.CertPath} " +
-                                $"--key {_kboMutationsConfiguration.KeyPath} " +
+                                $"--key {_kboMutationsConfiguration.KeyPath} --key-type {_kboMutationsConfiguration.KeyType} " +
                                 $"--cacert {_kboMutationsConfiguration.CaCertPath} " +
                                 $"{baseUri} " +
                                 $"-Q \"-RNFR {sourceFilePath}\" " +

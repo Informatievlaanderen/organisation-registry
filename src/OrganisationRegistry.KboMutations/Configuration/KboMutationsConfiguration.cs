@@ -21,6 +21,7 @@ namespace OrganisationRegistry.KboMutations.Configuration
         public string CertPath { get; set; }
         public string CaCertPath { get; set; }
         public string KeyPath { get; set; }
+        public string KeyType { get; set; }
 
         public string LockRegionEndPoint { get; set; }
         public string LockAccessKeyId { get; set; }
