@@ -37,7 +37,7 @@
         {
             return new CreateRegulationTheme(
                 new RegulationThemeId(message.Id),
-                message.Name);
+                new RegulationThemeName(message.Name));
         }
     }
 }

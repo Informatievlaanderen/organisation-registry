@@ -24,6 +24,7 @@ namespace OrganisationRegistry.Organisation
     using Commands;
     using Infrastructure.Authorization;
     using OrganisationTermination;
+    using RegulationSubTheme;
     using State;
     using Purpose = Purpose.Purpose;
 
@@ -1237,6 +1238,7 @@ namespace OrganisationRegistry.Organisation
         public void AddRegulation(
             Guid organisationRegulationId,
             RegulationTheme? regulationTheme,
+            RegulationSubTheme? regulationSubTheme,
             string? link,
             DateTime? date,
             string? description,
@@ -1247,6 +1249,8 @@ namespace OrganisationRegistry.Organisation
                 organisationRegulationId,
                 regulationTheme?.Id,
                 regulationTheme?.Name,
+                regulationSubTheme?.Id,
+                regulationSubTheme?.Name,
                 link,
                 date,
                 description,
@@ -1257,6 +1261,7 @@ namespace OrganisationRegistry.Organisation
         public void UpdateRegulation(
             Guid organisationRegulationId,
             RegulationTheme? regulationTheme,
+            RegulationSubTheme? regulationSubTheme,
             string? link,
             DateTime? date,
             string? description,
@@ -1270,12 +1275,16 @@ namespace OrganisationRegistry.Organisation
                 organisationRegulationId,
                 regulationTheme?.Id,
                 regulationTheme?.Name,
+                regulationSubTheme?.Id,
+                regulationSubTheme?.Name,
                 link,
                 date,
                 description,
                 validity.Start, validity.End,
                 previousRegulation.RegulationThemeId,
                 previousRegulation.RegulationThemeName,
+                previousRegulation.RegulationSubThemeId,
+                previousRegulation.RegulationSubThemeName,
                 previousRegulation.Validity.Start,
                 previousRegulation.Validity.End,
                 previousRegulation.Link,
@@ -2079,6 +2088,8 @@ namespace OrganisationRegistry.Organisation
                 @event.OrganisationId,
                 @event.RegulationThemeId,
                 @event.RegulationThemeName,
+                @event.RegulationSubThemeId,
+                @event.RegulationSubThemeName,
                 @event.Link,
                 @event.Date,
                 @event.Description,
@@ -2094,6 +2105,8 @@ namespace OrganisationRegistry.Organisation
                     @event.OrganisationId,
                     @event.RegulationThemeId,
                     @event.RegulationThemeName,
+                    @event.RegulationSubThemeId,
+                    @event.RegulationSubThemeName,
                     @event.Link,
                     @event.Date,
                     @event.Description,

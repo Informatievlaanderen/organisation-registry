@@ -38,6 +38,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     using Person;
     using ProjectionState;
     using Purpose;
+    using RegulationSubTheme;
     using RegulationTheme;
     using Reporting;
     using SeatType;
@@ -90,6 +91,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         public DbSet<SeatTypeListItem> SeatTypeList { get; set; }
         public DbSet<LocationTypeListItem> LocationTypeList { get; set; }
         public DbSet<RegulationThemeListItem> RegulationThemeList { get; set; }
+        public DbSet<RegulationSubThemeListItem> RegulationSubThemeList { get; set; }
 
         public DbSet<OrganisationDetailItem> OrganisationDetail { get; set; }
         public DbSet<OrganisationListItem> OrganisationList { get; set; }

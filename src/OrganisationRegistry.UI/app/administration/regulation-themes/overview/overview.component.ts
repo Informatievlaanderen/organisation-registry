@@ -54,7 +54,7 @@ export class RegulationThemeOverviewComponent implements OnInit {
         error => this.alertService.setAlert(
           new Alert(
             AlertType.Error,
-            'Regelgevingsthema\'s kunnen niet geladen worden!',
+            'Regelgevingthema\'s kunnen niet geladen worden!',
             'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
   }
 }

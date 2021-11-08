@@ -54,6 +54,7 @@ export * from './projections';
 export * from './projectionstates';
 export * from './purposes';
 export * from './regulation-themes';
+export * from './regulation-sub-themes';
 export * from './reports';
 export * from './seattypes';
 export * from './stats';

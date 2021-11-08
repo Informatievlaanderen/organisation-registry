@@ -5,16 +5,16 @@ namespace OrganisationRegistry.RegulationTheme
 
     public class RegulationTheme : AggregateRoot
     {
-        public string Name { get; private set; }
+        public RegulationThemeName Name { get; private set; }
 
         private RegulationTheme() { }
 
-        public RegulationTheme(RegulationThemeId id, string name)
+        public RegulationTheme(RegulationThemeId id, RegulationThemeName name)
         {
             ApplyChange(new RegulationThemeCreated(id, name));
         }
 
-        public void Update(string name)
+        public void Update(RegulationThemeName name)
         {
             var @event = new RegulationThemeUpdated(Id, name, Name);
             ApplyChange(@event);
@@ -23,12 +23,12 @@ namespace OrganisationRegistry.RegulationTheme
         private void Apply(RegulationThemeCreated @event)
         {
             Id = @event.RegulationThemeId;
-            Name = @event.Name;
+            Name = new RegulationThemeName(@event.Name);
         }
 
         private void Apply(RegulationThemeUpdated @event)
         {
-            Name = @event.Name;
+            Name = new RegulationThemeName(@event.Name);
         }
     }
 }

@@ -9,6 +9,8 @@
         public Guid OrganisationRegulationId { get; }
         public Guid? RegulationThemeId { get; }
         public string RegulationThemeName { get; }
+        public Guid? RegulationSubThemeId { get; }
+        public string RegulationSubThemeName { get; }
         public string Link { get; }
         public Period Validity { get; }
         public DateTime? Date { get; }
@@ -18,6 +20,8 @@
             Guid organisationId,
             Guid? regulationThemeId,
             string regulationThemeName,
+            Guid? regulationSubThemeId,
+            string regulationSubThemeName,
             string link,
             DateTime? date,
             string? description,
@@ -27,6 +31,8 @@
             OrganisationRegulationId = organisationRegulationId;
             RegulationThemeId = regulationThemeId;
             RegulationThemeName = regulationThemeName;
+            RegulationSubThemeId = regulationSubThemeId;
+            RegulationSubThemeName = regulationSubThemeName;
             Link = link;
             Validity = validity;
             Date = date;
@@ -40,6 +46,8 @@
                 OrganisationId,
                 RegulationThemeId,
                 RegulationThemeName,
+                RegulationSubThemeId,
+                RegulationSubThemeName,
                 Link,
                 Date,
                 Description,

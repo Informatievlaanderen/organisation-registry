@@ -14,6 +14,12 @@ namespace OrganisationRegistry.Organisation.Events
         public string? RegulationThemeName { get; }
         public string? PreviousRegulationThemeName { get; }
 
+        public Guid? RegulationSubThemeId { get; }
+        public Guid? PreviousRegulationSubThemeId { get; }
+
+        public string? RegulationSubThemeName { get; }
+        public string? PreviousRegulationSubThemeName { get; }
+
         public string? Link { get; }
         public string? PreviousLink { get; }
 
@@ -35,6 +41,8 @@ namespace OrganisationRegistry.Organisation.Events
             Guid organisationRegulationId,
             Guid? regulationThemeId,
             string regulationThemeName,
+            Guid? regulationSubThemeId,
+            string regulationSubThemeName,
             string? link,
             DateTime? date,
             string? description,
@@ -42,6 +50,8 @@ namespace OrganisationRegistry.Organisation.Events
             DateTime? validTo,
             Guid? previousRegulationThemeId,
             string previousRegulationThemeName,
+            Guid? previousRegulationSubThemeId,
+            string previousRegulationSubThemeName,
             DateTime? previouslyValidFrom,
             DateTime? previouslyValidTo,
             string? previousLink,
@@ -53,6 +63,8 @@ namespace OrganisationRegistry.Organisation.Events
             OrganisationRegulationId = organisationRegulationId;
             RegulationThemeId = regulationThemeId;
             RegulationThemeName = regulationThemeName;
+            RegulationSubThemeId = regulationSubThemeId;
+            RegulationSubThemeName = regulationSubThemeName;
             Link = link;
             Date = date;
             Description = description;
@@ -61,6 +73,8 @@ namespace OrganisationRegistry.Organisation.Events
 
             PreviousRegulationThemeId = previousRegulationThemeId;
             PreviousRegulationThemeName = previousRegulationThemeName;
+            PreviousRegulationSubThemeId = previousRegulationSubThemeId;
+            PreviousRegulationSubThemeName = previousRegulationSubThemeName;
             PreviousLink = previousLink;
             PreviousDate = previousDate;
             PreviousDescription = previousDescription;
