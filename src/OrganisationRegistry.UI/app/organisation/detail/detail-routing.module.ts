@@ -434,14 +434,14 @@ const routes: Routes = [
           {
             path: '',
             component: OrganisationRegulationsOverviewComponent,
-            data: { title: 'Organisatie - Regelgevingen' }
+            data: { title: 'Organisatie - Regelgeving' }
           },
           {
             path: 'create',
             component: OrganisationRegulationsCreateOrganisationRegulationComponent,
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
-              title: 'Organisatie - Regelgevingen - Nieuwe regelgeving',
+              title: 'Organisatie - Regelgeving - Nieuwe regelgeving',
               roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
@@ -454,7 +454,7 @@ const routes: Routes = [
             component: OrganisationRegulationsUpdateOrganisationRegulationComponent,
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
-              title: 'Organisatie - Regelgevingen - Bewerken regelgeving',
+              title: 'Organisatie - Regelgeving - Bewerken regelgeving',
               roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
