@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.RegulationTheme.Events
 {
     using System;
+    using Newtonsoft.Json;
 
     public class RegulationThemeUpdated : BaseEvent<RegulationThemeUpdated>
     {
@@ -10,14 +11,26 @@ namespace OrganisationRegistry.RegulationTheme.Events
         public string PreviousName { get; }
 
         public RegulationThemeUpdated(
-            Guid regulationThemeId,
-            string name,
-            string previousName)
+            RegulationThemeId regulationThemeId,
+            RegulationThemeName name,
+            RegulationThemeName previousName)
         {
             Id = regulationThemeId;
 
             Name = name;
             PreviousName = previousName;
+        }
+
+        [JsonConstructor]
+        public RegulationThemeUpdated(
+            Guid regulationThemeId,
+            string name,
+            string previousName)
+        : this(
+            new RegulationThemeId(regulationThemeId),
+            new RegulationThemeName(name),
+            new RegulationThemeName(previousName))
+        {
         }
     }
 }

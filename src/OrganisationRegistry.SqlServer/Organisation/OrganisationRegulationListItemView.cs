@@ -13,6 +13,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.RegulationTheme.Events;
+    using RegulationSubTheme;
 
     public class OrganisationRegulationListItem
     {
@@ -20,6 +21,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public Guid OrganisationId { get; set; }
         public Guid? RegulationThemeId { get; set; }
         public string? RegulationThemeName { get; set; }
+        public Guid? RegulationSubThemeId { get; set; }
+        public string? RegulationSubThemeName { get; set; }
         public DateTime? Date { get; set; }
         public string? Link { get; set; }
         public string? Description { get; set; }
@@ -41,6 +44,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             b.Property(p => p.RegulationThemeId);
             b.Property(p => p.RegulationThemeName).HasMaxLength(RegulationThemeListConfiguration.NameLength);
+
+            b.Property(p => p.RegulationSubThemeId);
+            b.Property(p => p.RegulationSubThemeName).HasMaxLength(RegulationSubThemeListConfiguration.NameLength);
 
             b.Property(p => p.Date);
             b.Property(p => p.Link).HasMaxLength(RegulationLinkLength);
@@ -101,11 +107,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
             {
                 OrganisationRegulationId = message.Body.OrganisationRegulationId,
                 OrganisationId = message.Body.OrganisationId,
-                RegulationThemeId = message.Body.RegulationThemeId,
                 Link = message.Body.Link,
                 Date = message.Body.Date,
                 Description = message.Body.Description,
+                RegulationThemeId = message.Body.RegulationThemeId,
                 RegulationThemeName = message.Body.RegulationThemeName,
+                RegulationSubThemeId = message.Body.RegulationSubThemeId,
+                RegulationSubThemeName = message.Body.RegulationSubThemeName,
                 ValidFrom = message.Body.ValidFrom,
                 ValidTo = message.Body.ValidTo
             };
@@ -122,11 +130,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             regulation.OrganisationRegulationId = message.Body.OrganisationRegulationId;
             regulation.OrganisationId = message.Body.OrganisationId;
-            regulation.RegulationThemeId = message.Body.RegulationThemeId;
             regulation.Link = message.Body.Link;
             regulation.Date = message.Body.Date;
             regulation.Description = message.Body.Description;
+            regulation.RegulationThemeId = message.Body.RegulationThemeId;
             regulation.RegulationThemeName = message.Body.RegulationThemeName;
+            regulation.RegulationSubThemeId = message.Body.RegulationSubThemeId;
+            regulation.RegulationSubThemeName = message.Body.RegulationSubThemeName;
             regulation.ValidFrom = message.Body.ValidFrom;
             regulation.ValidTo = message.Body.ValidTo;
 

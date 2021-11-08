@@ -23,6 +23,7 @@ namespace OrganisationRegistry.Organisation
     using System.Linq;
     using System.Threading.Tasks;
     using Infrastructure.Authorization;
+    using RegulationSubTheme;
     using RegulationTheme;
 
     public class OrganisationCommandHandlers :
@@ -306,9 +307,13 @@ namespace OrganisationRegistry.Organisation
             var regulationTheme = message.RegulationThemeId != Guid.Empty ?
                 Session.Get<RegulationTheme>(message.RegulationThemeId) : null;
 
+            var regulationSubTheme = message.RegulationSubThemeId != Guid.Empty ?
+                Session.Get<RegulationSubTheme>(message.RegulationSubThemeId) : null;
+
             organisation.AddRegulation(
                 message.OrganisationRegulationId,
                 regulationTheme,
+                regulationSubTheme,
                 message.Link,
                 message.Date,
                 message.Description,
@@ -324,9 +329,13 @@ namespace OrganisationRegistry.Organisation
             var regulationTheme = message.RegulationThemeId != Guid.Empty ?
                 Session.Get<RegulationTheme>(message.RegulationThemeId) : null;
 
+            var regulationSubTheme = message.RegulationSubThemeId != Guid.Empty ?
+                Session.Get<RegulationSubTheme>(message.RegulationSubThemeId) : null;
+
             organisation.UpdateRegulation(
                 message.OrganisationRegulationId,
                 regulationTheme,
+                regulationSubTheme,
                 message.Link,
                 message.Date,
                 message.Description,

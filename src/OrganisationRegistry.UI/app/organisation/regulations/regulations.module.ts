@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { SharedModule } from 'shared';
 
+import { RegulationSubThemesServiceModule } from 'services/regulation-sub-themes';
 import { RegulationThemesServiceModule } from 'services/regulation-themes';
 import { OrganisationRegulationsServiceModule } from 'services/organisationregulations';
 
@@ -18,7 +19,8 @@ import { OrganisationRegulationsUpdateOrganisationRegulationComponent } from './
     SharedModule,
     OrganisationRegulationsRoutingModule,
     OrganisationRegulationsServiceModule,
-    RegulationThemesServiceModule
+    RegulationThemesServiceModule,
+    RegulationSubThemesServiceModule
   ],
   declarations: [
     OrganisationRegulationsComponent,

@@ -5,6 +5,7 @@
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.RegulationTheme;
+    using RegulationSubTheme;
 
     public class UpdateOrganisationRegulationInternalRequest
     {
@@ -22,8 +23,9 @@
     {
         public Guid OrganisationRegulationId { get; set; }
         public Guid RegulationThemeId { get; set; }
-        public DateTime? Date { get; set; }
-        public string? Link { get; set; }
+        public Guid RegulationSubThemeId { get; set; }
+        public DateTime? RegulationDate { get; set; }
+        public string? RegulationUrl { get; set; }
         public string? Description { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
@@ -56,8 +58,9 @@
                 message.Body.OrganisationRegulationId,
                 new OrganisationId(message.OrganisationId),
                 new RegulationThemeId(message.Body.RegulationThemeId),
-                message.Body.Link,
-                message.Body.Date,
+                new RegulationSubThemeId(message.Body.RegulationSubThemeId),
+                message.Body.RegulationUrl,
+                message.Body.RegulationDate,
                 message.Body.Description,
                 new ValidFrom(message.Body.ValidFrom),
                 new ValidTo(message.Body.ValidTo));

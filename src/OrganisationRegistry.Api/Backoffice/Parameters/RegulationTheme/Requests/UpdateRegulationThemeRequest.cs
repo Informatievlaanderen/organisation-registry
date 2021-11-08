@@ -47,7 +47,7 @@
         {
             return new UpdateRegulationTheme(
                 new RegulationThemeId(message.RegulationThemeId),
-                message.Body.Name);
+                new RegulationThemeName(message.Body.Name));
         }
     }
 }

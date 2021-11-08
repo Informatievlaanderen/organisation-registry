@@ -1,0 +1,11 @@
+<ww-form-group-autocomplete
+  [id]="id"
+  [label]="label || 'Regelgevingthema'"
+  [initialValue]="initialValue"
+  [control]="control"
+  [placeholder]="placeholder || 'Selecteer regelgevingthema...'"
+  [name]="name || 'Regelgevingthema'"
+  [focus]="focus"
+  [inline]="inline"
+  [fetch]="searchRegulationThemes.bind(this)">
+</ww-form-group-autocomplete>

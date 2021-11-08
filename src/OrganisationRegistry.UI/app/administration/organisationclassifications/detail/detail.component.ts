@@ -35,7 +35,6 @@ export class OrganisationClassificationDetailComponent implements OnInit {
     private router: Router,
     private alertService: AlertService,
     private itemService: OrganisationClassificationService,
-    private organisationClassificationCategoryService: OrganisationClassificationTypeService
   ) {
     this.form = formBuilder.group({
       id: [ '', required ],

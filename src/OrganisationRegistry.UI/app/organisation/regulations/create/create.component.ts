@@ -4,7 +4,6 @@ import { ActivatedRoute, Router, Params } from '@angular/router';
 
 import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
 import { CreateAlertMessages } from 'core/alertmessages';
-import { Create, ICrud } from 'core/crud';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
@@ -14,7 +13,8 @@ import {
   OrganisationRegulationService
 } from 'services/organisationregulations';
 
-import { RegulationTheme, RegulationThemeService } from 'services/regulation-themes';
+import { RegulationThemeService } from 'services/regulation-themes';
+import { RegulationSubThemeService } from 'services/regulation-sub-themes';
 
 @Component({
   templateUrl: 'create.template.html',
@@ -23,7 +23,9 @@ import { RegulationTheme, RegulationThemeService } from 'services/regulation-the
 export class OrganisationRegulationsCreateOrganisationRegulationComponent implements OnInit {
   public form: FormGroup;
   public regulationThemes: SelectItem[];
+  public regulationSubThemes: Array<SelectItem> = [];
 
+  private regulationTheme: string = '';
   private readonly createAlerts = new CreateAlertMessages('Regulation');
 
   constructor(
@@ -31,6 +33,7 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
     private router: Router,
     private formBuilder: FormBuilder,
     private regulationThemeService: RegulationThemeService,
+    private regulationSubThemeService: RegulationSubThemeService,
     private organisationRegulationService: OrganisationRegulationService,
     private alertService: AlertService
   ) {
@@ -39,7 +42,7 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
       organisationId: ['', required],
       regulationThemeId: [''],
       regulationSubThemeId: [''],
-      regulationName: [''],
+      regulationName: ['', required],
       regulationUrl: [''],
       regulationDate: [''],
       description: [''],
@@ -57,16 +60,56 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
 
     this.regulationThemeService
       .getAllRegulationThemes()
-      .finally(() => this.form.enable())
+      .finally(() => this.enableForm())
       .subscribe(
         allRegulationThemes => this.regulationThemes = allRegulationThemes.map(k => new SelectItem(k.id, k.name)),
         error =>
           this.alertService.setAlert(
             new AlertBuilder()
               .error(error)
-              .withTitle('Regelgevingsthema\'s konden niet geladen worden!')
+              .withTitle('Regelgevingthema\'s konden niet geladen worden!')
               .withMessage('Er is een fout opgetreden bij het ophalen van de regelgevingsthema\'s. Probeer het later opnieuw.')
               .build()));
+    this.subscribeToFormChanges();
+  }
+
+  subscribeToFormChanges() {
+    const regulationThemeChanges$ = this.form.controls['regulationThemeId'].valueChanges;
+
+    regulationThemeChanges$
+      .subscribe(function (regulationTheme) {
+        if (this.regulationTheme === regulationTheme)
+          return;
+
+        this.regulationTheme = regulationTheme;
+
+        this.form.patchValue({ regulationSubThemeId: '' });
+
+        this.form.disable();
+
+        if (regulationTheme) {
+          this.regulationSubThemeService
+            .getAllRegulationSubThemes(regulationTheme)
+            .finally(() => this.enableForm())
+            .subscribe(
+              x => this.regulationSubThemes = x.map(c => new SelectItem(c.id, c.name)),
+              error =>
+                this.alertService.setAlert(
+                  new AlertBuilder()
+                    .error(error)
+                    .withTitle('Regelgevingsubthema\'s konden niet geladen worden!')
+                    .withMessage('Er is een fout opgetreden bij het ophalen van de regelgevingsubthema\'s. Probeer het later opnieuw.')
+                    .build()));
+        } else {
+          this.enableForm();
+        }
+      }.bind(this));
+  }
+
+  enableForm() {
+    this.form.enable();
+    if (!this.regulationTheme)
+      this.form.get('regulationSubThemeId').disable();
   }
 
   get isFormValid() {
@@ -77,7 +120,7 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
     this.form.disable();
 
     this.organisationRegulationService.create(value.organisationId, value)
-      .finally(() => this.form.enable())
+      .finally(() => this.enableForm())
       .subscribe(
         result => {
           if (result) {

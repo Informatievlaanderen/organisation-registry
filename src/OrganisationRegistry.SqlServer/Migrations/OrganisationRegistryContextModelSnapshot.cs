@@ -2328,6 +2328,13 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.Property<Guid>("OrganisationId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("RegulationSubThemeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RegulationSubThemeName")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<Guid?>("RegulationThemeId")
                         .HasColumnType("uniqueidentifier");
 
@@ -2902,6 +2909,39 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsClustered();
 
                     b.ToTable("PurposeList", "Backoffice");
+                });
+
+            modelBuilder.Entity("OrganisationRegistry.SqlServer.RegulationSubTheme.RegulationSubThemeListItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("RegulationThemeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RegulationThemeName")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id")
+                        .IsClustered(false);
+
+                    b.HasIndex("Name")
+                        .IsClustered();
+
+                    b.HasIndex("RegulationThemeName");
+
+                    b.HasIndex("Name", "RegulationThemeId")
+                        .IsUnique();
+
+                    b.ToTable("RegulationSubThemeList", "Backoffice");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.RegulationTheme.RegulationThemeListItem", b =>

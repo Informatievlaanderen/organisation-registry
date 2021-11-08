@@ -13,7 +13,7 @@ const routes: Routes = [
     canActivate: [RoleGuard],
     data: {
       roles: [Role.OrganisationRegistryBeheerder],
-      title: 'Parameters - Regelgevingsthema\'s'
+      title: 'Parameters - Regelgevingthema\'s'
     }
   },
   {

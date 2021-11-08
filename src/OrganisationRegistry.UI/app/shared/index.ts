@@ -29,7 +29,7 @@ import {
   BuildingAutoComplete,
   LocationAutoComplete,
   LocationTypeAutoComplete,
-  CrabLocationAutoComplete
+  CrabLocationAutoComplete, RegulationThemeAutoComplete
 } from './components/autocomplete';
 
 import { PopupDirective } from './components/popup';
@@ -64,6 +64,7 @@ import { BaseListComponent } from 'shared/components/list';
     FormalFrameworkCategoryAutoComplete,
     FormalFrameworkAutoComplete,
     OrganisationClassificationTypeAutoComplete,
+    RegulationThemeAutoComplete,
     OrganisationAutoComplete,
     PersonAutoComplete,
     BuildingAutoComplete,
@@ -95,6 +96,7 @@ import { BaseListComponent } from 'shared/components/list';
     FormalFrameworkCategoryAutoComplete,
     FormalFrameworkAutoComplete,
     OrganisationClassificationTypeAutoComplete,
+    RegulationThemeAutoComplete,
     OrganisationAutoComplete,
     PersonAutoComplete,
     BuildingAutoComplete,

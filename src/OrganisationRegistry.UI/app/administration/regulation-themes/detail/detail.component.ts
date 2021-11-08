@@ -18,8 +18,8 @@ export class RegulationThemeDetailComponent implements OnInit {
   public form: FormGroup;
 
   private crud: ICrud<RegulationTheme>;
-  private readonly createAlerts = new CreateAlertMessages('Regelgevingsthema');
-  private readonly updateAlerts = new UpdateAlertMessages('Regelgevingsthema');
+  private readonly createAlerts = new CreateAlertMessages('Regelgevingthema');
+  private readonly updateAlerts = new UpdateAlertMessages('Regelgevingthema');
 
   get isFormValid() {
     return this.form.enabled && this.form.valid;

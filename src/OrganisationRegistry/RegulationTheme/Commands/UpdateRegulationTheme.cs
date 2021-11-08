@@ -4,11 +4,11 @@ namespace OrganisationRegistry.RegulationTheme.Commands
     {
         public RegulationThemeId RegulationThemeId => Id;
 
-        public string Name { get; }
+        public RegulationThemeName Name { get; }
 
         public UpdateRegulationTheme(
             RegulationThemeId regulationThemeId,
-            string name)
+            RegulationThemeName name)
         {
             Id = regulationThemeId;
             Name = name;
