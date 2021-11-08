@@ -25,7 +25,7 @@ export class OrganisationRegulationsOverviewComponent implements OnInit, OnDestr
   public organisationRegulations: PagedResult<OrganisationRegulationListItem>;
 
   private filter: OrganisationRegulationFilter = new OrganisationRegulationFilter();
-  private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Organisatie regelgevingen');
+  private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Organisatie regelgeving');
   private organisationId: string;
   private currentSortBy: string = 'regulationTypeName';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
