@@ -11,7 +11,7 @@ import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
 
-import { RegulationType, RegulationTypeService } from 'services/regulationtypes';
+import { RegulationTheme, RegulationThemeService } from 'services/regulation-themes';
 
 import {
   OrganisationRegulationService,
@@ -24,7 +24,7 @@ import {
 })
 export class OrganisationRegulationsUpdateOrganisationRegulationComponent implements OnInit {
   public form: FormGroup;
-  public regulationTypes: SelectItem[];
+  public regulationThemes: SelectItem[];
 
   private readonly updateAlerts = new UpdateAlertMessages('Regelgeving');
 
@@ -32,15 +32,15 @@ export class OrganisationRegulationsUpdateOrganisationRegulationComponent implem
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
-    private regulationTypeService: RegulationTypeService,
+    private regulationThemeService: RegulationThemeService,
     private organisationRegulationService: OrganisationRegulationService,
     private alertService: AlertService
   ) {
     this.form = formBuilder.group({
       organisationRegulationId: ['', required],
       organisationId: ['', required],
-      regulationTypeId: [''],
-      regulationTypeName: [''],
+      regulationThemeId: [''],
+      regulationThemeName: [''],
       link: [''],
       date: [''],
       description: [''],
@@ -50,7 +50,7 @@ export class OrganisationRegulationsUpdateOrganisationRegulationComponent implem
   }
 
   ngOnInit() {
-    let allRegulationTypesObservable = this.regulationTypeService.getAllRegulationTypes();
+    let allRegulationThemesObservable = this.regulationThemeService.getAllRegulationThemes();
 
     Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
@@ -58,7 +58,7 @@ export class OrganisationRegulationsUpdateOrganisationRegulationComponent implem
         let orgId = res[0]['id'];
         let regulationId = res[1]['id'];
 
-        Observable.zip(this.organisationRegulationService.get(orgId, regulationId), allRegulationTypesObservable)
+        Observable.zip(this.organisationRegulationService.get(orgId, regulationId), allRegulationThemesObservable)
           .subscribe(
             item => this.setForm(item[0], item[1]),
             error => this.handleError(error));
@@ -85,12 +85,12 @@ export class OrganisationRegulationsUpdateOrganisationRegulationComponent implem
       );
   }
 
-  private setForm(organisationRegulation, allRegulationTypes) {
+  private setForm(organisationRegulation, allRegulationThemes) {
     if (organisationRegulation) {
       this.form.setValue(organisationRegulation);
     }
 
-    this.regulationTypes = allRegulationTypes.map(k => new SelectItem(k.id, k.name));
+    this.regulationThemes = allRegulationThemes.map(k => new SelectItem(k.id, k.name));
     this.form.enable();
   }
 

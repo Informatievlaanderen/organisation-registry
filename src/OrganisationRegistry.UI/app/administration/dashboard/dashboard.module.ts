@@ -21,7 +21,7 @@ import { AdministrationOrganisationRelationTypesModule } from '../organisationre
 import { AdministrationPeopleModule } from '../people';
 import { AdministrationPurposesModule } from '../purposes';
 import { AdministrationSeatTypesModule } from '../seattypes';
-import {AdministrationRegulationTypesModule} from "../regulationtypes";
+import {AdministrationRegulationThemesModule} from "../regulation-themes";
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
 
@@ -52,7 +52,7 @@ import { DashboardOverviewComponent } from './overview';
     AdministrationPeopleModule,
     AdministrationPurposesModule,
     AdministrationSeatTypesModule,
-    AdministrationRegulationTypesModule
+    AdministrationRegulationThemesModule
   ],
   declarations: [
     DashboardOverviewComponent

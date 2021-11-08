@@ -1,0 +1,18 @@
+<div class="grid">
+    <div class="col--1-1">
+        <div class="cta-title">
+            <h1 class="h2 cta-title__title">Regelgevingsthema's</h1>
+            <a class="button cta-title__cta" [routerLink]="['./create']">Voeg regelgevingsthema toe</a>
+        </div>
+
+        <ww-regulation-theme-filter
+          [isBusy]="isLoading"
+          (filter)="search($event)">
+        </ww-regulation-theme-filter>
+        <ww-regulation-theme-list
+          [items]="regulationThemes"
+          [isBusy]="isLoading"
+          (changePage)="changePage($event)">
+        </ww-regulation-theme-list>
+    </div>
+</div>

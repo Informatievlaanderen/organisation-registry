@@ -3,7 +3,7 @@ namespace OrganisationRegistry.Organisation
     using Building;
     using Capacity;
     using ContactType;
-    using RegulationType;
+    using RegulationTheme;
     using Events;
     using FormalFramework;
     using Function;
@@ -1236,7 +1236,7 @@ namespace OrganisationRegistry.Organisation
 
         public void AddRegulation(
             Guid organisationRegulationId,
-            RegulationType? regulationType,
+            RegulationTheme? regulationTheme,
             string? link,
             DateTime? date,
             string? description,
@@ -1245,8 +1245,8 @@ namespace OrganisationRegistry.Organisation
             ApplyChange(new OrganisationRegulationAdded(
                 Id,
                 organisationRegulationId,
-                regulationType?.Id,
-                regulationType?.Name,
+                regulationTheme?.Id,
+                regulationTheme?.Name,
                 link,
                 date,
                 description,
@@ -1256,7 +1256,7 @@ namespace OrganisationRegistry.Organisation
 
         public void UpdateRegulation(
             Guid organisationRegulationId,
-            RegulationType? regulationType,
+            RegulationTheme? regulationTheme,
             string? link,
             DateTime? date,
             string? description,
@@ -1268,14 +1268,14 @@ namespace OrganisationRegistry.Organisation
             ApplyChange(new OrganisationRegulationUpdated(
                 Id,
                 organisationRegulationId,
-                regulationType?.Id,
-                regulationType?.Name,
+                regulationTheme?.Id,
+                regulationTheme?.Name,
                 link,
                 date,
                 description,
                 validity.Start, validity.End,
-                previousRegulation.RegulationTypeId,
-                previousRegulation.RegulationTypeName,
+                previousRegulation.RegulationThemeId,
+                previousRegulation.RegulationThemeName,
                 previousRegulation.Validity.Start,
                 previousRegulation.Validity.End,
                 previousRegulation.Link,
@@ -2077,8 +2077,8 @@ namespace OrganisationRegistry.Organisation
             State.OrganisationRegulations.Add(new OrganisationRegulation(
                 @event.OrganisationRegulationId,
                 @event.OrganisationId,
-                @event.RegulationTypeId,
-                @event.RegulationTypeName,
+                @event.RegulationThemeId,
+                @event.RegulationThemeName,
                 @event.Link,
                 @event.Date,
                 @event.Description,
@@ -2092,8 +2092,8 @@ namespace OrganisationRegistry.Organisation
                 new OrganisationRegulation(
                     @event.OrganisationRegulationId,
                     @event.OrganisationId,
-                    @event.RegulationTypeId,
-                    @event.RegulationTypeName,
+                    @event.RegulationThemeId,
+                    @event.RegulationThemeName,
                     @event.Link,
                     @event.Date,
                     @event.Description,

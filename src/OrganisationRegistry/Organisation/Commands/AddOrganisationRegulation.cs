@@ -1,14 +1,14 @@
 ﻿namespace OrganisationRegistry.Organisation.Commands
 {
     using System;
-    using RegulationType;
+    using RegulationTheme;
 
     public class AddOrganisationRegulation : BaseCommand<OrganisationId>
     {
         public OrganisationId OrganisationId => Id;
 
         public Guid OrganisationRegulationId { get; }
-        public RegulationTypeId RegulationTypeId { get; }
+        public RegulationThemeId RegulationThemeId { get; }
         public string? Link { get; }
         public DateTime? Date { get; }
         public string? Description { get; }
@@ -17,7 +17,7 @@
 
         public AddOrganisationRegulation(Guid organisationRegulationId,
             OrganisationId organisationId,
-            RegulationTypeId regulationTypeId,
+            RegulationThemeId regulationThemeId,
             string? link,
             DateTime? date,
             string? description,
@@ -27,7 +27,7 @@
             Id = organisationId;
 
             OrganisationRegulationId = organisationRegulationId;
-            RegulationTypeId = regulationTypeId;
+            RegulationThemeId = regulationThemeId;
             Link = link;
             Date = date;
             Description = description;

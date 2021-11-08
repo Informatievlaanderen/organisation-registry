@@ -7,8 +7,8 @@ namespace OrganisationRegistry.Organisation.Events
         public Guid OrganisationId => Id;
 
         public Guid OrganisationRegulationId { get; }
-        public Guid? RegulationTypeId { get; }
-        public string? RegulationTypeName { get; }
+        public Guid? RegulationThemeId { get; }
+        public string? RegulationThemeName { get; }
         public string? Link { get; }
         public DateTime? Date { get; }
         public string? Description { get; }
@@ -18,8 +18,8 @@ namespace OrganisationRegistry.Organisation.Events
         public OrganisationRegulationAdded(
             Guid organisationId,
             Guid organisationRegulationId,
-            Guid? regulationTypeId,
-            string? regulationTypeName,
+            Guid? regulationThemeId,
+            string? regulationThemeName,
             string? link,
             DateTime? date,
             string? description,
@@ -29,8 +29,8 @@ namespace OrganisationRegistry.Organisation.Events
             Id = organisationId;
 
             OrganisationRegulationId = organisationRegulationId;
-            RegulationTypeId = regulationTypeId;
-            RegulationTypeName = regulationTypeName;
+            RegulationThemeId = regulationThemeId;
+            RegulationThemeName = regulationThemeName;
             Link = link;
             Description = description;
             Date = date;

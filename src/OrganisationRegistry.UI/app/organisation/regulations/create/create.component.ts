@@ -14,7 +14,7 @@ import {
   OrganisationRegulationService
 } from 'services/organisationregulations';
 
-import { RegulationType, RegulationTypeService } from 'services/regulationtypes';
+import { RegulationTheme, RegulationThemeService } from 'services/regulation-themes';
 
 @Component({
   templateUrl: 'create.template.html',
@@ -22,7 +22,7 @@ import { RegulationType, RegulationTypeService } from 'services/regulationtypes'
 })
 export class OrganisationRegulationsCreateOrganisationRegulationComponent implements OnInit {
   public form: FormGroup;
-  public regulationTypes: SelectItem[];
+  public regulationThemes: SelectItem[];
 
   private readonly createAlerts = new CreateAlertMessages('Regulation');
 
@@ -30,16 +30,18 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
-    private regulationTypeService: RegulationTypeService,
+    private regulationThemeService: RegulationThemeService,
     private organisationRegulationService: OrganisationRegulationService,
     private alertService: AlertService
   ) {
     this.form = formBuilder.group({
       organisationRegulationId: ['', required],
       organisationId: ['', required],
-      regulationTypeId: [''],
-      link: [''],
-      date: [''],
+      regulationThemeId: [''],
+      regulationSubThemeId: [''],
+      regulationName: [''],
+      regulationUrl: [''],
+      regulationDate: [''],
       description: [''],
       validFrom: [''],
       validTo: [''],
@@ -53,17 +55,17 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
       this.form.setValue(new CreateOrganisationRegulationRequest(params['id']));
     });
 
-    this.regulationTypeService
-      .getAllRegulationTypes()
+    this.regulationThemeService
+      .getAllRegulationThemes()
       .finally(() => this.form.enable())
       .subscribe(
-        allRegulationTypes => this.regulationTypes = allRegulationTypes.map(k => new SelectItem(k.id, k.name)),
+        allRegulationThemes => this.regulationThemes = allRegulationThemes.map(k => new SelectItem(k.id, k.name)),
         error =>
           this.alertService.setAlert(
             new AlertBuilder()
               .error(error)
-              .withTitle('Regelgevingstypes konden niet geladen worden!')
-              .withMessage('Er is een fout opgetreden bij het ophalen van de regelgevingstypes. Probeer het later opnieuw.')
+              .withTitle('Regelgevingsthema\'s konden niet geladen worden!')
+              .withMessage('Er is een fout opgetreden bij het ophalen van de regelgevingsthema\'s. Probeer het later opnieuw.')
               .build()));
   }
 

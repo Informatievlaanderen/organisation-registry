@@ -13,7 +13,7 @@
     public class OrganisationRegulationListQueryResult
     {
         public Guid OrganisationRegulationId { get; set; }
-        public string? RegulationTypeName { get; set; }
+        public string? RegulationThemeName { get; set; }
         public DateTime? Date { get; set; }
         public string? Link { get; set; }
         public string? Description { get; set; }
@@ -25,7 +25,7 @@
 
         public OrganisationRegulationListQueryResult(
             Guid organisationRegulationId,
-            string? regulationTypeName,
+            string? regulationThemeName,
             DateTime? date,
             string? link,
             string? description,
@@ -33,7 +33,7 @@
             DateTime? validTo)
         {
             OrganisationRegulationId = organisationRegulationId;
-            RegulationTypeName = regulationTypeName;
+            RegulationThemeName = regulationThemeName;
             Date = date;
             Link = link;
             ValidFrom = validFrom;
@@ -54,7 +54,7 @@
         protected override Expression<Func<OrganisationRegulationListItem, OrganisationRegulationListQueryResult>> Transformation =>
             x => new OrganisationRegulationListQueryResult(
                 x.OrganisationRegulationId,
-                x.RegulationTypeName,
+                x.RegulationThemeName,
                 x.Date,
                 x.Link,
                 x.Description,
@@ -88,14 +88,14 @@
         {
             public IEnumerable<string> SortableFields { get; } = new[]
             {
-                nameof(OrganisationRegulationListItem.RegulationTypeName),
+                nameof(OrganisationRegulationListItem.RegulationThemeName),
                 nameof(OrganisationRegulationListItem.Link),
                 nameof(OrganisationRegulationListItem.ValidFrom),
                 nameof(OrganisationRegulationListItem.ValidTo)
             };
 
             public SortingHeader DefaultSortingHeader { get; } =
-                new SortingHeader(nameof(OrganisationRegulationListItem.RegulationTypeName), SortOrder.Ascending);
+                new SortingHeader(nameof(OrganisationRegulationListItem.RegulationThemeName), SortOrder.Ascending);
         }
     }
 

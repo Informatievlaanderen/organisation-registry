@@ -2328,10 +2328,10 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.Property<Guid>("OrganisationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("RegulationTypeId")
+                    b.Property<Guid?>("RegulationThemeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("RegulationTypeName")
+                    b.Property<string>("RegulationThemeName")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -2346,7 +2346,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
 
                     b.HasIndex("Link");
 
-                    b.HasIndex("RegulationTypeName")
+                    b.HasIndex("RegulationThemeName")
                         .IsClustered();
 
                     b.HasIndex("ValidFrom");
@@ -2904,7 +2904,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.ToTable("PurposeList", "Backoffice");
                 });
 
-            modelBuilder.Entity("OrganisationRegistry.SqlServer.RegulationType.RegulationTypeListItem", b =>
+            modelBuilder.Entity("OrganisationRegistry.SqlServer.RegulationTheme.RegulationThemeListItem", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -2922,7 +2922,7 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .IsUnique()
                         .IsClustered();
 
-                    b.ToTable("RegulationTypeList", "Backoffice");
+                    b.ToTable("RegulationThemeList", "Backoffice");
                 });
 
             modelBuilder.Entity("OrganisationRegistry.SqlServer.Reporting.BodySeatGenderRatioAssignmentItem", b =>

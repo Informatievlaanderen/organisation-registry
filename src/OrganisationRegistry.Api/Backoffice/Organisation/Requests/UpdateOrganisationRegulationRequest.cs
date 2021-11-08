@@ -4,7 +4,7 @@
     using FluentValidation;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-    using OrganisationRegistry.RegulationType;
+    using OrganisationRegistry.RegulationTheme;
 
     public class UpdateOrganisationRegulationInternalRequest
     {
@@ -21,7 +21,7 @@
     public class UpdateOrganisationRegulationRequest
     {
         public Guid OrganisationRegulationId { get; set; }
-        public Guid RegulationTypeId { get; set; }
+        public Guid RegulationThemeId { get; set; }
         public DateTime? Date { get; set; }
         public string? Link { get; set; }
         public string? Description { get; set; }
@@ -55,7 +55,7 @@
             return new UpdateOrganisationRegulation(
                 message.Body.OrganisationRegulationId,
                 new OrganisationId(message.OrganisationId),
-                new RegulationTypeId(message.Body.RegulationTypeId),
+                new RegulationThemeId(message.Body.RegulationThemeId),
                 message.Body.Link,
                 message.Body.Date,
                 message.Body.Description,
