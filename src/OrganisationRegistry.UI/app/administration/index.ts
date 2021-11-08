@@ -20,4 +20,4 @@ export * from './organisationrelationtypes';
 export * from './people';
 export * from './purposes';
 export * from './seattypes';
-export * from './regulationtypes';
+export * from './regulation-themes';

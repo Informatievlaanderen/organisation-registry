@@ -53,7 +53,7 @@ export * from './peoplemandates';
 export * from './projections';
 export * from './projectionstates';
 export * from './purposes';
-export * from './regulationtypes';
+export * from './regulation-themes';
 export * from './reports';
 export * from './seattypes';
 export * from './stats';

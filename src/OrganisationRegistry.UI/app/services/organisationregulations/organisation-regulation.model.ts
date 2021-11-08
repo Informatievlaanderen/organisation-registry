@@ -2,7 +2,7 @@ export class OrganisationRegulation {
     constructor(
       public organisationId: string,
       public regulationId: string,
-      public regulationTypeName: string,
+      public regulationThemeName: string,
       public link: string,
       public date: string,
       public description: string,

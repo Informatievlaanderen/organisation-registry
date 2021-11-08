@@ -8,11 +8,11 @@ namespace OrganisationRegistry.Organisation.Events
 
         public Guid OrganisationRegulationId { get; }
 
-        public Guid? RegulationTypeId { get; }
-        public Guid? PreviousRegulationTypeId { get; }
+        public Guid? RegulationThemeId { get; }
+        public Guid? PreviousRegulationThemeId { get; }
 
-        public string? RegulationTypeName { get; }
-        public string? PreviousRegulationTypeName { get; }
+        public string? RegulationThemeName { get; }
+        public string? PreviousRegulationThemeName { get; }
 
         public string? Link { get; }
         public string? PreviousLink { get; }
@@ -33,15 +33,15 @@ namespace OrganisationRegistry.Organisation.Events
         public OrganisationRegulationUpdated(
             Guid organisationId,
             Guid organisationRegulationId,
-            Guid? regulationTypeId,
-            string regulationTypeName,
+            Guid? regulationThemeId,
+            string regulationThemeName,
             string? link,
             DateTime? date,
             string? description,
             DateTime? validFrom,
             DateTime? validTo,
-            Guid? previousRegulationTypeId,
-            string previousRegulationTypeName,
+            Guid? previousRegulationThemeId,
+            string previousRegulationThemeName,
             DateTime? previouslyValidFrom,
             DateTime? previouslyValidTo,
             string? previousLink,
@@ -51,16 +51,16 @@ namespace OrganisationRegistry.Organisation.Events
             Id = organisationId;
 
             OrganisationRegulationId = organisationRegulationId;
-            RegulationTypeId = regulationTypeId;
-            RegulationTypeName = regulationTypeName;
+            RegulationThemeId = regulationThemeId;
+            RegulationThemeName = regulationThemeName;
             Link = link;
             Date = date;
             Description = description;
             ValidFrom = validFrom;
             ValidTo = validTo;
 
-            PreviousRegulationTypeId = previousRegulationTypeId;
-            PreviousRegulationTypeName = previousRegulationTypeName;
+            PreviousRegulationThemeId = previousRegulationThemeId;
+            PreviousRegulationThemeName = previousRegulationThemeName;
             PreviousLink = previousLink;
             PreviousDate = previousDate;
             PreviousDescription = previousDescription;

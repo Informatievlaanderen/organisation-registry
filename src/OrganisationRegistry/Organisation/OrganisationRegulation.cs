@@ -7,8 +7,8 @@
         public Guid Id => OrganisationRegulationId;
         public Guid OrganisationId { get; }
         public Guid OrganisationRegulationId { get; }
-        public Guid? RegulationTypeId { get; }
-        public string RegulationTypeName { get; }
+        public Guid? RegulationThemeId { get; }
+        public string RegulationThemeName { get; }
         public string Link { get; }
         public Period Validity { get; }
         public DateTime? Date { get; }
@@ -16,8 +16,8 @@
 
         public OrganisationRegulation(Guid organisationRegulationId,
             Guid organisationId,
-            Guid? regulationTypeId,
-            string regulationTypeName,
+            Guid? regulationThemeId,
+            string regulationThemeName,
             string link,
             DateTime? date,
             string? description,
@@ -25,8 +25,8 @@
         {
             OrganisationId = organisationId;
             OrganisationRegulationId = organisationRegulationId;
-            RegulationTypeId = regulationTypeId;
-            RegulationTypeName = regulationTypeName;
+            RegulationThemeId = regulationThemeId;
+            RegulationThemeName = regulationThemeName;
             Link = link;
             Validity = validity;
             Date = date;
@@ -38,8 +38,8 @@
             return new OrganisationRegulation(
                 OrganisationRegulationId,
                 OrganisationId,
-                RegulationTypeId,
-                RegulationTypeName,
+                RegulationThemeId,
+                RegulationThemeName,
                 Link,
                 Date,
                 Description,

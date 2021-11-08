@@ -9,17 +9,17 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using OrganisationRegistry.Organisation.Events;
     using System.Linq;
     using System.Threading.Tasks;
-    using RegulationType;
+    using RegulationTheme;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.RegulationType.Events;
+    using OrganisationRegistry.RegulationTheme.Events;
 
     public class OrganisationRegulationListItem
     {
         public Guid OrganisationRegulationId { get; set; }
         public Guid OrganisationId { get; set; }
-        public Guid? RegulationTypeId { get; set; }
-        public string? RegulationTypeName { get; set; }
+        public Guid? RegulationThemeId { get; set; }
+        public string? RegulationThemeName { get; set; }
         public DateTime? Date { get; set; }
         public string? Link { get; set; }
         public string? Description { get; set; }
@@ -39,8 +39,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             b.Property(p => p.OrganisationId).IsRequired();
 
-            b.Property(p => p.RegulationTypeId);
-            b.Property(p => p.RegulationTypeName).HasMaxLength(RegulationTypeListConfiguration.NameLength);
+            b.Property(p => p.RegulationThemeId);
+            b.Property(p => p.RegulationThemeName).HasMaxLength(RegulationThemeListConfiguration.NameLength);
 
             b.Property(p => p.Date);
             b.Property(p => p.Link).HasMaxLength(RegulationLinkLength);
@@ -49,7 +49,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.RegulationTypeName).IsClustered();
+            b.HasIndex(x => x.RegulationThemeName).IsClustered();
             b.HasIndex(x => x.Link);
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
@@ -60,7 +60,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         Projection<OrganisationRegulationListView>,
         IEventHandler<OrganisationRegulationAdded>,
         IEventHandler<OrganisationRegulationUpdated>,
-        IEventHandler<RegulationTypeUpdated>,
+        IEventHandler<RegulationThemeUpdated>,
         IEventHandler<OrganisationTerminated>,
         IEventHandler<OrganisationTerminatedV2>
     {
@@ -82,15 +82,15 @@ namespace OrganisationRegistry.SqlServer.Organisation
             _eventStore = eventStore;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RegulationTypeUpdated> message)
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RegulationThemeUpdated> message)
         {
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var organisationRegulations = context.OrganisationRegulationList.Where(x => x.RegulationTypeId == message.Body.RegulationTypeId);
+            var organisationRegulations = context.OrganisationRegulationList.Where(x => x.RegulationThemeId == message.Body.RegulationThemeId);
             if (!await organisationRegulations.AnyAsync())
                 return;
 
             foreach (var organisationRegulation in organisationRegulations)
-                organisationRegulation.RegulationTypeName = message.Body.Name;
+                organisationRegulation.RegulationThemeName = message.Body.Name;
 
             await context.SaveChangesAsync();
         }
@@ -101,11 +101,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
             {
                 OrganisationRegulationId = message.Body.OrganisationRegulationId,
                 OrganisationId = message.Body.OrganisationId,
-                RegulationTypeId = message.Body.RegulationTypeId,
+                RegulationThemeId = message.Body.RegulationThemeId,
                 Link = message.Body.Link,
                 Date = message.Body.Date,
                 Description = message.Body.Description,
-                RegulationTypeName = message.Body.RegulationTypeName,
+                RegulationThemeName = message.Body.RegulationThemeName,
                 ValidFrom = message.Body.ValidFrom,
                 ValidTo = message.Body.ValidTo
             };
@@ -122,11 +122,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             regulation.OrganisationRegulationId = message.Body.OrganisationRegulationId;
             regulation.OrganisationId = message.Body.OrganisationId;
-            regulation.RegulationTypeId = message.Body.RegulationTypeId;
+            regulation.RegulationThemeId = message.Body.RegulationThemeId;
             regulation.Link = message.Body.Link;
             regulation.Date = message.Body.Date;
             regulation.Description = message.Body.Description;
-            regulation.RegulationTypeName = message.Body.RegulationTypeName;
+            regulation.RegulationThemeName = message.Body.RegulationThemeName;
             regulation.ValidFrom = message.Body.ValidFrom;
             regulation.ValidTo = message.Body.ValidTo;
 

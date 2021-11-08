@@ -23,7 +23,7 @@ namespace OrganisationRegistry.Organisation
     using System.Linq;
     using System.Threading.Tasks;
     using Infrastructure.Authorization;
-    using RegulationType;
+    using RegulationTheme;
 
     public class OrganisationCommandHandlers :
         BaseCommandHandler<OrganisationCommandHandlers>,
@@ -303,12 +303,12 @@ namespace OrganisationRegistry.Organisation
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
-            var regulationType = message.RegulationTypeId != Guid.Empty ?
-                Session.Get<RegulationType>(message.RegulationTypeId) : null;
+            var regulationTheme = message.RegulationThemeId != Guid.Empty ?
+                Session.Get<RegulationTheme>(message.RegulationThemeId) : null;
 
             organisation.AddRegulation(
                 message.OrganisationRegulationId,
-                regulationType,
+                regulationTheme,
                 message.Link,
                 message.Date,
                 message.Description,
@@ -321,12 +321,12 @@ namespace OrganisationRegistry.Organisation
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
-            var regulationType = message.RegulationTypeId != Guid.Empty ?
-                Session.Get<RegulationType>(message.RegulationTypeId) : null;
+            var regulationTheme = message.RegulationThemeId != Guid.Empty ?
+                Session.Get<RegulationTheme>(message.RegulationThemeId) : null;
 
             organisation.UpdateRegulation(
                 message.OrganisationRegulationId,
-                regulationType,
+                regulationTheme,
                 message.Link,
                 message.Date,
                 message.Description,

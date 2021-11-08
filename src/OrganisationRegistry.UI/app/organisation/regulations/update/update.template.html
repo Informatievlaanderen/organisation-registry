@@ -7,12 +7,12 @@
     <form class="form" [formGroup]="form" (ngSubmit)="update(form.value)" autocomplete="off">
       <div class="form__group">
         <ww-form-group-select
-          [id]="'regulationTypeId'"
-          [name]="'Regulation type'"
-          [label]="'Regulation type'"
-          [control]="form.get('regulationTypeId')"
-          [placeholder]="'Selecteer regelgevingstypes...'"
-          [values]="regulationTypes">
+          [id]="'regulationThemeId'"
+          [name]="'Regulation theme'"
+          [label]="'Regulation theme'"
+          [control]="form.get('regulationThemeId')"
+          [placeholder]="'Selecteer regelgevingsthema\'s...'"
+          [values]="regulationThemes">
         </ww-form-group-select>
 
         <ww-form-group-textbox
