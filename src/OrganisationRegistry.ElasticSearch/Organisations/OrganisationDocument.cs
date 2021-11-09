@@ -139,6 +139,11 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
                     .Name(p => p.OpeningHours)
                     .IncludeInRoot()
                     .Properties(OrganisationOpeningHour.Mapping))
+
+                .Nested<OrganisationRegulation>(n => n
+                    .Name(p => p.Regulations)
+                    .IncludeInRoot()
+                    .Properties(OrganisationRegulation.Mapping))
             );
 
         public List<Purpose> Purposes { get; set; }
@@ -864,6 +869,83 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
 
                 .Keyword(k => k
                     .Name(p => p.DayOfWeek))
+
+                .Object<Period>(o => o
+                    .Name(p => p.Validity)
+                    .Properties(Period.Mapping));
+        }
+
+        public List<OrganisationRegulation> Regulations { get; set; }
+        public class OrganisationRegulation
+        {
+            public Guid OrganisationRegulationId { get; set; }
+            public Guid? RegulationThemeId { get; set; }
+            public string? RegulationThemeName { get; set; }
+            public Guid? RegulationSubThemeId { get; set; }
+            public string? RegulationSubThemeName { get; set; }
+            public DateTime? RegulationDate { get; set; }
+            public string? RegulationUrl { get; set; }
+            public string? Description { get; set; }
+            public string DescriptionRendered { get; set; }
+            public Period Validity { get; set; }
+
+            protected OrganisationRegulation()
+            {
+            }
+
+            public OrganisationRegulation(
+                Guid organisationRegulationId,
+                Guid? regulationThemeId,
+                string? regulationThemeName,
+                Guid? regulationSubThemeId,
+                string? regulationSubThemeName,
+                string? description,
+                string descriptionRendered,
+                string? regulationUrl,
+                DateTime? regulationDate,
+                Period validity)
+            {
+                OrganisationRegulationId = organisationRegulationId;
+                RegulationThemeId = regulationThemeId;
+                RegulationThemeName = regulationThemeName;
+                RegulationSubThemeId = regulationSubThemeId;
+                RegulationSubThemeName = regulationSubThemeName;
+                RegulationDate = regulationDate;
+                RegulationUrl = regulationUrl;
+                Description = description;
+                DescriptionRendered = descriptionRendered;
+                Validity = validity;
+            }
+
+            public static IPromise<IProperties> Mapping(PropertiesDescriptor<OrganisationRegulation> map) => map
+                .Keyword(k => k
+                    .Name(p => p.OrganisationRegulationId))
+
+                .Keyword(k => k
+                    .Name(p => p.RegulationThemeId))
+
+                .Text(t => t
+                    .Name(p => p.RegulationThemeName)
+                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
+
+                .Keyword(k => k
+                    .Name(p => p.RegulationThemeId))
+
+                .Date(d => d
+                    .Name(p => p.RegulationDate)
+                    .Format("yyyy-MM-dd'T'HH:mm:ss||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"))
+
+                .Text(t => t
+                    .Name(p => p.RegulationUrl)
+                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
+
+                .Text(t => t
+                    .Name(p => p.Description)
+                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
+
+                .Text(t => t
+                    .Name(p => p.DescriptionRendered)
+                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
 
                 .Object<Period>(o => o
                     .Name(p => p.Validity)
