@@ -10,6 +10,7 @@ export class CreateOrganisationRegulationRequest {
   public regulationUrl: string = '';
   public regulationDate: string = '';
   public description: string = '';
+  public descriptionRendered: string = '';
   public validFrom: Date = null;
   public validTo: Date = null;
 

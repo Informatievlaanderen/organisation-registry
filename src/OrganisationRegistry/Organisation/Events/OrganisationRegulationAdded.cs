@@ -14,11 +14,11 @@ namespace OrganisationRegistry.Organisation.Events
         public string? Link { get; }
         public DateTime? Date { get; }
         public string? Description { get; }
+        public string? DescriptionRendered { get; }
         public DateTime? ValidFrom { get; }
         public DateTime? ValidTo { get; }
 
-        public OrganisationRegulationAdded(
-            Guid organisationId,
+        public OrganisationRegulationAdded(Guid organisationId,
             Guid organisationRegulationId,
             Guid? regulationThemeId,
             string? regulationThemeName,
@@ -27,6 +27,7 @@ namespace OrganisationRegistry.Organisation.Events
             string? link,
             DateTime? date,
             string? description,
+            string? descriptionRendered,
             DateTime? validFrom,
             DateTime? validTo)
         {
@@ -39,6 +40,7 @@ namespace OrganisationRegistry.Organisation.Events
             RegulationSubThemeName = regulationSubThemeName;
             Link = link;
             Description = description;
+            DescriptionRendered = descriptionRendered;
             Date = date;
             ValidFrom = validFrom;
             ValidTo = validTo;

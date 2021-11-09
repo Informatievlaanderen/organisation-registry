@@ -27,6 +27,7 @@
         public DateTime? RegulationDate { get; set; }
         public string? RegulationUrl { get; set; }
         public string? Description { get; set; }
+        public string? DescriptionRendered { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }
@@ -62,6 +63,7 @@
                 message.Body.RegulationUrl,
                 message.Body.RegulationDate,
                 message.Body.Description,
+                message.Body.DescriptionRendered,
                 new ValidFrom(message.Body.ValidFrom),
                 new ValidTo(message.Body.ValidTo));
         }

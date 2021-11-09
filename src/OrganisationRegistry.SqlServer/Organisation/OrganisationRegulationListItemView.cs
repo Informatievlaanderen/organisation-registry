@@ -26,6 +26,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public DateTime? Date { get; set; }
         public string? Link { get; set; }
         public string? Description { get; set; }
+        public string? DescriptionRendered { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }
@@ -51,6 +52,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             b.Property(p => p.Date);
             b.Property(p => p.Link).HasMaxLength(RegulationLinkLength);
             b.Property(p => p.Description);
+            b.Property(p => p.DescriptionRendered);
 
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
@@ -110,6 +112,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 Link = message.Body.Link,
                 Date = message.Body.Date,
                 Description = message.Body.Description,
+                DescriptionRendered = message.Body.DescriptionRendered,
                 RegulationThemeId = message.Body.RegulationThemeId,
                 RegulationThemeName = message.Body.RegulationThemeName,
                 RegulationSubThemeId = message.Body.RegulationSubThemeId,

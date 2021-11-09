@@ -317,6 +317,7 @@ namespace OrganisationRegistry.Organisation
                 message.Link,
                 message.Date,
                 message.Description,
+                message.DescriptionRendered,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
             await Session.Commit(message.User);

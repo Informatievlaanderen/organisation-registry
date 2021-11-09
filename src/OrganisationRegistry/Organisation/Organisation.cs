@@ -1235,13 +1235,13 @@ namespace OrganisationRegistry.Organisation
                 previousOpeningHour.Validity?.End));
         }
 
-        public void AddRegulation(
-            Guid organisationRegulationId,
+        public void AddRegulation(Guid organisationRegulationId,
             RegulationTheme? regulationTheme,
             RegulationSubTheme? regulationSubTheme,
             string? link,
             DateTime? date,
             string? description,
+            string? descriptionRendered,
             Period validity)
         {
             ApplyChange(new OrganisationRegulationAdded(
@@ -1254,6 +1254,7 @@ namespace OrganisationRegistry.Organisation
                 link,
                 date,
                 description,
+                descriptionRendered,
                 validity.Start,
                 validity.End));
         }
