@@ -1,0 +1,80 @@
+:host /deep/ .md h1 {
+  font-size: 36px;
+}
+
+.h1 {
+  font-size: 36px;
+}
+
+:host /deep/ .md h2 {
+  font-size: 30px;
+}
+
+:host /deep/ .md h3 {
+  font-size: 24px;
+}
+
+:host /deep/ .md h4 {
+  font-size: 18px;
+}
+
+:host /deep/ .md h5 {
+  font-size: 14px;
+}
+
+:host /deep/ .md h6 {
+  font-size: 12px;
+}
+
+:host /deep/ .md em {
+  font-style: italic;
+}
+
+:host /deep/ .md ul {
+  list-style-type: circle;
+  padding-left: 20px;
+  margin-left: 10px;
+  margin-bottom: 1.8rem;
+}
+
+:host /deep/ .md ol {
+  list-style-type: decimal;
+  padding-left: 20px;
+  margin-left: 10px;
+  margin-bottom: 1.8rem;
+}
+
+:host /deep/ .md p {
+  margin-bottom: 1.8rem;
+}
+
+:host /deep/ blockquote{
+  padding: 10px 20px;
+  margin: 0 0 20px;
+  font-size: 17.5px;
+  border-left: 5px solid #AAA;
+}
+
+:host /deep/ pre {
+  display: block;
+  padding: 9.5px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  word-break: break-all;
+  word-wrap: break-word;
+  background-color: #DDD;
+  border: 1px solid #AAA;
+  border-radius: 4px;
+}
+
+.scoller-container {
+  width: 150%;
+}
+
+.scroller {
+  height: 400px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #EFEFEF;
+  padding: 10px;
+}
