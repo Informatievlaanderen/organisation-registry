@@ -14,6 +14,7 @@
         public string? Link { get; }
         public DateTime? Date { get; }
         public string? Description { get; }
+        public string? DescriptionRendered { get; }
         public ValidFrom ValidFrom { get; }
         public ValidTo ValidTo { get; }
 
@@ -24,6 +25,7 @@
             string? link,
             DateTime? date,
             string? description,
+            string? descriptionRendered,
             ValidFrom validFrom,
             ValidTo validTo)
         {
@@ -35,6 +37,7 @@
             Link = link;
             Date = date;
             Description = description;
+            DescriptionRendered = descriptionRendered;
             ValidFrom = validFrom;
             ValidTo = validTo;
         }

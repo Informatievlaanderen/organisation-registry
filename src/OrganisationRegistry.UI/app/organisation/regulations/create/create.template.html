@@ -71,10 +71,10 @@
         </ww-form-group-textarea>
         <a href="" (click)="showExample($event)">Toon voorbeeld</a>
 
-        <div class="form__row" style="width: 150%" *ngIf="renderedMarkdown">
+        <div class="form__row" style="width: 150%" *ngIf="renderedDescription">
           <h3 class="h4">Omschrijving (voorbeeld)</h3>
           <hr />
-          <div class="md scroller" [innerHTML]="renderedMarkdown"></div>
+          <div class="md scroller" [innerHTML]="renderedDescription"></div>
         </div>
         <div class="form__row">
           <div class="form__buttons">

@@ -31,7 +31,7 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
   private readonly createAlerts = new CreateAlertMessages('Regulation');
 
   private converter = new showdown.Converter();
-  public renderedMarkdown: string = '';
+  public renderedDescription: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -81,7 +81,7 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
 
   subscribeToFormChanges() {
     this.form.controls['description'].valueChanges.subscribe(function(x) {
-      this.renderedMarkdown = this.converter.makeHtml(x);
+      this.renderedDescription = this.converter.makeHtml(x);
     }.bind(this));
 
     const regulationThemeChanges$ = this.form.controls['regulationThemeId'].valueChanges;
@@ -204,6 +204,8 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
 
   create(value: CreateOrganisationRegulationRequest) {
     this.form.disable();
+
+    value.descriptionRendered = this.renderedDescription;
 
     this.organisationRegulationService.create(value.organisationId, value)
       .finally(() => this.enableForm())
