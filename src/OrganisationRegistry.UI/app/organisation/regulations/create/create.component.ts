@@ -31,7 +31,6 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
   private readonly createAlerts = new CreateAlertMessages('Regulation');
 
   private converter = new showdown.Converter();
-  public renderedDescription: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -53,6 +52,7 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
       description: [''],
       validFrom: [''],
       validTo: [''],
+      descriptionRendered: ['']
     });
   }
 
@@ -81,7 +81,7 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
 
   subscribeToFormChanges() {
     this.form.controls['description'].valueChanges.subscribe(function(x) {
-      this.renderedDescription = this.converter.makeHtml(x);
+      this.form.controls['descriptionRendered'].patchValue(this.converter.makeHtml(x));
     }.bind(this));
 
     const regulationThemeChanges$ = this.form.controls['regulationThemeId'].valueChanges;
@@ -117,78 +117,80 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
   }
 
   showExample(e) {
-    this.form.controls["description"].patchValue('# h1 Titel\n' +
-      'Gevolgd door wat tekst.\n' +
-      '## h2 Titel\n' +
-      '\n' +
-      'Gevolgd door nog wat tekst.\n' +
-      '### h3 Titel\n' +
-      'We kunnen ook meerdere paragrafen voorzien.\n' +
-      '\n' +
-      'Hiervoor plaatsen we een lege lijn tussen de paragrafen. \n' +
-      'Lijnen die niet gescheiden zijn door een lege lijn, worden bij dezelfde paragraaf geplaatst.\n' +
-      '#### h4 Titel\n' +
-      '##### h5 Titel\n' +
-      '###### h6 Titel\n' +
-      '___\n' +
-      '\n' +
-      '## Tekststijl\n' +
-      '\n' +
-      '**Deze tekst is bold**\n' +
-      '\n' +
-      '__Deze tekst is ook bold__\n' +
-      '\n' +
-      '*Deze tekst is italic*\n' +
-      '\n' +
-      '_Deze tekst is ook italic_\n' +
-      '\n' +
-      '## Links\n' +
-      '\n' +
-      '[link text](http://dev.nodeca.com)\n' +
-      '\n' +
-      '## Afbeeldingen\n' +
-      '\n' +
-      '![Vlaanderen](https://www.vlaanderen.be/img/logo/vlaanderen-logo.svg)\n' +
-      '\n' +
-      '## Lijsten\n' +
-      '\n' +
-      '#### Ongeordend\n' +
-      '\n' +
-      '+ Maak een lijst met *,\n' +
-      '+ Maak een lijst met +, of \n' +
-      '+ Maak een lijst met -\n' +
-      '\n' +
-      '#### Ongeordend\n' +
-      '\n' +
-      '1. Lorem ipsum dolor sit amet\n' +
-      '2. Consectetur adipiscing elit\n' +
-      '3. Integer molestie lorem at massa\n' +
-      '\n' +
-      '\n' +
-      '## Quotes\n' +
-      '\n' +
-      '\n' +
-      '> Quotes kunnen genest worden...\n' +
-      '>> ...door verschillende groter dan tekens na elkaar...\n' +
-      '> > > ...of met spaties tussen de tekens.\n' +
-      '\n' +
-      '## Code\n' +
-      '\n' +
-      'Indented code\n' +
-      '\n' +
-      '    // Some comments\n' +
-      '    line 1 of code\n' +
-      '    line 2 of code\n' +
-      '    line 3 of code\n' +
-      '\n' +
-      '\n' +
-      'Block code\n' +
-      '\n' +
-      '```\n' +
-      'Sample text here...\n' +
-      'console.log(foo(5));\n' +
-      '```');
-
+    if(this.form.controls['description'].value === '' ||
+      confirm('Let op, hierdoor zult u de huidige tekst verliezen. Wilt u doorgaan?')){
+      this.form.controls["description"].patchValue('# h1 Titel\n' +
+        'Gevolgd door wat tekst.\n' +
+        '## h2 Titel\n' +
+        '\n' +
+        'Gevolgd door nog wat tekst.\n' +
+        '### h3 Titel\n' +
+        'We kunnen ook meerdere paragrafen voorzien.\n' +
+        '\n' +
+        'Hiervoor plaatsen we een lege lijn tussen de paragrafen. \n' +
+        'Lijnen die niet gescheiden zijn door een lege lijn, worden bij dezelfde paragraaf geplaatst.\n' +
+        '#### h4 Titel\n' +
+        '##### h5 Titel\n' +
+        '###### h6 Titel\n' +
+        '___\n' +
+        '\n' +
+        '## Tekststijl\n' +
+        '\n' +
+        '**Deze tekst is bold**\n' +
+        '\n' +
+        '__Deze tekst is ook bold__\n' +
+        '\n' +
+        '*Deze tekst is italic*\n' +
+        '\n' +
+        '_Deze tekst is ook italic_\n' +
+        '\n' +
+        '## Links\n' +
+        '\n' +
+        '[link text](http://dev.nodeca.com)\n' +
+        '\n' +
+        '## Afbeeldingen\n' +
+        '\n' +
+        '![Vlaanderen](https://www.vlaanderen.be/img/logo/vlaanderen-logo.svg)\n' +
+        '\n' +
+        '## Lijsten\n' +
+        '\n' +
+        '#### Ongeordend\n' +
+        '\n' +
+        '+ Maak een lijst met *,\n' +
+        '+ Maak een lijst met +, of \n' +
+        '+ Maak een lijst met -\n' +
+        '\n' +
+        '#### Ongeordend\n' +
+        '\n' +
+        '1. Lorem ipsum dolor sit amet\n' +
+        '2. Consectetur adipiscing elit\n' +
+        '3. Integer molestie lorem at massa\n' +
+        '\n' +
+        '\n' +
+        '## Quotes\n' +
+        '\n' +
+        '\n' +
+        '> Quotes kunnen genest worden...\n' +
+        '>> ...door verschillende groter dan tekens na elkaar...\n' +
+        '> > > ...of met spaties tussen de tekens.\n' +
+        '\n' +
+        '## Code\n' +
+        '\n' +
+        'Indented code\n' +
+        '\n' +
+        '    // Some comments\n' +
+        '    line 1 of code\n' +
+        '    line 2 of code\n' +
+        '    line 3 of code\n' +
+        '\n' +
+        '\n' +
+        'Block code\n' +
+        '\n' +
+        '```\n' +
+        'Sample text here...\n' +
+        'console.log(foo(5));\n' +
+        '```');
+    }
     return false;
   }
 
@@ -204,8 +206,6 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
 
   create(value: CreateOrganisationRegulationRequest) {
     this.form.disable();
-
-    value.descriptionRendered = this.renderedDescription;
 
     this.organisationRegulationService.create(value.organisationId, value)
       .finally(() => this.enableForm())

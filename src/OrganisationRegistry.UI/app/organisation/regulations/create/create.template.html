@@ -69,12 +69,12 @@
           [placeholder]="'Omschrijving'"
           [control]="form.get('description')">
         </ww-form-group-textarea>
-        <a href="" (click)="showExample($event)">Toon voorbeeld</a>
+        <a href="" (click)="showExample($event)">Genereer voorbeeld</a>
 
-        <div class="form__row" style="width: 150%" *ngIf="renderedDescription">
+        <div class="form__row" style="width: 150%" *ngIf="form.get('descriptionRendered').value">
           <h3 class="h4">Omschrijving (voorbeeld)</h3>
           <hr />
-          <div class="md scroller" [innerHTML]="renderedDescription"></div>
+          <div class="md scroller" [innerHTML]="form.get('descriptionRendered').value"></div>
         </div>
         <div class="form__row">
           <div class="form__buttons">
