@@ -27,6 +27,8 @@ namespace OrganisationRegistry.Organisation.Events
         public DateTime? PreviousDate { get; }
 
         public string? Description { get; }
+        public string? DescriptionRendered { get; }
+
         public string? PreviousDescription { get; }
 
         public DateTime? ValidFrom { get; }
@@ -46,6 +48,7 @@ namespace OrganisationRegistry.Organisation.Events
             string? link,
             DateTime? date,
             string? description,
+            // string? descriptionRendered,
             DateTime? validFrom,
             DateTime? validTo,
             Guid? previousRegulationThemeId,
@@ -68,6 +71,7 @@ namespace OrganisationRegistry.Organisation.Events
             Link = link;
             Date = date;
             Description = description;
+            // DescriptionRendered = descriptionRendered;
             ValidFrom = validFrom;
             ValidTo = validTo;
 
