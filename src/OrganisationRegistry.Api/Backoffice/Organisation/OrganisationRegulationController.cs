@@ -12,6 +12,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.FeatureManagement.Mvc;
+    using Newtonsoft.Json;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using Queries;
@@ -69,7 +70,9 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationRegulationRequest message)
+        public async Task<IActionResult> Post([FromServices] ISecurityService securityService,
+            [FromRoute] Guid organisationId,
+            [FromBody] AddOrganisationRegulationRequest message)
         {
             var internalMessage = new AddOrganisationRegulationInternalRequest(organisationId, message);
 
