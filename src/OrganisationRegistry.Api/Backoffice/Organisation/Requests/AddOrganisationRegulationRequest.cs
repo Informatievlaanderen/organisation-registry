@@ -1,7 +1,11 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Requests
 {
     using System;
+    using Be.Vlaanderen.Basisregisters.Converters.TrimString;
+    using Be.Vlaanderen.Basisregisters.Utilities;
     using FluentValidation;
+    using Infrastructure;
+    using Newtonsoft.Json;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.RegulationTheme;
@@ -27,6 +31,7 @@
         public DateTime? RegulationDate { get; set; }
         public string RegulationName { get; set; }
         public string? RegulationUrl { get; set; }
+        [JsonConverter(typeof(NoConverter))]
         public string? Description { get; set; }
         public string? DescriptionRendered { get; set; }
         public DateTime? ValidFrom { get; set; }

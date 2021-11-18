@@ -152,7 +152,10 @@ namespace OrganisationRegistry.Api.Infrastructure
                         },
                         MiddlewareHooks =
                         {
-                            ConfigureJsonOptions = options => options.SerializerSettings.ConfigureForOrganisationRegistry(),
+                            ConfigureJsonOptions = options =>
+                            {
+                                options.SerializerSettings.ConfigureForOrganisationRegistry();
+                            },
                             ConfigureMvcCore = cfg =>
                             {
                                 cfg.OutputFormatters.Add(new CsvOutputFormatter(new CsvFormatterOptions()));
