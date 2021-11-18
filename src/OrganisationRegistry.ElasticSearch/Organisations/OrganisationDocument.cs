@@ -883,10 +883,11 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
             public string? RegulationThemeName { get; set; }
             public Guid? RegulationSubThemeId { get; set; }
             public string? RegulationSubThemeName { get; set; }
-            public DateTime? RegulationDate { get; set; }
-            public string? RegulationUrl { get; set; }
+            public string Name { get; set; }
+            public DateTime? Date { get; set; }
+            public string? Url { get; set; }
             public string? Description { get; set; }
-            public string DescriptionRendered { get; set; }
+            public string? DescriptionRendered { get; set; }
             public Period Validity { get; set; }
 
             protected OrganisationRegulation()
@@ -899,10 +900,11 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
                 string? regulationThemeName,
                 Guid? regulationSubThemeId,
                 string? regulationSubThemeName,
+                string name,
                 string? description,
-                string descriptionRendered,
-                string? regulationUrl,
-                DateTime? regulationDate,
+                string? descriptionRendered,
+                string? url,
+                DateTime? date,
                 Period validity)
             {
                 OrganisationRegulationId = organisationRegulationId;
@@ -910,8 +912,9 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
                 RegulationThemeName = regulationThemeName;
                 RegulationSubThemeId = regulationSubThemeId;
                 RegulationSubThemeName = regulationSubThemeName;
-                RegulationDate = regulationDate;
-                RegulationUrl = regulationUrl;
+                Name = name;
+                Date = date;
+                Url = url;
                 Description = description;
                 DescriptionRendered = descriptionRendered;
                 Validity = validity;
@@ -929,14 +932,22 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
                     .Fields(x => x.Keyword(y => y.Name("keyword"))))
 
                 .Keyword(k => k
-                    .Name(p => p.RegulationThemeId))
+                    .Name(p => p.RegulationSubThemeId))
+
+                .Text(t => t
+                    .Name(p => p.RegulationSubThemeName)
+                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
+
+                .Text(t => t
+                    .Name(p => p.Name)
+                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
 
                 .Date(d => d
-                    .Name(p => p.RegulationDate)
+                    .Name(p => p.Date)
                     .Format("yyyy-MM-dd'T'HH:mm:ss||yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"))
 
                 .Text(t => t
-                    .Name(p => p.RegulationUrl)
+                    .Name(p => p.Url)
                     .Fields(x => x.Keyword(y => y.Name("keyword"))))
 
                 .Text(t => t

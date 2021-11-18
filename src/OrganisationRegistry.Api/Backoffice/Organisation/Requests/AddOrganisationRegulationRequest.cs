@@ -25,6 +25,7 @@
         public Guid RegulationThemeId { get; set; }
         public Guid RegulationSubThemeId { get; set; }
         public DateTime? RegulationDate { get; set; }
+        public string RegulationName { get; set; }
         public string? RegulationUrl { get; set; }
         public string? Description { get; set; }
         public string? DescriptionRendered { get; set; }
@@ -60,6 +61,7 @@
                 new OrganisationId(message.OrganisationId),
                 new RegulationThemeId(message.Body.RegulationThemeId),
                 new RegulationSubThemeId(message.Body.RegulationSubThemeId),
+                message.Body.RegulationName,
                 message.Body.RegulationUrl,
                 message.Body.RegulationDate,
                 message.Body.Description,

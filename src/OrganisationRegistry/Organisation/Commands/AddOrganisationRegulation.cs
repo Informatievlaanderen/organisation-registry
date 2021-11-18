@@ -11,6 +11,7 @@
         public Guid OrganisationRegulationId { get; }
         public RegulationThemeId RegulationThemeId { get; }
         public RegulationSubThemeId RegulationSubThemeId { get; }
+        public string RegulationName { get; }
         public string? Link { get; }
         public DateTime? Date { get; }
         public string? Description { get; }
@@ -22,6 +23,7 @@
             OrganisationId organisationId,
             RegulationThemeId regulationThemeId,
             RegulationSubThemeId regulationSubThemeId,
+            string regulationName,
             string? link,
             DateTime? date,
             string? description,
@@ -34,6 +36,7 @@
             OrganisationRegulationId = organisationRegulationId;
             RegulationThemeId = regulationThemeId;
             RegulationSubThemeId = regulationSubThemeId;
+            RegulationName = regulationName;
             Link = link;
             Date = date;
             Description = description;
