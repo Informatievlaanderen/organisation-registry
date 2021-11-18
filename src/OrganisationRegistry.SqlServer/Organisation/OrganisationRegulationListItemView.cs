@@ -23,8 +23,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public string? RegulationThemeName { get; set; }
         public Guid? RegulationSubThemeId { get; set; }
         public string? RegulationSubThemeName { get; set; }
+        public string Name { get; set; }
         public DateTime? Date { get; set; }
-        public string? Link { get; set; }
+        public string? Url { get; set; }
         public string? Description { get; set; }
         public string? DescriptionRendered { get; set; }
         public DateTime? ValidFrom { get; set; }
@@ -49,8 +50,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
             b.Property(p => p.RegulationSubThemeId);
             b.Property(p => p.RegulationSubThemeName).HasMaxLength(RegulationSubThemeListConfiguration.NameLength);
 
+            b.Property(p => p.Name);
             b.Property(p => p.Date);
-            b.Property(p => p.Link).HasMaxLength(RegulationLinkLength);
+            b.Property(p => p.Url).HasMaxLength(RegulationLinkLength);
             b.Property(p => p.Description);
             b.Property(p => p.DescriptionRendered);
 
@@ -58,7 +60,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             b.Property(p => p.ValidTo);
 
             b.HasIndex(x => x.RegulationThemeName).IsClustered();
-            b.HasIndex(x => x.Link);
+            b.HasIndex(x => x.Url);
             b.HasIndex(x => x.ValidFrom);
             b.HasIndex(x => x.ValidTo);
         }
@@ -109,7 +111,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
             {
                 OrganisationRegulationId = message.Body.OrganisationRegulationId,
                 OrganisationId = message.Body.OrganisationId,
-                Link = message.Body.Link,
+                Name = message.Body.Name,
+                Url = message.Body.Link,
                 Date = message.Body.Date,
                 Description = message.Body.Description,
                 DescriptionRendered = message.Body.DescriptionRendered,
@@ -133,7 +136,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             regulation.OrganisationRegulationId = message.Body.OrganisationRegulationId;
             regulation.OrganisationId = message.Body.OrganisationId;
-            regulation.Link = message.Body.Link;
+            regulation.Url = message.Body.Link;
             regulation.Date = message.Body.Date;
             regulation.Description = message.Body.Description;
             regulation.RegulationThemeId = message.Body.RegulationThemeId;

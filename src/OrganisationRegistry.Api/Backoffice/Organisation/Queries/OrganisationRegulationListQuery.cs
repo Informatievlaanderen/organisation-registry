@@ -14,9 +14,8 @@
     {
         public Guid OrganisationRegulationId { get; set; }
         public string? RegulationThemeName { get; set; }
-        public DateTime? Date { get; set; }
-        public string? Link { get; set; }
-        public string? Description { get; set; }
+        public string? RegulationSubThemeName { get; }
+        public string? Name { get; set; }
         public DateTime? ValidFrom { get; set; }
 
         public DateTime? ValidTo { get; set; }
@@ -26,19 +25,17 @@
         public OrganisationRegulationListQueryResult(
             Guid organisationRegulationId,
             string? regulationThemeName,
-            DateTime? date,
-            string? link,
-            string? description,
+            string? regulationSubThemeName,
+            string? name,
             DateTime? validFrom,
             DateTime? validTo)
         {
             OrganisationRegulationId = organisationRegulationId;
             RegulationThemeName = regulationThemeName;
-            Date = date;
-            Link = link;
+            RegulationSubThemeName = regulationSubThemeName;
             ValidFrom = validFrom;
             ValidTo = validTo;
-            Description = description;
+            Name = name;
 
             IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
         }
@@ -55,9 +52,8 @@
             x => new OrganisationRegulationListQueryResult(
                 x.OrganisationRegulationId,
                 x.RegulationThemeName,
-                x.Date,
-                x.Link,
-                x.Description,
+                x.RegulationSubThemeName,
+                x.Name,
                 x.ValidFrom,
                 x.ValidTo);
 
@@ -89,7 +85,7 @@
             public IEnumerable<string> SortableFields { get; } = new[]
             {
                 nameof(OrganisationRegulationListItem.RegulationThemeName),
-                nameof(OrganisationRegulationListItem.Link),
+                nameof(OrganisationRegulationListItem.Url),
                 nameof(OrganisationRegulationListItem.ValidFrom),
                 nameof(OrganisationRegulationListItem.ValidTo)
             };

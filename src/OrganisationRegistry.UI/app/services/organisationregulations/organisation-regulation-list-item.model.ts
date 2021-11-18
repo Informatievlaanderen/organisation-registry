@@ -3,6 +3,8 @@ export class OrganisationRegulationListItem {
     public organisationRegulationId: string = '',
     public regulationId: string = '',
     public regulationThemeName: string = '',
+    public regulationSubThemeName: string = '',
+    public name: string = '',
     public validFrom: Date,
     public validTo: Date,
     public link: string

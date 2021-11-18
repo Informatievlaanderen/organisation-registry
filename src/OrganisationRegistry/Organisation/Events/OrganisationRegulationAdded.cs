@@ -11,6 +11,7 @@ namespace OrganisationRegistry.Organisation.Events
         public string? RegulationThemeName { get; }
         public Guid? RegulationSubThemeId { get; }
         public string? RegulationSubThemeName { get; }
+        public string Name { get; }
         public string? Link { get; }
         public DateTime? Date { get; }
         public string? Description { get; }
@@ -24,6 +25,7 @@ namespace OrganisationRegistry.Organisation.Events
             string? regulationThemeName,
             Guid? regulationSubThemeId,
             string? regulationSubThemeName,
+            string name,
             string? link,
             DateTime? date,
             string? description,
@@ -38,6 +40,7 @@ namespace OrganisationRegistry.Organisation.Events
             RegulationThemeName = regulationThemeName;
             RegulationSubThemeId = regulationSubThemeId;
             RegulationSubThemeName = regulationSubThemeName;
+            Name = name;
             Link = link;
             Description = description;
             DescriptionRendered = descriptionRendered;

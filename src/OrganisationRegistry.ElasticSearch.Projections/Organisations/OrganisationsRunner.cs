@@ -32,7 +32,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             typeof(OrganisationParent),
             typeof(OrganisationRelation),
             typeof(OrganisationBankAccount),
-            typeof(OrganisationOpeningHoursSpecification)
+            typeof(OrganisationOpeningHoursSpecification),
+            typeof(OrganisationRegulation)
         };
 
         public OrganisationsRunner(

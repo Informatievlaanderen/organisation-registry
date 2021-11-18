@@ -314,6 +314,7 @@ namespace OrganisationRegistry.Organisation
                 message.OrganisationRegulationId,
                 regulationTheme,
                 regulationSubTheme,
+                message.RegulationName,
                 message.Link,
                 message.Date,
                 message.Description,
