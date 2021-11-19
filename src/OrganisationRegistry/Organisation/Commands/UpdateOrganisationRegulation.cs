@@ -11,9 +11,11 @@
         public Guid OrganisationRegulationId { get; }
         public RegulationThemeId RegulationThemeId { get; }
         public RegulationSubThemeId RegulationSubThemeId { get; }
+        public string Name { get; }
         public string? Link { get; }
         public DateTime? Date { get; }
         public string? Description { get; }
+        public string? DescriptionRendered { get; }
         public ValidFrom ValidFrom { get; }
         public ValidTo ValidTo { get; }
 
@@ -21,9 +23,11 @@
             OrganisationId organisationId,
             RegulationThemeId regulationThemeId,
             RegulationSubThemeId regulationSubThemeId,
+            string name,
             string? link,
             DateTime? date,
             string? description,
+            string? descriptionRendered,
             ValidFrom validFrom,
             ValidTo validTo)
         {
@@ -32,9 +36,11 @@
             OrganisationRegulationId = organisationRegulationId;
             RegulationThemeId = regulationThemeId;
             RegulationSubThemeId = regulationSubThemeId;
+            Name = name;
             Link = link;
             Date = date;
             Description = description;
+            DescriptionRendered = descriptionRendered;
             ValidFrom = validFrom;
             ValidTo = validTo;
         }

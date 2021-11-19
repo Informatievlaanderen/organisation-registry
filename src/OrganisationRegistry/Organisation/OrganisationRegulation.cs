@@ -8,23 +8,27 @@
         public Guid OrganisationId { get; }
         public Guid OrganisationRegulationId { get; }
         public Guid? RegulationThemeId { get; }
-        public string RegulationThemeName { get; }
+        public string? RegulationThemeName { get; }
         public Guid? RegulationSubThemeId { get; }
-        public string RegulationSubThemeName { get; }
-        public string Link { get; }
+        public string? RegulationSubThemeName { get; }
+        public string Name { get; }
+        public string? Link { get; }
         public Period Validity { get; }
         public DateTime? Date { get; }
         public string? Description { get; }
+        public string? DescriptionRendered { get; }
 
         public OrganisationRegulation(Guid organisationRegulationId,
             Guid organisationId,
             Guid? regulationThemeId,
-            string regulationThemeName,
+            string? regulationThemeName,
             Guid? regulationSubThemeId,
-            string regulationSubThemeName,
-            string link,
+            string? regulationSubThemeName,
+            string name,
+            string? link,
             DateTime? date,
             string? description,
+            string? descriptionRendered,
             Period validity)
         {
             OrganisationId = organisationId;
@@ -33,10 +37,12 @@
             RegulationThemeName = regulationThemeName;
             RegulationSubThemeId = regulationSubThemeId;
             RegulationSubThemeName = regulationSubThemeName;
+            Name = name;
             Link = link;
             Validity = validity;
             Date = date;
             Description = description;
+            DescriptionRendered = descriptionRendered;
         }
 
         public OrganisationRegulation WithValidity(Period period)
@@ -48,9 +54,11 @@
                 RegulationThemeName,
                 RegulationSubThemeId,
                 RegulationSubThemeName,
+                Name,
                 Link,
                 Date,
                 Description,
+                DescriptionRendered,
                 period);
         }
 

@@ -11,8 +11,8 @@
         public Guid OrganisationRegulationId { get; }
         public RegulationThemeId RegulationThemeId { get; }
         public RegulationSubThemeId RegulationSubThemeId { get; }
-        public string RegulationName { get; }
-        public string? Link { get; }
+        public string Name { get; }
+        public string? Url { get; }
         public DateTime? Date { get; }
         public string? Description { get; }
         public string? DescriptionRendered { get; }
@@ -23,8 +23,8 @@
             OrganisationId organisationId,
             RegulationThemeId regulationThemeId,
             RegulationSubThemeId regulationSubThemeId,
-            string regulationName,
-            string? link,
+            string name,
+            string? url,
             DateTime? date,
             string? description,
             string? descriptionRendered,
@@ -36,8 +36,8 @@
             OrganisationRegulationId = organisationRegulationId;
             RegulationThemeId = regulationThemeId;
             RegulationSubThemeId = regulationSubThemeId;
-            RegulationName = regulationName;
-            Link = link;
+            Name = name;
+            Url = url;
             Date = date;
             Description = description;
             DescriptionRendered = descriptionRendered;

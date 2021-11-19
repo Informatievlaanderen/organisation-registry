@@ -113,8 +113,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                     parents: new Dictionary<Guid, DateTime>(),
                     relations: new Dictionary<Guid, DateTime>(),
                     formalFrameworks: new Dictionary<Guid, DateTime>(),
-                    openingHours: new Dictionary<Guid, DateTime>(),
-                    regulations: new Dictionary<Guid, DateTime>()),
+                    openingHours: new Dictionary<Guid, DateTime>()),
                 new KboFieldsToTerminate(
                     bankAccounts: new Dictionary<Guid, DateTime>(),
                     registeredOffice: null,

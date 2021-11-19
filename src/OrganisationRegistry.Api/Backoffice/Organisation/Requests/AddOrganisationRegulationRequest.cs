@@ -28,9 +28,9 @@
         public Guid OrganisationRegulationId { get; set; }
         public Guid RegulationThemeId { get; set; }
         public Guid RegulationSubThemeId { get; set; }
-        public DateTime? RegulationDate { get; set; }
-        public string RegulationName { get; set; }
-        public string? RegulationUrl { get; set; }
+        public DateTime? Date { get; set; }
+        public string Name { get; set; }
+        public string? Url { get; set; }
         [JsonConverter(typeof(NoConverter))]
         public string? Description { get; set; }
         public string? DescriptionRendered { get; set; }
@@ -66,9 +66,9 @@
                 new OrganisationId(message.OrganisationId),
                 new RegulationThemeId(message.Body.RegulationThemeId),
                 new RegulationSubThemeId(message.Body.RegulationSubThemeId),
-                message.Body.RegulationName,
-                message.Body.RegulationUrl,
-                message.Body.RegulationDate,
+                message.Body.Name,
+                message.Body.Url,
+                message.Body.Date,
                 message.Body.Description,
                 message.Body.DescriptionRendered,
                 new ValidFrom(message.Body.ValidFrom),

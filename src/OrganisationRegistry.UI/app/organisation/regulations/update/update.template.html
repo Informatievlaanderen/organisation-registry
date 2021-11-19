@@ -9,18 +9,27 @@
         <ww-form-group-select
           [id]="'regulationThemeId'"
           [name]="'Regulation theme'"
-          [label]="'Regulation theme'"
+          [label]="'Thema'"
           [control]="form.get('regulationThemeId')"
-          [placeholder]="'Selecteer regelgevingsthema\'s...'"
+          [placeholder]="'Selecteer regelgevingsthema...'"
           [values]="regulationThemes">
         </ww-form-group-select>
 
+        <ww-form-group-select
+          [id]="'regulationSubThemeId'"
+          [name]="'Regulation sub-theme'"
+          [label]="'Subthema'"
+          [control]="form.get('regulationSubThemeId')"
+          [placeholder]="'Selecteer regelgevingssubthema...'"
+          [values]="regulationSubThemes">
+        </ww-form-group-select>
+
         <ww-form-group-textbox
-            [id]="'link'"
-            [name]="'Regulation'"
-            [label]="'Regulation'"
-            [placeholder]="'Regulation'"
-            [control]="form.get('link')">
+          [id]="'link'"
+          [name]="'Regulation'"
+          [label]="'Regelgeving'"
+          [placeholder]="'Naam regelgeving'"
+          [control]="form.get('name')">
         </ww-form-group-textbox>
 
         <ww-form-group-datepicker
@@ -31,13 +40,13 @@
           [control]="form.get('date')">
         </ww-form-group-datepicker>
 
-        <ww-form-group-textarea
-          [id]="'description'"
-          [name]="'Omschrijving'"
-          [label]="'Omschrijving'"
-          [placeholder]="'Omschrijving'"
-          [control]="form.get('description')">
-        </ww-form-group-textarea>
+        <ww-form-group-textbox
+          [id]="'link'"
+          [name]="'RegulationUrl'"
+          [label]="'URL regelgeving'"
+          [placeholder]="'Link naar de regelgeving'"
+          [control]="form.get('url')">
+        </ww-form-group-textbox>
 
         <ww-form-group-datepicker-range
           [fromId]="'validFrom'"
@@ -51,6 +60,22 @@
           [toPlaceholder]="'Geldig tot'"
           [toControl]="form.get('validTo')">
         </ww-form-group-datepicker-range>
+
+        <ww-form-group-textarea
+          [id]="'description'"
+          [name]="'Omschrijving'"
+          [label]="'Omschrijving'"
+          [rows]="20"
+          [placeholder]="'Omschrijving'"
+          [control]="form.get('description')">
+        </ww-form-group-textarea>
+        <a href="" (click)="showExample($event)">Genereer voorbeeld</a>
+
+        <div class="form__row" style="width: 150%" *ngIf="form.get('descriptionRendered').value">
+          <h3 class="h4">Omschrijving (voorbeeld)</h3>
+          <hr />
+          <div class="md scroller" [innerHTML]="form.get('descriptionRendered').value"></div>
+        </div>
 
         <div class="form__row">
           <div class="form__buttons">
