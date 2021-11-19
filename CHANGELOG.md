@@ -1,3 +1,19 @@
+# [1.108.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.107.0...v1.108.0) (2021-11-19)
+
+
+### Features
+
+* add managing regulation sub themas, use in org regulations ([f84e295](https://github.com/informatievlaanderen/organisation-registry/commit/f84e2954a520195cd594d7bafaa591815dc54344))
+* add name; rename props ([7253324](https://github.com/informatievlaanderen/organisation-registry/commit/72533248e5137512ed65cd486a7bb4a0b282d09f))
+* allow updating regulations ([04fef49](https://github.com/informatievlaanderen/organisation-registry/commit/04fef49ea1650a1fb0a5a285bb2062e484623114))
+* ask confirmation to show md example ([e7177a2](https://github.com/informatievlaanderen/organisation-registry/commit/e7177a27635ac310d6626f2560ebaef932a93c4b))
+* don't convert description to keep newlines ([6400281](https://github.com/informatievlaanderen/organisation-registry/commit/640028172c71f9cfab8ab3d9dfd3d71bc4186af6))
+* handle OrganisationRegulationAdded in ES projections ([7335ad1](https://github.com/informatievlaanderen/organisation-registry/commit/7335ad14b2420104774a3c06fa485e524fb68470))
+* rename 'regelgevingen' ([45fa5f0](https://github.com/informatievlaanderen/organisation-registry/commit/45fa5f07daceec7db39e974c12175e8e226b9acf))
+* rename regulation type to regulation theme ([ff24a3e](https://github.com/informatievlaanderen/organisation-registry/commit/ff24a3e68b8a6643436c6929936957b4ea918d79))
+* render markdown preview for description ([c558c18](https://github.com/informatievlaanderen/organisation-registry/commit/c558c18ad55880f8e61701594fadd09efda5c409))
+* save rendered html to db ([86c8798](https://github.com/informatievlaanderen/organisation-registry/commit/86c879899213de18822d2147c68d6950cc75ca87))
+
 # [1.107.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.106.0...v1.107.0) (2021-11-03)
 
 
