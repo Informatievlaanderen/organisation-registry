@@ -20,8 +20,11 @@ namespace OrganisationRegistry.Organisation.Events
         public string? RegulationSubThemeName { get; }
         public string? PreviousRegulationSubThemeName { get; }
 
-        public string? Link { get; }
-        public string? PreviousLink { get; }
+        public string Name { get; }
+        public string PreviousName { get; }
+
+        public string? Url { get; }
+        public string? PreviousUrl { get; }
 
         public DateTime? Date { get; }
         public DateTime? PreviousDate { get; }
@@ -30,6 +33,7 @@ namespace OrganisationRegistry.Organisation.Events
         public string? DescriptionRendered { get; }
 
         public string? PreviousDescription { get; }
+        public string? PreviousDescriptionRendered { get; }
 
         public DateTime? ValidFrom { get; }
         public DateTime? PreviouslyValidFrom { get; }
@@ -42,24 +46,27 @@ namespace OrganisationRegistry.Organisation.Events
             Guid organisationId,
             Guid organisationRegulationId,
             Guid? regulationThemeId,
-            string regulationThemeName,
+            string? regulationThemeName,
             Guid? regulationSubThemeId,
-            string regulationSubThemeName,
-            string? link,
+            string? regulationSubThemeName,
+            string name,
+            string? url,
             DateTime? date,
             string? description,
-            // string? descriptionRendered,
+            string? descriptionRendered,
             DateTime? validFrom,
             DateTime? validTo,
             Guid? previousRegulationThemeId,
-            string previousRegulationThemeName,
+            string? previousRegulationThemeName,
             Guid? previousRegulationSubThemeId,
-            string previousRegulationSubThemeName,
+            string? previousRegulationSubThemeName,
+            string previousName,
             DateTime? previouslyValidFrom,
             DateTime? previouslyValidTo,
-            string? previousLink,
+            string? previousUrl,
             DateTime? previousDate,
-            string? previousDescription)
+            string? previousDescription,
+            string? previousDescriptionRendered)
         {
             Id = organisationId;
 
@@ -68,10 +75,11 @@ namespace OrganisationRegistry.Organisation.Events
             RegulationThemeName = regulationThemeName;
             RegulationSubThemeId = regulationSubThemeId;
             RegulationSubThemeName = regulationSubThemeName;
-            Link = link;
+            Name = name;
+            Url = url;
             Date = date;
             Description = description;
-            // DescriptionRendered = descriptionRendered;
+            DescriptionRendered = descriptionRendered;
             ValidFrom = validFrom;
             ValidTo = validTo;
 
@@ -79,9 +87,11 @@ namespace OrganisationRegistry.Organisation.Events
             PreviousRegulationThemeName = previousRegulationThemeName;
             PreviousRegulationSubThemeId = previousRegulationSubThemeId;
             PreviousRegulationSubThemeName = previousRegulationSubThemeName;
-            PreviousLink = previousLink;
+            PreviousName = previousName;
+            PreviousUrl = previousUrl;
             PreviousDate = previousDate;
             PreviousDescription = previousDescription;
+            PreviousDescriptionRendered = previousDescriptionRendered;
             PreviouslyValidFrom = previouslyValidFrom;
             PreviouslyValidTo = previouslyValidTo;
         }

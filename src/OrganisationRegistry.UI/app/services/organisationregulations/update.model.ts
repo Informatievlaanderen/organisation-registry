@@ -3,7 +3,9 @@ export class UpdateOrganisationRegulationRequest {
     public organisationRegulationId: string,
     public organisationId: string,
     public regulationThemeId: string,
-    public link: string,
+    public name: string,
+    public description: string,
+    public uri: string,
     public validFrom: Date,
     public validTo: Date
   ) {

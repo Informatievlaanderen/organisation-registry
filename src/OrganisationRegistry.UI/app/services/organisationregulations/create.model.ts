@@ -6,9 +6,9 @@ export class CreateOrganisationRegulationRequest {
   public regulationThemeId: string = '';
   public regulationSubThemeId: string = '';
 
-  public regulationName: string = '';
-  public regulationUrl: string = '';
-  public regulationDate: string = '';
+  public name: string = '';
+  public url: string = '';
+  public date: string = '';
   public description: string = '';
   public descriptionRendered: string = '';
   public validFrom: Date = null;

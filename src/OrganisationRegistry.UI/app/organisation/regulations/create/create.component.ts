@@ -46,13 +46,13 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
       organisationId: ['', required],
       regulationThemeId: [''],
       regulationSubThemeId: [''],
-      regulationName: ['', required],
-      regulationUrl: [''],
-      regulationDate: [''],
+      name: ['', required],
+      url: [''],
+      date: [''],
       description: [''],
+      descriptionRendered: [''],
       validFrom: [''],
-      validTo: [''],
-      descriptionRendered: ['']
+      validTo: ['']
     });
   }
 

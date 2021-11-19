@@ -314,8 +314,8 @@ namespace OrganisationRegistry.Organisation
                 message.OrganisationRegulationId,
                 regulationTheme,
                 regulationSubTheme,
-                message.RegulationName,
-                message.Link,
+                message.Name,
+                message.Url,
                 message.Date,
                 message.Description,
                 message.DescriptionRendered,
@@ -338,9 +338,11 @@ namespace OrganisationRegistry.Organisation
                 message.OrganisationRegulationId,
                 regulationTheme,
                 regulationSubTheme,
+                message.Name,
                 message.Link,
                 message.Date,
                 message.Description,
+                message.DescriptionRendered,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
 
             await Session.Commit(message.User);

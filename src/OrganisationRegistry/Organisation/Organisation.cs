@@ -1239,7 +1239,7 @@ namespace OrganisationRegistry.Organisation
             RegulationTheme? regulationTheme,
             RegulationSubTheme? regulationSubTheme,
             string name,
-            string? link,
+            string? url,
             DateTime? date,
             string? description,
             string? descriptionRendered,
@@ -1253,7 +1253,7 @@ namespace OrganisationRegistry.Organisation
                 regulationSubTheme?.Id,
                 regulationSubTheme?.Name,
                 name,
-                link,
+                url,
                 date,
                 description,
                 descriptionRendered,
@@ -1261,13 +1261,14 @@ namespace OrganisationRegistry.Organisation
                 validity.End));
         }
 
-        public void UpdateRegulation(
-            Guid organisationRegulationId,
+        public void UpdateRegulation(Guid organisationRegulationId,
             RegulationTheme? regulationTheme,
             RegulationSubTheme? regulationSubTheme,
+            string name,
             string? link,
             DateTime? date,
             string? description,
+            string? descriptionRendered,
             Period validity)
         {
             var previousRegulation =
@@ -1280,19 +1281,23 @@ namespace OrganisationRegistry.Organisation
                 regulationTheme?.Name,
                 regulationSubTheme?.Id,
                 regulationSubTheme?.Name,
+                name,
                 link,
                 date,
                 description,
+                descriptionRendered,
                 validity.Start, validity.End,
                 previousRegulation.RegulationThemeId,
                 previousRegulation.RegulationThemeName,
                 previousRegulation.RegulationSubThemeId,
                 previousRegulation.RegulationSubThemeName,
+                previousRegulation.Name,
                 previousRegulation.Validity.Start,
                 previousRegulation.Validity.End,
                 previousRegulation.Link,
                 previousRegulation.Date,
-                previousRegulation.Description));
+                previousRegulation.Description,
+                previousRegulation.DescriptionRendered));
         }
 
 
@@ -2093,9 +2098,11 @@ namespace OrganisationRegistry.Organisation
                 @event.RegulationThemeName,
                 @event.RegulationSubThemeId,
                 @event.RegulationSubThemeName,
+                @event.Name,
                 @event.Link,
                 @event.Date,
                 @event.Description,
+                @event.DescriptionRendered,
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
         }
 
@@ -2110,9 +2117,11 @@ namespace OrganisationRegistry.Organisation
                     @event.RegulationThemeName,
                     @event.RegulationSubThemeId,
                     @event.RegulationSubThemeName,
-                    @event.Link,
+                    @event.Name,
+                    @event.Url,
                     @event.Date,
                     @event.Description,
+                    @event.DescriptionRendered,
                     new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
         }
 

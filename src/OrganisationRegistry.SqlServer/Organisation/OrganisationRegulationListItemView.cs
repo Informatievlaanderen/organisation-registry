@@ -71,7 +71,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationRegulationAdded>,
         IEventHandler<OrganisationRegulationUpdated>,
         IEventHandler<RegulationThemeUpdated>,
-        IEventHandler<OrganisationTerminated>,
         IEventHandler<OrganisationTerminatedV2>
     {
         protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
@@ -136,7 +135,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             regulation.OrganisationRegulationId = message.Body.OrganisationRegulationId;
             regulation.OrganisationId = message.Body.OrganisationId;
-            regulation.Url = message.Body.Link;
+            regulation.Url = message.Body.Url;
             regulation.Date = message.Body.Date;
             regulation.Description = message.Body.Description;
             regulation.RegulationThemeId = message.Body.RegulationThemeId;
@@ -145,22 +144,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
             regulation.RegulationSubThemeName = message.Body.RegulationSubThemeName;
             regulation.ValidFrom = message.Body.ValidFrom;
             regulation.ValidTo = message.Body.ValidTo;
-
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
-        {
-            if (message.Body.FieldsToTerminate.Regulations == null ||
-                !message.Body.FieldsToTerminate.Regulations.Any())
-                return;
-
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var regulations = context.OrganisationRegulationList.Where(item =>
-                message.Body.FieldsToTerminate.Regulations.Keys.Contains(item.OrganisationRegulationId));
-
-            foreach (var regulation in regulations)
-                regulation.ValidTo = message.Body.FieldsToTerminate.Regulations[regulation.OrganisationRegulationId];
 
             await context.SaveChangesAsync();
         }
