@@ -378,6 +378,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                     bodySeat.EntitledToVote = message.Body.EntitledToVote;
                     bodySeat.SeatTypeId = message.Body.SeatTypeId;
                     bodySeat.SeatTypeName = message.Body.SeatTypeName;
+                    bodySeat.Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo);
                 }
             );
         }
