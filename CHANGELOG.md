@@ -1,3 +1,15 @@
+# [1.109.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.108.0...v1.109.0) (2021-11-26)
+
+
+### Bug Fixes
+
+* update validity on body seat updated ([e05d8f3](https://github.com/informatievlaanderen/organisation-registry/commit/e05d8f398c52f299b98436cd75601ff7d5128adc))
+
+
+### Features
+
+* only admins can manage regulations ([f5a9602](https://github.com/informatievlaanderen/organisation-registry/commit/f5a960247a25047c5e0aa9b08bd02222cdae0c7c))
+
 # [1.108.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.107.0...v1.108.0) (2021-11-19)
 
 
