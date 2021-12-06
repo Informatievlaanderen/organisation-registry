@@ -111,7 +111,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 OrganisationRegulationId = message.Body.OrganisationRegulationId,
                 OrganisationId = message.Body.OrganisationId,
                 Name = message.Body.Name,
-                Url = message.Body.Link,
+                Url = message.Body.Uri,
                 Date = message.Body.Date,
                 Description = message.Body.Description,
                 DescriptionRendered = message.Body.DescriptionRendered,

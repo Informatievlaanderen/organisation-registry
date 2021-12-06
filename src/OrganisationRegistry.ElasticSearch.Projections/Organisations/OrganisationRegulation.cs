@@ -71,7 +71,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 message.Body.ValidTo,
                 message.Body.Description,
                 message.Body.DescriptionRendered,
-                message.Body.Link,
+                message.Body.Uri,
                 message.Body.Date,
                 message.Number, message.Timestamp);
         }
