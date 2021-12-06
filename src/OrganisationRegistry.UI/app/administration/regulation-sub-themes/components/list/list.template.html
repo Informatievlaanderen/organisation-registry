@@ -30,43 +30,13 @@
               </a>
           </th>
 
-          <th class="data-table__header-title" style="width: 15%">
+          <th class="data-table__header-title" style="width: 46%">
             <a class="data-table__header-title--sortable"
                [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('regulationThemeName')}"
                (click)="sortBy('regulationThemeName')">
               Type
               <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
                  [ngClass]="{'vi-u-180deg': isSortedByDescending('regulationThemeName')}"></i>
-              </a>
-          </th>
-
-          <th class="data-table__header-title" style="width: 10%">
-            <a class="data-table__header-title--sortable"
-               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('order')}"
-               (click)="sortBy('order')">
-              Volgnummer
-              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                 [ngClass]="{'vi-u-180deg': isSortedByDescending('order')}"></i>
-              </a>
-          </th>
-
-          <th class="data-table__header-title" style="width: 10%">
-            <a class="data-table__header-title--sortable"
-               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('externalKey')}"
-               (click)="sortBy('externalKey')">
-              Externe sleutel
-              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                 [ngClass]="{'vi-u-180deg': isSortedByDescending('externalKey')}"></i>
-              </a>
-          </th>
-
-          <th class="data-table__header-title" style="width: 5%">
-            <a class="data-table__header-title--sortable"
-               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('active')}"
-               (click)="sortBy('active')">
-              Actief
-              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                 [ngClass]="{'vi-u-180deg': isSortedByDescending('active')}"></i>
               </a>
           </th>
         </tr>
@@ -82,10 +52,7 @@
           </tr>
           <tr *ngFor="let regulationSubTheme of data">
             <td class="data-table__body-title"><a [routerLink]="['./', regulationSubTheme.id]" title="{{regulationSubTheme.name}}">{{regulationSubTheme.name}}</a></td>
-            <td>{{regulationSubTheme.regulationThemeName}}</td> <!-- // TODO: Add a link to this item?-->
-            <td>{{regulationSubTheme.order}}</td>
-            <td>{{regulationSubTheme.externalKey}}</td>
-            <td><i aria-label="Actief" [ngClass]="{'vi vi-u-badge vi-u-badge--green vi-u-badge--xxsmall vi-check': regulationSubTheme.active}"></i></td>
+            <td>{{regulationSubTheme.regulationThemeName}}</td>
           </tr>
         </template>
       </tbody>
