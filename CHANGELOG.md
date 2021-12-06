@@ -1,3 +1,13 @@
+## [1.109.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.109.0...v1.109.1) (2021-12-06)
+
+
+### Bug Fixes
+
+* keep uri field consistent between create/update ([103d637](https://github.com/informatievlaanderen/organisation-registry/commit/103d637517ce2e7a7b9dd79ce40d17325f188797))
+* remove unnecessary cols ([744e350](https://github.com/informatievlaanderen/organisation-registry/commit/744e350d0a0c2e7936e2a541a5aa3bdcce3e2561))
+* translations ([4bea0a4](https://github.com/informatievlaanderen/organisation-registry/commit/4bea0a4b809ef908867d54e636b6da44a803a014))
+* update name on org regulation updated ([eb6fb3c](https://github.com/informatievlaanderen/organisation-registry/commit/eb6fb3c4ad1c59ddfa65cd9330ffc2d145ec8ce3))
+
 # [1.109.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.108.0...v1.109.0) (2021-11-26)
 
 
