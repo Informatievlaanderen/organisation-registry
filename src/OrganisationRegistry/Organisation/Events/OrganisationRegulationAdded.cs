@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Organisation.Events
 {
     using System;
+    using Newtonsoft.Json;
 
     public class OrganisationRegulationAdded : BaseEvent<OrganisationRegulationAdded>
     {
@@ -12,7 +13,7 @@ namespace OrganisationRegistry.Organisation.Events
         public Guid? RegulationSubThemeId { get; }
         public string? RegulationSubThemeName { get; }
         public string Name { get; }
-        public string? Link { get; }
+        public string? Uri { get; }
         public DateTime? Date { get; }
         public string? Description { get; }
         public string? DescriptionRendered { get; }
@@ -26,6 +27,44 @@ namespace OrganisationRegistry.Organisation.Events
             Guid? regulationSubThemeId,
             string? regulationSubThemeName,
             string name,
+            string? uri,
+            DateTime? date,
+            string? description,
+            string? descriptionRendered,
+            DateTime? validFrom,
+            DateTime? validTo)
+        {
+            Id = organisationId;
+
+            OrganisationRegulationId = organisationRegulationId;
+            RegulationThemeId = regulationThemeId;
+            RegulationThemeName = regulationThemeName;
+            RegulationSubThemeId = regulationSubThemeId;
+            RegulationSubThemeName = regulationSubThemeName;
+            Name = name;
+            Uri = uri;
+            Description = description;
+            DescriptionRendered = descriptionRendered;
+            Date = date;
+            ValidFrom = validFrom;
+            ValidTo = validTo;
+        }
+
+        [JsonConstructor]
+        [Obsolete("Used only in json deserialization")]
+        // REASON: Uri field was previously named link.
+        // For consistency this field was changed to Uri.
+        // To allow for both legacy events with link, and new events with uri
+        // we introduce a ctor accepting both, only taking the new field if the
+        // legacy one is NULL.
+        public OrganisationRegulationAdded(Guid organisationId,
+            Guid organisationRegulationId,
+            Guid? regulationThemeId,
+            string? regulationThemeName,
+            Guid? regulationSubThemeId,
+            string? regulationSubThemeName,
+            string name,
+            string? uri,
             string? link,
             DateTime? date,
             string? description,
@@ -41,7 +80,7 @@ namespace OrganisationRegistry.Organisation.Events
             RegulationSubThemeId = regulationSubThemeId;
             RegulationSubThemeName = regulationSubThemeName;
             Name = name;
-            Link = link;
+            Uri = link ?? uri;
             Description = description;
             DescriptionRendered = descriptionRendered;
             Date = date;

@@ -2099,7 +2099,7 @@ namespace OrganisationRegistry.Organisation
                 @event.RegulationSubThemeId,
                 @event.RegulationSubThemeName,
                 @event.Name,
-                @event.Link,
+                @event.Uri,
                 @event.Date,
                 @event.Description,
                 @event.DescriptionRendered,
