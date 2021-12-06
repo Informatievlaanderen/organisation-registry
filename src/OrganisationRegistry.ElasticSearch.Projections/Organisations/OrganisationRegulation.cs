@@ -141,7 +141,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.RegulationThemeName,
                             message.Body.RegulationSubThemeId,
                             message.Body.RegulationSubThemeName,
-                            string.Empty,
+                            message.Body.Name,
                             message.Body.Description,
                             message.Body.DescriptionRendered,
                             message.Body.Url,

@@ -138,6 +138,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             regulation.Url = message.Body.Url;
             regulation.Date = message.Body.Date;
             regulation.Description = message.Body.Description;
+            regulation.Name = message.Body.Name;
             regulation.RegulationThemeId = message.Body.RegulationThemeId;
             regulation.RegulationThemeName = message.Body.RegulationThemeName;
             regulation.RegulationSubThemeId = message.Body.RegulationSubThemeId;
