@@ -8,25 +8,25 @@
       <div class="form__group">
         <ww-form-group-select
           [id]="'regulationThemeId'"
-          [name]="'Regulation theme'"
+          [name]="'Thema'"
           [label]="'Thema'"
           [control]="form.get('regulationThemeId')"
-          [placeholder]="'Selecteer regelgevingsthema...'"
+          [placeholder]="'Selecteer thema...'"
           [values]="regulationThemes">
         </ww-form-group-select>
 
         <ww-form-group-select
           [id]="'regulationSubThemeId'"
-          [name]="'Regulation sub-theme'"
+          [name]="'Subthema'"
           [label]="'Subthema'"
           [control]="form.get('regulationSubThemeId')"
-          [placeholder]="'Selecteer regelgevingssubthema...'"
+          [placeholder]="'Selecteer subthema...'"
           [values]="regulationSubThemes">
         </ww-form-group-select>
 
         <ww-form-group-textbox
           [id]="'link'"
-          [name]="'Regulation'"
+          [name]="'Regelgeving'"
           [label]="'Regelgeving'"
           [placeholder]="'Naam regelgeving'"
           [control]="form.get('name')">
