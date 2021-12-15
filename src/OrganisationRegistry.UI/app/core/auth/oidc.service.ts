@@ -152,13 +152,15 @@ export class OidcService {
 
   public canEditOrganisation(organisationId): Observable<boolean> {
     let wegwijsBeheerderCheck = this.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
+    let vlimpersBeheerderCheck = this.hasAnyOfRoles([Role.VlimpersBeheerder]);
     let organisatieBeheerderCheck = this.hasAnyOfRoles([Role.OrganisatieBeheerder]);
 
-    return Observable.zip(wegwijsBeheerderCheck, organisatieBeheerderCheck, this.organisationIds)
+    return Observable.zip(wegwijsBeheerderCheck, vlimpersBeheerderCheck, organisatieBeheerderCheck, this.organisationIds)
       .map(zipped => {
         let isOrganisationRegistryBeheerder = zipped[0];
-        let isOrganisatieBeheerder = zipped[1];
-        let organisationIds = zipped[2];
+        let isVlimpersBeheerder = zipped[1];
+        let isOrganisatieBeheerder = zipped[2];
+        let organisationIds = zipped[3];
 
         if (isOrganisationRegistryBeheerder)
           return true;

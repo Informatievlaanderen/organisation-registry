@@ -21,6 +21,10 @@ export class User {
           roles.push(Role.OrganisationRegistryBeheerder);
           break;
 
+        case 'vlimpersBeheerder':
+          roles.push(Role.VlimpersBeheerder);
+          break;
+
         case 'orgaanBeheerder':
           roles.push(Role.OrgaanBeheerder);
           break;

@@ -98,6 +98,7 @@ namespace OrganisationRegistry.Api.Security
     public class OrganisationRegistryApiClaims
     {
         public const string OrganisationRegistryBeheerder = "organisationRegistryBeheerder";
+        public const string VlimpersBeheerder = "vlimpersBeheerder";
         public const string OrgaanBeheerder = "orgaanBeheerder";
         public const string Invoerder = "organisatieBeheerder";
         public const string Developer = "developer";
@@ -175,6 +176,10 @@ namespace OrganisationRegistry.Api.Security
             }
             else
             {
+                if (roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryVlimpersRole)))
+                {
+                    AddRoleClaim(identity, OrganisationRegistryApiClaims.VlimpersBeheerder);
+                }
                 // If any of the roles is wegwijs body admin, you are one, regardless on which OVO you got it
                 if (roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryOrgaanBeheerderRole)))
                 {

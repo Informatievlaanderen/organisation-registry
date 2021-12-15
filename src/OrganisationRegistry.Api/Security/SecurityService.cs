@@ -13,6 +13,7 @@ namespace OrganisationRegistry.Api.Security
         private readonly Dictionary<string, Role> _roleMapping = new Dictionary<string, Role>
         {
             { Roles.OrganisationRegistryBeheerder, Role.OrganisationRegistryBeheerder },
+            { Roles.VlimpersBeheerder, Role.VlimpersBeheerder },
             { Roles.OrganisatieBeheerder, Role.OrganisatieBeheerder },
             { Roles.OrgaanBeheerder, Role.OrgaanBeheerder },
             { Roles.Developer, Role.Developer },

@@ -19,6 +19,7 @@ export class NavbarComponent implements OnInit {
 
   public isLoggedIn: Observable<boolean>;
   public isOrganisationRegistryBeheerder: Observable<boolean>;
+  public isVlimpersBeheerder: Observable<boolean>;
   public isOrganisatieBeheerder: Observable<boolean>;
   public isDeveloper: Observable<boolean>;
   public isOrgaanBeheerder: Observable<boolean>;
@@ -40,6 +41,9 @@ export class NavbarComponent implements OnInit {
     this.isOrganisationRegistryBeheerder =
       this.oidcService.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
 
+    this.isVlimpersBeheerder =
+      this.oidcService.hasAnyOfRoles([Role.VlimpersBeheerder]);
+
     this.isOrganisatieBeheerder =
       this.oidcService.hasAnyOfRoles([Role.OrganisatieBeheerder]);
 
@@ -53,8 +57,11 @@ export class NavbarComponent implements OnInit {
 
     this.role = roles.map(roles => {
       let role = '';
+      console.log(roles);
       if (roles.indexOf(Role.OrganisationRegistryBeheerder) !== -1) {
         role = 'Beheerder';
+      } else if (roles.indexOf(Role.VlimpersBeheerder) !== -1) {
+        role = 'Vlimpersbeheerder';
       } else if (roles.indexOf(Role.OrganisatieBeheerder) !== -1) {
         role = 'Invoerder';
       } else if (roles.indexOf(Role.OrgaanBeheerder) !== -1) {
