@@ -14,6 +14,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization
         public const string OrganisationRegistryBeheerderPrefix = "wegwijsbeheerder-";
 
         public const string OrganisationRegistryBeheerderRole = "algemeenbeheerder";
+        public const string OrganisationRegistryVlimpersRole = "vlimpersbeheerder";
         public const string OrganisationRegistryInvoerderRole = "beheerder";
         public const string OrganisationRegistryOrgaanBeheerderRole = "orgaanbeheerder";
     }
