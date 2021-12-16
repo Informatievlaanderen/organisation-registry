@@ -1,0 +1,48 @@
+<div class="label-card__content-wrapper">
+  <div class="contact-card__content-wrapper">
+    <div class="cta-title">
+      <h3 class="h3 cta-title__title">Vlimpersbeheer</h3>
+    </div>
+    <p class='ww-description'>
+      <span>
+        Hier kunt u aanpassen of de organisatie al dan niet onder Vlimpersbeheer valt.
+      </span>
+    </p>
+  </div>
+  <div *ngIf="!organisation.underVlimpersManagement" class="contact-card__content-wrapper">
+    <div class="cta-title">
+      <h4 class="h4 cta-title__title">Organisatie onder Vlimpersbeheer plaatsen</h4>
+    </div>
+    <p>
+    <span>
+      Deze actie zorgt ervoor dat voor deze organisatie bepaalde velden enkel nog kunnen gewijzigd worden door Vlimpersbeheerders.
+    </span>
+    </p>
+    <div class="cta-title__cta">
+      <button (click)="placeUnderVlimpersManagement()"
+              [ngClass]="{'button--loading': isLoading}"
+              class="button form__button button--primary"
+              type="button">
+        <span>Organisatie onder Vlimpersbeheer plaatsen</span>
+      </button>
+    </div>
+  </div>
+  <div *ngIf="organisation.underVlimpersManagement" class="contact-card__content-wrapper">
+    <div class="cta-title">
+      <h4 class="h4 cta-title__title">Organisatie uit Vlimpersbeheer halen</h4>
+    </div>
+    <p>
+    <span>
+      Deze actie zorgt ervoor dat organisaties buiten Vlimpers deze organisatie kunnen beheren.
+    </span>
+    </p>
+    <div class="cta-title__cta">
+      <button (click)="removeFromVlimpersManagement()"
+              [ngClass]="{'button--loading': isLoading}"
+              class="button form__button button--secondary"
+              type="button">
+        <span>Organisatie uit Vlimpersbeheer halen</span>
+      </button>
+    </div>
+  </div>
+</div>

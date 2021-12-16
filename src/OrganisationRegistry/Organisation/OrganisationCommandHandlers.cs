@@ -63,7 +63,9 @@ namespace OrganisationRegistry.Organisation
         ICommandHandler<UpdateOrganisationRelation>,
         ICommandHandler<AddOrganisationOpeningHour>,
         ICommandHandler<UpdateOrganisationOpeningHour>,
-        ICommandHandler<TerminateOrganisation>
+        ICommandHandler<TerminateOrganisation>,
+        ICommandHandler<PlaceUnderVlimpersManagement>,
+        ICommandHandler<ReleaseFromVlimpersManagement>
     {
         private readonly IOvoNumberGenerator _ovoNumberGenerator;
         private readonly IUniqueOvoNumberValidator _uniqueOvoNumberValidator;
@@ -803,6 +805,28 @@ namespace OrganisationRegistry.Organisation
                 _organisationRegistryConfiguration.FormalFrameworkIdsToTerminateEndOfNextYear,
                 _dateTimeProvider,
                 message.ForceKboTermination);
+
+            await Session.Commit(message.User);
+        }
+
+        public async Task Handle(PlaceUnderVlimpersManagement message)
+        {
+            Guard.RequiresOneOfRoles(message.User, Role.OrganisationRegistryBeheerder, Role.VlimpersBeheerder);
+
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+
+            organisation.PlaceUnderVlimpersManagement();
+
+            await Session.Commit(message.User);
+        }
+
+        public async Task Handle(ReleaseFromVlimpersManagement message)
+        {
+            Guard.RequiresOneOfRoles(message.User, Role.OrganisationRegistryBeheerder, Role.VlimpersBeheerder);
+
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+
+            organisation.ReleaseFromVlimpersManagement();
 
             await Session.Commit(message.User);
         }

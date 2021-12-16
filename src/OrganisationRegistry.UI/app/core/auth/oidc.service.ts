@@ -150,6 +150,26 @@ export class OidcService {
     return this.getOrUpdateValue().map(user => user.bodyIds);
   }
 
+  public isVlimpersBeheerder(): Observable<boolean> {
+    let wegwijsBeheerderCheck = this.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
+    let vlimpersBeheerderCheck = this.hasAnyOfRoles([Role.VlimpersBeheerder]);
+
+    return Observable.zip(wegwijsBeheerderCheck, vlimpersBeheerderCheck)
+      .map(zipped => {
+        let isOrganisationRegistryBeheerder = zipped[0];
+        let isVlimpersBeheerder = zipped[1];
+
+        if (isOrganisationRegistryBeheerder || isVlimpersBeheerder)
+          return true;
+
+        return false;
+      })
+      .catch(err => {
+        return Observable.of(false);
+      });
+  }
+
+
   public canEditOrganisation(organisationId): Observable<boolean> {
     let wegwijsBeheerderCheck = this.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
     let vlimpersBeheerderCheck = this.hasAnyOfRoles([Role.VlimpersBeheerder]);

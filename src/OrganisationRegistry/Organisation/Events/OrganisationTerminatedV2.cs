@@ -5,6 +5,7 @@ namespace OrganisationRegistry.Organisation.Events
     using OrganisationTermination;
     using State;
 
+
     public class OrganisationTerminatedV2 : BaseEvent<OrganisationTerminatedV2>
     {
         public Guid OrganisationId => Id;

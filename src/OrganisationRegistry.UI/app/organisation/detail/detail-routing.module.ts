@@ -122,9 +122,10 @@ import {
 } from 'organisation/openinghours';
 
 import {
-  OrganisationManagementComponent,
   OrganisationManagementOverviewComponent,
 } from 'organisation/management';
+
+import {OrganisationVlimpersOverviewComponent} from "organisation/vlimpers";
 
 const routes: Routes = [
   {
@@ -747,6 +748,24 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - KBO-koppeling',
+              roles: [Role.OrganisationRegistryBeheerder],
+              organisationGuard: {
+                params: 'route.parent.parent.params',
+                idPart: 'id'
+              }
+            }
+          }
+        ]
+      },
+      {
+        path: 'vlimpers',
+        children: [
+          {
+            path: '',
+            component: OrganisationVlimpersOverviewComponent,
+            canActivate: [RoleGuard, OrganisationGuard],
+            data: {
+              title: 'Organisatie - Vlimpers',
               roles: [Role.OrganisationRegistryBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
