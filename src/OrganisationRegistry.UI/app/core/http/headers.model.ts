@@ -13,6 +13,11 @@ export class HeadersBuilder {
     return this;
   }
 
+  public contentJson(): HeadersBuilder {
+    this._headers.append('Content-Type', 'application/json');
+    return this;
+  }
+
   public csv(): HeadersBuilder {
     this._headers.append('accept', 'text/csv');
     return this;

@@ -29,6 +29,7 @@ namespace OrganisationRegistry.Organisation.State
         public OrganisationBuildings OrganisationBuildings { get; }
         public OrganisationLocations OrganisationLocations { get; }
         public List<OrganisationRegulation> OrganisationRegulations { get; }
+        public bool UnderVlimpersManagement { get; set; }
 
 
         public OrganisationState()
@@ -55,6 +56,8 @@ namespace OrganisationRegistry.Organisation.State
             OrganisationBuildings = new OrganisationBuildings();
             OrganisationLocations = new OrganisationLocations();
             OrganisationRegulations = new List<OrganisationRegulation>();
+
+            UnderVlimpersManagement = false;
         }
     }
 }

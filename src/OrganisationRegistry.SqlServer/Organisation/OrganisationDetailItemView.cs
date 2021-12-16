@@ -59,6 +59,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public DateTime? OperationalValidTo { get; set; }
 
         public bool IsTerminated { get; set; }
+        public bool UnderVlimpersManagement { get; set; }
     }
 
     public class OrganisationDetailConfiguration : EntityMappingConfiguration<OrganisationDetailItem>
@@ -91,6 +92,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             b.Property(p => p.ValidTo);
 
             b.Property(p => p.IsTerminated);
+            b.Property(p => p.UnderVlimpersManagement);
 
             b.HasIndex(x => x.OvoNumber).IsUnique();
             b.HasIndex(x => x.Name).IsClustered();
@@ -112,7 +114,10 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<ParentClearedFromOrganisation>,
         IEventHandler<PurposeUpdated>,
         IEventHandler<OrganisationTerminated>,
-        IEventHandler<OrganisationTerminatedV2>
+        IEventHandler<OrganisationTerminatedV2>,
+        IEventHandler<OrganisationPlacedUnderVlimpersManagement>,
+        IEventHandler<OrganisationReleasedFromVlimpersManagement>
+
     {
         private readonly IEventStore _eventStore;
         protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
@@ -378,7 +383,30 @@ namespace OrganisationRegistry.SqlServer.Organisation
             if(message.Body.ForcedKboTermination)
                 organisationListItem.KboNumber = null;
 
-            await context.SaveChangesAsync();        }
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationPlacedUnderVlimpersManagement> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationListItem =
+                await context.OrganisationDetail.SingleAsync(item => item.Id == message.Body.OrganisationId);
+
+            organisationListItem.UnderVlimpersManagement = true;
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationReleasedFromVlimpersManagement> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationListItem =
+                await context.OrganisationDetail.SingleAsync(item => item.Id == message.Body.OrganisationId);
+
+            organisationListItem.UnderVlimpersManagement = false;
+
+            await context.SaveChangesAsync();
+        }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<RebuildProjection> message)

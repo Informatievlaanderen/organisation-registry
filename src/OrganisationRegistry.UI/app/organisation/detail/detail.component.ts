@@ -20,6 +20,7 @@ export class OrganisationDetailComponent implements OnInit, OnDestroy {
   public enableBankAccounts: Observable<boolean>;
   public enableRegulations: Observable<boolean>;
   public enableSync: Observable<boolean>;
+  public enableVlimpers: Observable<boolean>;
 
   constructor(
     private route: ActivatedRoute,
@@ -40,6 +41,7 @@ export class OrganisationDetailComponent implements OnInit, OnDestroy {
       let id = params['id'];
       this.store.loadOrganisation(id);
       this.enableSync = this.oidcService.isLoggedIn && this.oidcService.canEditOrganisation(id);
+      this.enableVlimpers = this.oidcService.isLoggedIn && this.oidcService.isVlimpersBeheerder();
     });
 
     this.enableBankAccounts = this.oidcService.isLoggedIn;

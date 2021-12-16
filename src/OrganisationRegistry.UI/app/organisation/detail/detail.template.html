@@ -67,6 +67,9 @@
               <li class="side-navigation__item" *ngIf="(enableSync | async)">
                 <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['manage']">KBO-koppeling</a>
               </li>
+              <li class="side-navigation__item" *ngIf="(enableVlimpers | async)">
+                <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['vlimpers']">Vlimpers</a>
+              </li>
             </ul>
           </div>
         </nav>

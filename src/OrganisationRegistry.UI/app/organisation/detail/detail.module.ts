@@ -20,6 +20,7 @@ import { OrganisationBankAccountsModule } from 'organisation/bankaccounts';
 import { OrganisationRelationsModule } from 'organisation/relations';
 import { OrganisationOpeningHoursModule } from 'organisation/openinghours';
 import { OrganisationManagementModule } from "organisation/management";
+import {OrganisationVlimpersModule} from "organisation/vlimpers";
 
 import { OrganisationDetailRoutingModule } from './detail-routing.module';
 import { OrganisationDetailComponent } from './detail.component';
@@ -48,7 +49,8 @@ import { OrganisationDetailComponent } from './detail.component';
     OrganisationBankAccountsModule,
     OrganisationRelationsModule,
     OrganisationOpeningHoursModule,
-    OrganisationManagementModule
+    OrganisationManagementModule,
+    OrganisationVlimpersModule
   ],
   declarations: [
     OrganisationDetailComponent

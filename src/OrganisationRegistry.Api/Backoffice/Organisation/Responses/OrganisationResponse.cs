@@ -32,6 +32,7 @@
         public DateTime? OperationalValidFrom { get; }
         public DateTime? OperationalValidTo { get; }
         public bool IsTerminated { get; set; }
+        public bool UnderVlimpersManagement { get; set; }
 
         public OrganisationResponse(OrganisationDetailItem projectionItem)
         {
@@ -55,6 +56,7 @@
             OperationalValidFrom = projectionItem.OperationalValidFrom;
             OperationalValidTo = projectionItem.OperationalValidTo;
             IsTerminated = projectionItem.IsTerminated;
+            UnderVlimpersManagement = projectionItem.UnderVlimpersManagement;
         }
     }
 }

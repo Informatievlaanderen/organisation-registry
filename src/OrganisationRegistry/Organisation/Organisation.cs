@@ -1653,6 +1653,16 @@ namespace OrganisationRegistry.Organisation
             }
         }
 
+        public void PlaceUnderVlimpersManagement()
+        {
+            ApplyChange(new OrganisationPlacedUnderVlimpersManagement(Id));
+        }
+
+        public void ReleaseFromVlimpersManagement()
+        {
+            ApplyChange(new OrganisationReleasedFromVlimpersManagement(Id));
+        }
+
         private void CheckIfCurrentParentChanged(
             OrganisationParent organisationParent,
             DateTime today)
@@ -2522,6 +2532,11 @@ namespace OrganisationRegistry.Organisation
 
             if (@event.ForcedKboTermination)
                 KboState.Clear();
+        }
+
+        private void Apply(OrganisationPlacedUnderVlimpersManagement @event)
+        {
+            this.State.UnderVlimpersManagement = true;
         }
 
         private void Apply(OrganisationTerminatedV2 @event)
