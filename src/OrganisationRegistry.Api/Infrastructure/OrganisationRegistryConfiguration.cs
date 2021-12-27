@@ -10,6 +10,8 @@ namespace OrganisationRegistry.Api.Infrastructure
         private readonly ApiConfiguration _configuration;
 
         public Guid KboKeyTypeId => _configuration.KBO_KeyTypeId;
+        public Guid OrafinKeyTypeId => _configuration.Orafin_KeyTypeId;
+        public string OrafinOvoCode => _configuration.Orafin_OvoCode;
 
         public Guid KboLegalFormClassificationTypeId => _configuration.LegalFormClassificationTypeId;
 

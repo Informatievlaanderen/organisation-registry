@@ -74,6 +74,9 @@
             if (!securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
+            if (!securityService.CanUseKeyType(User, message.KeyTypeId))
+                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor dit informatiesysteem.");
+
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
@@ -95,6 +98,9 @@
 
             if (!securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
+
+            if (!securityService.CanUseKeyType(User, message.KeyTypeId))
+                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor dit informatiesysteem.");
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
