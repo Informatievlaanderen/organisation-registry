@@ -19,5 +19,7 @@ namespace OrganisationRegistry.Organisation
         Guid[] OrganisationCapacityTypeIdsToTerminateEndOfNextYear { get; }
         Guid[] OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; }
         Guid[] FormalFrameworkIdsToTerminateEndOfNextYear { get; }
+        Guid OrafinKeyTypeId { get; }
+        string OrafinOvoCode { get; }
     }
 }

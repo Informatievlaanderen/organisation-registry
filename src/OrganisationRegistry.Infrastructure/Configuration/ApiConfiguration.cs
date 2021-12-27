@@ -40,12 +40,12 @@ namespace OrganisationRegistry.Infrastructure.Configuration
 
         //key type ids
         public Guid VademecumKeyTypeId { get; set; }
-
         public Guid INR_KeyTypeId { get; set; }
 
         [Obsolete("Replaced by property on Organisation entity.")]
         public Guid KBO_KeyTypeId { get; set; }
         public Guid Orafin_KeyTypeId { get; set; }
+        public string Orafin_OvoCode { get; set; }
         public Guid Vlimpers_KeyTypeId { get; set; }
         public Guid VlimpersKort_KeyTypeId { get; set; }
 

@@ -4,8 +4,8 @@ namespace OrganisationRegistry.Api.Security
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
+    using Organisation;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Bus;
     using SqlServer.Infrastructure;
 
     public class SecurityService : ISecurityService
@@ -22,10 +22,12 @@ namespace OrganisationRegistry.Api.Security
         private const string ClaimOrganisation = "urn:be:vlaanderen:wegwijs:organisation";
 
         private readonly OrganisationRegistryContext _context;
+        private readonly IOrganisationRegistryConfiguration _configuration;
 
-        public SecurityService(OrganisationRegistryContext context)
+        public SecurityService(OrganisationRegistryContext context, IOrganisationRegistryConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         public bool CanAddOrganisation(ClaimsPrincipal user, Guid? parentOrganisationId)
@@ -129,7 +131,7 @@ namespace OrganisationRegistry.Api.Security
                 .Select(role => _roleMapping[role])
                 .ToList();
 
-            var organisations = user.GetClaims(ClaimOrganisation).Select(s => s.ToUpperInvariant());
+            var organisations = GetOrganisations(user);
             var organisationSecurity = GetSecurityInformation(organisations);
 
             return new SecurityInformation(
@@ -176,6 +178,16 @@ namespace OrganisationRegistry.Api.Security
                 GetRoles(principal));
         }
 
+        public bool CanUseKeyType(ClaimsPrincipal user, Guid keyTypeId)
+        {
+            if (_configuration.OrafinKeyTypeId.Equals(keyTypeId))
+            {
+                return GetOrganisations(user).Any(x => x.Equals(_configuration.OrafinOvoCode));
+            }
+
+            return true;
+        }
+
         private OrganisationSecurityInformation GetSecurityInformation(IEnumerable<string> ovoNumbers)
         {
             var organisationTrees = _context
@@ -206,6 +218,11 @@ namespace OrganisationRegistry.Api.Security
                 .ToList();
 
             return new OrganisationSecurityInformation(organisationTrees, organisationIds, bodyIds);
+        }
+
+        private static IEnumerable<string> GetOrganisations(ClaimsPrincipal user)
+        {
+            return user.GetClaims(ClaimOrganisation).Select(s => s.ToUpperInvariant());
         }
 
         private class OrganisationSecurityInformation
