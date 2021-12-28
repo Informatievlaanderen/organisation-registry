@@ -1,7 +1,7 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType
 {
     using System;
-    using System.Net;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
@@ -11,30 +11,44 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
+    using OrganisationRegistry.Organisation;
     using Queries;
     using Requests;
     using Security;
     using SqlServer.Infrastructure;
-    using SqlServer.KeyType;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
     [OrganisationRegistryRoute("keytypes")]
     public class KeyTypeController : OrganisationRegistryController
     {
-        public KeyTypeController(ICommandSender commandSender)
+        private readonly ISecurityService _securityService;
+        private readonly IOrganisationRegistryConfiguration _configuration;
+
+        public KeyTypeController(ICommandSender commandSender,
+            ISecurityService securityService,
+            IOrganisationRegistryConfiguration configuration)
             : base(commandSender)
         {
+            _securityService = securityService;
+            _configuration = configuration;
         }
 
         /// <summary>Get a list of available key types.</summary>
         [HttpGet]
+        [OrganisationRegistryAuthorize]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
         {
-            var filtering = Request.ExtractFilteringRequest<KeyTypeListItem>();
+            var filtering = Request.ExtractFilteringRequest<KeyTypeListQuery.KeyTypeListItemFilter>();
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
+
+            filtering.Filter ??= new KeyTypeListQuery.KeyTypeListItemFilter();
+
+            if (!_securityService.CanUseKeyType(User, _configuration.OrafinKeyTypeId))
+                filtering.Filter.ExcludeIds.Add(_configuration.OrafinKeyTypeId);
 
             var pagedKeyTypes = new KeyTypeListQuery(context).Fetch(filtering, sorting, pagination);
 
@@ -48,6 +62,7 @@
         /// <response code="200">If the key type is found.</response>
         /// <response code="404">If the key type cannot be found.</response>
         [HttpGet("{id}")]
+        [OrganisationRegistryAuthorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)

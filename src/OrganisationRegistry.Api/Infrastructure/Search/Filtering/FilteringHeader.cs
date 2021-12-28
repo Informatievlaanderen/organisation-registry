@@ -8,7 +8,7 @@
         [JsonIgnore]
         public bool ShouldFilter => !EqualityComparer<T>.Default.Equals(Filter, default(T));
 
-        public T Filter { get; }
+        public T? Filter { get; set; }
 
         public FilteringHeader(T filter)
         {
