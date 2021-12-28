@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Queries
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
@@ -9,7 +10,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Queries
     using SqlServer.Infrastructure;
     using SqlServer.KeyType;
 
-    public class KeyTypeListQuery: Query<KeyTypeListItem>
+    public class KeyTypeListQuery: Query<KeyTypeListItem, KeyTypeListQuery.KeyTypeListItemFilter>
     {
         private readonly OrganisationRegistryContext _context;
 
@@ -20,7 +21,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Queries
             _context = context;
         }
 
-        protected override IQueryable<KeyTypeListItem> Filter(FilteringHeader<KeyTypeListItem> filtering)
+        protected override IQueryable<KeyTypeListItem> Filter(FilteringHeader<KeyTypeListItemFilter> filtering)
         {
             var keyTypes = _context.KeyTypeList.AsQueryable();
 
@@ -30,7 +31,24 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Queries
             if (!filtering.Filter.Name.IsNullOrWhiteSpace())
                 keyTypes = keyTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
 
+            if (filtering.Filter.ExcludeIds != null && filtering.Filter.ExcludeIds.Any())
+                keyTypes = keyTypes.Where(x => !filtering.Filter.ExcludeIds.Contains(x.Id));
+
             return keyTypes;
+        }
+
+        public class KeyTypeListItemFilter
+        {
+            public KeyTypeListItemFilter()
+            {
+                ExcludeIds = new List<Guid>();
+            }
+            public Guid Id { get; set; }
+
+            public string Name { get; set; }
+
+            public List<Guid> ExcludeIds { get; }
+
         }
 
         private class KeyTypeListSorting : ISorting
