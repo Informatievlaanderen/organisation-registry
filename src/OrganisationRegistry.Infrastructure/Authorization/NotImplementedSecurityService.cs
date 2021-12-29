@@ -55,5 +55,10 @@ namespace OrganisationRegistry.Infrastructure.Authorization
         {
             throw new NotImplementedException();
         }
+
+        public bool CanUseKeyType(IUser user, Guid keyTypeId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

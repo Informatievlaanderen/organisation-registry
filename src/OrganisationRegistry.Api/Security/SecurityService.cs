@@ -175,7 +175,8 @@ namespace OrganisationRegistry.Api.Security
                 lastName.Value,
                 acmId.Value,
                 ip?.Value,
-                GetRoles(principal));
+                GetRoles(principal),
+                GetOrganisations(principal));
         }
 
         public bool CanUseKeyType(ClaimsPrincipal user, Guid keyTypeId)
@@ -185,6 +186,18 @@ namespace OrganisationRegistry.Api.Security
 
             if (_configuration.OrafinKeyTypeId.Equals(keyTypeId))
                 return GetOrganisations(user).Any(x => x.Equals(_configuration.OrafinOvoCode));
+
+            return true;
+        }
+
+        // TODO: see how we can make SecurityService use IUser everywhere, io ClaimsPrincipal.
+        public bool CanUseKeyType(IUser user, Guid keyTypeId)
+        {
+            if (user.IsInRole(Role.Developer) || user.IsInRole(Role.OrganisationRegistryBeheerder))
+                return true;
+
+            if (_configuration.OrafinKeyTypeId.Equals(keyTypeId))
+                return user.Organisations.Any(x => x.Equals(_configuration.OrafinOvoCode));
 
             return true;
         }

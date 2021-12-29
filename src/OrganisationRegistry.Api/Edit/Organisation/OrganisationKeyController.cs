@@ -62,7 +62,8 @@
                 return BadRequest(ModelState);
 
             var addOrganisationKey = AddOrganisationKeyRequestMapping.Map(internalMessage);
-            addOrganisationKey.User = new User("Orafin", "Edit Api", "Orafin Edit Api", null, new[] { Role.Orafin });
+            addOrganisationKey.User = new User("Orafin", "Edit Api", "Orafin Edit Api", null, new[] { Role.Orafin },
+                Array.Empty<string>());
             await CommandSender.Send(addOrganisationKey);
 
             return Created(
@@ -99,7 +100,8 @@
                 return BadRequest(ModelState);
 
             var updateOrganisationKey = UpdateOrganisationKeyRequestMapping.Map(internalMessage);
-            updateOrganisationKey.User = new User("Orafin", "Edit Api", "Orafin Edit Api", null, new[] { Role.Orafin });
+            updateOrganisationKey.User = new User("Orafin", "Edit Api", "Orafin Edit Api", null, new[] { Role.Orafin },
+                Array.Empty<string>());
             await CommandSender.Send(updateOrganisationKey);
 
             return Ok();

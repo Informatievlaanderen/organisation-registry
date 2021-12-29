@@ -19,7 +19,12 @@ namespace OrganisationRegistry.Api.IntegrationTests
     {
         private readonly IWebHost _webHost;
         public const string ApiEndpoint = "http://localhost:5000/v1/";
-        public HttpClient HttpClient { get; } = new HttpClient { BaseAddress = new Uri(ApiEndpoint) };
+        public const string Jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdF9oYXNoIjoiMklEMHdGR3l6WnJWaHRmbi00Ty1EQSIsImF1ZCI6WyJodHRwczovL2RpZW5zdHZlcmxlbmluZy10ZXN0LmJhc2lzcmVnaXN0ZXJzLnZsYWFuZGVyZW4iXSwiYXpwIjoiN2Q4MDExOTctNmQ0My00NzZhLTgzZWYtMzU4NjllZTUyZDg1IiwiZXhwIjoxODkzOTM2ODIzLCJmYW1pbHlfbmFtZSI6IkFwaSIsImdpdmVuX25hbWUiOiJUZXN0IiwiaWF0IjoxNTc4MzExNjMzLCJ2b19pZCI6IjEyMzk4Nzk4Ny0xMjMxMjMiLCJpc3MiOiJodHRwczovL2RpZW5zdHZlcmxlbmluZy10ZXN0LmJhc2lzcmVnaXN0ZXJzLnZsYWFuZGVyZW4iLCJ1cm46YmU6dmxhYW5kZXJlbjpkaWVuc3R2ZXJsZW5pbmc6YWNtaWQiOiJ2b19pZCIsInVybjpiZTp2bGFhbmRlcmVuOmFjbTpmYW1pbGllbmFhbSI6ImZhbWlseV9uYW1lIiwidXJuOmJlOnZsYWFuZGVyZW46YWNtOnZvb3JuYWFtIjoiZ2l2ZW5fbmFtZSIsInVybjpiZTp2bGFhbmRlcmVuOndlZ3dpanM6YWNtaWQiOiJ0ZXN0Iiwicm9sZSI6WyJvcmdhbmlzYXRpb25SZWdpc3RyeUJlaGVlcmRlciJdLCJuYmYiOjE1NzgzOTY2MzN9.fNPHP0Z8mCPe3ux11Ss32C-IpZ_4cvLQKT7QTo2ErgI";
+        public HttpClient HttpClient { get; } = new HttpClient
+        {
+            BaseAddress = new Uri(ApiEndpoint),
+            DefaultRequestHeaders = { Authorization = new AuthenticationHeaderValue("Bearer", Jwt)}
+        };
 
         public ApiFixture()
         {
@@ -76,7 +81,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
 
             Import.Piavo.Program.Import(
                 ApiEndpoint,
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdF9oYXNoIjoiMklEMHdGR3l6WnJWaHRmbi00Ty1EQSIsImF1ZCI6WyJodHRwczovL2RpZW5zdHZlcmxlbmluZy10ZXN0LmJhc2lzcmVnaXN0ZXJzLnZsYWFuZGVyZW4iXSwiYXpwIjoiN2Q4MDExOTctNmQ0My00NzZhLTgzZWYtMzU4NjllZTUyZDg1IiwiZXhwIjoxODkzOTM2ODIzLCJmYW1pbHlfbmFtZSI6IkFwaSIsImdpdmVuX25hbWUiOiJUZXN0IiwiaWF0IjoxNTc4MzExNjMzLCJ2b19pZCI6IjEyMzk4Nzk4Ny0xMjMxMjMiLCJpc3MiOiJodHRwczovL2RpZW5zdHZlcmxlbmluZy10ZXN0LmJhc2lzcmVnaXN0ZXJzLnZsYWFuZGVyZW4iLCJ1cm46YmU6dmxhYW5kZXJlbjpkaWVuc3R2ZXJsZW5pbmc6YWNtaWQiOiJ2b19pZCIsInVybjpiZTp2bGFhbmRlcmVuOmFjbTpmYW1pbGllbmFhbSI6ImZhbWlseV9uYW1lIiwidXJuOmJlOnZsYWFuZGVyZW46YWNtOnZvb3JuYWFtIjoiZ2l2ZW5fbmFtZSIsInVybjpiZTp2bGFhbmRlcmVuOndlZ3dpanM6YWNtaWQiOiJ0ZXN0Iiwicm9sZSI6WyJvcmdhbmlzYXRpb25SZWdpc3RyeUJlaGVlcmRlciJdLCJuYmYiOjE1NzgzOTY2MzN9.fNPHP0Z8mCPe3ux11Ss32C-IpZ_4cvLQKT7QTo2ErgI");
+                Jwt);
         }
 
         protected virtual void Dispose(bool disposing)

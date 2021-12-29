@@ -69,6 +69,7 @@ namespace OrganisationRegistry.Organisation
         private readonly IUniqueOvoNumberValidator _uniqueOvoNumberValidator;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
+        private readonly ISecurityService _securityService;
 
         public OrganisationCommandHandlers(
             ILogger<OrganisationCommandHandlers> logger,
@@ -76,12 +77,14 @@ namespace OrganisationRegistry.Organisation
             IOvoNumberGenerator ovoNumberGenerator,
             IUniqueOvoNumberValidator uniqueOvoNumberValidator,
             IDateTimeProvider dateTimeProvider,
-            IOrganisationRegistryConfiguration organisationRegistryConfiguration) : base(logger, session)
+            IOrganisationRegistryConfiguration organisationRegistryConfiguration,
+            ISecurityService securityService) : base(logger, session)
         {
             _ovoNumberGenerator = ovoNumberGenerator;
             _uniqueOvoNumberValidator = uniqueOvoNumberValidator;
             _dateTimeProvider = dateTimeProvider;
             _organisationRegistryConfiguration = organisationRegistryConfiguration;
+            _securityService = securityService;
         }
 
         public async Task Handle(CreateOrganisation message)
@@ -294,7 +297,8 @@ namespace OrganisationRegistry.Organisation
                 message.OrganisationKeyId,
                 keyType,
                 message.Value,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                keyTypeId => _securityService.CanUseKeyType(message.User, keyTypeId));
 
             await Session.Commit(message.User);
         }
