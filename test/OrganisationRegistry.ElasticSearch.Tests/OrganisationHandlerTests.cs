@@ -15,6 +15,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging.Abstractions;
     using Organisation.Events;
+    using OrganisationRegistry.Tests.Shared;
     using Organisations;
     using Projections;
     using Projections.Organisations;
@@ -53,7 +54,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 .AddSingleton(new MemoryCachesMaintainer(new MemoryCaches(testContextFactory), testContextFactory))
                 .BuildServiceProvider();
 
-            _inProcessBus = new InProcessBus(new NullLogger<InProcessBus>(), new SecurityService(fixture.ContextFactory.Create()));
+            _inProcessBus = new InProcessBus(new NullLogger<InProcessBus>(), new SecurityService(fixture.ContextFactory.Create(), new OrganisationRegistryConfigurationStub()));
             var registrar = new BusRegistrar(new NullLogger<BusRegistrar>(), _inProcessBus, () => serviceProvider);
             registrar.RegisterEventHandlers(OrganisationsRunner.EventHandlers);
         }

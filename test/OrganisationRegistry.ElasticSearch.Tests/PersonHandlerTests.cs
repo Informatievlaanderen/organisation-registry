@@ -3,6 +3,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Api.Infrastructure;
     using Api.Security;
     using FluentAssertions;
     using Infrastructure.AppSpecific;
@@ -14,6 +15,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using Organisation.Events;
+    using OrganisationRegistry.Tests.Shared;
     using People;
     using Person.Events;
     using Projections;
@@ -49,7 +51,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 .AddSingleton(personCapacityHandler)
                 .BuildServiceProvider();
 
-            _inProcessBus = new InProcessBus(new NullLogger<InProcessBus>(), new SecurityService(fixture.ContextFactory.Create()));
+            _inProcessBus = new InProcessBus(new NullLogger<InProcessBus>(), new SecurityService(fixture.ContextFactory.Create(), new OrganisationRegistryConfigurationStub()));
             var registrar = new BusRegistrar(new NullLogger<BusRegistrar>(), _inProcessBus, () => serviceProvider);
             registrar.RegisterEventHandlers(PeopleRunner.EventHandlers);
         }

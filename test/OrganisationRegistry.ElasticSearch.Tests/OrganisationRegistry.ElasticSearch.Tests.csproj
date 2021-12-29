@@ -8,6 +8,7 @@
     <ProjectReference Include="..\..\src\OrganisationRegistry.Api\OrganisationRegistry.Api.csproj" />
     <ProjectReference Include="..\..\src\OrganisationRegistry.ElasticSearch.Projections\OrganisationRegistry.ElasticSearch.Projections.csproj" />
     <ProjectReference Include="..\..\src\OrganisationRegistry.SqlServer\OrganisationRegistry.SqlServer.csproj" />
+    <ProjectReference Include="..\OrganisationRegistry.Tests.Shared\OrganisationRegistry.Tests.Shared.csproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

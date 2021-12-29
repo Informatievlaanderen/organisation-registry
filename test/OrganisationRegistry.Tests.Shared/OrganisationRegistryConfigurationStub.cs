@@ -1,7 +1,7 @@
-namespace OrganisationRegistry.UnitTests.Organisation.Kbo
+namespace OrganisationRegistry.Tests.Shared
 {
     using System;
-    using OrganisationRegistry.Organisation;
+    using Organisation;
 
     public class OrganisationRegistryConfigurationStub : IOrganisationRegistryConfiguration
     {
@@ -22,5 +22,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         public Guid[] OrganisationCapacityTypeIdsToTerminateEndOfNextYear { get; set; }
         public Guid[] OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; set; }
         public Guid[] FormalFrameworkIdsToTerminateEndOfNextYear { get; set; }
+        public Guid OrafinKeyTypeId { get; }
+        public string OrafinOvoCode { get; }
     }
 }
