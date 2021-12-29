@@ -1,3 +1,11 @@
+## [1.110.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.110.0...v1.110.1) (2021-12-29)
+
+
+### Bug Fixes
+
+* prevent user from updating orafin key ([4c972d6](https://github.com/informatievlaanderen/organisation-registry/commit/4c972d6874adbda431df36f8d4a2e8a4e82e21c4))
+* use IUser for CanUseKeyType ([b05b306](https://github.com/informatievlaanderen/organisation-registry/commit/b05b3061f483264fea2e4231018efb2b629d08aa))
+
 # [1.110.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.109.1...v1.110.0) (2021-12-29)
 
 
