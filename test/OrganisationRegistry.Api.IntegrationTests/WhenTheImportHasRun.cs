@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Net.Http.Headers;
     using System.Threading.Tasks;
     using FluentAssertions;
     using Import.Piavo.Models;
@@ -51,6 +52,7 @@
                 .BeGreaterThan(0);
         }
 
+        [Fact]
         public async Task ThereAreKeyTypes()
         {
             (await Get<OrganisationKeyListItem>("keytypes"))

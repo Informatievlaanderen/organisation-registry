@@ -71,7 +71,7 @@ namespace OrganisationRegistry.MagdaReRegistration
             var claimsIdentity = new User("Magda", "Reregistrator", "Magda Reregistrator", null, new[]
             {
                 Role.AutomatedTask
-            });
+            }, Array.Empty<string>());
 
             foreach (var organisation in allOrganisations)
             {

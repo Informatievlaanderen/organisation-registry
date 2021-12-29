@@ -18,5 +18,6 @@ namespace OrganisationRegistry.Infrastructure.Authorization
 
         IUser GetUser(ClaimsPrincipal? principal);
         bool CanUseKeyType(ClaimsPrincipal user, Guid keyTypeId);
+        bool CanUseKeyType(IUser user, Guid keyTypeId);
     }
 }

@@ -431,11 +431,11 @@ namespace OrganisationRegistry.Organisation
                 validity.End));
         }
 
-        public void UpdateKey(
-            Guid organisationKeyId,
+        public void UpdateKey(Guid organisationKeyId,
             KeyType keyType,
             string value,
-            Period validity)
+            Period validity,
+            Func<Guid, bool> canUseKeyType)
         {
             if (State.OrganisationKeys
                 .Where(organisationKey => organisationKey.KeyTypeId == keyType.Id)
@@ -445,6 +445,10 @@ namespace OrganisationRegistry.Organisation
 
             var previousOrganisationKey =
                 State.OrganisationKeys.Single(key => key.OrganisationKeyId == organisationKeyId);
+
+            if (!canUseKeyType(previousOrganisationKey.KeyTypeId) ||
+                !canUseKeyType(keyType.Id))
+                throw new UserIsNotAuthorizedForOrafinKeyType();
 
             ApplyChange(new OrganisationKeyUpdated(
                 Id,

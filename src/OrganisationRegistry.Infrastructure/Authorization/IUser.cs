@@ -1,5 +1,7 @@
 namespace OrganisationRegistry.Infrastructure.Authorization
 {
+    using System.Collections.Generic;
+
     public interface IUser
     {
         string FirstName { get; set; }
@@ -7,6 +9,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization
         string UserId { get; set; }
         string? Ip { get; set; }
         Role[] Roles { get; set; }
+        List<string> Organisations { get; }
         bool IsInRole(Role role);
     }
 }
