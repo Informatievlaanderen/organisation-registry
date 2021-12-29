@@ -1,3 +1,11 @@
+# [1.110.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.109.1...v1.110.0) (2021-12-29)
+
+
+### Features
+
+* limit usage of orafin key type to orafin ([ea65640](https://github.com/informatievlaanderen/organisation-registry/commit/ea65640ee7b6363e7239b98a1b6cd62c836c0330))
+* only return allowed key types ([b462edc](https://github.com/informatievlaanderen/organisation-registry/commit/b462edc1a605595630fe77fb12c6c906a11b040a))
+
 ## [1.109.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.109.0...v1.109.1) (2021-12-06)
 
 
