@@ -9,6 +9,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
     using Location;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using Tests.Shared;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
@@ -35,7 +36,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
                 new SequentialOvoNumberGenerator(),
                 null,
                 _dateTimeProvider,
-                Mock.Of<IOrganisationRegistryConfiguration>());
+                Mock.Of<IOrganisationRegistryConfiguration>(),
+                Mock.Of<ISecurityService>());
         }
 
         protected override IEnumerable<IEvent> Given()

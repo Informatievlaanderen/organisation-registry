@@ -47,7 +47,7 @@
 
             filtering.Filter ??= new KeyTypeListQuery.KeyTypeListItemFilter();
 
-            if (!_securityService.CanUseKeyType(User, _configuration.OrafinKeyTypeId))
+            if (!_securityService.CanUseKeyType(_securityService.GetUser(User), _configuration.OrafinKeyTypeId))
                 filtering.Filter.ExcludeIds.Add(_configuration.OrafinKeyTypeId);
 
             var pagedKeyTypes = new KeyTypeListQuery(context).Fetch(filtering, sorting, pagination);

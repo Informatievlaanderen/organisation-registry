@@ -6,6 +6,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using Purpose;
     using Tests.Shared;
     using OrganisationRegistry.Infrastructure.Events;
@@ -54,7 +55,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
                 new SequentialOvoNumberGenerator(),
                 new UniqueOvoNumberValidatorStub(false),
                 _dateTimeProviderStub,
-                Mock.Of<IOrganisationRegistryConfiguration>());
+                Mock.Of<IOrganisationRegistryConfiguration>(),
+                Mock.Of<ISecurityService>());
         }
 
         protected override int ExpectedNumberOfEvents => 1;

@@ -179,17 +179,6 @@ namespace OrganisationRegistry.Api.Security
                 GetOrganisations(principal));
         }
 
-        public bool CanUseKeyType(ClaimsPrincipal user, Guid keyTypeId)
-        {
-            if (user.IsInRole(Roles.Developer) || user.IsInRole(Roles.OrganisationRegistryBeheerder))
-                return true;
-
-            if (_configuration.OrafinKeyTypeId.Equals(keyTypeId))
-                return GetOrganisations(user).Any(x => x.Equals(_configuration.OrafinOvoCode));
-
-            return true;
-        }
-
         // TODO: see how we can make SecurityService use IUser everywhere, io ClaimsPrincipal.
         public bool CanUseKeyType(IUser user, Guid keyTypeId)
         {

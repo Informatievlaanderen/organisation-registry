@@ -465,6 +465,7 @@ namespace OrganisationRegistry.Organisation
                 previousOrganisationKey.Validity.Start));
         }
 
+
         public void AddFunction(
             Guid organisationFunctionId,
             FunctionType functionType,

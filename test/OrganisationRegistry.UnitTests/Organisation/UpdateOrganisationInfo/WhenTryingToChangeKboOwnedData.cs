@@ -6,6 +6,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using Purpose;
     using Tests.Shared;
     using Tests.Shared.TestDataBuilders;
@@ -28,7 +29,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                 Session,
                 new SequentialOvoNumberGenerator(),
                 new UniqueOvoNumberValidatorStub(false),
-                new DateTimeProviderStub(DateTime.Today), Mock.Of<IOrganisationRegistryConfiguration>());
+                new DateTimeProviderStub(DateTime.Today), Mock.Of<IOrganisationRegistryConfiguration>(),
+                Mock.Of<ISecurityService>());
         }
 
         protected override IEnumerable<IEvent> Given()

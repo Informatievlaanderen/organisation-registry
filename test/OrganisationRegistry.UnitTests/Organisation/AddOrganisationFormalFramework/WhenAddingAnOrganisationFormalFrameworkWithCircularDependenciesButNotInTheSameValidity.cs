@@ -7,6 +7,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationFormalFrame
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using Tests.Shared;
     using Tests.Shared.TestDataBuilders;
     using OrganisationRegistry.Infrastructure.Events;
@@ -36,7 +37,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationFormalFrame
                 _ovoNumberGenerator,
                 null,
                 _dateTimeProviderStub,
-                Mock.Of<IOrganisationRegistryConfiguration>());
+                Mock.Of<IOrganisationRegistryConfiguration>(),
+                Mock.Of<ISecurityService>());
         }
 
         protected override IEnumerable<IEvent> Given()

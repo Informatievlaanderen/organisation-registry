@@ -74,8 +74,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.Coup
                 new SequentialOvoNumberGenerator(),
                 new UniqueOvoNumberValidatorStub(false),
                 _dateTimeProviderStub,
-                _organisationRegistryConfigurationStub);
+                _organisationRegistryConfigurationStub,
+                Mock.Of<ISecurityService>());
         }
+
 
         protected override int ExpectedNumberOfEvents => 0;
 

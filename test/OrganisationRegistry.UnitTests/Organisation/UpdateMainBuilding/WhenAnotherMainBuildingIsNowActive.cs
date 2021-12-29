@@ -12,6 +12,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainBuilding
     using Building.Events;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using Tests.Shared;
     using Xunit.Abstractions;
 
@@ -33,7 +34,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainBuilding
                 new SequentialOvoNumberGenerator(),
                 null,
                 _dateTimeProviderStub,
-                Mock.Of<IOrganisationRegistryConfiguration>());
+                Mock.Of<IOrganisationRegistryConfiguration>(),
+                Mock.Of<ISecurityService>());
         }
 
         protected override IEnumerable<IEvent> Given()

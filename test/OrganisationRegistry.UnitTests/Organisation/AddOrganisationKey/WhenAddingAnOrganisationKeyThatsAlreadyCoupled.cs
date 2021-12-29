@@ -9,6 +9,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationKey
     using KeyTypes.Events;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using Tests.Shared;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
@@ -33,7 +34,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationKey
                 new SequentialOvoNumberGenerator(),
                 null,
                 new DateTimeProvider(),
-                Mock.Of<IOrganisationRegistryConfiguration>());
+                Mock.Of<IOrganisationRegistryConfiguration>(),
+                Mock.Of<ISecurityService>());
         }
 
         protected override IEnumerable<IEvent> Given()

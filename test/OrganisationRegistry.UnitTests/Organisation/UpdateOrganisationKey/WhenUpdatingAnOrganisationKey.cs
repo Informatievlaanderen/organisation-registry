@@ -10,6 +10,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
     using KeyTypes.Events;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using Tests.Shared;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
@@ -28,13 +29,19 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
+            var securityServiceMock = new Mock<ISecurityService>();
+            securityServiceMock
+                .Setup(service => service.CanUseKeyType(It.IsAny<IUser>(), It.IsAny<Guid>()))
+                .Returns(true);
+
             return new OrganisationCommandHandlers(
                 new Mock<ILogger<OrganisationCommandHandlers>>().Object,
                 Session,
                 new SequentialOvoNumberGenerator(),
                 null,
                 new DateTimeProvider(),
-                Mock.Of<IOrganisationRegistryConfiguration>());
+                Mock.Of<IOrganisationRegistryConfiguration>(),
+                securityServiceMock.Object);
         }
 
         protected override IEnumerable<IEvent> Given()

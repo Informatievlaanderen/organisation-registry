@@ -7,6 +7,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using Tests.Shared;
     using Tests.Shared.TestDataBuilders;
     using OrganisationRegistry.Infrastructure.Events;
@@ -86,7 +87,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
                 Session,
                 _sequentialOvoNumberGenerator,
                 new UniqueOvoNumberValidatorStub(true),
-                _dateTimeProvider, Mock.Of<IOrganisationRegistryConfiguration>());
+                _dateTimeProvider, Mock.Of<IOrganisationRegistryConfiguration>(),
+                Mock.Of<ISecurityService>());
         }
 
         protected override int ExpectedNumberOfEvents => 1;
