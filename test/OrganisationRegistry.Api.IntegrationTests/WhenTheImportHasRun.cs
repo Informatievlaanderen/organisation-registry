@@ -51,7 +51,6 @@
                 .BeGreaterThan(0);
         }
 
-        [Fact]
         public async Task ThereAreKeyTypes()
         {
             (await Get<OrganisationKeyListItem>("keytypes"))
