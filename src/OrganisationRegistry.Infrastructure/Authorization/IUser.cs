@@ -9,6 +9,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization
         string UserId { get; set; }
         string? Ip { get; set; }
         Role[] Roles { get; set; }
+        bool IsAuthorizedForVlimpersOrganisations { get; }
         List<string> Organisations { get; }
         bool IsInRole(Role role);
     }
