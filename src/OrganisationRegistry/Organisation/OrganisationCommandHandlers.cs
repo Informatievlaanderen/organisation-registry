@@ -91,6 +91,13 @@ namespace OrganisationRegistry.Organisation
 
         public async Task Handle(CreateOrganisation message)
         {
+            var parentOrganisation =
+                message.ParentOrganisationId != null
+                    ? Session.Get<Organisation>(message.ParentOrganisationId)
+                    : null;
+
+            parentOrganisation?.ThrowIfUnauthorizedForVlimpers(message.User);
+
             if (_uniqueOvoNumberValidator.IsOvoNumberTaken(message.OvoNumber))
                 throw new OvoNumberNotUniqueException();
 
@@ -98,18 +105,12 @@ namespace OrganisationRegistry.Organisation
                 ? _ovoNumberGenerator.GenerateNumber()
                 : message.OvoNumber;
 
-            var parentOrganisation =
-                message.ParentOrganisationId != null
-                    ? Session.Get<Organisation>(message.ParentOrganisationId)
-                    : null;
-
             var purposes = message
                 .Purposes
                 .Select(purposeId => Session.Get<Purpose>(purposeId))
                 .ToList();
 
-            var organisation = new Organisation(
-                message.OrganisationId,
+            var organisation = Organisation.Create(message.OrganisationId,
                 message.Name,
                 ovoNumber,
                 message.ShortName,
@@ -129,7 +130,6 @@ namespace OrganisationRegistry.Organisation
         public async Task Handle(UpdateOrganisationInfo message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
-
             organisation.ThrowIfTerminated(message.User);
 
             var purposes = message
@@ -155,6 +155,7 @@ namespace OrganisationRegistry.Organisation
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
             organisation.ThrowIfTerminated(message.User);
+            organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
             var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
             var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
@@ -175,6 +176,7 @@ namespace OrganisationRegistry.Organisation
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
             organisation.ThrowIfTerminated(message.User);
+            organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
             var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
             var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
@@ -195,6 +197,7 @@ namespace OrganisationRegistry.Organisation
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
             organisation.ThrowIfTerminated(message.User);
+            organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
             var formalFramework = Session.Get<FormalFramework>(message.FormalFrameworkId);
             var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
@@ -218,6 +221,7 @@ namespace OrganisationRegistry.Organisation
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
             organisation.ThrowIfTerminated(message.User);
+            organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
             var formalFramework = Session.Get<FormalFramework>(message.FormalFrameworkId);
             var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
@@ -309,6 +313,8 @@ namespace OrganisationRegistry.Organisation
         public async Task Handle(AddOrganisationRegulation message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+            organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
             var regulationTheme = message.RegulationThemeId != Guid.Empty ?
                 Session.Get<RegulationTheme>(message.RegulationThemeId) : null;
@@ -333,6 +339,8 @@ namespace OrganisationRegistry.Organisation
         public async Task Handle(UpdateOrganisationRegulation message)
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+            organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
             var regulationTheme = message.RegulationThemeId != Guid.Empty ?
                 Session.Get<RegulationTheme>(message.RegulationThemeId) : null;
@@ -606,6 +614,7 @@ namespace OrganisationRegistry.Organisation
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
             organisation.ThrowIfTerminated(message.User);
+            organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
             var labelType = Session.Get<LabelType>(message.LabelTypeId);
 
@@ -624,6 +633,7 @@ namespace OrganisationRegistry.Organisation
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
             organisation.ThrowIfTerminated(message.User);
+            organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
             var labelType = Session.Get<LabelType>(message.LabelTypeId);
 

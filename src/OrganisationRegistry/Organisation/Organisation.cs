@@ -52,7 +52,7 @@ namespace OrganisationRegistry.Organisation
             KboState = new KboState();
         }
 
-        public Organisation(
+        private Organisation(
             OrganisationId id,
             string name,
             string ovoNumber,
@@ -100,6 +100,33 @@ namespace OrganisationRegistry.Organisation
                 Id,
                 parentOrganisation.Id,
                 Id));
+        }
+
+        public static Organisation Create(OrganisationId id,
+            string name,
+            string ovoNumber,
+            string shortName,
+            Article article,
+            Organisation? parentOrganisation,
+            string description,
+            IEnumerable<Purpose> purposes,
+            bool showOnVlaamseOverheidSites,
+            Period validity,
+            Period operationalValidity,
+            IDateTimeProvider dateTimeProvider)
+        {
+            return new Organisation(id,
+                name,
+                ovoNumber,
+                shortName,
+                article,
+                parentOrganisation,
+                description,
+                purposes,
+                showOnVlaamseOverheidSites,
+                validity,
+                operationalValidity,
+                dateTimeProvider);
         }
 
         public static Organisation CreateFromKbo(
@@ -2671,6 +2698,12 @@ namespace OrganisationRegistry.Organisation
                 !user.IsInRole(Role.OrganisationRegistryBeheerder) &&
                 !user.IsInRole(Role.AutomatedTask))
                 throw new OrganisationAlreadyTerminated();
+        }
+
+        public void ThrowIfUnauthorizedForVlimpers(IUser user)
+        {
+            if (State.UnderVlimpersManagement && !user.IsAuthorizedForVlimpersOrganisations)
+                throw new UserIsNotAuthorizedForVlimpersOrganisations();
         }
     }
 }

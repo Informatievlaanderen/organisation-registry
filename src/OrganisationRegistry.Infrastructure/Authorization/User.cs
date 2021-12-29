@@ -23,6 +23,11 @@ namespace OrganisationRegistry.Infrastructure.Authorization
             Roles = roles;
         }
 
+        public bool IsAuthorizedForVlimpersOrganisations =>
+            IsInRole(Role.VlimpersBeheerder) ||
+            IsInRole(Role.Developer) ||
+            IsInRole(Role.OrganisationRegistryBeheerder);
+
         public bool IsInRole(Role role)
         {
             return Roles.Any(x => x == role);
