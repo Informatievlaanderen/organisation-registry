@@ -1,3 +1,10 @@
+# [1.111.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.110.1...v1.111.0) (2021-12-30)
+
+
+### Features
+
+* don't show edit btn when user can't use key type ([f2934f8](https://github.com/informatievlaanderen/organisation-registry/commit/f2934f8c56e5c81f0785c844a56623dbf0db6e96))
+
 ## [1.110.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.110.0...v1.110.1) (2021-12-29)
 
 
