@@ -5,6 +5,8 @@ export class OrganisationKeyListItem {
     public keyTypeName: string = '',
     public validFrom: Date,
     public validTo: Date,
-    public keyValue: string
-  ) { }
+    public keyValue: string,
+    public isEditable: boolean
+  ) {
+  }
 }

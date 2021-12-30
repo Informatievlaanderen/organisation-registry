@@ -7,6 +7,7 @@
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
@@ -28,13 +29,22 @@
 
         /// <summary>Get a list of available keys for an organisation.</summary>
         [HttpGet]
-        public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
+        [OrganisationRegistryAuthorize]
+        [AllowAnonymous]
+        public async Task<IActionResult> Get(
+            [FromServices] OrganisationRegistryContext context,
+            [FromServices] ISecurityService securityService,
+            [FromRoute] Guid organisationId)
         {
             var filtering = Request.ExtractFilteringRequest<OrganisationKeyListItemFilter>();
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var pagedOrganisations = new OrganisationKeyListQuery(context, organisationId).Fetch(filtering, sorting, pagination);
+            Func<Guid?, bool> canUseKeyType =
+                keyTypeId => User.Identity.IsAuthenticated &&
+                             securityService.CanUseKeyType(securityService.GetUser(User), keyTypeId.Value);
+
+            var pagedOrganisations = new OrganisationKeyListQuery(context, organisationId, canUseKeyType).Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedOrganisations.PaginationInfo);
             Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
