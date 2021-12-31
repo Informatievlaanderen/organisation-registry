@@ -1,3 +1,10 @@
+## [1.111.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.111.0...v1.111.1) (2021-12-31)
+
+
+### Bug Fixes
+
+* keep td but hide pencil ([79da028](https://github.com/informatievlaanderen/organisation-registry/commit/79da0282ac11d1faeb81ed1c02034293f060b527))
+
 # [1.111.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.110.1...v1.111.0) (2021-12-30)
 
 
