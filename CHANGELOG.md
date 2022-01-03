@@ -1,3 +1,10 @@
+## [1.111.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.111.1...v1.111.2) (2022-01-03)
+
+
+### Bug Fixes
+
+* allow orafin role to edit orafin keys ([5a20b7f](https://github.com/informatievlaanderen/organisation-registry/commit/5a20b7fc760c985c09f11ef14173216320091ffc))
+
 ## [1.111.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.111.0...v1.111.1) (2021-12-31)
 
 
