@@ -182,11 +182,13 @@ namespace OrganisationRegistry.Api.Security
         // TODO: see how we can make SecurityService use IUser everywhere, io ClaimsPrincipal.
         public bool CanUseKeyType(IUser user, Guid keyTypeId)
         {
-            if (user.IsInRole(Role.Developer) || user.IsInRole(Role.OrganisationRegistryBeheerder))
+            if (user.IsInRole(Role.Developer) ||
+                user.IsInRole(Role.OrganisationRegistryBeheerder))
                 return true;
 
             if (_configuration.OrafinKeyTypeId.Equals(keyTypeId))
-                return user.Organisations.Any(x => x.Equals(_configuration.OrafinOvoCode));
+                return user.IsInRole(Role.Orafin) || // todo: set orafin role on creation of user jwt
+                    user.Organisations.Any(x => x.Equals(_configuration.OrafinOvoCode));
 
             return true;
         }
