@@ -75,5 +75,7 @@ namespace OrganisationRegistry.Infrastructure.Configuration
         public Guid KboV2LegalFormOrganisationClassificationTypeId { get; set; }
         public string RepertoriumMagdaEndpoint { get; set; }
         public string RepertoriumCapacity { get; set; }
+        public Guid FormalNameLabelTypeId { get; set; }
+        public Guid FormalShortNameLabelTypeId { get; set; }
     }
 }

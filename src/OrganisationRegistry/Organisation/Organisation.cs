@@ -440,8 +440,12 @@ namespace OrganisationRegistry.Organisation
             Guid organisationKeyId,
             KeyType keyType,
             string value,
-            Period validity)
+            Period validity,
+            Func<Guid, bool> canUseKeyType)
         {
+            if (!canUseKeyType(keyType.Id))
+                throw new UserIsNotAuthorizedForKeyType();
+
             if (State.OrganisationKeys
                 .Where(organisationKey => organisationKey.KeyTypeId == keyType.Id)
                 .Where(organisationKey => organisationKey.OrganisationKeyId != organisationKeyId)
@@ -464,18 +468,19 @@ namespace OrganisationRegistry.Organisation
             Period validity,
             Func<Guid, bool> canUseKeyType)
         {
+            var previousOrganisationKey =
+                State.OrganisationKeys.Single(key => key.OrganisationKeyId == organisationKeyId);
+
+            if (!canUseKeyType(previousOrganisationKey.KeyTypeId) ||
+                !canUseKeyType(keyType.Id))
+                throw new UserIsNotAuthorizedForKeyType();
+
             if (State.OrganisationKeys
                 .Where(organisationKey => organisationKey.KeyTypeId == keyType.Id)
                 .Where(organisationKey => organisationKey.OrganisationKeyId != organisationKeyId)
                 .Any(organisationKey => organisationKey.Validity.OverlapsWith(validity)))
                 throw new KeyAlreadyCoupledToInThisPeriodException();
 
-            var previousOrganisationKey =
-                State.OrganisationKeys.Single(key => key.OrganisationKeyId == organisationKeyId);
-
-            if (!canUseKeyType(previousOrganisationKey.KeyTypeId) ||
-                !canUseKeyType(keyType.Id))
-                throw new UserIsNotAuthorizedForOrafinKeyType();
 
             ApplyChange(new OrganisationKeyUpdated(
                 Id,
@@ -911,12 +916,15 @@ namespace OrganisationRegistry.Organisation
                 previousContact.Validity.End));
         }
 
-        public void AddLabel(
-            Guid organisationLabelId,
+        public void AddLabel(Guid organisationLabelId,
             LabelType labelType,
             string labelValue,
-            Period validity)
+            Period validity,
+            Func<Guid, bool> canUseLabelType)
         {
+            if (!canUseLabelType(labelType.Id))
+                throw new UserIsNotAuthorizedForKeyType();
+
             if (State.OrganisationLabels
                 .Where(organisationLabel => organisationLabel.LabelTypeId == labelType.Id)
                 .Where(organisationLabel => organisationLabel.OrganisationLabelId != organisationLabelId)
@@ -976,12 +984,19 @@ namespace OrganisationRegistry.Organisation
                     new ValidTo()));
         }
 
-        public void UpdateLabel(
-            Guid organisationLabelId,
+        public void UpdateLabel(Guid organisationLabelId,
             LabelType labelType,
             string labelValue,
-            Period validity)
+            Period validity,
+            Func<Guid, bool> canUseLabelType)
         {
+            var previousOrganisationLabel =
+                State.OrganisationLabels.Single(key => key.OrganisationLabelId == organisationLabelId);
+
+            if (!canUseLabelType(previousOrganisationLabel.LabelTypeId) ||
+                !canUseLabelType(labelType.Id))
+                throw new UserIsNotAuthorizedForKeyType();
+
             if (State.OrganisationLabels
                 .Where(organisationLabel => organisationLabel.LabelTypeId == labelType.Id)
                 .Where(organisationLabel => organisationLabel.OrganisationLabelId != organisationLabelId)
