@@ -23,6 +23,9 @@ namespace OrganisationRegistry.Tests.Shared
         public Guid[] OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; set; }
         public Guid[] FormalFrameworkIdsToTerminateEndOfNextYear { get; set; }
         public Guid OrafinKeyTypeId { get; }
+        public Guid VlimpersKeyTypeId { get; }
         public string OrafinOvoCode { get; }
+        public Guid FormalNameLabelTypeId { get; }
+        public Guid FormalShortNameLabelTypeId { get; }
     }
 }

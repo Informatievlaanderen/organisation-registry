@@ -288,7 +288,8 @@ namespace OrganisationRegistry.Organisation
                 message.OrganisationKeyId,
                 keyType,
                 message.KeyValue,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                keyTypeId => _securityService.CanUseKeyType(message.User, keyTypeId));
 
             await Session.Commit(message.User);
         }
@@ -308,7 +309,6 @@ namespace OrganisationRegistry.Organisation
 
             await Session.Commit(message.User);
         }
-
 
         public async Task Handle(AddOrganisationRegulation message)
         {
@@ -624,7 +624,8 @@ namespace OrganisationRegistry.Organisation
                 message.OrganisationLabelId,
                 labelType,
                 message.LabelValue,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                labelTypeId => _securityService.CanUseLabelType(message.User, labelTypeId));
 
             await Session.Commit(message.User);
         }
@@ -643,7 +644,8 @@ namespace OrganisationRegistry.Organisation
                 message.OrganisationLabelId,
                 labelType,
                 message.Value,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                labelTypeId => _securityService.CanUseLabelType(message.User, labelTypeId));
 
             await Session.Commit(message.User);
         }

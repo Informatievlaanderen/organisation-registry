@@ -188,8 +188,25 @@ namespace OrganisationRegistry.Api.Security
                 return true;
 
             if (_configuration.OrafinKeyTypeId.Equals(keyTypeId))
-                return user.IsInRole(Role.Orafin) || // todo: set orafin role on creation of user jwt
+                return user.IsInRole(Role.Orafin) ||
                     user.Organisations.Any(x => x.Equals(_configuration.OrafinOvoCode));
+            // todo: instead of checking the organisations now, check them on creation of jwt.
+
+            if (_configuration.VlimpersKeyTypeId.Equals(keyTypeId))
+                return user.IsInRole(Role.VlimpersBeheerder);
+
+            return true;
+        }
+
+        public bool CanUseLabelType(IUser user, Guid labelTypeId)
+        {
+            if (user.IsInRole(Role.Developer) ||
+                user.IsInRole(Role.OrganisationRegistryBeheerder))
+                return true;
+
+            if (_configuration.FormalNameLabelTypeId.Equals(labelTypeId) ||
+                _configuration.FormalShortNameLabelTypeId.Equals(labelTypeId))
+                return user.IsInRole(Role.VlimpersBeheerder);
 
             return true;
         }

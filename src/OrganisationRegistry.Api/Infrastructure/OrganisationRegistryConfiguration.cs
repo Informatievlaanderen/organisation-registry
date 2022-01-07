@@ -11,6 +11,9 @@ namespace OrganisationRegistry.Api.Infrastructure
 
         public Guid KboKeyTypeId => _configuration.KBO_KeyTypeId;
         public Guid OrafinKeyTypeId => _configuration.Orafin_KeyTypeId;
+        public Guid VlimpersKeyTypeId => _configuration.Vlimpers_KeyTypeId;
+        public Guid FormalNameLabelTypeId => _configuration.FormalNameLabelTypeId;
+        public Guid FormalShortNameLabelTypeId => _configuration.FormalShortNameLabelTypeId;
         public string OrafinOvoCode => _configuration.Orafin_OvoCode;
 
         public Guid KboLegalFormClassificationTypeId => _configuration.LegalFormClassificationTypeId;
