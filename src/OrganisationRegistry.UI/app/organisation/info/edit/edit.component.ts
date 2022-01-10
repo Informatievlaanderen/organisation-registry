@@ -1,17 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 
-import { AlertService, AlertBuilder } from 'core/alert';
-import { required } from 'core/validation';
+import {AlertBuilder, AlertService} from 'core/alert';
+import {required} from 'core/validation';
 
-import { SelectItem } from 'shared/components/form/form-group-select';
+import {SelectItem} from 'shared/components/form/form-group-select';
 
-import {
-  UpdateOrganisationService
-} from 'services/organisations';
+import {UpdateOrganisationService} from 'services/organisations';
 
-import { PurposeService } from 'services/purposes';
+import {PurposeService} from 'services/purposes';
+import {OidcService, Role} from "../../../core/auth";
 
 @Component({
   templateUrl: 'edit.template.html',
@@ -23,12 +22,15 @@ export class OrganisationInfoEditComponent implements OnInit {
   public articles: SelectItem[];
 
   private organisationId: string;
+  private underVlimpersManagement: boolean;
+  private isVlimpersBeheerder: boolean;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
     private organisationService: UpdateOrganisationService,
+    private oidcService: OidcService,
     private purposeService: PurposeService,
     private alertService: AlertService
   ) {
@@ -52,7 +54,8 @@ export class OrganisationInfoEditComponent implements OnInit {
       validTo: [''],
       operationalValidFrom: [''],
       operationalValidTo: [''],
-      isTerminated: [false]
+      isTerminated: [false],
+      underVlimpersManagement: [false]
     });
     this.articles = [
       new SelectItem('de', 'de'),
@@ -93,6 +96,9 @@ export class OrganisationInfoEditComponent implements OnInit {
               .withMessage('Er is een fout opgetreden bij het ophalen van de organisatie. Probeer het later opnieuw.')
               .build()));
     });
+
+    this.oidcService.isVlimpersBeheerder()
+      .subscribe(isVlimpersBeheerder => this.isVlimpersBeheerder = isVlimpersBeheerder);
   }
 
   get isFormValid() {
@@ -131,6 +137,15 @@ export class OrganisationInfoEditComponent implements OnInit {
     if (this.form.value.kboNumber) {
       this.form.get('name').disable();
       this.form.get('shortName').disable();
+    }
+    if (this.form.value.underVlimpersManagement && !this.isVlimpersBeheerder) {
+      this.form.get('name').disable();
+      this.form.get('article').disable();
+      this.form.get('shortName').disable();
+      this.form.get('validFrom').disable();
+      this.form.get('validTo').disable();
+      this.form.get('operationalValidFrom').disable();
+      this.form.get('operationalValidTo').disable();
     }
   }
 }

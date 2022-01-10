@@ -2,7 +2,8 @@
     <div class="cta-title">
         <h3 class="h3 cta-title__title">Historiek</h3>
         <div class="cta-title__cta">
-            <a *ngIf="(store.isEditableChanged | async)" class="button cta-title__cta" [routerLink]="['./create']">Moeder entiteit koppelen</a>
+            <a *ngIf="(store.isEditableChanged | async) && !(store.isLimitedByVlimpers | async)"
+               class="button cta-title__cta" [routerLink]="['./create']">Moeder entiteit koppelen</a>
             <div class="u-align-right" style="clear: both;"></div>
         </div>
     </div>

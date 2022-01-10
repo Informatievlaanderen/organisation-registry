@@ -33,6 +33,9 @@ export class OrganisationInfoService {
   private isEditableChangedSource: BehaviorSubject<boolean>;
   private readonly isEditableChanged$: Observable<boolean>;
 
+  private isLimitedByVlimpersChangedSource: BehaviorSubject<boolean>;
+  private readonly isLimitedByVlimpersChanged$: Observable<boolean>;
+
   constructor(
     private organisationService: OrganisationService,
     private oidcService: OidcService,
@@ -47,11 +50,21 @@ export class OrganisationInfoService {
     this.isEditableChangedSource = new BehaviorSubject<boolean>(false);
     this.isEditableChanged$ = this.isEditableChangedSource.asObservable();
 
+    this.isLimitedByVlimpersChangedSource = new BehaviorSubject<boolean>(false);
+    this.isLimitedByVlimpersChanged$ = this.isLimitedByVlimpersChangedSource.asObservable();
+
     combineLatest(this.organisationChanged$, oidcService.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
       .subscribe(combined => {
         const isTerminated = combined[0].isTerminated;
         const isOrganisationRegistryBeheerder = combined[1];
         this.isEditableChangedSource.next(!isTerminated || isOrganisationRegistryBeheerder);
+      });
+
+    combineLatest(this.organisationChanged$, oidcService.hasAnyOfRoles([Role.VlimpersBeheerder]))
+      .subscribe(combined => {
+        const underVlimpersManagement = combined[0].underVlimpersManagement;
+        const isVlimpersBeheerder = combined[1];
+        this.isLimitedByVlimpersChangedSource.next(underVlimpersManagement && !isVlimpersBeheerder);
       });
   }
 
@@ -65,6 +78,10 @@ export class OrganisationInfoService {
 
   get isEditableChanged() {
     return this.isEditableChanged$;
+  }
+
+  get isLimitedByVlimpers() {
+    return this.isLimitedByVlimpersChanged$;
   }
 
   loadOrganisation(id: string) {
