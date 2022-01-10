@@ -57,7 +57,6 @@ export class NavbarComponent implements OnInit {
 
     this.role = roles.map(roles => {
       let role = '';
-      console.log(roles);
       if (roles.indexOf(Role.OrganisationRegistryBeheerder) !== -1) {
         role = 'Beheerder';
       } else if (roles.indexOf(Role.VlimpersBeheerder) !== -1) {
