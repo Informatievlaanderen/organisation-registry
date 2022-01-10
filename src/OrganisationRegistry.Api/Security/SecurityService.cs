@@ -193,7 +193,7 @@ namespace OrganisationRegistry.Api.Security
             // todo: instead of checking the organisations now, check them on creation of jwt.
 
             if (_configuration.VlimpersKeyTypeId.Equals(keyTypeId))
-                return user.IsInRole(Role.VlimpersBeheerder);
+                return user.IsAuthorizedForVlimpersOrganisations;
 
             return true;
         }
