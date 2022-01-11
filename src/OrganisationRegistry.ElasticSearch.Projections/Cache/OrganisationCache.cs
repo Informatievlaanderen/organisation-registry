@@ -17,6 +17,7 @@
         IEventHandler<OrganisationCreated>,
         IEventHandler<OrganisationCreatedFromKbo>,
         IEventHandler<OrganisationInfoUpdated>,
+        IEventHandler<OrganisationNameUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<InitialiseProjection>
@@ -62,6 +63,19 @@
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<OrganisationInfoUpdated> message)
+        {
+            await using var context = _contextFactory.Create();
+            var organisation = await context
+                .OrganisationCache
+                .FindAsync(message.Body.OrganisationId);
+
+            organisation.Name = message.Body.Name;
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationNameUpdated> message)
         {
             await using var context = _contextFactory.Create();
             var organisation = await context

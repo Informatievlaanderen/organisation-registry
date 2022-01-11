@@ -61,6 +61,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationFormalFrameworkAdded>,
         IEventHandler<OrganisationFormalFrameworkUpdated>,
         IEventHandler<OrganisationInfoUpdated>,
+        IEventHandler<OrganisationNameUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<FormalFrameworkUpdated>,
@@ -85,6 +86,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        {
+            UpdateParentOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
         {
             UpdateParentOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
         }

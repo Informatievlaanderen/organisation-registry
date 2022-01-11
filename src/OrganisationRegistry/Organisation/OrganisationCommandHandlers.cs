@@ -146,7 +146,8 @@ namespace OrganisationRegistry.Organisation
                 message.ShowOnVlaamseOverheidSites,
                 new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
                 new Period(new ValidFrom(message.OperationalValidFrom), new ValidTo(message.OperationalValidTo)),
-                _dateTimeProvider);
+                _dateTimeProvider,
+                message.User.IsAuthorizedForVlimpersOrganisations);
 
             await Session.Commit(message.User);
         }

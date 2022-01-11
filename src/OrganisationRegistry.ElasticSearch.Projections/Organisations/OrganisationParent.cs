@@ -18,6 +18,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IElasticEventHandler<OrganisationParentAdded>,
         IElasticEventHandler<OrganisationParentUpdated>,
         IElasticEventHandler<OrganisationInfoUpdated>,
+        IElasticEventHandler<OrganisationNameUpdated>,
         IElasticEventHandler<OrganisationInfoUpdatedFromKbo>,
         IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
         IElasticEventHandler<OrganisationTerminated>
@@ -28,6 +29,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        {
+            return await MassUpdateOrganisationParentName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
         {
             return await MassUpdateOrganisationParentName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
         }

@@ -147,6 +147,7 @@ namespace OrganisationRegistry.SqlServer.Body
         IEventHandler<PersonUpdated>,
         IEventHandler<FunctionUpdated>,
         IEventHandler<OrganisationInfoUpdated>,
+        IEventHandler<OrganisationNameUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<BodySeatUpdated>,
@@ -408,6 +409,11 @@ namespace OrganisationRegistry.SqlServer.Body
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        {
+            await UpdateDelegatorName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
         {
             await UpdateDelegatorName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
         }

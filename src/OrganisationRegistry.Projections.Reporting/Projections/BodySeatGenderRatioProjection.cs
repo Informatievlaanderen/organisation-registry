@@ -25,6 +25,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         IEventHandler<OrganisationCreated>,
         IEventHandler<OrganisationCreatedFromKbo>,
         IEventHandler<OrganisationInfoUpdated>,
+        IEventHandler<OrganisationNameUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationTerminationSyncedWithKbo>,
@@ -136,6 +137,11 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        {
+            await UpdateOrganisationName(message.Body.OrganisationId, message.Body.Name);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
         {
             await UpdateOrganisationName(message.Body.OrganisationId, message.Body.Name);
         }

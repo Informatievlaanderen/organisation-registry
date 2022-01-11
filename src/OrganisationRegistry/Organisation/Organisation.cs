@@ -20,7 +20,6 @@ namespace OrganisationRegistry.Organisation
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Resources;
     using Commands;
     using Infrastructure.Authorization;
     using OrganisationTermination;
@@ -213,7 +212,8 @@ namespace OrganisationRegistry.Organisation
             bool showOnVlaamseOverheidSites,
             Period validity,
             Period operationalValidity,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider,
+            bool isAuthorizedForVlimpers)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
@@ -224,28 +224,36 @@ namespace OrganisationRegistry.Organisation
                 KboV2Guards.ThrowIfChanged(State.ShortName, shortName);
             }
 
-            ApplyChange(new OrganisationInfoUpdated(
-                Id,
-                name,
-                article,
-                description,
-                State.OvoNumber,
-                shortName,
-                purposes.Select(x => new Events.Purpose(x.Id, x.Name)).ToList(),
-                showOnVlaamseOverheidSites,
-                validity.Start,
-                validity.End,
-                operationalValidity.Start,
-                operationalValidity.End,
-                State.Name,
-                State.Description,
-                State.ShortName,
-                _purposes,
-                State.ShowOnVlaamseOverheidSites,
-                State.Validity.Start,
-                State.Validity.End,
-                State.OperationalValidity.Start,
-                State.OperationalValidity.End));
+            if(!name.Equals(State.Name))
+                ApplyChange(new OrganisationNameUpdated(Id, name));
+
+
+            if(!shortName.Equals(State.ShortName))
+                ApplyChange(new OrganisationShortNameUpdated(Id, shortName));
+
+
+            if(!article.Equals(State.Article))
+                ApplyChange(new OrganisationArticleUpdated(Id, article));
+
+
+            if(!description.Equals(State.Description))
+                ApplyChange(new OrganisationDescriptionUpdated(Id, description));
+
+            var purposes2 = purposes.Select(x => new Events.Purpose(x.Id, x.Name)).ToList();
+            if(!purposes2.SequenceEqual(_purposes)) // todo: don't use events as type for List
+            {
+                ApplyChange(new OrganisationPurposesUpdated(Id, purposes2));
+            }
+
+            if(!showOnVlaamseOverheidSites.Equals(State.ShowOnVlaamseOverheidSites))
+                ApplyChange(new OrganisationShowOnVlaamseOverheidSitesUpdated(Id, showOnVlaamseOverheidSites));
+
+
+            if(!validity.Equals(State.Validity))
+                ApplyChange(new OrganisationValidityUpdated(Id, validity.Start, validity.End));
+
+            if(!operationalValidity.Equals(State.OperationalValidity))
+                ApplyChange(new OrganisationOperationalValidityUpdated(Id, operationalValidity.Start, operationalValidity.End));
 
             var validityOverlapsWithToday = validity.OverlapsWith(dateTimeProvider.Today);
             if (State.IsActive && !validityOverlapsWithToday)

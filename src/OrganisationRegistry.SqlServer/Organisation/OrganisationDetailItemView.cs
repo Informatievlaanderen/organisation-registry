@@ -108,6 +108,14 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationTerminationSyncedWithKbo>,
         IEventHandler<OrganisationInfoUpdated>,
+        IEventHandler<OrganisationNameUpdated>,
+        IEventHandler<OrganisationArticleUpdated>,
+        IEventHandler<OrganisationShortNameUpdated>,
+        IEventHandler<OrganisationValidityUpdated>,
+        IEventHandler<OrganisationOperationalValidityUpdated>,
+        IEventHandler<OrganisationShowOnVlaamseOverheidSitesUpdated>,
+        IEventHandler<OrganisationDescriptionUpdated>,
+        IEventHandler<OrganisationPurposesUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationParentUpdated>,
         IEventHandler<ParentAssignedToOrganisation>,
@@ -248,6 +256,110 @@ namespace OrganisationRegistry.SqlServer.Organisation
             foreach (var child in context.OrganisationDetail.Where(item =>
                 item.ParentOrganisationId == message.Body.OrganisationId))
                 child.ParentOrganisation = message.Body.Name;
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationNameUpdated> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationListItem =
+                await context.OrganisationDetail.SingleAsync(item => item.Id == message.Body.OrganisationId);
+
+            organisationListItem.Name = message.Body.Name;
+
+            foreach (var child in context.OrganisationDetail.Where(item =>
+                         item.ParentOrganisationId == message.Body.OrganisationId))
+                child.ParentOrganisation = message.Body.Name;
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationArticleUpdated> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationListItem =
+                await context.OrganisationDetail.SingleAsync(item => item.Id == message.Body.OrganisationId);
+
+            organisationListItem.Article = message.Body.Article;
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationShortNameUpdated> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationListItem =
+                await context.OrganisationDetail.SingleAsync(item => item.Id == message.Body.OrganisationId);
+
+            organisationListItem.ShortName = message.Body.ShortName;
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationDescriptionUpdated> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationListItem =
+                await context.OrganisationDetail.SingleAsync(item => item.Id == message.Body.OrganisationId);
+
+            organisationListItem.Description = message.Body.Description;
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationShowOnVlaamseOverheidSitesUpdated> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationListItem =
+                await context.OrganisationDetail.SingleAsync(item => item.Id == message.Body.OrganisationId);
+
+            organisationListItem.ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites;
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationValidityUpdated> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationListItem =
+                await context.OrganisationDetail.SingleAsync(item => item.Id == message.Body.OrganisationId);
+
+            organisationListItem.ValidFrom = message.Body.ValidFrom;
+            organisationListItem.ValidTo = message.Body.ValidTo;
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationOperationalValidityUpdated> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationListItem =
+                await context.OrganisationDetail.SingleAsync(item => item.Id == message.Body.OrganisationId);
+
+            organisationListItem.OperationalValidFrom = message.Body.OperationalValidFrom;
+            organisationListItem.OperationalValidTo = message.Body.OperationalValidTo;
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationPurposesUpdated> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationListItem =
+                await context.OrganisationDetail.SingleAsync(item => item.Id == message.Body.OrganisationId);
+
+            organisationListItem.PurposeIds = message.Body.Purposes.ToSeparatedList("|", x => x.Id.ToString());
+            organisationListItem.PurposeNames =
+                message.Body.Purposes.OrderBy(x => x.Name).ToSeparatedList("|", x => x.Name);
 
             await context.SaveChangesAsync();
         }

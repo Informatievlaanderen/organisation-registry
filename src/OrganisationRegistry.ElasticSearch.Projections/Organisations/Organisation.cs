@@ -24,6 +24,14 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IElasticEventHandler<OrganisationCreated>,
         IElasticEventHandler<OrganisationCreatedFromKbo>,
         IElasticEventHandler<OrganisationInfoUpdated>,
+        IElasticEventHandler<OrganisationNameUpdated>,
+        IElasticEventHandler<OrganisationShortNameUpdated>,
+        IElasticEventHandler<OrganisationArticleUpdated>,
+        IElasticEventHandler<OrganisationValidityUpdated>,
+        IElasticEventHandler<OrganisationOperationalValidityUpdated>,
+        IElasticEventHandler<OrganisationDescriptionUpdated>,
+        IElasticEventHandler<OrganisationShowOnVlaamseOverheidSitesUpdated>,
+        IElasticEventHandler<OrganisationPurposesUpdated>,
         IElasticEventHandler<OrganisationInfoUpdatedFromKbo>,
         IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
         IElasticEventHandler<OrganisationCoupledWithKbo>,
@@ -106,6 +114,127 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.OperationalValidity = new Period(message.Body.OperationalValidFrom, message.Body.OperationalValidTo);
                     document.Description = message.Body.Description;
                     document.ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites;
+                    document.Purposes = message.Body.Purposes
+                        .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList();
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    document.Name = message.Body.Name;
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationShortNameUpdated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    document.ShortName = message.Body.ShortName;
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationArticleUpdated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    document.Article = message.Body.Article;
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationValidityUpdated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    document.Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo);
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOperationalValidityUpdated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    document.OperationalValidity = new Period(message.Body.OperationalValidFrom, message.Body.OperationalValidTo);
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationDescriptionUpdated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    document.Description = message.Body.Description;
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationShowOnVlaamseOverheidSitesUpdated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    document.ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites;
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationPurposesUpdated> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
                     document.Purposes = message.Body.Purposes
                         .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList();
                 }

@@ -54,6 +54,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         IElasticEventHandler<PersonAssignedToDelegationRemoved>,
         IElasticEventHandler<PersonUpdated>,
         IElasticEventHandler<OrganisationInfoUpdated>,
+        IElasticEventHandler<OrganisationNameUpdated>,
         IElasticEventHandler<OrganisationInfoUpdatedFromKbo>,
         IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
         IElasticEventHandler<FunctionUpdated>,
@@ -762,6 +763,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<OrganisationInfoUpdated> message)
+        {
+            return UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name);
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<OrganisationNameUpdated> message)
         {
             return UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name);
         }
