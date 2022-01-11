@@ -67,6 +67,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
     public class OrganisationChildListView :
         Projection<OrganisationChildListView>,
         IEventHandler<OrganisationInfoUpdated>,
+        IEventHandler<OrganisationNameUpdated>,
+        IEventHandler<OrganisationValidityUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationParentAdded>,
@@ -106,6 +108,41 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 {
                     organisation.Name = message.Body.Name;
                     organisation.OvoNumber = message.Body.OvoNumber;
+                    organisation.OrganisationValidFrom = message.Body.ValidFrom;
+                    organisation.OrganisationValidTo = message.Body.ValidTo;
+                }
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var organisations = context.OrganisationChildrenList.Where(x => x.Id == message.Body.OrganisationId);
+                if (!organisations.Any())
+                    return;
+
+                foreach (var organisation in organisations)
+                {
+                    organisation.Name = message.Body.Name;
+                }
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationValidityUpdated> message)
+        {
+            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            {
+                var organisations = context.OrganisationChildrenList.Where(x => x.Id == message.Body.OrganisationId);
+                if (!organisations.Any())
+                    return;
+
+                foreach (var organisation in organisations)
+                {
                     organisation.OrganisationValidFrom = message.Body.ValidFrom;
                     organisation.OrganisationValidTo = message.Body.ValidTo;
                 }

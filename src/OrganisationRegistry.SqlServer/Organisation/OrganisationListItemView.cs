@@ -154,6 +154,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationCreated>,
         IEventHandler<OrganisationCreatedFromKbo>,
         IEventHandler<OrganisationInfoUpdated>,
+        IEventHandler<OrganisationNameUpdated>,
+        IEventHandler<OrganisationShortNameUpdated>,
+        IEventHandler<OrganisationValidityUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationParentUpdated>,
         IEventHandler<ParentAssignedToOrganisation>,
@@ -245,6 +248,49 @@ namespace OrganisationRegistry.SqlServer.Organisation
             {
                 child.ParentOrganisation = message.Body.Name;
                 child.ParentOrganisationOvoNumber = message.Body.OvoNumber;
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisations = context.OrganisationList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+            foreach (var organisationListItem in organisations)
+            {
+                organisationListItem.Name = message.Body.Name;
+            }
+
+            var ovoNumber = (await organisations.FirstAsync()).OvoNumber;
+
+            foreach (var child in context.OrganisationList.Where(item => item.ParentOrganisationId == message.Body.OrganisationId))
+            {
+                child.ParentOrganisation = message.Body.Name;
+                child.ParentOrganisationOvoNumber = ovoNumber;
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationShortNameUpdated> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            foreach (var organisationListItem in context.OrganisationList.Where(item => item.OrganisationId == message.Body.OrganisationId))
+            {
+                organisationListItem.ShortName = message.Body.ShortName;
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationValidityUpdated> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            foreach (var organisationListItem in context.OrganisationList.Where(item => item.OrganisationId == message.Body.OrganisationId))
+            {
+                organisationListItem.ValidFrom = message.Body.ValidFrom;
+                organisationListItem.ValidTo = message.Body.ValidTo;
             }
 
             await context.SaveChangesAsync();

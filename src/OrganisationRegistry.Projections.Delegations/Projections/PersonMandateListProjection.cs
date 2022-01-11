@@ -21,6 +21,7 @@
         IEventHandler<BodySeatUpdated>,
         IEventHandler<BodyOrganisationUpdated>,
         IEventHandler<OrganisationInfoUpdated>,
+        IEventHandler<OrganisationNameUpdated>,
         IEventHandler<OrganisationCoupledWithKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<PersonAssignedToDelegation>,
@@ -150,6 +151,23 @@
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        {
+            await using var context = _contextFactory().Value;
+            var organisationNames = context.PersonMandateList.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+            foreach (var delegationListItem in organisationNames)
+                delegationListItem.OrganisationName = message.Body.Name;
+
+            var bodyOrganisationNames = context.PersonMandateList.Where(item => item.BodyOrganisationId == message.Body.OrganisationId);
+
+            foreach (var delegationListItem in bodyOrganisationNames)
+                delegationListItem.BodyOrganisationName = message.Body.Name;
+
+            await context.SaveChangesAsync();
+        }
+
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
         {
             await using var context = _contextFactory().Value;
             var organisationNames = context.PersonMandateList.Where(item => item.OrganisationId == message.Body.OrganisationId);

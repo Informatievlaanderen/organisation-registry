@@ -31,6 +31,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         IElasticEventHandler<OrganisationCreated>,
         IElasticEventHandler<OrganisationCreatedFromKbo>,
         IElasticEventHandler<OrganisationInfoUpdated>,
+        IElasticEventHandler<OrganisationNameUpdated>,
+        IElasticEventHandler<OrganisationShowOnVlaamseOverheidSitesUpdated>,
         IElasticEventHandler<OrganisationInfoUpdatedFromKbo>,
         IElasticEventHandler<OrganisationCouplingWithKboCancelled>,
         IElasticEventHandler<OrganisationCapacityBecameActive>,
@@ -102,7 +104,41 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     if (message.Body.ShowOnVlaamseOverheidSites == message.Body.PreviouslyShownInVlaanderenBe)
                         return;
 
-                    await UpdateCacheShowOnVlaamseOverheidSites(message);
+                    await UpdateCacheShowOnVlaamseOverheidSites(message.Body.OrganisationId, message.Body.ShowOnVlaamseOverheidSites);
+
+                    await ElasticWriter.UpdateByScroll<PersonDocument>(elastic, Logger,
+                        query => query.Nested(
+                            nested => nested.Path(
+                                path => path.Capacities).Query(
+                                innerQuery => innerQuery.Bool(
+                                    b => b.Must(
+                                        must => must.Match(
+                                            match => match
+                                                .Field("capacities.organisationId")
+                                                .Query(message.Body.OrganisationId.ToString())))))),
+                        async document => document.ShowOnVlaamseOverheidSites =
+                            await ShouldPersonBeShownOnVlaamseOverheidSites(document));
+                });
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
+        {
+            return new ElasticMassChange
+            (
+                async elastic =>
+                {
+                    await MassUpdateOrganisationName(elastic, message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
+                });
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationShowOnVlaamseOverheidSitesUpdated> message)
+        {
+            return new ElasticMassChange
+            (
+                async elastic =>
+                {
+                    await UpdateCacheShowOnVlaamseOverheidSites(
+                        message.Body.OrganisationId, message.Body.ShowOnVlaamseOverheidSites);
 
                     await ElasticWriter.UpdateByScroll<PersonDocument>(elastic, Logger,
                         query => query.Nested(
@@ -329,15 +365,15 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             await context.SaveChangesAsync();
         }
 
-        private async Task UpdateCacheShowOnVlaamseOverheidSites(IEnvelope<OrganisationInfoUpdated> message)
+        private async Task UpdateCacheShowOnVlaamseOverheidSites(Guid organisationId, bool showOnVlaamseOverheidSites)
         {
             await using var context = _contextFactory.Create();
             var showOnVlaamseOverheidSitesPerOrganisation =
                 await context
                     .ShowOnVlaamseOverheidSitesPerOrganisationList
-                    .FindAsync(message.Body.OrganisationId);
+                    .FindAsync(organisationId);
 
-            showOnVlaamseOverheidSitesPerOrganisation.ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites;
+            showOnVlaamseOverheidSitesPerOrganisation.ShowOnVlaamseOverheidSites = showOnVlaamseOverheidSites;
 
             await context.SaveChangesAsync();
         }

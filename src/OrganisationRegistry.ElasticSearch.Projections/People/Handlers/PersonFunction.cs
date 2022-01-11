@@ -23,6 +23,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         IElasticEventHandler<OrganisationFunctionUpdated>,
         IElasticEventHandler<FunctionUpdated>,
         IElasticEventHandler<OrganisationInfoUpdated>,
+        IElasticEventHandler<OrganisationNameUpdated>,
         IElasticEventHandler<OrganisationInfoUpdatedFromKbo>,
         IElasticEventHandler<OrganisationCouplingWithKboCancelled>
     {
@@ -133,6 +134,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        {
+            return MassUpdateFunctionOrganisationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
         {
             return MassUpdateFunctionOrganisationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
         }

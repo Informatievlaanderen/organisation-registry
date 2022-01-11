@@ -55,5 +55,10 @@ namespace OrganisationRegistry.Infrastructure.Authorization
         {
             throw new NotImplementedException();
         }
+
+        public bool CanUseLabelType(IUser user, Guid labelTypeId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

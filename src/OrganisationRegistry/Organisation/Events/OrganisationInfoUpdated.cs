@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Organisation.Events
     using System;
     using System.Collections.Generic;
 
+    [Obsolete("Use events for individual property changes, eg: OrganisationValidityChanged")]
     public class OrganisationInfoUpdated : BaseEvent<OrganisationInfoUpdated>
     {
         public Guid OrganisationId => Id;

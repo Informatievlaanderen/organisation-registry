@@ -211,6 +211,8 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         IEventHandler<OrganisationCreated>,
         IEventHandler<OrganisationCreatedFromKbo>,
         IEventHandler<OrganisationInfoUpdated>,
+        IEventHandler<OrganisationNameUpdated>,
+        IEventHandler<OrganisationValidityUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<ParentAssignedToOrganisation>,
@@ -327,6 +329,21 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ValidTo);
         }
 
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationNameUpdated> message)
+        {
+            _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationNames)
+                .UpdateMemoryCache(message.Body.OrganisationId, message.Body.Name);
+        }
+
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationValidityUpdated> message)
+        {
+            _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidFroms)
+                .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ValidFrom);
+
+            _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidTos)
+                .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ValidTo);
+        }
+
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationTerminated> message)
         {
             if (message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
@@ -391,6 +408,8 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                     typeof(OrganisationCreated),
                     typeof(OrganisationCreatedFromKbo),
                     typeof(OrganisationInfoUpdated),
+                    typeof(OrganisationNameUpdated),
+                    typeof(OrganisationValidityUpdated),
                     typeof(OrganisationInfoUpdatedFromKbo)
                 },
                 new[]

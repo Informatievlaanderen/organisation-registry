@@ -88,6 +88,7 @@ namespace OrganisationRegistry.SqlServer.Body
         IEventHandler<BodyLifecycleBecameInvalid>,
         IEventHandler<BodyBalancedParticipationChanged>,
         IEventHandler<OrganisationInfoUpdated>,
+        IEventHandler<OrganisationNameUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>
 
     {
@@ -225,6 +226,19 @@ namespace OrganisationRegistry.SqlServer.Body
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var bodyDetailItemDetails = context.BodyDetail.Where(item => item.OrganisationId == message.Body.OrganisationId);
+
+            foreach (var bodyDetail in bodyDetailItemDetails)
+            {
+                bodyDetail.Organisation = message.Body.Name;
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
         {
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
             var bodyDetailItemDetails = context.BodyDetail.Where(item => item.OrganisationId == message.Body.OrganisationId);
