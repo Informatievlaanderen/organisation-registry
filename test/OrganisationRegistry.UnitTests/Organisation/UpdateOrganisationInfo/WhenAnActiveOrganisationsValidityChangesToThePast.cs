@@ -49,6 +49,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
 
         protected override UpdateOrganisationInfo When()
         {
+            var user = new UserBuilder()
+                .Build();
+
             return new UpdateOrganisationInfo(
                 _organisationCreatedTestDataBuilder.Id,
                 "Test",
@@ -60,22 +63,53 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                 new ValidFrom(_yesterday),
                 new ValidTo(_yesterday),
                 new ValidFrom(),
-                new ValidTo());
+                new ValidTo())
+            {
+                User = user
+            };
         }
 
-        protected override int ExpectedNumberOfEvents => 2;
+        protected override int ExpectedNumberOfEvents => 6;
 
         [Fact]
-        public void UpdatesAnOrganisation()
+        public void UpdatesOrganisationName()
         {
-            var organisationCreated = PublishedEvents[0].UnwrapBody<OrganisationInfoUpdated>();
+            var organisationCreated = PublishedEvents[0].UnwrapBody<OrganisationNameUpdated>();
+            organisationCreated.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void UpdatesOrganisationShortName()
+        {
+            var organisationCreated = PublishedEvents[1].UnwrapBody<OrganisationShortNameUpdated>();
+            organisationCreated.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void UpdatesOrganisationDescription()
+        {
+            var organisationCreated = PublishedEvents[2].UnwrapBody<OrganisationDescriptionUpdated>();
+            organisationCreated.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void UpdatesOrganisationValidity()
+        {
+            var organisationCreated = PublishedEvents[3].UnwrapBody<OrganisationValidityUpdated>();
+            organisationCreated.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void UpdatesOrganisationOperationalValidity()
+        {
+            var organisationCreated = PublishedEvents[4].UnwrapBody<OrganisationOperationalValidityUpdated>();
             organisationCreated.Should().NotBeNull();
         }
 
         [Fact]
         public void TheOrganisationBecomesActive()
         {
-            var organisationBecameInactive = PublishedEvents[1].UnwrapBody<OrganisationBecameInactive>();
+            var organisationBecameInactive = PublishedEvents[5].UnwrapBody<OrganisationBecameInactive>();
             organisationBecameInactive.Should().NotBeNull();
         }
 

@@ -66,7 +66,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                 new ValidFrom(_yesterday),
                 new ValidTo(_yesterday),
                 new ValidFrom(),
-                new ValidTo());
+                new ValidTo())
+            {
+                User = new UserBuilder()
+                    .Build()
+            };
         }
 
         protected override int ExpectedNumberOfEvents => 0;

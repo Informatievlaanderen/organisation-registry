@@ -29,14 +29,22 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationKey
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
+            var securityServiceMock = new Mock<ISecurityService>();
+            securityServiceMock
+                .Setup(service =>
+                    service.CanUseKeyType(
+                        It.IsAny<IUser>(),
+                        It.IsAny<Guid>()))
+                .Returns(true);
+
             return new OrganisationCommandHandlers(
                 new Mock<ILogger<OrganisationCommandHandlers>>().Object,
                 Session,
                 new SequentialOvoNumberGenerator(),
                 null,
                 new DateTimeProvider(),
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
+                new OrganisationRegistryConfigurationStub(),
+                securityServiceMock.Object);
         }
 
         protected override IEnumerable<IEvent> Given()
