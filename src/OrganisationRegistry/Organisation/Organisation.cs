@@ -1855,7 +1855,7 @@ namespace OrganisationRegistry.Organisation
             Id = @event.OrganisationId;
             State.Name = @event.Name;
             State.ShortName = @event.ShortName;
-            State.Article = @event.Article;
+            State.Article = Article.Parse(@event.Article);
             State.OvoNumber = @event.OvoNumber;
             State.Description = @event.Description;
             _purposes = @event.Purposes;
@@ -1869,7 +1869,7 @@ namespace OrganisationRegistry.Organisation
             Id = @event.OrganisationId;
             State.Name = @event.Name;
             State.ShortName = @event.ShortName;
-            State.Article = @event.Article;
+            State.Article = Article.Parse(@event.Article);
             State.OvoNumber = @event.OvoNumber;
             State.Description = @event.Description;
             _purposes = @event.Purposes;
@@ -1900,7 +1900,7 @@ namespace OrganisationRegistry.Organisation
         {
             State.Name = @event.Name;
             State.Description = @event.Description;
-            State.Article = @event.Article;
+            State.Article = Article.Parse(@event.Article);
             State.ShortName = @event.ShortName;
             _purposes = @event.Purposes;
             State.ShowOnVlaamseOverheidSites = @event.ShowOnVlaamseOverheidSites;
