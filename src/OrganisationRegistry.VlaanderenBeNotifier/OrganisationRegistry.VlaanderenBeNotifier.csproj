@@ -12,6 +12,7 @@
     <ProjectReference Include="..\OrganisationRegistry.Configuration.Database\OrganisationRegistry.Configuration.Database.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.ElasticSearch\OrganisationRegistry.ElasticSearch.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.SqlServer\OrganisationRegistry.SqlServer.csproj" />
+    <ProjectReference Include="..\OrganisationRegistry.VlaanderenBeNotifier.Schema\OrganisationRegistry.VlaanderenBeNotifier.Schema.csproj" />
     <ProjectReference Include="..\OrganisationRegistry\OrganisationRegistry.csproj" />
   </ItemGroup>
 

@@ -24,6 +24,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Configuration.Database;
     using OrganisationRegistry.Configuration.Database.Configuration;
+    using Schema;
+    using SqlServer.Configuration;
 
     internal class Program
     {
@@ -113,6 +115,15 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
 
                 if (app.GetService<IOptions<TogglesConfiguration>>().Value.VlaanderenBeNotifierAvailable)
                 {
+                    var sqlServerConfiguration = app.GetRequiredService<IOptions<SqlServerConfiguration>>().Value;
+                    var migratorOptions = new DbContextOptionsBuilder<VlaanderenBeNotifierContext>()
+                        .UseSqlServer(
+                            sqlServerConfiguration.MigrationsConnectionString,
+                            x => x.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.VlaanderenBeNotifierSchema));
+
+                    await using (var migrator = new VlaanderenBeNotifierContext(migratorOptions.Options))
+                        await migrator.Database.MigrateAsync();
+
                     var runner = app.GetService<T>();
                     UseOrganisationRegistryEventSourcing(app);
 

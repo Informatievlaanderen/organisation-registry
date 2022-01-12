@@ -2,14 +2,18 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
 {
     using System;
     using System.Collections.Generic;
+    using System.Data;
+    using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
     using Configuration;
     using Info;
     using Infrastructure.Configuration;
     using Infrastructure.Events;
+    using Microsoft.Data.SqlClient;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using SqlServer.Configuration;
     using SqlServer.ProjectionState;
 
     public class Runner
@@ -22,6 +26,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
         private readonly IEventStore _store;
         private readonly IProjectionStates _projectionStates;
         private readonly IEventPublisher _bus;
+        private readonly SqlServerConfiguration _sqlServerConfiguration;
 
         public Runner(
             ILogger<Runner> logger,
@@ -29,7 +34,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             IOptions<VlaanderenBeNotifierConfiguration> vlaanderenBeNotifierConfigurationOptions,
             IEventStore store,
             IProjectionStates projectionStates,
-            IEventPublisher bus)
+            IEventPublisher bus,
+            IOptions<SqlServerConfiguration> sqlServerConfiguration)
         {
             _logger = logger;
             _vlaanderenBeNotifierConfiguration = vlaanderenBeNotifierConfigurationOptions.Value;
@@ -37,6 +43,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             _store = store;
             _projectionStates = projectionStates;
             _bus = bus;
+            _sqlServerConfiguration = sqlServerConfiguration.Value;
         }
 
         public async Task<bool> Run()
@@ -47,16 +54,23 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                 return false;
 
             var lastProcessedEventNumber = await _projectionStates.GetLastProcessedEventNumber(VlaanderenbeNotifierProjectionName);
-            var envelopes = _store.GetEventEnvelopesAfter(lastProcessedEventNumber).ToList();
+            var envelopes = _store.GetEventEnvelopesAfter(lastProcessedEventNumber, 5000).ToList();
 
             LogEnvelopeCount(envelopes);
 
             var newLastProcessedEventNumber = new int?();
             try
             {
+                var db = new SqlConnection(_sqlServerConfiguration.ConnectionString);
+                await db.OpenAsync();
                 foreach (var envelope in envelopes)
                 {
-                    newLastProcessedEventNumber = await ProcessEnvelope(envelope);
+                    var tx = await db.BeginTransactionAsync(IsolationLevel.Serializable);
+
+                    newLastProcessedEventNumber = await ProcessEnvelope(envelope, db, tx);
+                    await UpdateProjectionState(newLastProcessedEventNumber, db, tx);
+
+                    await tx.CommitAsync();
                 }
             }
             catch (Exception ex)
@@ -64,28 +78,27 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                 _logger.LogCritical(0, ex, "An exception occurred while handling envelopes.");
                 throw;
             }
-            finally
-            {
-                await UpdateProjectionState(newLastProcessedEventNumber);
-            }
 
             return true;
         }
 
-        private async Task UpdateProjectionState(int? newLastProcessedEventNumber)
+        private async Task UpdateProjectionState(int? newLastProcessedEventNumber, SqlConnection sqlConnection,
+            DbTransaction dbTransaction)
         {
             if (!newLastProcessedEventNumber.HasValue)
                 return;
 
             _logger.LogInformation("Processed up until envelope #{LastProcessedEnvelopeNumber}, writing number to db...", newLastProcessedEventNumber);
-            await _projectionStates.UpdateProjectionState(VlaanderenbeNotifierProjectionName, newLastProcessedEventNumber.Value);
+            await _projectionStates.UpdateProjectionState(VlaanderenbeNotifierProjectionName,
+                newLastProcessedEventNumber.Value,
+                sqlConnection, dbTransaction);
         }
 
-        private async Task<int?> ProcessEnvelope(IEnvelope envelope)
+        private async Task<int?> ProcessEnvelope(IEnvelope envelope, SqlConnection db, DbTransaction tx)
         {
             try
             {
-                await _bus.Publish(null, null, (dynamic) envelope);
+                await _bus.Publish(db, tx, (dynamic)envelope);
                 return envelope.Number;
             }
             catch

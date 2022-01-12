@@ -12,12 +12,16 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
     using Infrastructure.Events;
     using Microsoft.Extensions.Options;
     using Organisation.Events;
+    using Schema;
     using SendGrid;
+    using SqlServer.Infrastructure;
 
     public class MailOrganisationEventProcessor :
         IEventHandler<OrganisationCreated>,
         IEventHandler<OrganisationCreatedFromKbo>,
         IEventHandler<OrganisationInfoUpdated>,
+        IEventHandler<OrganisationNameUpdated>,
+        IEventHandler<OrganisationShowOnVlaamseOverheidSitesUpdated>,
         IEventHandler<OrganisationInfoUpdatedFromKbo>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
         IEventHandler<OrganisationBecameActive>,
@@ -45,8 +49,19 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             _organisationUriTemplate = _configuration.OrganisationUriTemplate;
         }
 
-        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationCreated> message)
+        public async Task Handle(DbConnection connection, DbTransaction transaction, IEnvelope<OrganisationCreated> message)
         {
+            var organisation = new OrganisationCacheItem
+            {
+                Id = message.Body.OrganisationId,
+                Name = message.Body.Name,
+                OvoNumber = message.Body.OvoNumber
+            };
+
+            await using var ctx = new VlaanderenBeNotifierTransactionalContext(connection, transaction);
+            await ctx.OrganisationCache.AddAsync(organisation);
+            await ctx.SaveChangesAsync();
+
             var subject = $"OrganisationRegistry: ORGANISATIE TOEGEVOEGD {message.Body.OvoNumber}";
             var body =
                 new StringBuilder()
@@ -119,9 +134,38 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     message.Body.Timestamp));
 
             if (organisationHasChangedShowOnVlaanderenBe)
-                mails.Add(OrganisationShowOnVlaanderenBeChanged(message));
+                mails.Add(OrganisationShowOnVlaanderenBeChanged(message.Body.OvoNumber, message.Body.Name, message.Body.ShowOnVlaamseOverheidSites, message.Body.Timestamp, message.Body.OrganisationId));
 
             SendMails(mails.ToArray());
+        }
+
+        public async Task Handle(DbConnection connection, DbTransaction transaction, IEnvelope<OrganisationNameUpdated> message)
+        {
+            await using var ctx = new VlaanderenBeNotifierTransactionalContext(connection, transaction);
+            var organisation = await ctx.OrganisationCache.FindAsync(message.Body.OrganisationId);
+
+            SendMails(OrganisationNameChanged(
+                message.Body.OrganisationId,
+                _memoryCaches.OvoNumbers[message.Body.OrganisationId],
+                message.Body.Name,
+                organisation.Name,
+                message.Body.Timestamp));
+
+            organisation.Name = message.Body.Name;
+
+            throw new NotImplementedException();
+        }
+
+        public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationShowOnVlaamseOverheidSitesUpdated> message)
+        {
+            SendMails(
+                OrganisationShowOnVlaanderenBeChanged(
+                    _memoryCaches.OvoNumbers[message.Body.OrganisationId],
+                    _memoryCaches.OrganisationNames[message.Body.OrganisationId],
+                    message.Body.ShowOnVlaamseOverheidSites,
+                    message.Body.Timestamp,
+                    message.Body.OrganisationId)
+            );
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
@@ -173,16 +217,15 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             return new Mail(subject, body);
         }
 
-        private Mail OrganisationShowOnVlaanderenBeChanged(IEnvelope<OrganisationInfoUpdated> message)
+        private Mail OrganisationShowOnVlaanderenBeChanged(string ovoNumber, string organisationName, bool showOnVlaamseOverheidSites, DateTimeOffset timestamp, Guid organisationId)
         {
-            var subject = $"OrganisationRegistry: TONEN IN WEBSITES VLAAMSE OVERHEID AANGEPAST VOOR ORGANISATIE {message.Body.OvoNumber}";
+            var subject = $"OrganisationRegistry: TONEN IN WEBSITES VLAAMSE OVERHEID AANGEPAST VOOR ORGANISATIE {ovoNumber}";
             var body =
                 new StringBuilder()
                     .AppendLine("De volgende organisatie heeft de optie \'Tonen in websites Vlaamse Overheid\' aangepast")
-                    .AppendLine($"{message.Body.OvoNumber} - {message.Body.Name} werd aangepast op {message.Body.Timestamp:yy-MM-dd HH:mm:ss}.")
-                    .AppendLine($"Vorige waarde: {message.Body.PreviouslyShownInVlaanderenBe}")
-                    .AppendLine($"Nieuwe waarde: {message.Body.ShowOnVlaamseOverheidSites}")
-                    .AppendLine(string.Format(_organisationUriTemplate, message.Body.OrganisationId))
+                    .AppendLine($"{ovoNumber} - {organisationName} werd aangepast op {timestamp:yy-MM-dd HH:mm:ss}.")
+                    .AppendLine($"Nieuwe waarde: {showOnVlaamseOverheidSites}")
+                    .AppendLine(string.Format(_organisationUriTemplate, organisationId))
                     .ToString();
 
             return new Mail(subject, body);
@@ -204,8 +247,6 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                             categories: new List<string>() { "OrganisationRegistry VlaanderenBeNotifier" }
                         )
                         .Wait());
-            //_telemetryClient.TrackEvent("VlaanderenBeNotifier::MailSent");
-            //_telemetryClient.TrackEvent("VlaanderenBeNotifier::MailSent::Organisation");
         }
     }
 }

@@ -25,43 +25,6 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections
                 .AddJsonFile("appsettings.json", optional: false)
                 .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
                 .Build();
-
-            // var migrationsConnectionString =
-            //     Configuration.GetSection(SqlServerConfiguration.Section)
-            //         .Get<SqlServerConfiguration>()
-            //         .MigrationsConnectionString;
-            //
-            // ContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
-            //     .UseSqlServer(
-            //         migrationsConnectionString,
-            //         x => x.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry"))
-            //     .Options;
-            //
-            // var context = new OrganisationRegistryContext(ContextOptions);
-            // context.Database.EnsureDeleted();
-            //
-            // using (var migrator = context)
-            //     migrator.Database.Migrate();
-            //
-            // IWebHostBuilder hostBuilder = new WebHostBuilder();
-            // hostBuilder = hostBuilder.UseKestrel(server => server.AddServerHeader = false);
-            //
-            // var webHost = new TestServer(hostBuilder
-            //     .UseContentRoot(Directory.GetCurrentDirectory())
-            //     .UseConfiguration(Configuration)
-            //     .UseStartup<Startup>()).Host;
-            //
-            // Publisher = (IEventPublisher)webHost.Services.GetService(typeof(IEventPublisher));
-            // ServiceProvider = webHost.Services;
-            //
-            // var sqlServerConfig = (IOptions<SqlServerConfiguration>)webHost.Services.GetService(typeof(IOptions<SqlServerConfiguration>));
-            //
-            // ConnectionString = sqlServerConfig.Value.MigrationsConnectionString;
-            // ContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
-            //     .UseSqlServer(
-            //         ConnectionString,
-            //         x => x.MigrationsHistoryTable("__EFMigrationsHistory", "OrganisationRegistry"))
-            //     .Options;
         }
     }
 }
