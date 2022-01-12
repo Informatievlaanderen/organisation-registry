@@ -1908,6 +1908,46 @@ namespace OrganisationRegistry.Organisation
             State.OperationalValidity = new Period(new ValidFrom(@event.OperationalValidFrom), new ValidTo(@event.OperationalValidTo));
         }
 
+        private void Apply(OrganisationNameUpdated @event)
+        {
+            State.Name = @event.Name;
+        }
+
+        private void Apply(OrganisationShortNameUpdated @event)
+        {
+            State.ShortName = @event.ShortName;
+        }
+
+        private void Apply(OrganisationDescriptionUpdated @event)
+        {
+            State.Description = @event.Description;
+        }
+
+        private void Apply(OrganisationArticleUpdated @event)
+        {
+            State.Article = Article.Parse(@event.Article);
+        }
+
+        private void Apply(OrganisationShowOnVlaamseOverheidSitesUpdated @event)
+        {
+            State.ShowOnVlaamseOverheidSites = @event.ShowOnVlaamseOverheidSites;
+        }
+
+        private void Apply(OrganisationPurposesUpdated @event)
+        {
+            _purposes = @event.Purposes;
+        }
+
+        private void Apply(OrganisationValidityUpdated @event)
+        {
+            State.Validity = new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo));
+        }
+
+        private void Apply(OrganisationOperationalValidityUpdated @event)
+        {
+            State.OperationalValidity = new Period(new ValidFrom(@event.OperationalValidFrom), new ValidTo(@event.OperationalValidTo));
+        }
+
         private void Apply(OrganisationKeyAdded @event)
         {
             State.OrganisationKeys.Add(new OrganisationKey(
