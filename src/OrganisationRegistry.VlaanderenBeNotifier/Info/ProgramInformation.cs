@@ -28,10 +28,13 @@
 
         private static string ObfuscateToken(string text)
         {
+            if(string.IsNullOrEmpty(text))
+                return text;
+
             return
-                text.Substring(0, 5) +
+                text[..5] +
                 new string('*', text.Length - 8) +
-                text.Substring(text.Length - 3);
+                text[^3..];
         }
     }
 }

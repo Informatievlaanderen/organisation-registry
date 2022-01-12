@@ -36,6 +36,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             builder.RegisterModule(new OrganisationRegistryModule());
             builder.RegisterModule(new ElasticSearchModule(_configuration, _services));
             builder.RegisterModule(new SqlServerModule(_configuration, _services, _loggerFactory));
+            builder.RegisterModule(new Schema.VlaanderenBeNotifierModule(_configuration, _services, _loggerFactory));
             builder.RegisterModule(new VlaanderenBeNotifierModule(_configuration, _services));
 
             builder.RegisterAssemblyTypes(typeof(OrganisationRegistryVlaanderenBeNotifierAssemblyTokenClass).GetTypeInfo().Assembly)
