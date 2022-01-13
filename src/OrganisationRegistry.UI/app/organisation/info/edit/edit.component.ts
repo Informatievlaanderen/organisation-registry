@@ -22,7 +22,6 @@ export class OrganisationInfoEditComponent implements OnInit {
   public articles: SelectItem[];
 
   private organisationId: string;
-  private underVlimpersManagement: boolean;
   private isVlimpersBeheerder: boolean;
 
   constructor(
@@ -108,19 +107,24 @@ export class OrganisationInfoEditComponent implements OnInit {
   edit() {
     this.form.disable();
 
-    this.organisationService.update(this.organisationId, this.form.value)
+    const update = this.form.value.underVlimpersManagement && !this.isVlimpersBeheerder ?
+      this.organisationService.updateInfoNotLimitedByVlimpers(this.organisationId, this.form.value) :
+      this.organisationService.update(this.organisationId, this.form.value);
+
+    update
       .finally(() => this.enableForm())
       .subscribe(
         result => {
           if (result) {
-            this.router.navigate(['./..'], { relativeTo: this.route });
+            this.router.navigate(['./..'], {relativeTo: this.route}).then(r =>{
+              this.alertService.setAlert(
+                new AlertBuilder()
+                  .success()
+                  .withTitle('Organisatie bijgewerkt!')
+                  .withMessage('Organisatie is succesvol bijgewerkt.')
+                  .build());
 
-            this.alertService.setAlert(
-              new AlertBuilder()
-                .success()
-                .withTitle('Organisatie bijgewerkt!')
-                .withMessage('Organisatie is succesvol bijgewerkt.')
-                .build());
+            });
           }
         },
         error => this.alertService.setAlert(

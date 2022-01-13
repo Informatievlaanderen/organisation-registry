@@ -125,6 +125,28 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.OrganisationId }));
         }
 
+        /// <summary>Update the organisation info that is not limited by vlimpers.</summary>
+        /// <response code="200">If the organisation is updated, together with the location.</response>
+        /// <response code="400">If the organisation information does not pass validation.</response>
+        [HttpPut("{id}/notlimitedbyvlimpers")]
+        [OrganisationRegistryAuthorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid id, [FromBody] UpdateOrganisationInfoNotLimitedByVlimpersRequest message)
+        {
+            var internalMessage = new UpdateOrganisationInfoNotLimitedByVlimpersInternalRequest(id, message);
+
+            if (!securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
+                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
+
+            if (!TryValidateModel(internalMessage))
+                return BadRequest(ModelState);
+
+            await CommandSender.Send(UpdateOrganisationInfoNotLimitedByVlimpersRequestMapping.Map(internalMessage));
+
+            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.OrganisationId }));
+        }
+
         /// <summary>Terminate an organisation.</summary>
         /// <response code="200">If the organisation is terminated.</response>
         [HttpPut("{id}/terminate")]

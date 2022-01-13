@@ -30,6 +30,7 @@ namespace OrganisationRegistry.Organisation
         BaseCommandHandler<OrganisationCommandHandlers>,
         ICommandHandler<CreateOrganisation>,
         ICommandHandler<UpdateOrganisationInfo>,
+        ICommandHandler<UpdateOrganisationInfoNotLimitedByVlimpers>,
         ICommandHandler<AddOrganisationKey>,
         ICommandHandler<UpdateOrganisationKey>,
         ICommandHandler<AddOrganisationRegulation>,
@@ -148,6 +149,24 @@ namespace OrganisationRegistry.Organisation
                 new Period(new ValidFrom(message.OperationalValidFrom), new ValidTo(message.OperationalValidTo)),
                 _dateTimeProvider,
                 message.User.IsAuthorizedForVlimpersOrganisations);
+
+            await Session.Commit(message.User);
+        }
+
+        public async Task Handle(UpdateOrganisationInfoNotLimitedByVlimpers message)
+        {
+            var organisation = Session.Get<Organisation>(message.OrganisationId);
+            organisation.ThrowIfTerminated(message.User);
+
+            var purposes = message
+                .Purposes
+                .Select(purposeId => Session.Get<Purpose>(purposeId))
+                .ToList();
+
+            organisation.UpdateInfoNotLimitedByVlimpers(
+                message.Description,
+                purposes,
+                message.ShowOnVlaamseOverheidSites);
 
             await Session.Commit(message.User);
         }

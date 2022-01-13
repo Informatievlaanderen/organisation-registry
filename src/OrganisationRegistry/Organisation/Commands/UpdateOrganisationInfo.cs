@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using Purpose;
 
+
     public class UpdateOrganisationInfo : BaseCommand<OrganisationId>
     {
         public OrganisationId OrganisationId => Id;
