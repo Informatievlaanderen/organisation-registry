@@ -215,6 +215,9 @@ namespace OrganisationRegistry.Organisation
             IDateTimeProvider dateTimeProvider,
             bool isAuthorizedForVlimpers)
         {
+            if (State.UnderVlimpersManagement && !isAuthorizedForVlimpers)
+                throw new UserIsNotAuthorizedForVlimpersOrganisations();
+
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
 
@@ -224,19 +227,19 @@ namespace OrganisationRegistry.Organisation
                 KboV2Guards.ThrowIfChanged(State.ShortName, shortName);
             }
 
-            if(!name.Equals(State.Name))
+            if(!string.Equals(name, State.Name))
                 ApplyChange(new OrganisationNameUpdated(Id, name));
 
 
-            if(!shortName.Equals(State.ShortName))
+            if(!string.Equals(shortName, State.ShortName))
                 ApplyChange(new OrganisationShortNameUpdated(Id, shortName));
 
 
-            if(!article.Equals(State.Article))
+            if(!string.Equals(article, State.Article))
                 ApplyChange(new OrganisationArticleUpdated(Id, article));
 
 
-            if(!description.Equals(State.Description))
+            if(!string.Equals(description, State.Description))
                 ApplyChange(new OrganisationDescriptionUpdated(Id, description));
 
             var purposes2 = purposes.Select(x => new Events.Purpose(x.Id, x.Name)).ToList();
@@ -262,6 +265,24 @@ namespace OrganisationRegistry.Organisation
             if (!State.IsActive && validityOverlapsWithToday)
                 ApplyChange(new OrganisationBecameActive(Id));
         }
+
+        public void UpdateInfoNotLimitedByVlimpers(string description,
+            List<Purpose> purposes,
+            bool showOnVlaamseOverheidSites)
+        {
+            if(!description.Equals(State.Description))
+                ApplyChange(new OrganisationDescriptionUpdated(Id, description));
+
+            var purposes2 = purposes.Select(x => new Events.Purpose(x.Id, x.Name)).ToList();
+            if(!purposes2.SequenceEqual(_purposes)) // todo: don't use events as type for List
+            {
+                ApplyChange(new OrganisationPurposesUpdated(Id, purposes2));
+            }
+
+            if(!showOnVlaamseOverheidSites.Equals(State.ShowOnVlaamseOverheidSites))
+                ApplyChange(new OrganisationShowOnVlaamseOverheidSitesUpdated(Id, showOnVlaamseOverheidSites));
+        }
+
 
         public void MarkTerminationFound(IMagdaTermination magdaTermination)
         {
