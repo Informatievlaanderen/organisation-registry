@@ -99,6 +99,9 @@ namespace OrganisationRegistry.Organisation
                 Id,
                 parentOrganisation.Id,
                 Id));
+
+            if(parentOrganisation.State.UnderVlimpersManagement)
+                ApplyChange(new OrganisationPlacedUnderVlimpersManagement(Id));
         }
 
         public static Organisation Create(OrganisationId id,
