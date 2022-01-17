@@ -13,7 +13,6 @@ Autofac.Extensions.DependencyInjection
 
 Be.Vlaanderen.Basisregisters.Api
 Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql
-Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner
 
 AspNetCore.HealthChecks.SqlServer
 

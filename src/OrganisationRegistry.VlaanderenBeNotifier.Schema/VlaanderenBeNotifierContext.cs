@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.VlaanderenBeNotifier.Schema
 {
     using System.Reflection;
-    using Be.Vlaanderen.Basisregisters.ProjectionHandling.Runner;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Design;
