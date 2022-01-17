@@ -1,3 +1,25 @@
+# [1.112.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.111.2...v1.112.0) (2022-01-17)
+
+
+### Bug Fixes
+
+* parse article from string ([877b759](https://github.com/informatievlaanderen/organisation-registry/commit/877b7593d86cffa833cd5f771468c1fc2b7425c6))
+* remove unused package ([bc15eab](https://github.com/informatievlaanderen/organisation-registry/commit/bc15eab23247a86d2b62f1fcbce9e3ead490aeb8))
+
+
+### Features
+
+* allow organisation to be placed under vlimpers management ([625f64c](https://github.com/informatievlaanderen/organisation-registry/commit/625f64c679cd455b060e94b4fd03dd20364f9017))
+* apply OrganisationxxxUpdated events ([a90370f](https://github.com/informatievlaanderen/organisation-registry/commit/a90370fc8e11eefdce65464e0eafd10119012226))
+* don't show edit btns when limited by Vlimpers ([7ff220b](https://github.com/informatievlaanderen/organisation-registry/commit/7ff220b5ce61139c5412915b577b1252681a474b))
+* introduce UpdateOrganisationInfoNotLimitedByVlimpers ([ef40ffa](https://github.com/informatievlaanderen/organisation-registry/commit/ef40ffa5944b7c276abdb31e2fd6d1d17c1faf79))
+* only vlimpersbeheerders can manage certain key and label types ([d426870](https://github.com/informatievlaanderen/organisation-registry/commit/d426870567883af99864cf76ebdc27affce0bfcb))
+* place daughters under vlimpers management ([56c5454](https://github.com/informatievlaanderen/organisation-registry/commit/56c5454adcaabacd3ed33cc9865db0180e224072))
+* show vlimpersBeheerder claim in ui ([cb623d8](https://github.com/informatievlaanderen/organisation-registry/commit/cb623d83ac962bc3b197ff78d9f3c17df6aacb8a))
+* split OrganisationInfoUpdated ([61116ca](https://github.com/informatievlaanderen/organisation-registry/commit/61116ca037868663b5b63961995716afd8971b9f))
+* split up VlaanderenBeNotifier ([933c49f](https://github.com/informatievlaanderen/organisation-registry/commit/933c49ff9130e49d7628e4c06dbc189e94380485))
+* throw if unauthorized for vlimpers ([bc26cb8](https://github.com/informatievlaanderen/organisation-registry/commit/bc26cb8ea8caa6adc5744e26e43475fce89f9333))
+
 ## [1.111.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.111.1...v1.111.2) (2022-01-03)
 
 
