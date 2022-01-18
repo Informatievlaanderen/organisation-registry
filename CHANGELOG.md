@@ -1,3 +1,10 @@
+## [1.112.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.112.0...v1.112.1) (2022-01-18)
+
+
+### Bug Fixes
+
+* try different jira key ([9fdba01](https://github.com/informatievlaanderen/organisation-registry/commit/9fdba0149fbfcd15428ba84572036683d5001351))
+
 # [1.112.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.111.2...v1.112.0) (2022-01-17)
 
 
