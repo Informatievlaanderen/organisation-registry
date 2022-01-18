@@ -4,14 +4,7 @@
 
 > Authentic organisation registry.
 
-## Quick contributing guide
-
-* Fork and clone locally.
-* Build the solution with Visual Studio or `build.sh`.
-* Create a topic specific branch in git. Add a nice feature in the code. Do not forget to add tests and/or docs.
-* Run `build.sh` to make sure everything still compiles and all tests are still passing.
-* When built, you'll find the binaries in `./dist` which you can then test with locally, to ensure the bug or feature has been successfully implemented.
-* Send a Pull Request.
+Please see our [contributing guidelines](CONTRIBUTING.md) before contributing.
 
 ## Required tools
 - dotnet sdk (see `global.json` for exact version)
