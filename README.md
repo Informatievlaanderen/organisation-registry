@@ -13,6 +13,12 @@
 * When built, you'll find the binaries in `./dist` which you can then test with locally, to ensure the bug or feature has been successfully implemented.
 * Send a Pull Request.
 
+## Required tools
+- dotnet sdk (see `global.json` for exact version)
+- nvm
+- docker compose
+- 
+
 ### Useful commands
 
 #### To run the UI in live reload mode:
@@ -26,8 +32,8 @@ Make sure you have the following lines in your `hosts` file
 
 Run the following commands:
 ```bash
-nvm use #optional
-sudo setcap 'cap_net_bind_service=+ep' `which node` #first run only
+nvm use
+sudo setcap 'cap_net_bind_service=+ep' `which node` #only if experiencing permissions issues with port
 npm install
 npm run start:hmr
 # browse to https://organisatie.dev-vlaanderen.local

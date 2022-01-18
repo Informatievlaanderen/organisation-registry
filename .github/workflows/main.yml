@@ -233,7 +233,7 @@ jobs:
         CONFLUENCE_USERNAME: ${{ secrets.VBR_CONFLUENCE_USER }}
         CONFLUENCE_PASSWORD: ${{ secrets.VBR_CONFLUENCE_PASSWORD }}
         JIRA_PREFIX: Organisation
-        JIRA_PROJECT: WEGWIJS
+        JIRA_PROJECT: OR
         JIRA_VERSION: ${{ env.RELEASE_VERSION }}
 
   deploy_staging:
