@@ -1,3 +1,15 @@
+# [1.113.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.112.3...v1.113.0) (2022-01-19)
+
+
+### Bug Fixes
+
+* check vlimpers auth when adding org as parent ([32aab9e](https://github.com/informatievlaanderen/organisation-registry/commit/32aab9eefd464083657d38edef3789ffcfce90f9))
+
+
+### Features
+
+* filter events on aggregateid ([7da572d](https://github.com/informatievlaanderen/organisation-registry/commit/7da572d2eb917299dbcda682f7adb979262525ee))
+
 ## [1.112.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.112.2...v1.112.3) (2022-01-19)
 
 
