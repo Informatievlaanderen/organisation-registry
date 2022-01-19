@@ -178,6 +178,7 @@ namespace OrganisationRegistry.Organisation
             organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
             var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
+            parentOrganisation.ThrowIfUnauthorizedForVlimpers(message.User);
             var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
 
             if (ParentTreeHasOrganisationInIt(organisation, validity, parentOrganisation, new List<Organisation>()))
