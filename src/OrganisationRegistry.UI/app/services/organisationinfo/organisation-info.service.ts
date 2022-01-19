@@ -1,21 +1,16 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { combineLatest } from 'rxjs/observable/combineLatest';
+import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {combineLatest} from 'rxjs/observable/combineLatest';
 
-import { AlertBuilder, AlertService } from 'core/alert';
-import { PagedEvent, PagedResult, SortOrder } from 'core/pagination';
-import { BaseAlertMessages } from 'core/alertmessages';
-import { OidcService, Role } from 'core/auth';
+import {AlertBuilder, AlertService} from 'core/alert';
+import {PagedEvent, PagedResult, SortOrder} from 'core/pagination';
+import {BaseAlertMessages} from 'core/alertmessages';
+import {OidcService, Role} from 'core/auth';
 
-import {
-  Organisation,
-  OrganisationChild,
-  OrganisationService
-} from 'services/organisations';
-import {HeadersBuilder} from "../../core/http";
+import {Organisation, OrganisationChild, OrganisationService} from 'services/organisations';
 
 @Injectable()
 export class OrganisationInfoService {
@@ -60,11 +55,12 @@ export class OrganisationInfoService {
         this.isEditableChangedSource.next(!isTerminated || isOrganisationRegistryBeheerder);
       });
 
-    combineLatest(this.organisationChanged$, oidcService.hasAnyOfRoles([Role.VlimpersBeheerder]))
+    combineLatest(this.organisationChanged$, oidcService.hasAnyOfRoles(
+      [Role.VlimpersBeheerder, Role.OrganisationRegistryBeheerder]))
       .subscribe(combined => {
         const underVlimpersManagement = combined[0].underVlimpersManagement;
-        const isVlimpersBeheerder = combined[1];
-        this.isLimitedByVlimpersChangedSource.next(underVlimpersManagement && !isVlimpersBeheerder);
+        const hasRightsToVlimpersManagedOrganisations = combined[1];
+        this.isLimitedByVlimpersChangedSource.next(underVlimpersManagement && !hasRightsToVlimpersManagedOrganisations);
       });
   }
 
