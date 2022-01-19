@@ -45,6 +45,7 @@
     {
         private readonly OrganisationRegistryContext _context;
         private readonly Guid _organisationId;
+        private readonly Func<Guid?, bool> _canUseLabelTypeFunc;
 
         protected override ISorting Sorting => new OrganisationLabelListSorting();
 
@@ -55,12 +56,16 @@
                 x.LabelValue,
                 x.ValidFrom,
                 x.ValidTo,
-                x.IsEditable);
+                x.IsEditable && _canUseLabelTypeFunc(x.LabelTypeId));
 
-        public OrganisationLabelListQuery(OrganisationRegistryContext context, Guid organisationId)
+        public OrganisationLabelListQuery(
+            OrganisationRegistryContext context,
+            Guid organisationId,
+            Func<Guid?, bool> canUseLabelTypeFunc)
         {
             _context = context;
             _organisationId = organisationId;
+            _canUseLabelTypeFunc = canUseLabelTypeFunc;
         }
 
         protected override IQueryable<OrganisationLabelListItem> Filter(FilteringHeader<OrganisationLabelListItemFilter> filtering)
