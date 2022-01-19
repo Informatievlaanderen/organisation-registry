@@ -6,12 +6,14 @@
 
         <ww-event-filter
             [isBusy]="isLoading"
-            (filter)="search($event)">
+            [filterChanged]="filterChanged"
+            (onFilter)="search($event)">
         </ww-event-filter>
         <ww-event-list
             [items]="events"
             [isBusy]="isLoading"
-            (changePage)="changePage($event)">
+            (changePage)="changePage($event)"
+            (filterByAggregateIdRequested)="setFilterAggregateId($event)">
         </ww-event-list>
     </div>
 </div>

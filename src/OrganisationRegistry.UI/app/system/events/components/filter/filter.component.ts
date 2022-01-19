@@ -5,6 +5,7 @@ import { atLeastOne } from 'core/validation';
 import { SearchEvent } from 'core/search';
 
 import { EventFilter } from 'services/events';
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'ww-event-filter',
@@ -12,10 +13,13 @@ import { EventFilter } from 'services/events';
   styleUrls: ['filter.style.css']
 })
 export class EventDataFilterComponent implements OnInit {
-  @Output() filter: EventEmitter<SearchEvent<EventFilter>> = new EventEmitter<SearchEvent<EventFilter>>();
+  @Output() onFilter: EventEmitter<SearchEvent<EventFilter>> = new EventEmitter<SearchEvent<EventFilter>>();
+  @Input() filterChanged: Observable<EventFilter>;
 
   public form: FormGroup;
   public filterActive: boolean = false;
+
+  private filter: EventFilter;
 
   get isFormValid() {
     return this.form.enabled && this.form.valid;
@@ -23,6 +27,7 @@ export class EventDataFilterComponent implements OnInit {
 
   constructor(formBuilder: FormBuilder) {
     this.form = formBuilder.group({
+      aggregateId: ['', Validators.nullValidator],
       eventNumber: ['', Validators.nullValidator],
       name: ['', Validators.nullValidator],
       firstName: ['', Validators.nullValidator],
@@ -32,6 +37,7 @@ export class EventDataFilterComponent implements OnInit {
     });
     this.form.setValidators(
       atLeastOne(
+        this.form.get('aggregateId'),
         this.form.get('eventNumber'),
         this.form.get('name'),
         this.form.get('firstName'),
@@ -51,12 +57,15 @@ export class EventDataFilterComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.form.setValue(new EventFilter());
+    this.filterChanged.subscribe((filter)=> {
+      this.form.setValue(filter);
+    });
   }
 
   resetForm() {
     this.filterActive = false;
     this.form.reset({
+      aggregateId: '',
       eventNumber: '',
       name: '',
       firstName: '',
@@ -64,11 +73,11 @@ export class EventDataFilterComponent implements OnInit {
       data: '',
       ip: ''
     });
-    this.filter.emit(new SearchEvent<EventFilter>(this.form.value));
+    this.onFilter.emit(new SearchEvent<EventFilter>(this.form.value));
   }
 
   filterForm(value: EventFilter) {
     this.filterActive = true;
-    this.filter.emit(new SearchEvent<EventFilter>(value));
+    this.onFilter.emit(new SearchEvent<EventFilter>(value));
   }
 }

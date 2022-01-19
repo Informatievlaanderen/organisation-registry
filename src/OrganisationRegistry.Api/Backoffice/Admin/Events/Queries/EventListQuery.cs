@@ -66,10 +66,10 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Events.Queries
             x.Name,
             x.Timestamp,
             x.Data,
-            x.Ip,
-            x.LastName,
-            x.FirstName,
-            x.UserId)
+            x.Ip ?? "",
+            x.LastName ?? "",
+            x.FirstName ?? "",
+            x.UserId ?? "")
         {
         }
     }
@@ -108,6 +108,9 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Events.Queries
             if (filtering.Filter.EventNumber.HasValue && filtering.Filter.EventNumber > 0)
                 events = events.Where(x => x.Number == filtering.Filter.EventNumber.Value);
 
+            if (filtering.Filter.AggregateId.HasValue)
+                events = events.Where(x => x.Id == filtering.Filter.AggregateId);
+
             if (!filtering.Filter.Name.IsNullOrWhiteSpace())
                 events = events.Where(x => x.Name.Contains(filtering.Filter.Name));
 
@@ -144,6 +147,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Events.Queries
 
     public class EventListItemFilter
     {
+        public Guid? AggregateId { get; set; }
         public int? EventNumber { get; set; }
         public string Name { get; set; }
         public string FirstName { get; set; }

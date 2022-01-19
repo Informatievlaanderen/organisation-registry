@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 
 import { BaseListComponent } from 'shared/components/list';
 
-import { EventData } from 'services/events';
+import {EventData} from 'services/events';
 
 @Component({
   selector: 'ww-event-list',
@@ -12,4 +12,9 @@ import { EventData } from 'services/events';
   outputs: ['changePage']
 })
 export class EventDataListComponent extends BaseListComponent<EventData> {
+  @Output() filterByAggregateIdRequested: EventEmitter<string> = new EventEmitter<string>();
+
+  filterByAggregateId(value: string){
+    this.filterByAggregateIdRequested.emit(value);
+  }
 }
