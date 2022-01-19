@@ -8,6 +8,7 @@
     using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
@@ -30,13 +31,22 @@
 
         /// <summary>Get a list of available labels for an organisation.</summary>
         [HttpGet]
-        public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
+        [OrganisationRegistryAuthorize]
+        [AllowAnonymous]
+        public async Task<IActionResult> Get(
+            [FromServices] OrganisationRegistryContext context,
+            [FromServices] ISecurityService securityService,
+            [FromRoute] Guid organisationId)
         {
             var filtering = Request.ExtractFilteringRequest<OrganisationLabelListItemFilter>();
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var pagedOrganisations = new OrganisationLabelListQuery(context, organisationId).Fetch(filtering, sorting, pagination);
+            Func<Guid?, bool> canUseLabelType =
+                labelTypeId => User.Identity.IsAuthenticated &&
+                             securityService.CanUseLabelType(securityService.GetUser(User), labelTypeId.Value);
+
+            var pagedOrganisations = new OrganisationLabelListQuery(context, organisationId, canUseLabelType).Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedOrganisations.PaginationInfo);
             Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
