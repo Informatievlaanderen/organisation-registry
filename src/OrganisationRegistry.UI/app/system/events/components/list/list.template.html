@@ -55,7 +55,11 @@
             <td class="data-table__body-title"><a [routerLink]="['./', eventData.number]" title="{{eventData.data | json}}">{{eventData.name}}</a></td>
             <td class="data-table__body-title">{{eventData.lastName}} {{eventData.firstName}}</td>
             <td class="data-table__body-title">{{eventData.timestamp}}</td>
-            <td class="data-table__body-title"><a class="link-text" (click)="filterByAggregateId(eventData.id)" aria-label="Filter op deze Aggregate Id"><i class="vi vi-location"></i></a></td>
+            <td class="data-table__body-title">
+              <a class="link-text" (click)="filterByAggregateId(eventData.id)" aria-label="Filter op deze Aggregate Id" title="Filter op deze Aggregate Id">
+                <i class="vi vi-location"></i>
+              </a>
+            </td>
           </tr>
         </template>
       </tbody>
