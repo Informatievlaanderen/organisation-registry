@@ -3,6 +3,14 @@
     <div class="col--6-12 col--1-1--s">
       <div class="form__group">
         <ww-form-group-textbox
+          [id]="'aggregateId'"
+          [label]="'Aggregate Id'"
+          [control]="form.get('aggregateId')"
+          [placeholder]="'Aggregate Id'"
+          [name]="'AggregateId'">
+        </ww-form-group-textbox>
+
+        <ww-form-group-textbox
           [id]="'eventNumber'"
           [label]="'Nummer'"
           [control]="form.get('eventNumber')"

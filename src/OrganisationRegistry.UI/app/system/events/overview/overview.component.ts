@@ -9,6 +9,8 @@ import {
   EventService,
   EventFilter
 } from 'services/events';
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   templateUrl: 'overview.template.html',
@@ -17,22 +19,38 @@ import {
 export class EventDataOverviewComponent implements OnInit {
   public isLoading: boolean = true;
   public events: PagedResult<EventListItem> = new PagedResult<EventListItem>();
+  public filterSource: BehaviorSubject<EventFilter>;
+  public filterChanged: Observable<EventFilter>;
 
-  private filter: EventFilter = new EventFilter();
   private currentSortBy: string = 'number';
   private currentSortOrder: SortOrder = SortOrder.Descending;
 
   constructor(
     private alertService: AlertService,
-    private eventService: EventService) { }
+    private eventService: EventService) {
+    this.filterSource = new BehaviorSubject<EventFilter>(new EventFilter())
+    this.filterChanged = this.filterSource.asObservable();
+  }
 
   ngOnInit() {
     this.loadEvents();
   }
 
   search(event: SearchEvent<EventFilter>) {
-    this.filter = event.fields;
+    this.filterSource.next(event.fields);
     this.loadEvents();
+  }
+
+  setFilterAggregateId(aggregateId: string) {
+    const value = this.filter;
+
+    value.aggregateId = aggregateId;
+
+    this.filterSource.next(value);
+  }
+
+  get filter() {
+    return this.filterSource.getValue();
   }
 
   changePage(event: PagedEvent) {
