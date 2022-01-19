@@ -1,25 +1,26 @@
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { atLeastOne } from 'core/validation';
 import { SearchEvent } from 'core/search';
 
 import { EventFilter } from 'services/events';
-import {Observable} from "rxjs/Observable";
+import { Observable } from "rxjs/Observable";
+import { Subscription } from "rxjs/Subscription";
 
 @Component({
   selector: 'ww-event-filter',
   templateUrl: 'filter.template.html',
   styleUrls: ['filter.style.css']
 })
-export class EventDataFilterComponent implements OnInit {
+export class EventDataFilterComponent implements OnInit, OnDestroy {
   @Output() onFilter: EventEmitter<SearchEvent<EventFilter>> = new EventEmitter<SearchEvent<EventFilter>>();
   @Input() filterChanged: Observable<EventFilter>;
 
   public form: FormGroup;
   public filterActive: boolean = false;
 
-  private filter: EventFilter;
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   get isFormValid() {
     return this.form.enabled && this.form.valid;
@@ -57,9 +58,14 @@ export class EventDataFilterComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.filterChanged.subscribe((filter)=> {
-      this.form.setValue(filter);
-    });
+    this.subscriptions.push(
+      this.filterChanged.subscribe((filter)=> {
+        this.form.setValue(filter);
+      }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   resetForm() {
