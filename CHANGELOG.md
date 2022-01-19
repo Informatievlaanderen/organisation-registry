@@ -1,3 +1,10 @@
+# [1.114.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.113.0...v1.114.0) (2022-01-19)
+
+
+### Features
+
+* properly unsubcribe from observable ([0976862](https://github.com/informatievlaanderen/organisation-registry/commit/0976862430954f6684466f6cfd3bace7820284af))
+
 # [1.113.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.112.3...v1.113.0) (2022-01-19)
 
 
