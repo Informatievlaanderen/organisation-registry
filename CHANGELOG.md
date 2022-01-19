@@ -1,3 +1,10 @@
+## [1.112.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.112.1...v1.112.2) (2022-01-19)
+
+
+### Bug Fixes
+
+* **ui:** organisationRegistryBeheerders are not limited by Vlimpers ([a4a4a64](https://github.com/informatievlaanderen/organisation-registry/commit/a4a4a64ef4706f746d47b8e33a7e61429d9ae44c))
+
 ## [1.112.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.112.0...v1.112.1) (2022-01-18)
 
 
