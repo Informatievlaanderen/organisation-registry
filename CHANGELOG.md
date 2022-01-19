@@ -1,3 +1,10 @@
+## [1.112.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.112.2...v1.112.3) (2022-01-19)
+
+
+### Bug Fixes
+
+* only limit formal (short) name labels for non-vlimpers users ([c7f7538](https://github.com/informatievlaanderen/organisation-registry/commit/c7f7538aec602ae78230d87d0590a677faa39777))
+
 ## [1.112.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.112.1...v1.112.2) (2022-01-19)
 
 
