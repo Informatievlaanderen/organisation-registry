@@ -37,7 +37,7 @@ export class OrganisationAutoComplete {
         .withName(search)
         .withActiveOnly(this.activeOnly)
         .withAuthorizedOnly(this.authorizedOnly))
-      .map(pagedResult => pagedResult.data.map(x => new SearchResult(x.id, x.name)))
+      .map(pagedResult => pagedResult.data.map(x => new SearchResult(x.id, `${x.name} ${x.ovoNumber}`)))
       .map(pagedResult => pagedResult.filter(searchResult => !this.excludeId || searchResult.value !== this.excludeId))
       .toPromise()
       .catch(this.handleError);
