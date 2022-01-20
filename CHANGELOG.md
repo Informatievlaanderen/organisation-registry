@@ -1,3 +1,10 @@
+# [1.116.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.115.0...v1.116.0) (2022-01-20)
+
+
+### Features
+
+* 685 bij koppelen parent entiteit ook ovo-code tonen ([b0adc54](https://github.com/informatievlaanderen/organisation-registry/commit/b0adc54fde0deea500b191bc62baa167f4483964))
+
 # [1.115.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.114.0...v1.115.0) (2022-01-20)
 
 
