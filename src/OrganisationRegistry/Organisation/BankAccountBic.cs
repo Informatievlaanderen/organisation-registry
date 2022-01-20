@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Organisation
 {
     using System;
+    using Exceptions;
     using IbanBic;
 
     public class BankAccountBic
@@ -38,7 +39,7 @@ namespace OrganisationRegistry.Organisation
             }
             catch (Exception ex)
             {
-                throw new InvalidIbanException(ex);
+                throw new InvalidIbanFormat(ex);
             }
         }
     }

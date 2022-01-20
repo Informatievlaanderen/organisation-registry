@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Organisation
 {
     using System;
     using System.Text.RegularExpressions;
+    using Exceptions;
     using IbanBic;
 
     public class BankAccountNumber
@@ -49,7 +50,7 @@ namespace OrganisationRegistry.Organisation
             }
             catch (Exception ex)
             {
-                throw new InvalidIbanException(ex);
+                throw new InvalidIbanFormat(ex);
             }
         }
     }

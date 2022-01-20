@@ -14,6 +14,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -75,7 +76,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
         [Fact]
         public void ThrowsAnException()
         {
-            Exception.Should().BeOfType<OrganisationAlreadyHasAMainLocationInThisPeriodException>();
+            Exception.Should().BeOfType<OrganisationAlreadyHasAMainLocationInThisPeriod>();
             Exception.Message.Should().Be("Deze organisatie heeft reeds een hoofdlocatie binnen deze periode.");
         }
 

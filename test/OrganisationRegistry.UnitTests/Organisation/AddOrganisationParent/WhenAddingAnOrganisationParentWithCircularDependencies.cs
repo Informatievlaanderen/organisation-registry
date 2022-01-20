@@ -12,6 +12,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+    using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -66,7 +67,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
         [Fact]
         public void ThrowsADomainException()
         {
-            Exception.Should().BeOfType<CircularRelationException>();
+            Exception.Should().BeOfType<CircularRelationshipDetected>();
         }
 
         public WhenAddingAnOrganisationParentWithCircularDependencies(ITestOutputHelper helper) : base(helper) { }

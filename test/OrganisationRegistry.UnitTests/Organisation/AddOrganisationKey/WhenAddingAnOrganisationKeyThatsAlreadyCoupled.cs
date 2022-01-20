@@ -14,6 +14,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationKey
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -79,7 +80,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationKey
         [Fact]
         public void ThrowsAnException()
         {
-            Exception.Should().BeOfType<KeyAlreadyCoupledToInThisPeriodException>();
+            Exception.Should().BeOfType<KeyAlreadyCoupledToInThisPeriod>();
             Exception.Message.Should().Be("Deze sleutel is in deze periode reeds gekoppeld aan de organisatie.");
         }
 

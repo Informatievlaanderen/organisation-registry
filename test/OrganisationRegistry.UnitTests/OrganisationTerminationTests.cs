@@ -7,6 +7,7 @@ namespace OrganisationRegistry.UnitTests
     using AutoFixture.Kernel;
     using FluentAssertions;
     using OrganisationRegistry.Organisation;
+    using OrganisationRegistry.Organisation.Exceptions;
     using OrganisationRegistry.Organisation.OrganisationTermination;
     using OrganisationRegistry.Organisation.State;
     using Xunit;

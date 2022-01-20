@@ -12,6 +12,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -71,7 +72,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
         [Fact]
         public void ThrowsAnException()
         {
-            Exception.Should().BeOfType<OrganisationAlreadyCoupledToParentInThisPeriodException>();
+            Exception.Should().BeOfType<OrganisationAlreadyCoupledToParentInThisPeriod>();
             Exception.Message.Should().Be("Deze organisatie is in deze periode reeds gekoppeld aan een moeder entiteit.");
         }
 

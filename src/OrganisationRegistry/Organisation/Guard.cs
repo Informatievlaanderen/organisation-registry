@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Organisation
 {
     using System.Linq;
+    using Exceptions;
     using Infrastructure.Authorization;
 
     public static class Guard

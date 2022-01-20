@@ -22,6 +22,7 @@ namespace OrganisationRegistry.Organisation
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Exceptions;
     using Infrastructure.Authorization;
     using RegulationSubTheme;
     using RegulationTheme;
@@ -100,7 +101,7 @@ namespace OrganisationRegistry.Organisation
             parentOrganisation?.ThrowIfUnauthorizedForVlimpers(message.User);
 
             if (_uniqueOvoNumberValidator.IsOvoNumberTaken(message.OvoNumber))
-                throw new OvoNumberNotUniqueException();
+                throw new OvoNumberNotUnique();
 
             var ovoNumber = string.IsNullOrWhiteSpace(message.OvoNumber)
                 ? _ovoNumberGenerator.GenerateNumber()
@@ -182,7 +183,7 @@ namespace OrganisationRegistry.Organisation
             var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
 
             if (ParentTreeHasOrganisationInIt(organisation, validity, parentOrganisation, new List<Organisation>()))
-                throw new CircularRelationException();
+                throw new CircularRelationshipDetected();
 
             organisation.AddParent(
                 message.OrganisationOrganisationParentId,
@@ -203,7 +204,7 @@ namespace OrganisationRegistry.Organisation
             var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
 
             if (ParentTreeHasOrganisationInIt(organisation, validity, parentOrganisation, new List<Organisation>()))
-                throw new CircularRelationException();
+                throw new CircularRelationshipDetected();
 
             organisation.UpdateParent(
                 message.OrganisationOrganisationParentId,

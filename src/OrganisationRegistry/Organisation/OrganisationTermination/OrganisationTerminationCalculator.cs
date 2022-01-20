@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Organisation.OrganisationTermination
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Exceptions;
     using State;
 
     public static class OrganisationTerminationCalculator

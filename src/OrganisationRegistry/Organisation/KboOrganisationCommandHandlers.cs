@@ -6,6 +6,7 @@ namespace OrganisationRegistry.Organisation
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Authorization;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -66,7 +67,7 @@ namespace OrganisationRegistry.Organisation
 
 
             if (_uniqueOvoNumberValidator.IsOvoNumberTaken(message.OvoNumber))
-                throw new OvoNumberNotUniqueException();
+                throw new OvoNumberNotUnique();
 
             var ovoNumber = string.IsNullOrWhiteSpace(message.OvoNumber)
                 ? _ovoNumberGenerator.GenerateNumber()
@@ -76,15 +77,15 @@ namespace OrganisationRegistry.Organisation
                 _kboOrganisationRetriever.RetrieveOrganisation(message.User, message.KboNumber).GetAwaiter().GetResult();
 
             if (kboOrganisationResult.HasErrors)
-                throw new KboOrganisationNotFoundException(kboOrganisationResult.ErrorMessages);
+                throw new KboOrganisationNotFound(kboOrganisationResult.ErrorMessages);
 
             var kboOrganisation = kboOrganisationResult.Value;
 
             if (_uniqueKboValidator.IsKboNumberTaken(message.KboNumber))
-                throw new KboNumberNotUniqueException();
+                throw new KboNumberNotUnique();
 
             if (kboOrganisation.Termination != null)
-                throw new KboOrganisationTerminatedException();
+                throw new KboOrganisationTerminated();
 
             var parentOrganisation =
                 message.ParentOrganisationId != null
@@ -132,12 +133,12 @@ namespace OrganisationRegistry.Organisation
                 _kboOrganisationRetriever.RetrieveOrganisation(message.User, message.KboNumber).GetAwaiter().GetResult();
 
             if (kboOrganisationResult.HasErrors)
-                throw new KboOrganisationNotFoundException(kboOrganisationResult.ErrorMessages);
+                throw new KboOrganisationNotFound(kboOrganisationResult.ErrorMessages);
 
             var kboOrganisation = kboOrganisationResult.Value;
 
             if (kboOrganisation.Termination != null)
-                throw new KboOrganisationTerminatedException();
+                throw new KboOrganisationTerminated();
 
             var location = GetOrAddLocations(kboOrganisation.Address);
 
@@ -147,7 +148,7 @@ namespace OrganisationRegistry.Organisation
             organisation.CoupleToKbo(message.KboNumber, _dateTimeProvider);
 
             if (_uniqueKboValidator.IsKboNumberTaken(message.KboNumber))
-                throw new KboNumberNotUniqueException();
+                throw new KboNumberNotUnique();
 
             organisation.UpdateInfoFromKbo(kboOrganisation.FormalName.Value, kboOrganisation.ShortName.Value);
 
@@ -184,7 +185,7 @@ namespace OrganisationRegistry.Organisation
                 await _kboOrganisationRetriever.RetrieveOrganisation(user, organisation.KboState.KboNumber);
 
             if (kboOrganisationResult.HasErrors)
-                throw new KboOrganisationNotFoundException(kboOrganisationResult.ErrorMessages);
+                throw new KboOrganisationNotFound(kboOrganisationResult.ErrorMessages);
 
             var kboOrganisation = kboOrganisationResult.Value;
 
