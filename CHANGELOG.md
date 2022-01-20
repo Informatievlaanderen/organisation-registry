@@ -1,3 +1,10 @@
+# [1.115.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.114.0...v1.115.0) (2022-01-20)
+
+
+### Features
+
+* 695 add version to list of events ([6943b1d](https://github.com/informatievlaanderen/organisation-registry/commit/6943b1d30df92a99f76bec19711e4d10a46f5564))
+
 # [1.114.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.113.0...v1.114.0) (2022-01-19)
 
 
