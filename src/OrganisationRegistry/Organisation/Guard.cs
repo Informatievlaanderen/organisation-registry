@@ -9,7 +9,7 @@ namespace OrganisationRegistry.Organisation
         public static void RequiresRole(IUser user, Role role)
         {
             if (!user.IsInRole(role))
-                throw new InsuffientsRights();
+                throw new InsufficientRights();
         }
 
         public static void RequiresOneOfRoles(IUser user, params Role[] roles)
@@ -17,7 +17,7 @@ namespace OrganisationRegistry.Organisation
             if (roles.Any(user.IsInRole))
                 return;
 
-            throw new InsuffientsRights();
+            throw new InsufficientRights();
         }
     }
 }

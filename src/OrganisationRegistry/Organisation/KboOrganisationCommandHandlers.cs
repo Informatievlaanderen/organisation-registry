@@ -85,7 +85,7 @@ namespace OrganisationRegistry.Organisation
                 throw new KboNumberNotUnique();
 
             if (kboOrganisation.Termination != null)
-                throw new KboOrganisationTerminated();
+                throw new CannotCreateOrganisationBecauseKboOrganisationTerminated();
 
             var parentOrganisation =
                 message.ParentOrganisationId != null
@@ -138,7 +138,7 @@ namespace OrganisationRegistry.Organisation
             var kboOrganisation = kboOrganisationResult.Value;
 
             if (kboOrganisation.Termination != null)
-                throw new KboOrganisationTerminated();
+                throw new CannotCoupleOrganisationBecauseKboOrganisationTerminated();
 
             var location = GetOrAddLocations(kboOrganisation.Address);
 
@@ -233,7 +233,7 @@ namespace OrganisationRegistry.Organisation
 
             var organisation = Session.Get<Organisation>(message.OrganisationId);
 
-            organisation.SyncKboTermination();
+            organisation.TerminateOrganisationBasedOnKboTermination();
 
             await Session.Commit(message.User);
         }
