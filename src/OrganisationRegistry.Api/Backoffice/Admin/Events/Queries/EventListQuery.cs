@@ -135,6 +135,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Events.Queries
             {
                 nameof(EventListItem.Number),
                 nameof(EventListItem.Name),
+                nameof(EventListItem.Version),
                 nameof(EventListItem.Timestamp),
                 nameof(EventListItem.FirstName),
                 nameof(EventListItem.LastName),
