@@ -15,7 +15,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingAVlimpersOrganisationParentAndUserIsVlimpers : Specification<Organisation, OrganisationCommandHandlers, AddOrganisationParent>
+    public class WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation : ExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationParent>
     {
         private Guid _organisationId;
         private Guid _organisationOrganisationParentId;
@@ -49,9 +49,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
             return new List<IEvent>
             {
                 new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
-                new OrganisationPlacedUnderVlimpersManagement(_organisationId),
                 new OrganisationCreated(_organisationParentId, "Ouder en Gezin", "OVO000012346", "O&G", Article.None, "Moeder", new List<Purpose>(), false, null, null, null, null),
-                new OrganisationPlacedUnderVlimpersManagement(_organisationParentId),
+                new OrganisationPlacedUnderVlimpersManagement(_organisationParentId)
             };
         }
 
@@ -70,28 +69,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
             };
         }
 
-        protected override int ExpectedNumberOfEvents => 2;
+        protected override int ExpectedNumberOfEvents => 0;
 
         [Fact]
         public void AddsAnOrganisationParent()
         {
-            var organisationParentAdded = PublishedEvents[0].UnwrapBody<OrganisationParentAdded>();
-
-            organisationParentAdded.OrganisationOrganisationParentId.Should().Be(_organisationOrganisationParentId);
-            organisationParentAdded.OrganisationId.Should().Be(_organisationId);
-            organisationParentAdded.ParentOrganisationId.Should().Be(_organisationParentId);
-            organisationParentAdded.ValidFrom.Should().Be(_validFrom);
-            organisationParentAdded.ValidTo.Should().Be(_validTo);
+            Exception.Should().BeOfType<VlimpersAndNonVlimpersOrganisationCannotBeInParentalRelationship>();
         }
 
-        [Fact]
-        public void AssignsAParent()
-        {
-            var parentAssignedToOrganisation = PublishedEvents[1].UnwrapBody<ParentAssignedToOrganisation>();
-            parentAssignedToOrganisation.OrganisationId.Should().Be(_organisationId);
-            parentAssignedToOrganisation.ParentOrganisationId.Should().Be(_organisationParentId);
-        }
-
-        public WhenAddingAVlimpersOrganisationParentAndUserIsVlimpers(ITestOutputHelper helper) : base(helper) { }
+        public WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation(ITestOutputHelper helper) : base(helper) { }
     }
 }
