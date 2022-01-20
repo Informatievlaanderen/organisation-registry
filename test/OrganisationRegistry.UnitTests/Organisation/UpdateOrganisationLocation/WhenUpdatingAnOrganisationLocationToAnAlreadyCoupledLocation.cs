@@ -14,6 +14,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -72,7 +73,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
         [Fact]
         public void ThrowsAnException()
         {
-            Exception.Should().BeOfType<LocationAlreadyCoupledToInThisPeriodException>();
+            Exception.Should().BeOfType<LocationAlreadyCoupledToInThisPeriod>();
             Exception.Message.Should().Be("Deze locatie is in deze periode reeds gekoppeld aan de organisatie.");
         }
 

@@ -12,6 +12,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+    using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -73,7 +74,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
         [Fact]
         public void ThrowsADomainException()
         {
-            Exception.Should().BeOfType<OrganisationAlreadyCoupledToParentInThisPeriodException>();
+            Exception.Should().BeOfType<OrganisationAlreadyCoupledToParentInThisPeriod>();
         }
 
         public WhenUpdatingAnOrganisationParentWithCircularDependencies(ITestOutputHelper helper) : base(helper) { }

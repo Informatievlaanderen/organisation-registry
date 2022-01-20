@@ -14,6 +14,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -70,7 +71,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         [Fact]
         public void ThrowsAnException()
         {
-            Exception.Should().BeOfType<BuildingAlreadyCoupledToInThisPeriodException>();
+            Exception.Should().BeOfType<BuildingAlreadyCoupledToInThisPeriod>();
             Exception.Message.Should().Be("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.");
         }
 

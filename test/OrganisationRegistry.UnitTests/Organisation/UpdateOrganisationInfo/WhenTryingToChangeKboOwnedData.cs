@@ -14,6 +14,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -78,7 +79,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
         [Fact]
         public void TheOrganisationBecomesActive()
         {
-            Exception.Should().BeOfType<CannotChangeKboDataException>();
+            Exception.Should().BeOfType<CannotChangeDataOwnedByKbo>();
         }
 
         public WhenTryingToChangeKboOwnedData(ITestOutputHelper helper) : base(helper) { }

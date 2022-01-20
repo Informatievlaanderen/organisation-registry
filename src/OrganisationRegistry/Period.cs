@@ -2,6 +2,7 @@ namespace OrganisationRegistry
 {
     using System;
     using Organisation;
+    using Organisation.Exceptions;
 
     public class Period
     {
@@ -18,7 +19,7 @@ namespace OrganisationRegistry
             var endDate = end.DateTime;
             var startDate = start.DateTime;
             if (endDate < startDate)
-                throw new StartDateCannotBeAfterEndDateException();
+                throw new StartDateCannotBeAfterEndDate();
 
             Start = start;
             End = end;

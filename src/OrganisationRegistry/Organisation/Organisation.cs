@@ -21,6 +21,7 @@ namespace OrganisationRegistry.Organisation
     using System.Collections.Generic;
     using System.Linq;
     using Commands;
+    using Exceptions;
     using Infrastructure.Authorization;
     using OrganisationTermination;
     using RegulationSubTheme;
@@ -343,7 +344,7 @@ namespace OrganisationRegistry.Organisation
             if (State.OrganisationParents
                 .Where(organisationParent => organisationParent.OrganisationOrganisationParentId != organisationOrganisationParentId)
                 .Any(organisationParent => organisationParent.Validity.OverlapsWith(validity)))
-                throw new OrganisationAlreadyCoupledToParentInThisPeriodException();
+                throw new OrganisationAlreadyCoupledToParentInThisPeriod();
 
             ApplyChange(new OrganisationParentAdded(
                 Id,
@@ -371,7 +372,7 @@ namespace OrganisationRegistry.Organisation
             if (State.OrganisationParents
                 .Where(organisationParent => organisationParent.OrganisationOrganisationParentId != organisationOrganisationParentId)
                 .Any(organisationParent => organisationParent.Validity.OverlapsWith(validity)))
-                throw new OrganisationAlreadyCoupledToParentInThisPeriodException();
+                throw new OrganisationAlreadyCoupledToParentInThisPeriod();
 
             var previousParentOrganisation = State.OrganisationParents.Single(parent => parent.OrganisationOrganisationParentId == organisationOrganisationParentId);
 
@@ -407,7 +408,7 @@ namespace OrganisationRegistry.Organisation
                 .Where(organisationFormalFramework => organisationFormalFramework.OrganisationFormalFrameworkId != organisationFormalFrameworkId)
                 .Where(organisationFormalFramework => organisationFormalFramework.FormalFrameworkId == formalFramework.Id)
                 .Any(organisationParent => organisationParent.Validity.OverlapsWith(validity)))
-                throw new OrganisationAlreadyCoupledToFormalFrameworkParentInThisPeriodException();
+                throw new OrganisationAlreadyCoupledToFormalFrameworkParentInThisPeriod();
 
             ApplyChange(new OrganisationFormalFrameworkAdded(
                 Id,
@@ -441,7 +442,7 @@ namespace OrganisationRegistry.Organisation
                 .Where(x => x.OrganisationFormalFrameworkId != organisationFormalFrameworkId)
                 .Where(x => x.FormalFrameworkId == formalFramework.Id)
                 .Any(organisationParent => organisationParent.Validity.OverlapsWith(validity)))
-                throw new OrganisationAlreadyCoupledToFormalFrameworkParentInThisPeriodException();
+                throw new OrganisationAlreadyCoupledToFormalFrameworkParentInThisPeriod();
 
             var previousParentOrganisation =
                 State.OrganisationFormalFrameworks
@@ -486,7 +487,7 @@ namespace OrganisationRegistry.Organisation
                 .Where(organisationKey => organisationKey.KeyTypeId == keyType.Id)
                 .Where(organisationKey => organisationKey.OrganisationKeyId != organisationKeyId)
                 .Any(organisationKey => organisationKey.Validity.OverlapsWith(validity)))
-                throw new KeyAlreadyCoupledToInThisPeriodException();
+                throw new KeyAlreadyCoupledToInThisPeriod();
 
             ApplyChange(new OrganisationKeyAdded(
                 Id,
@@ -515,7 +516,7 @@ namespace OrganisationRegistry.Organisation
                 .Where(organisationKey => organisationKey.KeyTypeId == keyType.Id)
                 .Where(organisationKey => organisationKey.OrganisationKeyId != organisationKeyId)
                 .Any(organisationKey => organisationKey.Validity.OverlapsWith(validity)))
-                throw new KeyAlreadyCoupledToInThisPeriodException();
+                throw new KeyAlreadyCoupledToInThisPeriod();
 
 
             ApplyChange(new OrganisationKeyUpdated(
@@ -612,10 +613,10 @@ namespace OrganisationRegistry.Organisation
                 .Where(organisationRelation => organisationRelation.OrganisationRelationId != organisationRelationId)
                 .Where(organisationRelation => organisationRelation.RelatedOrganisationId == relatedOrganisation.Id)
                 .Any(organisationParent => organisationParent.Validity.OverlapsWith(period)))
-                throw new OrganisationAlreadyLinkedToOrganisationInThisPeriodException();
+                throw new OrganisationAlreadyLinkedToOrganisationInThisPeriod();
 
             if (Id == relatedOrganisation.Id)
-                throw new OrganisationCannotBeLinkedToItselfException();
+                throw new OrganisationCannotBeLinkedToItself();
 
             ApplyChange(new OrganisationRelationAdded(
                 Id,
@@ -643,10 +644,10 @@ namespace OrganisationRegistry.Organisation
                 .Where(organisationRelation => organisationRelation.OrganisationRelationId != organisationRelationId)
                 .Where(organisationRelation => organisationRelation.RelatedOrganisationId == relatedOrganisation.Id)
                 .Any(organisationParent => organisationParent.Validity.OverlapsWith(period)))
-                throw new OrganisationAlreadyLinkedToOrganisationInThisPeriodException();
+                throw new OrganisationAlreadyLinkedToOrganisationInThisPeriod();
 
             if (Id == relatedOrganisation.Id)
-                throw new OrganisationCannotBeLinkedToItselfException();
+                throw new OrganisationCannotBeLinkedToItself();
 
             var previousOrganisationRelation = State.OrganisationRelations.Single(organisationRelation =>
                 organisationRelation.OrganisationRelationId == organisationRelationId);
@@ -807,7 +808,7 @@ namespace OrganisationRegistry.Organisation
                 .Where(x => x.OrganisationClassificationTypeId == organisationClassificationType.Id)
                 .Where(x => x.OrganisationOrganisationClassificationId != organisationOrganisationClassificationId)
                 .Any(x => x.Validity.OverlapsWith(validity)))
-                throw new OrganisationClassificationTypeAlreadyCoupledToInThisPeriodException();
+                throw new OrganisationClassificationTypeAlreadyCoupledToInThisPeriod();
 
             ApplyChange(new OrganisationOrganisationClassificationAdded(
                 Id,
@@ -892,7 +893,7 @@ namespace OrganisationRegistry.Organisation
                 .Where(organisationOrganisationClassification => organisationOrganisationClassification.OrganisationClassificationTypeId == organisationClassificationType.Id)
                 .Where(organisationOrganisationClassification => organisationOrganisationClassification.OrganisationOrganisationClassificationId != organisationOrganisationClassificationId)
                 .Any(organisationOrganisationClassification => organisationOrganisationClassification.Validity.OverlapsWith(validity)))
-                throw new OrganisationClassificationTypeAlreadyCoupledToInThisPeriodException();
+                throw new OrganisationClassificationTypeAlreadyCoupledToInThisPeriod();
 
             var previousOrganisationOrganisationClassification =
                 State.OrganisationOrganisationClassifications.Single(classification => classification.OrganisationOrganisationClassificationId == organisationOrganisationClassificationId);
@@ -965,7 +966,7 @@ namespace OrganisationRegistry.Organisation
                 .Where(organisationLabel => organisationLabel.LabelTypeId == labelType.Id)
                 .Where(organisationLabel => organisationLabel.OrganisationLabelId != organisationLabelId)
                 .Any(organisationLabel => organisationLabel.Validity.OverlapsWith(validity)))
-                throw new LabelAlreadyCoupledToInThisPeriodException();
+                throw new LabelAlreadyCoupledToInThisPeriod();
 
             ApplyChange(new OrganisationLabelAdded(
                 Id,
@@ -1037,7 +1038,7 @@ namespace OrganisationRegistry.Organisation
                 .Where(organisationLabel => organisationLabel.LabelTypeId == labelType.Id)
                 .Where(organisationLabel => organisationLabel.OrganisationLabelId != organisationLabelId)
                 .Any(organisationLabel => organisationLabel.Validity.OverlapsWith(validity)))
-                throw new LabelAlreadyCoupledToInThisPeriodException();
+                throw new LabelAlreadyCoupledToInThisPeriod();
 
             var previousLabel = State.OrganisationLabels.Single(label => label.OrganisationLabelId == organisationLabelId);
 
@@ -1073,10 +1074,10 @@ namespace OrganisationRegistry.Organisation
                     validity);
 
             if (State.OrganisationBuildings.AlreadyHasTheSameOrganisationAndBuildingInTheSamePeriod(organisationBuilding))
-                throw new BuildingAlreadyCoupledToInThisPeriodException();
+                throw new BuildingAlreadyCoupledToInThisPeriod();
 
             if (organisationBuilding.IsMainBuilding && State.OrganisationBuildings.OrganisationAlreadyHasAMainBuildingInTheSamePeriod(organisationBuilding))
-                throw new OrganisationAlreadyHasAMainBuildingInThisPeriodException();
+                throw new OrganisationAlreadyHasAMainBuildingInThisPeriod();
 
             ApplyChange(new OrganisationBuildingAdded(
                 Id,
@@ -1107,10 +1108,10 @@ namespace OrganisationRegistry.Organisation
                     validity);
 
             if (State.OrganisationBuildings.AlreadyHasTheSameOrganisationAndBuildingInTheSamePeriod(organisationBuilding))
-                throw new BuildingAlreadyCoupledToInThisPeriodException();
+                throw new BuildingAlreadyCoupledToInThisPeriod();
 
             if (organisationBuilding.IsMainBuilding && State.OrganisationBuildings.OrganisationAlreadyHasAMainBuildingInTheSamePeriod(organisationBuilding))
-                throw new OrganisationAlreadyHasAMainBuildingInThisPeriodException();
+                throw new OrganisationAlreadyHasAMainBuildingInThisPeriod();
 
             var previousOrganisationBuilding =
                 State.OrganisationBuildings.Single(x => x.OrganisationBuildingId == organisationBuildingId);
@@ -1152,10 +1153,10 @@ namespace OrganisationRegistry.Organisation
                     validity);
 
             if (State.OrganisationLocations.AlreadyHasTheSameOrganisationAndLocationInTheSamePeriod(organisationLocation))
-                throw new LocationAlreadyCoupledToInThisPeriodException();
+                throw new LocationAlreadyCoupledToInThisPeriod();
 
             if (organisationLocation.IsMainLocation && State.OrganisationLocations.OrganisationAlreadyHasAMainLocationInTheSamePeriod(organisationLocation))
-                throw new OrganisationAlreadyHasAMainLocationInThisPeriodException();
+                throw new OrganisationAlreadyHasAMainLocationInThisPeriod();
 
             ApplyChange(new OrganisationLocationAdded(
                 Id,
@@ -1248,10 +1249,10 @@ namespace OrganisationRegistry.Organisation
                 throw new ArgumentNullException(nameof(organisationLocation));
 
             if (State.OrganisationLocations.AlreadyHasTheSameOrganisationAndLocationInTheSamePeriod(organisationLocation))
-                throw new LocationAlreadyCoupledToInThisPeriodException();
+                throw new LocationAlreadyCoupledToInThisPeriod();
 
             if (organisationLocation.IsMainLocation && State.OrganisationLocations.OrganisationAlreadyHasAMainLocationInTheSamePeriod(organisationLocation))
-                throw new OrganisationAlreadyHasAMainLocationInThisPeriodException();
+                throw new OrganisationAlreadyHasAMainLocationInThisPeriod();
 
             var previousLocation =
                 State.OrganisationLocations.Single(x => x.OrganisationLocationId == organisationLocationId);
@@ -1646,7 +1647,7 @@ namespace OrganisationRegistry.Organisation
                 throw new OrganisationNotCoupledWithKbo();
 
             if (!KboState.TerminationInKbo.HasValue)
-                throw new KboOrganisationNotTerminatedException();
+                throw new KboOrganisationNotTerminated();
 
             ApplyChange(
                 new OrganisationTerminationSyncedWithKbo(

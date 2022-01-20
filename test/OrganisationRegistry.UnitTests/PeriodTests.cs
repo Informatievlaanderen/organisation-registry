@@ -3,6 +3,7 @@
     using System;
     using FluentAssertions;
     using OrganisationRegistry.Organisation;
+    using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
 
     public class PeriodTests
@@ -156,7 +157,7 @@
         [Fact]
         public void CannotCreateAPeriodWithStartDateAfterEndDate()
         {
-            Assert.Throws<StartDateCannotBeAfterEndDateException>(() => new Period(new ValidFrom(new DateTime(2000, 1, 2)), new ValidTo(new DateTime(2000, 1, 1))));
+            Assert.Throws<StartDateCannotBeAfterEndDate>(() => new Period(new ValidFrom(new DateTime(2000, 1, 2)), new ValidTo(new DateTime(2000, 1, 1))));
         }
     }
 }

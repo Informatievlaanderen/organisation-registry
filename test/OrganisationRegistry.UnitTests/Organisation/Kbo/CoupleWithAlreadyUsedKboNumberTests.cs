@@ -19,6 +19,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.Exceptions;
     using Tests.Shared;
     using Xunit;
     using Xunit.Abstractions;
@@ -168,7 +169,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         [Fact]
         public void ThrowsOrganisationAlreadyCoupledWithKbo()
         {
-            Exception.Should().BeOfType<KboNumberNotUniqueException>();
+            Exception.Should().BeOfType<KboNumberNotUnique>();
         }
 
         public CoupleWithAlreadyUsedKboNumberTests(ITestOutputHelper helper) : base(helper) { }

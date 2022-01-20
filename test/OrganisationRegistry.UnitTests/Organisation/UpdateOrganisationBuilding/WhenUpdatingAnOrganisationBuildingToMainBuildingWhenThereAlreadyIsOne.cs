@@ -14,6 +14,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -74,7 +75,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         [Fact]
         public void ThrowsAnException()
         {
-            Exception.Should().BeOfType<OrganisationAlreadyHasAMainBuildingInThisPeriodException>();
+            Exception.Should().BeOfType<OrganisationAlreadyHasAMainBuildingInThisPeriod>();
             Exception.Message.Should().Be("Deze organisatie heeft reeds een hoofdgebouw binnen deze periode.");
         }
 
