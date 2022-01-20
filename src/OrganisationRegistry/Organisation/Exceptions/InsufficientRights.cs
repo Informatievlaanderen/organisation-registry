@@ -1,8 +1,8 @@
 namespace OrganisationRegistry.Organisation.Exceptions
 {
-    public class InsuffientsRights : DomainException
+    public class InsufficientRights : DomainException
     {
-        public InsuffientsRights()
+        public InsufficientRights()
             : base("U heeft onvoldoende rechten voor deze actie.") { }
     }
 }

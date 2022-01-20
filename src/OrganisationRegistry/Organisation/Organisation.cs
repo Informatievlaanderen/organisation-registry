@@ -1641,7 +1641,7 @@ namespace OrganisationRegistry.Organisation
                 KboState.KboBankAccounts.Select(account => account.OrganisationBankAccountId).ToList()));
         }
 
-        public void SyncKboTermination()
+        public void TerminateOrganisationBasedOnKboTermination()
         {
             if (!HasKboNumber)
                 throw new OrganisationNotCoupledWithKbo();
@@ -1698,7 +1698,7 @@ namespace OrganisationRegistry.Organisation
                     dateOfTermination));
 
             if (HasKboNumber && KboState.TerminationInKbo.HasValue)
-                SyncKboTermination();
+                TerminateOrganisationBasedOnKboTermination();
 
             var validityOverlapsWithToday = State.Validity.OverlapsWith(dateTimeProvider.Today);
             if (State.IsActive && !validityOverlapsWithToday)
