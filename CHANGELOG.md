@@ -1,3 +1,10 @@
+# [1.117.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.116.0...v1.117.0) (2022-01-20)
+
+
+### Features
+
+* don't allow vlimpers and non-vlimpers in a parental relationship ([b92325b](https://github.com/informatievlaanderen/organisation-registry/commit/b92325bc5e12cefcb0c07cd939fbc52f67ef678b))
+
 # [1.116.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.115.0...v1.116.0) (2022-01-20)
 
 
