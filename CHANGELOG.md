@@ -1,3 +1,10 @@
+# [1.119.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.118.0...v1.119.0) (2022-01-21)
+
+
+### Features
+
+* refactoring exceptions - body ([b394aa5](https://github.com/informatievlaanderen/organisation-registry/commit/b394aa50e138a7b71e7bf45f3f951dc93bced8a0))
+
 # [1.118.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.117.1...v1.118.0) (2022-01-20)
 
 
