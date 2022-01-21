@@ -1,3 +1,11 @@
+# [1.120.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.119.0...v1.120.0) (2022-01-21)
+
+
+### Features
+
+* or-699 origanisatie zoeken op ovo-code ([7970a33](https://github.com/informatievlaanderen/organisation-registry/commit/7970a331d57d3711a967557b2938474d6534270e))
+* refactoring of the remaining exceptions ([783c453](https://github.com/informatievlaanderen/organisation-registry/commit/783c453f25ace050d242d2aed39a003c1e0e0618))
+
 # [1.119.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.118.0...v1.119.0) (2022-01-21)
 
 
