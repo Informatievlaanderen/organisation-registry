@@ -15,6 +15,12 @@ export class OrganisationFilter {
     return copy;
   }
 
+  withOvoNumber(ovoNumber: string) {
+    let copy = this.copy();
+    copy.ovoNumber = ovoNumber;
+    return copy;
+  }
+
   withActiveOnly(activeOnly: boolean) {
     let copy = this.copy();
     copy.activeOnly = activeOnly;

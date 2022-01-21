@@ -31,12 +31,23 @@ export class OrganisationAutoComplete {
     private organisationService: OrganisationService
   ) {}
 
+  isOvo(search: string): boolean {
+    const regex = /^[oO][vV][oO]\d{6}$/;
+    return regex.test(search);
+  }
+
+  getSearchFilter(search: string) : OrganisationFilter {
+    const filter = new OrganisationFilter()
+      .withActiveOnly(this.activeOnly)
+      .withAuthorizedOnly(this.authorizedOnly);
+
+    return this.isOvo(search)
+      ? filter.withOvoNumber(search)
+      : filter.withName(search);
+  }
+
   searchOrganisations(search: string): Promise<SearchResult[]> {
-    return this.organisationService.search(
-      new OrganisationFilter()
-        .withName(search)
-        .withActiveOnly(this.activeOnly)
-        .withAuthorizedOnly(this.authorizedOnly))
+    return this.organisationService.search(this.getSearchFilter(search))
       .map(pagedResult => pagedResult.data.map(x => new SearchResult(x.id, `${x.name} ${x.ovoNumber}`)))
       .map(pagedResult => pagedResult.filter(searchResult => !this.excludeId || searchResult.value !== this.excludeId))
       .toPromise()
