@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Body
 {
     using System;
     using System.Collections.Generic;
+    using Exceptions;
     using Person;
 
     public class PersonBodyMandate : BodyMandate
@@ -33,7 +34,7 @@ namespace OrganisationRegistry.Body
             Dictionary<Guid, string> contacts,
             Period period)
         {
-            throw new CannotAssignPersonToPersonBodyMandateException();
+            throw new CannotAssignPersonToPersonBodyMandate();
         }
     }
 }

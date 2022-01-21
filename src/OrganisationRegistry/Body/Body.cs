@@ -7,6 +7,7 @@ namespace OrganisationRegistry.Body
     using BodyClassificationType;
     using ContactType;
     using Events;
+    using Exceptions;
     using FormalFramework;
     using Function;
     using Infrastructure.Domain;
@@ -71,10 +72,10 @@ namespace OrganisationRegistry.Body
                 formalValidity.End));
 
             if (IsNotTheDefaultActiveLifecyclePhaseType(activeLifecyclePhaseType))
-                throw new IncorrectActiveLifecyclePhaseTypeDefinedInConfigurationException();
+                throw new IncorrectActiveLifecyclePhaseTypeDefinedInConfiguration();
 
             if (IsNotTheDefaultInactiveLifecyclePhaseType(inactiveLifecyclePhaseType))
-                throw new IncorrectInactiveLifecyclePhaseTypeDefinedInConfigurationException();
+                throw new IncorrectInactiveLifecyclePhaseTypeDefinedInConfiguration();
 
             if (validity.HasFixedEnd)
             {
@@ -150,7 +151,7 @@ namespace OrganisationRegistry.Body
         public void AssignBodyNumber(string bodyNumber)
         {
             if (!string.IsNullOrWhiteSpace(_bodyNumber))
-                throw new BodyNumberAlreadyAssignedException();
+                throw new BodyNumberAlreadyAssigned();
 
             ApplyChange(new BodyNumberAssigned(
                 Id,
@@ -164,7 +165,7 @@ namespace OrganisationRegistry.Body
             var bodySeat = _bodySeats.Single(x => x.BodySeatId == bodySeatId);
 
             if (!string.IsNullOrWhiteSpace(bodySeat.BodySeatNumber))
-                throw new BodySeatNumberAlreadyAssignedException();
+                throw new BodySeatNumberAlreadyAssigned();
 
             ApplyChange(new BodySeatNumberAssigned(
                 Id,
@@ -222,7 +223,7 @@ namespace OrganisationRegistry.Body
             if (_bodyFormalFrameworks
                 .Where(bodyFormalFramework => bodyFormalFramework.FormalFrameworkId == formalFramework.Id)
                 .Any(bodyFormalFramework => bodyFormalFramework.Validity.OverlapsWith(validity)))
-                throw new BodyAlreadyCoupledToFormalFrameworkInThisPeriodException();
+                throw new BodyAlreadyCoupledToFormalFrameworkInThisPeriod();
 
             ApplyChange(new BodyFormalFrameworkAdded(
                 Id,
@@ -243,7 +244,7 @@ namespace OrganisationRegistry.Body
                     bodyFormalFramework => bodyFormalFramework.BodyFormalFrameworkId != bodyFormalFrameworkId &&
                                            bodyFormalFramework.FormalFrameworkId == formalFramework.Id)
                 .Any(bodyFormalFramework => bodyFormalFramework.Validity.OverlapsWith(validity)))
-                throw new BodyAlreadyCoupledToFormalFrameworkInThisPeriodException();
+                throw new BodyAlreadyCoupledToFormalFrameworkInThisPeriod();
 
             var previousBodyFormalFramework = _bodyFormalFrameworks.Single(x => x.BodyFormalFrameworkId == bodyFormalFrameworkId);
 
@@ -266,7 +267,7 @@ namespace OrganisationRegistry.Body
             Period validity)
         {
             if (_bodyLifecyclePhases.Any(bodyLifecyclePhase => bodyLifecyclePhase.Validity.OverlapsWith(validity)))
-                throw new BodyAlreadyCoupledToLifecyclePhaseInThisPeriodException();
+                throw new BodyAlreadyCoupledToLifecyclePhaseInThisPeriod();
 
             ApplyChange(new BodyLifecyclePhaseAdded(
                 Id,
@@ -292,7 +293,7 @@ namespace OrganisationRegistry.Body
             if (_bodyLifecyclePhases
                 .Where(bodyLifecyclePhase => bodyLifecyclePhase.BodyLifecyclePhaseId != bodyLifecyclePhaseId)
                 .Any(bodyLifecyclePhase => bodyLifecyclePhase.Validity.OverlapsWith(validity)))
-                throw new BodyAlreadyCoupledToLifecyclePhaseInThisPeriodException();
+                throw new BodyAlreadyCoupledToLifecyclePhaseInThisPeriod();
 
             var previousBodyLifecyclePhase = _bodyLifecyclePhases.Single(x => x.BodyLifecyclePhaseId == bodyLifecyclePhaseId);
 
@@ -377,7 +378,7 @@ namespace OrganisationRegistry.Body
             IDateTimeProvider dateTimeProvider)
         {
             if (_bodyOrganisations.Any(bodyOrganisation => bodyOrganisation.Validity.OverlapsWith(validity)))
-                throw new BodyAlreadyCoupledToOrganisationInThisPeriodException();
+                throw new BodyAlreadyCoupledToOrganisationInThisPeriod();
 
             ApplyChange(new BodyOrganisationAdded(
                 Id,
@@ -406,7 +407,7 @@ namespace OrganisationRegistry.Body
             if (_bodyOrganisations
                 .Where(bodyOrganisation => bodyOrganisation.BodyOrganisationId != bodyOrganisationId)
                 .Any(bodyOrganisation => bodyOrganisation.Validity.OverlapsWith(validity)))
-                throw new BodyAlreadyCoupledToOrganisationInThisPeriodException();
+                throw new BodyAlreadyCoupledToOrganisationInThisPeriod();
 
             var previousBodyOrganisation = _bodyOrganisations.Single(x => x.BodyOrganisationId == bodyOrganisationId);
 
@@ -465,10 +466,10 @@ namespace OrganisationRegistry.Body
             var bodySeat = _bodySeats.Single(seat => seat.BodySeatId == bodySeatId);
 
             if (bodySeat.HasABodyMandateWithOverlappingValidity(validity))
-                throw new BodyMandateAlreadyCoupledToBodySeatInThisPeriodException();
+                throw new BodyMandateAlreadyCoupledToBodySeatInThisPeriod();
 
             if (_bodySeats.CanThisPersonBeAssignedInThisPeriod(new PersonId(person.Id), validity))
-                throw new PersonAlreadyAssignedInThisPeriodException();
+                throw new PersonAlreadyAssignedInThisPeriod();
 
             ApplyChange(new AssignedPersonToBodySeat(
                 Id,
@@ -495,7 +496,7 @@ namespace OrganisationRegistry.Body
             var bodySeat = _bodySeats.Single(seat => seat.BodySeatId == bodySeatId);
 
             if (bodySeat.HasABodyMandateWithOverlappingValidity(validity))
-                throw new BodyMandateAlreadyCoupledToBodySeatInThisPeriodException();
+                throw new BodyMandateAlreadyCoupledToBodySeatInThisPeriod();
 
             ApplyChange(new AssignedFunctionTypeToBodySeat(
                 Id,
@@ -521,7 +522,7 @@ namespace OrganisationRegistry.Body
             var bodySeat = _bodySeats.Single(seat => seat.BodySeatId == bodySeatId);
 
             if (bodySeat.HasABodyMandateWithOverlappingValidity(validity))
-                throw new BodyMandateAlreadyCoupledToBodySeatInThisPeriodException();
+                throw new BodyMandateAlreadyCoupledToBodySeatInThisPeriod();
 
             ApplyChange(new AssignedOrganisationToBodySeat(
                 Id,
@@ -550,10 +551,10 @@ namespace OrganisationRegistry.Body
             var bodySeat = _bodySeats.Single(seat => seat.BodySeatId == bodySeatId);
 
             if (bodySeat.HasAnotherBodyMandateWithOverlappingValidity(validity, bodyMandateId))
-                throw new BodyMandateAlreadyCoupledToBodySeatInThisPeriodException();
+                throw new BodyMandateAlreadyCoupledToBodySeatInThisPeriod();
 
             if (_bodySeats.CanThisPersonBeReassignedInThisPeriod(bodyMandateId, new PersonId(person.Id), validity))
-                throw new PersonAlreadyAssignedInThisPeriodException();
+                throw new PersonAlreadyAssignedInThisPeriod();
 
             ApplyChange(new ReassignedPersonToBodySeat(
                 Id,
@@ -596,7 +597,7 @@ namespace OrganisationRegistry.Body
             var bodySeat = _bodySeats.Single(seat => seat.BodySeatId == bodySeatId);
 
             if (bodySeat.HasAnotherBodyMandateWithOverlappingValidity(validity, bodyMandateId))
-                throw new BodyMandateAlreadyCoupledToBodySeatInThisPeriodException();
+                throw new BodyMandateAlreadyCoupledToBodySeatInThisPeriod();
 
             ApplyChange(new ReassignedFunctionTypeToBodySeat(
                 Id,
@@ -637,7 +638,7 @@ namespace OrganisationRegistry.Body
             var bodySeat = _bodySeats.Single(seat => seat.BodySeatId == bodySeatId);
 
             if (bodySeat.HasAnotherBodyMandateWithOverlappingValidity(validity, bodyMandateId))
-                throw new BodyMandateAlreadyCoupledToBodySeatInThisPeriodException();
+                throw new BodyMandateAlreadyCoupledToBodySeatInThisPeriod();
 
             ApplyChange(new ReassignedOrganisationToBodySeat(
                 Id,
@@ -674,7 +675,7 @@ namespace OrganisationRegistry.Body
             var bodyMandate = bodySeat.BodyMandates.Single(mandate => mandate.BodyMandateId == bodyMandateId);
 
             if (bodyMandate.HasPersonDelegationWithOverlappingValidity(validity))
-                throw new PersonDelegationAlreadyAssignedToBodyMandateInThisPeriodException();
+                throw new PersonDelegationAlreadyAssignedToBodyMandateInThisPeriod();
 
             ApplyChange(new PersonAssignedToDelegation(
                 Id,
@@ -708,7 +709,7 @@ namespace OrganisationRegistry.Body
             var bodyMandate = bodySeat.BodyMandates.Single(mandate => mandate.BodyMandateId == bodyMandateId);
 
             if (bodyMandate.HasAnotherPersonDelegationWithOverlappingValidity(delegationAssignmentId, validity))
-                throw new PersonDelegationAlreadyAssignedToBodyMandateInThisPeriodException();
+                throw new PersonDelegationAlreadyAssignedToBodyMandateInThisPeriod();
 
             var previousAssignment = bodyMandate.Assignments.Single(x => x.Id == delegationAssignmentId);
 
@@ -860,7 +861,7 @@ namespace OrganisationRegistry.Body
                 .Where(bodyBodyClassification => bodyBodyClassification.BodyClassificationTypeId == bodyClassificationType.Id)
                 .Where(bodyBodyClassification => bodyBodyClassification.BodyBodyClassificationId != bodyBodyClassificationId)
                 .Any(bodyBodyClassification => bodyBodyClassification.Validity.OverlapsWith(validity)))
-                throw new BodyClassificationTypeAlreadyCoupledToInThisPeriodException();
+                throw new BodyClassificationTypeAlreadyCoupledToInThisPeriod();
 
             ApplyChange(new BodyBodyClassificationAdded(
                 Id,
@@ -886,7 +887,7 @@ namespace OrganisationRegistry.Body
                 .Where(bodyBodyClassification => bodyBodyClassification.BodyClassificationTypeId == bodyClassificationType.Id)
                 .Where(bodyBodyClassification => bodyBodyClassification.BodyBodyClassificationId != bodyBodyClassificationId)
                 .Any(bodyBodyClassification => bodyBodyClassification.Validity.OverlapsWith(validity)))
-                throw new BodyClassificationTypeAlreadyCoupledToInThisPeriodException();
+                throw new BodyClassificationTypeAlreadyCoupledToInThisPeriod();
 
             var previousBodyBodyClassification =
                 _bodyBodyClassifications.Single(classification =>

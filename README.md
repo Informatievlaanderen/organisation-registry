@@ -21,7 +21,7 @@ Make sure you have the following lines in your `hosts` file
 ```bash
 127.0.0.1	organisatie.dev-vlaanderen.local
 127.0.0.1	api.organisatie.dev-vlaanderen.local
-``
+```
 
 Run the following commands:
 ```bash

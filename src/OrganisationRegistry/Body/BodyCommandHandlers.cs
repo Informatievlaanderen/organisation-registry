@@ -6,6 +6,7 @@ namespace OrganisationRegistry.Body
     using BodyClassificationType;
     using Commands;
     using ContactType;
+    using Exceptions;
     using FormalFramework;
     using Function;
     using Infrastructure.Commands;
@@ -70,7 +71,7 @@ namespace OrganisationRegistry.Body
         public async Task Handle(RegisterBody message)
         {
             if (_uniqueBodyNumberValidator.IsBodyNumberTaken(message.BodyNumber))
-                throw new BodyNumberNotUniqueException();
+                throw new BodyNumberNotUnique();
 
             var bodyNumber = string.IsNullOrWhiteSpace(message.BodyNumber)
                 ? _bodyNumberGenerator.GenerateNumber()
