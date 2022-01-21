@@ -2,6 +2,7 @@ namespace OrganisationRegistry.OrganisationClassification
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -30,10 +31,10 @@ namespace OrganisationRegistry.OrganisationClassification
             var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
 
             if (_uniqueNameValidator.IsNameTaken(message.Name, message.OrganisationClassificationTypeId))
-                throw new NameNotUniqueWithinTypeException();
+                throw new NameNotUniqueWithinType();
 
             if (_uniqueExternalKeyValidator.IsExternalKeyTaken(message.ExternalKey, message.OrganisationClassificationTypeId))
-                throw new ExternalKeyNotUniqueWithinTypeException();
+                throw new ExternalKeyNotUniqueWithinType();
 
             var organisationClassification =
                 new OrganisationClassification(
@@ -51,11 +52,11 @@ namespace OrganisationRegistry.OrganisationClassification
         public async Task Handle(UpdateOrganisationClassification message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.OrganisationClassificationId, message.Name, message.OrganisationClassificationTypeId))
-                throw new NameNotUniqueWithinTypeException();
+                throw new NameNotUniqueWithinType();
 
             if (_uniqueExternalKeyValidator.IsExternalKeyTaken(message.OrganisationClassificationId, message.ExternalKey,
                 message.OrganisationClassificationTypeId))
-                throw new ExternalKeyNotUniqueWithinTypeException();
+                throw new ExternalKeyNotUniqueWithinType();
 
             var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
             var organisationClassification = Session.Get<OrganisationClassification>(message.OrganisationClassificationId);

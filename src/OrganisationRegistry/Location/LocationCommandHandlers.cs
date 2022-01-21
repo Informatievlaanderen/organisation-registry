@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@
         public async Task Handle(CreateLocation message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Address.FullAddress))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var location = new Location(message.LocationId, message.CrabLocationId, message.Address);
             Session.Add(location);
@@ -34,7 +35,7 @@
         public async Task Handle(UpdateLocation message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.LocationId, message.Address.FullAddress))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var location = Session.Get<Location>(message.LocationId);
             location.Update(message.CrabLocationId, message.Address);

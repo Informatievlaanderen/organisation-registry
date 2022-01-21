@@ -13,6 +13,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationFormalFrame
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+    using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -76,7 +77,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationFormalFrame
         [Fact]
         public void ThrowsADomainException()
         {
-            Exception.Should().BeOfType<CircularRelationInFormalFrameworkException>();
+            Exception.Should().BeOfType<CircularRelationInFormalFramework>();
         }
 
         public WhenAddingAnOrganisationFormalFrameworkWithCircularDependencies(ITestOutputHelper helper) : base(helper) { }

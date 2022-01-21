@@ -23,6 +23,7 @@ namespace OrganisationRegistry.IbanBic
 {
     using System;
     using System.Text;
+    using Exceptions;
 
     /// <summary>
     /// IBAN Utilities
@@ -42,9 +43,9 @@ namespace OrganisationRegistry.IbanBic
         /// Validation of IBAN string
         /// </summary>
         /// <param name="iban">IBAN string</param>
-        /// <exception cref="IbanFormatException">Thrown when IBAN is invalid</exception>
-        /// <exception cref="UnsupportedCountryException">Thrown when INAB's country code is not supported</exception>
-        /// <exception cref="InvalidCheckDigitException">Thrown when IBAN string contains invalid check digit</exception>
+        /// <exception cref="InvalidIbanFormat">Thrown when IBAN is invalid</exception>
+        /// <exception cref="UnsupportedCountry">Thrown when INAB's country code is not supported</exception>
+        /// <exception cref="InvalidCheckDigit">Thrown when IBAN string contains invalid check digit</exception>
         public static void Validate(string iban)
         {
             try
@@ -59,21 +60,21 @@ namespace OrganisationRegistry.IbanBic
 
                 validateCheckDigit(iban);
             }
-            catch (InvalidCheckDigitException icex)
+            catch (InvalidCheckDigit icex)
             {
                 throw icex;
             }
-            catch (IbanFormatException iex)
+            catch (InvalidIbanFormat iex)
             {
                 throw iex;
             }
-            catch (UnsupportedCountryException ucex)
+            catch (UnsupportedCountry ucex)
             {
                 throw ucex;
             }
             catch (Exception ex)
             {
-                throw new IbanFormatException(ex.Message, IbanFormatViolation.UNKNOWN, ex);
+                throw new InvalidIbanFormat(ex.Message, IbanFormatViolation.UNKNOWN, ex);
             }
         }
 
@@ -157,7 +158,7 @@ namespace OrganisationRegistry.IbanBic
         /// </summary>
         /// <param name="iban">Iban string value</param>
         /// <returns>Check digit as string</returns>
-        /// <exception cref="IbanFormatException">Thrown if supplied iban string contains invalid chracters</exception>
+        /// <exception cref="InvalidIbanFormat">Thrown if supplied iban string contains invalid chracters</exception>
         public static string CalculateCheckDigit(string iban)
         {
             string reformattedIban = ReplaceCheckDigit(iban, Iban.DEFAULT_CHECK_DIGIT);
@@ -174,7 +175,7 @@ namespace OrganisationRegistry.IbanBic
         /// </summary>
         /// <param name="iban">IBAN object</param>
         /// <returns>Check digit as string</returns>
-        /// <exception cref="IbanFormatException">Thrown if supplied iban string contains invalid chracters</exception>
+        /// <exception cref="InvalidIbanFormat">Thrown if supplied iban string contains invalid chracters</exception>
         public static string CalculateCheckDigit(Iban iban) => CalculateCheckDigit(iban.ToString());
 
         /// <summary>
@@ -229,7 +230,7 @@ namespace OrganisationRegistry.IbanBic
         /// <param name="iban">Original IBAN</param>
         /// <param name="newAccountNumber">The new account number</param>
         /// <returns>IBAN with changed account number and recalculated check digit</returns>
-        /// <exception cref="IbanFormatException">Thrown when new account number is longer, than that is specified in BBAN rules</exception>
+        /// <exception cref="InvalidIbanFormat">Thrown when new account number is longer, than that is specified in BBAN rules</exception>
         public static string ChangeAccountNumber(string iban, string newAccountNumber) => changeBbanEntry(iban, newAccountNumber, BBanEntryType.ACCOUNT_NUMBER);
 
         /// <summary>
@@ -239,7 +240,7 @@ namespace OrganisationRegistry.IbanBic
         /// <param name="iban">Original IBAN</param>
         /// <param name="newAccountNumberPrefix">The new account number prefix</param>
         /// <returns>IBAN with changed account number prefix and recalculated check digit</returns>
-        /// <exception cref="IbanFormatException">Thrown when new account number is longer, than that is specified in BBAN rules</exception>
+        /// <exception cref="InvalidIbanFormat">Thrown when new account number is longer, than that is specified in BBAN rules</exception>
         public static string ChangeAccountNumberPrefix(string iban, string newAccountNumberPrefix) => changeBbanEntry(iban, newAccountNumberPrefix, BBanEntryType.ACCOUNT_NUMBER_PREFIX);
 
         /// <summary>
@@ -256,7 +257,7 @@ namespace OrganisationRegistry.IbanBic
         /// <param name="iban">Original IBAN</param>
         /// <param name="newBankCode">The new bank code</param>
         /// <returns>IBAN with changed bank code and recalculated check digit</returns>
-        /// <exception cref="IbanFormatException">Thrown when new bank code is longer, than that is specified in BBAN rules</exception>
+        /// <exception cref="InvalidIbanFormat">Thrown when new bank code is longer, than that is specified in BBAN rules</exception>
         public static string ChangeBankCode(string iban, string newBankCode) => changeBbanEntry(iban, newBankCode, BBanEntryType.BANK_CODE);
 
         /// <summary>
@@ -313,7 +314,7 @@ namespace OrganisationRegistry.IbanBic
                 string checkDigit = GetCheckDigit(iban);
                 string expectedCheckDigit = CalculateCheckDigit(iban);
 
-                throw new InvalidCheckDigitException($"{iban} has invalid check digit {checkDigit}. Expected check digit is {expectedCheckDigit}", expectedCheckDigit, checkDigit);
+                throw new InvalidCheckDigit($"{iban} has invalid check digit {checkDigit}. Expected check digit is {expectedCheckDigit}", expectedCheckDigit, checkDigit);
             }
         }
 
@@ -333,7 +334,7 @@ namespace OrganisationRegistry.IbanBic
         {
             if (string.IsNullOrEmpty(iban))
             {
-                throw new IbanFormatException("Empty or null input cannot be a valid IBAN", IbanFormatViolation.IBAN_NOT_EMPTY_OR_NULL);
+                throw new InvalidIbanFormat("Empty or null input cannot be a valid IBAN", IbanFormatViolation.IBAN_NOT_EMPTY_OR_NULL);
             }
         }
 
@@ -341,27 +342,27 @@ namespace OrganisationRegistry.IbanBic
         {
             if (iban.Length < _COUNTRY_CODE_LENGTH)
             {
-                throw new IbanFormatException("Input must contain 2 letters for country code", IbanFormatViolation.COUNTRY_CODE_TWO_LETTERS, iban);
+                throw new InvalidIbanFormat("Input must contain 2 letters for country code", IbanFormatViolation.COUNTRY_CODE_TWO_LETTERS, iban);
             }
 
             string countryCode = GetCountryCode(iban);
 
             if (!countryCode.Equals(countryCode.ToUpper()) || !char.IsLetter(iban[0]) || !char.IsLetter(iban[1]))
             {
-                throw new IbanFormatException("IBAN's country code must contain upper case letters", IbanFormatViolation.COUNTRY_CODE_UPPER_CASE_LETTERS, iban);
+                throw new InvalidIbanFormat("IBAN's country code must contain upper case letters", IbanFormatViolation.COUNTRY_CODE_UPPER_CASE_LETTERS, iban);
             }
 
             CountryCodeEntry countryEntry = CountryCode.GetCountryCode(countryCode);
 
             if (countryEntry == null)
             {
-                throw new IbanFormatException("IBAN contains non existing country code", IbanFormatViolation.COUNTRY_CODE_EXISTS, iban);
+                throw new InvalidIbanFormat("IBAN contains non existing country code", IbanFormatViolation.COUNTRY_CODE_EXISTS, iban);
             }
 
             BBanStructure structure = Bban.GetStructureForCountry(countryEntry);
             if (structure == null)
             {
-                throw new UnsupportedCountryException("IBAN contains not supported country code", countryCode);
+                throw new UnsupportedCountry("IBAN contains not supported country code", countryCode);
             }
         }
 
@@ -405,13 +406,13 @@ namespace OrganisationRegistry.IbanBic
         {
             if (iban.Length < (_COUNTRY_CODE_LENGTH + _CHECK_DIGIT_LENGTH))
             {
-                throw new IbanFormatException("IBAN must contain 2 digit check digit", IbanFormatViolation.CHECK_DIGIT_TWO_DIGITS, iban.Substring(_COUNTRY_CODE_LENGTH));
+                throw new InvalidIbanFormat("IBAN must contain 2 digit check digit", IbanFormatViolation.CHECK_DIGIT_TWO_DIGITS, iban.Substring(_COUNTRY_CODE_LENGTH));
             }
 
             string checkDigit = GetCheckDigit(iban);
             if (!char.IsDigit(checkDigit[0]) || !char.IsDigit(checkDigit[1]))
             {
-                throw new IbanFormatException("IBAN's check digit should contain only digits", IbanFormatViolation.CHECK_DIGIT_ONLY_DIGITS, checkDigit);
+                throw new InvalidIbanFormat("IBAN's check digit should contain only digits", IbanFormatViolation.CHECK_DIGIT_ONLY_DIGITS, checkDigit);
             }
         }
 
@@ -443,7 +444,7 @@ namespace OrganisationRegistry.IbanBic
 
             if (expectedBbanLength != bbanLength)
             {
-                throw new IbanFormatException($"BBAN '{bban}' length is {bbanLength}, expected is {expectedBbanLength}",
+                throw new InvalidIbanFormat($"BBAN '{bban}' length is {bbanLength}, expected is {expectedBbanLength}",
                                                IbanFormatViolation.BBAN_LENGTH, bbanLength, expectedBbanLength);
             }
         }
@@ -512,7 +513,7 @@ namespace OrganisationRegistry.IbanBic
                     {
                         if (!char.IsUpper(c))
                         {
-                            throw new IbanFormatException($"'{entryValue}' must contain only upper case letters",
+                            throw new InvalidIbanFormat($"'{entryValue}' must contain only upper case letters",
                                                            IbanFormatViolation.BBAN_ONLY_UPPER_CASE_LETTERS, c, entry.EntryType, entryValue);
                         }
                     }
@@ -522,7 +523,7 @@ namespace OrganisationRegistry.IbanBic
                     {
                         if (!char.IsLetterOrDigit(c))
                         {
-                            throw new IbanFormatException($"'{entryValue}' must contain only letters or digits",
+                            throw new InvalidIbanFormat($"'{entryValue}' must contain only letters or digits",
                                                            IbanFormatViolation.BBAN_ONLY_DIGITS_OR_LETTERS, c, entry.EntryType, entryValue);
                         }
                     }
@@ -532,7 +533,7 @@ namespace OrganisationRegistry.IbanBic
                     {
                         if (!char.IsDigit(c))
                         {
-                            throw new IbanFormatException($"'{entryValue}' must contain only digits",
+                            throw new InvalidIbanFormat($"'{entryValue}' must contain only digits",
                                                            IbanFormatViolation.BBAN_ONLY_DIGITS, c, entry.EntryType, entryValue);
                         }
                     }
@@ -594,7 +595,7 @@ namespace OrganisationRegistry.IbanBic
                 double numericValue = char.IsLetter(reformattedIban[i]) ? (10 + Array.IndexOf(letters, reformattedIban[i])) : char.GetNumericValue(reformattedIban[i]);
                 if (numericValue < 0 || numericValue > 35)
                 {
-                    throw new IbanFormatException($"Invalid character on position {i} = {numericValue}", IbanFormatViolation.IBAN_VALID_CHARACTERS, reformattedIban[i]);
+                    throw new InvalidIbanFormat($"Invalid character on position {i} = {numericValue}", IbanFormatViolation.IBAN_VALID_CHARACTERS, reformattedIban[i]);
                 }
 
                 total = (numericValue > 9 ? total * 100 : total * 10) + numericValue;
@@ -658,7 +659,7 @@ namespace OrganisationRegistry.IbanBic
 
                     if (newValue.Length > entry.Length)
                     {
-                        throw new IbanFormatException($"New value for {Enum.GetName(typeof(BBanEntryType), entry.EntryType)} is too long.", IbanFormatViolation.BBAN_ENTRY_TOO_LONG);
+                        throw new InvalidIbanFormat($"New value for {Enum.GetName(typeof(BBanEntryType), entry.EntryType)} is too long.", IbanFormatViolation.BBAN_ENTRY_TOO_LONG);
                     }
 
                     sb.Remove(bbanOffset, entry.Length);

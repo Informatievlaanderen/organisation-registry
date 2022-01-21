@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@
         public async Task Handle(CreateBuilding message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var building = new Building(message.BuildingId, message.Name, message.VimId);
             Session.Add(building);
@@ -34,7 +35,7 @@
         public async Task Handle(UpdateBuilding message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.BuildingId, message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var building = Session.Get<Building>(message.BuildingId);
             building.Update(message.Name, message.VimId);

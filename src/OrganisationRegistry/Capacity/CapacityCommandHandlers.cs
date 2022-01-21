@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@
         public async Task Handle(CreateCapacity message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var capacity = new Capacity(message.CapacityId, message.Name);
             Session.Add(capacity);
@@ -34,7 +35,7 @@
         public async Task Handle(UpdateCapacity message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.CapacityId, message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var capacity = Session.Get<Capacity>(message.CapacityId);
             capacity.Update(message.Name);

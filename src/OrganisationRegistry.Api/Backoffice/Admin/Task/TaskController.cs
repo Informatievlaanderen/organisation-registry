@@ -6,6 +6,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
     using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Day.Commands;
+    using Exceptions;
     using Infrastructure;
     using Infrastructure.Security;
     using Microsoft.AspNetCore.Http;
@@ -56,7 +57,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
 
                 case TaskType.RebuildProjection:
                     if (task.Params.Length != 1)
-                        throw new RebuildProjectionRequiresANameException();
+                        throw new RebuildProjectionRequiresAName();
 
                     _logger.LogInformation("Projection Rebuild for {ProjectionName} requested.", task.Params[0]);
                     await CommandSender.Send(new RebuildProjection(task.Params[0]));
@@ -64,7 +65,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
 
                 case TaskType.CompensatingAction:
                     if (task.Params.Length != 1)
-                        throw new CompensatingActionRequiresANameException();
+                        throw new CompensatingActionRequiresAName();
 
                     _logger.LogInformation("Requested execution of {CompensatingAction}.", task.Params[0]);
                     using (var context = contextFactory().Value)

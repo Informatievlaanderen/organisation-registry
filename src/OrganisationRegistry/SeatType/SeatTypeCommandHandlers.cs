@@ -2,6 +2,7 @@ namespace OrganisationRegistry.SeatType
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@ namespace OrganisationRegistry.SeatType
         public async Task Handle(CreateSeatType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var seatType = new SeatType(message.SeatTypeId, message.Name, message.Order, message.IsEffective);
             Session.Add(seatType);
@@ -34,7 +35,7 @@ namespace OrganisationRegistry.SeatType
         public async Task Handle(UpdateSeatType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.SeatTypeId, message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var seatType = Session.Get<SeatType>(message.SeatTypeId);
             seatType.Update(message.Name, message.Order, message.IsEffective);

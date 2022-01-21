@@ -1,10 +1,10 @@
-namespace OrganisationRegistry
+namespace OrganisationRegistry.Exceptions
 {
     using LifecyclePhaseType;
 
-    public class DefaultLifecyclePhaseAlreadyPresentException : DomainException
+    public class DefaultLifecyclePhaseAlreadyPresent : DomainException
     {
-        public DefaultLifecyclePhaseAlreadyPresentException(LifecyclePhaseTypeIsRepresentativeFor representsActivePhase)
+        public DefaultLifecyclePhaseAlreadyPresent(LifecyclePhaseTypeIsRepresentativeFor representsActivePhase)
             : base($"Standaard levensloopfase is reeds gedefinieerd voor {(representsActivePhase == LifecyclePhaseTypeIsRepresentativeFor.ActivePhase ? "actieve" : "inactieve")} levensloopfase.") { }
     }
 }

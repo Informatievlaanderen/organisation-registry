@@ -19,31 +19,31 @@
  * limitations under the License.
  */
 
-using System;
-
-namespace OrganisationRegistry.IbanBic
+namespace OrganisationRegistry.IbanBic.Exceptions
 {
+    using System;
+
     /// <summary>
     /// Exception which is thrown to indicate that IBAN's check digit is invalid.
     /// </summary>
-    public class InvalidCheckDigitException : Exception
+    public class InvalidCheckDigit : Exception
     {
         public string ActualString { get; private set; }
         public string ExpectedString { get; private set; }
 
-        public InvalidCheckDigitException() : base()
+        public InvalidCheckDigit() : base()
         { }
 
-        public InvalidCheckDigitException(string message) : base(message)
+        public InvalidCheckDigit(string message) : base(message)
         { }
 
-        public InvalidCheckDigitException(string message, Exception innerException) : base(message, innerException)
+        public InvalidCheckDigit(string message, Exception innerException) : base(message, innerException)
         { }
 
-        public InvalidCheckDigitException(string format, params object[] args) : base(string.Format(format, args))
+        public InvalidCheckDigit(string format, params object[] args) : base(string.Format(format, args))
         { }
 
-        public InvalidCheckDigitException(string message, string expected, string actual) : base(message)
+        public InvalidCheckDigit(string message, string expected, string actual) : base(message)
         {
             ActualString = actual;
             ExpectedString = expected;

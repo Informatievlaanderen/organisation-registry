@@ -2,6 +2,7 @@ namespace OrganisationRegistry.RegulationSubTheme
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -27,7 +28,7 @@ namespace OrganisationRegistry.RegulationSubTheme
             var regulationTheme = Session.Get<RegulationTheme>(message.RegulationThemeId);
 
             if (_uniqueNameValidator.IsNameTaken(message.Name, message.RegulationThemeId))
-                throw new NameNotUniqueWithinTypeException();
+                throw new NameNotUniqueWithinType();
 
             var regulationSubTheme =
                 new RegulationSubTheme(
@@ -42,7 +43,7 @@ namespace OrganisationRegistry.RegulationSubTheme
         public async Task Handle(UpdateRegulationSubTheme message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.RegulationSubThemeId, message.Name, message.RegulationThemeId))
-                throw new NameNotUniqueWithinTypeException();
+                throw new NameNotUniqueWithinType();
 
             var regulationTheme = Session.Get<RegulationTheme>(message.RegulationThemeId);
             var regulationSubTheme = Session.Get<RegulationSubTheme>(message.RegulationSubThemeId);

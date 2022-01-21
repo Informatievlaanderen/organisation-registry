@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@
         public async Task Handle(CreateRegulationTheme message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var regulationTheme = new RegulationTheme(message.RegulationThemeId, message.Name);
             Session.Add(regulationTheme);
@@ -34,7 +35,7 @@
         public async Task Handle(UpdateRegulationTheme message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.RegulationThemeId, message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var regulationTheme = Session.Get<RegulationTheme>(message.RegulationThemeId);
             regulationTheme.Update(message.Name);
