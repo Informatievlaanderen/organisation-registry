@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -27,10 +28,10 @@
         public async Task Handle(CreateLifecyclePhaseType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             if (_onlyOneDefaultLifecyclePhaseTypeValidator.ViolatesOnlyOneDefaultLifecyclePhaseTypeConstraint(message.LifecyclePhaseTypeIsRepresentativeFor, message.Status))
-                throw new DefaultLifecyclePhaseAlreadyPresentException(message.LifecyclePhaseTypeIsRepresentativeFor);
+                throw new DefaultLifecyclePhaseAlreadyPresent(message.LifecyclePhaseTypeIsRepresentativeFor);
 
             var lifecyclePhaseType = new LifecyclePhaseType(
                 message.LifecyclePhaseTypeId,
@@ -45,10 +46,10 @@
         public async Task Handle(UpdateLifecyclePhaseType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.LifecyclePhaseTypeId, message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             if (_onlyOneDefaultLifecyclePhaseTypeValidator.ViolatesOnlyOneDefaultLifecyclePhaseTypeConstraint(message.LifecyclePhaseTypeId, message.LifecyclePhaseTypeIsRepresentativeFor, message.Status))
-                throw new DefaultLifecyclePhaseAlreadyPresentException(message.LifecyclePhaseTypeIsRepresentativeFor);
+                throw new DefaultLifecyclePhaseAlreadyPresent(message.LifecyclePhaseTypeIsRepresentativeFor);
 
             var lifecyclePhaseType = Session.Get<LifecyclePhaseType>(message.LifecyclePhaseTypeId);
 

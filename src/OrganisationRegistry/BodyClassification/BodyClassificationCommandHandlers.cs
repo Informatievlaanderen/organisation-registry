@@ -3,6 +3,7 @@ namespace OrganisationRegistry.BodyClassification
     using System.Threading.Tasks;
     using BodyClassificationType;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -27,7 +28,7 @@ namespace OrganisationRegistry.BodyClassification
             var bodyClassificationType = Session.Get<BodyClassificationType>(message.BodyClassificationTypeId);
 
             if (_uniqueNameValidator.IsNameTaken(message.Name, message.BodyClassificationTypeId))
-                throw new NameNotUniqueWithinTypeException();
+                throw new NameNotUniqueWithinType();
 
             var bodyClassification = new BodyClassification(message.BodyClassificationId, message.Name, message.Order, message.Active, bodyClassificationType);
             Session.Add(bodyClassification);
@@ -37,7 +38,7 @@ namespace OrganisationRegistry.BodyClassification
         public async Task Handle(UpdateBodyClassification message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.BodyClassificationId, message.Name, message.BodyClassificationTypeId))
-                throw new NameNotUniqueWithinTypeException();
+                throw new NameNotUniqueWithinType();
 
             var bodyClassificationType = Session.Get<BodyClassificationType>(message.BodyClassificationTypeId);
             var bodyClassification = Session.Get<BodyClassification>(message.BodyClassificationId);

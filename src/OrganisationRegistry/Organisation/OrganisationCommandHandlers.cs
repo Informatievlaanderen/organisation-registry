@@ -227,7 +227,7 @@ namespace OrganisationRegistry.Organisation
             var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
 
             if (FormalFrameworkTreeHasOrganisationInIt(organisation, formalFramework, validity, parentOrganisation, new List<Organisation>()))
-                throw new CircularRelationInFormalFrameworkException();
+                throw new CircularRelationInFormalFramework();
 
             organisation.AddFormalFramework(
                 message.OrganisationFormalFrameworkId,
@@ -251,7 +251,7 @@ namespace OrganisationRegistry.Organisation
             var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
 
             if (FormalFrameworkTreeHasOrganisationInIt(organisation, formalFramework, validity, parentOrganisation, new List<Organisation>()))
-                throw new CircularRelationInFormalFrameworkException();
+                throw new CircularRelationInFormalFramework();
 
             organisation.UpdateFormalFramework(
                 message.OrganisationFormalFrameworkId,

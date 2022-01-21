@@ -22,6 +22,7 @@
 namespace OrganisationRegistry.IbanBic
 {
     using System;
+    using Exceptions;
 
     /// <summary>
     /// BIC Utility class
@@ -44,8 +45,8 @@ namespace OrganisationRegistry.IbanBic
         /// BIC validation
         /// </summary>
         /// <param name="bic">BIC to be validated.</param>
-        /// <exception cref="BicFormatException">If BIC is invalid.</exception>
-        /// <exception cref="UnsupportedCountryException">If BIC's country is not supported.</exception>
+        /// <exception cref="InvalidBicFormat">If BIC is invalid.</exception>
+        /// <exception cref="UnsupportedCountry">If BIC's country is not supported.</exception>
         public static void ValidateBIC(string bic)
         {
             try
@@ -62,17 +63,17 @@ namespace OrganisationRegistry.IbanBic
                     validateBranchCode(bic);
                 }
             }
-            catch (UnsupportedCountryException uce)
+            catch (UnsupportedCountry uce)
             {
                 throw uce;
             }
-            catch (BicFormatException bex)
+            catch (InvalidBicFormat bex)
             {
                 throw bex;
             }
             catch (Exception ex)
             {
-                throw new BicFormatException(ex.Message, BicFormatViolation.UNKNOWN, ex);
+                throw new InvalidBicFormat(ex.Message, BicFormatViolation.UNKNOWN, ex);
             }
 
         }
@@ -130,7 +131,7 @@ namespace OrganisationRegistry.IbanBic
         {
             if (string.IsNullOrEmpty(bic))
             {
-                throw new BicFormatException("Empty or null input string cannot be valid BIC", BicFormatViolation.BIC_NOT_EMPTY_OR_NULL);
+                throw new InvalidBicFormat("Empty or null input string cannot be valid BIC", BicFormatViolation.BIC_NOT_EMPTY_OR_NULL);
             }
         }
 
@@ -138,7 +139,7 @@ namespace OrganisationRegistry.IbanBic
         {
             if (bic.Length != _BIC8_LENGTH && bic.Length != _BIC11_LENGTH)
             {
-                throw new BicFormatException($"BIC length must be {_BIC8_LENGTH} or {_BIC11_LENGTH}", BicFormatViolation.BIC_LENGTH_8_OR_11);
+                throw new InvalidBicFormat($"BIC length must be {_BIC8_LENGTH} or {_BIC11_LENGTH}", BicFormatViolation.BIC_LENGTH_8_OR_11);
             }
         }
 
@@ -158,7 +159,7 @@ namespace OrganisationRegistry.IbanBic
         {
             if (!bic.Equals(bic.ToUpper()))
             {
-                throw new BicFormatException("BIC must contain only upper case letters", BicFormatViolation.BIC_ONLY_UPPER_CASE_LETTERS);
+                throw new InvalidBicFormat("BIC must contain only upper case letters", BicFormatViolation.BIC_ONLY_UPPER_CASE_LETTERS);
             }
         }
 
@@ -181,7 +182,7 @@ namespace OrganisationRegistry.IbanBic
             {
                 if (!char.IsLetter(c))
                 {
-                    throw new BicFormatException("Bank code must contain only letters", BicFormatViolation.BANK_CODE_ONLY_LETTERS);
+                    throw new InvalidBicFormat("Bank code must contain only letters", BicFormatViolation.BANK_CODE_ONLY_LETTERS);
                 }
             }
 
@@ -209,12 +210,12 @@ namespace OrganisationRegistry.IbanBic
             string countryCode = GetCountryCode(bic);
             if (countryCode.Trim().Length < _COUNTRY_CODE_LENGTH || !countryCode.Equals(countryCode.ToUpper()) || !Char.IsLetter(countryCode[0]) || !Char.IsLetter(countryCode[1]))
             {
-                throw new BicFormatException("BIC country code must contain upper case letters", BicFormatViolation.COUNTRY_CODE_ONLY_UPPER_CASE_LETTERS);
+                throw new InvalidBicFormat("BIC country code must contain upper case letters", BicFormatViolation.COUNTRY_CODE_ONLY_UPPER_CASE_LETTERS);
             }
 
             if (CountryCode.GetCountryCode(countryCode) == null)
             {
-                throw new UnsupportedCountryException("Country code is not supported", countryCode);
+                throw new UnsupportedCountry("Country code is not supported", countryCode);
             }
         }
 
@@ -245,7 +246,7 @@ namespace OrganisationRegistry.IbanBic
             {
                 if (!char.IsLetterOrDigit(c))
                 {
-                    throw new BicFormatException("Location code must contain only letters or digits", BicFormatViolation.LOCATION_CODE_ONLY_LETTERS_OR_DIGITS);
+                    throw new InvalidBicFormat("Location code must contain only letters or digits", BicFormatViolation.LOCATION_CODE_ONLY_LETTERS_OR_DIGITS);
                 }
             }
         }
@@ -274,7 +275,7 @@ namespace OrganisationRegistry.IbanBic
             {
                 if (!char.IsLetterOrDigit(c))
                 {
-                    throw new BicFormatException("Branch code must contain only letters or digits", BicFormatViolation.BRANCH_CODE_ONLY_LETTERS_OR_DIGITS);
+                    throw new InvalidBicFormat("Branch code must contain only letters or digits", BicFormatViolation.BRANCH_CODE_ONLY_LETTERS_OR_DIGITS);
                 }
             }
         }

@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@
         public async Task Handle(CreateLabelType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var labelType = new LabelType(message.LabelTypeId, message.Name);
             Session.Add(labelType);
@@ -34,7 +35,7 @@
         public async Task Handle(UpdateLabelType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.LabelTypeId, message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var labelType = Session.Get<LabelType>(message.LabelTypeId);
             labelType.Update(message.Name);

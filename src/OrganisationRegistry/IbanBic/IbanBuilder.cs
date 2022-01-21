@@ -22,6 +22,7 @@
 namespace OrganisationRegistry.IbanBic
 {
     using System.Text;
+    using Exceptions;
 
     /// <summary>
     /// IBAN Builder class
@@ -167,8 +168,8 @@ namespace OrganisationRegistry.IbanBic
         /// </summary>
         /// <param name="validate">True if the generated IBAN will be validated after generation</param>
         /// <returns>New IBAN instance</returns>
-        /// <exception cref="IbanFormatException">If values doesn't meet requirements for valid IBAN.</exception>
-        /// <exception cref="UnsupportedCountryException">If specified country code is not supported.</exception>
+        /// <exception cref="InvalidIbanFormat">If values doesn't meet requirements for valid IBAN.</exception>
+        /// <exception cref="UnsupportedCountry">If specified country code is not supported.</exception>
         public Iban Build(bool validate)
         {
             require(_countryCodeEntry, _bankCode, _accountNumber);
@@ -191,8 +192,8 @@ namespace OrganisationRegistry.IbanBic
         /// <param name="validate">True if the generated IBAN will be validated after generation</param>
         /// <param name="autopadding">True if Bank code, Account number prefix and Account number can be auto left-padded with zeroes if they are shorter than specified in BBAN rules</param>
         /// <returns>New IBAN instance</returns>
-        /// <exception cref="IbanFormatException">If values doesn't meet requirements for valid IBAN.</exception>
-        /// <exception cref="UnsupportedCountryException">If specified country code is not supported.</exception>
+        /// <exception cref="InvalidIbanFormat">If values doesn't meet requirements for valid IBAN.</exception>
+        /// <exception cref="UnsupportedCountry">If specified country code is not supported.</exception>
         public Iban Build(bool validate, bool autopadding)
         {
             _enableAutopadding = autopadding;
@@ -225,7 +226,7 @@ namespace OrganisationRegistry.IbanBic
 
             if (bbanStructure == null)
             {
-                throw new UnsupportedCountryException("Country code is not supported", _countryCodeEntry.Alpha2);
+                throw new UnsupportedCountry("Country code is not supported", _countryCodeEntry.Alpha2);
             }
 
             foreach (BBanEntry entry in bbanStructure.Entries)
@@ -273,22 +274,22 @@ namespace OrganisationRegistry.IbanBic
         /// <param name="countryCodeEntry">Country code Entry</param>
         /// <param name="bankCode">Bank code</param>
         /// <param name="accountNumber">Account number</param>
-        /// <exception cref="IbanFormatException">Thrown when one of the parameters is not supplied</exception>
+        /// <exception cref="InvalidIbanFormat">Thrown when one of the parameters is not supplied</exception>
         private void require(CountryCodeEntry countryCodeEntry, string bankCode, string accountNumber)
         {
             if (_countryCodeEntry == null)
             {
-                throw new IbanFormatException("Country code is required, it cannot be null.", IbanFormatViolation.COUNTRY_CODE_NOT_NULL);
+                throw new InvalidIbanFormat("Country code is required, it cannot be null.", IbanFormatViolation.COUNTRY_CODE_NOT_NULL);
             }
 
             if (string.IsNullOrEmpty(bankCode))
             {
-                throw new IbanFormatException("Bank code is required, it cannot be empty.", IbanFormatViolation.BANK_CODE_NOT_NULL);
+                throw new InvalidIbanFormat("Bank code is required, it cannot be empty.", IbanFormatViolation.BANK_CODE_NOT_NULL);
             }
 
             if (string.IsNullOrEmpty(accountNumber))
             {
-                throw new IbanFormatException("Account number is required, it cannot be empty.", IbanFormatViolation.ACCOUNT_NUMBER_NOT_NULL);
+                throw new InvalidIbanFormat("Account number is required, it cannot be empty.", IbanFormatViolation.ACCOUNT_NUMBER_NOT_NULL);
             }
         }
 
@@ -296,12 +297,12 @@ namespace OrganisationRegistry.IbanBic
         {
             if (_bankCode.Length > requiredLength)
             {
-                throw new IbanFormatException("Bank Code is too long for the specified country", IbanFormatViolation.BANK_CODE_TOO_LONG,
+                throw new InvalidIbanFormat("Bank Code is too long for the specified country", IbanFormatViolation.BANK_CODE_TOO_LONG,
                                                 $"Actual length: {_bankCode.Length}", $"Expected length: {requiredLength}");
             }
             else if (_bankCode.Length < requiredLength && !_enableAutopadding)
             {
-                throw new IbanFormatException("Bank Code is too short for the specified country and the autopadding feature is disabled", IbanFormatViolation.BANK_CODE_TOO_SHORT,
+                throw new InvalidIbanFormat("Bank Code is too short for the specified country and the autopadding feature is disabled", IbanFormatViolation.BANK_CODE_TOO_SHORT,
                                                 $"Actual length: {_bankCode.Length}", $"Expected length: {requiredLength}");
             }
             else
@@ -314,12 +315,12 @@ namespace OrganisationRegistry.IbanBic
         {
             if (_accountNumberPrefix.Length > requiredLength)
             {
-                throw new IbanFormatException("Account number prefix is too long for the specified country", IbanFormatViolation.ACCOUNT_NUMBER_PREFIX_TOO_LONG,
+                throw new InvalidIbanFormat("Account number prefix is too long for the specified country", IbanFormatViolation.ACCOUNT_NUMBER_PREFIX_TOO_LONG,
                     $"Actual length: {_accountNumberPrefix.Length}", $"Expected length: {requiredLength}");
             }
             else if (_accountNumberPrefix.Length < requiredLength && !_enableAutopadding)
             {
-                throw new IbanFormatException("Account number prefix is too short for the specified country and the autopadding feature is disabled", IbanFormatViolation.ACCOUNT_NUMBER_PREFIX_TOO_SHORT,
+                throw new InvalidIbanFormat("Account number prefix is too short for the specified country and the autopadding feature is disabled", IbanFormatViolation.ACCOUNT_NUMBER_PREFIX_TOO_SHORT,
                                                 $"Actual length: {_bankCode.Length}", $"Expected length: {requiredLength}");
             }
             else
@@ -332,12 +333,12 @@ namespace OrganisationRegistry.IbanBic
         {
             if (_accountNumber.Length > requiredLength)
             {
-                throw new IbanFormatException("Account number is too long for the specified country", IbanFormatViolation.ACCOUNT_NUMBER_TOO_LONG,
+                throw new InvalidIbanFormat("Account number is too long for the specified country", IbanFormatViolation.ACCOUNT_NUMBER_TOO_LONG,
                                                 $"Actual length: {_accountNumber.Length}", $"Expected length: {requiredLength}");
             }
             else if (_accountNumber.Length < requiredLength && !_enableAutopadding)
             {
-                throw new IbanFormatException("Account number is too short for the specified country and the autopadding feature is disabled", IbanFormatViolation.ACCOUNT_NUMBER_TOO_SHORT,
+                throw new InvalidIbanFormat("Account number is too short for the specified country and the autopadding feature is disabled", IbanFormatViolation.ACCOUNT_NUMBER_TOO_SHORT,
                                                 $"Actual length: {_bankCode.Length}", $"Expected length: {requiredLength}");
             }
             else

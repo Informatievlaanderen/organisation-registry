@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@
         public async Task Handle(CreateMandateRoleType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var mandateRoleType = new MandateRoleType(message.MandateRoleTypeId, message.Name);
             Session.Add(mandateRoleType);
@@ -34,7 +35,7 @@
         public async Task Handle(UpdateMandateRoleType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.MandateRoleTypeId, message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var mandateRoleType = Session.Get<MandateRoleType>(message.MandateRoleTypeId);
             mandateRoleType.Update(message.Name);

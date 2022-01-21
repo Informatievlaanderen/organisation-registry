@@ -2,6 +2,7 @@ namespace OrganisationRegistry.OrganisationRelationType
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@ namespace OrganisationRegistry.OrganisationRelationType
         public async Task Handle(CreateOrganisationRelationType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var organisationRelationType = new OrganisationRelationType(message.OrganisationRelationTypeId, message.Name, message.InverseName);
             Session.Add(organisationRelationType);
@@ -34,7 +35,7 @@ namespace OrganisationRegistry.OrganisationRelationType
         public async Task Handle(UpdateOrganisationRelationType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.OrganisationRelationTypeId, message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var organisationRelationType = Session.Get<OrganisationRelationType>(message.OrganisationRelationTypeId);
             organisationRelationType.Update(message.Name, message.InverseName);

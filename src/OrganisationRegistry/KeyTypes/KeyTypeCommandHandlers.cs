@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@
         public async Task Handle(CreateKeyType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var keyType = new KeyType(message.KeyTypeId, message.Name);
             Session.Add(keyType);
@@ -34,7 +35,7 @@
         public async Task Handle(UpdateKeyType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.KeyTypeId, message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var keyType = Session.Get<KeyType>(message.KeyTypeId);
             keyType.Update(message.Name);

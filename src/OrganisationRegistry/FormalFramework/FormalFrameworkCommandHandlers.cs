@@ -2,6 +2,7 @@ namespace OrganisationRegistry.FormalFramework
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using FormalFrameworkCategory;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -28,10 +29,10 @@ namespace OrganisationRegistry.FormalFramework
         public async Task Handle(CreateFormalFramework message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name, message.FormalFrameworkCategoryId))
-                throw new NameNotUniqueWithinTypeException();
+                throw new NameNotUniqueWithinType();
 
             if (_uniqueCodeValidator.IsCodeTaken(message.Code))
-                throw new CodeNotUniqueException();
+                throw new CodeNotUnique();
 
             var formalFrameworkCategory = Session.Get<FormalFrameworkCategory>(message.FormalFrameworkCategoryId);
 
@@ -43,10 +44,10 @@ namespace OrganisationRegistry.FormalFramework
         public async Task Handle(UpdateFormalFramework message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.FormalFrameworkId, message.Name, message.FormalFrameworkCategoryId))
-                throw new NameNotUniqueWithinTypeException();
+                throw new NameNotUniqueWithinType();
 
             if (_uniqueCodeValidator.IsCodeTaken(message.FormalFrameworkId, message.Code))
-                throw new CodeNotUniqueException();
+                throw new CodeNotUnique();
 
             var formalFrameworkCategory = Session.Get<FormalFrameworkCategory>(message.FormalFrameworkCategoryId);
 

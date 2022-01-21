@@ -21,6 +21,8 @@
 
 namespace OrganisationRegistry.IbanBic
 {
+    using Exceptions;
+
     /// <summary>
     /// Business Identifier Codes (also known as SWIFT-BIC, BIC code, SWIFT ID or SWIFT code).
     /// ISO 9362
@@ -39,8 +41,8 @@ namespace OrganisationRegistry.IbanBic
         /// </summary>
         /// <param name="bicCode">The string to be parsed as BIC code.</param>
         /// <returns>BIC object holding the value represented by the string argument.</returns>
-        /// <exception cref="BicFormatException">If the string contains invalid BIC code<./exception>
-        /// <exception cref="UnsupportedCountryException">If BIC's country is not supported.</exception>
+        /// <exception cref="InvalidBicFormat">If the string contains invalid BIC code<./exception>
+        /// <exception cref="UnsupportedCountry">If BIC's country is not supported.</exception>
         public static Bic CreateInstance(string bicCode)
         {
             BicUtils.ValidateBIC(bicCode);

@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@
         public async Task Handle(CreateOrganisationClassificationType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var organisationClassificationType = new OrganisationClassificationType(message.OrganisationClassificationTypeId, message.Name);
             Session.Add(organisationClassificationType);
@@ -34,7 +35,7 @@
         public async Task Handle(UpdateOrganisationClassificationType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.OrganisationClassificationTypeId, message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
             organisationClassificationType.Update(message.Name);

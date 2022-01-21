@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@
         public async Task Handle(CreateFunctionType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var functionType = new FunctionType(message.FunctionTypeId, message.Name);
 
@@ -35,7 +36,7 @@
         public async Task Handle(UpdateFunctionType message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.FunctionTypeId, message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var functionType = Session.Get<FunctionType>(message.FunctionTypeId);
 

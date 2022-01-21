@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@
         public async Task Handle(CreateFormalFrameworkCategory message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var formalFrameworkCategory = new FormalFrameworkCategory(message.FormalFrameworkCategoryId, message.Name);
             Session.Add(formalFrameworkCategory);
@@ -34,7 +35,7 @@
         public async Task Handle(UpdateFormalFrameworkCategory message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.FormalFrameworkCategoryId, message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var formalFrameworkCategory = Session.Get<FormalFrameworkCategory>(message.FormalFrameworkCategoryId);
             formalFrameworkCategory.Update(message.Name);

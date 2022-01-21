@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using Commands;
+    using Exceptions;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@
         public async Task Handle(CreatePurpose message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var purpose = new Purpose(message.PurposeId, message.Name);
             Session.Add(purpose);
@@ -34,7 +35,7 @@
         public async Task Handle(UpdatePurpose message)
         {
             if (_uniqueNameValidator.IsNameTaken(message.PurposeId, message.Name))
-                throw new NameNotUniqueException();
+                throw new NameNotUnique();
 
             var purpose = Session.Get<Purpose>(message.PurposeId);
             purpose.Update(message.Name);
