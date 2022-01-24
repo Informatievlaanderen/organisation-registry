@@ -1,3 +1,10 @@
+## [1.120.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.120.0...v1.120.1) (2022-01-24)
+
+
+### Bug Fixes
+
+* or-663 unsubscribe from all subscriptions on destroy, hoping that this resolves the issue ([85ff28f](https://github.com/informatievlaanderen/organisation-registry/commit/85ff28fc0b84955f8aff0d9878ee4780b8027b5f))
+
 # [1.120.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.119.0...v1.120.0) (2022-01-21)
 
 
