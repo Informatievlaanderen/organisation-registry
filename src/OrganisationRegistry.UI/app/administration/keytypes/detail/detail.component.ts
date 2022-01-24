@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -8,18 +8,21 @@ import { Create, ICrud, Update } from 'core/crud';
 import { required } from 'core/validation';
 
 import { KeyType, KeyTypeService } from 'services/keytypes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: [ 'detail.style.css' ]
 })
-export class KeyTypeDetailComponent implements OnInit {
+export class KeyTypeDetailComponent implements OnInit, OnDestroy {
   public isEditMode: boolean;
   public form: FormGroup;
 
   private crud: ICrud<KeyType>;
   private readonly createAlerts = new CreateAlertMessages('Informatiesysteem');
   private readonly updateAlerts = new UpdateAlertMessages('Informatiesysteem');
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   get isFormValid() {
     return this.form.enabled && this.form.valid;
@@ -62,10 +65,14 @@ export class KeyTypeDetailComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   createOrUpdate(value: KeyType) {
     this.form.disable();
 
-    this.crud.save(value)
+    this.subscriptions.push(this.crud.save(value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -81,6 +88,6 @@ export class KeyTypeDetailComponent implements OnInit {
           }
         },
         error => this.crud.alertSaveError(error)
-      );
+      ));
   }
 }

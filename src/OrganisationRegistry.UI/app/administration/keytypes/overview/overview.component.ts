@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertService, Alert, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -9,12 +9,13 @@ import {
   KeyTypeService,
   KeyTypeFilter
 } from 'services/keytypes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class KeyTypeOverviewComponent implements OnInit {
+export class KeyTypeOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public keyTypes: PagedResult<KeyTypeListItem> = new PagedResult<KeyTypeListItem>();
 
@@ -22,12 +23,18 @@ export class KeyTypeOverviewComponent implements OnInit {
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private keyTypeService: KeyTypeService) { }
 
   ngOnInit() {
     this.loadKeyTypes();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<KeyTypeFilter>) {
@@ -47,7 +54,7 @@ export class KeyTypeOverviewComponent implements OnInit {
       ? this.keyTypeService.getKeyTypes(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.keyTypeService.getKeyTypes(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    keyTypes
+    this.subscriptions.push(keyTypes
       .finally(() => this.isLoading = false)
       .subscribe(
         newKeyTypes => this.keyTypes = newKeyTypes,
@@ -56,6 +63,6 @@ export class KeyTypeOverviewComponent implements OnInit {
             AlertType.Error,
             'Informatiesystemen kunnen niet geladen worden!',
             'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'
-          )));
+          ))));
   }
 }

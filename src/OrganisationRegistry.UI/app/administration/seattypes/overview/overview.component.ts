@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertService, Alert, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -9,12 +9,13 @@ import {
   SeatTypeService,
   SeatTypeFilter
 } from 'services/seattypes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class SeatTypeOverviewComponent implements OnInit {
+export class SeatTypeOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public seatTypes: PagedResult<SeatType> = new PagedResult<SeatType>();
 
@@ -22,12 +23,18 @@ export class SeatTypeOverviewComponent implements OnInit {
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private seatTypeService: SeatTypeService) { }
 
   ngOnInit() {
     this.loadSeatTypes();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<SeatTypeFilter>) {
@@ -47,7 +54,7 @@ export class SeatTypeOverviewComponent implements OnInit {
       ? this.seatTypeService.getSeatTypes(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.seatTypeService.getSeatTypes(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    seatTypes
+    this.subscriptions.push(seatTypes
       .finally(() => this.isLoading = false)
       .subscribe(
         newSeatTypes => this.seatTypes = newSeatTypes,
@@ -55,6 +62,6 @@ export class SeatTypeOverviewComponent implements OnInit {
           new Alert(
             AlertType.Error,
             'Post types kunnen niet geladen worden!',
-            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -8,18 +8,21 @@ import { Create, ICrud, Update } from 'core/crud';
 import { required } from 'core/validation';
 
 import { LifecyclePhaseType, LifecyclePhaseTypeService } from 'services/lifecyclephasetypes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: [ 'detail.style.css' ]
 })
-export class LifecyclePhaseTypeDetailComponent implements OnInit {
+export class LifecyclePhaseTypeDetailComponent implements OnInit, OnDestroy {
   public isEditMode: boolean;
   public form: FormGroup;
 
   private crud: ICrud<LifecyclePhaseType>;
   private readonly createAlerts = new CreateAlertMessages('Levensloopfase type');
   private readonly updateAlerts = new UpdateAlertMessages('Levensloopfase type');
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   get isFormValid() {
     return this.form.enabled && this.form.valid;
@@ -51,7 +54,7 @@ export class LifecyclePhaseTypeDetailComponent implements OnInit {
         ? new Update<LifecyclePhaseTypeService, LifecyclePhaseType>(id, this.itemService, this.alertService, this.updateAlerts)
         : new Create<LifecyclePhaseTypeService, LifecyclePhaseType>(this.itemService, this.alertService, this.createAlerts);
 
-      this.crud
+      this.subscriptions.push(this.crud
         .load(LifecyclePhaseType)
         .finally(() => this.form.enable())
         .subscribe(
@@ -59,14 +62,18 @@ export class LifecyclePhaseTypeDetailComponent implements OnInit {
             if (item)
               this.form.setValue(item);
           },
-          error => this.crud.alertLoadError(error));
+          error => this.crud.alertLoadError(error)));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   createOrUpdate(value: LifecyclePhaseType) {
     this.form.disable();
 
-    this.crud.save(value)
+    this.subscriptions.push(this.crud.save(value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -81,6 +88,6 @@ export class LifecyclePhaseTypeDetailComponent implements OnInit {
             this.crud.alertSaveSuccess(value, lifecyclePhaseTypeUrl);
           }
         },
-        error => this.crud.alertSaveError(error));
+        error => this.crud.alertSaveError(error)));
   }
 }

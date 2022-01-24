@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertService, Alert, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -9,12 +9,13 @@ import {
   MandateRoleTypeService,
   MandateRoleTypeFilter
 } from 'services/mandateroletypes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class MandateRoleTypeOverviewComponent implements OnInit {
+export class MandateRoleTypeOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public mandateRoleTypes: PagedResult<MandateRoleType> = new PagedResult<MandateRoleType>();
 
@@ -22,12 +23,18 @@ export class MandateRoleTypeOverviewComponent implements OnInit {
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private mandateRoleTypeService: MandateRoleTypeService) { }
 
   ngOnInit() {
     this.loadMandateRoleTypes();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<MandateRoleTypeFilter>) {
@@ -47,7 +54,7 @@ export class MandateRoleTypeOverviewComponent implements OnInit {
       ? this.mandateRoleTypeService.getMandateRoleTypes(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.mandateRoleTypeService.getMandateRoleTypes(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    mandateRoleTypes
+    this.subscriptions.push(mandateRoleTypes
       .finally(() => this.isLoading = false)
       .subscribe(
         newMandateRoleTypes => this.mandateRoleTypes = newMandateRoleTypes,
@@ -55,6 +62,6 @@ export class MandateRoleTypeOverviewComponent implements OnInit {
           new Alert(
             AlertType.Error,
             'Mandaat rollen kunnen niet geladen worden!',
-            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }

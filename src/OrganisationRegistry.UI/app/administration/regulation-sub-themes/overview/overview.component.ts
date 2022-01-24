@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertService, Alert, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -9,12 +9,13 @@ import {
   RegulationSubThemeService,
   RegulationSubThemeFilter
 } from 'services/regulation-sub-themes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class RegulationSubThemeOverviewComponent implements OnInit {
+export class RegulationSubThemeOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public regulationSubThemes: PagedResult<RegulationSubTheme> = new PagedResult<RegulationSubTheme>();
 
@@ -22,12 +23,18 @@ export class RegulationSubThemeOverviewComponent implements OnInit {
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private regulationSubThemeService: RegulationSubThemeService) { }
 
   ngOnInit() {
     this.loadRegulationSubThemes();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<RegulationSubThemeFilter>) {
@@ -47,7 +54,7 @@ export class RegulationSubThemeOverviewComponent implements OnInit {
       ? this.regulationSubThemeService.getRegulationSubThemes(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.regulationSubThemeService.getRegulationSubThemes(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    regulationSubThemes
+    this.subscriptions.push(regulationSubThemes
       .finally(() => this.isLoading = false)
       .subscribe(
         newRegulationSubThemes => this.regulationSubThemes = newRegulationSubThemes,
@@ -56,6 +63,6 @@ export class RegulationSubThemeOverviewComponent implements OnInit {
             AlertType.Error,
             'Regelgevingsubthema\'s kunnen niet geladen worden!',
             'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'
-          )));
+          ))));
   }
 }

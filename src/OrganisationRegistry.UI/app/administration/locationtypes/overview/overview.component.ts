@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertService, Alert, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -9,12 +9,13 @@ import {
   LocationTypeService,
   LocationTypeFilter
 } from 'services/locationtypes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class LocationTypeOverviewComponent implements OnInit {
+export class LocationTypeOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public locationTypes: PagedResult<LocationType> = new PagedResult<LocationType>();
 
@@ -22,12 +23,18 @@ export class LocationTypeOverviewComponent implements OnInit {
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private locationTypeService: LocationTypeService) { }
 
   ngOnInit() {
     this.loadLocationTypes();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<LocationTypeFilter>) {
@@ -47,7 +54,7 @@ export class LocationTypeOverviewComponent implements OnInit {
       ? this.locationTypeService.getLocationTypes(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.locationTypeService.getLocationTypes(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    locationTypes
+    this.subscriptions.push(locationTypes
       .finally(() => this.isLoading = false)
       .subscribe(
         newLocationTypes => this.locationTypes = newLocationTypes,
@@ -55,6 +62,6 @@ export class LocationTypeOverviewComponent implements OnInit {
           new Alert(
             AlertType.Error,
             'Locatie types kunnen niet geladen worden!',
-            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }

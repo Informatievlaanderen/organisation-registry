@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertService, Alert, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -9,12 +9,13 @@ import {
   LifecyclePhaseTypeService,
   LifecyclePhaseTypeFilter
 } from 'services/lifecyclephasetypes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class LifecyclePhaseTypeOverviewComponent implements OnInit {
+export class LifecyclePhaseTypeOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public lifecyclePhaseTypes: PagedResult<LifecyclePhaseType> = new PagedResult<LifecyclePhaseType>();
 
@@ -22,12 +23,18 @@ export class LifecyclePhaseTypeOverviewComponent implements OnInit {
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private lifecyclePhaseTypeService: LifecyclePhaseTypeService) { }
 
   ngOnInit() {
     this.loadLifecyclePhaseTypes();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<LifecyclePhaseTypeFilter>) {
@@ -47,7 +54,7 @@ export class LifecyclePhaseTypeOverviewComponent implements OnInit {
       ? this.lifecyclePhaseTypeService.getLifecyclePhaseTypes(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.lifecyclePhaseTypeService.getLifecyclePhaseTypes(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    lifecyclePhaseTypes
+    this.subscriptions.push(lifecyclePhaseTypes
       .finally(() => this.isLoading = false)
       .subscribe(
         newLifecyclePhaseTypes => this.lifecyclePhaseTypes = newLifecyclePhaseTypes,
@@ -55,6 +62,6 @@ export class LifecyclePhaseTypeOverviewComponent implements OnInit {
           new Alert(
             AlertType.Error,
             'Levensloopfase types kunnen niet geladen worden!',
-            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }

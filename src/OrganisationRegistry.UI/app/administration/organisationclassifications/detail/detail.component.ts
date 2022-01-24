@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
@@ -11,12 +11,13 @@ import { OrganisationClassification, OrganisationClassificationService } from 's
 import { OrganisationClassificationTypeService } from 'services/organisationclassificationtypes';
 
 import { SearchResult } from 'shared/components/form/form-group-autocomplete';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: [ 'detail.style.css' ]
 })
-export class OrganisationClassificationDetailComponent implements OnInit {
+export class OrganisationClassificationDetailComponent implements OnInit, OnDestroy {
   public isEditMode: boolean;
   public form: FormGroup;
   public initialResult: SearchResult;
@@ -24,6 +25,8 @@ export class OrganisationClassificationDetailComponent implements OnInit {
   private crud: ICrud<OrganisationClassification>;
   private readonly createAlerts = new CreateAlertMessages('Organisatieclassificatie');
   private readonly updateAlerts = new UpdateAlertMessages('Organisatieclassificatie');
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   get isFormValid() {
     return this.form.enabled && this.form.valid;
@@ -58,7 +61,7 @@ export class OrganisationClassificationDetailComponent implements OnInit {
         ? new Update<OrganisationClassificationService, OrganisationClassification>(id, this.itemService, this.alertService, this.updateAlerts)
         : new Create<OrganisationClassificationService, OrganisationClassification>(this.itemService, this.alertService, this.createAlerts);
 
-      this.crud
+      this.subscriptions.push(this.crud
         .load(OrganisationClassification)
         .finally(() => this.form.enable())
         .subscribe(
@@ -78,14 +81,18 @@ export class OrganisationClassificationDetailComponent implements OnInit {
               });
           },
           error => this.crud.alertLoadError(error)
-        );
+        ));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   createOrUpdate(value: OrganisationClassification) {
     this.form.disable();
 
-    this.crud.save(value)
+    this.subscriptions.push(this.crud.save(value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -101,6 +108,6 @@ export class OrganisationClassificationDetailComponent implements OnInit {
           }
         },
         error => this.crud.alertSaveError(error)
-      );
+      ));
   }
 }

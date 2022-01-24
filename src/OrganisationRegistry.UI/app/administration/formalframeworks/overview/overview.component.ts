@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertService, Alert, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -9,12 +9,13 @@ import {
   FormalFrameworkService,
   FormalFrameworkFilter
 } from 'services/formalframeworks';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class FormalFrameworkOverviewComponent implements OnInit {
+export class FormalFrameworkOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public formalFrameworks: PagedResult<FormalFramework> = new PagedResult<FormalFramework>();
 
@@ -22,12 +23,18 @@ export class FormalFrameworkOverviewComponent implements OnInit {
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private formalFrameworkService: FormalFrameworkService) { }
 
   ngOnInit() {
     this.loadFormalFrameworks();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<FormalFrameworkFilter>) {
@@ -47,7 +54,7 @@ export class FormalFrameworkOverviewComponent implements OnInit {
       ? this.formalFrameworkService.getFormalFrameworks(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.formalFrameworkService.getFormalFrameworks(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    formalFrameworks
+    this.subscriptions.push(formalFrameworks
       .finally(() => this.isLoading = false)
       .subscribe(
         newFormalFrameworks => this.formalFrameworks = newFormalFrameworks,
@@ -56,6 +63,6 @@ export class FormalFrameworkOverviewComponent implements OnInit {
             AlertType.Error,
             'Toepassingsgebieden kunnen niet geladen worden!',
             'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'
-          )));
+          ))));
   }
 }

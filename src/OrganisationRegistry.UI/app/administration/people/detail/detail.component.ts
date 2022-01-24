@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
@@ -10,6 +10,7 @@ import { required, date } from 'core/validation';
 import { Person, PersonService } from 'services/people';
 
 import { RadioItem } from 'shared/components/form/form-group-radio/form-group-radio.model';
+import {Subscription} from "rxjs/Subscription";
 
 declare var moment: any; // global moment
 
@@ -17,7 +18,7 @@ declare var moment: any; // global moment
   templateUrl: 'detail.template.html',
   styleUrls: [ 'detail.style.css' ]
 })
-export class PersonDetailComponent implements OnInit {
+export class PersonDetailComponent implements OnInit, OnDestroy {
   public isEditMode: boolean;
   public form: FormGroup;
 
@@ -27,6 +28,8 @@ export class PersonDetailComponent implements OnInit {
   private crud: ICrud<Person>;
   private readonly createAlerts = new CreateAlertMessages('Persoon');
   private readonly updateAlerts = new UpdateAlertMessages('Persoon');
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   get isFormValid() {
     return this.form.enabled && this.form.valid;
@@ -65,7 +68,7 @@ export class PersonDetailComponent implements OnInit {
         ? new Update<PersonService, Person>(id, this.itemService, this.alertService, this.updateAlerts)
         : new Create<PersonService, Person>(this.itemService, this.alertService, this.createAlerts);
 
-      this.crud
+      this.subscriptions.push(this.crud
         .load(Person)
         .finally(() => this.form.enable())
         .subscribe(
@@ -74,14 +77,18 @@ export class PersonDetailComponent implements OnInit {
               this.form.setValue(item);
           },
           error => this.crud.alertLoadError(error)
-        );
+        ));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   createOrUpdate(value: Person) {
     this.form.disable();
 
-    this.crud.save(value)
+    this.subscriptions.push(this.crud.save(value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -99,6 +106,6 @@ export class PersonDetailComponent implements OnInit {
           }
         },
         error => this.crud.alertSaveError(error)
-      );
+      ));
   }
 }

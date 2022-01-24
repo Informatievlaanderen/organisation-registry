@@ -1,4 +1,4 @@
-﻿import { Component, ElementRef, OnInit } from '@angular/core';
+﻿import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -8,18 +8,21 @@ import { Create, ICrud, Update } from 'core/crud';
 import { required } from 'core/validation';
 
 import { LocationType, LocationTypeService } from 'services/locationtypes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: [ 'detail.style.css' ]
 })
-export class LocationTypeDetailComponent implements OnInit {
+export class LocationTypeDetailComponent implements OnInit, OnDestroy {
   public isEditMode: boolean;
   public form: FormGroup;
 
   private crud: ICrud<LocationType>;
   private readonly createAlerts = new CreateAlertMessages('Locatie type');
   private readonly updateAlerts = new UpdateAlertMessages('Locatie type');
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   get isFormValid() {
     return this.form.enabled && this.form.valid;
@@ -49,7 +52,7 @@ export class LocationTypeDetailComponent implements OnInit {
         ? new Update<LocationTypeService, LocationType>(id, this.itemService, this.alertService, this.updateAlerts)
         : new Create<LocationTypeService, LocationType>(this.itemService, this.alertService, this.createAlerts);
 
-      this.crud
+      this.subscriptions.push(this.crud
         .load(LocationType)
         .finally(() => this.form.enable())
         .subscribe(
@@ -57,14 +60,18 @@ export class LocationTypeDetailComponent implements OnInit {
             if (item)
               this.form.setValue(item);
           },
-          error => this.crud.alertLoadError(error));
+          error => this.crud.alertLoadError(error)));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   createOrUpdate(value: LocationType) {
     this.form.disable();
 
-    this.crud.save(value)
+    this.subscriptions.push(this.crud.save(value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -79,6 +86,6 @@ export class LocationTypeDetailComponent implements OnInit {
             this.crud.alertSaveSuccess(value, locationTypeUrl);
           }
         },
-        error => this.crud.alertSaveError(error));
+        error => this.crud.alertSaveError(error)));
   }
 }
