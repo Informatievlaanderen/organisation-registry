@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -8,18 +8,21 @@ import { Create, ICrud, Update } from 'core/crud';
 import { required } from 'core/validation';
 
 import { BodyClassificationType, BodyClassificationTypeService } from 'services/bodyclassificationtypes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: [ 'detail.style.css' ]
 })
-export class BodyClassificationTypeDetailComponent implements OnInit {
+export class BodyClassificationTypeDetailComponent implements OnInit, OnDestroy {
   public isEditMode: boolean;
   public form: FormGroup;
 
   private crud: ICrud<BodyClassificationType>;
   private readonly createAlerts = new CreateAlertMessages('Orgaan classificatietype');
   private readonly updateAlerts = new UpdateAlertMessages('Orgaan classificatietype');
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   get isFormValid() {
     return this.form.enabled && this.form.valid;
@@ -49,7 +52,7 @@ export class BodyClassificationTypeDetailComponent implements OnInit {
         ? new Update<BodyClassificationTypeService, BodyClassificationType>(id, this.itemService, this.alertService, this.updateAlerts)
         : new Create<BodyClassificationTypeService, BodyClassificationType>(this.itemService, this.alertService, this.createAlerts);
 
-      this.crud
+      this.subscriptions.push(this.crud
         .load(BodyClassificationType)
         .finally(() => this.form.enable())
         .subscribe(
@@ -58,14 +61,18 @@ export class BodyClassificationTypeDetailComponent implements OnInit {
               this.form.setValue(item);
           },
           error => this.crud.alertLoadError(error)
-        );
+        ));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   createOrUpdate(value: BodyClassificationType) {
     this.form.disable();
 
-    this.crud.save(value)
+    this.subscriptions.push(this.crud.save(value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -81,6 +88,6 @@ export class BodyClassificationTypeDetailComponent implements OnInit {
           }
         },
         error => this.crud.alertSaveError(error)
-      );
+      ));
   }
 }

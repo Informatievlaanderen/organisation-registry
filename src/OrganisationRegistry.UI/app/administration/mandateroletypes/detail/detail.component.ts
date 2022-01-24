@@ -1,4 +1,4 @@
-﻿import { Component, ElementRef, OnInit } from '@angular/core';
+﻿import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -8,18 +8,21 @@ import { Create, ICrud, Update } from 'core/crud';
 import { required } from 'core/validation';
 
 import { MandateRoleType, MandateRoleTypeService } from 'services/mandateroletypes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: [ 'detail.style.css' ]
 })
-export class MandateRoleTypeDetailComponent implements OnInit {
+export class MandateRoleTypeDetailComponent implements OnInit, OnDestroy {
   public isEditMode: boolean;
   public form: FormGroup;
 
   private crud: ICrud<MandateRoleType>;
   private readonly createAlerts = new CreateAlertMessages('Mandaat rol type');
   private readonly updateAlerts = new UpdateAlertMessages('Mandaat rol type');
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   get isFormValid() {
     return this.form.enabled && this.form.valid;
@@ -49,7 +52,7 @@ export class MandateRoleTypeDetailComponent implements OnInit {
         ? new Update<MandateRoleTypeService, MandateRoleType>(id, this.itemService, this.alertService, this.updateAlerts)
         : new Create<MandateRoleTypeService, MandateRoleType>(this.itemService, this.alertService, this.createAlerts);
 
-      this.crud
+      this.subscriptions.push(this.crud
         .load(MandateRoleType)
         .finally(() => this.form.enable())
         .subscribe(
@@ -57,14 +60,18 @@ export class MandateRoleTypeDetailComponent implements OnInit {
             if (item)
               this.form.setValue(item);
           },
-          error => this.crud.alertLoadError(error));
+          error => this.crud.alertLoadError(error)));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   createOrUpdate(value: MandateRoleType) {
     this.form.disable();
 
-    this.crud.save(value)
+    this.subscriptions.push(this.crud.save(value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -79,6 +86,6 @@ export class MandateRoleTypeDetailComponent implements OnInit {
             this.crud.alertSaveSuccess(value, mandateRoleTypeUrl);
           }
         },
-        error => this.crud.alertSaveError(error));
+        error => this.crud.alertSaveError(error)));
   }
 }

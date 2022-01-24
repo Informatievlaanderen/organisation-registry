@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertService, Alert, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -9,12 +9,13 @@ import {
   FormalFrameworkCategoryService,
   FormalFrameworkCategoryFilter
 } from 'services/formalframeworkcategories';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class FormalFrameworkCategoryOverviewComponent implements OnInit {
+export class FormalFrameworkCategoryOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public formalFrameworkCategories: PagedResult<FormalFrameworkCategory> = new PagedResult<FormalFrameworkCategory>();
 
@@ -22,12 +23,18 @@ export class FormalFrameworkCategoryOverviewComponent implements OnInit {
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private formalFrameworkCategoryService: FormalFrameworkCategoryService) { }
 
   ngOnInit() {
     this.loadFormalFrameworkCategories();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<FormalFrameworkCategoryFilter>) {
@@ -47,7 +54,7 @@ export class FormalFrameworkCategoryOverviewComponent implements OnInit {
       ? this.formalFrameworkCategoryService.getFormalFrameworkCategories(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.formalFrameworkCategoryService.getFormalFrameworkCategories(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    formalFrameworkCategories
+    this.subscriptions.push(formalFrameworkCategories
       .finally(() => this.isLoading = false)
       .subscribe(
         newFormalFrameworkCategories => this.formalFrameworkCategories = newFormalFrameworkCategories,
@@ -55,6 +62,6 @@ export class FormalFrameworkCategoryOverviewComponent implements OnInit {
           new Alert(
             AlertType.Error,
             'Toepassingsgebiedcategorieën kunnen niet geladen worden!',
-            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }

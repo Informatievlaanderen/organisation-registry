@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertService, Alert, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -9,12 +9,13 @@ import {
   ContactTypeService,
   ContactTypeFilter
 } from 'services/contacttypes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class ContactTypeOverviewComponent implements OnInit {
+export class ContactTypeOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public contactTypes: PagedResult<ContactType> = new PagedResult<ContactType>();
 
@@ -22,12 +23,18 @@ export class ContactTypeOverviewComponent implements OnInit {
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private contactTypeService: ContactTypeService) { }
 
   ngOnInit() {
     this.loadContactTypes();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<ContactTypeFilter>) {
@@ -47,7 +54,7 @@ export class ContactTypeOverviewComponent implements OnInit {
       ? this.contactTypeService.getContactTypes(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.contactTypeService.getContactTypes(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    contactTypes
+    this.subscriptions.push(contactTypes
       .finally(() => this.isLoading = false)
       .subscribe(
         newContactTypes => this.contactTypes = newContactTypes,
@@ -55,6 +62,6 @@ export class ContactTypeOverviewComponent implements OnInit {
           new Alert(
             AlertType.Error,
             'Contact types kunnen niet geladen worden!',
-            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }

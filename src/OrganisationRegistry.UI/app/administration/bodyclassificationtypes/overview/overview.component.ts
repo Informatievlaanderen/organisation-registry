@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertService, Alert, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -9,13 +9,13 @@ import {
   BodyClassificationTypeService,
   BodyClassificationTypeFilter
 } from 'services/bodyclassificationtypes';
-
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class BodyClassificationTypeOverviewComponent implements OnInit {
+export class BodyClassificationTypeOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public bodyClassificationTypes: PagedResult<BodyClassificationType> = new PagedResult<BodyClassificationType>();
 
@@ -23,12 +23,18 @@ export class BodyClassificationTypeOverviewComponent implements OnInit {
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private bodyClassificationTypeService: BodyClassificationTypeService) { }
 
   ngOnInit() {
     this.loadBodyClassificationTypes();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<BodyClassificationTypeFilter>) {
@@ -48,7 +54,7 @@ export class BodyClassificationTypeOverviewComponent implements OnInit {
       ? this.bodyClassificationTypeService.getBodyClassificationTypes(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.bodyClassificationTypeService.getBodyClassificationTypes(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    bodyClassificationTypes
+    this.subscriptions.push(bodyClassificationTypes
       .finally(() => this.isLoading = false)
       .subscribe(
         newBodyClassificationTypes => this.bodyClassificationTypes = newBodyClassificationTypes,
@@ -57,6 +63,6 @@ export class BodyClassificationTypeOverviewComponent implements OnInit {
             AlertType.Error,
             'Orgaan classificatietypes kunnen niet geladen worden!',
             'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'
-          )));
+          ))));
   }
 }

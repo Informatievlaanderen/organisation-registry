@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertService, Alert, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -9,13 +9,14 @@ import {
   PersonService,
   PersonFilter
 } from 'services/people';
+import {Subscription} from "rxjs/Subscription";
 
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class PersonOverviewComponent implements OnInit {
+export class PersonOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public people: PagedResult<PersonListItem> = new PagedResult<PersonListItem>();
 
@@ -23,12 +24,18 @@ export class PersonOverviewComponent implements OnInit {
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private personService: PersonService) { }
 
   ngOnInit() {
     this.loadPersons();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<PersonFilter>) {
@@ -48,7 +55,7 @@ export class PersonOverviewComponent implements OnInit {
       ? this.personService.getPeople(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.personService.getPeople(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    people
+    this.subscriptions.push(people
       .finally(() => this.isLoading = false)
       .subscribe(
         newPeople => this.people = newPeople,
@@ -57,6 +64,6 @@ export class PersonOverviewComponent implements OnInit {
             AlertType.Error,
             'Personen kunnen niet geladen worden!',
             'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'
-          )));
+          ))));
   }
 }

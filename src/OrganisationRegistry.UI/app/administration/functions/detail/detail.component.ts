@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -8,18 +8,21 @@ import { Create, ICrud, Update } from 'core/crud';
 import { required } from 'core/validation';
 
 import { Function, FunctionService } from 'services/functions';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: ['detail.style.css']
 })
-export class FunctionDetailComponent implements OnInit {
+export class FunctionDetailComponent implements OnInit, OnDestroy {
   public isEditMode: boolean;
   public form: FormGroup;
 
   private crud: ICrud<Function>;
   private readonly createAlerts = new CreateAlertMessages('Functie type');
   private readonly updateAlerts = new UpdateAlertMessages('Functie type');
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   get isFormValid() {
     return this.form.enabled && this.form.valid;
@@ -49,7 +52,7 @@ export class FunctionDetailComponent implements OnInit {
         ? new Update<FunctionService, Function>(id, this.itemService, this.alertService, this.updateAlerts)
         : new Create<FunctionService, Function>(this.itemService, this.alertService, this.createAlerts);
 
-      this.crud
+      this.subscriptions.push(this.crud
         .load(Function)
         .finally(() => this.form.enable())
         .subscribe(
@@ -57,14 +60,18 @@ export class FunctionDetailComponent implements OnInit {
             if (item)
               this.form.setValue(item);
           },
-          error => this.crud.alertLoadError(error));
+          error => this.crud.alertLoadError(error)));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   createOrUpdate(value: Function) {
     this.form.disable();
 
-    this.crud.save(value)
+    this.subscriptions.push(this.crud.save(value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -79,6 +86,6 @@ export class FunctionDetailComponent implements OnInit {
             this.crud.alertSaveSuccess(value, functionUrl);
           }
         },
-        error => this.crud.alertSaveError(error));
+        error => this.crud.alertSaveError(error)));
   }
 }

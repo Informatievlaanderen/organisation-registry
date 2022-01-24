@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertService, Alert, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -9,12 +9,13 @@ import {
   PurposeService,
   PurposeFilter
 } from 'services/purposes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class PurposeOverviewComponent implements OnInit {
+export class PurposeOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public purposes: PagedResult<Purpose> = new PagedResult<Purpose>();
 
@@ -22,12 +23,18 @@ export class PurposeOverviewComponent implements OnInit {
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private purposeService: PurposeService) { }
 
   ngOnInit() {
     this.loadPurposes();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<PurposeFilter>) {
@@ -47,7 +54,7 @@ export class PurposeOverviewComponent implements OnInit {
       ? this.purposeService.getPurposes(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.purposeService.getPurposes(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    purposes
+    this.subscriptions.push(purposes
       .finally(() => this.isLoading = false)
       .subscribe(
         newPurposes => this.purposes = newPurposes,
@@ -55,6 +62,6 @@ export class PurposeOverviewComponent implements OnInit {
           new Alert(
             AlertType.Error,
             'Beleidsvelden kunnen niet geladen worden!',
-            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }

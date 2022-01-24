@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
@@ -10,12 +10,13 @@ import { optionalNumber, required } from 'core/validation';
 import { RegulationSubTheme, RegulationSubThemeService } from 'services/regulation-sub-themes';
 
 import { SearchResult } from 'shared/components/form/form-group-autocomplete';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: [ 'detail.style.css' ]
 })
-export class RegulationSubThemeDetailComponent implements OnInit {
+export class RegulationSubThemeDetailComponent implements OnInit, OnDestroy {
   public isEditMode: boolean;
   public form: FormGroup;
   public initialResult: SearchResult;
@@ -23,6 +24,8 @@ export class RegulationSubThemeDetailComponent implements OnInit {
   private crud: ICrud<RegulationSubTheme>;
   private readonly createAlerts = new CreateAlertMessages('Regelgevingsubthema');
   private readonly updateAlerts = new UpdateAlertMessages('Regelgevingsubthema');
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   get isFormValid() {
     return this.form.enabled && this.form.valid;
@@ -54,7 +57,7 @@ export class RegulationSubThemeDetailComponent implements OnInit {
         ? new Update<RegulationSubThemeService, RegulationSubTheme>(id, this.itemService, this.alertService, this.updateAlerts)
         : new Create<RegulationSubThemeService, RegulationSubTheme>(this.itemService, this.alertService, this.createAlerts);
 
-      this.crud
+      this.subscriptions.push(this.crud
         .load(RegulationSubTheme)
         .finally(() => this.form.enable())
         .subscribe(
@@ -71,14 +74,18 @@ export class RegulationSubThemeDetailComponent implements OnInit {
               });
           },
           error => this.crud.alertLoadError(error)
-        );
+        ));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   createOrUpdate(value: RegulationSubTheme) {
     this.form.disable();
 
-    this.crud.save(value)
+    this.subscriptions.push(this.crud.save(value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -94,6 +101,6 @@ export class RegulationSubThemeDetailComponent implements OnInit {
           }
         },
         error => this.crud.alertSaveError(error)
-      );
+      ));
   }
 }

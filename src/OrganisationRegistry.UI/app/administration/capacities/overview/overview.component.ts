@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertService, Alert, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -9,12 +9,13 @@ import {
   CapacityService,
   CapacityFilter
 } from 'services/capacities';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class CapacityOverviewComponent implements OnInit {
+export class CapacityOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public capacities: PagedResult<Capacity> = new PagedResult<Capacity>();
 
@@ -22,12 +23,18 @@ export class CapacityOverviewComponent implements OnInit {
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private capacityService: CapacityService) { }
 
   ngOnInit() {
     this.loadCapacities();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<CapacityFilter>) {
@@ -47,7 +54,7 @@ export class CapacityOverviewComponent implements OnInit {
       ? this.capacityService.getCapacities(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.capacityService.getCapacities(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    capacities
+    this.subscriptions.push(capacities
       .finally(() => this.isLoading = false)
       .subscribe(
         newCapacities => this.capacities = newCapacities,
@@ -55,6 +62,6 @@ export class CapacityOverviewComponent implements OnInit {
           new Alert(
             AlertType.Error,
             'Hoedanigheden kunnen niet geladen worden!',
-            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }

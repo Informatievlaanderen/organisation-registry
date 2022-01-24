@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertService, Alert, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -9,12 +9,13 @@ import {
   LocationService,
   LocationFilter
 } from 'services/locations';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class LocationOverviewComponent implements OnInit {
+export class LocationOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public locations: PagedResult<LocationListItem> = new PagedResult<LocationListItem>();
 
@@ -22,12 +23,18 @@ export class LocationOverviewComponent implements OnInit {
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private locationService: LocationService) { }
 
   ngOnInit() {
     this.loadLocations();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<LocationFilter>) {
@@ -47,7 +54,7 @@ export class LocationOverviewComponent implements OnInit {
       ? this.locationService.getLocations(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.locationService.getLocations(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    locations
+    this.subscriptions.push(locations
       .finally(() => this.isLoading = false)
       .subscribe(
         newLocations => this.locations = newLocations,
@@ -56,6 +63,6 @@ export class LocationOverviewComponent implements OnInit {
             AlertType.Error,
             'Locaties kunnen niet geladen worden!',
             'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'
-          )));
+          ))));
   }
 }

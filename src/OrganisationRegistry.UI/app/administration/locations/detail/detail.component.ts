@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -10,12 +10,13 @@ import { required } from 'core/validation';
 import { Location, LocationService } from 'services/locations';
 
 import { SearchResult } from 'shared/components/form/form-group-autocomplete';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: ['detail.style.css']
 })
-export class LocationDetailComponent implements OnInit {
+export class LocationDetailComponent implements OnInit, OnDestroy {
   public isEditMode: boolean;
   public form: FormGroup;
 
@@ -25,6 +26,8 @@ export class LocationDetailComponent implements OnInit {
 
   private readonly createAlerts = new CreateAlertMessages('Locatie');
   private readonly updateAlerts = new UpdateAlertMessages('Locatie');
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   get isFormValid() {
     return this.form.enabled && this.form.valid;
@@ -59,7 +62,7 @@ export class LocationDetailComponent implements OnInit {
       this.isEditMode = id !== null && id !== undefined;
 
       if (this.isEditMode) {
-        this.locationService.get(id)
+        this.subscriptions.push(this.locationService.get(id)
           .finally(() => this.form.enable())
           .subscribe(
             item => {
@@ -79,11 +82,15 @@ export class LocationDetailComponent implements OnInit {
                   .withTitle(alert.title)
                   .withMessage(alert.message)
                   .build());
-            });
+            }));
       } else {
         this.form.enable();
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   crabValueChanged(value: string) {
@@ -146,7 +153,7 @@ export class LocationDetailComponent implements OnInit {
   }
 
   private create(location: Location) {
-    this.locationService.create(location)
+    this.subscriptions.push(this.locationService.create(location)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -177,11 +184,11 @@ export class LocationDetailComponent implements OnInit {
               .withTitle(alert.title)
               .withMessage(alert.message)
               .build());
-        });
+        }));
   }
 
   private update(location: Location) {
-    this.locationService.update(location)
+    this.subscriptions.push(this.locationService.update(location)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -211,6 +218,6 @@ export class LocationDetailComponent implements OnInit {
               .withTitle(alert.title)
               .withMessage(alert.message)
               .build());
-        });
+        }));
   }
 }

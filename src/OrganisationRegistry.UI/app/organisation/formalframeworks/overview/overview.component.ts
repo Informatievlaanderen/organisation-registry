@@ -73,7 +73,7 @@ export class OrganisationFormalFrameworksOverviewComponent implements OnInit, On
       ? this.organisationFormalFrameworkService.getOrganisationFormalFrameworks(this.organisationId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.organisationFormalFrameworkService.getOrganisationFormalFrameworks(this.organisationId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    organisationFormalFrameworks
+    this.subscriptions.push(organisationFormalFrameworks
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -85,6 +85,6 @@ export class OrganisationFormalFrameworksOverviewComponent implements OnInit, On
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }
