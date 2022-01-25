@@ -1,3 +1,10 @@
+# [1.121.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.120.1...v1.121.0) (2022-01-25)
+
+
+### Features
+
+* move to opensearch ([03c392f](https://github.com/informatievlaanderen/organisation-registry/commit/03c392f18151751fc4ac02d97c89d63191c909ea))
+
 ## [1.120.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.120.0...v1.120.1) (2022-01-24)
 
 
