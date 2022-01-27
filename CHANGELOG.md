@@ -1,3 +1,10 @@
+## [1.121.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.121.0...v1.121.1) (2022-01-27)
+
+
+### Bug Fixes
+
+* or-707 es now uses only 1 connection ([64bb7e0](https://github.com/informatievlaanderen/organisation-registry/commit/64bb7e0673bb7a993fca5b45d6cbaf10b2ce27ef))
+
 # [1.121.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.120.1...v1.121.0) (2022-01-25)
 
 
