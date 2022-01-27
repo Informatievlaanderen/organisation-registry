@@ -1,3 +1,10 @@
+# [1.122.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.121.1...v1.122.0) (2022-01-27)
+
+
+### Features
+
+* or-706 query to map organisations and niscodes ([3e9a300](https://github.com/informatievlaanderen/organisation-registry/commit/3e9a300e6bced9d05baf3b26c4680cd131f56e77))
+
 ## [1.121.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.121.0...v1.121.1) (2022-01-27)
 
 
