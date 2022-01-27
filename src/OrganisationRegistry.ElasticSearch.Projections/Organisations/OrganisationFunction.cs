@@ -69,7 +69,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 message.Body.OrganisationId, async document =>
                 {
                     await using var organisationRegistryContext = _contextFactory.Create();
-                    var contactTypeNames = await organisationRegistryContext.ContactTypeList
+                    var contactTypeNames = await organisationRegistryContext.ContactTypeCache
                         .Select(x => new {x.Id, x.Name})
                         .ToDictionaryAsync(x => x.Id, x => x.Name);
 
@@ -101,7 +101,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 message.Body.OrganisationId, async document =>
                 {
                     await using var organisationRegistryContext = _contextFactory.Create();
-                    var contactTypeNames = await organisationRegistryContext.ContactTypeList
+                    var contactTypeNames = await organisationRegistryContext.ContactTypeCache
                         .Select(x => new {x.Id, x.Name})
                         .ToDictionaryAsync(x => x.Id, x => x.Name);
 

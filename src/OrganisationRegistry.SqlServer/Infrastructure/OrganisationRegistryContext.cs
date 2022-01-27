@@ -144,6 +144,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         public DbSet<OrganisationToRebuild> OrganisationsToRebuild { get; set; }
 
         public DbSet<OrganisationCacheItem> OrganisationCache { get; set; }
+        public DbSet<ContactTypeCacheItem> ContactTypeCache { get; set; }
         public DbSet<BodySeatCacheItem> BodySeatCache { get; set; }
         public DbSet<BodyCacheItem> BodyCache { get; set; }
 

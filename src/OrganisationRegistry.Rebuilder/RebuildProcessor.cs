@@ -37,7 +37,11 @@ namespace OrganisationRegistry.Rebuilder
         {
             try{
                 if (!await _projectionStates.Exists(ProjectionName).ConfigureAwait(false))
+                {
+                    _logger.LogWarning($"No record found in Backoffice.ProjectionStateList table. " +
+                                       $"you might need to add a record for name='{ProjectionName}'");
                     return;
+                }
 
                 _logger.LogInformation("Found desired projection state");
 

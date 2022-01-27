@@ -21,68 +21,65 @@ namespace OrganisationRegistry.ElasticSearch.Client
     // Scoped as SingleInstance()
     public class Elastic
     {
-        private readonly ILogger<Elastic> _logger;
-        private readonly ElasticSearchConfiguration _configuration;
-        private RetryPolicy _waitAndRetry;
-        private AsyncRetryPolicy _waitAndRetryAsync;
         public const int MaxResultWindow = 10000;
 
         private Policy RetryPolicy { get; }
         private AsyncRetryPolicy AsyncRetryPolicy { get; }
 
-        public ElasticClient ReadClient => GetElasticClient(write: false);
-        public ElasticClient WriteClient => GetElasticClient(write: true);
+        public ElasticClient ReadClient { get; }
+        public ElasticClient WriteClient { get; }
 
         public Elastic(
             ILogger<Elastic> logger,
             IOptions<ElasticSearchConfiguration> elasticSearchOptions)
         {
-            _logger = logger;
-            _configuration = elasticSearchOptions.Value;
+            var configuration = elasticSearchOptions.Value;
+            WriteClient = GetElasticClient(configuration, write: true);
+            ReadClient = GetElasticClient(configuration, write: false);
 
             RetryPolicy = Policy
                 .Handle<Exception>()
                 .WaitAndRetry(
-                    _configuration.MaxRetryAttempts,
+                    configuration.MaxRetryAttempts,
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                    (exception, timeSpan, retryCount, context) =>
-                        _logger.LogError(0, exception,
+                    (exception, timeSpan, retryCount, _) =>
+                        logger.LogError(0, exception,
                             "Elasticsearch exception occurred, attempt #{RetryCount}, trying again in {RetrySeconds} seconds.",
                             retryCount, timeSpan.TotalSeconds));
 
             AsyncRetryPolicy = Policy
                 .Handle<Exception>()
                 .WaitAndRetryAsync(
-                    _configuration.MaxRetryAttempts,
+                    configuration.MaxRetryAttempts,
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-                    (exception, timeSpan, retryCount, context) =>
-                        _logger.LogError(0, exception,
+                    (exception, timeSpan, retryCount, _) =>
+                        logger.LogError(0, exception,
                             "Elasticsearch exception occurred, attempt #{RetryCount}, trying again in {RetrySeconds} seconds.",
                             retryCount, timeSpan.TotalSeconds));
         }
 
-        private ElasticClient GetElasticClient(bool write)
+        private static ElasticClient GetElasticClient(ElasticSearchConfiguration configuration, bool write)
         {
             var connectionSettings =
-                new ConnectionSettings(new Uri(write ? _configuration.WriteConnectionString : _configuration.ReadConnectionString))
+                new ConnectionSettings(new Uri(write ? configuration.WriteConnectionString : configuration.ReadConnectionString))
                     .DisableDirectStreaming();
 
-            if (!string.IsNullOrEmpty(write ? _configuration.WriteUser : _configuration.ReadUser))
+            if (!string.IsNullOrEmpty(write ? configuration.WriteUser : configuration.ReadUser))
                 connectionSettings.BasicAuthentication(
-                    write ? _configuration.WriteUser : _configuration.ReadUser,
-                    write ? _configuration.WritePass : _configuration.ReadPass);
+                    write ? configuration.WriteUser : configuration.ReadUser,
+                    write ? configuration.WritePass : configuration.ReadPass);
 
             IConnectionSettingsValues settings = connectionSettings;
 
-            settings.DefaultIndices.Add(typeof(OrganisationDocument), write ? _configuration.OrganisationsWriteIndex : _configuration.OrganisationsReadIndex);
-            settings.DefaultRelationNames.Add(typeof(OrganisationDocument), _configuration.OrganisationType);
+            settings.DefaultIndices.Add(typeof(OrganisationDocument), write ? configuration.OrganisationsWriteIndex : configuration.OrganisationsReadIndex);
+            settings.DefaultRelationNames.Add(typeof(OrganisationDocument), configuration.OrganisationType);
 
-            settings.DefaultIndices.Add(typeof(PersonDocument), write ? _configuration.PeopleWriteIndex : _configuration.PeopleReadIndex);
-            settings.DefaultRelationNames.Add(typeof(PersonDocument), _configuration.PersonType);
+            settings.DefaultIndices.Add(typeof(PersonDocument), write ? configuration.PeopleWriteIndex : configuration.PeopleReadIndex);
+            settings.DefaultRelationNames.Add(typeof(PersonDocument), configuration.PersonType);
             settings.IdProperties.Add(typeof(PersonDocument), nameof(PersonDocument.Id));
 
-            settings.DefaultIndices.Add(typeof(BodyDocument), write ? _configuration.BodyWriteIndex : _configuration.BodyReadIndex);
-            settings.DefaultRelationNames.Add(typeof(BodyDocument), _configuration.BodyType);
+            settings.DefaultIndices.Add(typeof(BodyDocument), write ? configuration.BodyWriteIndex : configuration.BodyReadIndex);
+            settings.DefaultRelationNames.Add(typeof(BodyDocument), configuration.BodyType);
 
             return new ElasticClient(settings);
         }
