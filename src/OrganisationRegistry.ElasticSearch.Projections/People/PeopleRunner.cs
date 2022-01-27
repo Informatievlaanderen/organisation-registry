@@ -26,7 +26,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People
             typeof(Person),
             typeof(PersonFunction),
             typeof(PersonCapacity),
-            typeof(PersonMandate)
+            typeof(PersonMandate),
         };
 
         public PeopleRunner(

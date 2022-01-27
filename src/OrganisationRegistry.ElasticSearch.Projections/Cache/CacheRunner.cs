@@ -21,6 +21,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Cache
             typeof(OrganisationCache),
             typeof(BodySeatCache),
             typeof(BodyCache),
+            typeof(ContactTypeCache),
         };
 
         public static string ProjectionName => "ElasticSearchCache";

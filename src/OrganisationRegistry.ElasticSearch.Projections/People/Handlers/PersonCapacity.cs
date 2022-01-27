@@ -193,7 +193,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                 {
                     await using var organisationRegistryContext = _contextFactory.Create();
                     var organisation = await organisationRegistryContext.OrganisationCache.SingleAsync(x => x.Id == message.Body.OrganisationId);
-                    var contactTypeNames = await organisationRegistryContext.ContactTypeList
+                    var contactTypeNames = await organisationRegistryContext.ContactTypeCache
                         .Select(x => new {x.Id, x.Name})
                         .ToDictionaryAsync(x => x.Id, x => x.Name);
 
@@ -261,7 +261,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             await organisationRegistryContext.OrganisationCache.FindAsync(message.Body.OrganisationId);
 
                         // TODO: build local cache
-                        var contactTypeNames = await organisationRegistryContext.ContactTypeList
+                        var contactTypeNames = await organisationRegistryContext.ContactTypeCache
                             .Select(x => new {x.Id, x.Name})
                             .ToDictionaryAsync(x => x.Id, x => x.Name);
 
