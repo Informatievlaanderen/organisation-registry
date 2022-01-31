@@ -35,13 +35,15 @@ export class OrganisationDetailComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.store
       .organisationChanged
-      .subscribe(org => this.organisation = org);
+      .subscribe(org => {
+        this.organisation = org;
+        this.enableSync = this.oidcService.isLoggedIn && this.oidcService.canEditOrganisation(org);
+        this.enableVlimpers = this.oidcService.isLoggedIn && this.oidcService.isVlimpersBeheerder();
+      });
 
     this.route.params.forEach((params: Params) => {
       let id = params['id'];
       this.store.loadOrganisation(id);
-      this.enableSync = this.oidcService.isLoggedIn && this.oidcService.canEditOrganisation(id);
-      this.enableVlimpers = this.oidcService.isLoggedIn && this.oidcService.isVlimpersBeheerder();
     });
 
     this.enableBankAccounts = this.oidcService.isLoggedIn;

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { OrganisationGuard, RoleGuard, Role, FeatureGuard } from 'core/auth';
+import { RoleGuard, Role, FeatureGuard } from 'core/auth';
 
 import { OrganisationDetailComponent } from './detail.component';
 
@@ -126,6 +126,7 @@ import {
 } from 'organisation/management';
 
 import {OrganisationVlimpersOverviewComponent} from "organisation/vlimpers";
+import {OrganisationGuard} from "../guards/organisation.guard";
 
 const routes: Routes = [
   {

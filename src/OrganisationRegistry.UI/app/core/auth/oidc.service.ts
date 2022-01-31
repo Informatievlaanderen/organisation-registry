@@ -11,6 +11,7 @@ import { User } from './user.model';
 
 import { Role } from './role.model';
 import {OidcClient} from "oidc-client";
+import {Organisation} from "../../services/organisations";
 
 interface SecurityInfo {
   isLoggedIn: boolean;
@@ -169,8 +170,7 @@ export class OidcService {
       });
   }
 
-
-  public canEditOrganisation(organisationId): Observable<boolean> {
+  public canEditOrganisation(organisation : Organisation): Observable<boolean> {
     let wegwijsBeheerderCheck = this.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
     let vlimpersBeheerderCheck = this.hasAnyOfRoles([Role.VlimpersBeheerder]);
     let organisatieBeheerderCheck = this.hasAnyOfRoles([Role.OrganisatieBeheerder]);
@@ -185,8 +185,11 @@ export class OidcService {
         if (isOrganisationRegistryBeheerder)
           return true;
 
-        if (isOrganisatieBeheerder && organisationIds.findIndex(x => x === organisationId) > -1)
-            return true;
+        if (organisation.underVlimpersManagement && isVlimpersBeheerder)
+          return true;
+
+        if (isOrganisatieBeheerder && organisationIds.findIndex(x => x === organisation.id) > -1)
+          return true;
 
         return false;
       })

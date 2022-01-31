@@ -44,13 +44,13 @@ export class OrganisationVlimpersOverviewComponent implements OnInit, OnDestroy 
       .subscribe(organisation => {
         if (organisation) {
           this.organisation = organisation;
+          this.canEditOrganisation = this.oidcService.canEditOrganisation(organisation);
         }
       }));
 
     this.canEditOrganisation = Observable.of(false);
     this.subscriptions.push(this.route.parent.parent.params.subscribe((params: Params) => {
       this.organisationId = params['id'];
-      this.canEditOrganisation = this.oidcService.canEditOrganisation(this.organisationId);
       this.store.loadOrganisation(this.organisationId);
     }));
   }
