@@ -10,7 +10,6 @@ Please see our [contributing guidelines](CONTRIBUTING.md) before contributing.
 - dotnet sdk (see `global.json` for exact version)
 - nvm
 - docker compose
-- 
 
 ### Useful commands
 
@@ -43,6 +42,10 @@ To facilitate development, these systems can be run on your environment with Doc
 ```
 docker compose up --build
 ```
+
+#### To set up identity server settings
+
+After the initial database setup, run the sql in `scripts/sqlqueries/20210128_organisatie-niscode-mapping.sql`.
 
 #### To add a migration:
 
