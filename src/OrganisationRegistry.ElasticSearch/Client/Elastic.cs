@@ -44,7 +44,7 @@ namespace OrganisationRegistry.ElasticSearch.Client
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                     (exception, timeSpan, retryCount, _) =>
                         logger.LogError(0, exception,
-                            "Elasticsearch exception occurred, attempt #{RetryCount}, trying again in {RetrySeconds} seconds.",
+                            "Elasticsearch exception occurred, attempt #{RetryCount}, trying again in {RetrySeconds} seconds",
                             retryCount, timeSpan.TotalSeconds));
 
             AsyncRetryPolicy = Policy
@@ -54,7 +54,7 @@ namespace OrganisationRegistry.ElasticSearch.Client
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                     (exception, timeSpan, retryCount, _) =>
                         logger.LogError(0, exception,
-                            "Elasticsearch exception occurred, attempt #{RetryCount}, trying again in {RetrySeconds} seconds.",
+                            "Elasticsearch exception occurred, attempt #{RetryCount}, trying again in {RetrySeconds} seconds",
                             retryCount, timeSpan.TotalSeconds));
         }
 

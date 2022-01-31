@@ -21,7 +21,6 @@ namespace OrganisationRegistry.Rebuilder
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
     using OrganisationRegistry.Configuration.Database.Configuration;
     using Infrastructure.Authorization;
     using Infrastructure.Bus;
@@ -42,13 +41,13 @@ namespace OrganisationRegistry.Rebuilder
     {
         public static async Task Main(string[] args)
         {
-            Console.WriteLine("Starting OrganisationRegistry Rebuilder.");
+            Console.WriteLine("Starting OrganisationRegistry Rebuilder");
 
             AppDomain.CurrentDomain.FirstChanceException += (_, eventArgs) =>
-                Log.Debug(eventArgs.Exception, "FirstChanceException event raised in {AppDomain}.", AppDomain.CurrentDomain.FriendlyName);
+                Log.Debug(eventArgs.Exception, "FirstChanceException event raised in {AppDomain}", AppDomain.CurrentDomain.FriendlyName);
 
             AppDomain.CurrentDomain.UnhandledException += (_, eventArgs) =>
-                Log.Fatal((Exception)eventArgs.ExceptionObject, "Encountered a fatal exception, exiting program.");
+                Log.Fatal((Exception)eventArgs.ExceptionObject, "Encountered a fatal exception, exiting program");
 
             var host = new HostBuilder()
                 .ConfigureHostConfiguration(builder =>
@@ -112,7 +111,7 @@ namespace OrganisationRegistry.Rebuilder
 
                     builder.AddSingleton<RebuildProcessor>();
 
-                    var handlers = Assembly.GetAssembly(typeof(OrganisationRegistrySqlServerAssemblyTokenClass))
+                    var handlers = Assembly.GetAssembly(typeof(OrganisationRegistrySqlServerAssemblyTokenClass))!
                         .GetTypes()
                         .Where(item => !item.IsInterface &&
                                        !item.IsAbstract &&
@@ -132,7 +131,7 @@ namespace OrganisationRegistry.Rebuilder
                             .ForEach(serviceType => builder.AddSingleton(serviceType, assignedType));
                     });
 
-                    var types = Assembly.GetAssembly(typeof(OrganisationRegistrySqlServerAssemblyTokenClass))
+                    var types = Assembly.GetAssembly(typeof(OrganisationRegistrySqlServerAssemblyTokenClass))!
                         .GetTypes()
                         .Where(item => !item.IsInterface &&
                                        !item.IsAbstract &&
@@ -162,7 +161,7 @@ namespace OrganisationRegistry.Rebuilder
 
                     builder
                         .AddTransient<ISecurityService, NotImplementedSecurityService>()
-                        .AddSingleton<IMetricsRoot>(new MetricsBuilder()
+                        .AddSingleton(new MetricsBuilder()
                             .Report.ToConsole().Build())
 
                         .AddSingleton<IDateTimeProvider, DateTimeProvider>()
@@ -207,12 +206,10 @@ namespace OrganisationRegistry.Rebuilder
                                     .MigrationsAssembly("OrganisationRegistry.SqlServer")
                                     .MigrationsHistoryTable(MigrationTables.Default, WellknownSchemas.OrganisationRegistrySchema);
                             }));
-                        ;
                 })
                 .Build();
 
             var configuration = host.Services.GetRequiredService<IConfiguration>();
-            var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
             var logger = host.Services.GetRequiredService<ILogger<Program>>();
 
             var registrar = host.Services.GetRequiredService<BusRegistrar>();
@@ -234,7 +231,7 @@ namespace OrganisationRegistry.Rebuilder
             }
             catch (Exception e)
             {
-                logger.LogCritical(e, "Encountered a fatal exception, exiting program.");
+                logger.LogCritical(e, "Encountered a fatal exception, exiting program");
             }
             finally
             {

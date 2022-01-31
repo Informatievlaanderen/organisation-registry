@@ -5,8 +5,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using Bodies;
-    using Body;
     using Capacity.Events;
     using Client;
     using Common;
@@ -16,7 +14,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using Infrastructure.Change;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
-    using Nest;
     using Organisation.Events;
     using SqlServer.ElasticSearchProjections;
     using OrganisationRegistry.Infrastructure.Events;

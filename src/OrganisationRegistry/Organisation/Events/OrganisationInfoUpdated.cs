@@ -3,7 +3,6 @@ namespace OrganisationRegistry.Organisation.Events
     using System;
     using System.Collections.Generic;
 
-    [Obsolete("Use events for individual property changes, eg: OrganisationValidityChanged")]
     public class OrganisationInfoUpdated : BaseEvent<OrganisationInfoUpdated>
     {
         public Guid OrganisationId => Id;
@@ -39,6 +38,7 @@ namespace OrganisationRegistry.Organisation.Events
         public DateTime? PreviouslyOperationalValidTo { get; }
 
 
+        [Obsolete("Use events for individual property changes, eg: OrganisationValidityChanged")]
         public OrganisationInfoUpdated(
             Guid organisationId,
             string name,

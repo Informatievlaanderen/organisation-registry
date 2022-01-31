@@ -13,7 +13,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Organisation.Events;
-    using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Events;
     using SqlServer;
 

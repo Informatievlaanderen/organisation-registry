@@ -3,7 +3,6 @@
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using SqlServer.ElasticSearchProjections;
     using OrganisationRegistry.Body.Events;

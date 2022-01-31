@@ -5,10 +5,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
+    using App.Metrics;
     using Client;
     using Configuration;
     using Infrastructure;
     using Infrastructure.Change;
+    using Metrics;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Nest;
@@ -29,6 +31,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
         private readonly IEventStore _store;
         private readonly IProjectionStates _projectionStates;
         private readonly ElasticBus _bus;
+        private readonly EnvelopeMetrics _metrics;
 
         protected BaseRunner(
             ILogger<BaseRunner<T>> logger,
@@ -40,7 +43,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             string projectionName,
             Type[] eventHandlers,
             Elastic elastic,
-            ElasticBus bus)
+            ElasticBus bus,
+            IMetricsRoot metrics)
         {
             _logger = logger;
             _store = store;
@@ -54,6 +58,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections
 
             ProjectionName = projectionName;
             EventHandlers = eventHandlers;
+
+            _metrics = new EnvelopeMetrics(metrics, ProjectionName);
         }
 
         public async Task Run()
@@ -74,7 +80,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 .GetEventEnvelopesAfter(lastProcessedEventNumber, _batchSize, eventsBeingListenedTo.ToArray())
                 .ToList();
 
-            LogEnvelopeCount(envelopes);
+            _metrics.LogEnvelopeCount(envelopes);
 
             int? newLastProcessedEventNumber = null;
             try
@@ -101,7 +107,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             }
             catch (Exception ex)
             {
-                _logger.LogCritical(0, ex, "[{ProjectionName}] An exception occurred while processing envelope #{EnvelopeNumber}.", ProjectionName, newLastProcessedEventNumber);
+                _logger.LogCritical(0, ex, "[{ProjectionName}] An exception occurred while processing envelope #{EnvelopeNumber}", ProjectionName, newLastProcessedEventNumber);
                 throw;
             }
         }
@@ -166,7 +172,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     throw new Exception("Found document without key or name.");
                 }
 
-                await _elastic.TryAsync(async () =>
+                await _elastic.TryAsync(() =>
                 {
                     _elastic.WriteClient.BulkAll(documentCache.Values, b => b
                         .BackOffTime("30s")
@@ -179,6 +185,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     {
                         _logger.LogInformation("[{ProjectionName}] Flushed documents, page {PageNumber}", ProjectionName, next.Page);
                     });
+                    
+                    return Task.CompletedTask;
                 });
                 documentCache.Clear();
             }
@@ -198,7 +206,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             if (!newLastProcessedEventNumber.HasValue)
                 return;
 
-            _logger.LogInformation("[{ProjectionName}] Processed up until envelope #{LastProcessedEnvelopeNumber}.", ProjectionName, newLastProcessedEventNumber);
+            _logger.LogInformation("[{ProjectionName}] Processed up until envelope #{LastProcessedEnvelopeNumber}", ProjectionName, newLastProcessedEventNumber);
             await _projectionStates.UpdateProjectionState(_elasticSearchProjectionsProjectionName, newLastProcessedEventNumber.Value);
         }
 
@@ -206,14 +214,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
         {
             var changes = await _bus.Publish(null, null, (dynamic) envelope);
             return new ElasticChanges(envelope.Number, changes);
-        }
-
-        private void LogEnvelopeCount(IReadOnlyCollection<IEnvelope> envelopes)
-        {
-            _logger.LogInformation("[{ProjectionName}] Found {NumberOfEnvelopes} envelopes to process.", ProjectionName, envelopes.Count);
-
-            if (envelopes.Count > 0)
-                _logger.LogInformation("[{ProjectionName}] Starting at #{FirstEnvelopeNumber} to #{LastEnvelopeNumber}.", ProjectionName, envelopes.First().Number, envelopes.Last().Number);
         }
     }
 }

@@ -2,7 +2,6 @@
 {
     using System.Data.Common;
     using System.Linq;
-    using System.Threading;
     using System.Threading.Tasks;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
@@ -119,8 +118,8 @@
             if (message.Body.ProjectionName != CacheRunner.ProjectionName)
                 return;
 
-            Logger.LogInformation("Rebuilding index for {ProjectionName}.", message.Body.ProjectionName);
-            Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} started.",
+            Logger.LogInformation("Rebuilding index for {ProjectionName}", message.Body.ProjectionName);
+            Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} started",
                 OrganisationCacheForEsConfiguration.TableName, message.Body.ProjectionName);
 
             await using (var context = _contextFactory.Create())
@@ -128,7 +127,7 @@
                 {
                 }
 
-            Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} finished.",
+            Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} finished",
                 OrganisationCacheForEsConfiguration.TableName, message.Body.ProjectionName);
         }
 
@@ -136,7 +135,7 @@
         {
             return await context.Database.ExecuteSqlRawAsync(
                 string.Concat(new[] {OrganisationCacheForEsConfiguration.TableName}.Select(tableName =>
-                    $"DELETE TOP(500) FROM [ElasticSearchProjections].[{tableName}];")));
+                    $"DELETE TOP(500) FROM [{OrganisationRegistry.Infrastructure.WellknownSchemas.ElasticSearchProjectionsSchema}].[{tableName}];")));
         }
 
     }

@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 {
     using System;
+    using App.Metrics;
     using Client;
     using Configuration;
     using ElasticSearch.Organisations;
@@ -43,7 +44,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             IProjectionStates projectionStates,
             Elastic elastic,
             ElasticBus bus,
-            ElasticBusRegistrar busRegistrar) :
+            ElasticBusRegistrar busRegistrar,
+            IMetricsRoot metrics) :
             base(
                 logger,
                 configuration,
@@ -54,7 +56,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 ProjectionName,
                 EventHandlers,
                 elastic,
-                bus)
+                bus,
+                metrics)
         {
             busRegistrar.RegisterEventHandlers(EventHandlers);
         }

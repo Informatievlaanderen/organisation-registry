@@ -14,7 +14,8 @@
     public class ContactTypeCache :
         BaseProjection<ContactTypeCache>,
         IEventHandler<ContactTypeCreated>,
-        IEventHandler<ContactTypeUpdated>
+        IEventHandler<ContactTypeUpdated>,
+        IEventHandler<InitialiseProjection>
     {
         private readonly IContextFactory _contextFactory;
 
@@ -55,8 +56,8 @@
             if (message.Body.ProjectionName != CacheRunner.ProjectionName)
                 return;
 
-            Logger.LogInformation("Rebuilding index for {ProjectionName}.", message.Body.ProjectionName);
-            Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} started.",
+            Logger.LogInformation("Rebuilding index for {ProjectionName}", message.Body.ProjectionName);
+            Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} started",
                 ContactTypeCacheForEsConfiguration.TableName, message.Body.ProjectionName);
 
             await using (var context = _contextFactory.Create())
@@ -64,7 +65,7 @@
                 {
                 }
 
-            Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} finished.",
+            Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} finished",
                 ContactTypeCacheForEsConfiguration.TableName, message.Body.ProjectionName);
         }
 

@@ -38,8 +38,8 @@ namespace OrganisationRegistry.Rebuilder
             try{
                 if (!await _projectionStates.Exists(ProjectionName).ConfigureAwait(false))
                 {
-                    _logger.LogWarning($"No record found in Backoffice.ProjectionStateList table. " +
-                                       $"you might need to add a record for name='{ProjectionName}'");
+                    _logger.LogWarning("No record found in Backoffice.ProjectionStateList table " +
+                                       "you might need to add a record for name='{ProjectionName}'", ProjectionName);
                     return;
                 }
 
@@ -51,7 +51,7 @@ namespace OrganisationRegistry.Rebuilder
 
                 while (number != lastNumber)
                 {
-                    _logger.LogInformation($"Catching up from {number}");
+                    _logger.LogInformation("Catching up from {Number}", number);
                     var events = _store.GetEventEnvelopesAfter(number, 5000);
 
                     var connection = new SqlConnection(_infrastructureOption.Value.EventStoreConnectionString);
@@ -78,7 +78,7 @@ namespace OrganisationRegistry.Rebuilder
             catch (Exception ex)
             {
                 _logger.LogCritical(0, ex,
-                    "An exception occurred while handling envelopes.");
+                    "An exception occurred while handling envelopes");
             }
         }
     }
