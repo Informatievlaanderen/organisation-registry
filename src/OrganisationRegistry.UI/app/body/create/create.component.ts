@@ -1,16 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 
-import { AuthService } from 'core/auth';
-import { AlertService, AlertBuilder } from 'core/alert';
+import {OidcService} from 'core/auth';
+import { AlertService} from 'core/alert';
 
 import { BodyService } from 'services/bodies';
 import { OrganisationService } from 'services/organisations';
 
-import { SelectItem } from 'shared/components/form/form-group-select';
 import { SearchResult } from 'shared/components/form/form-group-autocomplete';
 
 import { CreateChildAlerts } from './create.alerts';
@@ -35,7 +33,7 @@ export class CreateBodyComponent implements OnInit, OnDestroy {
     private bodyService: BodyService,
     private organisationService: OrganisationService,
     private alertService: AlertService,
-    private authService: AuthService) { }
+    private oidcService: OidcService) { }
 
   ngOnInit() {
     this.body = new CreateBodyFormValues();
@@ -70,7 +68,7 @@ export class CreateBodyComponent implements OnInit, OnDestroy {
 
   private onCreateSuccess(result, value) {
     if (result) {
-      this.authService.resetSecurityCache();
+      this.oidcService.resetSecurityCache();
 
       this.router.navigate(['./../', value.id], { relativeTo: this.route });
 

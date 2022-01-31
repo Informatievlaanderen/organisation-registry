@@ -4,7 +4,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 
-import { AuthService, OidcService } from 'core/auth';
+import { OidcService } from 'core/auth';
 import { AlertBuilder, AlertService } from 'core/alert';
 import { BaseAlertMessages } from 'core/alertmessages';
 import { SearchEvent } from 'core/search';
