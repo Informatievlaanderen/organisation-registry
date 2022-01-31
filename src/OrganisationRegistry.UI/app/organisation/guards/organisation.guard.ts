@@ -7,32 +7,30 @@ import {
 } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
-import { OidcService } from './oidc.service';
+import {OidcService} from "core/auth";
+import {OrganisationInfoService} from "../../services";
 
 @Injectable()
 export class OrganisationGuard implements CanActivate, CanActivateChild {
   constructor(
-    private oidcService: OidcService
-  ) { }
+    private oidcService: OidcService,
+    private organisationStore: OrganisationInfoService
+  ) {
+    console.log('GUARD')
+  }
 
   public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    return this.checkPermissions(route);
+    return this.checkPermissions();
   }
 
   public canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    return this.checkPermissions(route);
+    return this.checkPermissions();
   }
 
-  private checkPermissions(route: ActivatedRouteSnapshot): Observable<boolean> {
-    let organisationIdPart = route.data['organisationGuard'].idPart as string;
-    let organisationParams = route.data['organisationGuard'].params as string;
-
-    let params;
-    eval('params = ' + organisationParams + ';');
-
+  private checkPermissions(): Observable<boolean> {
     return this
       .oidcService
-      .canEditOrganisation(params[organisationIdPart])
+      .canEditOrganisation(this.organisationStore.organisation)
       .map(canEditOrganisation => {
         if (canEditOrganisation)
           return true;

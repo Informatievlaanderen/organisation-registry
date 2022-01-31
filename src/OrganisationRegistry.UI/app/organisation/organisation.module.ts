@@ -10,6 +10,7 @@ import { OrganisationRoutingModule } from './organisation-routing.module';
 import { OrganisationOverviewComponent, OrganisationListComponent, OrganisationFilterComponent } from './overview';
 import { CreateOrganisationComponent, CreateOrganisationFormComponent } from './create';
 import { OrganisationDetailModule } from './detail';
+import {OrganisationGuard} from "./guards/organisation.guard";
 
 @NgModule({
   imports: [
@@ -27,6 +28,9 @@ import { OrganisationDetailModule } from './detail';
     OrganisationFilterComponent,
     CreateOrganisationComponent,
     CreateOrganisationFormComponent
+  ],
+  providers:[
+    OrganisationGuard
   ],
   exports: [
     OrganisationRoutingModule

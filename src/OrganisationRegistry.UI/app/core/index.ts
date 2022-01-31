@@ -5,7 +5,6 @@ import { HttpModule, JsonpModule, Http, XHRBackend, RequestOptions, Jsonp, JSONP
 
 import {
   AuthService,
-  OrganisationGuard,
   BodyGuard,
   RoleGuard,
   HttpInterceptor,
@@ -52,7 +51,6 @@ export function jsonpInterceptor(
     Constants,
     AuthService,
     OidcService,
-    OrganisationGuard,
     BodyGuard,
     RoleGuard,
     ToggleGuard,

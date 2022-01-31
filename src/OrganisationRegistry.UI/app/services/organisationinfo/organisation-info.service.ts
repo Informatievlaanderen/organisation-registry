@@ -30,6 +30,7 @@ export class OrganisationInfoService {
 
   private isLimitedByVlimpersChangedSource: BehaviorSubject<boolean>;
   private readonly isLimitedByVlimpersChanged$: Observable<boolean>;
+  private currentOrganisation: Organisation;
 
   constructor(
     private organisationService: OrganisationService,
@@ -63,6 +64,10 @@ export class OrganisationInfoService {
         this.isLimitedByVlimpersChangedSource.next(underVlimpersManagement && !hasRightsToVlimpersManagedOrganisations);
       });
   }
+  
+  get organisation() {
+    return this.currentOrganisation;
+  }
 
   get organisationChanged() {
     return this.organisationChanged$;
@@ -84,8 +89,11 @@ export class OrganisationInfoService {
     this.organisationService.get(id)
       .subscribe(
         item => {
-          if (item)
+          if (item){
+            console.log('changed', id);
+            this.currentOrganisation = item;
             this.organisationChangedSource.next(item);
+          }
         },
         error => this.alertLoadError(error));
   }

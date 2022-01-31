@@ -15,6 +15,7 @@ import {
   OrganisationKeyService,
   OrganisationKeyFilter
 } from 'services/organisationkeys';
+import {OrganisationInfoService} from "../../../services";
 
 @Component({
   templateUrl: 'overview.template.html',
@@ -38,16 +39,22 @@ export class OrganisationKeysOverviewComponent implements OnInit, OnDestroy {
     private router: Router,
     private organisationKeyService: OrganisationKeyService,
     private oidcService: OidcService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private store: OrganisationInfoService
   ) {
     this.organisationKeys = new PagedResult<OrganisationKeyListItem>();
   }
 
   ngOnInit() {
+    this.store
+      .organisationChanged
+      .subscribe(org => {
+        this.canEditOrganisation = this.oidcService.canEditOrganisation(org);
+      });
+
     this.canEditOrganisation = Observable.of(false);
     this.subscriptions.push(this.route.parent.parent.params.subscribe((params: Params) => {
       this.organisationId = params['id'];
-      this.canEditOrganisation = this.oidcService.canEditOrganisation(this.organisationId);
       this.loadKeys();
     }));
   }
