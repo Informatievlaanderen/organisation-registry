@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 import { required } from 'core/validation';
-import { AuthService, Role } from 'core/auth';
+import { Role } from 'core/auth';
 
 import { CreateBodyFormValues } from './create-body-form.model';
 

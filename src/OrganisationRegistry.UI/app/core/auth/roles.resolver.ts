@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
 
-import { AuthService } from './auth.service';
 import { Role } from './role.model';
 import { OidcService } from './oidc.service';
 

@@ -1,10 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Component } from '@angular/core';
 
 import { Alert, AlertBuilder, AlertService, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
 import { SearchEvent } from 'core/search';
-import { AuthService, Role } from 'core/auth';
 
 import {
   ProjectionStateFilter,

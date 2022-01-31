@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
 
-import { AuthService, Role, OidcService } from 'core/auth';
+import { Role, OidcService } from 'core/auth';
 
 @Component({
     templateUrl: 'overview.template.html',

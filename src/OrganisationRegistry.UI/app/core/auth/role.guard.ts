@@ -3,14 +3,11 @@ import {
   ActivatedRouteSnapshot,
   CanActivate,
   CanActivateChild,
-  Router,
   RouterStateSnapshot
 } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
-import { ConfigurationService } from './../configuration';
 
-import { AuthService } from './auth.service';
 import { Role } from './role.model';
 import { OidcService } from './oidc.service';
 
@@ -18,8 +15,6 @@ import { OidcService } from './oidc.service';
 export class RoleGuard implements CanActivate, CanActivateChild {
   constructor(
     private oidcService: OidcService,
-    private router: Router,
-    private configurationService: ConfigurationService
   ) { }
 
   public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {

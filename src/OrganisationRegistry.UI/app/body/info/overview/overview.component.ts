@@ -1,13 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 
-import { AlertBuilder, AlertService, Alert, AlertType } from 'core/alert';
-import { PagedEvent, PagedResult, SortOrder } from 'core/pagination';
+import { AlertService} from 'core/alert';
 import { BaseAlertMessages } from 'core/alertmessages';
-import { AuthService, OidcService } from 'core/auth';
+import { OidcService } from 'core/auth';
 
 import { Body } from 'services/bodies';
 import { BodyInfoService } from 'services/bodyinfo';
