@@ -19,5 +19,21 @@
     <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="App.Metrics" Version="4.3.0" />
+    <PackageReference Update="App.Metrics.Abstractions" Version="4.3.0" />
+    <PackageReference Update="App.Metrics.Core" Version="4.3.0" />
+    <PackageReference Update="App.Metrics.AspNetCore.Core" Version="4.3.0" />
+    <PackageReference Update="App.Metrics.AspNetCore.Abstractions" Version="4.3.0" />
+    <PackageReference Update="App.Metrics.AspNetCore.Hosting" Version="4.3.0" />
+    <PackageReference Update="App.Metrics.AspNetCore.Tracking" Version="4.3.0" />
+    <PackageReference Update="App.Metrics.Concurrency" Version="4.3.0" />
+    <PackageReference Update="App.Metrics.Extensions.Configuration" Version="4.3.0" />
+    <PackageReference Update="App.Metrics.Extensions.DependencyInjection" Version="4.3.0" />
+    <PackageReference Update="App.Metrics.Formatters.Ascii" Version="4.3.0" />
+    <PackageReference Update="App.Metrics.Formatters.Json" Version="4.3.0" />
+    <PackageReference Update="App.Metrics.Reporting.Console" Version="4.3.0" />
+  </ItemGroup>
+
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

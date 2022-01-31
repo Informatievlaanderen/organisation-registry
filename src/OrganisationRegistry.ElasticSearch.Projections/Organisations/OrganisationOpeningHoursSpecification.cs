@@ -2,7 +2,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 {
     using Infrastructure;
     using Microsoft.Extensions.Logging;
-    using System;
     using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;

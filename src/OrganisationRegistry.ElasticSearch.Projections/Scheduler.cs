@@ -8,6 +8,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using NodaTime;
+    using IClock = NodaTime.IClock;
 
     public class Scheduler
     {
@@ -35,16 +36,21 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 AllowSynchronousContinuations = false
             });
             _timer = new Timer(
-                async _ => await _messageChannel.Writer.WriteAsync(new TimerElapsed { Time = _clock.GetCurrentInstant() }, _messagePumpCancellation.Token),
+                _ => _messageChannel.Writer.WriteAsync(new TimerElapsed { Time = _clock.GetCurrentInstant() }, _messagePumpCancellation.Token),
                 null,
                 Timeout.InfiniteTimeSpan,
                 Timeout.InfiniteTimeSpan);
-            _messagePump = Task.Factory.StartNew(async () =>
+            _messagePump = CreateMessagePump();
+        }
+
+        private Task<Task> CreateMessagePump()
+        {
+            return Task.Factory.StartNew(async () =>
             {
                 var scheduled = new List<ScheduledAction>();
                 try
                 {
-                    _logger.LogInformation("Scheduler message pump entered ...");
+                    _logger.LogDebug("Scheduler message pump entered ...");
                     while (await _messageChannel.Reader.WaitToReadAsync().ConfigureAwait(false))
                     {
                         while (_messageChannel.Reader.TryRead(out var message))
@@ -52,11 +58,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                             switch (message)
                             {
                                 case TimerElapsed elapsed:
-                                    _logger.LogInformation("Timer elapsed at instant {0}.", elapsed.Time);
                                     var dueEntries = scheduled
                                         .Where(entry => entry.Due <= elapsed.Time)
                                         .ToArray();
-                                    _logger.LogInformation("{0} actions due.", dueEntries.Length);
+                                    _logger.LogDebug("Timer elapsed at instant {Time}: {Length} actions due", elapsed.Time, dueEntries.Length);
 
                                     foreach (var dueEntry in dueEntries)
                                     {
@@ -66,7 +71,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
 
                                     if (scheduled.Count == 0) // deactivate timer when no more work
                                     {
-                                        _logger.LogInformation("Timer deactivated because no more scheduled actions.");
+                                        _logger.LogDebug("Timer deactivated because no more scheduled actions");
 
                                         _timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
                                     }
@@ -75,12 +80,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                                 case ScheduleAction schedule:
                                     if (scheduled.Count == 0) // activate timer when more work
                                     {
-                                        _logger.LogInformation("Timer activated because new scheduled actions.");
+                                        _logger.LogDebug("Timer activated because new scheduled actions");
 
                                         _timer.Change(DefaultFrequency, DefaultFrequency);
                                     }
 
-                                    _logger.LogInformation("Scheduling an action to be executed at {0}.", schedule.Due);
+                                    _logger.LogDebug("Scheduling an action to be executed at {Due}", schedule.Due);
 
                                     scheduled.Add(new ScheduledAction(schedule.Action, schedule.Due));
                                     break;
@@ -90,15 +95,15 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 }
                 catch (TaskCanceledException)
                 {
-                    _logger.LogInformation("Scheduler message pump is exiting due to cancellation.");
+                    _logger.LogDebug("Scheduler message pump is exiting due to cancellation");
                 }
                 catch (OperationCanceledException)
                 {
-                    _logger.LogInformation("Scheduler message pump is exiting due to cancellation.");
+                    _logger.LogDebug("Scheduler message pump is exiting due to cancellation");
                 }
                 catch (Exception exception)
                 {
-                    _logger.LogError(exception, "Scheduler message pump is exiting due to a bug.");
+                    _logger.LogError(exception, "Scheduler message pump is exiting due to a bug");
                 }
             }, _messagePumpCancellation.Token, TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
         }
@@ -120,21 +125,21 @@ namespace OrganisationRegistry.ElasticSearch.Projections
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Starting scheduler ...");
-            _logger.LogInformation("Started scheduler ...");
+            _logger.LogDebug("Starting scheduler ...");
+            _logger.LogDebug("Started scheduler ...");
             return Task.CompletedTask;
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Stopping scheduler ...");
+            _logger.LogDebug("Stopping scheduler ...");
             _timer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
             _messageChannel.Writer.Complete();
             _messagePumpCancellation.Cancel();
             await _messagePump.ConfigureAwait(false);
             _messagePumpCancellation.Dispose();
             await _timer.DisposeAsync().ConfigureAwait(false);
-            _logger.LogInformation("Stopped scheduler.");
+            _logger.LogDebug("Stopped scheduler");
         }
 
         private class ScheduledAction
@@ -152,7 +157,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
 
         private class ScheduleAction
         {
-            public Func<CancellationToken, Task> Action { get; set; }
+            public Func<CancellationToken, Task> Action { get; set; } = null!;
 
             public Instant Due { get; set; }
         }

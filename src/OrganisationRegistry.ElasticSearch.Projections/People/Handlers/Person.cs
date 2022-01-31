@@ -5,7 +5,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
     using Client;
     using Configuration;
     using ElasticSearch.People;
@@ -16,7 +15,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using Microsoft.Extensions.Options;
     using Nest;
     using SqlServer.ElasticSearchProjections;
-    using SqlServer.Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Person.Events;
     using SqlServer;
@@ -93,7 +91,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
             await using var context = _contextFactory.Create();
             await context.Database.ExecuteSqlRawAsync(
-                string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [ElasticSearchProjections].[{tableName}];")));
+                string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [{OrganisationRegistry.Infrastructure.WellknownSchemas.ElasticSearchProjectionsSchema}].[{tableName}];")));
 
             return new ElasticNoChange();
         }

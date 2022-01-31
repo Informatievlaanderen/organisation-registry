@@ -5,9 +5,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using Amazon.DynamoDBv2.DocumentModel;
-    using Autofac.Features.OwnedInstances;
-    using Bodies;
     using Cache;
     using Common;
     using ElasticSearch.People;
@@ -16,7 +13,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Organisation.Events;
-    using SqlServer.Infrastructure;
     using OrganisationRegistry.Body.Events;
     using OrganisationRegistry.Infrastructure.Events;
     using SqlServer;

@@ -1,17 +1,16 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Cache
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
+    using App.Metrics;
     using Infrastructure;
+    using Metrics;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure.Config;
     using OrganisationRegistry.Infrastructure.Events;
     using SqlServer;
-    using SqlServer.Infrastructure;
     using SqlServer.ProjectionState;
 
     public class CacheRunner
@@ -32,11 +31,14 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Cache
         private readonly IProjectionStates _projectionStates;
         private readonly IEventPublisher _bus;
 
+        private readonly EnvelopeMetrics _metrics;
+
         public CacheRunner(ILogger<CacheRunner> logger,
             IEventStore store,
             IContextFactory contextFactory,
             IProjectionStates projectionStates,
-            IEventPublisher bus, BusRegistrar busRegistrar)
+            IEventPublisher bus, BusRegistrar busRegistrar,
+            IMetricsRoot metrics)
         {
             _logger = logger;
             _store = store;
@@ -44,6 +46,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Cache
             _projectionStates = projectionStates;
             _bus = bus;
             busRegistrar.RegisterEventHandlers(EventHandlers);
+
+            _metrics = new EnvelopeMetrics(metrics, ProjectionName);
         }
 
         public async Task Run()
@@ -70,7 +74,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Cache
                 previousLastProcessedEventNumber = lastProcessedEventNumber;
                 var envelopes = _store.GetEventEnvelopesAfter(lastProcessedEventNumber, 2500, eventsBeingListenedTo.ToArray()).ToList();
 
-                LogEnvelopeCount(envelopes);
+                _metrics.LogEnvelopeCount(envelopes);
 
                 var newLastProcessedEventNumber = new int?();
                 try
@@ -82,7 +86,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Cache
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogCritical(0, ex, "[{ProjectionName}] An exception occurred while handling envelopes.", ProjectionName);
+                    _logger.LogCritical(0, ex, "[{ProjectionName}] An exception occurred while handling envelopes", ProjectionName);
                 }
                 finally
                 {
@@ -128,15 +132,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Cache
 
                 throw;
             }
-        }
-
-        private void LogEnvelopeCount(IReadOnlyCollection<IEnvelope> envelopes)
-        {
-            _logger.LogInformation("[{ProjectionName}] Found {NumberOfEnvelopes} envelopes to process.", ProjectionName, envelopes.Count);
-            //_telemetryClient.TrackMetric($"ElasticSearchProjections::{ProjectionName}::EnvelopesToProcess", envelopes.Count);
-
-            if (envelopes.Count > 0)
-                _logger.LogInformation("[{ProjectionName}] Starting at #{FirstEnvelopeNumber} to #{LastEnvelopeNumber}.", ProjectionName, envelopes.First().Number, envelopes.Last().Number);
         }
     }
 }

@@ -1,6 +1,5 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 {
-    using System;
     using System.Data.Common;
     using System.Collections.Generic;
     using System.Linq;
@@ -8,7 +7,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Infrastructure.Events;
     using Capacity.Events;
-    using Client;
     using ElasticSearch.Organisations;
     using Function.Events;
     using Infrastructure;

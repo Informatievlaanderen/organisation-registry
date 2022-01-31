@@ -5,7 +5,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Bodies;
     using OrganisationRegistry.Infrastructure.Events;
     using ElasticSearch.Organisations;
     using Infrastructure;

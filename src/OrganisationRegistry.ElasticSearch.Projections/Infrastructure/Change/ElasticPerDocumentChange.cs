@@ -2,7 +2,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure.Change
 {
     using System;
     using System.Collections.Generic;
-    using Bodies;
 
     public class ElasticPerDocumentChange<T> : IElasticChange where T: IDocument
     {

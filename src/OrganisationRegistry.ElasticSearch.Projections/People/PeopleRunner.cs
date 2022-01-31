@@ -10,7 +10,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People
     using Infrastructure;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using OrganisationRegistry.Infrastructure.Config;
     using OrganisationRegistry.Infrastructure.Events;
     using SqlServer.ProjectionState;
 
@@ -48,7 +47,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People
                 ProjectionName,
                 EventHandlers,
                 elastic,
-                bus)
+                bus,
+                metrics)
         {
             busRegistrar.RegisterEventHandlers(EventHandlers);
         }

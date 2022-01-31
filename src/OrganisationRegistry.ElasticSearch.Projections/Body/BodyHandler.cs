@@ -7,7 +7,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     using System.Threading.Tasks;
     using App.Metrics;
     using App.Metrics.Timer;
-    using Be.Vlaanderen.Basisregisters.AspNetCore.Swagger.ReDoc;
     using Bodies;
     using Client;
     using Common;
@@ -138,7 +137,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             await using var context = _contextFactory.Create();
             await context.Database.ExecuteSqlRawAsync(
                 string.Concat(ProjectionTableNames.Select(tableName =>
-                    $"DELETE FROM [ElasticSearchProjections].[{tableName}];")));
+                    $"DELETE FROM [{OrganisationRegistry.Infrastructure.WellknownSchemas.ElasticSearchProjectionsSchema}].[{tableName}];")));
 
             return new ElasticNoChange();
         }
