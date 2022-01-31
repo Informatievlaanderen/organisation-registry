@@ -1,3 +1,12 @@
+# [1.123.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.122.0...v1.123.0) (2022-01-31)
+
+
+### Features
+
+* add identity server ([9e6e963](https://github.com/informatievlaanderen/organisation-registry/commit/9e6e96311ee8cabc95e5f4a68e3955afda69d973))
+* add identity server to compose file ([939a0a1](https://github.com/informatievlaanderen/organisation-registry/commit/939a0a14ed421c541b62d12c5b2d23b2443ae137))
+* move oidc settings to appsettings.development.json ([fd28d46](https://github.com/informatievlaanderen/organisation-registry/commit/fd28d46da25ce10bda1882c1f5efdf79911d57b6))
+
 # [1.122.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.121.1...v1.122.0) (2022-01-27)
 
 
