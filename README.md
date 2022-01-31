@@ -32,6 +32,18 @@ npm run start:hmr
 # browse to https://organisatie.dev-vlaanderen.local
 ```
 
+#### To run external dependencies
+
+Organisation Registry integrates with a number of external systems:
+- Microsoft Sql Server
+- OpenSearch
+- ACM/IDM (Identity Server for development purposes)
+
+To facilitate development, these systems can be run on your environment with Docker Compose:
+```
+docker compose up --build
+```
+
 #### To add a migration:
 
 ```bash
