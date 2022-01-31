@@ -45,7 +45,7 @@ docker compose up --build
 
 #### To set up identity server settings
 
-After the initial database setup, run the sql in `scripts/sqlqueries/20210128_organisatie-niscode-mapping.sql`.
+After the initial database setup, run the sql in `scripts/development/setup_auth/remove_oidc_auth.sql`.
 
 #### To add a migration:
 
