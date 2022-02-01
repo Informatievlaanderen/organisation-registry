@@ -74,7 +74,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Cache
                 previousLastProcessedEventNumber = lastProcessedEventNumber;
                 var envelopes = _store.GetEventEnvelopesAfter(lastProcessedEventNumber, 2500, eventsBeingListenedTo.ToArray()).ToList();
 
-                _metrics.LogEnvelopeCount(envelopes);
+                _metrics.CountEnvelopes(envelopes);
+                _metrics.MeterEnvelopes(envelopes);
 
                 var newLastProcessedEventNumber = new int?();
                 try

@@ -80,7 +80,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 .GetEventEnvelopesAfter(lastProcessedEventNumber, _batchSize, eventsBeingListenedTo.ToArray())
                 .ToList();
 
-            _metrics.LogEnvelopeCount(envelopes);
+            _metrics.CountEnvelopes(envelopes);
+            _metrics.MeterEnvelopes(envelopes);
 
             int? newLastProcessedEventNumber = null;
             try
@@ -185,7 +186,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     {
                         _logger.LogInformation("[{ProjectionName}] Flushed documents, page {PageNumber}", ProjectionName, next.Page);
                     });
-                    
+
                     return Task.CompletedTask;
                 });
                 documentCache.Clear();
