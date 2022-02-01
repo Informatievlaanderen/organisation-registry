@@ -10,6 +10,7 @@ import { OidcService } from 'core/auth';
 import { OrganisationInfoService } from 'services/organisationinfo';
 import { Organisation } from 'services/organisations';
 import {FeaturesService} from "services/features";
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
@@ -21,6 +22,7 @@ export class OrganisationDetailComponent implements OnInit, OnDestroy {
   public enableRegulations: Observable<boolean>;
   public enableSync: Observable<boolean>;
   public enableVlimpers: Observable<boolean>;
+  private subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -33,13 +35,13 @@ export class OrganisationDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store
+    this.subscriptions.push(this.store
       .organisationChanged
       .subscribe(org => {
         this.organisation = org;
         this.enableSync = this.oidcService.isLoggedIn && this.oidcService.canEditOrganisation(org);
         this.enableVlimpers = this.oidcService.isLoggedIn && this.oidcService.isVlimpersBeheerder();
-      });
+      }));
 
     this.route.params.forEach((params: Params) => {
       let id = params['id'];
@@ -54,5 +56,6 @@ export class OrganisationDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.subscriptions.forEach(x => x.unsubscribe());
   }
 }

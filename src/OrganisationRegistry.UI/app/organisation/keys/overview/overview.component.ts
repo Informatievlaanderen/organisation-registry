@@ -1,20 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Params, Router} from '@angular/router';
 
-import { Observable } from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
+import {Observable} from 'rxjs/Observable';
+import {Subscription} from 'rxjs/Subscription';
 
-import { AuthService, OidcService } from 'core/auth';
-import { AlertBuilder, AlertService } from 'core/alert';
-import { BaseAlertMessages } from 'core/alertmessages';
-import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
-import { SearchEvent } from 'core/search';
+import {OidcService} from 'core/auth';
+import {AlertBuilder, AlertService} from 'core/alert';
+import {BaseAlertMessages} from 'core/alertmessages';
+import {PagedEvent, PagedResult, SortOrder} from 'core/pagination';
+import {SearchEvent} from 'core/search';
 
-import {
-  OrganisationKeyListItem,
-  OrganisationKeyService,
-  OrganisationKeyFilter
-} from 'services/organisationkeys';
+import {OrganisationKeyFilter, OrganisationKeyListItem, OrganisationKeyService} from 'services/organisationkeys';
 import {OrganisationInfoService} from "../../../services";
 
 @Component({
@@ -46,11 +42,11 @@ export class OrganisationKeysOverviewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store
+    this.subscriptions.push(this.store
       .organisationChanged
       .subscribe(org => {
         this.canEditOrganisation = this.oidcService.canEditOrganisation(org);
-      });
+      }));
 
     this.canEditOrganisation = Observable.of(false);
     this.subscriptions.push(this.route.parent.parent.params.subscribe((params: Params) => {
