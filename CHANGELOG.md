@@ -1,3 +1,10 @@
+# [1.124.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.123.1...v1.124.0) (2022-02-01)
+
+
+### Features
+
+* or-710 reduce logging ([d76ae9f](https://github.com/informatievlaanderen/organisation-registry/commit/d76ae9f54e8d5b370cfc6e71b2601477448cff30))
+
 ## [1.123.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.123.0...v1.123.1) (2022-02-01)
 
 
