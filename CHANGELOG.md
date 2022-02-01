@@ -1,3 +1,11 @@
+## [1.123.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.123.0...v1.123.1) (2022-02-01)
+
+
+### Bug Fixes
+
+* chain and unsubscribe subscriptions ([44dca68](https://github.com/informatievlaanderen/organisation-registry/commit/44dca689340223a4b1afc0013d4ce23161d5f3e9))
+* check vlimpers access in guard ([5efbd7d](https://github.com/informatievlaanderen/organisation-registry/commit/5efbd7df4550aff4c183d7d70e93289a87576630))
+
 # [1.123.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.122.0...v1.123.0) (2022-01-31)
 
 
