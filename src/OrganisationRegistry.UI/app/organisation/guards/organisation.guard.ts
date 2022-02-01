@@ -16,7 +16,6 @@ export class OrganisationGuard implements CanActivate, CanActivateChild {
     private oidcService: OidcService,
     private organisationStore: OrganisationInfoService
   ) {
-    console.log('GUARD')
   }
 
   public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
