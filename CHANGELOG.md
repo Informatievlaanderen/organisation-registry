@@ -1,3 +1,10 @@
+# [1.125.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.124.0...v1.125.0) (2022-02-01)
+
+
+### Features
+
+* counter resets, added meter ([2cab113](https://github.com/informatievlaanderen/organisation-registry/commit/2cab113c3e6eeb8da891f63baa2541685f61f6bb))
+
 # [1.124.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.123.1...v1.124.0) (2022-02-01)
 
 
