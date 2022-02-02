@@ -21,9 +21,36 @@ export class OrganisationInfoService implements OnDestroy {
   private organisationChildrenPageChangedSource: Subject<[string, PagedEvent]>;
   private readonly organisationChildrenPageChanged$: Observable<[string, PagedEvent]>;
 
+  private canViewKboManagementChangedSource: BehaviorSubject<boolean>;
+  public readonly canViewKboManagementChanged$: Observable<boolean>;
+
+  private canViewVlimpersManagementChangedSource: BehaviorSubject<boolean>;
+  public readonly canViewVlimpersManagementChanged$: Observable<boolean>;
+
+  private canEditAllOrganisationFieldsChangedSource: BehaviorSubject<boolean>;
+  public readonly canEditAllOrganisationFieldsChanged$: Observable<boolean>;
+
+  private canEditOrganisationChangedSource: BehaviorSubject<boolean>;
+  public readonly canEditOrganisationChanged$: Observable<boolean>;
+
+  private canTerminateOrganisationChangedSource: BehaviorSubject<boolean>;
+  public readonly canTerminateOrganisationChanged$: Observable<boolean>;
+
+  private canCancelCouplingWithKboChangedSource: BehaviorSubject<boolean>;
+  public readonly canCancelCouplingWithKboChanged$: Observable<boolean>;
+
+  private canCoupleWithKboChangedSource: BehaviorSubject<boolean>;
+  public readonly canCoupleWithKboChanged$: Observable<boolean>;
+
+  private canAddDaughtersChangedSource: BehaviorSubject<boolean>;
+  public readonly canAddDaughtersChanged$: Observable<boolean>;
+
+  private canEditRegulationsChangedSource: BehaviorSubject<boolean>;
+  public readonly canEditRegulationsChanged$: Observable<boolean>;
+
+
   private organisationIdChangedSource: Subject<string>;
   private readonly organisationIdChanged$: Observable<string>;
-
 
   private organisationChildrenChangedSource: Subject<PagedResult<OrganisationChild>>;
   private readonly organisationChildrenChanged$: Observable<PagedResult<OrganisationChild>>;
@@ -61,6 +88,33 @@ export class OrganisationInfoService implements OnDestroy {
 
     this.isEditableChangedSource = new BehaviorSubject<boolean>(false);
     this.isEditableChanged$ = this.isEditableChangedSource.asObservable();
+
+    this.canViewKboManagementChangedSource = new BehaviorSubject<boolean>(false);
+    this.canViewKboManagementChanged$ = this.canViewKboManagementChangedSource.asObservable();
+
+    this.canViewVlimpersManagementChangedSource = new BehaviorSubject<boolean>(false);
+    this.canViewVlimpersManagementChanged$ = this.canViewVlimpersManagementChangedSource.asObservable();
+
+    this.canEditAllOrganisationFieldsChangedSource = new BehaviorSubject<boolean>(false);
+    this.canEditAllOrganisationFieldsChanged$ = this.canEditAllOrganisationFieldsChangedSource.asObservable();
+
+    this.canEditOrganisationChangedSource = new BehaviorSubject<boolean>(false);
+    this.canEditOrganisationChanged$ = this.canEditOrganisationChangedSource.asObservable();
+
+    this.canTerminateOrganisationChangedSource = new BehaviorSubject<boolean>(false);
+    this.canTerminateOrganisationChanged$ = this.canTerminateOrganisationChangedSource.asObservable();
+
+    this.canCancelCouplingWithKboChangedSource = new BehaviorSubject<boolean>(false);
+    this.canCancelCouplingWithKboChanged$ = this.canCancelCouplingWithKboChangedSource.asObservable();
+
+    this.canCoupleWithKboChangedSource = new BehaviorSubject<boolean>(false);
+    this.canCoupleWithKboChanged$ = this.canCoupleWithKboChangedSource.asObservable();
+
+    this.canAddDaughtersChangedSource = new BehaviorSubject<boolean>(false);
+    this.canAddDaughtersChanged$ = this.canAddDaughtersChangedSource.asObservable();
+
+    this.canEditRegulationsChangedSource = new BehaviorSubject<boolean>(false);
+    this.canEditRegulationsChanged$ = this.canEditRegulationsChangedSource.asObservable();
 
     this.isLimitedByVlimpersChangedSource = new BehaviorSubject<boolean>(false);
     this.isLimitedByVlimpersChanged$ = this.isLimitedByVlimpersChangedSource.asObservable();
@@ -125,6 +179,148 @@ export class OrganisationInfoService implements OnDestroy {
           error => this.alertLoadError(error)
         )
     );
+    this.subscriptions.push(
+      combineLatest(
+        this.organisationChanged,
+        this.oidcService.securityInfo)
+        .subscribe(combined => {
+          let organisation = combined[0];
+          let securityInfo = combined[1];
+
+          console.log('security', securityInfo)
+
+          this.canViewKboManagementChangedSource.next(OrganisationInfoService.canViewKboManagement(organisation, securityInfo));
+          this.canViewVlimpersManagementChangedSource.next(OrganisationInfoService.canViewVlimpersManagement(organisation, securityInfo));
+          this.canEditOrganisationChangedSource.next(OrganisationInfoService.canEditOrganisation(organisation, securityInfo))
+          this.canEditAllOrganisationFieldsChangedSource.next(OrganisationInfoService.canEditAllOrganisationFields(organisation, securityInfo));
+          this.canTerminateOrganisationChangedSource.next(OrganisationInfoService.canTerminateOrganisation(organisation, securityInfo))
+          this.canCancelCouplingWithKboChangedSource.next(OrganisationInfoService.canCancelCouplingWithKbo(organisation, securityInfo))
+          this.canCoupleWithKboChangedSource.next(OrganisationInfoService.canCoupleWithKbo(organisation, securityInfo))
+          this.canAddDaughtersChangedSource.next(OrganisationInfoService.canAddDaughters(organisation, securityInfo))
+          this.canEditRegulationsChangedSource.next(OrganisationInfoService.canEditRegulations(organisation, securityInfo))
+        }));
+  }
+
+  private static canViewKboManagement(organisation, securityInfo) {
+    if (!securityInfo.isLoggedIn)
+      return false;
+
+    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+      return true;
+
+    return false;
+  }
+
+  private static canViewVlimpersManagement(organisation, securityInfo) {
+    if (!securityInfo.isLoggedIn)
+      return false;
+
+    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+      return true;
+
+    return false;
+  }
+
+  private static canEditAllOrganisationFields(organisation, securityInfo) {
+    if (!securityInfo.isLoggedIn)
+      return false;
+
+    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+      return true;
+
+    if (organisation.isTerminated)
+      return false;
+
+    if (!organisation.underVlimpersManagement &&
+      securityInfo.isOrganisatieBeheerderFor(organisation.id))
+      return true;
+
+    if (organisation.underVlimpersManagement &&
+      securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
+      return true;
+
+    return false;
+  }
+
+  private static canEditOrganisation(organisation, securityInfo) {
+    if (!securityInfo.isLoggedIn)
+      return false;
+
+    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+      return true;
+
+    if (organisation.isTerminated)
+      return false;
+
+    if (organisation.underVlimpersManagement &&
+      securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
+      return true;
+
+    if (securityInfo.isOrganisatieBeheerderFor(organisation.id))
+      return true;
+
+    return false;
+  }
+
+  private static canTerminateOrganisation(organisation, securityInfo) {
+    if (!securityInfo.isLoggedIn)
+      return false;
+
+    return !organisation.isTerminated &&
+      securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder])
+  }
+
+  private static canCancelCouplingWithKbo(organisation, securityInfo) {
+    if (!securityInfo.isLoggedIn)
+      return false;
+
+    return organisation.kboNumber &&
+      securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder])
+  }
+
+  private static canCoupleWithKbo(organisation, securityInfo) {
+    if (!securityInfo.isLoggedIn)
+      return false;
+
+    return !organisation.kboNumber &&
+      securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder])
+  }
+
+  private static canAddDaughters(organisation, securityInfo) {
+    if (!securityInfo.isLoggedIn)
+      return false;
+
+    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+      return true;
+
+    if (organisation.isTerminated)
+      return false;
+
+    if (organisation.underVlimpersManagement &&
+      securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
+      return true;
+
+    if (!organisation.underVlimpersManagement &&
+      securityInfo.isOrganisatieBeheerderFor(organisation.id))
+      return true;
+
+    return false;
+  }
+
+  private static canEditRegulations(organisation, securityInfo) {
+    if (!securityInfo.isLoggedIn)
+      return false;
+
+    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+      return true;
+
+    if (organisation.isTerminated)
+      return false;
+
+    if (securityInfo.isOrganisatieBeheerderFor(organisation.id))
+      return true;
+
+    return false;
   }
 
   get organisation() {

@@ -64,10 +64,10 @@
               <li class="side-navigation__item">
                 <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['openinghours']">Openingsuren</a>
               </li>
-              <li class="side-navigation__item" *ngIf="(enableSync | async)">
+              <li class="side-navigation__item" *ngIf="(store.canViewKboManagementChanged$ | async)">
                 <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['manage']">KBO-koppeling</a>
               </li>
-              <li class="side-navigation__item" *ngIf="(enableVlimpers | async)">
+              <li class="side-navigation__item" *ngIf="(store.canViewVlimpersManagementChanged$ | async)">
                 <a [routerLinkActive]="['js-scrollspy-active']" [routerLink]="['vlimpers']">Vlimpers</a>
               </li>
             </ul>

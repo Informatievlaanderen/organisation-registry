@@ -20,29 +20,21 @@ export class OrganisationDetailComponent implements OnInit, OnDestroy {
   public organisation: Organisation;
   public enableBankAccounts: Observable<boolean>;
   public enableRegulations: Observable<boolean>;
-  public enableSync: Observable<boolean>;
-  public enableVlimpers: Observable<boolean>;
+  public showKboManagement: Observable<boolean>;
+  public showVlimpers: Observable<boolean>;
   private subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
     private alertService: AlertService,
-    private store: OrganisationInfoService,
     private featuresService: FeaturesService,
     private oidcService: OidcService,
+    public store: OrganisationInfoService,
   ) {
     this.organisation = new Organisation();
   }
 
   ngOnInit() {
-    this.subscriptions.push(this.store
-      .organisationChanged
-      .subscribe(org => {
-        this.organisation = org;
-        this.enableSync = this.oidcService.isLoggedIn && this.oidcService.canEditOrganisation(org);
-        this.enableVlimpers = this.oidcService.isLoggedIn && this.oidcService.isVlimpersBeheerder();
-      }));
-
     this.route.params.forEach((params: Params) => {
       let id = params['id'];
       this.store.loadOrganisation(id);

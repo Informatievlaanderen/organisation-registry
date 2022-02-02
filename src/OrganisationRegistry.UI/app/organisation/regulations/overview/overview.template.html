@@ -6,7 +6,7 @@
             (filter)="search($event)">
         </ww-organisation-regulation-filter>
         <div class="cta-title__cta">
-            <a *ngIf="(store.isEditableChanged | async) && !(store.isLimitedByVlimpers | async)"
+            <a *ngIf="store.canEditRegulationsChanged$ | async"
                class="button cta-title__cta" [routerLink]="['./create']">Regelgeving toevoegen</a>
             <div class="u-align-right" style="clear: both;"></div>
         </div>
@@ -16,6 +16,6 @@
       [items]="organisationRegulations"
       [isBusy]="isLoading"
       (changePage)="changePage($event)"
-      [canEdit]="store.isEditableChanged">
+      [canEdit]="store.canEditRegulationsChanged$">
     </ww-organisation-regulation-list>
 </div>
