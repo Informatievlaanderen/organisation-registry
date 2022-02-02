@@ -2,24 +2,24 @@
   <div class="cta-title">
     <h3 class="h3 cta-title__title">Algemene informatie</h3>
     <div class="cta-title__cta">
-      <div *ngIf="(store.isEditableChanged | async)">
-        <a *ngIf="!organisation.kboNumber"
+      <div>
+        <a *ngIf="store.canCoupleWithKboChanged$ | async"
            class="button button--secondary button--notice"
            [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
            [routerLink]="'./couplewithkbo'">Koppel met KBO</a>
 
-        <a *ngIf="organisation.kboNumber &&
-                  (isOrganisationRegistryBeheerder | async)"
+        <a *ngIf="store.canCancelCouplingWithKboChanged$ | async"
            class="button button--secondary button--notice"
            [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
            [routerLink]="'./cancelcouplingwithkbo'">Koppeling met KBO ongedaan maken</a>
 
-        <a *ngIf="(isOrganisationRegistryBeheerder | async) && !organisation.isTerminated"
+        <a *ngIf="store.canTerminateOrganisationChanged$ | async"
            class="button form__button button--secondary button--warning"
            [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
            [routerLink]="'./terminate'">Sluit organisatie af</a>
 
         <a
+            *ngIf="store.canEditOrganisationChanged$ | async"
            class="button"
            [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
            [routerLink]="'./edit'">Wijzig</a>
@@ -105,7 +105,7 @@
   <div class="cta-title">
     <h3 class="h3 cta-title__title">Dochterorganisaties</h3>
     <div class="cta-title__cta">
-      <a *ngIf="(store.isEditableChanged | async) && !(store.isLimitedByVlimpers | async)" class="button cta-title__cta"
+      <a *ngIf="store.canAddDaughtersChanged$ | async" class="button cta-title__cta"
          [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}" [routerLink]="'./addchild'">Voeg dochter
         toe</a>
       <div class="u-align-right" style="clear: both;">

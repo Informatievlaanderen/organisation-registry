@@ -14,14 +14,52 @@ import {OidcClient} from "oidc-client";
 import {Organisation} from "../../services/organisations";
 
 interface SecurityInfo {
-  isLoggedIn: boolean;
-  userName: string;
-  roles: Array<Role>;
-  ovoNumbers: Array<string>;
-  organisationIds: Array<string>;
-  bodyIds: Array<string>;
-  refreshtoken: number;
-  expires: number;
+    isLoggedIn: boolean,
+    userName: string,
+    roles: Array<Role>,
+    ovoNumbers: Array<string>,
+    organisationIds: Array<string>,
+    bodyIds: Array<string>,
+    refreshtoken: number,
+    expires: number,
+    hasAnyOfRoles: ((desiredRoles: Array<Role>) => boolean),
+    isOrganisatieBeheerderFor: (organisationId: string) => boolean
+}
+
+function hasAnyOfRoles(roles: Role[], desiredRoles: Role[]) : boolean {
+  for (let userRole of roles) {
+    if (desiredRoles.findIndex(x => x === userRole) > -1)
+      return true;
+  }
+
+  return roles.findIndex(x => x === Role.Developer) > -1;
+}
+
+function createSecurityInfo(
+  isLoggedIn: boolean,
+  userName: string,
+  roles: Array<Role>,
+  ovoNumbers: Array<string>,
+  organisationIds: Array<string>,
+  bodyIds: Array<string>,
+  refreshtoken: number,
+  expires: number
+): SecurityInfo {
+  return {
+    isLoggedIn,
+    userName,
+    roles,
+    ovoNumbers,
+    organisationIds,
+    bodyIds,
+    refreshtoken,
+    expires,
+    hasAnyOfRoles: ((desiredRoles: Role[]) : boolean => hasAnyOfRoles(roles, desiredRoles)),
+    isOrganisatieBeheerderFor: ((organisationId: string) : boolean => {
+      return hasAnyOfRoles(roles, [Role.OrganisatieBeheerder]) &&
+        organisationIds.findIndex(x => x === organisationId) > -1;
+    })
+  };
 }
 
 @Injectable()
@@ -30,25 +68,30 @@ export class OidcService {
   private securityInfoUrl = `${this.configurationService.apiUrl}/v1/security/info`;
   private cacheTimeInMs: number = 60000;
 
-  private storage: SecurityInfo = {
-    isLoggedIn: false,
-    userName: '',
-    roles: new Array<Role>(),
-    ovoNumbers: new Array<string>(),
-    organisationIds: new Array<string>(),
-    bodyIds: new Array<string>(),
-    refreshtoken: 1000,
-    expires: new Date().getTime() - (60 * 1000)
-  };
+  private storage: SecurityInfo = createSecurityInfo(
+    false,
+    '',
+    new Array<Role>(),
+    new Array<string>(),
+    new Array<string>(),
+    new Array<string>(),
+    1000,
+    new Date().getTime() - (60 * 1000)
+);
 
   private data$ = new BehaviorSubject(this.storage);
   private request$ = new Subject<SecurityInfo>();
+
+  private readonly securityInfoChanged$: Observable<SecurityInfo>;
+
   private client: OidcClient;
 
   constructor(
     private http: Http,
     private configurationService: ConfigurationService
   ) {
+    this.securityInfoChanged$ = this.data$.asObservable();
+
     http.get(this.securityInfoUrl)
       .subscribe(r => {
         var data = r.json();
@@ -273,6 +316,10 @@ export class OidcService {
     this.request$.next(null);
   }
 
+  public get securityInfo() {
+    return this.securityInfoChanged$;
+  }
+
   private getOrUpdateValue(): Observable<SecurityInfo> {
     return this.data$.take(1)
       .filter((value, index) => {
@@ -293,28 +340,28 @@ export class OidcService {
     // console.log('loading from server request');
     return this.get()
       .map(user => {
-        return {
-          isLoggedIn: true,
-          userName: user.userName,
-          roles: user.roles,
-          ovoNumbers: user.ovoNumbers,
-          organisationIds: user.organisationIds,
-          bodyIds: user.bodyIds,
-          refreshtoken: this.storage.refreshtoken + 1,
-          expires: new Date().getTime() + this.cacheTimeInMs
-        } as SecurityInfo;
+        return createSecurityInfo(
+          true,
+          user.userName,
+          user.roles,
+          user.ovoNumbers,
+          user.organisationIds,
+          user.bodyIds,
+          this.storage.refreshtoken + 1,
+          new Date().getTime() + this.cacheTimeInMs
+      );
       })
       .catch(err => {
-        return Observable.throw({
-          isLoggedIn: false,
-          userName: '',
-          roles: new Array<Role>(),
-          ovoNumbers: new Array<string>(),
-          organisationIds: new Array<string>(),
-          bodyIds: new Array<string>(),
-          refreshtoken: this.storage.refreshtoken + 1,
-          expires: new Date().getTime() + this.cacheTimeInMs
-        } as SecurityInfo);
+        return Observable.throw(createSecurityInfo(
+          false,
+          '',
+          new Array<Role>(),
+          new Array<string>(),
+          new Array<string>(),
+          new Array<string>(),
+          this.storage.refreshtoken + 1,
+          new Date().getTime() + this.cacheTimeInMs
+        ));
       });
   }
 

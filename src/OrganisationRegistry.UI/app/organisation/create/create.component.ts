@@ -1,17 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { AuthService } from 'core/auth';
-import { AlertService, AlertBuilder } from 'core/alert';
+import {OidcService} from 'core/auth';
+import {AlertService, AlertBuilder} from 'core/alert';
 
-import { OrganisationService } from 'services/organisations';
-import { PurposeService } from 'services/purposes';
+import {OrganisationService} from 'services/organisations';
+import {PurposeService} from 'services/purposes';
 
-import { SelectItem } from 'shared/components/form/form-group-select';
+import {SelectItem} from 'shared/components/form/form-group-select';
 
-import { CreateChildAlerts } from './create.alerts';
+import {CreateChildAlerts} from './create.alerts';
 
-import { CreateOrganisationFormValues } from './create-organisation-form';
+import {CreateOrganisationFormValues} from './create-organisation-form';
 
 @Component({
   templateUrl: 'create.template.html',
@@ -30,7 +30,8 @@ export class CreateOrganisationComponent implements OnInit {
     private organisationService: OrganisationService,
     private purposeService: PurposeService,
     private alertService: AlertService,
-    private authService: AuthService) { }
+    private oidcService: OidcService) {
+  }
 
   ngOnInit() {
     this.organisation = new CreateOrganisationFormValues();
@@ -64,14 +65,14 @@ export class CreateOrganisationComponent implements OnInit {
 
   private onCreateSuccess(result, value) {
     if (result) {
-      this.authService.resetSecurityCache();
+      this.oidcService.resetSecurityCache();
 
-      this.router.navigate(['./../', value.id], { relativeTo: this.route });
+      this.router.navigate(['./../', value.id], {relativeTo: this.route});
 
       let organisationUrl = this.router.serializeUrl(
         this.router.createUrlTree(
           ['./../', value.id],
-          { relativeTo: this.route }));
+          {relativeTo: this.route}));
 
       this.alertService.setAlert(this.createAlerts.saveSuccess(value, organisationUrl));
     }

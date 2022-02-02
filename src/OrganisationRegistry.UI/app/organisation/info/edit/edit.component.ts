@@ -11,6 +11,7 @@ import {UpdateOrganisationService} from 'services/organisations';
 
 import {PurposeService} from 'services/purposes';
 import {OidcService, Role} from "../../../core/auth";
+import {OrganisationInfoService} from "../../../services";
 
 @Component({
   templateUrl: 'edit.template.html',
@@ -23,6 +24,7 @@ export class OrganisationInfoEditComponent implements OnInit {
 
   private organisationId: string;
   private isVlimpersBeheerder: boolean;
+  private canEditAllOrganisationFields: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -31,7 +33,8 @@ export class OrganisationInfoEditComponent implements OnInit {
     private organisationService: UpdateOrganisationService,
     private oidcService: OidcService,
     private purposeService: PurposeService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private store: OrganisationInfoService
   ) {
     this.form = formBuilder.group({
       id: ['', required],
@@ -96,8 +99,10 @@ export class OrganisationInfoEditComponent implements OnInit {
               .build()));
     });
 
-    this.oidcService.isVlimpersBeheerder()
-      .subscribe(isVlimpersBeheerder => this.isVlimpersBeheerder = isVlimpersBeheerder);
+    this.store.canEditAllOrganisationFieldsChanged$
+      .subscribe(x => {
+        this.canEditAllOrganisationFields = x;
+      })
   }
 
   get isFormValid() {
@@ -142,7 +147,8 @@ export class OrganisationInfoEditComponent implements OnInit {
       this.form.get('name').disable();
       this.form.get('shortName').disable();
     }
-    if (this.form.value.underVlimpersManagement && !this.isVlimpersBeheerder) {
+    console.log('y', this.canEditAllOrganisationFields)
+    if (!this.canEditAllOrganisationFields) {
       this.form.get('name').disable();
       this.form.get('article').disable();
       this.form.get('shortName').disable();
