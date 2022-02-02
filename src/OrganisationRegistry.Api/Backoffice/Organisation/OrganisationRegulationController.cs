@@ -1,7 +1,6 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Organisation
 {
     using System;
-    using System.Net;
     using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
@@ -12,14 +11,12 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.FeatureManagement.Mvc;
-    using Newtonsoft.Json;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using Queries;
     using Requests;
     using Security;
     using SqlServer.Infrastructure;
-    using SqlServer.Organisation;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
@@ -77,9 +74,6 @@
         {
             var internalMessage = new AddOrganisationRegulationInternalRequest(organisationId, message);
 
-            if (!securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
@@ -98,9 +92,6 @@
         public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationRegulationRequest message)
         {
             var internalMessage = new UpdateOrganisationRegulationInternalRequest(organisationId, message);
-
-            if (!securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
