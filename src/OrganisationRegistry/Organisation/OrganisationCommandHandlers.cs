@@ -336,7 +336,6 @@ namespace OrganisationRegistry.Organisation
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
             organisation.ThrowIfTerminated(message.User);
-            organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
             var regulationTheme = message.RegulationThemeId != Guid.Empty ?
                 Session.Get<RegulationTheme>(message.RegulationThemeId) : null;
@@ -362,7 +361,6 @@ namespace OrganisationRegistry.Organisation
         {
             var organisation = Session.Get<Organisation>(message.OrganisationId);
             organisation.ThrowIfTerminated(message.User);
-            organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
             var regulationTheme = message.RegulationThemeId != Guid.Empty ?
                 Session.Get<RegulationTheme>(message.RegulationThemeId) : null;
