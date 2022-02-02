@@ -26,6 +26,9 @@ namespace OrganisationRegistry.Api.Infrastructure
 
         public Guid KboV2LegalFormOrganisationClassificationTypeId => _configuration.KboV2LegalFormOrganisationClassificationTypeId;
 
+        public Guid Organisatietype_Mandaten_En_Vermogensaangifte_ClassificationTypeId =>
+            _configuration.Organisatietype_Mandaten_En_Vermogensaangifte_ClassificationTypeId;
+
         public Guid[] OrganisationCapacityTypeIdsToTerminateEndOfNextYear { get; }
         public Guid[] OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; }
         public Guid[] FormalFrameworkIdsToTerminateEndOfNextYear { get; }
