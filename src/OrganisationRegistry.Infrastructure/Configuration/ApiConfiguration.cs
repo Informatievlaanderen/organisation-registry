@@ -37,6 +37,7 @@ namespace OrganisationRegistry.Infrastructure.Configuration
         public Guid ESRSector_ClassificationTypeId { get; set; }
         public Guid ESRToezichthoudendeOverheid_ClassificationTypeId { get; set; }
         public Guid UitvoerendNiveau_ClassificationTypeId { get; set; }
+        public Guid Organisatietype_Mandaten_En_Vermogensaangifte_ClassificationTypeId { get; set; }
 
         //key type ids
         public Guid VademecumKeyTypeId { get; set; }

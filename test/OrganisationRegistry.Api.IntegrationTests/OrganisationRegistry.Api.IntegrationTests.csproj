@@ -3,7 +3,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrganisationRegistry.Api\OrganisationRegistry.Api.csproj" />
-    <ProjectReference Include="..\..\src\OrganisationRegistry.Import.Piavo\OrganisationRegistry.Import.Piavo.csproj" />
+    <ProjectReference Include="..\OrganisationRegistry.Import.Piavo\OrganisationRegistry.Import.Piavo.csproj" />
   </ItemGroup>
 
   <ItemGroup>
