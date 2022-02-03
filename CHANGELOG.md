@@ -1,3 +1,10 @@
+# [1.126.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.125.0...v1.126.0) (2022-02-03)
+
+
+### Features
+
+* or-291 modification report 'organisaties per toepassingsgebied' (extended csv download) ([b6a34af](https://github.com/informatievlaanderen/organisation-registry/commit/b6a34af52fe54e9b5c3f4b0670ba87077774184c))
+
 # [1.125.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.124.0...v1.125.0) (2022-02-01)
 
 
