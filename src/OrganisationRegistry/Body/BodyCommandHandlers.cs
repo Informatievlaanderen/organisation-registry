@@ -438,10 +438,13 @@ namespace OrganisationRegistry.Body
         {
             var body = Session.Get<Body>(message.BodyId);
 
-            body.UpdateCurrentPersonAssignedToBodyMandate(
-                message.BodySeatId,
-                message.BodyMandateId,
-                _dateTimeProvider.Today);
+            foreach (var (bodySeatId, bodyMandateId) in message.MandatesToUpdate)
+            {
+                body.UpdateCurrentPersonAssignedToBodyMandate(
+                    bodySeatId,
+                    bodyMandateId,
+                    _dateTimeProvider.Today);
+            }
 
             await Session.Commit(message.User);
         }

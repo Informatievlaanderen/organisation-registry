@@ -141,41 +141,47 @@
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonClearedFromBodyMandate> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var activePersonListItem =
-                    context.ActivePeopleAssignedToBodyMandatesList
-                        .SingleOrDefault(item =>
-                            item.BodyId == message.Body.BodyId &&
-                            item.DelegationAssignmentId == message.Body.DelegationAssignmentId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
 
-                if (activePersonListItem == null)
-                    return;
+            var activePersonListItem =
+                context.ActivePeopleAssignedToBodyMandatesList
+                    .SingleOrDefault(item =>
+                        item.BodyId == message.Body.BodyId &&
+                        item.DelegationAssignmentId == message.Body.DelegationAssignmentId);
 
-                context.ActivePeopleAssignedToBodyMandatesList.Remove(activePersonListItem);
+            if (activePersonListItem == null)
+                return;
 
-                await context.SaveChangesAsync();
-            }
+            context.ActivePeopleAssignedToBodyMandatesList.Remove(activePersonListItem);
+
+            await context.SaveChangesAsync();
         }
 
         public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = ContextFactory.Create())
-            {
-                return context.ActivePeopleAssignedToBodyMandatesList
-                    .Where(item => item.ValidTo.HasValue)
-                    .Where(item => item.ValidTo.Value <= message.Body.Date)
-                    .Select(item =>
-                            new UpdateCurrentPersonAssignedToBodyMandate(
-                                new BodyId(item.BodyId),
-                                new BodySeatId(item.BodySeatId),
-                                new BodyMandateId(item.BodyMandateId)))
-                    .Cast<ICommand>()
-                    .ToList();
-            }
+            await using var context = ContextFactory.Create();
+
+            return GetOutOfDatePeopleAssignedToBodyMandates(message, context)
+                .Select(group =>
+                    new UpdateCurrentPersonAssignedToBodyMandate(
+                        new BodyId(group.Key),
+                        group.Value.Select(item =>
+                            (new BodySeatId(item.BodySeatId), new BodyMandateId(item.BodyMandateId))).ToList()))
+                .Cast<ICommand>().ToList();
         }
 
-        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        private static Dictionary<Guid, IEnumerable<ActivePeopleAssignedToBodyMandateListItem>>
+            GetOutOfDatePeopleAssignedToBodyMandates(IEnvelope<DayHasPassed> message,
+                OrganisationRegistryContext context) =>
+            context.ActivePeopleAssignedToBodyMandatesList
+                .Where(item => item.ValidTo.HasValue)
+                .Where(item => item.ValidTo!.Value <= message.Body.Date)
+                .AsEnumerable()
+                .GroupBy(item => item.BodyId)
+                .ToDictionary(group => @group.Key, group => @group.AsEnumerable());
+
+        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+            IEnvelope<RebuildProjection> message)
         {
             await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }

@@ -119,21 +119,26 @@
 
         public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
         {
-            using (var context = ContextFactory.Create())
-            {
-                var futureActivePeople = context.FuturePeopleAssignedToBodyMandatesList.ToList();
-                return futureActivePeople
-                    .Where(item => item.ValidFrom.HasValue)
-                    .Where(item => item.ValidFrom.Value <= message.Body.Date)
-                    .Select(item =>
-                        new UpdateCurrentPersonAssignedToBodyMandate(
-                            new BodyId(item.BodyId),
-                            new BodySeatId(item.BodySeatId),
-                            new BodyMandateId(item.BodyMandateId)))
-                    .Cast<ICommand>()
-                    .ToList();
-            }
+            await using var context = ContextFactory.Create();
+
+            return GetOutOfSyncPeopleAssignedToBodyMandates(message, context)
+                .Select(group =>
+                    new UpdateCurrentPersonAssignedToBodyMandate(
+                        new BodyId(@group.Key),
+                        @group.Value.Select(item =>
+                            (new BodySeatId(item.BodySeatId), new BodyMandateId(item.BodyMandateId))).ToList()))
+                .Cast<ICommand>().ToList();
         }
+
+        private static Dictionary<Guid, IEnumerable<FuturePeopleAssignedToBodyMandatesListItem>>
+            GetOutOfSyncPeopleAssignedToBodyMandates(IEnvelope<DayHasPassed> message,
+                OrganisationRegistryContext context) =>
+            context.FuturePeopleAssignedToBodyMandatesList
+                .Where(item => item.ValidFrom.HasValue)
+                .Where(item => item.ValidFrom!.Value <= message.Body.Date)
+                .AsEnumerable()
+                .GroupBy(item => item.BodyId)
+                .ToDictionary(group => @group.Key, group => @group.AsEnumerable());
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonAssignedToBodyMandate> message)
         {
