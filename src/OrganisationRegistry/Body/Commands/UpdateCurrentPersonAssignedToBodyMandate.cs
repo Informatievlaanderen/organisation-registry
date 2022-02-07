@@ -1,20 +1,19 @@
 namespace OrganisationRegistry.Body.Commands
 {
+    using System.Collections.Generic;
+
     public class UpdateCurrentPersonAssignedToBodyMandate : BaseCommand<BodyId>
     {
         public BodyId BodyId => Id;
 
-        public BodySeatId BodySeatId { get; }
-        public BodyMandateId BodyMandateId { get; }
+        public List<(BodySeatId bodySeatId, BodyMandateId bodyMandateId)> MandatesToUpdate { get; }
 
         public UpdateCurrentPersonAssignedToBodyMandate(
             BodyId bodyId,
-            BodySeatId bodySeatId,
-            BodyMandateId bodyMandateId)
+            List<(BodySeatId bodySeatId,BodyMandateId bodyMandateId)> mandatesToUpdate)
         {
-            BodySeatId = bodySeatId;
-            BodyMandateId = bodyMandateId;
             Id = bodyId;
+            MandatesToUpdate = mandatesToUpdate;
         }
 
         protected bool Equals(UpdateCurrentPersonAssignedToBodyMandate other)

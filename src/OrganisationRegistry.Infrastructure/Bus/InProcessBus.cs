@@ -3,7 +3,6 @@ namespace OrganisationRegistry.Infrastructure.Bus
     using System;
     using System.Collections.Generic;
     using System.Data.Common;
-    using System.Linq;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Authorization;
@@ -25,7 +24,7 @@ namespace OrganisationRegistry.Infrastructure.Bus
         {
             _logger = logger;
             _securityService = securityService;
-            _logger.LogTrace("Creating InProcessBus.");
+            _logger.LogTrace("Creating InProcessBus");
         }
 
         public void RegisterEventHandler<T>(Func<DbConnection, DbTransaction, IEnvelope<T>, Task> handler) where T : IEvent<T>
@@ -67,7 +66,7 @@ namespace OrganisationRegistry.Infrastructure.Bus
             {
                 if (handlers.Count != 1)
                 {
-                    _logger.LogCritical("Tried to send command {@Command} but got {NumberOfCommandHandlers} handlers.", command, handlers.Count);
+                    _logger.LogCritical("Tried to send command {@Command} but got {NumberOfCommandHandlers} handlers", command, handlers.Count);
                     throw new InvalidOperationException("Cannot send to more than one handler.");
                 }
 
@@ -79,7 +78,7 @@ namespace OrganisationRegistry.Infrastructure.Bus
             }
             else
             {
-                _logger.LogCritical("Tried to send command {@Command} but got {NumberOfCommandHandlers} handlers.", command, 0);
+                _logger.LogCritical("Tried to send command {@Command} but got {NumberOfCommandHandlers} handlers", command, 0);
                 throw new InvalidOperationException("No handler registered.");
             }
         }
@@ -90,7 +89,7 @@ namespace OrganisationRegistry.Infrastructure.Bus
                 handlers = new List<Func<DbConnection, DbTransaction, IMessage, Task>>();
 
             _logger.LogDebug(
-                $"Publishing event {{@Event}} to {{NumberOfEventHandlers}} event {(handlers.Count == 1 ? "handler" : "handlers")}.",
+                "Publishing event {@Event} to {NumberOfEventHandlers} event handler(s)",
                 envelope,
                 handlers.Count);
 
@@ -104,7 +103,7 @@ namespace OrganisationRegistry.Infrastructure.Bus
                 reactions = new List<Func<IMessage, Task<List<ICommand>>>>();
 
             _logger.LogDebug(
-                $"Publishing event {{@Event}} to {{NumberOfReactionHandlers}} reaction {(reactions.Count == 1 ? "handler" : "handlers")}.",
+                "Publishing event {@Event} to {NumberOfReactionHandlers} reaction handler(s)",
                 envelope,
                 reactions.Count);
 
@@ -117,16 +116,23 @@ namespace OrganisationRegistry.Infrastructure.Bus
                         .ForEach(async reaction => (await reaction(envelope))
                             .ForEach(async command =>
                             {
-                                command.User = user;
-                                await Send(command);
+                                try
+                                {
+                                    command.User = user;
+                                    await Send(command);
+                                }
+                                catch (Exception e)
+                                {
+                                    _logger.LogCritical(e, "An error occured while processing reaction Command: {@Command}, Envelope: {@Envelope}", command, envelope);
+                                }
                             }));
 
                     if (reactions.Count > 0)
-                        _logger.LogInformation("Processed all reactions.");
+                        _logger.LogInformation("Processed all reactions");
                 }
                 catch (Exception e)
                 {
-                    _logger.LogCritical(0, e, "Error while handling reactions.");
+                    _logger.LogCritical(0, e, "Error while handling reactions");
                 }
             });
         }
