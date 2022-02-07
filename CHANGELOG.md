@@ -1,3 +1,10 @@
+# [1.127.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.126.0...v1.127.0) (2022-02-07)
+
+
+### Features
+
+* or-711 implemented pokemon exceptionhandling in inProcessBus ([8f4526a](https://github.com/informatievlaanderen/organisation-registry/commit/8f4526ae3d372aadd3734b868f2e587fbd63f621))
+
 # [1.126.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.125.0...v1.126.0) (2022-02-03)
 
 
