@@ -19,14 +19,14 @@ namespace OrganisationRegistry.Handling.Authorization
 
             _roles = roles;
         }
-        public AuthenticationResult Check(IUser user, ISession session)
+        public AuthorizationResult Check(IUser user, ISession session)
         {
             foreach (var role in _roles)
             {
                 if (user.IsInRole(role))
-                    return AuthenticationResult.Success();
+                    return AuthorizationResult.Success();
             }
-            return AuthenticationResult.Fail(new InsufficientRights());
+            return AuthorizationResult.Fail(new InsufficientRights());
         }
     }
 }

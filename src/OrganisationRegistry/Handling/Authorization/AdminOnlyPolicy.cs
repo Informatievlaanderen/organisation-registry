@@ -6,11 +6,11 @@ namespace OrganisationRegistry.Handling.Authorization
 
     class AdminOnlyPolicy : ISecurityPolicy
     {
-        public AuthenticationResult Check(IUser user, ISession session)
+        public AuthorizationResult Check(IUser user, ISession session)
         {
             return user.IsInRole(Role.OrganisationRegistryBeheerder) ?
-                    AuthenticationResult.Success() :
-                    AuthenticationResult.Fail(new InsufficientRights());
+                    AuthorizationResult.Success() :
+                    AuthorizationResult.Fail(new InsufficientRights());
         }
     }
 }

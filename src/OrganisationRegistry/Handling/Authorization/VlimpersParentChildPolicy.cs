@@ -14,24 +14,24 @@ namespace OrganisationRegistry.Handling.Authorization
         {
             _childOrganisationId = childOrganisationId;
         }
-        public AuthenticationResult Check(IUser user, ISession session)
+        public AuthorizationResult Check(IUser user, ISession session)
         {
             if (user.IsInRole(Role.OrganisationRegistryBeheerder))
-                return AuthenticationResult.Success();
+                return AuthorizationResult.Success();
 
             var child = session.Get<Organisation>(_childOrganisationId);
 
             if (child.State.UnderVlimpersManagement &&
                 user.IsAuthorizedForVlimpersOrganisations)
-                return AuthenticationResult.Success();
+                return AuthorizationResult.Success();
 
             if (!child.State.UnderVlimpersManagement &&
                 user.Organisations.Contains(child.State.OvoNumber))
-                return AuthenticationResult.Success();
+                return AuthorizationResult.Success();
 
             return child.State.UnderVlimpersManagement
-                ? AuthenticationResult.Fail(new UserIsNotAuthorizedForVlimpersOrganisations())
-                : AuthenticationResult.Fail(new InsufficientRights());
+                ? AuthorizationResult.Fail(new UserIsNotAuthorizedForVlimpersOrganisations())
+                : AuthorizationResult.Fail(new InsufficientRights());
         }
     }
 }
