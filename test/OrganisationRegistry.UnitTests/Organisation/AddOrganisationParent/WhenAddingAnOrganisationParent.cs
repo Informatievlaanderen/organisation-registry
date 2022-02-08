@@ -12,25 +12,27 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.OrganisationRegistryConfiguration;
+    using Tests.Shared.TestDataBuilders;
     using Xunit;
     using Xunit.Abstractions;
 
     public class WhenAddingAnOrganisationParent : Specification<Organisation, OrganisationCommandHandlers, AddOrganisationParent>
     {
-        private Guid _organisationId;
         private Guid _organisationOrganisationParentId;
         private DateTime _validTo;
         private DateTime _validFrom;
         private DateTimeProviderStub _dateTimeProviderStub;
-        private Guid _organisationParentId;
-        private string _ovoNumber;
+        private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
+        private OrganisationCreated _childCreated;
+        private OrganisationCreated _parentCreated;
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
             return new OrganisationCommandHandlers(
                 new Mock<ILogger<OrganisationCommandHandlers>>().Object,
                 Session,
-                new SequentialOvoNumberGenerator(),
+                _sequentialOvoNumberGenerator,
                 null,
                 _dateTimeProviderStub,
                 Mock.Of<IOrganisationRegistryConfiguration>(),
@@ -44,14 +46,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
             _organisationOrganisationParentId = Guid.NewGuid();
             _validFrom = _dateTimeProviderStub.Today;
             _validTo = _dateTimeProviderStub.Today.AddDays(2);
-            _organisationId = Guid.NewGuid();
-            _organisationParentId = Guid.NewGuid();
-            _ovoNumber = "OVO000012345";
 
+            _childCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator).Build();
+            _parentCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator).Build();
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", _ovoNumber, "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
-                new OrganisationCreated(_organisationParentId, "Ouder en Gezin", "OVO000012346", "O&G", Article.None, "Moeder", new List<Purpose>(), false, null, null, null, null)
+                _childCreated,
+                _parentCreated,
             };
         }
 
@@ -59,13 +60,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
         {
             return new AddOrganisationParent(
                 _organisationOrganisationParentId,
-                new OrganisationId(_organisationId),
-                new OrganisationId(_organisationParentId),
+                new OrganisationId(_childCreated.OrganisationId),
+                new OrganisationId(_parentCreated.OrganisationId),
                 new ValidFrom(_validFrom),
                 new ValidTo(_validTo))
             {
                 User = new UserBuilder()
-                    .AddOrganisations(_ovoNumber)
+                    .AddOrganisations(_childCreated.OvoNumber)
                     .AddRoles(Role.OrganisatieBeheerder)
                     .Build()
             };
@@ -79,8 +80,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
             var organisationParentAdded = PublishedEvents[0].UnwrapBody<OrganisationParentAdded>();
 
             organisationParentAdded.OrganisationOrganisationParentId.Should().Be(_organisationOrganisationParentId);
-            organisationParentAdded.OrganisationId.Should().Be(_organisationId);
-            organisationParentAdded.ParentOrganisationId.Should().Be(_organisationParentId);
+            organisationParentAdded.OrganisationId.Should().Be(_childCreated.OrganisationId);
+            organisationParentAdded.ParentOrganisationId.Should().Be(_parentCreated.OrganisationId);
             organisationParentAdded.ValidFrom.Should().Be(_validFrom);
             organisationParentAdded.ValidTo.Should().Be(_validTo);
         }
@@ -89,8 +90,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
         public void AssignsAParent()
         {
             var parentAssignedToOrganisation = PublishedEvents[1].UnwrapBody<ParentAssignedToOrganisation>();
-            parentAssignedToOrganisation.OrganisationId.Should().Be(_organisationId);
-            parentAssignedToOrganisation.ParentOrganisationId.Should().Be(_organisationParentId);
+            parentAssignedToOrganisation.OrganisationId.Should().Be(_childCreated.OrganisationId);
+            parentAssignedToOrganisation.ParentOrganisationId.Should().Be(_parentCreated.OrganisationId);
         }
 
         public WhenAddingAnOrganisationParent(ITestOutputHelper helper) : base(helper) { }
