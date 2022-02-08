@@ -6,6 +6,6 @@ namespace OrganisationRegistry.Handling.Authorization
 
     public interface ISecurityPolicy
     {
-        public AuthenticationResult Check(IUser user, ISession session);
+        public AuthorizationResult Check(IUser user, ISession session);
     }
 }

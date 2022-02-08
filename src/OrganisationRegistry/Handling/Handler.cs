@@ -5,7 +5,6 @@ namespace OrganisationRegistry.Handling
     using Authorization;
     using Infrastructure.Authorization;
     using Infrastructure.Domain;
-    using Organisation.Exceptions;
 
     public class Handler{
         private readonly IUser _user;
