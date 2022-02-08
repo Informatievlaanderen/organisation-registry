@@ -2,7 +2,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
 {
     using System;
     using System.Collections.Generic;
-    using Api.Security;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Location;

@@ -4,7 +4,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
     using System.Collections.Generic;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
-    using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;

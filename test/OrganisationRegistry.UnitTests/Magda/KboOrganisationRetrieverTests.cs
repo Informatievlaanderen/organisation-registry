@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.UnitTests.Magda
 {
     using System;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using Api.Backoffice.Kbo;
     using FluentAssertions;
