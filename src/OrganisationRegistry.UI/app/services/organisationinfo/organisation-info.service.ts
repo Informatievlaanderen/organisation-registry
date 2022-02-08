@@ -27,8 +27,8 @@ export class OrganisationInfoService implements OnDestroy {
   private canViewVlimpersManagementChangedSource: BehaviorSubject<boolean>;
   public readonly canViewVlimpersManagementChanged$: Observable<boolean>;
 
-  private canAddAndUpdateAllOrganisationFieldsChangedSource: BehaviorSubject<boolean>;
-  public readonly canAddAndUpdateAllOrganisationFieldsChanged$: Observable<boolean>;
+  private canUpdateAllOrganisationFieldsChangedSource: BehaviorSubject<boolean>;
+  public readonly canUpdateAllOrganisationFieldsChanged$: Observable<boolean>;
 
   private canAddAndUpdateOrganisationChangedSource: BehaviorSubject<boolean>;
   public readonly canAddAndUpdateOrganisationChanged$: Observable<boolean>;
@@ -97,8 +97,8 @@ export class OrganisationInfoService implements OnDestroy {
     this.canViewVlimpersManagementChangedSource = new BehaviorSubject<boolean>(false);
     this.canViewVlimpersManagementChanged$ = this.canViewVlimpersManagementChangedSource.asObservable();
 
-    this.canAddAndUpdateAllOrganisationFieldsChangedSource = new BehaviorSubject<boolean>(false);
-    this.canAddAndUpdateAllOrganisationFieldsChanged$ = this.canAddAndUpdateAllOrganisationFieldsChangedSource.asObservable();
+    this.canUpdateAllOrganisationFieldsChangedSource = new BehaviorSubject<boolean>(false);
+    this.canUpdateAllOrganisationFieldsChanged$ = this.canUpdateAllOrganisationFieldsChangedSource.asObservable();
 
     this.canAddAndUpdateOrganisationChangedSource = new BehaviorSubject<boolean>(false);
     this.canAddAndUpdateOrganisationChanged$ = this.canAddAndUpdateOrganisationChangedSource.asObservable();
@@ -195,7 +195,7 @@ export class OrganisationInfoService implements OnDestroy {
           this.canViewKboManagementChangedSource.next(OrganisationInfoService.canViewKboManagement(organisation, securityInfo));
           this.canViewVlimpersManagementChangedSource.next(OrganisationInfoService.canViewVlimpersManagement(organisation, securityInfo));
           this.canAddAndUpdateOrganisationChangedSource.next(OrganisationInfoService.canAddAndUpdateOrganisation(organisation, securityInfo))
-          this.canAddAndUpdateAllOrganisationFieldsChangedSource.next(OrganisationInfoService.canAddAndUpdateAllOrganisationFields(organisation, securityInfo));
+          this.canUpdateAllOrganisationFieldsChangedSource.next(OrganisationInfoService.canUpdateAllOrganisationFields(organisation, securityInfo));
           this.canTerminateOrganisationChangedSource.next(OrganisationInfoService.canTerminateOrganisation(organisation, securityInfo))
           this.canCancelCouplingWithKboChangedSource.next(OrganisationInfoService.canCancelCouplingWithKbo(organisation, securityInfo))
           this.canCoupleWithKboChangedSource.next(OrganisationInfoService.canCoupleWithKbo(organisation, securityInfo))
@@ -225,7 +225,7 @@ export class OrganisationInfoService implements OnDestroy {
     return false;
   }
 
-  private static canAddAndUpdateAllOrganisationFields(organisation, securityInfo) {
+  private static canUpdateAllOrganisationFields(organisation, securityInfo) {
     if (!securityInfo.isLoggedIn)
       return false;
 
