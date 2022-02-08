@@ -1,4 +1,3 @@
-export * from './auth.service';
 export * from './body.guard';
 export * from './role.guard';
 export * from './feature.guard';

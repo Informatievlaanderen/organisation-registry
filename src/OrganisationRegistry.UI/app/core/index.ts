@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { HttpModule, JsonpModule, Http, XHRBackend, RequestOptions, Jsonp, JSONPBackend } from '@angular/http';
 
 import {
-  AuthService,
   BodyGuard,
   RoleGuard,
   HttpInterceptor,
@@ -49,7 +48,6 @@ export function jsonpInterceptor(
   ],
   providers: [
     Constants,
-    AuthService,
     OidcService,
     BodyGuard,
     RoleGuard,
