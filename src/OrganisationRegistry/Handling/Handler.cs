@@ -17,7 +17,7 @@ namespace OrganisationRegistry.Handling
             _session = session;
         }
 
-        public static Handler ForUser(IUser user, ISession session)
+        public static Handler For(IUser user, ISession session)
         {
             return new Handler(user, session);
         }
