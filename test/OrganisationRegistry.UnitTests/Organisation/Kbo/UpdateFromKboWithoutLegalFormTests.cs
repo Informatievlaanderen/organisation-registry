@@ -6,7 +6,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using Infrastructure.Tests.Extensions.TestHelpers;
     using KeyTypes.Events;
     using LabelType.Events;
-    using Location;
     using LocationType.Events;
     using Microsoft.Extensions.Logging;
     using Moq;

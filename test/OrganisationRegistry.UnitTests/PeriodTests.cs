@@ -2,7 +2,6 @@
 {
     using System;
     using FluentAssertions;
-    using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
 

@@ -2,7 +2,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation
 {
     using System;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Bus;
     using OrganisationRegistry.Infrastructure.Commands;
 
     public static class ICommandExtensions

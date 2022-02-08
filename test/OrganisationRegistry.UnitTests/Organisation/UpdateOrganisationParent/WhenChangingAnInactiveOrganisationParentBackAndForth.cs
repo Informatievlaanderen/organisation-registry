@@ -13,7 +13,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
-    using OrganisationRegistry.Organisation.OrganisationRegistryConfiguration;
     using Xunit;
     using Xunit.Abstractions;
 

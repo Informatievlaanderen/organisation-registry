@@ -13,7 +13,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
-    using OrganisationRegistry.Organisation.OrganisationRegistryConfiguration;
     using Tests.Shared.TestDataBuilders;
     using Xunit;
     using Xunit.Abstractions;

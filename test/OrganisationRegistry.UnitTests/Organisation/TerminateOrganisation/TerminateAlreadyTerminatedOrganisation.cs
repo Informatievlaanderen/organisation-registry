@@ -2,11 +2,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation
 {
     using System;
     using System.Collections.Generic;
-    using System.Security.Claims;
     using AutoFixture;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
-    using Kbo;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
