@@ -27,11 +27,11 @@ export class OrganisationInfoService implements OnDestroy {
   private canViewVlimpersManagementChangedSource: BehaviorSubject<boolean>;
   public readonly canViewVlimpersManagementChanged$: Observable<boolean>;
 
-  private canEditAllOrganisationFieldsChangedSource: BehaviorSubject<boolean>;
-  public readonly canEditAllOrganisationFieldsChanged$: Observable<boolean>;
+  private canAddAndUpdateAllOrganisationFieldsChangedSource: BehaviorSubject<boolean>;
+  public readonly canAddAndUpdateAllOrganisationFieldsChanged$: Observable<boolean>;
 
-  private canEditOrganisationChangedSource: BehaviorSubject<boolean>;
-  public readonly canEditOrganisationChanged$: Observable<boolean>;
+  private canAddAndUpdateOrganisationChangedSource: BehaviorSubject<boolean>;
+  public readonly canAddAndUpdateOrganisationChanged$: Observable<boolean>;
 
   private canTerminateOrganisationChangedSource: BehaviorSubject<boolean>;
   public readonly canTerminateOrganisationChanged$: Observable<boolean>;
@@ -45,11 +45,11 @@ export class OrganisationInfoService implements OnDestroy {
   private canAddDaughtersChangedSource: BehaviorSubject<boolean>;
   public readonly canAddDaughtersChanged$: Observable<boolean>;
 
-  private canEditRegulationsChangedSource: BehaviorSubject<boolean>;
-  public readonly canEditRegulationsChanged$: Observable<boolean>;
+  private canAddAndUpdateRegulationsChangedSource: BehaviorSubject<boolean>;
+  public readonly canAddAndUpdateRegulationsChanged$: Observable<boolean>;
 
-  private canEditParentsChangedSource: BehaviorSubject<boolean>;
-  public readonly canEditParentsChanged$: Observable<boolean>;
+  private canAddAndUpdateParentsChangedSource: BehaviorSubject<boolean>;
+  public readonly canAddAndUpdateParentsChanged$: Observable<boolean>;
 
   private organisationIdChangedSource: Subject<string>;
   private readonly organisationIdChanged$: Observable<string>;
@@ -97,11 +97,11 @@ export class OrganisationInfoService implements OnDestroy {
     this.canViewVlimpersManagementChangedSource = new BehaviorSubject<boolean>(false);
     this.canViewVlimpersManagementChanged$ = this.canViewVlimpersManagementChangedSource.asObservable();
 
-    this.canEditAllOrganisationFieldsChangedSource = new BehaviorSubject<boolean>(false);
-    this.canEditAllOrganisationFieldsChanged$ = this.canEditAllOrganisationFieldsChangedSource.asObservable();
+    this.canAddAndUpdateAllOrganisationFieldsChangedSource = new BehaviorSubject<boolean>(false);
+    this.canAddAndUpdateAllOrganisationFieldsChanged$ = this.canAddAndUpdateAllOrganisationFieldsChangedSource.asObservable();
 
-    this.canEditOrganisationChangedSource = new BehaviorSubject<boolean>(false);
-    this.canEditOrganisationChanged$ = this.canEditOrganisationChangedSource.asObservable();
+    this.canAddAndUpdateOrganisationChangedSource = new BehaviorSubject<boolean>(false);
+    this.canAddAndUpdateOrganisationChanged$ = this.canAddAndUpdateOrganisationChangedSource.asObservable();
 
     this.canTerminateOrganisationChangedSource = new BehaviorSubject<boolean>(false);
     this.canTerminateOrganisationChanged$ = this.canTerminateOrganisationChangedSource.asObservable();
@@ -115,11 +115,11 @@ export class OrganisationInfoService implements OnDestroy {
     this.canAddDaughtersChangedSource = new BehaviorSubject<boolean>(false);
     this.canAddDaughtersChanged$ = this.canAddDaughtersChangedSource.asObservable();
 
-    this.canEditRegulationsChangedSource = new BehaviorSubject<boolean>(false);
-    this.canEditRegulationsChanged$ = this.canEditRegulationsChangedSource.asObservable();
+    this.canAddAndUpdateRegulationsChangedSource = new BehaviorSubject<boolean>(false);
+    this.canAddAndUpdateRegulationsChanged$ = this.canAddAndUpdateRegulationsChangedSource.asObservable();
 
-    this.canEditParentsChangedSource = new BehaviorSubject<boolean>(false);
-    this.canEditParentsChanged$ = this.canEditParentsChangedSource.asObservable();
+    this.canAddAndUpdateParentsChangedSource = new BehaviorSubject<boolean>(false);
+    this.canAddAndUpdateParentsChanged$ = this.canAddAndUpdateParentsChangedSource.asObservable();
 
     this.isLimitedByVlimpersChangedSource = new BehaviorSubject<boolean>(false);
     this.isLimitedByVlimpersChanged$ = this.isLimitedByVlimpersChangedSource.asObservable();
@@ -192,18 +192,16 @@ export class OrganisationInfoService implements OnDestroy {
           let organisation = combined[0];
           let securityInfo = combined[1];
 
-          console.log('security', securityInfo)
-
           this.canViewKboManagementChangedSource.next(OrganisationInfoService.canViewKboManagement(organisation, securityInfo));
           this.canViewVlimpersManagementChangedSource.next(OrganisationInfoService.canViewVlimpersManagement(organisation, securityInfo));
-          this.canEditOrganisationChangedSource.next(OrganisationInfoService.canEditOrganisation(organisation, securityInfo))
-          this.canEditAllOrganisationFieldsChangedSource.next(OrganisationInfoService.canEditAllOrganisationFields(organisation, securityInfo));
+          this.canAddAndUpdateOrganisationChangedSource.next(OrganisationInfoService.canAddAndUpdateOrganisation(organisation, securityInfo))
+          this.canAddAndUpdateAllOrganisationFieldsChangedSource.next(OrganisationInfoService.canAddAndUpdateAllOrganisationFields(organisation, securityInfo));
           this.canTerminateOrganisationChangedSource.next(OrganisationInfoService.canTerminateOrganisation(organisation, securityInfo))
           this.canCancelCouplingWithKboChangedSource.next(OrganisationInfoService.canCancelCouplingWithKbo(organisation, securityInfo))
           this.canCoupleWithKboChangedSource.next(OrganisationInfoService.canCoupleWithKbo(organisation, securityInfo))
           this.canAddDaughtersChangedSource.next(OrganisationInfoService.canAddDaughters(organisation, securityInfo))
-          this.canEditRegulationsChangedSource.next(OrganisationInfoService.canEditRegulations(organisation, securityInfo))
-          this.canEditParentsChangedSource.next(OrganisationInfoService.canEditParents(organisation, securityInfo))
+          this.canAddAndUpdateRegulationsChangedSource.next(OrganisationInfoService.canAddAndUpdateRegulations(organisation, securityInfo))
+          this.canAddAndUpdateParentsChangedSource.next(OrganisationInfoService.canAddAndUpdateParents(organisation, securityInfo))
         }));
   }
 
@@ -227,7 +225,7 @@ export class OrganisationInfoService implements OnDestroy {
     return false;
   }
 
-  private static canEditAllOrganisationFields(organisation, securityInfo) {
+  private static canAddAndUpdateAllOrganisationFields(organisation, securityInfo) {
     if (!securityInfo.isLoggedIn)
       return false;
 
@@ -248,7 +246,7 @@ export class OrganisationInfoService implements OnDestroy {
     return false;
   }
 
-  private static canEditOrganisation(organisation, securityInfo) {
+  private static canAddAndUpdateOrganisation(organisation, securityInfo) {
     if (!securityInfo.isLoggedIn)
       return false;
 
@@ -313,7 +311,7 @@ export class OrganisationInfoService implements OnDestroy {
     return false;
   }
 
-  private static canEditRegulations(organisation, securityInfo) {
+  private static canAddAndUpdateRegulations(organisation, securityInfo) {
     if (!securityInfo.isLoggedIn)
       return false;
 
@@ -329,7 +327,7 @@ export class OrganisationInfoService implements OnDestroy {
     return false;
   }
 
-  private static canEditParents(organisation, securityInfo) {
+  private static canAddAndUpdateParents(organisation, securityInfo) {
     if (!securityInfo.isLoggedIn)
       return false;
 
