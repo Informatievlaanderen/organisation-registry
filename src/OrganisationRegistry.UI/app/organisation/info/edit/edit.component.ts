@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 
@@ -10,14 +10,15 @@ import {SelectItem} from 'shared/components/form/form-group-select';
 import {UpdateOrganisationService} from 'services/organisations';
 
 import {PurposeService} from 'services/purposes';
-import {OidcService, Role} from "../../../core/auth";
+import {OidcService} from "../../../core/auth";
 import {OrganisationInfoService} from "../../../services";
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'edit.template.html',
   styleUrls: ['edit.style.css']
 })
-export class OrganisationInfoEditComponent implements OnInit {
+export class OrganisationInfoEditComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public purposes: SelectItem[];
   public articles: SelectItem[];
@@ -25,6 +26,7 @@ export class OrganisationInfoEditComponent implements OnInit {
   private organisationId: string;
   private isVlimpersBeheerder: boolean;
   private canEditAllOrganisationFields: boolean;
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -67,42 +69,45 @@ export class OrganisationInfoEditComponent implements OnInit {
 
   ngOnInit() {
     this.form.disable();
-    this.purposeService
-      .getAllPurposes()
-      .finally(() => this.enableForm())
-      .subscribe(
-        allPurposes => this.purposes = allPurposes.map(k => new SelectItem(k.id, k.name)),
-        error =>
-          this.alertService.setAlert(
-            new AlertBuilder()
-              .error(error)
-              .withTitle('Beleidsvelden konden niet geladen worden!')
-              .withMessage('Er is een fout opgetreden bij het ophalen van de beleidsvelden. Probeer het later opnieuw.')
-              .build()));
+    this.subscriptions.push(
+      this.purposeService
+        .getAllPurposes()
+        .finally(() => this.enableForm())
+        .subscribe(
+          allPurposes => this.purposes = allPurposes.map(k => new SelectItem(k.id, k.name)),
+          error =>
+            this.alertService.setAlert(
+              new AlertBuilder()
+                .error(error)
+                .withTitle('Beleidsvelden konden niet geladen worden!')
+                .withMessage('Er is een fout opgetreden bij het ophalen van de beleidsvelden. Probeer het later opnieuw.')
+                .build())));
 
     this.route.parent.parent.params.forEach((params: Params) => {
       this.organisationId = params['id'];
 
-      this.organisationService.get(this.organisationId)
-        .finally(() => this.enableForm())
-        .subscribe(
-          item => {
-            if (item) {
-              this.form.setValue(item);
-            }
-          },
-          error => this.alertService.setAlert(
-            new AlertBuilder()
-              .error(error)
-              .withTitle('Organisatie kon niet geladen worden!')
-              .withMessage('Er is een fout opgetreden bij het ophalen van de organisatie. Probeer het later opnieuw.')
-              .build()));
+      this.subscriptions.push(
+        this.organisationService.get(this.organisationId)
+          .finally(() => this.enableForm())
+          .subscribe(
+            item => {
+              if (item) {
+                this.form.setValue(item);
+              }
+            },
+            error => this.alertService.setAlert(
+              new AlertBuilder()
+                .error(error)
+                .withTitle('Organisatie kon niet geladen worden!')
+                .withMessage('Er is een fout opgetreden bij het ophalen van de organisatie. Probeer het later opnieuw.')
+                .build())));
     });
 
-    this.store.canEditAllOrganisationFieldsChanged$
-      .subscribe(x => {
-        this.canEditAllOrganisationFields = x;
-      })
+    this.subscriptions.push(
+      this.store.canUpdateAllOrganisationFieldsChanged$
+        .subscribe(x => {
+          this.canEditAllOrganisationFields = x;
+        }));
   }
 
   get isFormValid() {
@@ -116,28 +121,29 @@ export class OrganisationInfoEditComponent implements OnInit {
       this.organisationService.updateInfoNotLimitedByVlimpers(this.organisationId, this.form.value) :
       this.organisationService.update(this.organisationId, this.form.value);
 
-    update
-      .finally(() => this.enableForm())
-      .subscribe(
-        result => {
-          if (result) {
-            this.router.navigate(['./..'], {relativeTo: this.route}).then(r =>{
-              this.alertService.setAlert(
-                new AlertBuilder()
-                  .success()
-                  .withTitle('Organisatie bijgewerkt!')
-                  .withMessage('Organisatie is succesvol bijgewerkt.')
-                  .build());
+    this.subscriptions.push(
+      update
+        .finally(() => this.enableForm())
+        .subscribe(
+          result => {
+            if (result) {
+              this.router.navigate(['./..'], {relativeTo: this.route}).then(r => {
+                this.alertService.setAlert(
+                  new AlertBuilder()
+                    .success()
+                    .withTitle('Organisatie bijgewerkt!')
+                    .withMessage('Organisatie is succesvol bijgewerkt.')
+                    .build());
 
-            });
-          }
-        },
-        error => this.alertService.setAlert(
-          new AlertBuilder()
-            .error(error)
-            .withTitle('Organisatie kon niet bewaard worden!')
-            .withMessage('Er is een fout opgetreden bij het bewaren van de gegevens. Probeer het later opnieuw.')
-            .build()));
+              });
+            }
+          },
+          error => this.alertService.setAlert(
+            new AlertBuilder()
+              .error(error)
+              .withTitle('Organisatie kon niet bewaard worden!')
+              .withMessage('Er is een fout opgetreden bij het bewaren van de gegevens. Probeer het later opnieuw.')
+              .build())));
   }
 
   private enableForm() {
@@ -147,7 +153,6 @@ export class OrganisationInfoEditComponent implements OnInit {
       this.form.get('name').disable();
       this.form.get('shortName').disable();
     }
-    console.log('y', this.canEditAllOrganisationFields)
     if (!this.canEditAllOrganisationFields) {
       this.form.get('name').disable();
       this.form.get('article').disable();
@@ -157,5 +162,9 @@ export class OrganisationInfoEditComponent implements OnInit {
       this.form.get('operationalValidFrom').disable();
       this.form.get('operationalValidTo').disable();
     }
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }
