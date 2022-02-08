@@ -11,6 +11,9 @@ namespace OrganisationRegistry.UnitTests
         public DateTime Today
             => StubDate.Date;
 
+        public DateTime Yesterday
+            => StubDate.Date.AddDays(-1);
+
         public DateTimeOffset UtcNow
             => StubDate;
 
