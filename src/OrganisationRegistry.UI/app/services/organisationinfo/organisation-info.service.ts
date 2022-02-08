@@ -48,6 +48,8 @@ export class OrganisationInfoService implements OnDestroy {
   private canEditRegulationsChangedSource: BehaviorSubject<boolean>;
   public readonly canEditRegulationsChanged$: Observable<boolean>;
 
+  private canEditParentsChangedSource: BehaviorSubject<boolean>;
+  public readonly canEditParentsChanged$: Observable<boolean>;
 
   private organisationIdChangedSource: Subject<string>;
   private readonly organisationIdChanged$: Observable<string>;
@@ -115,6 +117,9 @@ export class OrganisationInfoService implements OnDestroy {
 
     this.canEditRegulationsChangedSource = new BehaviorSubject<boolean>(false);
     this.canEditRegulationsChanged$ = this.canEditRegulationsChangedSource.asObservable();
+
+    this.canEditParentsChangedSource = new BehaviorSubject<boolean>(false);
+    this.canEditParentsChanged$ = this.canEditParentsChangedSource.asObservable();
 
     this.isLimitedByVlimpersChangedSource = new BehaviorSubject<boolean>(false);
     this.isLimitedByVlimpersChanged$ = this.isLimitedByVlimpersChangedSource.asObservable();
@@ -198,6 +203,7 @@ export class OrganisationInfoService implements OnDestroy {
           this.canCoupleWithKboChangedSource.next(OrganisationInfoService.canCoupleWithKbo(organisation, securityInfo))
           this.canAddDaughtersChangedSource.next(OrganisationInfoService.canAddDaughters(organisation, securityInfo))
           this.canEditRegulationsChangedSource.next(OrganisationInfoService.canEditRegulations(organisation, securityInfo))
+          this.canEditParentsChangedSource.next(OrganisationInfoService.canEditParents(organisation, securityInfo))
         }));
   }
 
@@ -318,6 +324,27 @@ export class OrganisationInfoService implements OnDestroy {
       return false;
 
     if (securityInfo.isOrganisatieBeheerderFor(organisation.id))
+      return true;
+
+    return false;
+  }
+
+  private static canEditParents(organisation, securityInfo) {
+    if (!securityInfo.isLoggedIn)
+      return false;
+
+    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+      return true;
+
+    if (organisation.isTerminated)
+      return false;
+
+    if (organisation.underVlimpersManagement &&
+      securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
+      return true;
+
+    if (!organisation.underVlimpersManagement &&
+      securityInfo.isOrganisatieBeheerderFor(organisation.id))
       return true;
 
     return false;
