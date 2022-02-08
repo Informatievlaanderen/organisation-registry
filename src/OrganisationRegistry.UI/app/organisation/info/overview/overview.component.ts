@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs/Subscription';
 
 import { AlertService} from 'core/alert';
 import { PagedEvent, PagedResult} from 'core/pagination';
-import {AuthService, OidcService, Role} from 'core/auth';
+import { OidcService, Role} from 'core/auth';
 
 import { OrganisationChild, Organisation } from 'services/organisations';
 import { OrganisationInfoService } from 'services/organisationinfo';
@@ -30,7 +30,6 @@ export class OrganisationInfoOverviewComponent implements OnInit, OnDestroy {
     private router: Router,
     private alertService: AlertService,
     private oidcService: OidcService,
-    public authService: AuthService,
     public store: OrganisationInfoService,
   ) {
     this.organisation = new Organisation();

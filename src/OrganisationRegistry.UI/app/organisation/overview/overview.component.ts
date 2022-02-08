@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
-import { Alert, AlertBuilder, AlertService, AlertType } from 'core/alert';
+import { AlertBuilder, AlertService } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
 import { SearchEvent } from 'core/search';
-import { AuthService, Role, OidcService } from 'core/auth';
+import { Role, OidcService } from 'core/auth';
 import { FileSaverService } from 'core/file-saver';
 
 import {
