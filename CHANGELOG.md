@@ -1,3 +1,19 @@
+# [1.128.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.127.0...v1.128.0) (2022-02-08)
+
+
+### Bug Fixes
+
+* partial revert of too early committed code ([ed9f2cc](https://github.com/informatievlaanderen/organisation-registry/commit/ed9f2cce1f86344cad5945bc833b40db3e17d246))
+* subscribe and unsubscribe ([958222f](https://github.com/informatievlaanderen/organisation-registry/commit/958222fb5351f7aef5c9a19da0de680074f6df76))
+
+
+### Features
+
+* remove unnecessary security checks ([97fd69f](https://github.com/informatievlaanderen/organisation-registry/commit/97fd69f6f667ebec8fc164ccd44223404c967a9a))
+* rework authorization ([2c672ff](https://github.com/informatievlaanderen/organisation-registry/commit/2c672ffd541d521c8edf92a5658694a96bb1e7bc))
+* rework authorization for parents in ui ([7deffd3](https://github.com/informatievlaanderen/organisation-registry/commit/7deffd302b8c1c1e094459e9d43c5e13e6b1584a))
+* rework authorization in frontend ([773574b](https://github.com/informatievlaanderen/organisation-registry/commit/773574b443050a4b27881a269e3a92e8b8e394d9))
+
 # [1.127.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.126.0...v1.127.0) (2022-02-07)
 
 
