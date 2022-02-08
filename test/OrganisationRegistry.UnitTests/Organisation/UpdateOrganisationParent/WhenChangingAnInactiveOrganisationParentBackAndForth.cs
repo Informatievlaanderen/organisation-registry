@@ -13,6 +13,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.OrganisationRegistryConfiguration;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -27,8 +28,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
         private DateTime _validTo;
         private DateTime _validFrom;
 
-        private static readonly DateTime Yesterday = DateTime.Now.AddDays(-1);
         private string _ovoNumber;
+
+        private readonly DateTimeProviderStub _dateTimeProviderStub =
+            new DateTimeProviderStub(new DateTime(2022, 12, 31));
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
@@ -37,7 +40,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
                 Session,
                 new SequentialOvoNumberGenerator(),
                 null,
-                new DateTimeProvider(),
+                _dateTimeProviderStub,
                 Mock.Of<IOrganisationRegistryConfiguration>(),
                 Mock.Of<ISecurityService>());
         }
@@ -45,8 +48,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
         protected override IEnumerable<IEvent> Given()
         {
             _organisationOrganisationParentId = Guid.NewGuid();
-            _validFrom = Yesterday;
-            _validTo = Yesterday;
+            _validFrom = _dateTimeProviderStub.Yesterday;
+            _validTo = _dateTimeProviderStub.Yesterday;
             _organisationId = Guid.NewGuid();
             _organisationParentId = Guid.NewGuid();
             _organisationGrandParentId = Guid.NewGuid();
@@ -54,17 +57,19 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
 
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", _ovoNumber, "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, Yesterday, Yesterday,
+                new OrganisationCreated(_organisationId, "Kind en Gezin", _ovoNumber, "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, _dateTimeProviderStub.Yesterday, _dateTimeProviderStub.Yesterday,
                     new ValidFrom(), new ValidTo()),
-                new OrganisationCreated(_organisationParentId, "Ouder en Gezin", "OVO000012346", "O&G", Article.None, "Moeder", new List<Purpose>(), false, Yesterday, Yesterday,
+                new OrganisationCreated(_organisationParentId, "Ouder en Gezin", "OVO000012346", "O&G", Article.None, "Moeder", new List<Purpose>(), false, _dateTimeProviderStub.Yesterday, _dateTimeProviderStub.Yesterday,
                     new ValidFrom(), new ValidTo()),
-                new OrganisationCreated(_organisationGrandParentId, "Grootouder en gezin", "OVO000012347", "K&G", Article.None, "Oma", new List<Purpose>(), false, Yesterday, Yesterday,
+                new OrganisationCreated(_organisationGrandParentId, "Grootouder en gezin", "OVO000012347", "K&G", Article.None, "Oma", new List<Purpose>(), false, _dateTimeProviderStub.Yesterday, _dateTimeProviderStub.Yesterday,
                     new ValidFrom(), new ValidTo()),
-                new OrganisationParentAdded(_organisationId, _organisationOrganisationParentId, _organisationParentId, "Ouder en Gezin", Yesterday, Yesterday),
+                new OrganisationParentAdded(_organisationId, _organisationOrganisationParentId, _organisationParentId, "Ouder en Gezin", _dateTimeProviderStub.Yesterday, _dateTimeProviderStub.Yesterday),
                 new OrganisationParentUpdated(
                     _organisationId,
                     _organisationOrganisationParentId,
-                    _organisationGrandParentId, "", Yesterday, Yesterday,
+                    _organisationGrandParentId, "",
+                    _dateTimeProviderStub.Yesterday,
+                    _dateTimeProviderStub.Yesterday,
                     _organisationParentId, "", null, null)
             };
         }
