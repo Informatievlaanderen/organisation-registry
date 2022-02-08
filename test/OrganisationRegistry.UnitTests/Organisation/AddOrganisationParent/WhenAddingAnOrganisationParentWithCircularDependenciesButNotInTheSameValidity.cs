@@ -60,7 +60,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
                 Guid.NewGuid(),
                 _organisationABecameDaughterOfOrganisationBFor2016.OrganisationId,
                 _organisationABecameDaughterOfOrganisationBFor2016.ParentOrganisationId,
-                new ValidFrom(new DateTime(2017, 1, 1)), new ValidTo(new DateTime(2017, 12, 31)));
+                new ValidFrom(new DateTime(2017, 1, 1)), new ValidTo(new DateTime(2017, 12, 31)))
+            {
+                User = new UserBuilder()
+                    .AddOrganisations(_organisationACreated.OvoNumber)
+                    .AddRoles(Role.OrganisatieBeheerder)
+                    .Build()
+            };
         }
 
         protected override int ExpectedNumberOfEvents => 1;

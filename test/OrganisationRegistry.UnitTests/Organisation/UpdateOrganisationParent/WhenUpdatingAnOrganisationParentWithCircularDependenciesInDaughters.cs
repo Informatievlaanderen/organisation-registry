@@ -76,7 +76,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
                 _organisationCBecameDaughterOfOrganisationAFor2018.OrganisationOrganisationParentId,
                 _organisationCBecameDaughterOfOrganisationAFor2018.OrganisationId,
                 _organisationCBecameDaughterOfOrganisationAFor2018.ParentOrganisationId,
-                new ValidFrom(new DateTime(2016, 1, 1)), new ValidTo(new DateTime(2016, 12, 31)));
+                new ValidFrom(new DateTime(2016, 1, 1)), new ValidTo(new DateTime(2016, 12, 31)))
+            {
+                User = new UserBuilder()
+                    .AddOrganisations(_organisationACreated.OvoNumber)
+                    .AddRoles(Role.OrganisatieBeheerder)
+                    .Build()
+            };;
         }
 
         protected override int ExpectedNumberOfEvents => 0;

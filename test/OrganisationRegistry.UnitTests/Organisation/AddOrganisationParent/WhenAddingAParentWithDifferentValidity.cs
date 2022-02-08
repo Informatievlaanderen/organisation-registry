@@ -4,6 +4,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
     using System.Collections.Generic;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
+    using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
@@ -24,6 +25,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
         private DateTime _validFrom;
         private DateTimeProviderStub _dateTimeProviderStub;
         private Guid _organisationParentId;
+        private string _ovoNumber;
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
@@ -48,9 +50,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
             _organisationId = Guid.NewGuid();
             _organisationParentId = Guid.NewGuid();
 
+            _ovoNumber = "OVO000012345";
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(_organisationId, "Kind en Gezin", _ovoNumber, "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
                 new OrganisationCreated(_organisationParentId, "Ouder en Gezin", "OVO000012346", "O&G", Article.None, "Moeder", new List<Purpose>(), false, null, null, null, null),
                 new OrganisationParentAdded(_organisationId, _organisationOrganisationParentId1, _organisationParentId, "Ouder en Gezin", _validFrom, _validTo),
                 new ParentAssignedToOrganisation(_organisationId, _organisationParentId, _organisationOrganisationParentId1)
@@ -64,7 +67,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
                 new OrganisationId(_organisationId),
                 new OrganisationId(_organisationParentId),
                 new ValidFrom(_validFrom.AddYears(1)),
-                new ValidTo(_validTo.AddYears(1)));
+                new ValidTo(_validTo.AddYears(1)))
+            {
+                User = new UserBuilder()
+                    .AddOrganisations(_ovoNumber)
+                    .AddRoles(Role.OrganisatieBeheerder)
+                    .Build()
+            };
         }
 
         protected override int ExpectedNumberOfEvents => 1;

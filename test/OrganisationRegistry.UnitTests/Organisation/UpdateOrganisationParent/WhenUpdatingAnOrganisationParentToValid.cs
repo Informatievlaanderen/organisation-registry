@@ -24,6 +24,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
         private DateTime _validTo;
         private DateTime _validFrom;
         private DateTimeProviderStub _dateTimeProviderStub;
+        private string _ovoNumber;
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
@@ -46,10 +47,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
             _validTo = _dateTimeProviderStub.Today.AddDays(2);
             _organisationId = Guid.NewGuid();
             _organisationParentId = Guid.NewGuid();
+            _ovoNumber = "OVO000012345";
 
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(_organisationId, "Kind en Gezin", _ovoNumber, "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
                 new OrganisationCreated(_organisationParentId, "Ouder en Gezin", "OVO000012346", "O&G", Article.None, "Moeder", new List<Purpose>(), false, null, null, null, null),
                 new OrganisationParentAdded(_organisationId, _organisationOrganisationParentId, _organisationParentId, "Ouder en Gezin", _dateTimeProviderStub.Today.AddYears(-1), _dateTimeProviderStub.Today.AddYears(-1))
             };
@@ -62,7 +64,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
                 new OrganisationId(_organisationId),
                 new OrganisationId(_organisationParentId),
                 new ValidFrom(_validFrom),
-                new ValidTo(_validTo));
+                new ValidTo(_validTo))
+            {
+                User = new UserBuilder()
+                    .AddOrganisations(_ovoNumber)
+                    .AddRoles(Role.OrganisatieBeheerder)
+                    .Build()
+            };;
         }
 
         protected override int ExpectedNumberOfEvents => 2;

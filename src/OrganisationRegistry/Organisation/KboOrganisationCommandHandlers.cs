@@ -65,7 +65,6 @@ namespace OrganisationRegistry.Organisation
 
             var legalFormOrganisationClassificationType = Session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration.KboV2LegalFormOrganisationClassificationTypeId);
 
-
             if (_uniqueOvoNumberValidator.IsOvoNumberTaken(message.OvoNumber))
                 throw new OvoNumberNotUnique();
 

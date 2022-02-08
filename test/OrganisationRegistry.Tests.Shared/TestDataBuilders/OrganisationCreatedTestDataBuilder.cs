@@ -9,7 +9,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
     {
         public OrganisationId Id { get; }
         public string Name { get; }
-        public string Number { get; }
+        public string OvoNumber { get; }
         public string ShortName { get; }
         public string Description { get; }
         public DateTime? ValidFrom { get; private set; }
@@ -19,7 +19,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
         {
             Id = new OrganisationId(Guid.NewGuid());
             Name = Id.ToString();
-            Number = ovoNumberGenerator.GenerateNumber();
+            OvoNumber = ovoNumberGenerator.GenerateNumber();
             ShortName = Name.Substring(0, 2);
             Description = $"{Name}: {ShortName}";
             ValidFrom = null;
@@ -37,7 +37,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
             => new OrganisationCreated(
                 Id,
                 Name,
-                Number,
+                OvoNumber,
                 ShortName,
                 Article.None, Description, new List<Purpose>(), false, ValidFrom, ValidTo, null, null);
     }

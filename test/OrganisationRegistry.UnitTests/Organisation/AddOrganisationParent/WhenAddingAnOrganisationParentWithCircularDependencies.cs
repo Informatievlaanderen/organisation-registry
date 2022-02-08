@@ -59,7 +59,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
                 _organisationBCreated.Id,
                 _organisationACreated.Id,
                 new ValidFrom(),
-                new ValidTo());
+                new ValidTo())
+            {
+                User = new UserBuilder()
+                    .AddOrganisations(_organisationBCreated.OvoNumber)
+                    .AddRoles(Role.OrganisatieBeheerder)
+                    .Build()
+            };;
         }
 
         protected override int ExpectedNumberOfEvents => 0;

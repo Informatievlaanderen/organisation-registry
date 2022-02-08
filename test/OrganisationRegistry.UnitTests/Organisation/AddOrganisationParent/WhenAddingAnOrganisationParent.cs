@@ -23,6 +23,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
         private DateTime _validFrom;
         private DateTimeProviderStub _dateTimeProviderStub;
         private Guid _organisationParentId;
+        private string _ovoNumber;
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
@@ -45,10 +46,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
             _validTo = _dateTimeProviderStub.Today.AddDays(2);
             _organisationId = Guid.NewGuid();
             _organisationParentId = Guid.NewGuid();
+            _ovoNumber = "OVO000012345";
 
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(_organisationId, "Kind en Gezin", _ovoNumber, "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
                 new OrganisationCreated(_organisationParentId, "Ouder en Gezin", "OVO000012346", "O&G", Article.None, "Moeder", new List<Purpose>(), false, null, null, null, null)
             };
         }
@@ -60,7 +62,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
                 new OrganisationId(_organisationId),
                 new OrganisationId(_organisationParentId),
                 new ValidFrom(_validFrom),
-                new ValidTo(_validTo));
+                new ValidTo(_validTo))
+            {
+                User = new UserBuilder()
+                    .AddOrganisations(_ovoNumber)
+                    .AddRoles(Role.OrganisatieBeheerder)
+                    .Build()
+            };
         }
 
         protected override int ExpectedNumberOfEvents => 2;

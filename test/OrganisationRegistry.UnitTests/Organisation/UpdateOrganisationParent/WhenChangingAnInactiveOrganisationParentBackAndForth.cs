@@ -28,6 +28,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
         private DateTime _validFrom;
 
         private static readonly DateTime Yesterday = DateTime.Now.AddDays(-1);
+        private string _ovoNumber;
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
@@ -49,10 +50,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
             _organisationId = Guid.NewGuid();
             _organisationParentId = Guid.NewGuid();
             _organisationGrandParentId = Guid.NewGuid();
+            _ovoNumber = "OVO000012345";
 
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, Yesterday, Yesterday,
+                new OrganisationCreated(_organisationId, "Kind en Gezin", _ovoNumber, "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, Yesterday, Yesterday,
                     new ValidFrom(), new ValidTo()),
                 new OrganisationCreated(_organisationParentId, "Ouder en Gezin", "OVO000012346", "O&G", Article.None, "Moeder", new List<Purpose>(), false, Yesterday, Yesterday,
                     new ValidFrom(), new ValidTo()),
@@ -74,7 +76,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
                 new OrganisationId(_organisationId),
                 new OrganisationId(_organisationParentId),
                 new ValidFrom(_validFrom),
-                new ValidTo(_validTo));
+                new ValidTo(_validTo))
+            {
+                User = new UserBuilder()
+                    .AddOrganisations(_ovoNumber)
+                    .AddRoles(Role.OrganisatieBeheerder)
+                    .Build()
+            };
         }
 
         protected override int ExpectedNumberOfEvents => 1;
