@@ -40,7 +40,7 @@ namespace OrganisationRegistry.Organisation
         public KboState KboState { get; }
 
         private DateTime? _dateOfTermination;
-        private bool IsTerminated => _dateOfTermination != null;
+        public bool IsTerminated => _dateOfTermination != null;
 
         public bool CoupledToKboFromCreation { get; set; }
 
@@ -2796,6 +2796,12 @@ namespace OrganisationRegistry.Organisation
         {
             if (State.UnderVlimpersManagement && !user.IsAuthorizedForVlimpersOrganisations)
                 throw new UserIsNotAuthorizedForVlimpersOrganisations();
+        }
+
+        public void ThrowIfUnauthorizedForNonVlimpers(IUser user)
+        {
+            if (!State.UnderVlimpersManagement && user.IsAuthorizedForVlimpersOrganisations)
+                throw new UserIsNotAuthorizedForOrganisation();
         }
     }
 }

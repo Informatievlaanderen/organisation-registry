@@ -23,6 +23,8 @@ namespace OrganisationRegistry.Organisation
     using System.Linq;
     using System.Threading.Tasks;
     using Exceptions;
+    using Handling;
+    using Handling.Authorization;
     using Infrastructure.Authorization;
     using RegulationSubTheme;
     using RegulationTheme;
@@ -91,182 +93,196 @@ namespace OrganisationRegistry.Organisation
             _securityService = securityService;
         }
 
-        public async Task Handle(CreateOrganisation message)
+        public Task Handle(CreateOrganisation message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var parentOrganisation =
+                        message.ParentOrganisationId != null
+                            ? session.Get<Organisation>(message.ParentOrganisationId)
+                            : null;
+
+                    parentOrganisation?.ThrowIfUnauthorizedForVlimpers(message.User);
+
+                    if (_uniqueOvoNumberValidator.IsOvoNumberTaken(message.OvoNumber))
+                        throw new OvoNumberNotUnique();
+
+                    var ovoNumber = string.IsNullOrWhiteSpace(message.OvoNumber)
+                        ? _ovoNumberGenerator.GenerateNumber()
+                        : message.OvoNumber;
+
+                    var purposes = message
+                        .Purposes
+                        .Select(purposeId => session.Get<Purpose>(purposeId))
+                        .ToList();
+
+                    var organisation = Organisation.Create(message.OrganisationId,
+                        message.Name,
+                        ovoNumber,
+                        message.ShortName,
+                        message.Article,
+                        parentOrganisation,
+                        message.Description,
+                        purposes,
+                        message.ShowOnVlaamseOverheidSites,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                        new Period(new ValidFrom(message.OperationalValidFrom), new ValidTo(message.OperationalValidTo)),
+                        _dateTimeProvider);
+
+                    session.Add(organisation);
+                });
+
+        public Task Handle(UpdateOrganisationInfo message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var purposes = message
+                        .Purposes
+                        .Select(purposeId => session.Get<Purpose>(purposeId))
+                        .ToList();
+
+                    organisation.UpdateInfo(
+                        message.Name,
+                        message.Article,
+                        message.Description,
+                        message.ShortName,
+                        purposes,
+                        message.ShowOnVlaamseOverheidSites,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                        new Period(new ValidFrom(message.OperationalValidFrom), new ValidTo(message.OperationalValidTo)),
+                        _dateTimeProvider,
+                        message.User.IsAuthorizedForVlimpersOrganisations);
+                });
+
+        public Task Handle(UpdateOrganisationInfoNotLimitedByVlimpers message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var purposes = message
+                        .Purposes
+                        .Select(purposeId => session.Get<Purpose>(purposeId))
+                        .ToList();
+
+                    organisation.UpdateInfoNotLimitedByVlimpers(
+                        message.Description,
+                        purposes,
+                        message.ShowOnVlaamseOverheidSites);
+                });
+
+        private void ThrowIfCircularRelationshipDetected(Organisation organisation, Period validity, Organisation parentOrganisation)
         {
-            var parentOrganisation =
-                message.ParentOrganisationId != null
-                    ? Session.Get<Organisation>(message.ParentOrganisationId)
-                    : null;
+            var parentTreeHasOrganisationInIt =
+                ParentTreeHasOrganisationInIt(
+                    organisation,
+                    validity,
+                    parentOrganisation);
 
-            parentOrganisation?.ThrowIfUnauthorizedForVlimpers(message.User);
-
-            if (_uniqueOvoNumberValidator.IsOvoNumberTaken(message.OvoNumber))
-                throw new OvoNumberNotUnique();
-
-            var ovoNumber = string.IsNullOrWhiteSpace(message.OvoNumber)
-                ? _ovoNumberGenerator.GenerateNumber()
-                : message.OvoNumber;
-
-            var purposes = message
-                .Purposes
-                .Select(purposeId => Session.Get<Purpose>(purposeId))
-                .ToList();
-
-            var organisation = Organisation.Create(message.OrganisationId,
-                message.Name,
-                ovoNumber,
-                message.ShortName,
-                message.Article,
-                parentOrganisation,
-                message.Description,
-                purposes,
-                message.ShowOnVlaamseOverheidSites,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                new Period(new ValidFrom(message.OperationalValidFrom), new ValidTo(message.OperationalValidTo)),
-                _dateTimeProvider);
-
-            Session.Add(organisation);
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateOrganisationInfo message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var purposes = message
-                .Purposes
-                .Select(purposeId => Session.Get<Purpose>(purposeId))
-                .ToList();
-
-            organisation.UpdateInfo(
-                message.Name,
-                message.Article,
-                message.Description,
-                message.ShortName,
-                purposes,
-                message.ShowOnVlaamseOverheidSites,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                new Period(new ValidFrom(message.OperationalValidFrom), new ValidTo(message.OperationalValidTo)),
-                _dateTimeProvider,
-                message.User.IsAuthorizedForVlimpersOrganisations);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateOrganisationInfoNotLimitedByVlimpers message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var purposes = message
-                .Purposes
-                .Select(purposeId => Session.Get<Purpose>(purposeId))
-                .ToList();
-
-            organisation.UpdateInfoNotLimitedByVlimpers(
-                message.Description,
-                purposes,
-                message.ShowOnVlaamseOverheidSites);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(AddOrganisationParent message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-            organisation.ThrowIfUnauthorizedForVlimpers(message.User);
-
-            var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
-            parentOrganisation.ThrowIfUnauthorizedForVlimpers(message.User);
-            var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
-
-            if (ParentTreeHasOrganisationInIt(organisation, validity, parentOrganisation, new List<Organisation>()))
+            if (parentTreeHasOrganisationInIt)
                 throw new CircularRelationshipDetected();
-
-            organisation.AddParent(
-                message.OrganisationOrganisationParentId,
-                parentOrganisation,
-                validity,
-                _dateTimeProvider);
-
-            await Session.Commit(message.User);
         }
 
-        public async Task Handle(UpdateOrganisationParent message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-            organisation.ThrowIfUnauthorizedForVlimpers(message.User);
+        public Task Handle(AddOrganisationParent message) =>
+            Handler.ForUser(message.User, Session)
+                .WithVlimpersParentChildPolicy(message.ParentOrganisationId, message.OrganisationId)
+                .Handle(session =>
+                {
+                    var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
 
-            var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
-            var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
+                    var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
 
-            if (ParentTreeHasOrganisationInIt(organisation, validity, parentOrganisation, new List<Organisation>()))
-                throw new CircularRelationshipDetected();
+                    ThrowIfCircularRelationshipDetected(organisation, validity, parentOrganisation);
 
-            organisation.UpdateParent(
-                message.OrganisationOrganisationParentId,
-                parentOrganisation,
-                validity,
-                _dateTimeProvider);
+                    organisation.AddParent(
+                        message.OrganisationOrganisationParentId,
+                        parentOrganisation,
+                        validity,
+                        _dateTimeProvider);
+                });
 
-            await Session.Commit(message.User);
-        }
+        public Task Handle(UpdateOrganisationParent message) =>
+            Handler.ForUser(message.User, Session)
+                .WithVlimpersParentChildPolicy(message.ParentOrganisationId, message.OrganisationId)
+                .Handle(session =>
+                {
+                    var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
 
-        public async Task Handle(AddOrganisationFormalFramework message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-            organisation.ThrowIfUnauthorizedForVlimpers(message.User);
+                    var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
 
-            var formalFramework = Session.Get<FormalFramework>(message.FormalFrameworkId);
-            var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
+                    if (ParentTreeHasOrganisationInIt(organisation, validity, parentOrganisation))
+                        throw new CircularRelationshipDetected();
 
-            var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
+                    organisation.UpdateParent(
+                        message.OrganisationOrganisationParentId,
+                        parentOrganisation,
+                        validity,
+                        _dateTimeProvider);
+                });
 
-            if (FormalFrameworkTreeHasOrganisationInIt(organisation, formalFramework, validity, parentOrganisation, new List<Organisation>()))
-                throw new CircularRelationInFormalFramework();
+        public Task Handle(AddOrganisationFormalFramework message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+                    organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
-            organisation.AddFormalFramework(
-                message.OrganisationFormalFrameworkId,
-                formalFramework,
-                parentOrganisation,
-                validity,
-                _dateTimeProvider);
+                    var formalFramework = session.Get<FormalFramework>(message.FormalFrameworkId);
+                    var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
 
-            await Session.Commit(message.User);
-        }
+                    var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
 
-        public async Task Handle(UpdateOrganisationFormalFramework message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-            organisation.ThrowIfUnauthorizedForVlimpers(message.User);
+                    if (FormalFrameworkTreeHasOrganisationInIt(organisation, formalFramework, validity, parentOrganisation, new List<Organisation>()))
+                        throw new CircularRelationInFormalFramework();
 
-            var formalFramework = Session.Get<FormalFramework>(message.FormalFrameworkId);
-            var parentOrganisation = Session.Get<Organisation>(message.ParentOrganisationId);
+                    organisation.AddFormalFramework(
+                        message.OrganisationFormalFrameworkId,
+                        formalFramework,
+                        parentOrganisation,
+                        validity,
+                        _dateTimeProvider);
+                });
 
-            var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
+        public Task Handle(UpdateOrganisationFormalFramework message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+                    organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
-            if (FormalFrameworkTreeHasOrganisationInIt(organisation, formalFramework, validity, parentOrganisation, new List<Organisation>()))
-                throw new CircularRelationInFormalFramework();
+                    var formalFramework = session.Get<FormalFramework>(message.FormalFrameworkId);
+                    var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
 
-            organisation.UpdateFormalFramework(
-                message.OrganisationFormalFrameworkId,
-                formalFramework,
-                parentOrganisation,
-                validity,
-                _dateTimeProvider);
+                    var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
 
-            await Session.Commit(message.User);
-        }
+                    if (FormalFrameworkTreeHasOrganisationInIt(organisation, formalFramework, validity, parentOrganisation, new List<Organisation>()))
+                        throw new CircularRelationInFormalFramework();
+
+                    organisation.UpdateFormalFramework(
+                        message.OrganisationFormalFrameworkId,
+                        formalFramework,
+                        parentOrganisation,
+                        validity,
+                        _dateTimeProvider);
+                });
 
         private bool ParentTreeHasOrganisationInIt(
             Organisation organisation, Period validity,
-            Organisation parentOrganisation, ICollection<Organisation> alreadyCheckedOrganisations)
+            Organisation parentOrganisation,
+            ICollection<Organisation>? alreadyCheckedOrganisations = null)
         {
+            alreadyCheckedOrganisations ??= new List<Organisation>();
+
             if (Equals(organisation, parentOrganisation))
                 return true;
 
@@ -300,567 +316,568 @@ namespace OrganisationRegistry.Organisation
                 .Any(organisation1 => FormalFrameworkTreeHasOrganisationInIt(organisation, formalFramework, validity, organisation1, alreadyCheckedOrganisations.Concat(new List<Organisation> { parentOrganisation }).ToList()));
         }
 
-        public async Task Handle(AddOrganisationKey message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-
-            var keyType = Session.Get<KeyType>(message.KeyTypeId);
-
-            organisation.AddKey(
-                message.OrganisationKeyId,
-                keyType,
-                message.KeyValue,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                keyTypeId => _securityService.CanUseKeyType(message.User, keyTypeId));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateOrganisationKey message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-
-            var keyType = Session.Get<KeyType>(message.KeyTypeId);
-
-            organisation.UpdateKey(
-                message.OrganisationKeyId,
-                keyType,
-                message.Value,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                keyTypeId => _securityService.CanUseKeyType(message.User, keyTypeId));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(AddOrganisationRegulation message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var regulationTheme = message.RegulationThemeId != Guid.Empty ?
-                Session.Get<RegulationTheme>(message.RegulationThemeId) : null;
-
-            var regulationSubTheme = message.RegulationSubThemeId != Guid.Empty ?
-                Session.Get<RegulationSubTheme>(message.RegulationSubThemeId) : null;
-
-            organisation.AddRegulation(
-                message.OrganisationRegulationId,
-                regulationTheme,
-                regulationSubTheme,
-                message.Name,
-                message.Url,
-                message.Date,
-                message.Description,
-                message.DescriptionRendered,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateOrganisationRegulation message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var regulationTheme = message.RegulationThemeId != Guid.Empty ?
-                Session.Get<RegulationTheme>(message.RegulationThemeId) : null;
-
-            var regulationSubTheme = message.RegulationSubThemeId != Guid.Empty ?
-                Session.Get<RegulationSubTheme>(message.RegulationSubThemeId) : null;
-
-            organisation.UpdateRegulation(
-                message.OrganisationRegulationId,
-                regulationTheme,
-                regulationSubTheme,
-                message.Name,
-                message.Link,
-                message.Date,
-                message.Description,
-                message.DescriptionRendered,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(AddOrganisationCapacity message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var capacity = Session.Get<Capacity>(message.CapacityId);
-            var person = message.PersonId != null ? Session.Get<Person>(message.PersonId) : null;
-            var function = message.FunctionId != null ? Session.Get<FunctionType>(message.FunctionId) : null;
-            var location = message.LocationId != null ? Session.Get<Location>(message.LocationId) : null;
-
-            var contacts = message.Contacts.Select(contact =>
-            {
-                var contactType = Session.Get<ContactType>(contact.Key);
-                return new Contact(contactType, contact.Value);
-            }).ToList();
-
-            organisation.AddCapacity(
-                message.OrganisationCapacityId,
-                capacity,
-                person,
-                function,
-                location,
-                contacts,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                _dateTimeProvider);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateOrganisationCapacity message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var capacity = Session.Get<Capacity>(message.CapacityId);
-            var person = message.PersonId != null ? Session.Get<Person>(message.PersonId) : null;
-            var function = message.FunctionTypeId != null ? Session.Get<FunctionType>(message.FunctionTypeId) : null;
-            var location = message.LocationId != null ? Session.Get<Location>(message.LocationId) : null;
-
-            var contacts = message.Contacts.Select(contact =>
-            {
-                var contactType = Session.Get<ContactType>(contact.Key);
-                return new Contact(contactType, contact.Value);
-            }).ToList();
-
-            organisation.UpdateCapacity(
-                message.OrganisationCapacityId,
-                capacity,
-                person,
-                function,
-                location,
-                contacts,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                _dateTimeProvider);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(AddOrganisationFunction message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var person = Session.Get<Person>(message.PersonId);
-            var function = Session.Get<FunctionType>(message.FunctionTypeId);
-
-            var contacts = message.Contacts.Select(contact =>
-            {
-                var contactType = Session.Get<ContactType>(contact.Key);
-                return new Contact(contactType, contact.Value);
-            }).ToList();
-
-            organisation.AddFunction(
-                message.OrganisationFunctionId,
-                function,
-                person,
-                contacts,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateOrganisationFunction message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var person = Session.Get<Person>(message.PersonId);
-            var function = Session.Get<FunctionType>(message.FunctionTypeId);
-
-            var contacts = message.Contacts.Select(contact =>
-            {
-                var contactType = Session.Get<ContactType>(contact.Key);
-                return new Contact(contactType, contact.Value);
-            }).ToList();
-
-            organisation.UpdateFunction(
-                message.OrganisationFunctionId,
-                function,
-                person,
-                contacts,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(AddOrganisationRelation message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var relatedOrganisation = Session.Get<Organisation>(message.RelatedOrganisationId);
-            var relation = Session.Get<OrganisationRelationType>(message.RelationTypeId);
-
-            organisation.AddRelation(
-                message.OrganisationRelationId,
-                relation,
-                relatedOrganisation,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateOrganisationRelation message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var relatedOrganisation = Session.Get<Organisation>(message.RelatedOrganisationId);
-            var relation = Session.Get<OrganisationRelationType>(message.RelationTypeId);
-
-            organisation.UpdateRelation(
-                message.OrganisationRelationId,
-                relation,
-                relatedOrganisation,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(AddOrganisationBuilding message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var building = Session.Get<Building>(message.BuildingId);
-
-            organisation.AddBuilding(
-                message.OrganisationBuildingId,
-                building,
-                message.IsMainBuilding,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                _dateTimeProvider);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateOrganisationBuilding message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var building = Session.Get<Building>(message.BuildingId);
-
-            organisation.UpdateBuilding(
-                message.OrganisationBuildingId,
-                building,
-                message.IsMainBuilding,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                _dateTimeProvider);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(AddOrganisationLocation message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var location = Session.Get<Location>(message.LocationId);
-            var locationType = message.LocationTypeId != null ? Session.Get<LocationType>(message.LocationTypeId) : null;
-
-            KboV2Guards.ThrowIfRegisteredOffice(_organisationRegistryConfiguration, locationType);
-
-            organisation.AddLocation(
-                message.OrganisationLocationId,
-                location,
-                message.IsMainLocation,
-                locationType,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                _dateTimeProvider);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateOrganisationLocation message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var location = Session.Get<Location>(message.LocationId);
-            var locationType = message.LocationTypeId != null ? Session.Get<LocationType>(message.LocationTypeId) : null;
-
-            KboV2Guards.ThrowIfRegisteredOffice(_organisationRegistryConfiguration, locationType);
-
-            organisation.UpdateLocation(
-                message.OrganisationLocationId,
-                location,
-                message.IsMainLocation,
-                locationType,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                _dateTimeProvider);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(AddOrganisationContact message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var contactType = Session.Get<ContactType>(message.ContactTypeId);
-
-            organisation.AddContact(
-                message.OrganisationContactId,
-                contactType,
-                message.ContactValue,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateOrganisationContact message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var contactType = Session.Get<ContactType>(message.ContactTypeId);
-
-            organisation.UpdateContact(
-                message.OrganisationContactId,
-                contactType,
-                message.Value,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(AddOrganisationLabel message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-            organisation.ThrowIfUnauthorizedForVlimpers(message.User);
-
-            var labelType = Session.Get<LabelType>(message.LabelTypeId);
-
-            KboV2Guards.ThrowIfFormalName(_organisationRegistryConfiguration, labelType);
-
-            organisation.AddLabel(
-                message.OrganisationLabelId,
-                labelType,
-                message.LabelValue,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                labelTypeId => _securityService.CanUseLabelType(message.User, labelTypeId));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateOrganisationLabel message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-            organisation.ThrowIfUnauthorizedForVlimpers(message.User);
-
-            var labelType = Session.Get<LabelType>(message.LabelTypeId);
-
-            KboV2Guards.ThrowIfFormalName(_organisationRegistryConfiguration, labelType);
-
-            organisation.UpdateLabel(
-                message.OrganisationLabelId,
-                labelType,
-                message.Value,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                labelTypeId => _securityService.CanUseLabelType(message.User, labelTypeId));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(AddOrganisationOrganisationClassification message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var organisationClassification = Session.Get<OrganisationClassification>(message.OrganisationClassificationId);
-            var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
-
-            organisation.AddOrganisationClassification(
-                _organisationRegistryConfiguration,
-                message.OrganisationOrganisationClassificationId,
-                organisationClassificationType,
-                organisationClassification,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateOrganisationOrganisationClassification message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var organisationClassification = Session.Get<OrganisationClassification>(message.OrganisationClassificationId);
-            var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
-
-            KboV2Guards.ThrowIfLegalForm(_organisationRegistryConfiguration, organisationClassificationType);
-
-            organisation.UpdateOrganisationClassification(
-                message.OrganisationOrganisationClassificationId,
-                organisationClassificationType,
-                organisationClassification,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(AddOrganisationBankAccount message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var bankAccountNumber = BankAccountNumber.CreateWithExpectedValidity(message.BankAccountNumber, message.IsIban);
-            var bankAccountBic = BankAccountBic.CreateWithExpectedValidity(message.Bic, message.IsBic);
-
-            var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
-
-            organisation.AddBankAccount(
-                message.OrganisationBankAccountId,
-                bankAccountNumber,
-                bankAccountBic,
-                validity);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateOrganisationBankAccount message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            var bankAccountNumber = BankAccountNumber.CreateWithExpectedValidity(message.BankAccountNumber, message.IsIban);
-            var bankAccountBic = BankAccountBic.CreateWithExpectedValidity(message.Bic, message.IsBic);
-
-            var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
-
-            organisation.UpdateBankAccount(
-                message.OrganisationBankAccountId,
-                bankAccountNumber,
-                bankAccountBic,
-                validity);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateMainBuilding message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            organisation.UpdateMainBuilding(_dateTimeProvider.Today);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateMainLocation message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            organisation.UpdateMainLocation(_dateTimeProvider.Today);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateOrganisationFormalFrameworkParents message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            organisation.UpdateOrganisationFormalFrameworkParent(_dateTimeProvider.Today, message.FormalFrameworkId);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateCurrentOrganisationParent message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            organisation.UpdateCurrentOrganisationParent(_dateTimeProvider.Today);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateRelationshipValidities message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            organisation.UpdateRelationshipValidities(message.Date);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(AddOrganisationOpeningHour message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            organisation.AddOpeningHour(
-                message.OrganisationOpeningHourId,
-                message.Opens,
-                message.Closes,
-                message.DayOfWeek,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateOrganisationOpeningHour message)
-        {
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-            organisation.ThrowIfTerminated(message.User);
-
-            organisation.UpdateOpeningHour(
-                message.OrganisationOpeningHourId,
-                message.Opens,
-                message.Closes,
-                message.DayOfWeek,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(TerminateOrganisation message)
-        {
-            Guard.RequiresRole(message.User, Role.OrganisationRegistryBeheerder);
-
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-
-            organisation.TerminateOrganisation(message.DateOfTermination,
-                _organisationRegistryConfiguration.OrganisationCapacityTypeIdsToTerminateEndOfNextYear,
-                _organisationRegistryConfiguration.OrganisationClassificationTypeIdsToTerminateEndOfNextYear,
-                _organisationRegistryConfiguration.FormalFrameworkIdsToTerminateEndOfNextYear,
-                _dateTimeProvider,
-                message.ForceKboTermination);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(PlaceUnderVlimpersManagement message)
-        {
-            Guard.RequiresOneOfRoles(message.User, Role.OrganisationRegistryBeheerder, Role.VlimpersBeheerder);
-
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-
-            organisation.PlaceUnderVlimpersManagement();
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(ReleaseFromVlimpersManagement message)
-        {
-            Guard.RequiresOneOfRoles(message.User, Role.OrganisationRegistryBeheerder, Role.VlimpersBeheerder);
-
-            var organisation = Session.Get<Organisation>(message.OrganisationId);
-
-            organisation.ReleaseFromVlimpersManagement();
-
-            await Session.Commit(message.User);
-        }
+        public Task Handle(AddOrganisationKey message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+
+                    var keyType = session.Get<KeyType>(message.KeyTypeId);
+
+                    organisation.AddKey(
+                        message.OrganisationKeyId,
+                        keyType,
+                        message.KeyValue,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                        keyTypeId => _securityService.CanUseKeyType(message.User, keyTypeId));
+                });
+
+        public Task Handle(UpdateOrganisationKey message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+
+                    var keyType = session.Get<KeyType>(message.KeyTypeId);
+
+                    organisation.UpdateKey(
+                        message.OrganisationKeyId,
+                        keyType,
+                        message.Value,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                        keyTypeId => _securityService.CanUseKeyType(message.User, keyTypeId));
+                });
+
+        public Task Handle(AddOrganisationRegulation message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var regulationTheme = message.RegulationThemeId != Guid.Empty ?
+                        session.Get<RegulationTheme>(message.RegulationThemeId) : null;
+
+                    var regulationSubTheme = message.RegulationSubThemeId != Guid.Empty ?
+                        session.Get<RegulationSubTheme>(message.RegulationSubThemeId) : null;
+
+                    organisation.AddRegulation(
+                        message.OrganisationRegulationId,
+                        regulationTheme,
+                        regulationSubTheme,
+                        message.Name,
+                        message.Url,
+                        message.Date,
+                        message.Description,
+                        message.DescriptionRendered,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+                });
+
+        public Task Handle(UpdateOrganisationRegulation message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var regulationTheme = message.RegulationThemeId != Guid.Empty ?
+                        session.Get<RegulationTheme>(message.RegulationThemeId) : null;
+
+                    var regulationSubTheme = message.RegulationSubThemeId != Guid.Empty ?
+                        session.Get<RegulationSubTheme>(message.RegulationSubThemeId) : null;
+
+                    organisation.UpdateRegulation(
+                        message.OrganisationRegulationId,
+                        regulationTheme,
+                        regulationSubTheme,
+                        message.Name,
+                        message.Link,
+                        message.Date,
+                        message.Description,
+                        message.DescriptionRendered,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+                });
+
+        public Task Handle(AddOrganisationCapacity message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var capacity = session.Get<Capacity>(message.CapacityId);
+                    var person = message.PersonId != null ? session.Get<Person>(message.PersonId) : null;
+                    var function = message.FunctionId != null ? session.Get<FunctionType>(message.FunctionId) : null;
+                    var location = message.LocationId != null ? session.Get<Location>(message.LocationId) : null;
+
+                    var contacts = message.Contacts.Select(contact =>
+                    {
+                        var contactType = session.Get<ContactType>(contact.Key);
+                        return new Contact(contactType, contact.Value);
+                    }).ToList();
+
+                    organisation.AddCapacity(
+                        message.OrganisationCapacityId,
+                        capacity,
+                        person,
+                        function,
+                        location,
+                        contacts,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                        _dateTimeProvider);
+                });
+
+        public Task Handle(UpdateOrganisationCapacity message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var capacity = session.Get<Capacity>(message.CapacityId);
+                    var person = message.PersonId != null ? session.Get<Person>(message.PersonId) : null;
+                    var function = message.FunctionTypeId != null ? session.Get<FunctionType>(message.FunctionTypeId) : null;
+                    var location = message.LocationId != null ? session.Get<Location>(message.LocationId) : null;
+
+                    var contacts = message.Contacts.Select(contact =>
+                    {
+                        var contactType = session.Get<ContactType>(contact.Key);
+                        return new Contact(contactType, contact.Value);
+                    }).ToList();
+
+                    organisation.UpdateCapacity(
+                        message.OrganisationCapacityId,
+                        capacity,
+                        person,
+                        function,
+                        location,
+                        contacts,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                        _dateTimeProvider);
+                });
+
+        public Task Handle(AddOrganisationFunction message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var person = session.Get<Person>(message.PersonId);
+                    var function = session.Get<FunctionType>(message.FunctionTypeId);
+
+                    var contacts = message.Contacts.Select(contact =>
+                    {
+                        var contactType = session.Get<ContactType>(contact.Key);
+                        return new Contact(contactType, contact.Value);
+                    }).ToList();
+
+                    organisation.AddFunction(
+                        message.OrganisationFunctionId,
+                        function,
+                        person,
+                        contacts,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+                });
+
+        public Task Handle(UpdateOrganisationFunction message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var person = session.Get<Person>(message.PersonId);
+                    var function = session.Get<FunctionType>(message.FunctionTypeId);
+
+                    var contacts = message.Contacts.Select(contact =>
+                    {
+                        var contactType = session.Get<ContactType>(contact.Key);
+                        return new Contact(contactType, contact.Value);
+                    }).ToList();
+
+                    organisation.UpdateFunction(
+                        message.OrganisationFunctionId,
+                        function,
+                        person,
+                        contacts,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+                });
+
+        public Task Handle(AddOrganisationRelation message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var relatedOrganisation = session.Get<Organisation>(message.RelatedOrganisationId);
+                    var relation = session.Get<OrganisationRelationType>(message.RelationTypeId);
+
+                    organisation.AddRelation(
+                        message.OrganisationRelationId,
+                        relation,
+                        relatedOrganisation,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+                });
+
+        public Task Handle(UpdateOrganisationRelation message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var relatedOrganisation = session.Get<Organisation>(message.RelatedOrganisationId);
+                    var relation = session.Get<OrganisationRelationType>(message.RelationTypeId);
+
+                    organisation.UpdateRelation(
+                        message.OrganisationRelationId,
+                        relation,
+                        relatedOrganisation,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+                });
+
+        public Task Handle(AddOrganisationBuilding message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var building = session.Get<Building>(message.BuildingId);
+
+                    organisation.AddBuilding(
+                        message.OrganisationBuildingId,
+                        building,
+                        message.IsMainBuilding,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                        _dateTimeProvider);
+                });
+
+        public Task Handle(UpdateOrganisationBuilding message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var building = session.Get<Building>(message.BuildingId);
+
+                    organisation.UpdateBuilding(
+                        message.OrganisationBuildingId,
+                        building,
+                        message.IsMainBuilding,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                        _dateTimeProvider);
+                });
+
+        public Task Handle(AddOrganisationLocation message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var location = session.Get<Location>(message.LocationId);
+                    var locationType = message.LocationTypeId != null ? session.Get<LocationType>(message.LocationTypeId) : null;
+
+                    KboV2Guards.ThrowIfRegisteredOffice(_organisationRegistryConfiguration, locationType);
+
+                    organisation.AddLocation(
+                        message.OrganisationLocationId,
+                        location,
+                        message.IsMainLocation,
+                        locationType,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                        _dateTimeProvider);
+                });
+
+        public Task Handle(UpdateOrganisationLocation message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var location = session.Get<Location>(message.LocationId);
+                    var locationType = message.LocationTypeId != null ? session.Get<LocationType>(message.LocationTypeId) : null;
+
+                    KboV2Guards.ThrowIfRegisteredOffice(_organisationRegistryConfiguration, locationType);
+
+                    organisation.UpdateLocation(
+                        message.OrganisationLocationId,
+                        location,
+                        message.IsMainLocation,
+                        locationType,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                        _dateTimeProvider);
+                });
+
+        public Task Handle(AddOrganisationContact message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var contactType = session.Get<ContactType>(message.ContactTypeId);
+
+                    organisation.AddContact(
+                        message.OrganisationContactId,
+                        contactType,
+                        message.ContactValue,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+                });
+
+        public Task Handle(UpdateOrganisationContact message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var contactType = session.Get<ContactType>(message.ContactTypeId);
+
+                    organisation.UpdateContact(
+                        message.OrganisationContactId,
+                        contactType,
+                        message.Value,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+                });
+
+        public Task Handle(AddOrganisationLabel message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+                    organisation.ThrowIfUnauthorizedForVlimpers(message.User);
+
+                    var labelType = session.Get<LabelType>(message.LabelTypeId);
+
+                    KboV2Guards.ThrowIfFormalName(_organisationRegistryConfiguration, labelType);
+
+                    organisation.AddLabel(
+                        message.OrganisationLabelId,
+                        labelType,
+                        message.LabelValue,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                        labelTypeId => _securityService.CanUseLabelType(message.User, labelTypeId));
+                });
+
+        public Task Handle(UpdateOrganisationLabel message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+                    organisation.ThrowIfUnauthorizedForVlimpers(message.User);
+
+                    var labelType = session.Get<LabelType>(message.LabelTypeId);
+
+                    KboV2Guards.ThrowIfFormalName(_organisationRegistryConfiguration, labelType);
+
+                    organisation.UpdateLabel(
+                        message.OrganisationLabelId,
+                        labelType,
+                        message.Value,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                        labelTypeId => _securityService.CanUseLabelType(message.User, labelTypeId));
+                });
+
+        public Task Handle(AddOrganisationOrganisationClassification message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var organisationClassification = session.Get<OrganisationClassification>(message.OrganisationClassificationId);
+                    var organisationClassificationType = session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
+
+                    organisation.AddOrganisationClassification(
+                        _organisationRegistryConfiguration,
+                        message.OrganisationOrganisationClassificationId,
+                        organisationClassificationType,
+                        organisationClassification,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+                });
+
+        public Task Handle(UpdateOrganisationOrganisationClassification message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var organisationClassification = session.Get<OrganisationClassification>(message.OrganisationClassificationId);
+                    var organisationClassificationType = session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
+
+                    KboV2Guards.ThrowIfLegalForm(_organisationRegistryConfiguration, organisationClassificationType);
+
+                    organisation.UpdateOrganisationClassification(
+                        message.OrganisationOrganisationClassificationId,
+                        organisationClassificationType,
+                        organisationClassification,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+                });
+
+        public Task Handle(AddOrganisationBankAccount message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var bankAccountNumber = BankAccountNumber.CreateWithExpectedValidity(message.BankAccountNumber, message.IsIban);
+                    var bankAccountBic = BankAccountBic.CreateWithExpectedValidity(message.Bic, message.IsBic);
+
+                    var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
+
+                    organisation.AddBankAccount(
+                        message.OrganisationBankAccountId,
+                        bankAccountNumber,
+                        bankAccountBic,
+                        validity);
+                });
+
+        public Task Handle(UpdateOrganisationBankAccount message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    var bankAccountNumber = BankAccountNumber.CreateWithExpectedValidity(message.BankAccountNumber, message.IsIban);
+                    var bankAccountBic = BankAccountBic.CreateWithExpectedValidity(message.Bic, message.IsBic);
+
+                    var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
+
+                    organisation.UpdateBankAccount(
+                        message.OrganisationBankAccountId,
+                        bankAccountNumber,
+                        bankAccountBic,
+                        validity);
+                });
+
+        public Task Handle(UpdateMainBuilding message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    organisation.UpdateMainBuilding(_dateTimeProvider.Today);
+                });
+
+        public Task Handle(UpdateMainLocation message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    organisation.UpdateMainLocation(_dateTimeProvider.Today);
+                });
+
+        public Task Handle(UpdateOrganisationFormalFrameworkParents message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    organisation.UpdateOrganisationFormalFrameworkParent(_dateTimeProvider.Today,
+                        message.FormalFrameworkId);
+                });
+
+        public Task Handle(UpdateCurrentOrganisationParent message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    organisation.UpdateCurrentOrganisationParent(_dateTimeProvider.Today);
+                });
+
+        public Task Handle(UpdateRelationshipValidities message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    organisation.UpdateRelationshipValidities(message.Date);
+
+                });
+
+        public Task Handle(AddOrganisationOpeningHour message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    organisation.AddOpeningHour(
+                        message.OrganisationOpeningHourId,
+                        message.Opens,
+                        message.Closes,
+                        message.DayOfWeek,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+
+                });
+
+        public Task Handle(UpdateOrganisationOpeningHour message) =>
+            Handler.ForUser(message.User, Session)
+                .Handle(session =>
+                {
+
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+                    organisation.ThrowIfTerminated(message.User);
+
+                    organisation.UpdateOpeningHour(
+                        message.OrganisationOpeningHourId,
+                        message.Opens,
+                        message.Closes,
+                        message.DayOfWeek,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+                });
+
+        public Task Handle(TerminateOrganisation message) =>
+            Handler.ForUser(message.User, Session)
+                .WithPolicy(new AdminOnlyPolicy())
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+
+                    organisation.TerminateOrganisation(message.DateOfTermination,
+                        _organisationRegistryConfiguration.OrganisationCapacityTypeIdsToTerminateEndOfNextYear,
+                        _organisationRegistryConfiguration.OrganisationClassificationTypeIdsToTerminateEndOfNextYear,
+                        _organisationRegistryConfiguration.FormalFrameworkIdsToTerminateEndOfNextYear,
+                        _dateTimeProvider,
+                        message.ForceKboTermination);
+                });
+
+        public Task Handle(PlaceUnderVlimpersManagement message) =>
+            Handler.ForUser(message.User, Session)
+                .RequiresAdmin()
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+
+                    organisation.PlaceUnderVlimpersManagement();
+                });
+
+        public Task Handle(ReleaseFromVlimpersManagement message) =>
+            Handler.ForUser(message.User, Session)
+                .RequiresAdmin()
+                .Handle(session =>
+                {
+                    var organisation = session.Get<Organisation>(message.OrganisationId);
+
+                    organisation.ReleaseFromVlimpersManagement();
+                });
     }
 }
