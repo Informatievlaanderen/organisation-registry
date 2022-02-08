@@ -30,9 +30,6 @@ namespace OrganisationRegistry.Api.Infrastructure
         public Guid[] OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; }
         public Guid[] FormalFrameworkIdsToTerminateEndOfNextYear { get; }
 
-        public Guid[] FormalFrameworkIdsAllowedForVlimpers { get; }
-        public Guid[] FormalFrameworkIdsNotAllowedForOrganisationRegistryBeheerders { get; }
-
         public OrganisationRegistryConfiguration(
             ApiConfiguration configuration,
             OrganisationTerminationConfiguration? terminationConfiguration)
@@ -47,12 +44,6 @@ namespace OrganisationRegistry.Api.Infrastructure
 
             FormalFrameworkIdsToTerminateEndOfNextYear =
                 SplitGuids(terminationConfiguration?.FormalFrameworkIdsToTerminateEndOfNextYear);
-
-            FormalFrameworkIdsAllowedForVlimpers =
-                SplitGuids(_configuration.FormalFrameworkIdsAllowedForVlimpers);
-
-            FormalFrameworkIdsNotAllowedForOrganisationRegistryBeheerders =
-                SplitGuids(_configuration.FormalFrameworkIdsNotAllowedForOrganisatiebeheerders);
         }
 
         private static Guid[] SplitGuids(string? value)
