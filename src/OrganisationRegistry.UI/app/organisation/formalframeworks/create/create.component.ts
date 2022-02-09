@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
@@ -13,15 +13,16 @@ import {
   CreateOrganisationFormalFrameworkRequest,
   OrganisationFormalFrameworkService
 } from 'services/organisationformalframeworks';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'create.template.html',
   styleUrls: ['create.style.css']
 })
-export class OrganisationFormalFrameworksCreateOrganisationFormalFrameworkComponent implements OnInit {
+export class OrganisationFormalFrameworksCreateOrganisationFormalFrameworkComponent implements OnInit, OnDestroy {
   public form: FormGroup;
 
-  private readonly createAlerts = new CreateAlertMessages('Toepassingsgebied');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -46,6 +47,10 @@ export class OrganisationFormalFrameworksCreateOrganisationFormalFrameworkCompon
     });
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   get isFormValid() {
     return this.form.enabled && this.form.valid;
   }
@@ -53,12 +58,12 @@ export class OrganisationFormalFrameworksCreateOrganisationFormalFrameworkCompon
   create(value: CreateOrganisationFormalFrameworkRequest) {
     this.form.disable();
 
-    this.organisationFormalFrameworkService.create(value.organisationId, value)
+    this.subscriptions.push(this.organisationFormalFrameworkService.create(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
           if (result) {
-            this.router.navigate(['./..'], { relativeTo: this.route });
+            this.router.navigate(['./..'], {relativeTo: this.route});
 
             this.alertService.setAlert(
               new AlertBuilder()
@@ -74,6 +79,6 @@ export class OrganisationFormalFrameworksCreateOrganisationFormalFrameworkCompon
               .error(error)
               .withTitle('Toepassingsgebied kon niet gekoppeld worden!')
               .withMessage('Er is een fout opgetreden bij het koppelen van de gegevens. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 }

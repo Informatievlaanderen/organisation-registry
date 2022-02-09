@@ -1,5 +1,5 @@
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import { CreateOrganisationFormValues } from './create-organisation-form.model';
 import { required, isKboNumber } from 'core/validation';
 import { AlertService, AlertBuilder } from 'core/alert';
@@ -9,6 +9,7 @@ import {
   KboService
 } from 'services/kbo';
 import {SelectItem} from "../../../shared/components/form/form-group-select";
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   selector: 'ww-create-organisation-form',
@@ -16,7 +17,7 @@ import {SelectItem} from "../../../shared/components/form/form-group-select";
   styleUrls: ['create-organisation-form.style.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CreateOrganisationFormComponent implements OnInit {
+export class CreateOrganisationFormComponent implements OnInit, OnDestroy {
   @Input('cancelRouterLink') cancelRouterLink;
   @Input('primaryButtonText') primaryButtonText;
   @Input('organisation') organisation;
@@ -28,6 +29,8 @@ export class CreateOrganisationFormComponent implements OnInit {
   public kboForm: FormGroup;
   public kboNumber: string;
   public articles: SelectItem[];
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   @Input('isBusy')
   public set isBusy(value: boolean) {
@@ -83,6 +86,10 @@ export class CreateOrganisationFormComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   disableKboControls() {
     this.form.controls['name'].disable();
     this.form.controls['shortName'].disable();
@@ -107,7 +114,7 @@ export class CreateOrganisationFormComponent implements OnInit {
 
   search(value) {
     this.isBusy = true;
-    this.kboService.get(value.kboNumber)
+    this.subscriptions.push(this.kboService.get(value.kboNumber)
       .finally(() => this.isBusy = false)
       .subscribe(
         result => {
@@ -132,6 +139,6 @@ export class CreateOrganisationFormComponent implements OnInit {
               .error(error)
               .withTitle('Probleem bij het ophalen van de KBO informatie')
               .withMessage('Er is een fout opgetreden bij het ophalen van de organisatie in de KBO. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 }

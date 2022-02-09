@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { Alert, AlertBuilder, AlertService, AlertType } from 'core/alert';
@@ -13,12 +13,13 @@ import {
     BuildingOrganisationReportService,
     BuildingOrganisationReportFilter
 } from 'services/reports/building-organisations';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: [ 'detail.style.css' ]
 })
-export class BuildingDetailComponent implements OnInit {
+export class BuildingDetailComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public buildingId: string;
   public building: Building;
@@ -27,6 +28,8 @@ export class BuildingDetailComponent implements OnInit {
   private filter: BuildingOrganisationReportFilter = new BuildingOrganisationReportFilter();
   private currentSortBy: string = 'organisationName';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -45,7 +48,7 @@ export class BuildingDetailComponent implements OnInit {
       this.buildingId = id;
 
       this.isLoading = true;
-      this.buildingService
+      this.subscriptions.push(this.buildingService
         .get(id)
         .subscribe(
           item => {
@@ -53,13 +56,17 @@ export class BuildingDetailComponent implements OnInit {
               this.building = item;
           },
           error => this.alertService.setAlert(
-                new Alert(
-                    AlertType.Error,
-                    'Toepassingsgebieden kunnen niet geladen worden!',
-                    'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            new Alert(
+              AlertType.Error,
+              'Toepassingsgebieden kunnen niet geladen worden!',
+              'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
 
       this.loadBuildingOrganisations(id);
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<BuildingOrganisationReportFilter>) {
@@ -74,16 +81,16 @@ export class BuildingDetailComponent implements OnInit {
   }
 
   exportCsv(event: void) {
-    this.buildingOrganisationReportService.exportCsv(this.buildingId, this.filter, this.currentSortBy, this.currentSortOrder)
+    this.subscriptions.push(this.buildingOrganisationReportService.exportCsv(this.buildingId, this.filter, this.currentSortBy, this.currentSortOrder)
       .subscribe(
-      csv => this.fileSaverService.saveFile(csv, 'export_toepassingsgebied'),
-      error => this.alertService.setAlert(
-        new AlertBuilder()
-          .error(error)
-          .withTitle('Organisaties per toepassingsgebied kunnen niet geëxporteerd worden!')
-          .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
-          .build()
-      ));
+        csv => this.fileSaverService.saveFile(csv, 'export_toepassingsgebied'),
+        error => this.alertService.setAlert(
+          new AlertBuilder()
+            .error(error)
+            .withTitle('Organisaties per toepassingsgebied kunnen niet geëxporteerd worden!')
+            .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
+            .build()
+        )));
   }
 
   private loadBuildingOrganisations(buildingId: string, event?: PagedEvent) {
@@ -92,7 +99,7 @@ export class BuildingDetailComponent implements OnInit {
       ? this.buildingOrganisationReportService.getBuildingOrganisations(buildingId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.buildingOrganisationReportService.getBuildingOrganisations(buildingId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    data
+    this.subscriptions.push(data
       .finally(() => this.isLoading = false)
       .subscribe(
         buildingOrganisations => this.buildingOrganisations = buildingOrganisations,
@@ -100,6 +107,6 @@ export class BuildingDetailComponent implements OnInit {
           new Alert(
             AlertType.Error,
             'Organisaties per toepassingsgebied kunnen niet geladen worden!',
-            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }

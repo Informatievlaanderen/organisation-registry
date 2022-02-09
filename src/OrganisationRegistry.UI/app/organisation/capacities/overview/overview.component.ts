@@ -71,7 +71,7 @@ export class OrganisationCapacitiesOverviewComponent implements OnInit, OnDestro
       ? this.organisationCapacityService.getOrganisationCapacities(this.organisationId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.organisationCapacityService.getOrganisationCapacities(this.organisationId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    organisationCapacities
+    this.subscriptions.push(organisationCapacities
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -83,6 +83,6 @@ export class OrganisationCapacitiesOverviewComponent implements OnInit, OnDestro
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

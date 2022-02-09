@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
@@ -19,12 +19,13 @@ import {
   DelegationAssignmentFilter,
   DelegationAssignmentListItem
 } from 'services/delegationassignments';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: ['detail.style.css']
 })
-export class DelegationDetailComponent implements OnInit {
+export class DelegationDetailComponent implements OnInit, OnDestroy {
   public get isBusy() {
     return this.isLoadingDelegation || this.isLoadingDelegationAssignments;
   }
@@ -39,6 +40,8 @@ export class DelegationDetailComponent implements OnInit {
   private isLoadingDelegation: boolean = true;
   private isLoadingDelegationAssignments: boolean = true;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -50,21 +53,25 @@ export class DelegationDetailComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.params
+    this.subscriptions.push(this.route.params
       .subscribe(params => {
         let bodyMandateId = params['id'];
         this.bodyMandateId = bodyMandateId;
 
         this.isLoadingDelegation = true;
-        this.delegationService
+        this.subscriptions.push(this.delegationService
           .get(bodyMandateId)
           .finally(() => this.isLoadingDelegation = false)
           .subscribe(
             delegation => this.delegation = delegation,
-            error => this.handleError(error));
+            error => this.handleError(error)));
 
         this.loadDelegationAssignments();
-      });
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   changePage(event: PagedEvent) {
@@ -80,14 +87,14 @@ export class DelegationDetailComponent implements OnInit {
       ? this.delegationAssignmentService.getDelegationAssignments(this.bodyMandateId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.delegationAssignmentService.getDelegationAssignments(this.bodyMandateId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    delegationAssignments
+    this.subscriptions.push(delegationAssignments
       .finally(() => this.isLoadingDelegationAssignments = false)
       .subscribe(x => this.delegationAssignments = x,
         error => this.alertService.setAlert(
           new Alert(
             AlertType.Error,
             'Delegatie toewijzingen kunnen niet geladen worden!',
-            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 
   private handleError(error) {

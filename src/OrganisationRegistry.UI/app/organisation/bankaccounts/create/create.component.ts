@@ -1,30 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { CreateAlertMessages } from 'core/alertmessages';
-import { Create, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
 import { isValidIBAN, isValidBIC } from 'ibantools';
-
-import { SelectItem } from 'shared/components/form/form-group-select';
 
 import {
   OrganisationBankAccountService,
   CreateOrganisationBankAccountRequest
 } from 'services/organisationbankaccounts';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'create.template.html',
   styleUrls: ['create.style.css']
 })
 
-export class OrganisationBankAccountsCreateOrganisationBankAccountComponent implements OnInit {
+export class OrganisationBankAccountsCreateOrganisationBankAccountComponent implements OnInit, OnDestroy {
   public form: FormGroup;
 
-  private readonly createAlerts = new CreateAlertMessages('Bankrekeningnummers');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -51,6 +48,10 @@ export class OrganisationBankAccountsCreateOrganisationBankAccountComponent impl
     });
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   get isFormValid() {
     return this.form.enabled && this.form.valid;
   }
@@ -58,7 +59,7 @@ export class OrganisationBankAccountsCreateOrganisationBankAccountComponent impl
   create(value: CreateOrganisationBankAccountRequest) {
     this.form.disable();
 
-    this.organisationBankAccountService.create(value.organisationId, value)
+    this.subscriptions.push(this.organisationBankAccountService.create(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
       result => {
@@ -80,7 +81,7 @@ export class OrganisationBankAccountsCreateOrganisationBankAccountComponent impl
             .withTitle('Bankrekeningnummer kon niet gekoppeld worden!')
             .withMessage('Er is een fout opgetreden bij het koppelen van de gegevens. Probeer het later opnieuw.')
             .build())
-      );
+      ));
   }
 
   onBankAccountNumberChanged(e) {

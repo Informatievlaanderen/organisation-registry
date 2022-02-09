@@ -71,7 +71,7 @@ export class OrganisationFunctionsOverviewComponent implements OnInit, OnDestroy
       ? this.organisationFunctionService.getOrganisationFunctions(this.organisationId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.organisationFunctionService.getOrganisationFunctions(this.organisationId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    organisationFunctions
+    this.subscriptions.push(organisationFunctions
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -83,6 +83,6 @@ export class OrganisationFunctionsOverviewComponent implements OnInit, OnDestroy
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

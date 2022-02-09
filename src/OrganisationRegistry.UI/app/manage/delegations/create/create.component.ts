@@ -1,13 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validator, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { CreateAlertMessages } from 'core/alertmessages';
-import { Create, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
-import { Person, PersonService } from 'services/people';
+import { PersonService } from 'services/people';
 import { ContactTypeListItem } from 'services/contacttypes';
 
 import {
@@ -19,17 +17,18 @@ import {
   Delegation,
   DelegationService
 } from 'services/delegations';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'create.template.html',
   styleUrls: ['create.style.css']
 })
-export class DelegationAssignimentsCreateDelegationAssignmentComponent implements OnInit {
+export class DelegationAssignimentsCreateDelegationAssignmentComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public contactTypes: ContactTypeListItem[];
   public delegation: Delegation;
 
-  private readonly createAlerts = new CreateAlertMessages('Toewijzing');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -66,7 +65,7 @@ export class DelegationAssignimentsCreateDelegationAssignmentComponent implement
         initialValue.contacts[contactType.id] = '';
       });
 
-      this.delegationService
+      this.subscriptions.push(this.delegationService
         .get(bodyMandateId)
         .finally(() => this.form.enable())
         .subscribe(
@@ -77,8 +76,12 @@ export class DelegationAssignimentsCreateDelegationAssignmentComponent implement
             this.form.setValue(initialValue);
           },
           error => this.handleError(error)
-        );
+        ));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   toFormGroup(contactTypes: ContactTypeListItem[]) {
@@ -98,7 +101,7 @@ export class DelegationAssignimentsCreateDelegationAssignmentComponent implement
   create(value: CreateDelegationAssignmentRequest) {
     this.form.disable();
 
-    this.delegationAssignmentService.create(value.bodyMandateId, value)
+    this.subscriptions.push(this.delegationAssignmentService.create(value.bodyMandateId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -119,7 +122,7 @@ export class DelegationAssignimentsCreateDelegationAssignmentComponent implement
               .error(error)
               .withTitle('Toewijzing kon niet bewaard worden!')
               .withMessage('Er is een fout opgetreden bij het bewaren van de gegevens. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 
   private handleError(error) {

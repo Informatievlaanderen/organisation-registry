@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
@@ -11,14 +11,17 @@ import {
   CreateBodySeatRequest,
   BodySeatService
 } from 'services/bodyseats';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'create.template.html',
   styleUrls: ['create.style.css']
 })
-export class BodySeatsCreateBodySeatComponent implements OnInit {
+export class BodySeatsCreateBodySeatComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public seatTypes: SelectItem[];
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -47,6 +50,10 @@ export class BodySeatsCreateBodySeatComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   get isFormValid() {
     return this.form.enabled && this.form.valid;
   }
@@ -54,7 +61,7 @@ export class BodySeatsCreateBodySeatComponent implements OnInit {
   create(value: CreateBodySeatRequest) {
     this.form.disable();
 
-    this.bodySeatService.create(value.bodyId, value)
+    this.subscriptions.push(this.bodySeatService.create(value.bodyId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -75,6 +82,6 @@ export class BodySeatsCreateBodySeatComponent implements OnInit {
               .error(error)
               .withTitle('Post kon niet bewaard worden!')
               .withMessage('Er is een fout opgetreden bij het bewaren van de gegevens. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 }

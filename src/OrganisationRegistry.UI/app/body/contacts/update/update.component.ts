@@ -1,32 +1,32 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import { ActivatedRoute, Router} from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { UpdateAlertMessages } from 'core/alertmessages';
-import { Update, ICrud } from 'core/crud';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
 
-import { ContactType, ContactTypeService } from 'services/contacttypes';
+import { ContactTypeService } from 'services/contacttypes';
 
 import {
   BodyContactService,
   UpdateBodyContactRequest
 } from 'services/bodycontacts';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'update.template.html',
   styleUrls: ['update.style.css']
 })
-export class BodyContactsUpdateBodyContactComponent implements OnInit {
+export class BodyContactsUpdateBodyContactComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public contactTypes: SelectItem[];
 
-  private readonly updateAlerts = new UpdateAlertMessages('Contact');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -50,17 +50,21 @@ export class BodyContactsUpdateBodyContactComponent implements OnInit {
   ngOnInit() {
     let allContactTypesObservable = this.contactTypeService.getAllContactTypes();
 
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let contactId = res[1]['id'];
 
-        Observable.zip(this.bodyContactService.get(orgId, contactId), allContactTypesObservable)
+        this.subscriptions.push(Observable.zip(this.bodyContactService.get(orgId, contactId), allContactTypesObservable)
           .subscribe(
             item => this.setForm(item[0], item[1]),
-            error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -70,7 +74,7 @@ export class BodyContactsUpdateBodyContactComponent implements OnInit {
   update(value: UpdateBodyContactRequest) {
     this.form.disable();
 
-    this.bodyContactService.update(value.bodyId, value)
+    this.subscriptions.push(this.bodyContactService.update(value.bodyId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -80,7 +84,7 @@ export class BodyContactsUpdateBodyContactComponent implements OnInit {
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   private setForm(bodyContact, allContactTypes) {

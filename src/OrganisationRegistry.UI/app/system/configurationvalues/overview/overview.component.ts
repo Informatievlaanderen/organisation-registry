@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertService, Alert, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -9,12 +9,13 @@ import {
   ConfigurationValueService,
   ConfigurationValueFilter
 } from 'services/configurationvalues';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class ConfigurationValueOverviewComponent implements OnInit {
+export class ConfigurationValueOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public configurationValues: PagedResult<ConfigurationValueListItem> = new PagedResult<ConfigurationValueListItem>();
 
@@ -22,12 +23,18 @@ export class ConfigurationValueOverviewComponent implements OnInit {
   private currentSortBy: string = 'key';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private configurationValueService: ConfigurationValueService) { }
 
   ngOnInit() {
     this.loadConfigurationValues();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<ConfigurationValueFilter>) {
@@ -47,7 +54,7 @@ export class ConfigurationValueOverviewComponent implements OnInit {
       ? this.configurationValueService.getConfigurationValues(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.configurationValueService.getConfigurationValues(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    configurationValues
+    this.subscriptions.push(configurationValues
       .finally(() => this.isLoading = false)
       .subscribe(
         newConfigurationValues => this.configurationValues = newConfigurationValues,
@@ -56,6 +63,6 @@ export class ConfigurationValueOverviewComponent implements OnInit {
             AlertType.Error,
             'Configuratiewaarden kunnen niet geladen worden!',
             'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'
-          )));
+          ))));
   }
 }

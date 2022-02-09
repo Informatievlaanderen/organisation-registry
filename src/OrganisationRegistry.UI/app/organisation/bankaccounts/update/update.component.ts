@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
@@ -15,16 +15,19 @@ import {
   UpdateOrganisationBankAccountRequest,
   OrganisationBankAccountService
 } from 'services/organisationbankaccounts';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'update.template.html',
   styleUrls: ['update.style.css']
 })
-export class OrganisationBankAccountsUpdateOrganisationBankAccountComponent implements OnInit {
+export class OrganisationBankAccountsUpdateOrganisationBankAccountComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public bankAccount: SearchResult;
 
   private bankAccountId: string;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -48,18 +51,22 @@ export class OrganisationBankAccountsUpdateOrganisationBankAccountComponent impl
   }
 
   ngOnInit() {
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let organisationBankAccountId = res[1]['id'];
 
-        this.organisationBankAccountService
+        this.subscriptions.push(this.organisationBankAccountService
           .get(orgId, organisationBankAccountId)
           .subscribe(
             item => this.setForm(item),
-            error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -69,7 +76,7 @@ export class OrganisationBankAccountsUpdateOrganisationBankAccountComponent impl
   update(value: UpdateOrganisationBankAccountRequest) {
     this.form.disable();
 
-    this.organisationBankAccountService.update(value.organisationId, value)
+    this.subscriptions.push(this.organisationBankAccountService.update(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
       result => {
@@ -79,7 +86,7 @@ export class OrganisationBankAccountsUpdateOrganisationBankAccountComponent impl
           }
         },
         error => this.handleError(error)
-      );
+      ));
   }
 
   private setForm(organisationBankAccount) {

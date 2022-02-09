@@ -44,10 +44,10 @@ export class CreateBodyComponent implements OnInit, OnDestroy {
           if (params['organisationId']) {
             this.body.organisationId = params['organisationId'];
             this.isBusy = true;
-            this.organisationService
+            this.subscriptions.push(this.organisationService
               .get(this.body.organisationId)
               .finally(() => this.isBusy = false)
-              .subscribe(result => this.organisation = new SearchResult(result.id, result.name));
+              .subscribe(result => this.organisation = new SearchResult(result.id, result.name)));
           }
         }));
   }
@@ -58,12 +58,12 @@ export class CreateBodyComponent implements OnInit, OnDestroy {
 
   create(value: CreateBodyFormValues) {
     this.isBusy = true;
-    this.bodyService.create(value)
+    this.subscriptions.push(this.bodyService.create(value)
       .finally(() => this.isBusy = false)
       .subscribe(
         result => this.onCreateSuccess(result, value),
         error => this.alertService.setAlert(this.createAlerts.saveError(error))
-      );
+      ));
   }
 
   private onCreateSuccess(result, value) {

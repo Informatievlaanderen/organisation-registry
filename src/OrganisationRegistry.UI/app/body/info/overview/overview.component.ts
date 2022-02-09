@@ -5,7 +5,6 @@ import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 
 import { AlertService} from 'core/alert';
-import { BaseAlertMessages } from 'core/alertmessages';
 import { OidcService } from 'core/auth';
 
 import { Body } from 'services/bodies';
@@ -19,8 +18,6 @@ export class BodyInfoOverviewComponent implements OnInit, OnDestroy {
   public isBusy = true;
   public body: Body;
   public canEditBody: Observable<boolean>;
-
-  private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Orgaan');
   private id: string;
 
   private readonly subscriptions: Subscription[] = new Array<Subscription>();
@@ -39,7 +36,7 @@ export class BodyInfoOverviewComponent implements OnInit, OnDestroy {
     let bodyChangedObservable =
       this.store.bodyChanged;
 
-    bodyChangedObservable.subscribe((res) => this.isBusy = false);
+    this.subscriptions.push(bodyChangedObservable.subscribe((res) => this.isBusy = false));
 
     this.subscriptions.push(bodyChangedObservable
       .subscribe(body => {

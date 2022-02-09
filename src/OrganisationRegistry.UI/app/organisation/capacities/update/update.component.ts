@@ -1,32 +1,32 @@
-import { Component, OnInit, ViewChild, ElementRef, Renderer } from '@angular/core';
+import {Component, OnDestroy, OnInit, Renderer} from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import { ActivatedRoute, Router} from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { UpdateAlertMessages } from 'core/alertmessages';
-import { Update, ICrud } from 'core/crud';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
 import { SearchResult } from 'shared/components/form/form-group-autocomplete';
 
-import { PersonFunctionListItem, PersonFunctionService } from 'services/peoplefunctions';
-import { Person, PersonService } from 'services/people';
-import { Capacity, CapacityService } from 'services/capacities';
+import { PersonFunctionService } from 'services/peoplefunctions';
+import { PersonService } from 'services/people';
+import { CapacityService } from 'services/capacities';
 import { ContactTypeListItem } from 'services/contacttypes';
 
 import {
   UpdateOrganisationCapacityRequest,
   OrganisationCapacityService
 } from 'services/organisationcapacities';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'update.template.html',
   styleUrls: ['update.style.css']
 })
-export class OrganisationCapacitiesUpdateOrganisationCapacityComponent implements OnInit {
+export class OrganisationCapacitiesUpdateOrganisationCapacityComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public capacities: SelectItem[];
   public person: SearchResult;
@@ -36,8 +36,9 @@ export class OrganisationCapacitiesUpdateOrganisationCapacityComponent implement
   public functions: Array<SelectItem> = [];
 
   private personId: string = '';
-  private readonly updateAlerts = new UpdateAlertMessages('Hoedanigheid');
   private capacityId: string;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -73,17 +74,21 @@ export class OrganisationCapacitiesUpdateOrganisationCapacityComponent implement
     let allCapacitiesObservable = this.capacityService.getAllCapacities();
     this.subscribeToFormChanges();
 
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let capacityId = res[1]['id'];
 
-        Observable.zip(this.organisationCapacityService.get(orgId, capacityId), allCapacitiesObservable)
+        this.subscriptions.push(Observable.zip(this.organisationCapacityService.get(orgId, capacityId), allCapacitiesObservable)
           .subscribe(
             item => this.setForm(item[0], item[1]),
-            error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   toFormGroup(contactTypes: ContactTypeListItem[]) {
@@ -99,19 +104,19 @@ export class OrganisationCapacitiesUpdateOrganisationCapacityComponent implement
   subscribeToFormChanges() {
     const personIdChanges$ = this.form.controls['personId'].valueChanges;
 
-    personIdChanges$
+    this.subscriptions.push(personIdChanges$
       .subscribe(function (personId) {
         if (this.personId === personId)
           return;
 
         this.personId = personId;
 
-        this.form.patchValue({ functionId: '' });
+        this.form.patchValue({functionId: ''});
 
         if (personId) {
           this.isFunctionsBusy = true;
 
-          this.personFunctionService
+          this.subscriptions.push(this.personFunctionService
             .getAllPersonFunctions(personId)
             .finally(() => this.enableForm())
             .subscribe(
@@ -129,11 +134,11 @@ export class OrganisationCapacitiesUpdateOrganisationCapacityComponent implement
                     .error(error)
                     .withTitle('Functies konden niet geladen worden!')
                     .withMessage('Er is een fout opgetreden bij het ophalen van de functies. Probeer het later opnieuw.')
-                    .build()));
+                    .build())));
         } else {
           this.enableForm();
         }
-      }.bind(this));
+      }.bind(this)));
   }
 
   enableForm() {
@@ -149,16 +154,16 @@ export class OrganisationCapacitiesUpdateOrganisationCapacityComponent implement
   update(value: UpdateOrganisationCapacityRequest) {
     this.form.disable();
 
-    this.organisationCapacityService.update(value.organisationId, value)
+    this.subscriptions.push(this.organisationCapacityService.update(value.organisationId, value)
       .finally(() => this.enableForm())
       .subscribe(
         result => {
           if (result) {
-            this.router.navigate(['./../..'], { relativeTo: this.route });
+            this.router.navigate(['./../..'], {relativeTo: this.route});
             this.handleSaveSuccess();
           }
         },
-        error => this.handleSaveError(error));
+        error => this.handleSaveError(error)));
   }
 
   private setForm(organisationCapacity, allCapacities) {

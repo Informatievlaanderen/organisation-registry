@@ -73,7 +73,7 @@ export class OrganisationBodiesOverviewComponent implements OnInit, OnDestroy {
       ? this.organisationBodyService.getOrganisationBodies(this.organisationId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.organisationBodyService.getOrganisationBodies(this.organisationId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    bodies
+    this.subscriptions.push(bodies
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -85,6 +85,6 @@ export class OrganisationBodiesOverviewComponent implements OnInit, OnDestroy {
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

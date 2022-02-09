@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { AlertBuilder, AlertService } from 'core/alert';
@@ -12,12 +12,13 @@ import {
   OrganisationListItem,
   OrganisationService
 } from 'services/organisations';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: ['overview.style.css']
 })
-export class OrganisationOverviewComponent implements OnInit {
+export class OrganisationOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public organisations: PagedResult<OrganisationListItem> = new PagedResult<OrganisationListItem>();
   public canCreateOrganisation: Observable<boolean>;
@@ -25,6 +26,8 @@ export class OrganisationOverviewComponent implements OnInit {
   private filter: OrganisationFilter = new OrganisationFilter();
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private alertService: AlertService,
@@ -41,12 +44,12 @@ export class OrganisationOverviewComponent implements OnInit {
         return true;
       }
 
-      // else if (roles.indexOf(Role.OrganisatieBeheerder) !== -1) {
-      //   return false;
-      // }
-
       return false;
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<OrganisationFilter>) {
@@ -61,16 +64,16 @@ export class OrganisationOverviewComponent implements OnInit {
   }
 
   exportCsv(event: void) {
-    this.organisationService.exportCsv(this.filter, this.currentSortBy, this.currentSortOrder)
+    this.subscriptions.push(this.organisationService.exportCsv(this.filter, this.currentSortBy, this.currentSortOrder)
       .subscribe(
-      csv => this.fileSaverService.saveFile(csv, 'export_organisaties'),
-      error => this.alertService.setAlert(
-        new AlertBuilder()
-          .error(error)
-          .withTitle('Organisaties kunnen niet geëxporteerd worden!')
-          .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
-          .build()
-      ));
+        csv => this.fileSaverService.saveFile(csv, 'export_organisaties'),
+        error => this.alertService.setAlert(
+          new AlertBuilder()
+            .error(error)
+            .withTitle('Organisaties kunnen niet geëxporteerd worden!')
+            .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
+            .build()
+        )));
   }
 
   private loadOrganisations(event?: PagedEvent) {
@@ -79,7 +82,7 @@ export class OrganisationOverviewComponent implements OnInit {
       ? this.organisationService.getOrganisations(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.organisationService.getOrganisations(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    organisations
+    this.subscriptions.push(organisations
       .finally(() => this.isLoading = false)
       .subscribe(
         newOrganisations => this.organisations = newOrganisations,
@@ -88,6 +91,6 @@ export class OrganisationOverviewComponent implements OnInit {
             .error(error)
             .withTitle('Organisaties kunnen niet geladen worden!')
             .withMessage('Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')
-            .build()));
+            .build())));
   }
 }

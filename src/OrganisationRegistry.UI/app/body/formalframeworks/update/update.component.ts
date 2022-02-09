@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Renderer } from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef, Renderer, OnDestroy} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
@@ -16,16 +16,19 @@ import {
   UpdateBodyFormalFrameworkRequest,
   BodyFormalFrameworkService
 } from 'services/bodyformalframeworks';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'update.template.html',
   styleUrls: ['update.style.css']
 })
-export class BodyFormalFrameworksUpdateBodyFormalFrameworkComponent implements OnInit {
+export class BodyFormalFrameworksUpdateBodyFormalFrameworkComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public formalFramework: SearchResult;
 
   private readonly updateAlerts = new UpdateAlertMessages('Toepassingsgebied');
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -46,18 +49,22 @@ export class BodyFormalFrameworksUpdateBodyFormalFrameworkComponent implements O
   }
 
   ngOnInit() {
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let bodyFormalFrameworkId = res[1]['id'];
 
-        this.bodyFormalFrameworkService
+        this.subscriptions.push(this.bodyFormalFrameworkService
           .get(orgId, bodyFormalFrameworkId)
           .subscribe(
             item => this.setForm(item),
-            error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -67,7 +74,7 @@ export class BodyFormalFrameworksUpdateBodyFormalFrameworkComponent implements O
   update(value: UpdateBodyFormalFrameworkRequest) {
     this.form.disable();
 
-    this.bodyFormalFrameworkService.update(value.bodyId, value)
+    this.subscriptions.push(this.bodyFormalFrameworkService.update(value.bodyId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -77,7 +84,7 @@ export class BodyFormalFrameworksUpdateBodyFormalFrameworkComponent implements O
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   private setForm(bodyFormalFramework) {

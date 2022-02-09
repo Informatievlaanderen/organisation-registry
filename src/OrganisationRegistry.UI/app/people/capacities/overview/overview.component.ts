@@ -59,7 +59,7 @@ export class PeopleCapacitiesOverviewComponent implements OnInit, OnDestroy {
       ? this.personCapacityService.getPersonCapacities(this.personId, this.currentSortBy, this.currentSortOrder)
       : this.personCapacityService.getPersonCapacities(this.personId, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    personCapacities
+    this.subscriptions.push(personCapacities
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -71,6 +71,6 @@ export class PeopleCapacitiesOverviewComponent implements OnInit, OnDestroy {
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

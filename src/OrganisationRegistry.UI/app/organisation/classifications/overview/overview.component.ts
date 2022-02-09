@@ -71,7 +71,7 @@ export class OrganisationOrganisationClassificationsOverviewComponent implements
       ? this.organisationOrganisationClassificationService.getOrganisationOrganisationClassifications(this.organisationId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.organisationOrganisationClassificationService.getOrganisationOrganisationClassifications(this.organisationId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    organisationClassifications
+    this.subscriptions.push(organisationClassifications
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -83,6 +83,6 @@ export class OrganisationOrganisationClassificationsOverviewComponent implements
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

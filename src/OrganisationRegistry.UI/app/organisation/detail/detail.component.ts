@@ -22,7 +22,8 @@ export class OrganisationDetailComponent implements OnInit, OnDestroy {
   public enableRegulations: Observable<boolean>;
   public showKboManagement: Observable<boolean>;
   public showVlimpers: Observable<boolean>;
-  private subscriptions: Subscription[] = new Array<Subscription>();
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,

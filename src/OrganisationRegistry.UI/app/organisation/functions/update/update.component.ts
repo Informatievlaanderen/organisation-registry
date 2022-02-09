@@ -1,38 +1,37 @@
-import { Component, OnInit, ViewChild, ElementRef, Renderer } from '@angular/core';
+import {Component, OnDestroy, OnInit, Renderer} from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import { ActivatedRoute, Router} from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { UpdateAlertMessages } from 'core/alertmessages';
-import { Update, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
 import { SearchResult } from 'shared/components/form/form-group-autocomplete';
 
-import { Person, PersonService } from 'services/people';
-import { Function, FunctionService } from 'services/functions';
+import { PersonService } from 'services/people';
+import { FunctionService } from 'services/functions';
 import { ContactTypeListItem } from 'services/contacttypes';
 
 import {
   UpdateOrganisationFunctionRequest,
   OrganisationFunctionService
 } from 'services/organisationfunctions';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'update.template.html',
   styleUrls: ['update.style.css']
 })
-export class OrganisationFunctionsUpdateOrganisationFunctionComponent implements OnInit {
+export class OrganisationFunctionsUpdateOrganisationFunctionComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public functions: SelectItem[];
   public person: SearchResult;
   public contactTypes: ContactTypeListItem[];
-
-  private readonly updateAlerts = new UpdateAlertMessages('Functie');
   private functionId: string;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -62,17 +61,21 @@ export class OrganisationFunctionsUpdateOrganisationFunctionComponent implements
 
     let allFunctionsObservable = this.functionService.getAllFunctions();
 
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let functionId = res[1]['id'];
 
-        Observable.zip(this.organisationFunctionService.get(orgId, functionId), allFunctionsObservable)
+        this.subscriptions.push(Observable.zip(this.organisationFunctionService.get(orgId, functionId), allFunctionsObservable)
           .subscribe(
             item => this.setForm(item[0], item[1]),
-            error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   toFormGroup(contactTypes: ContactTypeListItem[]) {
@@ -92,17 +95,17 @@ export class OrganisationFunctionsUpdateOrganisationFunctionComponent implements
   update(value: UpdateOrganisationFunctionRequest) {
     this.form.disable();
 
-    this.organisationFunctionService.update(value.organisationId, value)
+    this.subscriptions.push(this.organisationFunctionService.update(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
           if (result) {
-            this.router.navigate(['./../..'], { relativeTo: this.route });
+            this.router.navigate(['./../..'], {relativeTo: this.route});
             this.handleSaveSuccess();
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   private setForm(organisationFunction, allFunctions) {

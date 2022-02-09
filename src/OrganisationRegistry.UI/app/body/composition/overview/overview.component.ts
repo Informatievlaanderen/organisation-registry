@@ -76,7 +76,7 @@ export class BodySeatsOverviewComponent implements OnInit, OnDestroy {
       ? this.bodySeatService.getBodySeats(this.bodyId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.bodySeatService.getBodySeats(this.bodyId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    bodySeats
+    this.subscriptions.push(bodySeats
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -88,6 +88,6 @@ export class BodySeatsOverviewComponent implements OnInit, OnDestroy {
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

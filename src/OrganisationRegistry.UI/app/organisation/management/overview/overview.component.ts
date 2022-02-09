@@ -73,7 +73,7 @@ export class OrganisationManagementOverviewComponent implements OnInit, OnDestro
   sync() {
     this.isLoading = true;
 
-    this.organisationSyncService.sync(this.organisationId)
+    this.subscriptions.push(this.organisationSyncService.sync(this.organisationId)
       .finally(() => this.isLoading = false)
       .subscribe(
         item => {
@@ -91,7 +91,7 @@ export class OrganisationManagementOverviewComponent implements OnInit, OnDestro
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 
   syncTermination() {
@@ -100,7 +100,7 @@ export class OrganisationManagementOverviewComponent implements OnInit, OnDestro
 
     this.isLoading = true;
 
-    this.organisationSyncService.syncTermination(this.organisationId)
+    this.subscriptions.push(this.organisationSyncService.syncTermination(this.organisationId)
       .finally(() => this.isLoading = false)
       .subscribe(
         item => {
@@ -118,13 +118,13 @@ export class OrganisationManagementOverviewComponent implements OnInit, OnDestro
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 
   private loadSyncStatus() {
     this.isLoading = true;
 
-    this.organisationSyncService.get(this.organisationId, this.organisation.kboNumber)
+    this.subscriptions.push(this.organisationSyncService.get(this.organisationId, this.organisation.kboNumber)
       .finally(() => this.isLoading = false)
       .subscribe(
         item => {
@@ -136,6 +136,6 @@ export class OrganisationManagementOverviewComponent implements OnInit, OnDestro
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

@@ -71,7 +71,7 @@ export class OrganisationRelationsOverviewComponent implements OnInit, OnDestroy
       ? this.organisationRelationService.getOrganisationRelations(this.organisationId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.organisationRelationService.getOrganisationRelations(this.organisationId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    organisationRelations
+    this.subscriptions.push(organisationRelations
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -83,6 +83,6 @@ export class OrganisationRelationsOverviewComponent implements OnInit, OnDestroy
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

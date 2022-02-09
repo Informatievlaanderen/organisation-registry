@@ -75,7 +75,7 @@ export class BodyFormalFrameworksOverviewComponent implements OnInit, OnDestroy 
       ? this.bodyFormalFrameworkService.getBodyFormalFrameworks(this.bodyId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.bodyFormalFrameworkService.getBodyFormalFrameworks(this.bodyId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    bodyFormalFrameworks
+    this.subscriptions.push(bodyFormalFrameworks
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -87,6 +87,6 @@ export class BodyFormalFrameworksOverviewComponent implements OnInit, OnDestroy 
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

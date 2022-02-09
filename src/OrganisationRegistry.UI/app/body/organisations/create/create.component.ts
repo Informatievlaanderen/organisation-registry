@@ -1,30 +1,27 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { CreateAlertMessages } from 'core/alertmessages';
-import { Create, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
 import { Role } from 'core/auth';
-
-import { SelectItem } from 'shared/components/form/form-group-select';
 
 import {
   CreateBodyOrganisationRequest,
   BodyOrganisationService
 } from 'services/bodyorganisations';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'create.template.html',
   styleUrls: ['create.style.css']
 })
-export class BodyOrganisationsCreateBodyOrganisationComponent implements OnInit {
+export class BodyOrganisationsCreateBodyOrganisationComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public isOrgaanBeheerder: boolean;
 
-  private readonly createAlerts = new CreateAlertMessages('Organisatie');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -51,6 +48,10 @@ export class BodyOrganisationsCreateBodyOrganisationComponent implements OnInit 
     });
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   get isFormValid() {
     return this.form.enabled && this.form.valid;
   }
@@ -58,7 +59,7 @@ export class BodyOrganisationsCreateBodyOrganisationComponent implements OnInit 
   create(value: CreateBodyOrganisationRequest) {
     this.form.disable();
 
-    this.bodyOrganisationService.create(value.bodyId, value)
+    this.subscriptions.push(this.bodyOrganisationService.create(value.bodyId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -79,6 +80,6 @@ export class BodyOrganisationsCreateBodyOrganisationComponent implements OnInit 
               .error(error)
               .withTitle('Organisatie kon niet gekoppeld worden!')
               .withMessage('Er is een fout opgetreden bij het koppelen van de gegevens. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 }

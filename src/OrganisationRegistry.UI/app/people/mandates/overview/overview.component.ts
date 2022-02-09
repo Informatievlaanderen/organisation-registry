@@ -59,7 +59,7 @@ export class PeopleMandatesOverviewComponent implements OnInit, OnDestroy {
       ? this.personMandateService.getPersonMandates(this.personId, this.currentSortBy, this.currentSortOrder)
       : this.personMandateService.getPersonMandates(this.personId, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    personMandates
+    this.subscriptions.push(personMandates
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -71,6 +71,6 @@ export class PeopleMandatesOverviewComponent implements OnInit, OnDestroy {
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

@@ -1,19 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
 import { AlertService, AlertBuilder } from 'core/alert';
-import { CreateAlertMessages } from 'core/alertmessages';
 import { required } from 'core/validation';
 
-import { BodyService, Body, BodyValidity } from 'services/bodies';
+import { BodyService, BodyValidity } from 'services/bodies';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'validity.template.html',
   styleUrls: ['validity.style.css']
 })
-export class BodyInfoValidityComponent implements OnInit {
+export class BodyInfoValidityComponent implements OnInit, OnDestroy {
   public form: FormGroup;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -34,7 +36,7 @@ export class BodyInfoValidityComponent implements OnInit {
       let bodyId = params['id'];
       this.form.disable();
 
-      this.bodyService.getValidity(bodyId)
+      this.subscriptions.push(this.bodyService.getValidity(bodyId)
         .finally(() => this.form.enable())
         .subscribe(
           item => {
@@ -47,13 +49,17 @@ export class BodyInfoValidityComponent implements OnInit {
               .error(error)
               .withTitle('Orgaan kon niet geladen worden!')
               .withMessage('Er is een fout opgetreden bij het ophalen van het orgaan. Probeer het later opnieuw.')
-              .build()));
+              .build())));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   submit(value: BodyValidity) {
     this.form.disable();
-    this.bodyService.changeValidity(value)
+    this.subscriptions.push(this.bodyService.changeValidity(value)
       .finally(() => this.form.enable())
       .subscribe(
         result => this.onSuccess(result),
@@ -62,7 +68,7 @@ export class BodyInfoValidityComponent implements OnInit {
             .error(error)
             .withTitle('Duurtijd orgaan kon niet bewaard worden!')
             .withMessage('Er is een fout opgetreden bij het bewaren van de gegevens. Probeer het later opnieuw.')
-            .build()));
+            .build())));
   }
 
   private onSuccess(result) {

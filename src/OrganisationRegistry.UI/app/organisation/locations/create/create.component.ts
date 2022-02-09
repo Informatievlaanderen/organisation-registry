@@ -1,10 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { CreateAlertMessages } from 'core/alertmessages';
-import { Create, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
@@ -14,17 +12,18 @@ import {
   OrganisationLocationService
 } from 'services/organisationlocations';
 
-import { LocationType, LocationTypeService } from 'services/locationtypes';
+import { LocationTypeService } from 'services/locationtypes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'create.template.html',
   styleUrls: ['create.style.css']
 })
-export class OrganisationLocationsCreateOrganisationLocationComponent implements OnInit {
+export class OrganisationLocationsCreateOrganisationLocationComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public locationTypes: SelectItem[];
 
-  private readonly createAlerts = new CreateAlertMessages('Locaties');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -50,7 +49,7 @@ export class OrganisationLocationsCreateOrganisationLocationComponent implements
       this.form.setValue(new CreateOrganisationLocationRequest(params['id']));
     });
 
-    this.locationTypeService
+    this.subscriptions.push(this.locationTypeService
       .getAllUserPermittedLocationTypes()
       .finally(() => this.form.enable())
       .subscribe(
@@ -61,7 +60,11 @@ export class OrganisationLocationsCreateOrganisationLocationComponent implements
               .error(error)
               .withTitle('Locatie types konden niet geladen worden!')
               .withMessage('Er is een fout opgetreden bij het ophalen van de locatie types. Probeer het later opnieuw.')
-              .build()));
+              .build())));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -71,28 +74,28 @@ export class OrganisationLocationsCreateOrganisationLocationComponent implements
   create(value: CreateOrganisationLocationRequest) {
     this.form.disable();
 
-    this.organisationLocationService.create(value.organisationId, value)
+    this.subscriptions.push(this.organisationLocationService.create(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
-      result => {
-        if (result) {
-          this.router.navigate(['./..'], { relativeTo: this.route });
+        result => {
+          if (result) {
+            this.router.navigate(['./..'], {relativeTo: this.route});
 
+            this.alertService.setAlert(
+              new AlertBuilder()
+                .success()
+                .withTitle('Locatie gekoppeld!')
+                .withMessage('Locatie is succesvol gekoppeld.')
+                .build());
+          }
+        },
+        error =>
           this.alertService.setAlert(
             new AlertBuilder()
-              .success()
-              .withTitle('Locatie gekoppeld!')
-              .withMessage('Locatie is succesvol gekoppeld.')
-              .build());
-        }
-      },
-      error =>
-        this.alertService.setAlert(
-          new AlertBuilder()
-            .error(error)
-            .withTitle('Locatie kon niet gekoppeld worden!')
-            .withMessage('Er is een fout opgetreden bij het koppelen van de gegevens. Probeer het later opnieuw.')
-            .build())
-      );
+              .error(error)
+              .withTitle('Locatie kon niet gekoppeld worden!')
+              .withMessage('Er is een fout opgetreden bij het koppelen van de gegevens. Probeer het later opnieuw.')
+              .build())
+      ));
   }
 }

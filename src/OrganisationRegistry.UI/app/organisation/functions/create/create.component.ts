@@ -1,33 +1,32 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl, Validator, Validators } from '@angular/forms';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import { FormBuilder, FormGroup, FormControl} from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { CreateAlertMessages } from 'core/alertmessages';
-import { Create, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
 
-import { Person, PersonService } from 'services/people';
-import { Function, FunctionService } from 'services/functions';
+import { PersonService } from 'services/people';
+import { FunctionService } from 'services/functions';
 import { ContactTypeListItem } from 'services/contacttypes';
 
 import {
   CreateOrganisationFunctionRequest,
   OrganisationFunctionService
 } from 'services/organisationfunctions';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'create.template.html',
   styleUrls: ['create.style.css']
 })
-export class OrganisationFunctionsCreateOrganisationFunctionComponent implements OnInit {
+export class OrganisationFunctionsCreateOrganisationFunctionComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public functions: SelectItem[];
   public contactTypes: ContactTypeListItem[];
 
-  private readonly createAlerts = new CreateAlertMessages('Functie');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -62,7 +61,7 @@ export class OrganisationFunctionsCreateOrganisationFunctionComponent implements
 
       this.form.setValue(initialValue);
 
-      this.functionService
+      this.subscriptions.push(this.functionService
         .getAllFunctions()
         .finally(() => this.form.enable())
         .subscribe(
@@ -73,8 +72,12 @@ export class OrganisationFunctionsCreateOrganisationFunctionComponent implements
                 .error(error)
                 .withTitle('Functies konden niet geladen worden!')
                 .withMessage('Er is een fout opgetreden bij het ophalen van de functies. Probeer het later opnieuw.')
-                .build()));
+                .build())));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   toFormGroup(contactTypes: ContactTypeListItem[]) {
@@ -94,12 +97,12 @@ export class OrganisationFunctionsCreateOrganisationFunctionComponent implements
   create(value: CreateOrganisationFunctionRequest) {
     this.form.disable();
 
-    this.organisationFunctionService.create(value.organisationId, value)
+    this.subscriptions.push(this.organisationFunctionService.create(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
           if (result) {
-            this.router.navigate(['./..'], { relativeTo: this.route });
+            this.router.navigate(['./..'], {relativeTo: this.route});
 
             this.alertService.setAlert(
               new AlertBuilder()
@@ -115,6 +118,6 @@ export class OrganisationFunctionsCreateOrganisationFunctionComponent implements
               .error(error)
               .withTitle('Functie kon niet bewaard worden!')
               .withMessage('Er is een fout opgetreden bij het bewaren van de gegevens. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 }

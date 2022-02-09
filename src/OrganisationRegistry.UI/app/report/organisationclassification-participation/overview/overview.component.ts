@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
@@ -13,12 +13,13 @@ import {
   OrganisationClassificationReportFilter,
   OrganisationClassificationReportService
 } from 'services/reports/organisationclassifications';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
     templateUrl: 'overview.template.html',
     styleUrls: [ 'overview.style.css' ]
   })
-  export class OrganisationClassificationParticipationOverviewComponent implements OnInit {
+  export class OrganisationClassificationParticipationOverviewComponent implements OnInit, OnDestroy {
     public isLoading: boolean = true;
 
     public classificationTag: string;
@@ -28,6 +29,8 @@ import {
     private filter: OrganisationClassificationReportFilter = new OrganisationClassificationReportFilter();
     private currentSortBy: string = 'name';
     private currentSortOrder: SortOrder = SortOrder.Ascending;
+
+    private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
     constructor(
       private route: ActivatedRoute,
@@ -44,6 +47,10 @@ import {
       });
 
       this.loadClassifications();
+    }
+
+    ngOnDestroy() {
+      this.subscriptions.forEach(sub => sub.unsubscribe());
     }
 
     search(event: SearchEvent<OrganisationClassificationReportFilter>) {
@@ -75,7 +82,7 @@ import {
           break;
       }
 
-      classifications
+      this.subscriptions.push(classifications
         .finally(() => this.isLoading = false)
         .subscribe(
           newClassifications => this.classifications = newClassifications,
@@ -84,6 +91,6 @@ import {
               .error(error)
               .withTitle('Beleidsdomeinen kunnen niet geladen worden!')
               .withMessage('Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')
-              .build()));
+              .build())));
     }
   }

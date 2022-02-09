@@ -1,34 +1,35 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import { FormBuilder, FormGroup} from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { CreateAlertMessages } from 'core/alertmessages';
-import { Create, ICrud } from 'core/crud';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
 
-import { OrganisationClassificationType, OrganisationClassificationTypeService } from 'services/organisationclassificationtypes';
-import { OrganisationClassification, OrganisationClassificationService } from 'services/organisationclassifications';
+import { OrganisationClassificationTypeService } from 'services/organisationclassificationtypes';
+import { OrganisationClassificationService } from 'services/organisationclassifications';
 
 import {
   CreateOrganisationOrganisationClassificationRequest,
   OrganisationOrganisationClassificationService
 } from 'services/organisationorganisationclassifications';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'create.template.html',
   styleUrls: ['create.style.css']
 })
-export class OrganisationOrganisationClassificationsCreateOrganisationOrganisationClassificationComponent implements OnInit {
+export class OrganisationOrganisationClassificationsCreateOrganisationOrganisationClassificationComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public organisationClassificationTypes: SelectItem[];
 
   public classifications: Array<SelectItem> = [];
 
   private classificationType: string = '';
-  private readonly createAlerts = new CreateAlertMessages('Classificatie');
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -54,7 +55,7 @@ export class OrganisationOrganisationClassificationsCreateOrganisationOrganisati
       this.form.setValue(new CreateOrganisationOrganisationClassificationRequest(params['id']));
     });
 
-    this.organisationClassificationTypeService
+    this.subscriptions.push(this.organisationClassificationTypeService
       .getAllUserPermittedOrganisationClassificationTypes()
       .finally(() => this.enableForm())
       .subscribe(
@@ -65,15 +66,19 @@ export class OrganisationOrganisationClassificationsCreateOrganisationOrganisati
               .error(error)
               .withTitle('Classificatietypes konden niet geladen worden!')
               .withMessage('Er is een fout opgetreden bij het ophalen van de classificatietypes. Probeer het later opnieuw.')
-              .build()));
+              .build())));
 
     this.subcribeToFormChanges();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   subcribeToFormChanges() {
     const classificationTypeChanges$ = this.form.controls['organisationClassificationTypeId'].valueChanges;
 
-    classificationTypeChanges$
+    this.subscriptions.push(classificationTypeChanges$
       .subscribe(function (classificationType) {
         if (this.classificationType === classificationType)
           return;
@@ -86,7 +91,7 @@ export class OrganisationOrganisationClassificationsCreateOrganisationOrganisati
 
         if (classificationType) {
 
-          this.organisationClassificationService
+          this.subscriptions.push(this.organisationClassificationService
             .getAllOrganisationClassifications(classificationType)
             .finally(() => this.enableForm())
             .subscribe(
@@ -97,11 +102,11 @@ export class OrganisationOrganisationClassificationsCreateOrganisationOrganisati
                     .error(error)
                     .withTitle('Classificaties konden niet geladen worden!')
                     .withMessage('Er is een fout opgetreden bij het ophalen van de classificaties. Probeer het later opnieuw.')
-                    .build()));
+                    .build())));
         } else {
           this.enableForm();
         }
-      }.bind(this));
+      }.bind(this)));
   }
 
   enableForm() {
@@ -117,7 +122,7 @@ export class OrganisationOrganisationClassificationsCreateOrganisationOrganisati
   create(value: CreateOrganisationOrganisationClassificationRequest) {
     this.form.disable();
 
-    this.organisationOrganisationClassificationService.create(value.organisationId, value)
+    this.subscriptions.push(this.organisationOrganisationClassificationService.create(value.organisationId, value)
       .finally(() => this.enableForm())
       .subscribe(
         result => {
@@ -138,6 +143,6 @@ export class OrganisationOrganisationClassificationsCreateOrganisationOrganisati
               .error(error)
               .withTitle('Classificatie kon niet bewaard worden!')
               .withMessage('Er is een fout opgetreden bij het bewaren van de gegevens. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 }

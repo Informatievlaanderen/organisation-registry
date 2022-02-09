@@ -1,15 +1,11 @@
-import { Component, OnInit, ViewChild, ElementRef, Renderer } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import {Component, OnDestroy, OnInit, Renderer} from '@angular/core';
+import { FormBuilder, FormGroup} from '@angular/forms';
+import { ActivatedRoute, Router} from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { UpdateAlertMessages } from 'core/alertmessages';
-import { Update, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
-
-import { ContactTypeListItem } from 'services/contacttypes';
 
 import {
   DeleteDelegationAssignmentRequest,
@@ -21,17 +17,18 @@ import {
   Delegation,
   DelegationService
 } from 'services/delegations';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'delete.template.html',
   styleUrls: ['delete.style.css']
 })
-export class DelegationAssignimentsDeleteDelegationAssignmentComponent implements OnInit {
+export class DelegationAssignimentsDeleteDelegationAssignmentComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public delegation: Delegation;
   public delegationAssignment: DelegationAssignment;
 
-  private readonly updateAlerts = new UpdateAlertMessages('Toewijzing');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -60,7 +57,7 @@ export class DelegationAssignimentsDeleteDelegationAssignmentComponent implement
   }
 
   ngOnInit() {
-    this.route.params
+    this.subscriptions.push(this.route.params
       .subscribe(res => {
         this.form.disable();
         let bodyMandateId = res['bodyMandateId'];
@@ -72,7 +69,7 @@ export class DelegationAssignimentsDeleteDelegationAssignmentComponent implement
         let delegationAssignment$ =
           this.delegationAssignmentService.get(bodyMandateId, delegationAssignmentId);
 
-        Observable.zip(delegation$, delegationAssignment$)
+        this.subscriptions.push(Observable.zip(delegation$, delegationAssignment$)
           .finally(() => this.form.enable())
           .subscribe(
             res => {
@@ -80,15 +77,18 @@ export class DelegationAssignimentsDeleteDelegationAssignmentComponent implement
               this.delegationAssignment = res[1];
               this.form.setValue(this.delegationAssignment);
             },
-            error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
   }
 
-  // TODO: Rename to delete
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   delete(value: DeleteDelegationAssignmentRequest) {
     this.form.disable();
 
-    this.delegationAssignmentService.delete(value.bodyMandateId, value)
+    this.subscriptions.push(this.delegationAssignmentService.delete(value.bodyMandateId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -98,7 +98,7 @@ export class DelegationAssignimentsDeleteDelegationAssignmentComponent implement
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   private handleError(error) {

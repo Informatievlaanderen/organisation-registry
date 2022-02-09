@@ -66,7 +66,7 @@ export class OrganisationVlimpersOverviewComponent implements OnInit, OnDestroy 
   public placeUnderVlimpersManagement() {
     this.isLoading = true;
 
-    this.organisationVlimpersService.placeUnderVlimpersManagement(this.organisationId)
+    this.subscriptions.push(this.organisationVlimpersService.placeUnderVlimpersManagement(this.organisationId)
       .finally(() => this.isLoading = false)
       .subscribe(
         item => {
@@ -83,13 +83,13 @@ export class OrganisationVlimpersOverviewComponent implements OnInit, OnDestroy 
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 
   public removeFromVlimpersManagement() {
     this.isLoading = true;
 
-    this.organisationVlimpersService.removeFromVlimpersManagement(this.organisationId)
+    this.subscriptions.push(this.organisationVlimpersService.removeFromVlimpersManagement(this.organisationId)
       .finally(() => this.isLoading = false)
       .subscribe(
         item => {
@@ -106,6 +106,6 @@ export class OrganisationVlimpersOverviewComponent implements OnInit, OnDestroy 
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

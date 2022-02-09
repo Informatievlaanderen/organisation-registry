@@ -73,7 +73,7 @@ export class BodyBodyClassificationsOverviewComponent implements OnInit, OnDestr
       ? this.bodyBodyClassificationService.getBodyBodyClassifications(this.bodyId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.bodyBodyClassificationService.getBodyBodyClassifications(this.bodyId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    bodyClassifications
+    this.subscriptions.push(bodyClassifications
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -85,6 +85,6 @@ export class BodyBodyClassificationsOverviewComponent implements OnInit, OnDestr
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

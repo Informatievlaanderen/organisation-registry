@@ -1,32 +1,29 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl, Validator, Validators } from '@angular/forms';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import { FormBuilder, FormGroup} from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { CreateAlertMessages } from 'core/alertmessages';
-import { Create, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
 
-import { Person, PersonService } from 'services/people';
-import { OrganisationRelationType, OrganisationRelationTypeService } from 'services/organisationrelationtypes';
-import { ContactTypeListItem } from 'services/contacttypes';
+import { OrganisationRelationTypeService } from 'services/organisationrelationtypes';
 
 import {
   CreateOrganisationRelationRequest,
   OrganisationRelationService
 } from 'services/organisationrelations';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'create.template.html',
   styleUrls: ['create.style.css']
 })
-export class OrganisationRelationsCreateOrganisationRelationComponent implements OnInit {
+export class OrganisationRelationsCreateOrganisationRelationComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public relations: SelectItem[];
 
-  private readonly createAlerts = new CreateAlertMessages('Relatie');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -52,7 +49,7 @@ export class OrganisationRelationsCreateOrganisationRelationComponent implements
       let initialValue = new CreateOrganisationRelationRequest(params['id']);
       this.form.setValue(initialValue);
 
-      this.relationService
+      this.subscriptions.push(this.relationService
         .getAllOrganisationRelationTypes()
         .finally(() => this.form.enable())
         .subscribe(
@@ -63,8 +60,12 @@ export class OrganisationRelationsCreateOrganisationRelationComponent implements
                 .error(error)
                 .withTitle('Relaties konden niet geladen worden!')
                 .withMessage('Er is een fout opgetreden bij het ophalen van de functies. Probeer het later opnieuw.')
-                .build()));
+                .build())));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -74,12 +75,12 @@ export class OrganisationRelationsCreateOrganisationRelationComponent implements
   create(value: CreateOrganisationRelationRequest) {
     this.form.disable();
 
-    this.organisationRelationService.create(value.organisationId, value)
+    this.subscriptions.push(this.organisationRelationService.create(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
           if (result) {
-            this.router.navigate(['./..'], { relativeTo: this.route });
+            this.router.navigate(['./..'], {relativeTo: this.route});
 
             this.alertService.setAlert(
               new AlertBuilder()
@@ -95,6 +96,6 @@ export class OrganisationRelationsCreateOrganisationRelationComponent implements
               .error(error)
               .withTitle('Relatie kon niet bewaard worden!')
               .withMessage('Er is een fout opgetreden bij het bewaren van de gegevens. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 }

@@ -1,33 +1,32 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import { ActivatedRoute, Router} from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { UpdateAlertMessages } from 'core/alertmessages';
-import { Update, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
 
-import { KeyType, KeyTypeService } from 'services/keytypes';
+import { KeyTypeService } from 'services/keytypes';
 
 import {
   UpdateOrganisationKeyRequest,
   OrganisationKeyService
 } from 'services/organisationkeys';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'update.template.html',
   styleUrls: ['update.style.css']
 })
-export class OrganisationKeysUpdateOrganisationKeyComponent implements OnInit {
+export class OrganisationKeysUpdateOrganisationKeyComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public keys: SelectItem[];
-
-  private readonly updateAlerts = new UpdateAlertMessages('Sleutel');
   private keyId: string;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -51,16 +50,20 @@ export class OrganisationKeysUpdateOrganisationKeyComponent implements OnInit {
   ngOnInit() {
     let allKeysObservable = this.keyService.getAllKeyTypes();
 
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let keyId = res[1]['id'];
 
-        Observable.zip(this.organisationKeyService.get(orgId, keyId), allKeysObservable)
+        this.subscriptions.push(Observable.zip(this.organisationKeyService.get(orgId, keyId), allKeysObservable)
           .subscribe(item => this.setForm(item[0], item[1]),
-          error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -70,17 +73,17 @@ export class OrganisationKeysUpdateOrganisationKeyComponent implements OnInit {
   update(value: UpdateOrganisationKeyRequest) {
     this.form.disable();
 
-    this.organisationKeyService.update(value.organisationId, value)
+    this.subscriptions.push(this.organisationKeyService.update(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
           if (result) {
-            this.router.navigate(['./../..'], { relativeTo: this.route });
+            this.router.navigate(['./../..'], {relativeTo: this.route});
             this.handleSaveSuccess();
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   private setForm(organisationKey, allKeys) {
@@ -90,9 +93,6 @@ export class OrganisationKeysUpdateOrganisationKeyComponent implements OnInit {
 
     this.keys = allKeys.map(k => new SelectItem(k.id, k.name));
     this.form.enable();
-  }
-
-  private setKeys(allKeys) {
   }
 
   private handleError(error) {

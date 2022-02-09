@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
 
@@ -11,12 +11,13 @@ import {
   DelegationService,
   DelegationFilter
 } from 'services/delegations';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class DelegationOverviewComponent implements OnInit {
+export class DelegationOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public delegations: PagedResult<DelegationListItem> = new PagedResult<DelegationListItem>();
   public hasNonDelegatedDelegations: boolean = false;
@@ -25,12 +26,18 @@ export class DelegationOverviewComponent implements OnInit {
   private currentSortBy: string = 'bodyName';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private delegationService: DelegationService) { }
 
   ngOnInit() {
     this.loadDelegations();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<DelegationFilter>) {
@@ -53,7 +60,7 @@ export class DelegationOverviewComponent implements OnInit {
 
     let hasNonDelegatedDelegationsCheck = this.delegationService.hasNonDelegatedDelegations(this.filter);
 
-    Observable.zip(delegations, hasNonDelegatedDelegationsCheck)
+    this.subscriptions.push(Observable.zip(delegations, hasNonDelegatedDelegationsCheck)
       .map(zipped => {
         return {
           delegations: zipped[0],
@@ -70,6 +77,6 @@ export class DelegationOverviewComponent implements OnInit {
           new Alert(
             AlertType.Error,
             'Delegaties kunnen niet geladen worden!',
-            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }

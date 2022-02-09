@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { Alert, AlertBuilder, AlertService, AlertType } from 'core/alert';
@@ -13,12 +13,13 @@ import {
     OrganisationClassificationTranslationReportFilter,
     OrganisationClassificationReportService
 } from 'services/reports/organisationclassifications';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: [ 'detail.style.css' ]
 })
-export class OrganisationClassificationDetailComponent implements OnInit {
+export class OrganisationClassificationDetailComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public classificationId: string;
   public classification: OrganisationClassification;
@@ -27,6 +28,8 @@ export class OrganisationClassificationDetailComponent implements OnInit {
   private filter: OrganisationClassificationTranslationReportFilter = new OrganisationClassificationTranslationReportFilter();
   private currentSortBy: string = 'organisationName';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -45,7 +48,7 @@ export class OrganisationClassificationDetailComponent implements OnInit {
       this.classificationId = id;
 
       this.isLoading = true;
-      this.organisationClassificationService
+      this.subscriptions.push(this.organisationClassificationService
         .get(id)
         .subscribe(
           item => {
@@ -53,13 +56,17 @@ export class OrganisationClassificationDetailComponent implements OnInit {
               this.classification = item;
           },
           error => this.alertService.setAlert(
-                new Alert(
-                    AlertType.Error,
-                    'Vertaling entiteiten kunnen niet geladen worden!',
-                    'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            new Alert(
+              AlertType.Error,
+              'Vertaling entiteiten kunnen niet geladen worden!',
+              'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
 
       this.loadFormalFrameworkOrganisations(id);
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<OrganisationClassificationTranslationReportFilter>) {
@@ -74,16 +81,16 @@ export class OrganisationClassificationDetailComponent implements OnInit {
   }
 
   exportCsv(event: void) {
-    this.organisationClassificationReportService.exportCsv(this.classificationId, this.filter, this.currentSortBy, this.currentSortOrder)
+    this.subscriptions.push(this.organisationClassificationReportService.exportCsv(this.classificationId, this.filter, this.currentSortBy, this.currentSortOrder)
       .subscribe(
-      csv => this.fileSaverService.saveFile(csv, 'export_beleidsdomeinen'),
-      error => this.alertService.setAlert(
-        new AlertBuilder()
-          .error(error)
-          .withTitle('Vertaling entiteiten kunnen niet geëxporteerd worden!')
-          .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
-          .build()
-      ));
+        csv => this.fileSaverService.saveFile(csv, 'export_beleidsdomeinen'),
+        error => this.alertService.setAlert(
+          new AlertBuilder()
+            .error(error)
+            .withTitle('Vertaling entiteiten kunnen niet geëxporteerd worden!')
+            .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
+            .build()
+        )));
   }
 
   private loadFormalFrameworkOrganisations(classificationId: string, event?: PagedEvent) {
@@ -92,7 +99,7 @@ export class OrganisationClassificationDetailComponent implements OnInit {
       ? this.organisationClassificationReportService.getClassificationOrganisations(classificationId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.organisationClassificationReportService.getClassificationOrganisations(classificationId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    data
+    this.subscriptions.push(data
       .finally(() => this.isLoading = false)
       .subscribe(
         classificationOrganisations => this.classificationOrganisations = classificationOrganisations,
@@ -100,6 +107,6 @@ export class OrganisationClassificationDetailComponent implements OnInit {
           new Alert(
             AlertType.Error,
             'Vertaling entiteiten kunnen niet geladen worden!',
-            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }

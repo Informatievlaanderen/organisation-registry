@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { AlertService, AlertBuilder } from 'core/alert';
@@ -11,18 +11,21 @@ import { CreateOrganisationFormValues } from './create-child-form';
 
 import { OrganisationService } from 'services/organisations';
 import { PurposeService } from 'services/purposes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'add-child.template.html',
   styleUrls: ['add-child.style.css']
 })
-export class OrganisationInfoAddChildOrganisationComponent implements OnInit {
+export class OrganisationInfoAddChildOrganisationComponent implements OnInit, OnDestroy {
   public isBusy: boolean = true;
   public organisation;
   public parentOrganisationId: string;
   public purposes: SelectItem[];
 
   private readonly createAlerts = new AddChildAlerts();
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -34,7 +37,7 @@ export class OrganisationInfoAddChildOrganisationComponent implements OnInit {
   ngOnInit() {
     this.organisation = new CreateOrganisationFormValues();
 
-    this.purposeService
+    this.subscriptions.push(this.purposeService
       .getAllPurposes()
       .finally(() => this.isBusy = this.purposes.length <= 0)
       .subscribe(
@@ -54,17 +57,21 @@ export class OrganisationInfoAddChildOrganisationComponent implements OnInit {
               .error(error)
               .withTitle('Beleidsvelden konden niet geladen worden!')
               .withMessage('Er is een fout opgetreden bij het ophalen van de beleidsvelden. Probeer het later opnieuw.')
-              .build()));
+              .build())));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   create(value: CreateOrganisationFormValues) {
     this.isBusy = true;
-    this.organisationService.create(value)
+    this.subscriptions.push(this.organisationService.create(value)
       .finally(() => this.isBusy = false)
       .subscribe(
         result => this.onCreateSuccess(result, value),
         error => this.alertService.setAlert(this.createAlerts.saveError(error))
-      );
+      ));
   }
 
   private onCreateSuccess(result, organisation) {

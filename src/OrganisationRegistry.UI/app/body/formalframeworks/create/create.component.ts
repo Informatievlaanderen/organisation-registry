@@ -1,27 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { CreateAlertMessages } from 'core/alertmessages';
-import { Create, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
-
-import { SelectItem } from 'shared/components/form/form-group-select';
 
 import {
   CreateBodyFormalFrameworkRequest,
   BodyFormalFrameworkService
 } from 'services/bodyformalframeworks';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'create.template.html',
   styleUrls: ['create.style.css']
 })
-export class BodyFormalFrameworksCreateBodyFormalFrameworkComponent implements OnInit {
+export class BodyFormalFrameworksCreateBodyFormalFrameworkComponent implements OnInit, OnDestroy {
   public form: FormGroup;
 
-  private readonly createAlerts = new CreateAlertMessages('Toepassingsgebied');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -45,6 +42,10 @@ export class BodyFormalFrameworksCreateBodyFormalFrameworkComponent implements O
     });
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   get isFormValid() {
     return this.form.enabled && this.form.valid;
   }
@@ -52,7 +53,7 @@ export class BodyFormalFrameworksCreateBodyFormalFrameworkComponent implements O
   create(value: CreateBodyFormalFrameworkRequest) {
     this.form.disable();
 
-    this.bodyFormalFrameworkService.create(value.bodyId, value)
+    this.subscriptions.push(this.bodyFormalFrameworkService.create(value.bodyId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -73,6 +74,6 @@ export class BodyFormalFrameworksCreateBodyFormalFrameworkComponent implements O
               .error(error)
               .withTitle('Toepassingsgebied kon niet gekoppeld worden!')
               .withMessage('Er is een fout opgetreden bij het koppelen van de gegevens. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 }

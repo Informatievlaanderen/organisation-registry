@@ -71,7 +71,7 @@ export class OrganisationContactsOverviewComponent implements OnInit, OnDestroy 
       ? this.organisationContactService.getOrganisationContacts(this.organisationId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.organisationContactService.getOrganisationContacts(this.organisationId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    contacts
+    this.subscriptions.push(contacts
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -83,6 +83,6 @@ export class OrganisationContactsOverviewComponent implements OnInit, OnDestroy 
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

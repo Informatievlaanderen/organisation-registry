@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router} from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 
 import { AlertService, AlertBuilder} from 'core/alert';
-import { UpdateAlertMessages } from 'core/alertmessages';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
@@ -19,21 +18,21 @@ import {
   OrganisationRegulationService,
   UpdateOrganisationRegulationRequest
 } from 'services/organisationregulations';
+import {Subscription} from "rxjs/Subscription";
 
 
 @Component({
   templateUrl: 'update.template.html',
   styleUrls: ['update.style.css']
 })
-export class OrganisationRegulationsUpdateOrganisationRegulationComponent implements OnInit {
+export class OrganisationRegulationsUpdateOrganisationRegulationComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public regulationThemes: SelectItem[];
   public regulationSubThemes: Array<SelectItem> = [];
   private regulationTheme: string = '';
-
-  private readonly updateAlerts = new UpdateAlertMessages('Regelgeving');
-
   private converter = new showdown.Converter();
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -65,40 +64,44 @@ export class OrganisationRegulationsUpdateOrganisationRegulationComponent implem
   ngOnInit() {
     let allRegulationThemesObservable = this.regulationThemeService.getAllRegulationThemes();
 
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let regulationId = res[1]['id'];
 
-        Observable.zip(this.organisationRegulationService.get(orgId, regulationId), allRegulationThemesObservable)
+        this.subscriptions.push(Observable.zip(this.organisationRegulationService.get(orgId, regulationId), allRegulationThemesObservable)
           .subscribe(
             item => this.setForm(item[0], item[1]),
-            error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
     this.subscribeToFormChanges();
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   subscribeToFormChanges() {
-    this.form.controls['description'].valueChanges.subscribe(function(x) {
+    this.subscriptions.push(this.form.controls['description'].valueChanges.subscribe(function (x) {
       this.form.controls['descriptionRendered'].patchValue(this.converter.makeHtml(x));
-    }.bind(this));
+    }.bind(this)));
 
     const regulationThemeChanges$ = this.form.controls['regulationThemeId'].valueChanges;
 
-    regulationThemeChanges$
+    this.subscriptions.push(regulationThemeChanges$
       .subscribe(function (regulationTheme) {
         if (this.regulationTheme === regulationTheme)
           return;
 
         this.regulationTheme = regulationTheme;
 
-        this.form.patchValue({ regulationSubThemeId: '' });
+        this.form.patchValue({regulationSubThemeId: ''});
 
         this.form.disable();
 
         if (regulationTheme) {
-          this.regulationSubThemeService
+          this.subscriptions.push(this.regulationSubThemeService
             .getAllRegulationSubThemes(regulationTheme)
             .finally(() => this.enableForm())
             .subscribe(
@@ -109,11 +112,11 @@ export class OrganisationRegulationsUpdateOrganisationRegulationComponent implem
                     .error(error)
                     .withTitle('Regelgevingsubthema\'s konden niet geladen worden!')
                     .withMessage('Er is een fout opgetreden bij het ophalen van de regelgevingsubthema\'s. Probeer het later opnieuw.')
-                    .build()));
+                    .build())));
         } else {
           this.enableForm();
         }
-      }.bind(this));
+      }.bind(this)));
   }
 
   enableForm() {
@@ -130,17 +133,17 @@ export class OrganisationRegulationsUpdateOrganisationRegulationComponent implem
   update(value: UpdateOrganisationRegulationRequest) {
     this.form.disable();
 
-    this.organisationRegulationService.update(value.organisationId, value)
+    this.subscriptions.push(this.organisationRegulationService.update(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
           if (result) {
-            this.router.navigate(['./../..'], { relativeTo: this.route });
+            this.router.navigate(['./../..'], {relativeTo: this.route});
             this.handleSaveSuccess();
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   showExample(e) {

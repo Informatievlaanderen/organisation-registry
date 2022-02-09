@@ -71,7 +71,7 @@ export class OrganisationBankAccountsOverviewComponent implements OnInit, OnDest
       ? this.organisationBankAccountService.getOrganisationBankAccounts(this.organisationId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.organisationBankAccountService.getOrganisationBankAccounts(this.organisationId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    bankAccounts
+    this.subscriptions.push(bankAccounts
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -83,6 +83,6 @@ export class OrganisationBankAccountsOverviewComponent implements OnInit, OnDest
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

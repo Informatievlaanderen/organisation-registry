@@ -1,29 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { CreateAlertMessages } from 'core/alertmessages';
-import { Create, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
 
-import { PersonFunctionListItem, PersonFunctionService } from 'services/peoplefunctions';
-import { Person, PersonService } from 'services/people';
-import { Capacity, CapacityService } from 'services/capacities';
+import { PersonFunctionService } from 'services/peoplefunctions';
+import { PersonService } from 'services/people';
+import { CapacityService } from 'services/capacities';
 import { ContactTypeListItem } from 'services/contacttypes';
 
 import {
   CreateOrganisationCapacityRequest,
   OrganisationCapacityService
 } from 'services/organisationcapacities';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'create.template.html',
   styleUrls: ['create.style.css']
 })
-export class OrganisationCapacitiesCreateOrganisationCapacityComponent implements OnInit {
+export class OrganisationCapacitiesCreateOrganisationCapacityComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public capacities: SelectItem[];
   public contactTypes: ContactTypeListItem[];
@@ -31,7 +30,8 @@ export class OrganisationCapacitiesCreateOrganisationCapacityComponent implement
   public functions: Array<SelectItem> = [];
 
   private personId: string = '';
-  private readonly createAlerts = new CreateAlertMessages('Hoedanigheid');
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -72,7 +72,7 @@ export class OrganisationCapacitiesCreateOrganisationCapacityComponent implement
       this.form.setValue(initialValue);
     });
 
-    this.capacityService
+    this.subscriptions.push(this.capacityService
       .getAllCapacities()
       .finally(() => this.enableForm())
       .subscribe(
@@ -83,7 +83,11 @@ export class OrganisationCapacitiesCreateOrganisationCapacityComponent implement
               .error(error)
               .withTitle('Hoedanigheden konden niet geladen worden!')
               .withMessage('Er is een fout opgetreden bij het ophalen van de hoedanigheden. Probeer het later opnieuw.')
-              .build()));
+              .build())));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   toFormGroup(contactTypes: ContactTypeListItem[]) {
@@ -99,7 +103,7 @@ export class OrganisationCapacitiesCreateOrganisationCapacityComponent implement
   subscribeToFormChanges() {
     const personIdChanges$ = this.form.controls['personId'].valueChanges;
 
-    personIdChanges$
+    this.subscriptions.push(personIdChanges$
       .subscribe(function (personId) {
         if (this.personId === personId)
           return;
@@ -110,7 +114,7 @@ export class OrganisationCapacitiesCreateOrganisationCapacityComponent implement
         this.form.disable();
 
         if (personId) {
-          this.personFunctionService
+          this.subscriptions.push(this.personFunctionService
             .getAllPersonFunctions(personId)
             .finally(() => this.enableForm())
             .subscribe(
@@ -128,11 +132,11 @@ export class OrganisationCapacitiesCreateOrganisationCapacityComponent implement
                     .error(error)
                     .withTitle('Functies konden niet geladen worden!')
                     .withMessage('Er is een fout opgetreden bij het ophalen van de functies. Probeer het later opnieuw.')
-                    .build()));
+                    .build())));
         } else {
           this.enableForm();
         }
-      }.bind(this));
+      }.bind(this)));
   }
 
   enableForm() {
@@ -148,7 +152,7 @@ export class OrganisationCapacitiesCreateOrganisationCapacityComponent implement
   create(value: CreateOrganisationCapacityRequest) {
     this.form.disable();
 
-    this.organisationCapacityService.create(value.organisationId, value)
+    this.subscriptions.push(this.organisationCapacityService.create(value.organisationId, value)
       .finally(() => this.enableForm())
       .subscribe(
         result => {
@@ -169,6 +173,6 @@ export class OrganisationCapacitiesCreateOrganisationCapacityComponent implement
               .error(error)
               .withTitle('Hoedanigheid kon niet bewaard worden!')
               .withMessage('Er is een fout opgetreden bij het bewaren van de gegevens. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 }

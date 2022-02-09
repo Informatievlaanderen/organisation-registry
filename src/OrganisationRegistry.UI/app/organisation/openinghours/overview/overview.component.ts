@@ -72,7 +72,7 @@ export class OrganisationOpeningHoursOverviewComponent implements OnInit, OnDest
       ? this.organisationOpeningHourService.getOrganisationOpeningHours(this.organisationId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.organisationOpeningHourService.getOrganisationOpeningHours(this.organisationId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    labels
+    this.subscriptions.push(labels
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -84,6 +84,6 @@ export class OrganisationOpeningHoursOverviewComponent implements OnInit, OnDest
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

@@ -1,37 +1,34 @@
-import { Component, OnInit, ViewChild, ElementRef, Renderer } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import {Component, OnDestroy, OnInit, Renderer} from '@angular/core';
+import { FormBuilder, FormGroup} from '@angular/forms';
+import { ActivatedRoute, Router} from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { UpdateAlertMessages } from 'core/alertmessages';
-import { Update, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
 import { SearchResult } from 'shared/components/form/form-group-autocomplete';
 
-import { Person, PersonService } from 'services/people';
-import { OrganisationRelationType, OrganisationRelationTypeService } from 'services/organisationrelationtypes';
-import { ContactTypeListItem } from 'services/contacttypes';
+import { OrganisationRelationTypeService } from 'services/organisationrelationtypes';
 
 import {
   UpdateOrganisationRelationRequest,
   OrganisationRelationService
 } from 'services/organisationrelations';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'update.template.html',
   styleUrls: ['update.style.css']
 })
-export class OrganisationRelationsUpdateOrganisationRelationComponent implements OnInit {
+export class OrganisationRelationsUpdateOrganisationRelationComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public relations: SelectItem[];
   public organisation: SearchResult;
-
-  private readonly updateAlerts = new UpdateAlertMessages('Functie');
   private relationId: string;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -57,17 +54,21 @@ export class OrganisationRelationsUpdateOrganisationRelationComponent implements
   ngOnInit() {
     let allRelationsObservable = this.relationService.getAllOrganisationRelationTypes();
 
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let relationId = res[1]['id'];
 
-        Observable.zip(this.organisationRelationService.get(orgId, relationId), allRelationsObservable)
+        this.subscriptions.push(Observable.zip(this.organisationRelationService.get(orgId, relationId), allRelationsObservable)
           .subscribe(
             item => this.setForm(item[0], item[1]),
-            error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -77,17 +78,17 @@ export class OrganisationRelationsUpdateOrganisationRelationComponent implements
   update(value: UpdateOrganisationRelationRequest) {
     this.form.disable();
 
-    this.organisationRelationService.update(value.organisationId, value)
+    this.subscriptions.push(this.organisationRelationService.update(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
           if (result) {
-            this.router.navigate(['./../..'], { relativeTo: this.route });
+            this.router.navigate(['./../..'], {relativeTo: this.route});
             this.handleSaveSuccess();
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   private setForm(organisationRelation, allRelations) {

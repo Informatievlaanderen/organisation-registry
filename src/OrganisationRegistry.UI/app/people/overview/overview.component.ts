@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertBuilder, AlertService } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -10,18 +10,21 @@ import {
   PersonListItem,
   PersonService
 } from 'services/people';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: ['overview.style.css']
 })
-export class PersonOverviewComponent implements OnInit {
+export class PersonOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public people: PagedResult<PersonListItem> = new PagedResult<PersonListItem>();
 
   private filter: PersonFilter = new PersonFilter();
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private alertService: AlertService,
@@ -31,6 +34,10 @@ export class PersonOverviewComponent implements OnInit {
 
   ngOnInit() {
     this.loadPeople();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<PersonFilter>) {
@@ -45,16 +52,16 @@ export class PersonOverviewComponent implements OnInit {
   }
 
   exportCsv(event: void) {
-    this.personService.exportCsv(this.filter, this.currentSortBy, this.currentSortOrder)
+    this.subscriptions.push(this.personService.exportCsv(this.filter, this.currentSortBy, this.currentSortOrder)
       .subscribe(
-      csv => this.fileSaverService.saveFile(csv, 'export_personen'),
-      error => this.alertService.setAlert(
-        new AlertBuilder()
-          .error(error)
-          .withTitle('Personen kunnen niet geëxporteerd worden!')
-          .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
-          .build()
-      ));
+        csv => this.fileSaverService.saveFile(csv, 'export_personen'),
+        error => this.alertService.setAlert(
+          new AlertBuilder()
+            .error(error)
+            .withTitle('Personen kunnen niet geëxporteerd worden!')
+            .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
+            .build()
+        )));
   }
 
   private loadPeople(event?: PagedEvent) {
@@ -63,7 +70,7 @@ export class PersonOverviewComponent implements OnInit {
       ? this.personService.getPeople(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.personService.getPeople(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    people
+    this.subscriptions.push(people
       .finally(() => this.isLoading = false)
       .subscribe(
         newPeople => this.people = newPeople,
@@ -73,6 +80,6 @@ export class PersonOverviewComponent implements OnInit {
             .withTitle('Personen kunnen niet geladen worden!')
             .withMessage('Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')
             .build()
-        ));
+        )));
   }
 }

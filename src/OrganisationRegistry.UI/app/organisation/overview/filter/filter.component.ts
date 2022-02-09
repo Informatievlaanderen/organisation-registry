@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import {Component, EventEmitter, Input, Output, OnInit, OnDestroy} from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { atLeastOne } from 'core/validation';
@@ -18,13 +18,14 @@ import {
 import { FormalFrameworkService } from 'services/formalframeworks';
 import { OrganisationClassificationService } from 'services/organisationclassifications';
 import { OrganisationClassificationTypeService } from 'services/organisationclassificationtypes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   selector: 'ww-organisation-filter',
   templateUrl: 'filter.template.html',
   styleUrls: ['filter.style.css']
 })
-export class OrganisationFilterComponent implements OnInit {
+export class OrganisationFilterComponent implements OnInit, OnDestroy {
   @Output() filter: EventEmitter<SearchEvent<OrganisationFilter>> = new EventEmitter<SearchEvent<OrganisationFilter>>();
 
   public organisationForm: FormGroup;
@@ -37,6 +38,8 @@ export class OrganisationFilterComponent implements OnInit {
   private classificationType: string = '';
   private isBusyInternal: boolean = true;
   private isBusyExternal: boolean = true;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   get isFormValid() {
     return this.organisationForm.enabled && this.organisationForm.valid;
@@ -97,54 +100,58 @@ export class OrganisationFilterComponent implements OnInit {
     this.organisationForm.setValue(new OrganisationFilter());
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   populateSelects() {
     this.updateFormEnabled(true, this.isBusyExternal);
 
     // TODO: Combine these 2 observables to only set isBusyInternal when both are done
 
-    this.formalFrameworkService
+    this.subscriptions.push(this.formalFrameworkService
       .getAllFormalFrameworks()
       .finally(() => this.updateFormEnabled(false, this.isBusyExternal))
       .subscribe(
-          allKeys => this.formalFrameworks = allKeys.map(k => new SelectItem(k.id, k.name)),
-          error =>
-              this.alertService.setAlert(
-                  new AlertBuilder()
-                      .error(error)
-                      .withTitle('Toepassingsgebieden konden niet geladen worden!')
-                      .withMessage('Er is een fout opgetreden bij het ophalen van de toepassingsgebieden. Probeer het later opnieuw.')
-                      .build()));
+        allKeys => this.formalFrameworks = allKeys.map(k => new SelectItem(k.id, k.name)),
+        error =>
+          this.alertService.setAlert(
+            new AlertBuilder()
+              .error(error)
+              .withTitle('Toepassingsgebieden konden niet geladen worden!')
+              .withMessage('Er is een fout opgetreden bij het ophalen van de toepassingsgebieden. Probeer het later opnieuw.')
+              .build())));
 
-    this.organisationClassificationTypeService
+    this.subscriptions.push(this.organisationClassificationTypeService
       .getAllOrganisationClassificationTypes()
       .finally(() => this.updateFormEnabled(false, this.isBusyExternal))
       .subscribe(
-          allKeys => this.classificationTypes = allKeys.map(k => new SelectItem(k.id, k.name)),
-          error =>
-              this.alertService.setAlert(
-                  new AlertBuilder()
-                      .error(error)
-                      .withTitle('Classificatietypes konden niet geladen worden!')
-                      .withMessage('Er is een fout opgetreden bij het ophalen van de classificatietypes. Probeer het later opnieuw.')
-                .build()));
+        allKeys => this.classificationTypes = allKeys.map(k => new SelectItem(k.id, k.name)),
+        error =>
+          this.alertService.setAlert(
+            new AlertBuilder()
+              .error(error)
+              .withTitle('Classificatietypes konden niet geladen worden!')
+              .withMessage('Er is een fout opgetreden bij het ophalen van de classificatietypes. Probeer het later opnieuw.')
+              .build())));
   }
 
   subcribeToFormChanges() {
     const classificationTypeChanges$ = this.organisationForm.controls['organisationClassificationTypeId'].valueChanges;
 
-    classificationTypeChanges$
+    this.subscriptions.push(classificationTypeChanges$
       .subscribe(classificationType => {
         if (this.classificationType === classificationType)
           return;
 
         this.classificationType = classificationType;
 
-        this.organisationForm.patchValue({ organisationClassificationId: '' });
+        this.organisationForm.patchValue({organisationClassificationId: ''});
 
         if (classificationType) {
           this.updateFormEnabled(true, this.isBusyExternal);
 
-          this.organisationClassificationService
+          this.subscriptions.push(this.organisationClassificationService
             .getAllOrganisationClassifications(classificationType)
             .finally(() => this.updateFormEnabled(false, this.isBusyExternal))
             .subscribe(
@@ -158,11 +165,11 @@ export class OrganisationFilterComponent implements OnInit {
                     .error(error)
                     .withTitle('Classificaties konden niet geladen worden!')
                     .withMessage('Er is een fout opgetreden bij het ophalen van de classificaties. Probeer het later opnieuw.')
-                    .build()));
+                    .build())));
         } else {
           this.classificationControl.disable();
         }
-      });
+      }));
   }
 
   resetForm() {

@@ -1,10 +1,11 @@
-import {Component, ViewEncapsulation, OnInit} from '@angular/core';
+import {Component, ViewEncapsulation, OnInit, OnDestroy} from '@angular/core';
 import {Router, NavigationStart, NavigationEnd, ActivatedRoute} from '@angular/router';
 import {Title} from '@angular/platform-browser';
 
 import {AlertService} from './core/alert';
 import {ConfigurationService} from "./core/configuration";
 import {Environments} from "./environments";
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   selector: 'wegwijs',
@@ -16,8 +17,10 @@ import {Environments} from "./environments";
   ],
   templateUrl: './app.template.html'
 })
-export class App implements OnInit {
+export class App implements OnInit, OnDestroy {
   public environment: string;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private router: Router,
@@ -36,11 +39,11 @@ export class App implements OnInit {
       this.environment = Environments.production;
     }
 
-    router.events
+    this.subscriptions.push(router.events
       .filter(event => event instanceof NavigationStart)
-      .subscribe(() => alertService.clearAlert());
+      .subscribe(() => alertService.clearAlert()));
 
-    router.events
+    this.subscriptions.push(router.events
       .filter(event => event instanceof NavigationEnd)
       .map(() => this.activatedRoute)
       .map(route => {
@@ -55,7 +58,11 @@ export class App implements OnInit {
         } else {
           this.titleService.setTitle('Wegwijs');
         }
-      });
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   ngOnInit() {

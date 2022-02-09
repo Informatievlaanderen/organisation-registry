@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
@@ -7,13 +7,16 @@ import { CreateAlertMessages } from 'core/alertmessages';
 import { required } from 'core/validation';
 
 import { BodyService, Body, BodyInfo } from 'services/bodies';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'general.template.html',
   styleUrls: ['general.style.css']
 })
-export class BodyInfoGeneralComponent implements OnInit {
+export class BodyInfoGeneralComponent implements OnInit, OnDestroy {
   public form: FormGroup;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -36,7 +39,7 @@ export class BodyInfoGeneralComponent implements OnInit {
       let bodyId = params['id'];
       this.form.disable();
 
-      this.bodyService.getInfo(bodyId)
+      this.subscriptions.push(this.bodyService.getInfo(bodyId)
         .finally(() => this.enableForm())
         .subscribe(
           item => {
@@ -49,13 +52,17 @@ export class BodyInfoGeneralComponent implements OnInit {
               .error(error)
               .withTitle('Orgaan kon niet geladen worden!')
               .withMessage('Er is een fout opgetreden bij het ophalen van het orgaan. Probeer het later opnieuw.')
-              .build()));
+              .build())));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   submit(value: BodyInfo) {
     this.form.disable();
-    this.bodyService.changeInfo(value)
+    this.subscriptions.push(this.bodyService.changeInfo(value)
       .finally(() => this.enableForm())
       .subscribe(
         result => this.onSuccess(result),
@@ -64,7 +71,7 @@ export class BodyInfoGeneralComponent implements OnInit {
             .error(error)
             .withTitle('Informatie orgaan kon niet bewaard worden!')
             .withMessage('Er is een fout opgetreden bij het bewaren van de gegevens. Probeer het later opnieuw.')
-            .build()));
+            .build())));
   }
 
   private enableForm() {

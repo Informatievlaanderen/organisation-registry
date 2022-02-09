@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
@@ -14,14 +14,17 @@ import {
   OrganisationLabelService,
   UpdateOrganisationLabelRequest
 } from 'services/organisationlabels';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'update.template.html',
   styleUrls: ['update.style.css']
 })
-export class OrganisationLabelsUpdateOrganisationLabelComponent implements OnInit {
+export class OrganisationLabelsUpdateOrganisationLabelComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public labelTypes: SelectItem[];
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -47,16 +50,20 @@ export class OrganisationLabelsUpdateOrganisationLabelComponent implements OnIni
   ngOnInit() {
     let allLabelTypesObservable = this.labelTypeService.getAllUserPermittedLabelTypes();
 
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let labelId = res[1]['id'];
 
-        Observable.zip(this.organisationLabelService.get(orgId, labelId), allLabelTypesObservable)
+        this.subscriptions.push(Observable.zip(this.organisationLabelService.get(orgId, labelId), allLabelTypesObservable)
           .subscribe(item => this.setForm(item[0], item[1]),
-          error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -66,17 +73,17 @@ export class OrganisationLabelsUpdateOrganisationLabelComponent implements OnIni
   update(value: UpdateOrganisationLabelRequest) {
     this.form.disable();
 
-    this.organisationLabelService.update(value.organisationId, value)
+    this.subscriptions.push(this.organisationLabelService.update(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
           if (result) {
-            this.router.navigate(['./../..'], { relativeTo: this.route });
+            this.router.navigate(['./../..'], {relativeTo: this.route});
             this.handleSaveSuccess();
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   private setForm(organisationLabel, allLabelTypes) {

@@ -1,32 +1,29 @@
-import { Component, OnInit, ViewChild, ElementRef, Renderer } from '@angular/core';
+import {Component, OnDestroy, OnInit, Renderer} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import { ActivatedRoute, Router} from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { UpdateAlertMessages } from 'core/alertmessages';
-import { Update, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
-import { SelectItem } from 'shared/components/form/form-group-select';
 import { SearchResult } from 'shared/components/form/form-group-autocomplete';
 
 import {
-  UpdateOrganisationFormalFrameworkRequest,
   OrganisationFormalFrameworkService
 } from 'services/organisationformalframeworks';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'update.template.html',
   styleUrls: ['update.style.css']
 })
-export class OrganisationFormalFrameworksUpdateOrganisationFormalFrameworkComponent implements OnInit {
+export class OrganisationFormalFrameworksUpdateOrganisationFormalFrameworkComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public formalFramework: SearchResult;
   public parentOrganisation: SearchResult;
 
-  private readonly updateAlerts = new UpdateAlertMessages('Toepassingsgebied');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -49,18 +46,22 @@ export class OrganisationFormalFrameworksUpdateOrganisationFormalFrameworkCompon
   }
 
   ngOnInit() {
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let organisationFormalFrameworkId = res[1]['id'];
 
-        this.organisationFormalFrameworkService
+        this.subscriptions.push(this.organisationFormalFrameworkService
           .get(orgId, organisationFormalFrameworkId)
           .subscribe(
             item => this.setForm(item),
-            error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -71,17 +72,17 @@ export class OrganisationFormalFrameworksUpdateOrganisationFormalFrameworkCompon
     this.form.disable();
     let value = this.form.value;
 
-    this.organisationFormalFrameworkService.update(value.organisationId, value)
+    this.subscriptions.push(this.organisationFormalFrameworkService.update(value.organisationId, value)
       .finally(() => this.enableForm())
       .subscribe(
         result => {
           if (result) {
-            this.router.navigate(['./../..'], { relativeTo: this.route });
+            this.router.navigate(['./../..'], {relativeTo: this.route});
             this.handleSaveSuccess();
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   private setForm(organisationFormalFramework) {

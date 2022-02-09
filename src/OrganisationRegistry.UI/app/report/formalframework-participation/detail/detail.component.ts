@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { Alert, AlertBuilder, AlertService, AlertType } from 'core/alert';
@@ -13,12 +13,13 @@ import {
     FormalFrameworkParticipationReportService,
     FormalFrameworkParticipationReportFilter
 } from 'services/reports/formalframework-participation';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: [ 'detail.style.css' ]
 })
-export class FormalFrameworkParticipationDetailComponent implements OnInit {
+export class FormalFrameworkParticipationDetailComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public formalFrameworkId: string;
   public formalFramework: FormalFramework;
@@ -27,6 +28,8 @@ export class FormalFrameworkParticipationDetailComponent implements OnInit {
   private filter: FormalFrameworkParticipationReportFilter = new FormalFrameworkParticipationReportFilter();
   private currentSortBy: string = 'bodyName';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -45,7 +48,7 @@ export class FormalFrameworkParticipationDetailComponent implements OnInit {
       this.formalFrameworkId = id;
 
       this.isLoading = true;
-      this.bodyService
+      this.subscriptions.push(this.bodyService
         .get(id)
         .subscribe(
           item => {
@@ -53,13 +56,17 @@ export class FormalFrameworkParticipationDetailComponent implements OnInit {
               this.formalFramework = item;
           },
           error => this.alertService.setAlert(
-                new Alert(
-                    AlertType.Error,
-                    'Participaties kunnen niet geladen worden!',
-                    'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            new Alert(
+              AlertType.Error,
+              'Participaties kunnen niet geladen worden!',
+              'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
 
       this.loadFormalFrameworkParticipations(id);
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<FormalFrameworkParticipationReportFilter>) {
@@ -74,16 +81,16 @@ export class FormalFrameworkParticipationDetailComponent implements OnInit {
   }
 
   exportCsv(event: void) {
-    this.formalFrameworkParticipationReportService.exportCsv(this.formalFrameworkId, this.filter, this.currentSortBy, this.currentSortOrder)
+    this.subscriptions.push(this.formalFrameworkParticipationReportService.exportCsv(this.formalFrameworkId, this.filter, this.currentSortBy, this.currentSortOrder)
       .subscribe(
-      csv => this.fileSaverService.saveFile(csv, 'export_participatie'),
-      error => this.alertService.setAlert(
-        new AlertBuilder()
-          .error(error)
-          .withTitle('Participaties kunnen niet geëxporteerd worden!')
-          .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
-          .build()
-      ));
+        csv => this.fileSaverService.saveFile(csv, 'export_participatie'),
+        error => this.alertService.setAlert(
+          new AlertBuilder()
+            .error(error)
+            .withTitle('Participaties kunnen niet geëxporteerd worden!')
+            .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
+            .build()
+        )));
   }
 
   private loadFormalFrameworkParticipations(formalFrameworkId: string, event?: PagedEvent) {
@@ -92,14 +99,14 @@ export class FormalFrameworkParticipationDetailComponent implements OnInit {
       ? this.formalFrameworkParticipationReportService.getParticipationsPerFormalFrameworkPerBody(formalFrameworkId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.formalFrameworkParticipationReportService.getParticipationsPerFormalFrameworkPerBody(formalFrameworkId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-      formalFrameworkParticipations
-        .finally(() => this.isLoading = false)
-        .subscribe(
-          formalFrameworkParticipations => this.formalFrameworkParticipations = formalFrameworkParticipations,
-          error => this.alertService.setAlert(
-            new Alert(
-              AlertType.Error,
-              'Participaties kunnen niet geladen worden!',
-              'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+    this.subscriptions.push(formalFrameworkParticipations
+      .finally(() => this.isLoading = false)
+      .subscribe(
+        formalFrameworkParticipations => this.formalFrameworkParticipations = formalFrameworkParticipations,
+        error => this.alertService.setAlert(
+          new Alert(
+            AlertType.Error,
+            'Participaties kunnen niet geladen worden!',
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }
