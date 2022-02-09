@@ -8,7 +8,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LocationType.Queries
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
-    using OrganisationRegistry.Organisation;
+    using OrganisationRegistry.Configuration;
     using SqlServer.Infrastructure;
     using SqlServer.LocationType;
 
@@ -30,7 +30,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LocationType.Queries
             {
                 Id = x.Id,
                 Name = x.Name,
-                UserPermitted = x.Id != _configuration.KboV2RegisteredOfficeLocationTypeId
+                UserPermitted = x.Id != _configuration.Kbo.KboV2RegisteredOfficeLocationTypeId
             };
 
         protected override IQueryable<LocationTypeListItem> Filter(FilteringHeader<LocationTypeListItem> filtering)

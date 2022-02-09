@@ -1,8 +1,6 @@
 namespace OrganisationRegistry.Api.Backoffice.Organisation
 {
     using System;
-    using System.Collections.Generic;
-    using System.Net;
     using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Search.Filtering;

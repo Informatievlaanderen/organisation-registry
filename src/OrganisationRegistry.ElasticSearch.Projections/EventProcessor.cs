@@ -66,7 +66,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                                         using (var context = contextFactory.Create())
                                         {
                                             var toggle = await context.Configuration.SingleOrDefaultAsync(item =>
-                                                item.Key == $"{TogglesConfiguration.Section}:{nameof(TogglesConfiguration.ElasticSearchProjectionsAvailable)}");
+                                                item.Key == $"{TogglesConfigurationSection.Name}:{nameof(TogglesConfigurationSection.ElasticSearchProjectionsAvailable)}");
                                             if (!bool.TryParse(toggle?.Value, out var enabled) || enabled)
                                             {
                                                 await _messageChannel.Writer

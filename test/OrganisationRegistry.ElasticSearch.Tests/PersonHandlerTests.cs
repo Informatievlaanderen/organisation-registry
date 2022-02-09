@@ -3,27 +3,22 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Api.Infrastructure;
     using Api.Security;
     using FluentAssertions;
-    using Infrastructure.AppSpecific;
     using Infrastructure.Bus;
     using Infrastructure.Config;
     using Infrastructure.Events;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
-    using Moq;
     using Organisation.Events;
-    using OrganisationRegistry.Tests.Shared;
+    using OrganisationRegistry.Tests.Shared.Stubs;
     using People;
     using Person.Events;
-    using Projections;
     using Projections.Infrastructure;
     using Projections.People;
     using Projections.People.Handlers;
     using Scenario;
-    using SqlServer.Infrastructure;
     using Xunit;
 
     [Collection(nameof(ElasticSearchFixture))]

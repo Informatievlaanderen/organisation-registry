@@ -28,6 +28,7 @@ namespace OrganisationRegistry.Organisation
     using Infrastructure.Authorization;
     using RegulationSubTheme;
     using RegulationTheme;
+    using IOrganisationRegistryConfiguration = Configuration.IOrganisationRegistryConfiguration;
 
     public class OrganisationCommandHandlers :
         BaseCommandHandler<OrganisationCommandHandlers>,
@@ -853,9 +854,9 @@ namespace OrganisationRegistry.Organisation
                     var organisation = session.Get<Organisation>(message.OrganisationId);
 
                     organisation.TerminateOrganisation(message.DateOfTermination,
-                        _organisationRegistryConfiguration.OrganisationCapacityTypeIdsToTerminateEndOfNextYear,
-                        _organisationRegistryConfiguration.OrganisationClassificationTypeIdsToTerminateEndOfNextYear,
-                        _organisationRegistryConfiguration.FormalFrameworkIdsToTerminateEndOfNextYear,
+                        _organisationRegistryConfiguration.Kbo.OrganisationCapacityTypeIdsToTerminateEndOfNextYear,
+                        _organisationRegistryConfiguration.Kbo.OrganisationClassificationTypeIdsToTerminateEndOfNextYear,
+                        _organisationRegistryConfiguration.Kbo.FormalFrameworkIdsToTerminateEndOfNextYear,
                         _dateTimeProvider,
                         message.ForceKboTermination);
                 });

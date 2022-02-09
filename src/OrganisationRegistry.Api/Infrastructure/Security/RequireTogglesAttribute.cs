@@ -21,7 +21,7 @@ namespace OrganisationRegistry.Api.Infrastructure.Security
 
         public void OnResourceExecuting(ResourceExecutingContext context)
         {
-            var togglesConfiguration = context.HttpContext.RequestServices.GetService<IOptions<TogglesConfiguration>>().Value;
+            var togglesConfiguration = context.HttpContext.RequestServices.GetService<IOptions<TogglesConfigurationSection>>().Value;
 
             var allToggles =
                 _requiredToggles

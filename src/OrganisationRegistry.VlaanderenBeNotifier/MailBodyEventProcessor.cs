@@ -23,14 +23,14 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
         private readonly IMemoryCaches _memoryCaches;
         private readonly IMailer _mailer;
         private readonly VlaanderenBeNotifierConfiguration _configuration;
-        private readonly TogglesConfiguration _toggles;
+        private readonly TogglesConfigurationSection _toggles;
         private readonly string _bodyUriTemplate;
         private readonly string _bodyFormalFrameworkUriTemplate;
 
         public MailBodyEventProcessor(
             IMemoryCaches memoryCaches,
             IMailer mailer,
-            IOptions<TogglesConfiguration> togglesOptions,
+            IOptions<TogglesConfigurationSection> togglesOptions,
             IOptions<VlaanderenBeNotifierConfiguration> vlaanderenBeNotifierOptions)
         {
             _memoryCaches = memoryCaches;

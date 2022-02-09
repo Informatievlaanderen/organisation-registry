@@ -4,9 +4,9 @@ namespace OrganisationRegistry.Infrastructure.Configuration
     using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
     using Newtonsoft.Json;
 
-    public class ApiConfiguration
+    public class ApiConfigurationSection
     {
-        public static string Section = "Api";
+        public static string Name = "Api";
 
         [JsonConverter(typeof(TimestampConverter))]
         public DateTime Created => DateTime.Now;
@@ -78,5 +78,7 @@ namespace OrganisationRegistry.Infrastructure.Configuration
         public string RepertoriumCapacity { get; set; }
         public Guid FormalNameLabelTypeId { get; set; }
         public Guid FormalShortNameLabelTypeId { get; set; }
+        public string? FormalFrameworkIdsAllowedForVlimpers { get; }
+        public string? FormalFrameworkIdsNotAllowedForOrganisatiebeheerders { get; set; }
     }
 }

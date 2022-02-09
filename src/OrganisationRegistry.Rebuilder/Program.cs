@@ -99,9 +99,9 @@ namespace OrganisationRegistry.Rebuilder
                 .ConfigureServices((hostContext, builder) =>
                 {
                     builder
-                        .Configure<InfrastructureConfiguration>(hostContext.Configuration.GetSection(InfrastructureConfiguration.Section))
-                        .Configure<TogglesConfiguration>(hostContext.Configuration.GetSection(TogglesConfiguration.Section))
-                        .Configure<OpenIdConnectConfiguration>(hostContext.Configuration.GetSection(OpenIdConnectConfiguration.Section));
+                        .Configure<InfrastructureConfigurationSection>(hostContext.Configuration.GetSection(InfrastructureConfigurationSection.Name))
+                        .Configure<TogglesConfigurationSection>(hostContext.Configuration.GetSection(TogglesConfigurationSection.Name))
+                        .Configure<OpenIdConnectConfigurationSection>(hostContext.Configuration.GetSection(OpenIdConnectConfigurationSection.Name));
 
                     builder.AddSingleton<IClock>(SystemClock.Instance);
                     builder.AddSingleton<MemoryCaches, MemoryCaches>();
@@ -157,7 +157,7 @@ namespace OrganisationRegistry.Rebuilder
                     builder.AddSingleton<BusRegistrar>();
 
                     builder.Configure<SqlServerConfiguration>(hostContext.Configuration.GetSection(SqlServerConfiguration.Section));
-                    builder.Configure<InfrastructureConfiguration>(hostContext.Configuration.GetSection(InfrastructureConfiguration.Section));
+                    builder.Configure<InfrastructureConfigurationSection>(hostContext.Configuration.GetSection(InfrastructureConfigurationSection.Name));
 
                     builder
                         .AddTransient<ISecurityService, NotImplementedSecurityService>()

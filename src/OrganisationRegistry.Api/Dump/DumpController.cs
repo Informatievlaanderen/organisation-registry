@@ -5,15 +5,12 @@ namespace OrganisationRegistry.Api.Dump
     using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
-    using System.Collections.Generic;
-    using System.Net;
     using System.Text;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
     using System.Xml;
-    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Microsoft.AspNetCore.Http;
     using Newtonsoft.Json.Serialization;
 

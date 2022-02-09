@@ -1,7 +1,5 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Admin.Events
 {
-    using System.Collections.Generic;
-    using System.Net;
     using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
@@ -14,7 +12,6 @@
     using OrganisationRegistry.Infrastructure.Commands;
     using Queries;
     using Security;
-    using SqlServer.Event;
     using SqlServer.Infrastructure;
 
     [ApiVersion("1.0")]

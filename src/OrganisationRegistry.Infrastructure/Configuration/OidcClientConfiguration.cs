@@ -20,7 +20,7 @@ namespace OrganisationRegistry.Infrastructure.Configuration
 
         public string PostLogoutRedirectUri { get; }
 
-        public OidcClientConfiguration(OpenIdConnectConfiguration configuration)
+        public OidcClientConfiguration(OpenIdConnectConfigurationSection configuration)
         {
             Authority = configuration.Authority;
             Issuer = configuration.AuthorizationIssuer;

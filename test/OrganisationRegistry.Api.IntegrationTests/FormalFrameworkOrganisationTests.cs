@@ -39,7 +39,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
                         validity: new Period(currentlyActiveDate, currentlyActiveDate))
                 }
             };
-            var apiConfiguration = new ApiConfiguration
+            var apiConfiguration = new ApiConfigurationSection
             {
                 ResponsibleMinisterClassificationTypeId = responsibleMinisterClassificationTypeId,
                 DataVlaanderenOrganisationUri = "https://example.com",
@@ -87,7 +87,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
                         validity: new Period(currentlyActiveDate, currentlyActiveDate))
                 }
             };
-            var apiConfiguration = new ApiConfiguration
+            var apiConfiguration = new ApiConfigurationSection
             {
                 ResponsibleMinisterClassificationTypeId = responsibleMinisterClassificationTypeId,
                 DataVlaanderenOrganisationUri = "https://example.com",

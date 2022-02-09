@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassification
 {
     using System;
-    using System.Net;
     using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
@@ -18,18 +17,17 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
     using Requests;
     using Security;
     using SqlServer.Infrastructure;
-    using SqlServer.OrganisationClassification;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
     [OrganisationRegistryRoute("organisationclassifications")]
     public class OrganisationClassificationController : OrganisationRegistryController
     {
-        private readonly ApiConfiguration _config;
+        private readonly ApiConfigurationSection _config;
 
         public OrganisationClassificationController(
             ICommandSender commandSender,
-            IOptions<ApiConfiguration> config)
+            IOptions<ApiConfigurationSection> config)
             : base(commandSender)
         {
             _config = config.Value;

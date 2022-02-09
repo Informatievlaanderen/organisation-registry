@@ -27,9 +27,9 @@ namespace OrganisationRegistry.Infrastructure
             _configuration = configuration;
             _scopedServiceProvider = scopedServiceProvider;
 
-            services.Configure<InfrastructureConfiguration>(_configuration.GetSection(InfrastructureConfiguration.Section));
-            services.Configure<TogglesConfiguration>(_configuration.GetSection(TogglesConfiguration.Section));
-            services.Configure<OpenIdConnectConfiguration>(_configuration.GetSection(OpenIdConnectConfiguration.Section));
+            services.Configure<InfrastructureConfigurationSection>(_configuration.GetSection(InfrastructureConfigurationSection.Name));
+            services.Configure<TogglesConfigurationSection>(_configuration.GetSection(TogglesConfigurationSection.Name));
+            services.Configure<OpenIdConnectConfigurationSection>(_configuration.GetSection(OpenIdConnectConfigurationSection.Name));
         }
 
         protected override void Load(ContainerBuilder builder)

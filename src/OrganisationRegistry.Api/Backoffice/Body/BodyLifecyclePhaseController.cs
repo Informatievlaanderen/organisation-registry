@@ -1,9 +1,7 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Body
 {
     using System;
-    using System.Net;
     using System.Threading.Tasks;
-    using Be.Vlaanderen.Basisregisters.Api;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Pagination;

@@ -3,6 +3,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainBuilding
     using System;
     using System.Collections.Generic;
     using Building.Events;
+    using Configuration;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;

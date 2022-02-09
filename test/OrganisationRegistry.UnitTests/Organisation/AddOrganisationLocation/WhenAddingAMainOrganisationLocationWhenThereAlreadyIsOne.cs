@@ -15,6 +15,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
+    using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -36,7 +37,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
                 new SequentialOvoNumberGenerator(),
                 null,
                 new DateTimeProvider(),
-                Mock.Of<IOrganisationRegistryConfiguration>(),
+                new OrganisationRegistryConfigurationStub(),
                 Mock.Of<ISecurityService>());
         }
 

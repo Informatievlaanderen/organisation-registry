@@ -1,9 +1,7 @@
 namespace OrganisationRegistry.Api.Backoffice.Report
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Search.Filtering;

@@ -18,6 +18,7 @@ namespace OrganisationRegistry.Organisation
     using OrganisationClassification;
     using OrganisationClassificationType;
     using Purpose;
+    using IOrganisationRegistryConfiguration = Configuration.IOrganisationRegistryConfiguration;
 
     public class KboOrganisationCommandHandlers :
         BaseCommandHandler<KboOrganisationCommandHandlers>,
@@ -61,9 +62,9 @@ namespace OrganisationRegistry.Organisation
         public async Task Handle(CreateOrganisationFromKbo message)
         {
             var registeredOfficeLocationType =
-                Session.Get<LocationType>(_organisationRegistryConfiguration.KboV2RegisteredOfficeLocationTypeId);
+                Session.Get<LocationType>(_organisationRegistryConfiguration.Kbo.KboV2RegisteredOfficeLocationTypeId);
 
-            var legalFormOrganisationClassificationType = Session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration.KboV2LegalFormOrganisationClassificationTypeId);
+            var legalFormOrganisationClassificationType = Session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration.Kbo.KboV2LegalFormOrganisationClassificationTypeId);
 
             if (_uniqueOvoNumberValidator.IsOvoNumberTaken(message.OvoNumber))
                 throw new OvoNumberNotUnique();
@@ -124,9 +125,9 @@ namespace OrganisationRegistry.Organisation
         public async Task Handle(CoupleOrganisationToKbo message)
         {
             var registeredOfficeLocationType =
-                Session.Get<LocationType>(_organisationRegistryConfiguration.KboV2RegisteredOfficeLocationTypeId);
+                Session.Get<LocationType>(_organisationRegistryConfiguration.Kbo.KboV2RegisteredOfficeLocationTypeId);
 
-            var legalFormOrganisationClassificationType = Session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration.KboV2LegalFormOrganisationClassificationTypeId);
+            var legalFormOrganisationClassificationType = Session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration.Kbo.KboV2LegalFormOrganisationClassificationTypeId);
 
             var kboOrganisationResult =
                 _kboOrganisationRetriever.RetrieveOrganisation(message.User, message.KboNumber).GetAwaiter().GetResult();
@@ -170,13 +171,13 @@ namespace OrganisationRegistry.Organisation
         private async Task SyncWithKbo(OrganisationId organisationId, IUser user, Guid? kboSyncItemId)
         {
             var registeredOfficeLocationType =
-                Session.Get<LocationType>(_organisationRegistryConfiguration.KboV2RegisteredOfficeLocationTypeId);
+                Session.Get<LocationType>(_organisationRegistryConfiguration.Kbo.KboV2RegisteredOfficeLocationTypeId);
 
-            var formalNameLabelType = Session.Get<LabelType>(_organisationRegistryConfiguration.KboV2FormalNameLabelTypeId);
+            var formalNameLabelType = Session.Get<LabelType>(_organisationRegistryConfiguration.Kbo.KboV2FormalNameLabelTypeId);
 
             var legalFormOrganisationClassificationType =
                 Session.Get<OrganisationClassificationType>(_organisationRegistryConfiguration
-                    .KboV2LegalFormOrganisationClassificationTypeId);
+                    .Kbo.KboV2LegalFormOrganisationClassificationTypeId);
 
             var organisation = Session.Get<Organisation>(organisationId);
 
@@ -267,7 +268,7 @@ namespace OrganisationRegistry.Organisation
 
         private void AddLabel(Organisation organisation, IMagdaOrganisationResponse kboOrganisation)
         {
-            var labelType = Session.Get<LabelType>(_organisationRegistryConfiguration.KboV2FormalNameLabelTypeId);
+            var labelType = Session.Get<LabelType>(_organisationRegistryConfiguration.Kbo.KboV2FormalNameLabelTypeId);
 
             organisation.AddKboFormalNameLabel(
                 Guid.NewGuid(),

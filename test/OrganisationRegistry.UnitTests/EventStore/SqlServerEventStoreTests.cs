@@ -29,7 +29,7 @@ namespace OrganisationRegistry.UnitTests
                 .Returns(eventData.ToList());
 
             var sqlServerEventStore = new SqlServerEventStore(
-                new OptionsWrapper<InfrastructureConfiguration>(new InfrastructureConfiguration()),
+                new OptionsWrapper<InfrastructureConfigurationSection>(new InfrastructureConfigurationSection()),
                 new NullPublisher(),
                 new NotImplementedSecurityService(),
                 dataReader.Object);

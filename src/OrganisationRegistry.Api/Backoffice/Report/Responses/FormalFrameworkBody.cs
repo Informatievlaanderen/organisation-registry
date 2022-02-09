@@ -34,7 +34,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
 
         public FormalFrameworkBody(
             BodyDocument document,
-            ApiConfiguration @params)
+            ApiConfigurationSection @params)
         {
             BodyId = document.Id;
             BodyName = document.Name;
@@ -89,7 +89,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         public static IEnumerable<FormalFrameworkBody> Map(
             IEnumerable<BodyDocument> documents,
             Guid formalFrameworkId,
-            ApiConfiguration @params)
+            ApiConfigurationSection @params)
         {
             var formalFrameworkBodies = new List<FormalFrameworkBody>();
 

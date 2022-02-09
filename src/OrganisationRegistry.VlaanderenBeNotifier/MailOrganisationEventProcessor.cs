@@ -31,14 +31,14 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IMailer _mailer;
         private readonly VlaanderenBeNotifierConfiguration _configuration;
-        private readonly TogglesConfiguration _toggles;
+        private readonly TogglesConfigurationSection _toggles;
         private readonly string _organisationUriTemplate;
 
         public MailOrganisationEventProcessor(
             IMemoryCaches memoryCaches,
             IDateTimeProvider dateTimeProvider,
             IMailer mailer,
-            IOptions<TogglesConfiguration> togglesOptions,
+            IOptions<TogglesConfigurationSection> togglesOptions,
             IOptions<VlaanderenBeNotifierConfiguration> vlaanderenBeNotifierOptions)
         {
             _memoryCaches = memoryCaches;

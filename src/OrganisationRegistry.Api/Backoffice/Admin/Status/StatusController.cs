@@ -40,7 +40,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Status
         [HttpGet]
         [Route("toggles")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetToggles([FromServices] IOptions<TogglesConfiguration> toggles)
+        public async Task<IActionResult> GetToggles([FromServices] IOptions<TogglesConfigurationSection> toggles)
         {
             return Ok(toggles.Value);
         }
@@ -65,18 +65,18 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Status
             [FromServices] IConfiguration configuration,
             [FromServices] IExternalIpFetcher externalIpFetcher)
         {
-            var apiConfiguration = configuration.GetSection(ApiConfiguration.Section).Get<ApiConfiguration>();
+            var apiConfiguration = configuration.GetSection(ApiConfigurationSection.Name).Get<ApiConfigurationSection>();
 
             var summary = new
             {
                 Api = apiConfiguration,
                 Configuration = configuration.GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>().Obfuscate(),
                 ElasticSearch = configuration.GetSection(ElasticSearchConfiguration.Section).Get<ElasticSearchConfiguration>().Obfuscate(),
-                Infrastructure = configuration.GetSection(InfrastructureConfiguration.Section).Get<InfrastructureConfiguration>().Obfuscate(),
+                Infrastructure = configuration.GetSection(InfrastructureConfigurationSection.Name).Get<InfrastructureConfigurationSection>().Obfuscate(),
                 Logging = PrintConfig(configuration.GetSection("Logging")),
                 Serilog = PrintConfig(configuration.GetSection("Serilog")),
                 SqlServer = configuration.GetSection(SqlServerConfiguration.Section).Get<SqlServerConfiguration>().Obfuscate(),
-                Toggles = configuration.GetSection(TogglesConfiguration.Section).Get<TogglesConfiguration>(),
+                Toggles = configuration.GetSection(TogglesConfigurationSection.Name).Get<TogglesConfigurationSection>(),
                 Ip = await externalIpFetcher.Fetch()
             };
 

@@ -2,7 +2,6 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
 {
     using System;
     using System.Linq;
-    using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;

@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFramework
 {
     using System;
-    using System.Net;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Infrastructure;
@@ -18,7 +17,6 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFramework
     using Queries;
     using Requests;
     using Security;
-    using SqlServer.FormalFramework;
     using SqlServer.Infrastructure;
 
     [ApiVersion("1.0")]
@@ -26,11 +24,11 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFramework
     [OrganisationRegistryRoute("formalframeworks")]
     public class FormalFrameworkController : OrganisationRegistryController
     {
-        private readonly IOptions<ApiConfiguration> _config;
+        private readonly IOptions<ApiConfigurationSection> _config;
 
         public FormalFrameworkController(
             ICommandSender commandSender,
-            IOptions<ApiConfiguration> config)
+            IOptions<ApiConfigurationSection> config)
             : base(commandSender)
         {
             _config = config;

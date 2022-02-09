@@ -187,7 +187,7 @@ namespace OrganisationRegistry.MagdaReRegistration
                 loggingBuilder.AddSerilog();
             });
 
-            var apiConfiguration = configuration.GetSection(ApiConfiguration.Section).Get<ApiConfiguration>();
+            var apiConfiguration = configuration.GetSection(ApiConfigurationSection.Name).Get<ApiConfigurationSection>();
 
             var magdaClientCertificate = MagdaClientCertificate.Create(
                 apiConfiguration.KboCertificate,

@@ -1,9 +1,7 @@
 namespace OrganisationRegistry.Api.Backoffice.Admin.Projections
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Reflection;
     using System.Threading.Tasks;
     using Infrastructure;
@@ -16,7 +14,6 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Projections
     using Security;
     using SqlServer;
     using SqlServer.Infrastructure;
-    using SqlServer.ProjectionState;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]

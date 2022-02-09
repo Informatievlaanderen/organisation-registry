@@ -6,7 +6,7 @@
 
     public class ProgramInformation
     {
-        public static string Build(DelegationsRunnerConfiguration delegationsRunnerConfiguration, TogglesConfiguration togglesConfiguration)
+        public static string Build(DelegationsRunnerConfiguration delegationsRunnerConfiguration, TogglesConfigurationSection togglesConfiguration)
         {
             var progInfo = new StringBuilder();
             progInfo.AppendLine();

@@ -1,7 +1,6 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.Delegations.Responses
 {
     using System;
-    using System.Runtime.Serialization;
     using SqlServer.Delegations;
 
     public class DelegationResponse

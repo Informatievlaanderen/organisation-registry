@@ -7,6 +7,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Building.Events;
+    using Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;

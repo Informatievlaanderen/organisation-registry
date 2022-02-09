@@ -1,8 +1,8 @@
 namespace OrganisationRegistry.Infrastructure.Configuration
 {
-    public class OpenIdConnectConfiguration
+    public class OpenIdConnectConfigurationSection
     {
-        public static string Section = "OIDCAuth";
+        public static string Name = "OIDCAuth";
 
         public string Authority { get; set; }
 

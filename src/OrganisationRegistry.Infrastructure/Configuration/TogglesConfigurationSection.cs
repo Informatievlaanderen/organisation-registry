@@ -6,9 +6,9 @@ namespace OrganisationRegistry.Infrastructure.Configuration
     using Newtonsoft.Json;
 
     [DataContract]
-    public class TogglesConfiguration
+    public class TogglesConfigurationSection
     {
-        public static string Section = "Toggles";
+        public static string Name = "Toggles";
 
         [JsonConverter(typeof(TimestampConverter))]
         public DateTime Created => DateTime.Now;
@@ -31,6 +31,6 @@ namespace OrganisationRegistry.Infrastructure.Configuration
 
         public bool KboMutationsAvailable { get; set; }
 
-        public TogglesConfiguration() { }
+        public TogglesConfigurationSection() { }
     }
 }

@@ -61,7 +61,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         /// <returns></returns>
         public static async Task<IEnumerable<ParticipationSummary>> Search(
             OrganisationRegistryContext context,
-            ApiConfiguration apiConfiguration,
+            ApiConfigurationSection apiConfiguration,
             DateTime today)
         {
             var bodyIdsForMep = context.BodyFormalFrameworkList

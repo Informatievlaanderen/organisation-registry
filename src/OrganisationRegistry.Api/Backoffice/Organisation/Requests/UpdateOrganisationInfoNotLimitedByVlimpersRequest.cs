@@ -7,7 +7,6 @@
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Purpose;
-    using SqlServer.Organisation;
 
     public class UpdateOrganisationInfoNotLimitedByVlimpersInternalRequest
     {

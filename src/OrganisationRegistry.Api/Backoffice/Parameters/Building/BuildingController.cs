@@ -1,7 +1,6 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.Building
 {
     using System;
-    using System.Net;
     using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
@@ -15,7 +14,6 @@
     using Queries;
     using Requests;
     using Security;
-    using SqlServer.Building;
     using SqlServer.Infrastructure;
 
     [ApiVersion("1.0")]

@@ -25,11 +25,11 @@ namespace OrganisationRegistry.Api.Security
     [OrganisationRegistryRoute("security")]
     public class SecurityController : OrganisationRegistryController
     {
-        private readonly OpenIdConnectConfiguration _openIdConnectConfiguration;
+        private readonly OpenIdConnectConfigurationSection _openIdConnectConfiguration;
         private readonly ILogger<SecurityController> _logger;
 
         public SecurityController(
-            IOptions<OpenIdConnectConfiguration> openIdConnectConfiguration,
+            IOptions<OpenIdConnectConfigurationSection> openIdConnectConfiguration,
             ICommandSender commandSender,
             ILogger<SecurityController> logger)
             : base(commandSender)
@@ -114,9 +114,9 @@ namespace OrganisationRegistry.Api.Security
 
     public class OrganisationRegistryTokenBuilder : IOrganisationRegistryTokenBuilder
     {
-        private readonly OpenIdConnectConfiguration _configuration;
+        private readonly OpenIdConnectConfigurationSection _configuration;
 
-        public OrganisationRegistryTokenBuilder(OpenIdConnectConfiguration configuration) =>
+        public OrganisationRegistryTokenBuilder(OpenIdConnectConfigurationSection configuration) =>
             _configuration = configuration;
 
         public string BuildJwt(ClaimsIdentity identity)

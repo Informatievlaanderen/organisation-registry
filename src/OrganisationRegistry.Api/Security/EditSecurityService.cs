@@ -1,31 +1,27 @@
 namespace OrganisationRegistry.Api.Security
 {
     using System;
-    using System.Linq;
-    using System.Security.Claims;
-    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Options;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Bus;
     using OrganisationRegistry.Infrastructure.Configuration;
 
     public class EditSecurityService : IEditSecurityService
     {
-        private readonly EditApiConfiguration _configuration;
+        private readonly EditApiConfigurationSection _configurationSection;
 
-        public EditSecurityService(IOptions<EditApiConfiguration> configuration)
+        public EditSecurityService(IOptions<EditApiConfigurationSection> configuration)
         {
-            _configuration = configuration.Value;
+            _configurationSection = configuration.Value;
         }
 
         public bool CanAddKey(Guid keyTypeId)
         {
-            return _configuration.Orafin.Equals(keyTypeId);
+            return _configurationSection.Orafin.Equals(keyTypeId);
         }
 
         public bool CanEditKey(Guid keyTypeId)
         {
-            return _configuration.Orafin.Equals(keyTypeId);
+            return _configurationSection.Orafin.Equals(keyTypeId);
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Requests
 {
     using System;
-    using Be.Vlaanderen.Basisregisters.Converters.TrimString;
-    using Be.Vlaanderen.Basisregisters.Utilities;
     using FluentValidation;
     using Infrastructure;
     using Newtonsoft.Json;

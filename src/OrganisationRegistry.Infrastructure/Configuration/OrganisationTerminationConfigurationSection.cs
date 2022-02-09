@@ -4,9 +4,9 @@ namespace OrganisationRegistry.Infrastructure.Configuration
     using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
     using Newtonsoft.Json;
 
-    public class OrganisationTerminationConfiguration
+    public class OrganisationTerminationConfigurationSection
     {
-        public static string Section = "OrganisationTermination";
+        public static string Name = "OrganisationTermination";
 
         [JsonConverter(typeof(TimestampConverter))]
         public DateTime Created => DateTime.Now;

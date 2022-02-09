@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationFormalFrame
 {
     using System;
     using System.Collections.Generic;
+    using Configuration;
     using FluentAssertions;
     using FormalFramework;
     using Infrastructure.Tests.Extensions.TestHelpers;
@@ -64,7 +65,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationFormalFrame
                 new FormalFrameworkId(_formalFrameworkCreated.Id),
                 _childOrganisationCreated.Id,
                 _parentOrganisationCreated.Id,
-                new ValidFrom(), new ValidTo());
+                new ValidFrom(), new ValidTo())
+            {
+                User = new UserBuilder()
+                    .AddRoles(Role.OrganisationRegistryBeheerder)
+                    .Build()
+            };
         }
 
         protected override int ExpectedNumberOfEvents => 2;

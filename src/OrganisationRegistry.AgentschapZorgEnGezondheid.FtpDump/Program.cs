@@ -72,7 +72,7 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
 
             var logger = app.GetService<ILogger<Program>>();
 
-            if (!app.GetService<IOptions<TogglesConfiguration>>().Value.ApplicationAvailable)
+            if (!app.GetService<IOptions<TogglesConfigurationSection>>().Value.ApplicationAvailable)
             {
                 logger.LogInformation("Application offline, exiting program.");
                 return;
@@ -105,7 +105,7 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
                     return;
                 }
 
-                if (app.GetService<IOptions<TogglesConfiguration>>().Value.AgentschapZorgEnGezondheidFtpDumpAvailable)
+                if (app.GetService<IOptions<TogglesConfigurationSection>>().Value.AgentschapZorgEnGezondheidFtpDumpAvailable)
                 {
                     var runner = app.GetService<T>();
                     ExecuteRunner(runner);

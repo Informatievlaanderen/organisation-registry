@@ -57,7 +57,7 @@
 
         public FormalFrameworkOrganisationBase(
             OrganisationDocument document,
-            ApiConfiguration @params,
+            ApiConfigurationSection @params,
             Guid formalFrameworkId,
             DateTime today)
         {

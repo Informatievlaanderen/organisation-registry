@@ -1,9 +1,7 @@
 namespace OrganisationRegistry.Api.Backoffice.Report
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Search.Pagination;
@@ -87,7 +85,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetParticipationSummary(
             [FromServices] OrganisationRegistryContext context,
-            [FromServices] IOptions<ApiConfiguration> apiConfiguration,
+            [FromServices] IOptions<ApiConfigurationSection> apiConfiguration,
             [FromServices] IDateTimeProvider dateTimeProvider)
         {
             var sorting = Request.ExtractSortingRequest();

@@ -16,6 +16,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation
     using OrganisationRegistry.Organisation.OrganisationTermination;
     using OrganisationRegistry.Organisation.State;
     using Tests.Shared;
+    using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -33,9 +34,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation
             _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today);
             _organisationRegistryConfigurationStub = new OrganisationRegistryConfigurationStub
             {
-                FormalFrameworkIdsToTerminateEndOfNextYear = new []{Guid.NewGuid()},
-                OrganisationCapacityTypeIdsToTerminateEndOfNextYear = new []{Guid.NewGuid()},
-                OrganisationClassificationTypeIdsToTerminateEndOfNextYear = new []{Guid.NewGuid()}
+                Kbo = new KboConfigurationStub
+                {
+                    KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
+                    KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
+                    KboV2FormalNameLabelTypeId = Guid.NewGuid(),
+                }
             };
             _dateOfTermination = _dateTimeProviderStub.Today.AddDays(fixture.Create<int>());
             _organisationId = new OrganisationId(Guid.NewGuid());

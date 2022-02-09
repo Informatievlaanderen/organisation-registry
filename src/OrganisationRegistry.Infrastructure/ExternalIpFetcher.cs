@@ -14,21 +14,21 @@ namespace OrganisationRegistry.Infrastructure
 
     public class ExternalIpFetcher : IExternalIpFetcher
     {
-        private readonly InfrastructureConfiguration _configuration;
+        private readonly InfrastructureConfigurationSection _configurationSection;
         private readonly IHttpClientFactory _httpClientFactory;
 
         public ExternalIpFetcher(
-            IOptions<InfrastructureConfiguration> configuration,
+            IOptions<InfrastructureConfigurationSection> configuration,
             IHttpClientFactory httpClientFactory)
         {
-            _configuration = configuration.Value;
+            _configurationSection = configuration.Value;
             _httpClientFactory = httpClientFactory;
         }
 
         public async Task<string> Fetch()
         {
             var httpClient = _httpClientFactory.CreateClient();
-            httpClient.BaseAddress = new Uri(_configuration.ExternalIpServiceUri);
+            httpClient.BaseAddress = new Uri(_configurationSection.ExternalIpServiceUri);
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             var httpResponseMessage = await httpClient.GetAsync("");

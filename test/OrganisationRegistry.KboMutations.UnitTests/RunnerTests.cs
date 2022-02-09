@@ -29,7 +29,7 @@
         [Fact]
         public void ReturnsFalseWhenNotEnabled()
         {
-            var togglesConfiguration = new OptionsWrapper<TogglesConfiguration>(new TogglesConfiguration { KboMutationsAvailable = false });
+            var togglesConfiguration = new OptionsWrapper<TogglesConfigurationSection>(new TogglesConfigurationSection { KboMutationsAvailable = false });
 
             var kboMutationsConfiguration = new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration { });
 
@@ -48,7 +48,7 @@
         [Fact]
         public void ReturnsTrueWhenNoMutationFiles()
         {
-            var togglesConfiguration = new OptionsWrapper<TogglesConfiguration>(new TogglesConfiguration { KboMutationsAvailable = true });
+            var togglesConfiguration = new OptionsWrapper<TogglesConfigurationSection>(new TogglesConfigurationSection { KboMutationsAvailable = true });
 
             var kboMutationsConfiguration = new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration { });
 
@@ -67,7 +67,7 @@
         [Fact]
         public void ReturnsTrueWhenNoMutationsInFiles()
         {
-            var togglesConfiguration = new OptionsWrapper<TogglesConfiguration>(new TogglesConfiguration { KboMutationsAvailable = true });
+            var togglesConfiguration = new OptionsWrapper<TogglesConfigurationSection>(new TogglesConfigurationSection { KboMutationsAvailable = true });
 
             var kboMutationsConfiguration = new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration { });
 
@@ -95,7 +95,7 @@
         [Fact]
         public void ArchivesEachFileAfterProcessing()
         {
-            var togglesConfiguration = new OptionsWrapper<TogglesConfiguration>(new TogglesConfiguration { KboMutationsAvailable = true });
+            var togglesConfiguration = new OptionsWrapper<TogglesConfigurationSection>(new TogglesConfigurationSection { KboMutationsAvailable = true });
 
             var kboMutationsConfiguration = new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration { });
 
@@ -127,7 +127,7 @@
         [Fact]
         public void PersistsEachMutationFile()
         {
-            var togglesConfiguration = new OptionsWrapper<TogglesConfiguration>(new TogglesConfiguration { KboMutationsAvailable = true });
+            var togglesConfiguration = new OptionsWrapper<TogglesConfigurationSection>(new TogglesConfigurationSection { KboMutationsAvailable = true });
 
             var kboMutationsConfiguration = new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration { });
 
