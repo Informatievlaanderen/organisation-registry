@@ -21,14 +21,14 @@ namespace OrganisationRegistry.UnitTests
     public class KboSyncTests
     {
         private readonly DateTimeProviderStub _dateTimeProviderStub;
-        private readonly OptionsWrapper<ApiConfiguration> _apiConfiguration;
+        private readonly OptionsWrapper<ApiConfigurationSection> _apiConfiguration;
         private readonly OrganisationRegistryContext _context;
         private readonly ClaimsPrincipal _claimsPrincipal;
 
         public KboSyncTests()
         {
             _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
-            _apiConfiguration = new OptionsWrapper<ApiConfiguration>(new ApiConfiguration {SyncFromKboBatchSize = 500});
+            _apiConfiguration = new OptionsWrapper<ApiConfigurationSection>(new ApiConfigurationSection {SyncFromKboBatchSize = 500});
             _context = new OrganisationRegistryContext(
                 new DbContextOptionsBuilder<OrganisationRegistryContext>()
                     .UseInMemoryDatabase(

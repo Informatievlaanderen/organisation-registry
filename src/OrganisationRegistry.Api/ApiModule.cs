@@ -6,19 +6,19 @@ namespace OrganisationRegistry.Api
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
+    using Configuration;
     using ElasticSearch;
-    using Infrastructure;
     using Infrastructure.Search;
     using Infrastructure.Security;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Configuration;
     using SqlServer;
     using OrganisationRegistry.Configuration.Database;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Configuration;
-    using OrganisationRegistry.Organisation;
 
     public class ApiModule : Autofac.Module
     {
@@ -36,9 +36,10 @@ namespace OrganisationRegistry.Api
             _loggerFactory = loggerFactory;
 
             _services
-                .Configure<ApiConfiguration>(_configuration.GetSection(ApiConfiguration.Section))
-                .Configure<EditApiConfiguration>(_configuration.GetSection(EditApiConfiguration.Section))
-                .Configure<OpenIdConnectConfiguration>(_configuration.GetSection(OpenIdConnectConfiguration.Section));
+                .Configure<ApiConfigurationSection>(_configuration.GetSection(ApiConfigurationSection.Name))
+                .Configure<EditApiConfigurationSection>(_configuration.GetSection(EditApiConfigurationSection.Name))
+                .Configure<OpenIdConnectConfigurationSection>(_configuration.GetSection(OpenIdConnectConfigurationSection.Name))
+                .Configure<AuthorizationConfigurationSection>(_configuration.GetSection(AuthorizationConfigurationSection.Name));
         }
 
         protected override void Load(ContainerBuilder builder)
@@ -68,11 +69,14 @@ namespace OrganisationRegistry.Api
                 .Register(_ =>
                     new OrganisationRegistryConfiguration(
                         _configuration
-                            .GetSection(ApiConfiguration.Section)
-                            .Get<ApiConfiguration>(),
+                            .GetSection(ApiConfigurationSection.Name)
+                            .Get<ApiConfigurationSection>(),
                         _configuration
-                            .GetSection(OrganisationTerminationConfiguration.Section)
-                            .Get<OrganisationTerminationConfiguration>()))
+                            .GetSection(OrganisationTerminationConfigurationSection.Name)
+                            .Get<OrganisationTerminationConfigurationSection>(),
+                        _configuration
+                            .GetSection(AuthorizationConfigurationSection.Name)
+                            .Get<AuthorizationConfigurationSection>()))
                 .As<IOrganisationRegistryConfiguration>()
                 .SingleInstance();
 

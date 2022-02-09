@@ -4,7 +4,7 @@ namespace OrganisationRegistry.Api.Security
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
-    using Organisation;
+    using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure.Authorization;
     using SqlServer.Infrastructure;
 

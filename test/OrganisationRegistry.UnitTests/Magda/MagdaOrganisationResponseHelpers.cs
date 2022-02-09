@@ -22,7 +22,7 @@ namespace OrganisationRegistry.UnitTests.Magda
 
     public class MagdaOrganisationResponseHelpers
     {
-        private readonly ApiConfiguration _apiConfiguration;
+        private readonly ApiConfigurationSection _apiConfiguration;
 
         public MagdaOrganisationResponseHelpers()
         {
@@ -33,7 +33,7 @@ namespace OrganisationRegistry.UnitTests.Magda
                 .AddEnvironmentVariables();
 
             var configurationRoot = configurationBuilder.Build();
-            _apiConfiguration = configurationRoot.GetSection(ApiConfiguration.Section).Get<ApiConfiguration>();
+            _apiConfiguration = configurationRoot.GetSection(ApiConfigurationSection.Name).Get<ApiConfigurationSection>();
         }
 
         private GeefOndernemingQuery CreateGeefOndernemingQuery()

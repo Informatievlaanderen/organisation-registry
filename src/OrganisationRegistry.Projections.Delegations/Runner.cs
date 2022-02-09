@@ -21,7 +21,7 @@ namespace OrganisationRegistry.Projections.Delegations
         public const string DelegationsRunnerProjectionName = "DelegationsRunner";
 
         private readonly ILogger<Runner> _logger;
-        private readonly TogglesConfiguration _togglesConfiguration;
+        private readonly TogglesConfigurationSection _togglesConfiguration;
         private readonly DelegationsRunnerConfiguration _delegationsRunnerConfiguration;
         private readonly IEventStore _store;
         private readonly IProjectionStates _projectionStates;
@@ -32,7 +32,7 @@ namespace OrganisationRegistry.Projections.Delegations
 
         public Runner(
             ILogger<Runner> logger,
-            IOptions<TogglesConfiguration> togglesConfigurationOptions,
+            IOptions<TogglesConfigurationSection> togglesConfigurationOptions,
             IOptions<DelegationsRunnerConfiguration> delegationsRunnerConfiguration,
             IEventStore store,
             IProjectionStates projectionStates,

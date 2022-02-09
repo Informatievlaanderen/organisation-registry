@@ -2,7 +2,6 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
 {
     using System;
     using System.Linq;
-    using System.Net;
     using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Day.Commands;

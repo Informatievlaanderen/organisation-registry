@@ -10,6 +10,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainBuilding
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
     using Building.Events;
+    using Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;

@@ -21,6 +21,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Tests.Shared;
+    using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
     using Purpose = OrganisationRegistry.Organisation.Events.Purpose;
@@ -41,13 +42,16 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             _organisationRegistryConfigurationStub = new OrganisationRegistryConfigurationStub
             {
                 KboKeyTypeId = Guid.NewGuid(),
-                KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
-                KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
-                KboV2FormalNameLabelTypeId = Guid.NewGuid(),
+                Kbo = new KboConfigurationStub
+                {
+                    KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
+                    KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
+                    KboV2FormalNameLabelTypeId = Guid.NewGuid(),
+                }
             };
             _organisationId = new OrganisationId(Guid.NewGuid());
             _registeredOfficeLocationId = new LocationId(Guid.NewGuid());
-            _legalFormOrganisationClassificationTypeId = new OrganisationClassificationTypeId(_organisationRegistryConfigurationStub.KboV2LegalFormOrganisationClassificationTypeId);
+            _legalFormOrganisationClassificationTypeId = new OrganisationClassificationTypeId(_organisationRegistryConfigurationStub.Kbo.KboV2LegalFormOrganisationClassificationTypeId);
             _organisationClassificationId = new OrganisationClassificationId(Guid.NewGuid());
             _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today);
 
@@ -79,7 +83,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     "ClassificatieType"),
 
                 new LocationTypeCreated(
-                    _organisationRegistryConfigurationStub.KboV2RegisteredOfficeLocationTypeId,
+                    _organisationRegistryConfigurationStub.Kbo.KboV2RegisteredOfficeLocationTypeId,
                     "Registered KBO Office"),
 
                 new LocationCreated(_registeredOfficeLocationId,
@@ -91,7 +95,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     "Belgie"),
 
                 new LabelTypeCreated(
-                    _organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId,
+                    _organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId,
                     "KBO formele naam"),
 
                 new OrganisationCoupledWithKbo(_organisationId, "BE0123456789", "organisation X", "OVO001234", _dateTimeProviderStub.Today)

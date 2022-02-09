@@ -68,7 +68,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         public CapacityPerson(
             OrganisationDocument document,
             OrganisationDocument.OrganisationCapacity capacity,
-            ApiConfiguration @params)
+            ApiConfigurationSection @params)
         {
             var parent = document
                 .Parents?
@@ -156,7 +156,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         public static IEnumerable<CapacityPerson> Map(
             IEnumerable<OrganisationDocument> documents,
             Guid capacityId,
-            ApiConfiguration @params)
+            ApiConfigurationSection @params)
         {
             var capacityPersons = new List<CapacityPerson>();
 

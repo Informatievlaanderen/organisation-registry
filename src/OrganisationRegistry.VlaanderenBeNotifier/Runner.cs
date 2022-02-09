@@ -21,7 +21,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
         public const string VlaanderenbeNotifierProjectionName = "VlaanderenBeNotifier";
 
         private readonly ILogger<Runner> _logger;
-        private readonly TogglesConfiguration _togglesConfiguration;
+        private readonly TogglesConfigurationSection _togglesConfiguration;
         private readonly VlaanderenBeNotifierConfiguration _vlaanderenBeNotifierConfiguration;
         private readonly IEventStore _store;
         private readonly IProjectionStates _projectionStates;
@@ -30,7 +30,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
 
         public Runner(
             ILogger<Runner> logger,
-            IOptions<TogglesConfiguration> togglesConfigurationOptions,
+            IOptions<TogglesConfigurationSection> togglesConfigurationOptions,
             IOptions<VlaanderenBeNotifierConfiguration> vlaanderenBeNotifierConfigurationOptions,
             IEventStore store,
             IProjectionStates projectionStates,

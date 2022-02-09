@@ -1,7 +1,5 @@
 ﻿namespace OrganisationRegistry.Api.Infrastructure.Search.Pagination
 {
-    using System;
-
     public class PaginationInfo
     {
         public int CurrentPage { get; }

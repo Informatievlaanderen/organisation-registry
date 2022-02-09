@@ -8,7 +8,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType.Queries
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
-    using OrganisationRegistry.Organisation;
+    using OrganisationRegistry.Configuration;
     using SqlServer.Infrastructure;
     using SqlServer.LabelType;
 
@@ -35,7 +35,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType.Queries
             {
                 Id = x.Id,
                 Name = x.Name,
-                UserPermitted = x.Id != _configuration.KboV2FormalNameLabelTypeId
+                UserPermitted = x.Id != _configuration.Kbo.KboV2FormalNameLabelTypeId
             };
 
         protected override ISorting Sorting => new LabelTypeListSorting();

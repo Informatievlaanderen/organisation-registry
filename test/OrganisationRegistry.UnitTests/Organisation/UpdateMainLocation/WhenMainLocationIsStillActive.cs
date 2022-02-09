@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainLocation
 {
     using System;
     using System.Collections.Generic;
+    using Configuration;
     using Location.Events;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;

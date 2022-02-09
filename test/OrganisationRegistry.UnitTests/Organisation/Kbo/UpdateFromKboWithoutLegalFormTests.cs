@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 {
     using System;
     using System.Collections.Generic;
+    using Api.Infrastructure.OrganisationRegistryConfiguration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using KeyTypes.Events;
@@ -18,6 +19,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -39,13 +41,16 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             _organisationRegistryConfigurationStub = new OrganisationRegistryConfigurationStub
             {
                 KboKeyTypeId = Guid.NewGuid(),
-                KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
-                KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
-                KboV2FormalNameLabelTypeId = Guid.NewGuid(),
+                Kbo = new KboConfigurationStub
+                {
+                    KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
+                    KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
+                    KboV2FormalNameLabelTypeId = Guid.NewGuid(),
+                }
             };
             _kboNumber = new KboNumber("BE0123456789");
             _organisationId = new OrganisationId(Guid.NewGuid());
-            _legalFormOrganisationClassificationTypeId = new OrganisationClassificationTypeId(_organisationRegistryConfigurationStub.KboV2LegalFormOrganisationClassificationTypeId);
+            _legalFormOrganisationClassificationTypeId = new OrganisationClassificationTypeId(_organisationRegistryConfigurationStub.Kbo.KboV2LegalFormOrganisationClassificationTypeId);
             _organisationClassificationId = new OrganisationClassificationId(Guid.NewGuid());
             _anotherOrganisationClassificationId = new OrganisationClassificationId(Guid.NewGuid());
             _kboSyncItemId = Guid.NewGuid();
@@ -56,8 +61,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 new OrganisationClassificationTypeCreated(_legalFormOrganisationClassificationTypeId, "ClassificatieType"),
                 new OrganisationClassificationCreated(_organisationClassificationId, "Classificatie", 1, "Some Legal Code", true, _legalFormOrganisationClassificationTypeId, "ClassificatieType"),
                 new OrganisationClassificationCreated(_anotherOrganisationClassificationId, "Classificatie", 1, "Another Legal Code", true, _legalFormOrganisationClassificationTypeId, "ClassificatieType"),
-                new LabelTypeCreated(_organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId, "KBO formele naam"),
-                new LocationTypeCreated(_organisationRegistryConfigurationStub.KboV2RegisteredOfficeLocationTypeId, "Registered KBO Office"),
+                new LabelTypeCreated(_organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId, "KBO formele naam"),
+                new LocationTypeCreated(_organisationRegistryConfigurationStub.Kbo.KboV2RegisteredOfficeLocationTypeId, "Registered KBO Office"),
                 new OrganisationCreatedFromKbo(
                     _organisationId,
                     _kboNumber.ToDigitsOnly(),
@@ -75,7 +80,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 new KboFormalNameLabelAdded(
                     _organisationId,
                     Guid.NewGuid(),
-                    _organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId,
+                    _organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId,
                     "KBO Formal Name Type",
                     "KBO formele naam",
                     new ValidFrom(2008, 12, 22),

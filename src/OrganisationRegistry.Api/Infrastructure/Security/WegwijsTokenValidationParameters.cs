@@ -9,12 +9,12 @@ namespace OrganisationRegistry.Api.Infrastructure.Security
 
     public class OrganisationRegistryTokenValidationParameters : TokenValidationParameters
     {
-        public OrganisationRegistryTokenValidationParameters(IOptions<OpenIdConnectConfiguration> authOptions)
+        public OrganisationRegistryTokenValidationParameters(IOptions<OpenIdConnectConfigurationSection> authOptions)
             : this(authOptions.Value)
         {
         }
 
-        public OrganisationRegistryTokenValidationParameters(OpenIdConnectConfiguration auth)
+        public OrganisationRegistryTokenValidationParameters(OpenIdConnectConfigurationSection auth)
         {
             var secretKey = auth.JwtSharedSigningKey;
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));

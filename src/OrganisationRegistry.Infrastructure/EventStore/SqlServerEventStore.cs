@@ -49,7 +49,7 @@ namespace OrganisationRegistry.Infrastructure.EventStore
             return new SqlConnection(_administrationConnectionString);
         }
 
-        public SqlServerEventStore(IOptions<InfrastructureConfiguration> infrastructureOptions, IEventPublisher publisher, ISecurityService securityService, IEventDataReader eventDataReader = null)
+        public SqlServerEventStore(IOptions<InfrastructureConfigurationSection> infrastructureOptions, IEventPublisher publisher, ISecurityService securityService, IEventDataReader eventDataReader = null)
         {
             var options = infrastructureOptions.Value;
 

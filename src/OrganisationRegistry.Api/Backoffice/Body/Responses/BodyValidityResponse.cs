@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.Api.Backoffice.Body.Responses
 {
     using System;
-    using System.Runtime.Serialization;
     using SqlServer.Body;
 
     public class BodyValidityResponse

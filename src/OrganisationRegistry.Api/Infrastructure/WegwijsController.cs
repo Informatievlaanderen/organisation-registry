@@ -1,6 +1,5 @@
 ﻿namespace OrganisationRegistry.Api.Infrastructure
 {
-    using Be.Vlaanderen.Basisregisters.Api;
     using Microsoft.AspNetCore.Mvc;
     using OrganisationRegistry.Infrastructure.Commands;
 

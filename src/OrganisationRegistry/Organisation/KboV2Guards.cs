@@ -5,6 +5,7 @@ namespace OrganisationRegistry.Organisation
     using LabelType;
     using LocationType;
     using OrganisationClassificationType;
+    using IOrganisationRegistryConfiguration = Configuration.IOrganisationRegistryConfiguration;
 
     public static class KboV2Guards
     {
@@ -12,10 +13,10 @@ namespace OrganisationRegistry.Organisation
             IOrganisationRegistryConfiguration organisationRegistryConfiguration,
             LocationType locationType)
         {
-            if (organisationRegistryConfiguration.KboV2RegisteredOfficeLocationTypeId == Guid.Empty)
+            if (organisationRegistryConfiguration.Kbo.KboV2RegisteredOfficeLocationTypeId == Guid.Empty)
                 return;
 
-            if (organisationRegistryConfiguration.KboV2RegisteredOfficeLocationTypeId == locationType?.Id)
+            if (organisationRegistryConfiguration.Kbo.KboV2RegisteredOfficeLocationTypeId == locationType?.Id)
                 throw new UserCannotCoupleKboRegisteredOffice();
         }
 
@@ -23,10 +24,10 @@ namespace OrganisationRegistry.Organisation
             IOrganisationRegistryConfiguration organisationRegistryConfiguration,
             LabelType labelType)
         {
-            if (organisationRegistryConfiguration.KboV2FormalNameLabelTypeId == Guid.Empty)
+            if (organisationRegistryConfiguration.Kbo.KboV2FormalNameLabelTypeId == Guid.Empty)
                 return;
 
-            if (organisationRegistryConfiguration.KboV2FormalNameLabelTypeId == labelType.Id)
+            if (organisationRegistryConfiguration.Kbo.KboV2FormalNameLabelTypeId == labelType.Id)
                 throw new UserCannotCoupleKboLegalName();
         }
 
@@ -34,10 +35,10 @@ namespace OrganisationRegistry.Organisation
             IOrganisationRegistryConfiguration organisationRegistryConfiguration,
             OrganisationClassificationType organisationClassificationType)
         {
-            if (organisationRegistryConfiguration.KboV2LegalFormOrganisationClassificationTypeId == Guid.Empty)
+            if (organisationRegistryConfiguration.Kbo.KboV2LegalFormOrganisationClassificationTypeId == Guid.Empty)
                 return;
 
-            if (organisationRegistryConfiguration.KboV2LegalFormOrganisationClassificationTypeId == organisationClassificationType.Id)
+            if (organisationRegistryConfiguration.Kbo.KboV2LegalFormOrganisationClassificationTypeId == organisationClassificationType.Id)
                 throw new UserCannotCoupleKboLegalFormOrganisationClassification();
         }
 

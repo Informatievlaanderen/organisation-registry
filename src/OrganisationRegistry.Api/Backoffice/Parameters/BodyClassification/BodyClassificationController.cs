@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassification
 {
     using System;
-    using System.Net;
     using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
@@ -17,7 +16,6 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassification
     using Queries;
     using Requests;
     using Security;
-    using SqlServer.BodyClassification;
     using SqlServer.Infrastructure;
 
     [ApiVersion("1.0")]
@@ -25,11 +23,11 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassification
     [OrganisationRegistryRoute("bodyclassifications")]
     public class BodyClassificationController : OrganisationRegistryController
     {
-        private readonly ApiConfiguration _config;
+        private readonly ApiConfigurationSection _config;
 
         public BodyClassificationController(
             ICommandSender commandSender,
-            IOptions<ApiConfiguration> config)
+            IOptions<ApiConfigurationSection> config)
             : base(commandSender)
         {
             _config = config.Value;

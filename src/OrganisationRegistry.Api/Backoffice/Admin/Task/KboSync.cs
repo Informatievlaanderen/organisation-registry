@@ -38,7 +38,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
 
         public KboSync(
             IDateTimeProvider dateTimeProvider,
-            IOptions<ApiConfiguration> apiOptions,
+            IOptions<ApiConfigurationSection> apiOptions,
             ISecurityService securityService,
             ILogger<KboSync> logger)
         {

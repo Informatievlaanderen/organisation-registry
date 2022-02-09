@@ -1,7 +1,6 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Admin.Configuration
 {
     using System.Linq;
-    using System.Net;
     using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Search.Filtering;

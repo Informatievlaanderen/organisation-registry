@@ -20,6 +20,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -41,14 +42,17 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             _organisationRegistryConfigurationStub = new OrganisationRegistryConfigurationStub
             {
                 KboKeyTypeId = Guid.NewGuid(),
-                KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
-                KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
-                KboV2FormalNameLabelTypeId = Guid.NewGuid(),
+                Kbo = new KboConfigurationStub
+                {
+                    KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
+                    KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
+                    KboV2FormalNameLabelTypeId = Guid.NewGuid(),
+                }
             };
             _kboNumber = new KboNumber("BE0123456789");
             _organisationId = new OrganisationId(Guid.NewGuid());
             _registeredOfficeLocationId = new LocationId(Guid.NewGuid());
-            _legalFormOrganisationClassificationTypeId = new OrganisationClassificationTypeId(_organisationRegistryConfigurationStub.KboV2LegalFormOrganisationClassificationTypeId);
+            _legalFormOrganisationClassificationTypeId = new OrganisationClassificationTypeId(_organisationRegistryConfigurationStub.Kbo.KboV2LegalFormOrganisationClassificationTypeId);
             _organisationClassificationId = new OrganisationClassificationId(Guid.NewGuid());
             _kboSyncItemId = Guid.NewGuid();
 
@@ -57,7 +61,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 new KeyTypeCreated(_organisationRegistryConfigurationStub.KboKeyTypeId, "KBO sleutel"),
                 new OrganisationClassificationTypeCreated(_legalFormOrganisationClassificationTypeId, "ClassificatieType"),
                 new OrganisationClassificationCreated(_organisationClassificationId, "Classificatie", 1, "Some Legal Code", true, _legalFormOrganisationClassificationTypeId, "ClassificatieType"),
-                new LocationTypeCreated(_organisationRegistryConfigurationStub.KboV2RegisteredOfficeLocationTypeId, "Registered KBO Office"),
+                new LocationTypeCreated(_organisationRegistryConfigurationStub.Kbo.KboV2RegisteredOfficeLocationTypeId, "Registered KBO Office"),
                 new LocationCreated(_registeredOfficeLocationId,
                     null,
                     "Derbylaan, 8881 Adinkerke, Belgie",
@@ -65,7 +69,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     "8881",
                     "Adinkerke",
                     "Belgie"),
-                new LabelTypeCreated(_organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId, "KBO formele naam"),
+                new LabelTypeCreated(_organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId, "KBO formele naam"),
                 new OrganisationCreatedFromKbo(
                     _organisationId,
                     _kboNumber.ToDigitsOnly(),
@@ -85,14 +89,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     _registeredOfficeLocationId,
                     "Derbylaan, 8881 Adinkerke, Belgie",
                     false,
-                    _organisationRegistryConfigurationStub.KboV2RegisteredOfficeLocationTypeId,
+                    _organisationRegistryConfigurationStub.Kbo.KboV2RegisteredOfficeLocationTypeId,
                     "Registered KBO Office",
                     new ValidFrom(1999, 12, 31),
                     null),
                 new KboFormalNameLabelAdded(
                     _organisationId,
                     Guid.NewGuid(),
-                    _organisationRegistryConfigurationStub.KboV2FormalNameLabelTypeId,
+                    _organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId,
                     "KBO formele naam",
                     "NAME FROM KBO",
                     new ValidFrom(2008, 12, 22),

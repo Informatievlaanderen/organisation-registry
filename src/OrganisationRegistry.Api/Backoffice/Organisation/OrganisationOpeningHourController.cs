@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.Api.Backoffice.Organisation
 {
     using System;
-    using System.Net;
     using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
@@ -16,7 +15,6 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
     using Queries;
     using Requests;
     using SqlServer.Infrastructure;
-    using SqlServer.Organisation;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]

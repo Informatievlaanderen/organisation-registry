@@ -4,6 +4,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
     using System.Collections.Generic;
     using Building;
     using Building.Events;
+    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using OrganisationRegistry.Infrastructure.Events;

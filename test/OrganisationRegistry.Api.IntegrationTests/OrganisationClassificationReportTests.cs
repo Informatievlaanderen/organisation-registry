@@ -29,7 +29,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
 
             var organisationClassificationId = Guid.NewGuid();
             var mepFormalFrameworkId = Guid.NewGuid();
-            var apiConfiguration = new ApiConfiguration
+            var apiConfiguration = new ApiConfigurationSection
             {
                 Mep_FormalFrameworkId = mepFormalFrameworkId
             };

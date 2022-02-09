@@ -61,9 +61,9 @@ namespace OrganisationRegistry.Api.Infrastructure
                 () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
 
             Migrations.Run(_configuration.GetSection(SqlServerConfiguration.Section).Get<SqlServerConfiguration>());
-            var openIdConfiguration = _configuration.GetSection(OpenIdConnectConfiguration.Section).Get<OpenIdConnectConfiguration>();
-            var apiConfiguration = _configuration.GetSection(ApiConfiguration.Section).Get<ApiConfiguration>();
-            var editApiConfiguration = _configuration.GetSection(EditApiConfiguration.Section).Get<EditApiConfiguration>();
+            var openIdConfiguration = _configuration.GetSection(OpenIdConnectConfigurationSection.Name).Get<OpenIdConnectConfigurationSection>();
+            var apiConfiguration = _configuration.GetSection(ApiConfigurationSection.Name).Get<ApiConfigurationSection>();
+            var editApiConfiguration = _configuration.GetSection(EditApiConfigurationSection.Name).Get<EditApiConfigurationSection>();
 
             var magdaClientCertificate = MagdaClientCertificate.Create(
                 apiConfiguration.KboCertificate,

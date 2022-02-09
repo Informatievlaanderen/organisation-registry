@@ -1,7 +1,6 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.LocationType
 {
     using System;
-    using System.Net;
     using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
@@ -11,8 +10,8 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure.Commands;
-    using OrganisationRegistry.Organisation;
     using Queries;
     using Requests;
     using Security;

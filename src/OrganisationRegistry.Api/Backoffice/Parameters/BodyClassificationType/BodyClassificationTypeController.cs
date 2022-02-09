@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassificationType
 {
     using System;
-    using System.Net;
     using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Search.Filtering;

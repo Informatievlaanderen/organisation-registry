@@ -80,7 +80,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
 
             var logger = app.GetService<ILogger<Program>>();
 
-            if (!app.GetService<IOptions<TogglesConfiguration>>().Value.ApplicationAvailable)
+            if (!app.GetService<IOptions<TogglesConfigurationSection>>().Value.ApplicationAvailable)
             {
                 logger.LogInformation("Application offline, exiting program.");
                 return;
@@ -113,7 +113,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     return;
                 }
 
-                if (app.GetService<IOptions<TogglesConfiguration>>().Value.VlaanderenBeNotifierAvailable)
+                if (app.GetService<IOptions<TogglesConfigurationSection>>().Value.VlaanderenBeNotifierAvailable)
                 {
                     var sqlServerConfiguration = app.GetRequiredService<IOptions<SqlServerConfiguration>>().Value;
                     var migratorOptions = new DbContextOptionsBuilder<VlaanderenBeNotifierContext>()

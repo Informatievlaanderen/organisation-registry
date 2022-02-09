@@ -4,9 +4,9 @@ namespace OrganisationRegistry.Infrastructure.Configuration
     using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
     using Newtonsoft.Json;
 
-    public class EditApiConfiguration
+    public class EditApiConfigurationSection
     {
-        public static string Section = "EditApi";
+        public static string Name = "EditApi";
 
         [JsonConverter(typeof(TimestampConverter))]
         public DateTime Created => DateTime.Now;

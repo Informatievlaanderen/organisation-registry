@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainLocation
 {
     using System;
     using System.Collections.Generic;
+    using Configuration;
     using Xunit;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;

@@ -76,7 +76,7 @@ namespace OrganisationRegistry.Projections.Delegations
 
             var delegationsRunnerOptions = app.GetService<IOptions<DelegationsRunnerConfiguration>>().Value;
 
-            if (!app.GetService<IOptions<TogglesConfiguration>>().Value.ApplicationAvailable)
+            if (!app.GetService<IOptions<TogglesConfigurationSection>>().Value.ApplicationAvailable)
             {
                 logger.LogInformation("Application offline, exiting program.");
                 return;

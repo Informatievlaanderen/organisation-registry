@@ -26,6 +26,7 @@ namespace OrganisationRegistry.Organisation
     using OrganisationTermination;
     using RegulationSubTheme;
     using State;
+    using IOrganisationRegistryConfiguration = Configuration.IOrganisationRegistryConfiguration;
     using Purpose = Purpose.Purpose;
 
     public partial class Organisation : AggregateRoot

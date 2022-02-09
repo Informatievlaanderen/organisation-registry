@@ -61,7 +61,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         /// <returns></returns>
         public static IEnumerable<FormalFrameworkOrganisationBase> Map(IEnumerable<OrganisationDocument> documents,
             Guid formalFrameworkId,
-            ApiConfiguration @params,
+            ApiConfigurationSection @params,
             DateTime today)
         {
             var formalFrameworkOrganisations = new List<FormalFrameworkOrganisationBase>();
@@ -101,7 +101,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         public static IEnumerable<FormalFrameworkOrganisationExtended> MapExtended(
             IEnumerable<OrganisationDocument> documents,
             Guid formalFrameworkId,
-            ApiConfiguration @params,
+            ApiConfigurationSection @params,
             DateTime today)
         {
             var formalFrameworkOrganisations = new List<FormalFrameworkOrganisationExtended>();

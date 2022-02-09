@@ -16,7 +16,7 @@
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, IOptions<TogglesConfiguration> configuration)
+        public async Task Invoke(HttpContext context, IOptions<TogglesConfigurationSection> configuration)
         {
             // These routes are always available
             if (context.Request.Path.ToString().StartsWith("/v1/security") ||

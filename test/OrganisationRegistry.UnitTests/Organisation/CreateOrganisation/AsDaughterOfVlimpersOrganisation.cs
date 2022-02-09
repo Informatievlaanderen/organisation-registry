@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
 {
     using System;
     using System.Collections.Generic;
+    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;

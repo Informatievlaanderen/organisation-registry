@@ -45,7 +45,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         /// <param name="params"></param>
         public FormalFrameworkOrganisationVademecum(
             OrganisationDocument document,
-            ApiConfiguration @params)
+            ApiConfigurationSection @params)
         {
             var parent = document
                 .Parents?
@@ -120,7 +120,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         public static IEnumerable<FormalFrameworkOrganisationVademecum> Map(
             IEnumerable<OrganisationDocument> documents,
             Guid formalFrameworkId,
-            ApiConfiguration @params)
+            ApiConfigurationSection @params)
         {
             var formalFrameworkOrganisations = new List<FormalFrameworkOrganisationVademecum>();
 

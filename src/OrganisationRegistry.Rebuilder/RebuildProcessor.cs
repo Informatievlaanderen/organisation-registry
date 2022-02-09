@@ -16,14 +16,14 @@ namespace OrganisationRegistry.Rebuilder
         private readonly ILogger<RebuildProcessor> _logger;
         private readonly IEventStore _store;
         private readonly IProjectionStates _projectionStates;
-        private readonly IOptions<InfrastructureConfiguration> _infrastructureOption;
+        private readonly IOptions<InfrastructureConfigurationSection> _infrastructureOption;
         private readonly IEventPublisher _publisher;
 
         public RebuildProcessor(
             ILogger<RebuildProcessor> logger,
             IEventStore store,
             IProjectionStates projectionStates,
-            IOptions<InfrastructureConfiguration> infrastructureOption,
+            IOptions<InfrastructureConfigurationSection> infrastructureOption,
             IEventPublisher publisher)
         {
             _logger = logger;

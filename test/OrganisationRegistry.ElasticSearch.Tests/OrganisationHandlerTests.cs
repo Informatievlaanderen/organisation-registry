@@ -15,9 +15,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging.Abstractions;
     using Organisation.Events;
-    using OrganisationRegistry.Tests.Shared;
+    using OrganisationRegistry.Tests.Shared.Stubs;
     using Organisations;
-    using Projections;
     using Projections.Organisations;
     using Scenario.Specimen;
     using SqlServer.Infrastructure;

@@ -44,7 +44,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         /// <param name="params"></param>
         public ClassificationOrganisation(
             OrganisationDocument document,
-            ApiConfiguration @params)
+            ApiConfigurationSection @params)
         {
             var parent = document
                 .Parents?
@@ -122,7 +122,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         public static IEnumerable<ClassificationOrganisation> Map(
             IEnumerable<OrganisationDocument> documents,
             Guid organisationClassificationId,
-            ApiConfiguration @params)
+            ApiConfigurationSection @params)
         {
             var classificationOrganisations = new List<ClassificationOrganisation>();
 

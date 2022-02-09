@@ -15,12 +15,12 @@ namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
         public const string DelegationsRunnerProjectionName = "AgentschapZorgEnGezondheidFtpDump";
 
         private readonly ILogger<Runner> _logger;
-        private readonly TogglesConfiguration _togglesConfiguration;
+        private readonly TogglesConfigurationSection _togglesConfiguration;
         private readonly AgentschapZorgEnGezondheidFtpDumpConfiguration _ftpDumpConfiguration;
 
         public Runner(
             ILogger<Runner> logger,
-            IOptions<TogglesConfiguration> togglesConfigurationOptions,
+            IOptions<TogglesConfigurationSection> togglesConfigurationOptions,
             IOptions<AgentschapZorgEnGezondheidFtpDumpConfiguration> ftpDumpConfiguration)
         {
             _logger = logger;

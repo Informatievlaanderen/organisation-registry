@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
 {
     using System;
     using System.Linq;
+    using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Organisation;
     using SqlServer;
 
@@ -22,7 +23,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
             using (var context = _contextFactory.Create())
                 return context.OrganisationClassificationList
                     .FirstOrDefault(o =>
-                        o.OrganisationClassificationTypeId == _organisationRegistryConfiguration.KboV2LegalFormOrganisationClassificationTypeId &&
+                        o.OrganisationClassificationTypeId == _organisationRegistryConfiguration.Kbo.KboV2LegalFormOrganisationClassificationTypeId &&
                         o.ExternalKey == legalFormCode)
                     ?.Id;
         }

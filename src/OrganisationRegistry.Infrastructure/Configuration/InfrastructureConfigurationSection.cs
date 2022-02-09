@@ -4,9 +4,9 @@ namespace OrganisationRegistry.Infrastructure.Configuration
     using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
     using Newtonsoft.Json;
 
-    public class InfrastructureConfiguration
+    public class InfrastructureConfigurationSection
     {
-        public static string Section = "Infrastructure";
+        public static string Name = "Infrastructure";
 
         [JsonConverter(typeof(TimestampConverter))]
         public DateTime Created => DateTime.Now;
@@ -17,8 +17,8 @@ namespace OrganisationRegistry.Infrastructure.Configuration
 
         public string ExternalIpServiceUri { get; set; }
 
-        public InfrastructureConfiguration Obfuscate()
-            => new InfrastructureConfiguration
+        public InfrastructureConfigurationSection Obfuscate()
+            => new InfrastructureConfigurationSection
             {
                 EventStoreConnectionString = Obfuscator.ObfuscateConnectionString(EventStoreConnectionString),
                 EventStoreAdministrationConnectionString = Obfuscator.ObfuscateConnectionString(EventStoreAdministrationConnectionString),

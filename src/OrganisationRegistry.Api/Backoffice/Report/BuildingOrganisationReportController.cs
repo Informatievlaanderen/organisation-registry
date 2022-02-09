@@ -1,9 +1,7 @@
 namespace OrganisationRegistry.Api.Backoffice.Report
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Threading.Tasks;
     using ElasticSearch.Client;
     using Infrastructure;
@@ -26,11 +24,11 @@ namespace OrganisationRegistry.Api.Backoffice.Report
         private const string ScrollTimeout = "30s";
         private const int ScrollSize = 500;
 
-        private readonly ApiConfiguration _config;
+        private readonly ApiConfigurationSection _config;
 
         public BuildingOrganisationReportController(
             ICommandSender commandSender,
-            IOptions<ApiConfiguration> config,
+            IOptions<ApiConfigurationSection> config,
             ILogger<SearchController> log) : base(commandSender)
         {
             _config = config.Value;

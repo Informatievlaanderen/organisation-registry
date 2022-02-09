@@ -1,6 +1,5 @@
 namespace OrganisationRegistry.Api.Backoffice.Kbo
 {
-    using System.Net;
     using System.Threading.Tasks;
     using Infrastructure;
     using Infrastructure.Security;

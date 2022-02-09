@@ -51,7 +51,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         /// <param name="params"></param>
         public BuildingOrganisation(
             OrganisationDocument document,
-            ApiConfiguration @params)
+            ApiConfigurationSection @params)
         {
             var parent = document
                 .Parents?
@@ -132,7 +132,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         public static IEnumerable<BuildingOrganisation> Map(
             IEnumerable<OrganisationDocument> documents,
             Guid buildingId,
-            ApiConfiguration @params)
+            ApiConfigurationSection @params)
         {
             var buildingOrganisations = new List<BuildingOrganisation>();
 

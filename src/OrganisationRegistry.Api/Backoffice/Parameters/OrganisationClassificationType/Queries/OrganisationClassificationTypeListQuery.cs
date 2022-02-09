@@ -8,7 +8,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
-    using OrganisationRegistry.Organisation;
+    using OrganisationRegistry.Configuration;
     using SqlServer.Infrastructure;
     using SqlServer.OrganisationClassificationType;
 
@@ -32,7 +32,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
             {
                 Id = x.Id,
                 Name = x.Name,
-                UserPermitted = x.Id != _configuration.KboV2LegalFormOrganisationClassificationTypeId,
+                UserPermitted = x.Id != _configuration.Kbo.KboV2LegalFormOrganisationClassificationTypeId,
             };
 
         protected override IQueryable<OrganisationClassificationTypeListItem> Filter(FilteringHeader<OrganisationClassificationTypeListItem> filtering)

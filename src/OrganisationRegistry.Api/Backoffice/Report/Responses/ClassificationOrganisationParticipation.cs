@@ -44,7 +44,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         public static IEnumerable<ClassificationOrganisationParticipation> Search(
             OrganisationRegistryContext context,
             Guid organisationClassificationId,
-            ApiConfiguration configuration,
+            ApiConfigurationSection configuration,
             DateTime today)
         {
             //get organisation ids for organisation classification

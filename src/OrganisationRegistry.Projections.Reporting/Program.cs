@@ -78,7 +78,7 @@ namespace OrganisationRegistry.Projections.Reporting
 
             var logger = app.GetService<ILogger<Program>>();
 
-            if (!app.GetService<IOptions<TogglesConfiguration>>().Value.ApplicationAvailable)
+            if (!app.GetService<IOptions<TogglesConfigurationSection>>().Value.ApplicationAvailable)
             {
                 logger.LogInformation("Application offline, exiting program.");
 
@@ -111,7 +111,7 @@ namespace OrganisationRegistry.Projections.Reporting
                     return;
                 }
 
-                if (app.GetService<IOptions<TogglesConfiguration>>().Value.ReportingRunnerAvailable)
+                if (app.GetService<IOptions<TogglesConfigurationSection>>().Value.ReportingRunnerAvailable)
                 {
                     var runner = app.GetService<T>();
 
