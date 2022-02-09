@@ -52,7 +52,7 @@ export class KeyTypeDetailComponent implements OnInit, OnDestroy {
         ? new Update<KeyTypeService, KeyType>(id, this.itemService, this.alertService, this.updateAlerts)
         : new Create<KeyTypeService, KeyType>(this.itemService, this.alertService, this.createAlerts);
 
-      this.crud
+      this.subscriptions.push(this.crud
         .load(KeyType)
         .finally(() => this.form.enable())
         .subscribe(
@@ -61,7 +61,7 @@ export class KeyTypeDetailComponent implements OnInit, OnDestroy {
               this.form.setValue(item);
           },
           error => this.crud.alertLoadError(error)
-        );
+        ));
     });
   }
 

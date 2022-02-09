@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { Alert, AlertBuilder, AlertService, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -9,12 +9,13 @@ import {
   ProjectionStateListItem,
   ProjectionStateService
 } from 'services/projectionstates';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
     templateUrl: 'overview.template.html',
     styleUrls: [ 'overview.style.css' ]
   })
-  export class ProjectionStateOverviewComponent {
+  export class ProjectionStateOverviewComponent implements OnInit, OnDestroy {
     public isLoading: boolean = true;
     public projectionStates: PagedResult<ProjectionStateListItem> = new PagedResult<ProjectionStateListItem>();
     public lastEventNumber: number = 0;
@@ -22,6 +23,8 @@ import {
     private filter: ProjectionStateFilter = new ProjectionStateFilter();
     private currentSortBy: string = 'name';
     private currentSortOrder: SortOrder = SortOrder.Ascending;
+
+    private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
     constructor(
       private alertService: AlertService,
@@ -31,6 +34,10 @@ import {
     ngOnInit() {
       this.loadProjectionStates();
       this.getLastEventNumber();
+    }
+
+    ngOnDestroy() {
+      this.subscriptions.forEach(sub => sub.unsubscribe());
     }
 
     search(event: SearchEvent<ProjectionStateFilter>) {
@@ -48,7 +55,7 @@ import {
       this.isLoading = true;
       let lastEvent = this.projectionStateService.getLastEventNumber();
 
-      lastEvent
+      this.subscriptions.push(lastEvent
         .finally(() => this.isLoading = false)
         .subscribe(
           data => this.lastEventNumber = data,
@@ -56,7 +63,7 @@ import {
             new Alert(
               AlertType.Error,
               'Totalen voor participaties kunnen niet geladen worden!',
-              'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+              'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
     }
 
     private loadProjectionStates(event?: PagedEvent) {
@@ -65,7 +72,7 @@ import {
         ? this.projectionStateService.getProjectionStates(this.filter, this.currentSortBy, this.currentSortOrder)
         : this.projectionStateService.getProjectionStates(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-      projectionStates
+      this.subscriptions.push(projectionStates
         .finally(() => this.isLoading = false)
         .subscribe(
           newProjectionStates => this.projectionStates = newProjectionStates,
@@ -75,6 +82,6 @@ import {
               .withTitle('Projectie statussen kunnen niet geladen worden!')
               .withMessage('Er is een fout opgetreden bij het ophalen van de projectie statussen. Probeer het later opnieuw.')
               .build()
-          ));
+          )));
     }
   }

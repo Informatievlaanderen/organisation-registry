@@ -19,7 +19,7 @@ import { Organisation, OrganisationService } from 'services/organisations';
   templateUrl: 'terminate.template.html',
   styleUrls: ['terminate.style.css'],
 })
-export class OrganisationTerminateComponent implements OnInit, OnDestroy{
+export class OrganisationTerminateComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public canEditOrganisation: Observable<boolean>;
   public terminateForm: FormGroup;
@@ -30,7 +30,6 @@ export class OrganisationTerminateComponent implements OnInit, OnDestroy{
   private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Organisatie stopzetten');
   private readonly subscriptions: Subscription[] = new Array<Subscription>();
   private organisationId: string;
-
 
   constructor(
     formBuilder: FormBuilder,
@@ -90,13 +89,13 @@ export class OrganisationTerminateComponent implements OnInit, OnDestroy{
       this.terminateForm.get('forceKboTermination').value :
       false;
 
-    this.organisationService.terminate(this.organisationId, dateOfTermination, forceKboTermination)
+    this.subscriptions.push(this.organisationService.terminate(this.organisationId, dateOfTermination, forceKboTermination)
       .finally(() => {
         this.isBusy = false;
       })
       .subscribe(
         result => {
-          this.router.navigate(['./..'], { relativeTo: this.route });
+          this.router.navigate(['./..'], {relativeTo: this.route});
 
           this.alertService.setAlert(
             new AlertBuilder()
@@ -106,12 +105,12 @@ export class OrganisationTerminateComponent implements OnInit, OnDestroy{
               .build());
         },
         error => {
-          this.router.navigate(['./..'], { relativeTo: this.route });
+          this.router.navigate(['./..'], {relativeTo: this.route});
           this.alertService.setAlert(
             new AlertBuilder()
               .error(error)
               .build());
-        });
+        }));
   }
 
   isTerminated(organisationTermination) {
@@ -121,11 +120,11 @@ export class OrganisationTerminateComponent implements OnInit, OnDestroy{
   private loadSyncStatus() {
     this.isLoading = true;
 
-    this.organisationSyncService.get(this.organisationId, this.organisation.kboNumber)
+    this.subscriptions.push(this.organisationSyncService.get(this.organisationId, this.organisation.kboNumber)
       .finally(() => this.isLoading = false)
       .subscribe(
         item => {
-          if (item){
+          if (item) {
             this.organisationTermination = item;
             this.terminateForm.setValue({
               terminationDate: item.date || null,
@@ -138,6 +137,6 @@ export class OrganisationTerminateComponent implements OnInit, OnDestroy{
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

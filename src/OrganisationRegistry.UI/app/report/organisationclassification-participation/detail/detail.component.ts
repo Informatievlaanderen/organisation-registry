@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { Constants } from 'core/constants';
@@ -14,12 +14,13 @@ import {
     OrganisationClassificationParticipationReportService,
     OrganisationClassificationParticipationReportFilter
 } from 'services/reports/organisationclassification-participation';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: [ 'detail.style.css' ]
 })
-export class OrganisationClassificationParticipationDetailComponent implements OnInit {
+export class OrganisationClassificationParticipationDetailComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
 
   public classificationId: string;
@@ -34,6 +35,8 @@ export class OrganisationClassificationParticipationDetailComponent implements O
   private filter: OrganisationClassificationParticipationReportFilter = new OrganisationClassificationParticipationReportFilter();
   private currentSortBy: string = 'bodyName';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -56,7 +59,7 @@ export class OrganisationClassificationParticipationDetailComponent implements O
       this.classificationLabel = this.classificationTag === Constants.PARTICIPATION_MINISTER_TAG ? 'ministerpost' : 'beleidsdomein';
 
       this.isLoading = true;
-      this.organisationClassificationService
+      this.subscriptions.push(this.organisationClassificationService
         .get(id)
         .subscribe(
           item => {
@@ -68,13 +71,17 @@ export class OrganisationClassificationParticipationDetailComponent implements O
             }
           },
           error => this.alertService.setAlert(
-                new Alert(
-                    AlertType.Error,
-                    'Participaties kunnen niet geladen worden!',
-                    'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            new Alert(
+              AlertType.Error,
+              'Participaties kunnen niet geladen worden!',
+              'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
 
       this.loadOrganisationClassificationParticipations(id);
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<OrganisationClassificationParticipationReportFilter>) {
@@ -89,16 +96,16 @@ export class OrganisationClassificationParticipationDetailComponent implements O
   }
 
   exportCsv(event: void) {
-    this.classificationOrganisationParticipationReportService.exportCsv(this.classificationId, this.filter, this.currentSortBy, this.currentSortOrder)
+    this.subscriptions.push(this.classificationOrganisationParticipationReportService.exportCsv(this.classificationId, this.filter, this.currentSortBy, this.currentSortOrder)
       .subscribe(
-      csv => this.fileSaverService.saveFile(csv, 'export_participatie'),
-      error => this.alertService.setAlert(
-        new AlertBuilder()
-          .error(error)
-          .withTitle('Participaties kunnen niet geëxporteerd worden!')
-          .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
-          .build()
-      ));
+        csv => this.fileSaverService.saveFile(csv, 'export_participatie'),
+        error => this.alertService.setAlert(
+          new AlertBuilder()
+            .error(error)
+            .withTitle('Participaties kunnen niet geëxporteerd worden!')
+            .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
+            .build()
+        )));
   }
 
   private loadOrganisationClassificationParticipations(classificationId: string, event?: PagedEvent) {
@@ -110,14 +117,14 @@ export class OrganisationClassificationParticipationDetailComponent implements O
       : this.classificationOrganisationParticipationReportService.getParticipationsPerOrganisationClassificationPerBody(
           classificationId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-      classificationParticipations
-        .finally(() => this.isLoading = false)
-        .subscribe(
-          classificationOrganisationParticipations => this.classificationOrganisationParticipations = classificationOrganisationParticipations,
-          error => this.alertService.setAlert(
-            new Alert(
-              AlertType.Error,
-              'Participaties kunnen niet geladen worden!',
-              'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+    this.subscriptions.push(classificationParticipations
+      .finally(() => this.isLoading = false)
+      .subscribe(
+        classificationOrganisationParticipations => this.classificationOrganisationParticipations = classificationOrganisationParticipations,
+        error => this.alertService.setAlert(
+          new Alert(
+            AlertType.Error,
+            'Participaties kunnen niet geladen worden!',
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }

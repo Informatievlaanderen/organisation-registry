@@ -1,10 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { CreateAlertMessages } from 'core/alertmessages';
-import { Create, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
@@ -14,17 +12,18 @@ import {
   OrganisationLabelService
 } from 'services/organisationlabels';
 
-import { LabelType, LabelTypeService } from 'services/labeltypes';
+import { LabelTypeService } from 'services/labeltypes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'create.template.html',
   styleUrls: ['create.style.css']
 })
-export class OrganisationLabelsCreateOrganisationLabelComponent implements OnInit {
+export class OrganisationLabelsCreateOrganisationLabelComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public labelTypes: SelectItem[];
 
-  private readonly createAlerts = new CreateAlertMessages('Benaming');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -51,7 +50,7 @@ export class OrganisationLabelsCreateOrganisationLabelComponent implements OnIni
       this.form.setValue(new CreateOrganisationLabelRequest(params['id']));
     });
 
-    this.labelTypeService
+    this.subscriptions.push(this.labelTypeService
       .getAllUserPermittedLabelTypes()
       .finally(() => this.form.enable())
       .subscribe(
@@ -62,7 +61,11 @@ export class OrganisationLabelsCreateOrganisationLabelComponent implements OnIni
               .error(error)
               .withTitle('Benaming types konden niet geladen worden!')
               .withMessage('Er is een fout opgetreden bij het ophalen van de benaming types. Probeer het later opnieuw.')
-              .build()));
+              .build())));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -72,12 +75,12 @@ export class OrganisationLabelsCreateOrganisationLabelComponent implements OnIni
   create(value: CreateOrganisationLabelRequest) {
     this.form.disable();
 
-    this.organisationLabelService.create(value.organisationId, value)
+    this.subscriptions.push(this.organisationLabelService.create(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
           if (result) {
-            this.router.navigate(['./..'], { relativeTo: this.route });
+            this.router.navigate(['./..'], {relativeTo: this.route});
 
             this.alertService.setAlert(
               new AlertBuilder()
@@ -93,6 +96,6 @@ export class OrganisationLabelsCreateOrganisationLabelComponent implements OnIni
               .error(error)
               .withTitle('Benaming kon niet bewaard worden!')
               .withMessage('Er is een fout opgetreden bij het bewaren van de gegevens. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 }

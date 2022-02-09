@@ -1,11 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import { ActivatedRoute, Router} from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { UpdateAlertMessages } from 'core/alertmessages';
-import { Update, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
@@ -18,17 +16,18 @@ import {
 import {
   ManagementService
 } from 'services/management';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'update.template.html',
   styleUrls: ['update.style.css']
 })
-export class OrganisationOpeningHoursUpdateOrganisationOpeningHourComponent implements OnInit {
+export class OrganisationOpeningHoursUpdateOrganisationOpeningHourComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public days: SelectItem[];
   public hours: SelectItem[];
 
-  private readonly updateAlerts = new UpdateAlertMessages('Openingsuur');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -53,20 +52,24 @@ export class OrganisationOpeningHoursUpdateOrganisationOpeningHourComponent impl
     let allDaysObservable = this.managementService.getAllDays();
     let allHoursObservable = this.managementService.getAllHours();
 
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let orgOpeningHourId = res[1]['id'];
 
-        Observable.zip(
+        this.subscriptions.push(Observable.zip(
           this.organisationOpeningHourService.get(orgId, orgOpeningHourId),
           allDaysObservable,
           allHoursObservable)
           .subscribe(
             item => this.setForm(item[0], item[1], item[2]),
-            error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -76,17 +79,17 @@ export class OrganisationOpeningHoursUpdateOrganisationOpeningHourComponent impl
   update(value: UpdateOrganisationOpeningHourRequest) {
     this.form.disable();
 
-    this.organisationOpeningHourService.update(value.organisationId, value)
+    this.subscriptions.push(this.organisationOpeningHourService.update(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
           if (result) {
-            this.router.navigate(['./../..'], { relativeTo: this.route });
+            this.router.navigate(['./../..'], {relativeTo: this.route});
             this.handleSaveSuccess();
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   private setForm(organisationOpeningHour, allDays, allHours) {

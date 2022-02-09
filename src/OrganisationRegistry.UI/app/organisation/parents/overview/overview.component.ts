@@ -65,7 +65,7 @@ export class OrganisationParentsOverviewComponent implements OnInit, OnDestroy {
       ? this.organisationParentService.getOrganisationParents(this.organisationId, this.currentSortBy, this.currentSortOrder)
       : this.organisationParentService.getOrganisationParents(this.organisationId, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    organisationParents
+    this.subscriptions.push(organisationParents
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -77,6 +77,6 @@ export class OrganisationParentsOverviewComponent implements OnInit, OnDestroy {
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

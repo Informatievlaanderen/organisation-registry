@@ -1,23 +1,24 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Observable} from 'rxjs/Observable';
 
-import { AlertBuilder, AlertService} from 'core/alert';
-import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
-import { SearchEvent } from 'core/search';
-import { Role, OidcService } from 'core/auth';
-import { FileSaverService } from 'core/file-saver';
+import {AlertBuilder, AlertService} from 'core/alert';
+import {PagedResult, PagedEvent, SortOrder} from 'core/pagination';
+import {SearchEvent} from 'core/search';
+import {Role, OidcService} from 'core/auth';
+import {FileSaverService} from 'core/file-saver';
 
 import {
   BodyFilter,
   BodyListItem,
   BodyService
 } from 'services/bodies';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: ['overview.style.css']
 })
-export class BodyOverviewComponent implements OnInit {
+export class BodyOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public bodies: PagedResult<BodyListItem> = new PagedResult<BodyListItem>();
   public canCreateBody: Observable<boolean>;
@@ -26,12 +27,15 @@ export class BodyOverviewComponent implements OnInit {
   private currentSortBy: string = 'name';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private alertService: AlertService,
     private bodyService: BodyService,
     private fileSaverService: FileSaverService,
     private oidcService: OidcService,
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.loadBodies();
@@ -48,6 +52,10 @@ export class BodyOverviewComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   search(event: SearchEvent<BodyFilter>) {
     this.filter = event.fields;
     this.loadBodies();
@@ -60,16 +68,16 @@ export class BodyOverviewComponent implements OnInit {
   }
 
   exportCsv(event: void) {
-    this.bodyService.exportCsv(this.filter, this.currentSortBy, this.currentSortOrder)
+    this.subscriptions.push(this.bodyService.exportCsv(this.filter, this.currentSortBy, this.currentSortOrder)
       .subscribe(
-      csv => this.fileSaverService.saveFile(csv, 'export_organen'),
-      error => this.alertService.setAlert(
-        new AlertBuilder()
-          .error(error)
-          .withTitle('Organen kunnen niet geëxporteerd worden!')
-          .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
-          .build()
-      ));
+        csv => this.fileSaverService.saveFile(csv, 'export_organen'),
+        error => this.alertService.setAlert(
+          new AlertBuilder()
+            .error(error)
+            .withTitle('Organen kunnen niet geëxporteerd worden!')
+            .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
+            .build()
+        )));
   }
 
   private loadBodies(event?: PagedEvent) {
@@ -78,7 +86,7 @@ export class BodyOverviewComponent implements OnInit {
       ? this.bodyService.getBodies(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.bodyService.getBodies(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    bodies
+    this.subscriptions.push(bodies
       .finally(() => this.isLoading = false)
       .subscribe(
         newBodies => this.bodies = newBodies,
@@ -87,6 +95,6 @@ export class BodyOverviewComponent implements OnInit {
             .error(error)
             .withTitle('Organen kunnen niet geladen worden!')
             .withMessage('Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')
-            .build()));
+            .build())));
   }
 }

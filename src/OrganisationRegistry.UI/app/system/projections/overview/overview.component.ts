@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
 
@@ -12,14 +12,17 @@ import {
   TaskService,
   TaskData
 } from 'services/tasks';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class ProjectionOverviewComponent implements OnInit {
+export class ProjectionOverviewComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public projections: SelectItem[];
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   get isFormValid() {
     return this.form.enabled && this.form.valid;
@@ -41,7 +44,7 @@ export class ProjectionOverviewComponent implements OnInit {
       let id = params['id'];
 
       this.form.disable();
-      this.projectionService
+      this.subscriptions.push(this.projectionService
         .getAllProjections()
         .finally(() => this.form.enable())
         .subscribe(
@@ -52,29 +55,33 @@ export class ProjectionOverviewComponent implements OnInit {
                 .error(error)
                 .withTitle('Projecties konden niet geladen worden!')
                 .withMessage('Er is een fout opgetreden bij het ophalen van de projecties. Probeer het later opnieuw.')
-                .build()));
+                .build())));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   rebuildProjection(value) {
     this.form.disable();
     let taskData = new TaskData('rebuildProjection', [value.projection]);
 
-    this.taskService.submit(taskData)
+    this.subscriptions.push(this.taskService.submit(taskData)
       .finally(() => this.form.enable())
       .subscribe(
         result => this.alertService.setAlert(
-            new AlertBuilder()
-              .success()
-              .withTitle('Taak uitgevoerd!')
-              .withMessage('De taak is succesvol uitgevoerd.')
-              .build()),
+          new AlertBuilder()
+            .success()
+            .withTitle('Taak uitgevoerd!')
+            .withMessage('De taak is succesvol uitgevoerd.')
+            .build()),
         error =>
           this.alertService.setAlert(
             new AlertBuilder()
               .error(error)
               .withTitle('Taak kon niet verstuurd worden!')
               .withMessage('Er is een fout opgetreden bij het versturen van de taak. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 }

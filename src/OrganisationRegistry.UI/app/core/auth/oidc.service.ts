@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import { Http, Response } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -12,6 +12,7 @@ import { User } from './user.model';
 import { Role } from './role.model';
 import {OidcClient} from "oidc-client";
 import {Organisation} from "../../services/organisations";
+import {Subscription} from "rxjs/Subscription";
 
 interface SecurityInfo {
     isLoggedIn: boolean,
@@ -63,7 +64,7 @@ function createSecurityInfo(
 }
 
 @Injectable()
-export class OidcService {
+export class OidcService implements OnDestroy {
   private securityUrl = `${this.configurationService.apiUrl}/v1/security`;
   private securityInfoUrl = `${this.configurationService.apiUrl}/v1/security/info`;
   private cacheTimeInMs: number = 60000;
@@ -86,13 +87,15 @@ export class OidcService {
 
   private client: OidcClient;
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     private http: Http,
     private configurationService: ConfigurationService
   ) {
     this.securityInfoChanged$ = this.data$.asObservable();
 
-    http.get(this.securityInfoUrl)
+    this.subscriptions.push(http.get(this.securityInfoUrl)
       .subscribe(r => {
         var data = r.json();
         const settings = {
@@ -115,18 +118,27 @@ export class OidcService {
           query_status_response_type: 'code'
         };
         this.client = new OidcClient(settings);
-      });
+      }));
 
-    this.request$
+    this.subscriptions.push(this.request$
       .exhaustMap(this.loadFromServer.bind(this))
       .share()
       .startWith(this.storage)
       .subscribe(
-        x => { this.data$.next(x as SecurityInfo); },
-        err => { this.data$.next(err as SecurityInfo); },
-        () => {});
+        x => {
+          this.data$.next(x as SecurityInfo);
+        },
+        err => {
+          this.data$.next(err as SecurityInfo);
+        },
+        () => {
+        }));
 
-    this.data$.subscribe(this.saveToStorage.bind(this));
+    this.subscriptions.push(this.data$.subscribe(this.saveToStorage.bind(this)));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   exchangeCode(code: string, configurationService: ConfigurationService) {
@@ -136,7 +148,7 @@ export class OidcService {
       .json()
       .build();
 
-    return this.http
+    const subscription = this.http
       .get(url, { headers: headers })
       .catch(this.handleError)
       .subscribe(res => {
@@ -144,6 +156,10 @@ export class OidcService {
         localStorage.setItem('token', token);
         window.location.href = configurationService.uiUrl;
       })
+
+    this.subscriptions.push(subscription);
+
+    return subscription;
   }
 
   public signIn() {

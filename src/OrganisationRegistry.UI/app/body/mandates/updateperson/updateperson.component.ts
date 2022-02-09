@@ -1,36 +1,34 @@
-﻿import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+﻿import {Component, OnDestroy, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, FormControl} from '@angular/forms';
+import {ActivatedRoute, Router, Params} from '@angular/router';
 
-import { Observable } from 'rxjs/Observable';
+import {Observable} from 'rxjs/Observable';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { UpdateAlertMessages } from 'core/alertmessages';
-import { Create, ICrud } from 'core/crud';
-import { required } from 'core/validation';
+import {AlertService, AlertBuilder} from 'core/alert';
+import {required} from 'core/validation';
 
-import { SelectItem } from 'shared/components/form/form-group-select';
-import { SearchResult } from 'shared/components/form/form-group-autocomplete';
-import { ContactTypeListItem } from 'services/contacttypes';
+import {SelectItem} from 'shared/components/form/form-group-select';
+import {SearchResult} from 'shared/components/form/form-group-autocomplete';
+import {ContactTypeListItem} from 'services/contacttypes';
 
 import {
   UpdateBodyMandateRequest,
-  BodyMandateService,
-  BodyMandateType
+  BodyMandateService
 } from 'services/bodymandates';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'updateperson.template.html',
   styleUrls: ['updateperson.style.css']
 })
-export class BodyMandatesUpdatePersonComponent implements OnInit {
+export class BodyMandatesUpdatePersonComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public isBusy: boolean;
   public bodySeats: SelectItem[];
   public person: SearchResult;
   public contactTypes: ContactTypeListItem[];
 
-  private readonly updateAlerts = new UpdateAlertMessages('Mandaat');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -70,18 +68,22 @@ export class BodyMandatesUpdatePersonComponent implements OnInit {
         .map(k => new SelectItem(k.bodySeatId, `${k.name} - ${k.seatTypeName} (#${k.bodySeatNumber})`));
     });
 
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let bodyMandateId = res[1]['id'];
 
-        this.bodyMandateService
+        this.subscriptions.push(this.bodyMandateService
           .get(orgId, bodyMandateId)
           .subscribe(
             item => this.setForm(item),
-            error => this.handleError(error));
-    });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   toFormGroup(contactTypes: ContactTypeListItem[]) {
@@ -101,17 +103,17 @@ export class BodyMandatesUpdatePersonComponent implements OnInit {
   update(value: UpdateBodyMandateRequest) {
     this.form.disable();
 
-    this.bodyMandateService.update(value.bodyId, value)
+    this.subscriptions.push(this.bodyMandateService.update(value.bodyId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
           if (result) {
-            this.router.navigate(['./../..'], { relativeTo: this.route });
+            this.router.navigate(['./../..'], {relativeTo: this.route});
             this.handleSaveSuccess();
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   private setForm(bodyMandate) {

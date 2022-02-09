@@ -87,7 +87,7 @@ export class BodyMandatesOverviewComponent implements OnInit, OnDestroy {
       ? this.bodyMandateService.getBodyMandates(this.bodyId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.bodyMandateService.getBodyMandates(this.bodyId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    bodyMandates
+    this.subscriptions.push(bodyMandates
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -99,6 +99,6 @@ export class BodyMandatesOverviewComponent implements OnInit, OnDestroy {
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

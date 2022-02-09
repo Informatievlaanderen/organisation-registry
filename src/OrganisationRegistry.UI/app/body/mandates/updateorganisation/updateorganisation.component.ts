@@ -1,12 +1,10 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { UpdateAlertMessages } from 'core/alertmessages';
-import { Create, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
@@ -14,20 +12,20 @@ import { SearchResult } from 'shared/components/form/form-group-autocomplete';
 
 import {
   UpdateBodyMandateRequest,
-  BodyMandateService,
-  BodyMandateType
+  BodyMandateService
 } from 'services/bodymandates';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'updateorganisation.template.html',
   styleUrls: ['updateorganisation.style.css']
 })
-export class BodyMandatesUpdateOrganisationComponent implements OnInit {
+export class BodyMandatesUpdateOrganisationComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public bodySeats: SelectItem[];
   public organisation: SearchResult;
 
-  private readonly updateAlerts = new UpdateAlertMessages('Mandaat');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -66,18 +64,22 @@ export class BodyMandatesUpdateOrganisationComponent implements OnInit {
         .map(k => new SelectItem(k.bodySeatId, `${k.name} - ${k.seatTypeName} (#${k.bodySeatNumber})`));
     });
 
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let bodyMandateId = res[1]['id'];
 
-        this.bodyMandateService
+        this.subscriptions.push(this.bodyMandateService
           .get(orgId, bodyMandateId)
           .subscribe(
             item => this.setForm(item),
-            error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -87,7 +89,7 @@ export class BodyMandatesUpdateOrganisationComponent implements OnInit {
   update(value: UpdateBodyMandateRequest) {
     this.form.disable();
 
-    this.bodyMandateService.update(value.bodyId, value)
+    this.subscriptions.push(this.bodyMandateService.update(value.bodyId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -97,7 +99,7 @@ export class BodyMandatesUpdateOrganisationComponent implements OnInit {
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   private setForm(bodyMandate) {

@@ -1,17 +1,15 @@
-import { Component, OnInit, ViewChild, ElementRef, Renderer } from '@angular/core';
+import {Component, OnDestroy, OnInit, Renderer} from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import { ActivatedRoute, Router} from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { UpdateAlertMessages } from 'core/alertmessages';
-import { Update, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
 import { SearchResult } from 'shared/components/form/form-group-autocomplete';
 
-import { Person, PersonService } from 'services/people';
+import { PersonService } from 'services/people';
 import { ContactTypeListItem } from 'services/contacttypes';
 
 import {
@@ -23,18 +21,19 @@ import {
   Delegation,
   DelegationService
 } from 'services/delegations';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'update.template.html',
   styleUrls: ['update.style.css']
 })
-export class DelegationAssignimentsUpdateDelegationAssignmentComponent implements OnInit {
+export class DelegationAssignimentsUpdateDelegationAssignmentComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public person: SearchResult;
   public delegation: Delegation;
   public contactTypes: ContactTypeListItem[];
 
-  private readonly updateAlerts = new UpdateAlertMessages('Toewijzing');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -64,7 +63,7 @@ export class DelegationAssignimentsUpdateDelegationAssignmentComponent implement
     this.contactTypes = this.route.snapshot.data['contactTypes'];
     this.form.addControl('contacts', this.toFormGroup(this.contactTypes));
 
-    this.route.params
+    this.subscriptions.push(this.route.params
       .subscribe(res => {
         this.form.disable();
         let bodyMandateId = res['bodyMandateId'];
@@ -76,15 +75,19 @@ export class DelegationAssignimentsUpdateDelegationAssignmentComponent implement
         let delegationAssignment$ =
           this.delegationAssignmentService.get(bodyMandateId, delegationAssignmentId);
 
-        Observable.zip(delegation$, delegationAssignment$)
+        this.subscriptions.push(Observable.zip(delegation$, delegationAssignment$)
           .finally(() => this.form.enable())
           .subscribe(
             res => {
               this.delegation = res[0];
               this.setForm(res[1]);
             },
-            error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   toFormGroup(contactTypes: ContactTypeListItem[]) {
@@ -104,7 +107,7 @@ export class DelegationAssignimentsUpdateDelegationAssignmentComponent implement
   update(value: UpdateDelegationAssignmentRequest) {
     this.form.disable();
 
-    this.delegationAssignmentService.update(value.bodyMandateId, value)
+    this.subscriptions.push(this.delegationAssignmentService.update(value.bodyMandateId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -114,7 +117,7 @@ export class DelegationAssignimentsUpdateDelegationAssignmentComponent implement
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   private setForm(delegationAssignment) {

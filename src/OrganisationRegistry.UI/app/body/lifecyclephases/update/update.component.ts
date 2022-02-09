@@ -1,33 +1,31 @@
-import { Component, OnInit, ViewChild, ElementRef, Renderer } from '@angular/core';
+import {Component, OnDestroy, OnInit, Renderer} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import { ActivatedRoute, Router} from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { UpdateAlertMessages } from 'core/alertmessages';
-import { Update, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
-import { SearchResult } from 'shared/components/form/form-group-autocomplete';
 
 import {
   UpdateBodyLifecyclePhaseRequest,
   BodyLifecyclePhaseService
 } from 'services/bodylifecyclephases';
 
-import { LifecyclePhaseType, LifecyclePhaseTypeService } from 'services/lifecyclephasetypes';
+import { LifecyclePhaseTypeService } from 'services/lifecyclephasetypes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'update.template.html',
   styleUrls: ['update.style.css']
 })
-export class BodyLifecyclePhasesUpdateBodyLifecyclePhaseComponent implements OnInit {
+export class BodyLifecyclePhasesUpdateBodyLifecyclePhaseComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public lifecyclePhaseTypes: SelectItem[];
 
-  private readonly updateAlerts = new UpdateAlertMessages('Levensloopfase');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -52,18 +50,22 @@ export class BodyLifecyclePhasesUpdateBodyLifecyclePhaseComponent implements OnI
   ngOnInit() {
     this.lifecyclePhaseTypes = this.route.snapshot.data['lifecyclePhaseTypes'].map(k => new SelectItem(k.id, k.name));
 
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let bodyLifecyclePhaseId = res[1]['id'];
 
-        this.bodyLifecyclePhaseService
+        this.subscriptions.push(this.bodyLifecyclePhaseService
           .get(orgId, bodyLifecyclePhaseId)
           .subscribe(
             item => this.setForm(item),
-            error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -73,7 +75,7 @@ export class BodyLifecyclePhasesUpdateBodyLifecyclePhaseComponent implements OnI
   update(value: UpdateBodyLifecyclePhaseRequest) {
     this.form.disable();
 
-    this.bodyLifecyclePhaseService.update(value.bodyId, value)
+    this.subscriptions.push(this.bodyLifecyclePhaseService.update(value.bodyId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -83,7 +85,7 @@ export class BodyLifecyclePhasesUpdateBodyLifecyclePhaseComponent implements OnI
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   private setForm(bodyLifecyclePhase) {

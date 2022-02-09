@@ -1,6 +1,6 @@
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 
 import * as moment from 'moment/moment';
 
@@ -9,12 +9,13 @@ import { AlertService, AlertBuilder } from 'core/alert';
 import { Difference } from './difference.model';
 import { CreateOrganisationFormValues } from './create-organisation.model';
 import {KboOrganisation, OrganisationService} from 'services/organisations';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'couple-with-kbo.template.html',
   styleUrls: ['couple-with-kbo.style.css'],
 })
-export class OrganisationCoupleWithKboComponent implements OnInit {
+export class OrganisationCoupleWithKboComponent implements OnInit, OnDestroy {
   @Output('onSubmit') onSubmit: EventEmitter<CreateOrganisationFormValues> = new EventEmitter<CreateOrganisationFormValues>();
   @Output('onCheckkboNumber') onCheckkboNumber: EventEmitter<string> = new EventEmitter<string>();
 
@@ -24,6 +25,8 @@ export class OrganisationCoupleWithKboComponent implements OnInit {
   public today: string;
   public organisationId: string;
   public differences: Difference[] = new Array();
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     formBuilder: FormBuilder,
@@ -60,12 +63,12 @@ export class OrganisationCoupleWithKboComponent implements OnInit {
     this.route.parent.parent.params.forEach((params: Params) => {
       this.organisationId = params['id'];
 
-      this.organisationService.get(this.organisationId)
+      this.subscriptions.push(this.organisationService.get(this.organisationId)
         .finally(() => this.kboNumberForm.enable())
         .subscribe(
           item => {
             if (item) {
-              this.kboNumberForm.setValue({ kboNumber: item.kboNumber });
+              this.kboNumberForm.setValue({kboNumber: item.kboNumber});
               this.organisation = new CreateOrganisationFormValues();
               this.organisation.id = item.id;
               this.organisation.name = item.name;
@@ -78,8 +81,12 @@ export class OrganisationCoupleWithKboComponent implements OnInit {
               .error(error)
               .withTitle('Persoon kon niet geladen worden!')
               .withMessage('Er is een fout opgetreden bij het ophalen van de persoon. Probeer het later opnieuw.')
-              .build()));
+              .build())));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   submit() {
@@ -93,13 +100,13 @@ export class OrganisationCoupleWithKboComponent implements OnInit {
   private putInsz(): any {
     this.isBusy = true;
     this.alertService.clearAlert();
-    this.organisationService.putKboNumber(this.organisationId, this.organisationFromKbo.kboNumber)
+    this.subscriptions.push(this.organisationService.putKboNumber(this.organisationId, this.organisationFromKbo.kboNumber)
       .finally(() => {
         this.isBusy = false;
       })
       .subscribe(
         result => {
-          this.router.navigate(['./..'], { relativeTo: this.route });
+          this.router.navigate(['./..'], {relativeTo: this.route});
 
           this.alertService.setAlert(
             new AlertBuilder()
@@ -109,13 +116,13 @@ export class OrganisationCoupleWithKboComponent implements OnInit {
               .build());
         },
         error => {
-            this.router.navigate(['./..'], { relativeTo: this.route });
-            this.alertService.setAlert(
-              new AlertBuilder()
-                .error(error)
-                .build());
-            this.organisationFromKbo = null;
-        });
+          this.router.navigate(['./..'], {relativeTo: this.route});
+          this.alertService.setAlert(
+            new AlertBuilder()
+              .error(error)
+              .build());
+          this.organisationFromKbo = null;
+        }));
   }
 
   private getOrganisationFromKbo(): any {
@@ -123,7 +130,7 @@ export class OrganisationCoupleWithKboComponent implements OnInit {
     this.alertService.clearAlert();
     this.differences = new Array();
 
-    this.organisationService.checkKbo(this.kboNumberForm.get('kboNumber').value)
+    this.subscriptions.push(this.organisationService.checkKbo(this.kboNumberForm.get('kboNumber').value)
       .finally(() => {
         this.isBusy = false;
       })
@@ -153,6 +160,6 @@ export class OrganisationCoupleWithKboComponent implements OnInit {
               .withTitle('KBO nummer')
               .withMessage('Het opgegeven KBO nummer werd niet gevonden.')
               .build());
-        });
+        }));
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
@@ -8,13 +8,16 @@ import { Body, BodyService } from 'services/bodies';
 import { AlertBuilder, AlertService, Alert, AlertType } from 'core/alert';
 import { PagedEvent, PagedResult, SortOrder } from 'core/pagination';
 import { BaseAlertMessages } from 'core/alertmessages';
+import {Subscription} from "rxjs/Subscription";
 
 @Injectable()
-export class BodyInfoService {
+export class BodyInfoService implements OnDestroy {
   private bodyChangedSource: Subject<Body>;
   private bodyChanged$: Observable<Body>;
 
   private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Orgaan');
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private bodyService: BodyService,
@@ -24,18 +27,22 @@ export class BodyInfoService {
     this.bodyChanged$ = this.bodyChangedSource.asObservable();
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   get bodyChanged() {
     return this.bodyChanged$;
   }
 
   loadBody(id: string) {
-    this.bodyService.get(id)
+    this.subscriptions.push(this.bodyService.get(id)
       .subscribe(
         item => {
           if (item)
             this.bodyChangedSource.next(item);
         },
-        error => this.alertLoadError(error));
+        error => this.alertLoadError(error)));
   }
 
   private alertLoadError(error) {

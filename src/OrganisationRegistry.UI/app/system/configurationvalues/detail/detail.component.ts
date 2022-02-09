@@ -1,4 +1,4 @@
-﻿import { Component, ElementRef, OnInit } from '@angular/core';
+﻿import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
@@ -8,18 +8,21 @@ import { Create, ICrud, Update } from 'core/crud';
 import { required } from 'core/validation';
 
 import { ConfigurationValue, ConfigurationValueService } from 'services/configurationvalues';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: [ 'detail.style.css' ]
 })
-export class ConfigurationValueDetailComponent implements OnInit {
+export class ConfigurationValueDetailComponent implements OnInit, OnDestroy {
   public isEditMode: boolean;
   public form: FormGroup;
 
   private crud: ICrud<ConfigurationValue>;
   private readonly createAlerts = new CreateAlertMessages('Configuratiewaarde');
   private readonly updateAlerts = new UpdateAlertMessages('Configuratiewaarde');
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   get isFormValid() {
     return this.form.enabled && this.form.valid;
@@ -51,7 +54,7 @@ export class ConfigurationValueDetailComponent implements OnInit {
         : new Create<ConfigurationValueService, ConfigurationValue>(this.itemService, this.alertService, this.createAlerts);
 
       this.form.disable();
-      this.crud
+      this.subscriptions.push(this.crud
         .load(ConfigurationValue)
         .finally(() => this.form.enable())
         .subscribe(
@@ -63,8 +66,12 @@ export class ConfigurationValueDetailComponent implements OnInit {
             }
           },
           error => this.crud.alertLoadError(error)
-        );
+        ));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   createOrUpdate(value: ConfigurationValue) {
@@ -73,22 +80,22 @@ export class ConfigurationValueDetailComponent implements OnInit {
     value.id = value.key;
     value.name = value.key;
 
-    this.crud.save(value)
+    this.subscriptions.push(this.crud.save(value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
           if (result) {
             let configurationValueUrl = this.router.serializeUrl(
               this.router.createUrlTree(
-                [ './../', value.id ],
-                { relativeTo: this.route }));
+                ['./../', value.id],
+                {relativeTo: this.route}));
 
-            this.router.navigate([ './..' ], { relativeTo: this.route });
+            this.router.navigate(['./..'], {relativeTo: this.route});
 
             this.crud.alertSaveSuccess(value, configurationValueUrl);
           }
         },
         error => this.crud.alertSaveError(error)
-      );
+      ));
   }
 }

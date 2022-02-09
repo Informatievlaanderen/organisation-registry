@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
@@ -7,14 +7,17 @@ import { required } from 'core/validation';
 
 import { BodyService, BodyBalancedParticipation } from 'services/bodies';
 import { RadioItem } from 'shared/components/form/form-group-radio/form-group-radio.model';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'manage.template.html',
   styleUrls: ['manage.style.css']
 })
-export class BodyParticipationManageComponent implements OnInit {
+export class BodyParticipationManageComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public mepComplianceOptions: RadioItem[];
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -42,7 +45,7 @@ export class BodyParticipationManageComponent implements OnInit {
       let bodyId = params['id'];
       this.form.disable();
 
-      this.bodyService.getBalancedParticipation(bodyId)
+      this.subscriptions.push(this.bodyService.getBalancedParticipation(bodyId)
         .finally(() => this.form.enable())
         .subscribe(
           item => {
@@ -55,8 +58,12 @@ export class BodyParticipationManageComponent implements OnInit {
               .error(error)
               .withTitle('Orgaan MEP beheer kon niet geladen worden!')
               .withMessage('Er is een fout opgetreden bij het ophalen van het orgaan MEP beheer. Probeer het later opnieuw.')
-              .build()));
+              .build())));
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -65,7 +72,7 @@ export class BodyParticipationManageComponent implements OnInit {
 
   submit(value: BodyBalancedParticipation) {
     this.form.disable();
-    this.bodyService.changeBalancedParticipation(value)
+    this.subscriptions.push(this.bodyService.changeBalancedParticipation(value)
       .finally(() => this.form.enable())
       .subscribe(
         result => this.onSuccess(result),
@@ -74,7 +81,7 @@ export class BodyParticipationManageComponent implements OnInit {
             .error(error)
             .withTitle('Informatie orgaan MEP beheer kon niet bewaard worden!')
             .withMessage('Er is een fout opgetreden bij het bewaren van de gegevens. Probeer het later opnieuw.')
-            .build()));
+            .build())));
   }
 
   private onSuccess(result) {

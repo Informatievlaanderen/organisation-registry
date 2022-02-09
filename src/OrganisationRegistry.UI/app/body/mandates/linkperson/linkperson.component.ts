@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
@@ -15,17 +15,18 @@ import {
   BodyMandateService,
   BodyMandateType
 } from 'services/bodymandates';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'linkperson.template.html',
   styleUrls: ['linkperson.style.css']
 })
-export class BodyMandatesLinkPersonComponent implements OnInit {
+export class BodyMandatesLinkPersonComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public contactTypes: ContactTypeListItem[];
   public bodySeats: SelectItem[];
 
-  private readonly createAlerts = new CreateAlertMessages('Mandaat');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -67,6 +68,10 @@ export class BodyMandatesLinkPersonComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   toFormGroup(contactTypes: ContactTypeListItem[]) {
     let group: any = {};
 
@@ -84,7 +89,7 @@ export class BodyMandatesLinkPersonComponent implements OnInit {
   create(value: CreateBodyMandateRequest) {
     this.form.disable();
 
-    this.bodyMandateService.create(value.bodyId, value)
+    this.subscriptions.push( this.bodyMandateService.create(value.bodyId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -105,6 +110,6 @@ export class BodyMandatesLinkPersonComponent implements OnInit {
               .error(error)
               .withTitle('Mandaat kon niet toegewezen worden!')
               .withMessage('Er is een fout opgetreden bij het toewijzen van het mandaat. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 }

@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+﻿import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
@@ -17,18 +17,19 @@ import {
   BodyMandateService,
   BodyMandateType
 } from 'services/bodymandates';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'updatefunction.template.html',
   styleUrls: ['updatefunction.style.css']
 })
-export class BodyMandatesUpdateFunctionComponent implements OnInit {
+export class BodyMandatesUpdateFunctionComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public bodySeats: SelectItem[];
   public functionTypes: SelectItem[];
   public organisation: SearchResult;
 
-  private readonly updateAlerts = new UpdateAlertMessages('Mandaat');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -69,18 +70,22 @@ export class BodyMandatesUpdateFunctionComponent implements OnInit {
         .map(k => new SelectItem(k.bodySeatId, `${k.name} - ${k.seatTypeName} (#${k.bodySeatNumber})`));
     });
 
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let bodyMandateId = res[1]['id'];
 
-        this.bodyMandateService
+        this.subscriptions.push(this.bodyMandateService
           .get(orgId, bodyMandateId)
           .subscribe(
             item => this.setForm(item),
-            error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -90,7 +95,7 @@ export class BodyMandatesUpdateFunctionComponent implements OnInit {
   update(value: UpdateBodyMandateRequest) {
     this.form.disable();
 
-    this.bodyMandateService.update(value.bodyId, value)
+    this.subscriptions.push(this.bodyMandateService.update(value.bodyId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -100,7 +105,7 @@ export class BodyMandatesUpdateFunctionComponent implements OnInit {
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   private setForm(bodyMandate) {

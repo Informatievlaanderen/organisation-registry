@@ -1,24 +1,23 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs/Observable';
 
-import { Alert, AlertBuilder, AlertService, AlertType } from 'core/alert';
-import { UpdateAlertMessages } from 'core/alertmessages';
-import { Create, ICrud, Update } from 'core/crud';
+import { AlertBuilder, AlertService} from 'core/alert';
 import { required } from 'core/validation';
 
 import { ProjectionState, ProjectionStateService } from 'services/projectionstates';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
     templateUrl: 'detail.template.html',
     styleUrls: [ 'detail.style.css' ]
   })
-  export class ProjectionStateDetailComponent implements OnInit {
+  export class ProjectionStateDetailComponent implements OnInit, OnDestroy {
     public form: FormGroup;
     public isBusy: boolean;
 
-    private readonly updateAlerts = new UpdateAlertMessages('Projectie Status');
+    private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
     constructor(
       private route: ActivatedRoute,
@@ -35,33 +34,36 @@ import { ProjectionState, ProjectionStateService } from 'services/projectionstat
     }
 
     ngOnInit() {
-
-      Observable.zip(this.route.params)
+      this.subscriptions.push(Observable.zip(this.route.params)
         .subscribe(res => {
           this.form.disable();
           let stateId = res[0]['id'];
 
-          Observable.zip(this.projectionStateService.get(stateId))
+          this.subscriptions.push(Observable.zip(this.projectionStateService.get(stateId))
             .subscribe(
               item => this.setForm(item[0]),
-              error => this.handleError(error));
-        });
+              error => this.handleError(error)));
+        }));
+    }
+
+    ngOnDestroy() {
+      this.subscriptions.forEach(sub => sub.unsubscribe());
     }
 
     update(value: ProjectionState) {
       this.form.disable();
 
-      this.projectionStateService.update(value)
+      this.subscriptions.push(this.projectionStateService.update(value)
         .finally(() => this.form.enable())
         .subscribe(
-        result => {
+          result => {
             if (result) {
-              this.router.navigate(['./..'], { relativeTo: this.route });
+              this.router.navigate(['./..'], {relativeTo: this.route});
               this.handleSaveSuccess();
             }
           },
           error => this.handleSaveError(error)
-        );
+        ));
     }
 
     get isFormValid() {

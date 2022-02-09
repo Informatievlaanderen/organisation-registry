@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import { AlertService, Alert, AlertType } from 'core/alert';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
@@ -11,12 +11,13 @@ import {
 } from 'services/events';
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {Observable} from "rxjs/Observable";
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: [ 'overview.style.css' ]
 })
-export class EventDataOverviewComponent implements OnInit {
+export class EventDataOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public events: PagedResult<EventListItem> = new PagedResult<EventListItem>();
   public filterSource: BehaviorSubject<EventFilter>;
@@ -24,6 +25,8 @@ export class EventDataOverviewComponent implements OnInit {
 
   private currentSortBy: string = 'number';
   private currentSortOrder: SortOrder = SortOrder.Descending;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private alertService: AlertService,
@@ -34,6 +37,10 @@ export class EventDataOverviewComponent implements OnInit {
 
   ngOnInit() {
     this.loadEvents();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<EventFilter>) {
@@ -65,7 +72,7 @@ export class EventDataOverviewComponent implements OnInit {
       ? this.eventService.getEvents(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.eventService.getEvents(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    events
+    this.subscriptions.push(events
       .finally(() => this.isLoading = false)
       .subscribe(
         newEvents => this.events = newEvents,
@@ -73,6 +80,6 @@ export class EventDataOverviewComponent implements OnInit {
           new Alert(
             AlertType.Error,
             'Events kunnen niet geladen worden!',
-            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }

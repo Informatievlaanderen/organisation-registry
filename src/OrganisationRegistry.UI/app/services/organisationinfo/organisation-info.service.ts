@@ -68,7 +68,7 @@ export class OrganisationInfoService implements OnDestroy {
   private isLimitedByVlimpersChangedSource: BehaviorSubject<boolean>;
   private readonly isLimitedByVlimpersChanged$: Observable<boolean>;
   private currentOrganisation: Organisation;
-  private subscriptions: Subscription[] = new Array<Subscription>();
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private organisationService: OrganisationService,

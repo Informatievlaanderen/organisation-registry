@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup, Validator, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
@@ -15,17 +15,20 @@ import {
   CreateBodyBodyClassificationRequest,
   BodyBodyClassificationService
 } from 'services/bodybodyclassifications';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'create.template.html',
   styleUrls: ['create.style.css']
 })
-export class BodyBodyClassificationsCreateBodyBodyClassificationComponent implements OnInit {
+export class BodyBodyClassificationsCreateBodyBodyClassificationComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public bodyClassificationTypes: SelectItem[];
   public classifications: Array<SelectItem> = [];
   private classificationType: string = '';
   private readonly createAlerts = new CreateAlertMessages('Classificatie');
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -51,7 +54,7 @@ export class BodyBodyClassificationsCreateBodyBodyClassificationComponent implem
       this.form.setValue(new CreateBodyBodyClassificationRequest(params['id']));
     });
 
-    this.bodyClassificationTypeService
+    this.subscriptions.push(this.bodyClassificationTypeService
       .getAllBodyClassificationTypes()
       .finally(() => this.enableForm())
       .subscribe(
@@ -62,15 +65,19 @@ export class BodyBodyClassificationsCreateBodyBodyClassificationComponent implem
               .error(error)
               .withTitle('Classificatietypes konden niet geladen worden!')
               .withMessage('Er is een fout opgetreden bij het ophalen van de classificatietypes. Probeer het later opnieuw.')
-              .build()));
+              .build())));
 
     this.subcribeToFormChanges();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   subcribeToFormChanges() {
     const classificationTypeChanges$ = this.form.controls['bodyClassificationTypeId'].valueChanges;
 
-    classificationTypeChanges$
+    this.subscriptions.push(classificationTypeChanges$
       .subscribe(function (classificationType) {
         if (this.classificationType === classificationType)
           return;
@@ -83,7 +90,7 @@ export class BodyBodyClassificationsCreateBodyBodyClassificationComponent implem
 
         if (classificationType) {
 
-          this.bodyClassificationService
+          this.subscriptions.push(this.bodyClassificationService
             .getAllBodyClassifications(classificationType)
             .finally(() => this.enableForm())
             .subscribe(
@@ -94,11 +101,11 @@ export class BodyBodyClassificationsCreateBodyBodyClassificationComponent implem
                     .error(error)
                     .withTitle('Classificaties konden niet geladen worden!')
                     .withMessage('Er is een fout opgetreden bij het ophalen van de classificaties. Probeer het later opnieuw.')
-                    .build()));
+                    .build())));
         } else {
           this.enableForm();
         }
-      }.bind(this));
+      }.bind(this)));
   }
 
   enableForm() {
@@ -114,7 +121,7 @@ export class BodyBodyClassificationsCreateBodyBodyClassificationComponent implem
   create(value: CreateBodyBodyClassificationRequest) {
     this.form.disable();
 
-    this.bodyBodyClassificationService.create(value.bodyId, value)
+    this.subscriptions.push(this.bodyBodyClassificationService.create(value.bodyId, value)
       .finally(() => this.enableForm())
       .subscribe(
         result => {
@@ -135,6 +142,6 @@ export class BodyBodyClassificationsCreateBodyBodyClassificationComponent implem
               .error(error)
               .withTitle('Classificatie kon niet bewaard worden!')
               .withMessage('Er is een fout opgetreden bij het bewaren van de gegevens. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 }

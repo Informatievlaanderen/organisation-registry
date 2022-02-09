@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { Alert, AlertBuilder, AlertService, AlertType } from 'core/alert';
@@ -13,12 +13,13 @@ import {
     CapacityPersonReportService,
     CapacityPersonReportFilter
 } from 'services/reports/capacity-persons';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: [ 'detail.style.css' ]
 })
-export class CapacityDetailComponent implements OnInit {
+export class CapacityDetailComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public capacityId: string;
   public capacity: Capacity;
@@ -27,6 +28,8 @@ export class CapacityDetailComponent implements OnInit {
   private filter: CapacityPersonReportFilter = new CapacityPersonReportFilter();
   private currentSortBy: string = 'organisationName';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -45,7 +48,7 @@ export class CapacityDetailComponent implements OnInit {
       this.capacityId = id;
 
       this.isLoading = true;
-      this.capacityService
+      this.subscriptions.push(this.capacityService
         .get(id)
         .subscribe(
           item => {
@@ -53,13 +56,17 @@ export class CapacityDetailComponent implements OnInit {
               this.capacity = item;
           },
           error => this.alertService.setAlert(
-                new Alert(
-                    AlertType.Error,
-                    'Hoedanigheden kunnen niet geladen worden!',
-                    'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            new Alert(
+              AlertType.Error,
+              'Hoedanigheden kunnen niet geladen worden!',
+              'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
 
       this.loadCapacityPersons(id);
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<CapacityPersonReportFilter>) {
@@ -74,16 +81,16 @@ export class CapacityDetailComponent implements OnInit {
   }
 
   exportCsv(event: void) {
-    this.capacityPersonReportService.exportCsv(this.capacityId, this.filter, this.currentSortBy, this.currentSortOrder)
+    this.subscriptions.push(this.capacityPersonReportService.exportCsv(this.capacityId, this.filter, this.currentSortBy, this.currentSortOrder)
       .subscribe(
-      csv => this.fileSaverService.saveFile(csv, 'export_hoedanigheid'),
-      error => this.alertService.setAlert(
-        new AlertBuilder()
-          .error(error)
-          .withTitle('Personen per hoedanigheid kunnen niet geëxporteerd worden!')
-          .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
-          .build()
-      ));
+        csv => this.fileSaverService.saveFile(csv, 'export_hoedanigheid'),
+        error => this.alertService.setAlert(
+          new AlertBuilder()
+            .error(error)
+            .withTitle('Personen per hoedanigheid kunnen niet geëxporteerd worden!')
+            .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
+            .build()
+        )));
   }
 
   private loadCapacityPersons(capacityId: string, event?: PagedEvent) {
@@ -92,7 +99,7 @@ export class CapacityDetailComponent implements OnInit {
       ? this.capacityPersonReportService.getCapacityPersons(capacityId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.capacityPersonReportService.getCapacityPersons(capacityId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    capacityPersons
+    this.subscriptions.push(capacityPersons
       .finally(() => this.isLoading = false)
       .subscribe(
         capacityPersons => this.capacityPersons = capacityPersons,
@@ -100,6 +107,6 @@ export class CapacityDetailComponent implements OnInit {
           new Alert(
             AlertType.Error,
             'Personen per hoedanigheid kunnen niet geladen worden!',
-            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }

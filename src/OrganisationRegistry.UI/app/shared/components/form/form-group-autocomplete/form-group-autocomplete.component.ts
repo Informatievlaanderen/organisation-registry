@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   EventEmitter,
@@ -9,17 +8,14 @@ import {
   OnInit,
   OnDestroy,
   ElementRef,
-  Renderer,
-  ViewChild
+  Renderer
 } from '@angular/core';
 
 import { FormControl } from '@angular/forms';
 import { UUID } from 'angular2-uuid';
 
-import { SearchCallback } from './search-callback.interface';
 import { SearchResult } from './search-result.model';
-
-import { Observable } from 'rxjs/Observable';
+import {Subscription} from "rxjs/Subscription";
 
 declare var vl: any; // global vlaanderen ui
 
@@ -82,6 +78,8 @@ export class FormGroupAutocomplete implements OnInit, AfterViewInit, OnDestroy {
   private generatedGuid: string;
   private currentValue: string = '';
 
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
+
   constructor(
     element: ElementRef,
     private renderer: Renderer,
@@ -99,7 +97,7 @@ export class FormGroupAutocomplete implements OnInit, AfterViewInit, OnDestroy {
     this.noResults = !this.hasInitialValue();
 
     // clear the elements if the value changes to null programmatically
-    this.control.valueChanges.subscribe(value => {
+    this.subscriptions.push(this.control.valueChanges.subscribe(value => {
       if (value === null) { // we only want to check for null!
         this.buttonElement.innerText = '';
         this.inputElement.value = '';
@@ -108,11 +106,12 @@ export class FormGroupAutocomplete implements OnInit, AfterViewInit, OnDestroy {
 
         this.changeDetect.detectChanges();
       }
-    });
+    }));
   }
 
   ngOnDestroy() {
     this.changeDetect.detach();
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   ngAfterViewInit() {

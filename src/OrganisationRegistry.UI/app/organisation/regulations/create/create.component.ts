@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { CreateAlertMessages } from 'core/alertmessages';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
@@ -17,20 +16,21 @@ import {
 
 import { RegulationThemeService } from 'services/regulation-themes';
 import { RegulationSubThemeService } from 'services/regulation-sub-themes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'create.template.html',
   styleUrls: ['create.style.css']
 })
-export class OrganisationRegulationsCreateOrganisationRegulationComponent implements OnInit {
+export class OrganisationRegulationsCreateOrganisationRegulationComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public regulationThemes: SelectItem[];
   public regulationSubThemes: Array<SelectItem> = [];
 
   private regulationTheme: string = '';
-  private readonly createAlerts = new CreateAlertMessages('Regulation');
-
   private converter = new showdown.Converter();
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -64,7 +64,7 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
     });
 
 
-    this.regulationThemeService
+    this.subscriptions.push(this.regulationThemeService
       .getAllRegulationThemes()
       .finally(() => this.enableForm())
       .subscribe(
@@ -75,30 +75,34 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
               .error(error)
               .withTitle('Regelgevingthema\'s konden niet geladen worden!')
               .withMessage('Er is een fout opgetreden bij het ophalen van de regelgevingsthema\'s. Probeer het later opnieuw.')
-              .build()));
+              .build())));
     this.subscribeToFormChanges();
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   subscribeToFormChanges() {
-    this.form.controls['description'].valueChanges.subscribe(function(x) {
+    this.subscriptions.push(this.form.controls['description'].valueChanges.subscribe(function (x) {
       this.form.controls['descriptionRendered'].patchValue(this.converter.makeHtml(x));
-    }.bind(this));
+    }.bind(this)));
 
     const regulationThemeChanges$ = this.form.controls['regulationThemeId'].valueChanges;
 
-    regulationThemeChanges$
+    this.subscriptions.push(regulationThemeChanges$
       .subscribe(function (regulationTheme) {
         if (this.regulationTheme === regulationTheme)
           return;
 
         this.regulationTheme = regulationTheme;
 
-        this.form.patchValue({ regulationSubThemeId: '' });
+        this.form.patchValue({regulationSubThemeId: ''});
 
         this.form.disable();
 
         if (regulationTheme) {
-          this.regulationSubThemeService
+          this.subscriptions.push(this.regulationSubThemeService
             .getAllRegulationSubThemes(regulationTheme)
             .finally(() => this.enableForm())
             .subscribe(
@@ -109,11 +113,11 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
                     .error(error)
                     .withTitle('Regelgevingsubthema\'s konden niet geladen worden!')
                     .withMessage('Er is een fout opgetreden bij het ophalen van de regelgevingsubthema\'s. Probeer het later opnieuw.')
-                    .build()));
+                    .build())));
         } else {
           this.enableForm();
         }
-      }.bind(this));
+      }.bind(this)));
   }
 
   showExample(e) {
@@ -207,12 +211,12 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
   create(value: CreateOrganisationRegulationRequest) {
     this.form.disable();
 
-    this.organisationRegulationService.create(value.organisationId, value)
+    this.subscriptions.push(this.organisationRegulationService.create(value.organisationId, value)
       .finally(() => this.enableForm())
       .subscribe(
         result => {
           if (result) {
-            this.router.navigate(['./..'], { relativeTo: this.route });
+            this.router.navigate(['./..'], {relativeTo: this.route});
 
             this.alertService.setAlert(
               new AlertBuilder()
@@ -228,6 +232,6 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
               .error(error)
               .withTitle('Regelgeving kon niet bewaard worden!')
               .withMessage('Er is een fout opgetreden bij het bewaren van de gegevens. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 }

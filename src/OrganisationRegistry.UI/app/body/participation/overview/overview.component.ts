@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
 import { Observable } from 'rxjs/Observable';
@@ -17,12 +17,13 @@ import {
   BodyParticipationReportTotals,
   Compliance
 } from 'services/reports/body-participation';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'overview.template.html',
   styleUrls: ['overview.style.css']
 })
-export class BodyParticipationOverviewComponent implements OnInit {
+export class BodyParticipationOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public bodyId: string;
   public body: Body;
@@ -33,6 +34,8 @@ export class BodyParticipationOverviewComponent implements OnInit {
   private filter: BodyParticipationReportFilter = new BodyParticipationReportFilter();
   private currentSortBy: string = 'bodyseatTypeName';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -54,7 +57,7 @@ export class BodyParticipationOverviewComponent implements OnInit {
       });
 
       this.isLoading = true;
-      this.bodyService
+      this.subscriptions.push(this.bodyService
         .get(id)
         .subscribe(
           item => {
@@ -65,11 +68,15 @@ export class BodyParticipationOverviewComponent implements OnInit {
                 new Alert(
                     AlertType.Error,
                     'Participaties kunnen niet geladen worden!',
-                    'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+                    'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
 
       this.loadBodyParticipations(id);
       this.loadBodyParticipationTotals(id);
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   search(event: SearchEvent<BodyParticipationReportFilter>) {
@@ -94,7 +101,7 @@ export class BodyParticipationOverviewComponent implements OnInit {
       ? this.bodyParticipationReportService.getParticipationsPerBody(bodyId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.bodyParticipationReportService.getParticipationsPerBody(bodyId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-      bodyParticipations
+      this.subscriptions.push(bodyParticipations
         .finally(() => this.isLoading = false)
         .subscribe(
           data => this.bodyParticipations = data,
@@ -102,17 +109,14 @@ export class BodyParticipationOverviewComponent implements OnInit {
             new Alert(
               AlertType.Error,
               'Participaties kunnen niet geladen worden!',
-              'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+              'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 
   private loadBodyParticipationTotals(bodyId: string) {
-    // if (!this.body.hasAllSeatsAssigned)
-    //   return;
-
     this.isLoading = true;
     let bodyParticipationTotals = this.bodyParticipationReportService.getParticipationsPerBodyTotals(bodyId, this.filter);
 
-    bodyParticipationTotals
+    this.subscriptions.push(bodyParticipationTotals
       .finally(() => this.isLoading = false)
       .subscribe(
         data => this.bodyParticipationTotals = data,
@@ -120,6 +124,6 @@ export class BodyParticipationOverviewComponent implements OnInit {
           new Alert(
             AlertType.Error,
             'Totalen voor participaties kunnen niet geladen worden!',
-            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }

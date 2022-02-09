@@ -71,7 +71,7 @@ export class OrganisationRegulationsOverviewComponent implements OnInit, OnDestr
       ? this.organisationRegulationService.getOrganisationRegulations(this.organisationId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.organisationRegulationService.getOrganisationRegulations(this.organisationId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    regulations
+    this.subscriptions.push(regulations
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -83,6 +83,6 @@ export class OrganisationRegulationsOverviewComponent implements OnInit, OnDestr
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

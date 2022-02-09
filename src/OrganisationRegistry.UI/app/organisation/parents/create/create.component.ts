@@ -1,27 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { CreateAlertMessages } from 'core/alertmessages';
-import { Create, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
-
-import { SelectItem } from 'shared/components/form/form-group-select';
 
 import {
   CreateOrganisationParentRequest,
   OrganisationParentService
 } from 'services/organisationparents';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'create.template.html',
   styleUrls: ['create.style.css']
 })
-export class OrganisationParentsCreateOrganisationParentComponent implements OnInit {
+export class OrganisationParentsCreateOrganisationParentComponent implements OnInit, OnDestroy {
   public form: FormGroup;
 
-  private readonly createAlerts = new CreateAlertMessages('Moeder entiteit');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -45,6 +42,10 @@ export class OrganisationParentsCreateOrganisationParentComponent implements OnI
     });
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   get isFormValid() {
     return this.form.enabled && this.form.valid;
   }
@@ -52,12 +53,12 @@ export class OrganisationParentsCreateOrganisationParentComponent implements OnI
   create(value: CreateOrganisationParentRequest) {
     this.form.disable();
 
-    this.organisationParentService.create(value.organisationId, value)
+    this.subscriptions.push(this.organisationParentService.create(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
           if (result) {
-            this.router.navigate(['./..'], { relativeTo: this.route });
+            this.router.navigate(['./..'], {relativeTo: this.route});
 
             this.alertService.setAlert(
               new AlertBuilder()
@@ -73,6 +74,6 @@ export class OrganisationParentsCreateOrganisationParentComponent implements OnI
               .error(error)
               .withTitle('Moeder entiteit kon niet gekoppeld worden!')
               .withMessage('Er is een fout opgetreden bij het koppelen van de gegevens. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 }

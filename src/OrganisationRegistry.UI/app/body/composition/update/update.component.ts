@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Renderer } from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef, Renderer, OnDestroy} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
@@ -13,14 +13,17 @@ import {
   UpdateBodySeatRequest,
   BodySeatService
 } from 'services/bodyseats';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'update.template.html',
   styleUrls: ['update.style.css']
 })
-export class BodySeatsUpdateBodySeatComponent implements OnInit {
+export class BodySeatsUpdateBodySeatComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public seatTypes: SelectItem[];
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -47,18 +50,22 @@ export class BodySeatsUpdateBodySeatComponent implements OnInit {
   ngOnInit() {
     this.seatTypes = this.route.snapshot.data['seatTypes'].map(k => new SelectItem(k.id, k.name));
 
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let bodySeatId = res[1]['id'];
 
-        this.bodySeatService
+        this.subscriptions.push(this.bodySeatService
           .get(orgId, bodySeatId)
           .subscribe(
             item => this.setForm(item),
-            error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -68,7 +75,7 @@ export class BodySeatsUpdateBodySeatComponent implements OnInit {
   update(value: UpdateBodySeatRequest) {
     this.form.disable();
 
-    this.bodySeatService.update(value.bodyId, value)
+    this.subscriptions.push(this.bodySeatService.update(value.bodyId, value)
       .finally(() => this.enableForm())
       .subscribe(
         result => {
@@ -78,7 +85,7 @@ export class BodySeatsUpdateBodySeatComponent implements OnInit {
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   private setForm(bodySeat) {

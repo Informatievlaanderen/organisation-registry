@@ -1,31 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 
-import { Alert, AlertBuilder, AlertService, AlertType } from 'core/alert';
-import { UpdateAlertMessages } from 'core/alertmessages';
-import { ICrud, Update } from 'core/crud';
+import { AlertBuilder, AlertService} from 'core/alert';
 import { required } from 'core/validation';
 
-import { SelectItem } from 'shared/components/form/form-group-select';
 import { SearchResult } from 'shared/components/form/form-group-autocomplete';
 
 import {
   UpdateOrganisationBuildingRequest,
   OrganisationBuildingService
 } from 'services/organisationbuildings';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'update.template.html',
   styleUrls: ['update.style.css']
 })
-export class OrganisationBuildingsUpdateOrganisationBuildingComponent implements OnInit {
+export class OrganisationBuildingsUpdateOrganisationBuildingComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public building: SearchResult;
-
-  private readonly updateAlerts = new UpdateAlertMessages('Gebouw');
   private buildingId: string;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -46,18 +44,22 @@ export class OrganisationBuildingsUpdateOrganisationBuildingComponent implements
   }
 
   ngOnInit() {
-    Observable.zip(this.route.parent.parent.params, this.route.params)
+    this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let organisationBuildingId = res[1]['id'];
 
-        this.organisationBuildingService
+        this.subscriptions.push(this.organisationBuildingService
           .get(orgId, organisationBuildingId)
           .subscribe(
             item => this.setForm(item),
-            error => this.handleError(error));
-      });
+            error => this.handleError(error)));
+      }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -67,17 +69,17 @@ export class OrganisationBuildingsUpdateOrganisationBuildingComponent implements
   update(value: UpdateOrganisationBuildingRequest) {
     this.form.disable();
 
-    this.organisationBuildingService.update(value.organisationId, value)
+    this.subscriptions.push(this.organisationBuildingService.update(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
-      result => {
+        result => {
           if (result) {
-            this.router.navigate(['./../..'], { relativeTo: this.route });
+            this.router.navigate(['./../..'], {relativeTo: this.route});
             this.handleSaveSuccess();
           }
         },
         error => this.handleSaveError(error)
-      );
+      ));
   }
 
   private setForm(organisationBuilding) {

@@ -1,10 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 
-import { AlertService, AlertBuilder, Alert, AlertType } from 'core/alert';
-import { CreateAlertMessages } from 'core/alertmessages';
-import { Create, ICrud } from 'core/crud';
+import { AlertService, AlertBuilder} from 'core/alert';
 import { required } from 'core/validation';
 
 import { SelectItem } from 'shared/components/form/form-group-select';
@@ -14,17 +12,18 @@ import {
   OrganisationContactService
 } from 'services/organisationcontacts';
 
-import { ContactType, ContactTypeService } from 'services/contacttypes';
+import { ContactTypeService } from 'services/contacttypes';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'create.template.html',
   styleUrls: ['create.style.css']
 })
-export class OrganisationContactsCreateOrganisationContactComponent implements OnInit {
+export class OrganisationContactsCreateOrganisationContactComponent implements OnInit, OnDestroy {
   public form: FormGroup;
   public contactTypes: SelectItem[];
 
-  private readonly createAlerts = new CreateAlertMessages('Contact');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -51,7 +50,7 @@ export class OrganisationContactsCreateOrganisationContactComponent implements O
       this.form.setValue(new CreateOrganisationContactRequest(params['id']));
     });
 
-    this.contactTypeService
+    this.subscriptions.push(this.contactTypeService
       .getAllContactTypes()
       .finally(() => this.form.enable())
       .subscribe(
@@ -62,7 +61,11 @@ export class OrganisationContactsCreateOrganisationContactComponent implements O
               .error(error)
               .withTitle('Contact types konden niet geladen worden!')
               .withMessage('Er is een fout opgetreden bij het ophalen van de contact types. Probeer het later opnieuw.')
-              .build()));
+              .build())));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   get isFormValid() {
@@ -72,7 +75,7 @@ export class OrganisationContactsCreateOrganisationContactComponent implements O
   create(value: CreateOrganisationContactRequest) {
     this.form.disable();
 
-    this.organisationContactService.create(value.organisationId, value)
+    this.subscriptions.push(this.organisationContactService.create(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
         result => {
@@ -93,6 +96,6 @@ export class OrganisationContactsCreateOrganisationContactComponent implements O
               .error(error)
               .withTitle('Contact kon niet bewaard worden!')
               .withMessage('Er is een fout opgetreden bij het bewaren van de gegevens. Probeer het later opnieuw.')
-              .build()));
+              .build())));
   }
 }

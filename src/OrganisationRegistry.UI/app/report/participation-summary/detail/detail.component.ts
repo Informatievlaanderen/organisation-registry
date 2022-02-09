@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 
 import { Alert, AlertBuilder, AlertService, AlertType } from 'core/alert';
@@ -11,18 +11,21 @@ import {
     ParticipationSummaryReportService,
     ParticipationSummaryReportFilter
 } from 'services/reports/participation-summary';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
   styleUrls: [ 'detail.style.css' ]
 })
-export class ParticipationSummaryDetailComponent implements OnInit {
+export class ParticipationSummaryDetailComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public participationSummaries: PagedResult<ParticipationSummaryReportListItem> = new PagedResult<ParticipationSummaryReportListItem>();
 
   private filter: ParticipationSummaryReportFilter = new ParticipationSummaryReportFilter();
   private currentSortBy: string = 'bodyName';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
+
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -41,6 +44,10 @@ export class ParticipationSummaryDetailComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   search(event: SearchEvent<ParticipationSummaryReportFilter>) {
     this.filter = event.fields;
     this.loadParticipationSummaries();
@@ -53,16 +60,16 @@ export class ParticipationSummaryDetailComponent implements OnInit {
   }
 
   exportCsv(event: void) {
-    this.participationSummaryReportService.exportCsv(this.filter, this.currentSortBy, this.currentSortOrder)
+    this.subscriptions.push(this.participationSummaryReportService.exportCsv(this.filter, this.currentSortBy, this.currentSortOrder)
       .subscribe(
-      csv => this.fileSaverService.saveFile(csv, 'export_participatie'),
-      error => this.alertService.setAlert(
-        new AlertBuilder()
-          .error(error)
-          .withTitle('Participaties kunnen niet geëxporteerd worden!')
-          .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
-          .build()
-      ));
+        csv => this.fileSaverService.saveFile(csv, 'export_participatie'),
+        error => this.alertService.setAlert(
+          new AlertBuilder()
+            .error(error)
+            .withTitle('Participaties kunnen niet geëxporteerd worden!')
+            .withMessage('Er is een fout opgetreden bij het exporteren van de gegevens. Probeer het later opnieuw.')
+            .build()
+        )));
   }
 
   private loadParticipationSummaries(event?: PagedEvent) {
@@ -71,14 +78,14 @@ export class ParticipationSummaryDetailComponent implements OnInit {
       ? this.participationSummaryReportService.getParticipationSummaries(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.participationSummaryReportService.getParticipationSummaries(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-      participationSummaries
-        .finally(() => this.isLoading = false)
-        .subscribe(
-          result => this.participationSummaries = result,
-          error => this.alertService.setAlert(
-            new Alert(
-              AlertType.Error,
-              'Participaties kunnen niet geladen worden!',
-              'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.')));
+    this.subscriptions.push(participationSummaries
+      .finally(() => this.isLoading = false)
+      .subscribe(
+        result => this.participationSummaries = result,
+        error => this.alertService.setAlert(
+          new Alert(
+            AlertType.Error,
+            'Participaties kunnen niet geladen worden!',
+            'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
   }
 }

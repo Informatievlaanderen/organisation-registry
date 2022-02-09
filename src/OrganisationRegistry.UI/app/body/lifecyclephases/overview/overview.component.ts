@@ -48,9 +48,9 @@ export class BodyLifecyclePhasesOverviewComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store
+    this.subscriptions.push(this.store
       .bodyChanged
-      .subscribe(body => this.body = body);
+      .subscribe(body => this.body = body));
 
     this.canEditBody = Observable.of(false);
     this.subscriptions.push(this.route.parent.parent.params.subscribe((params: Params) => {
@@ -77,7 +77,7 @@ export class BodyLifecyclePhasesOverviewComponent implements OnInit, OnDestroy {
       ? this.bodyLifecyclePhaseService.getBodyLifecyclePhases(this.bodyId, this.currentSortBy, this.currentSortOrder)
       : this.bodyLifecyclePhaseService.getBodyLifecyclePhases(this.bodyId, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    bodyLifecyclePhases
+    this.subscriptions.push(bodyLifecyclePhases
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -89,6 +89,6 @@ export class BodyLifecyclePhasesOverviewComponent implements OnInit, OnDestroy {
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }

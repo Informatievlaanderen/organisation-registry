@@ -1,11 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Params, Routes } from '@angular/router';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import { ActivatedRoute, Params} from '@angular/router';
 
-import { AlertBuilder, AlertService } from 'core/alert';
-import { BaseAlertMessages } from 'core/alertmessages';
+import { AlertService } from 'core/alert';
 
 import { PersonInfoService } from 'services/peopleinfo';
 import { Person } from 'services/people';
+import {Subscription} from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'detail.template.html',
@@ -14,7 +14,7 @@ import { Person } from 'services/people';
 export class PeopleDetailComponent implements OnInit, OnDestroy {
   public person: Person;
 
-  private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Persoon');
+  private readonly subscriptions: Subscription[] = new Array<Subscription>();
 
   constructor(
     private route: ActivatedRoute,
@@ -25,9 +25,9 @@ export class PeopleDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.store
+    this.subscriptions.push(this.store
       .personChanged
-      .subscribe(pers => this.person = pers);
+      .subscribe(pers => this.person = pers));
 
     this.route.params.forEach((params: Params) => {
       let id = params['id'];
@@ -36,5 +36,6 @@ export class PeopleDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 }

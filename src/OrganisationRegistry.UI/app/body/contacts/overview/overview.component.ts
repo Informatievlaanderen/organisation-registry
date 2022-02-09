@@ -73,7 +73,7 @@ export class BodyContactsOverviewComponent implements OnInit, OnDestroy {
       ? this.bodyContactService.getBodyContacts(this.bodyId, this.filter, this.currentSortBy, this.currentSortOrder)
       : this.bodyContactService.getBodyContacts(this.bodyId, this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
-    contacts
+    this.subscriptions.push(contacts
       .finally(() => this.isLoading = false)
       .subscribe(
         items => {
@@ -85,6 +85,6 @@ export class BodyContactsOverviewComponent implements OnInit, OnDestroy {
             .error(error)
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
-            .build()));
+            .build())));
   }
 }
