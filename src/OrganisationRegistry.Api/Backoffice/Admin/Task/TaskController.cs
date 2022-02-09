@@ -51,7 +51,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
             switch (task.Type)
             {
                 case TaskType.CheckIfDayHasPassed:
-                    await CommandSender.Send(new CheckIfDayHasPassed {User = securityService.GetUser(User)});
+                    await CommandSender.Send(new CheckIfDayHasPassed {User = securityService.GetRequiredUser(User)});
                     break;
 
                 case TaskType.RebuildProjection:

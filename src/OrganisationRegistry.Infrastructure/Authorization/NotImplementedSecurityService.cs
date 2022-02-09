@@ -46,6 +46,11 @@ namespace OrganisationRegistry.Infrastructure.Authorization
             throw new NotImplementedException();
         }
 
+        public IUser GetRequiredUser(ClaimsPrincipal? principal)
+        {
+            throw new NotImplementedException();
+        }
+
         public IUser GetUser(ClaimsPrincipal? principal)
         {
             throw new NotImplementedException();

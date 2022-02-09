@@ -44,7 +44,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
             var kboNumber = new KboNumber(kboNumberInput);
             var digitsOnly = kboNumber.ToDigitsOnly();
 
-            var user = securityService.GetUser(User);
+            var user = securityService.GetRequiredUser(User);
             var registerInscription = await _registerInscriptionCommand.Execute(user, digitsOnly);
             var giveOrganisation = await _geefOndernemingQuery.Execute(user, digitsOnly);
 

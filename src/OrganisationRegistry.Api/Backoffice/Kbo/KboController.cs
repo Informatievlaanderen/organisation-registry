@@ -61,7 +61,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
                 }
             }
 
-            var kboOrganisationResult = await kboOrganisationRetriever.RetrieveOrganisation(securityService.GetUser(ClaimsPrincipal.Current), kboNumber);
+            var kboOrganisationResult = await kboOrganisationRetriever.RetrieveOrganisation(securityService.GetRequiredUser(ClaimsPrincipal.Current), kboNumber);
 
             if (kboOrganisationResult.HasErrors)
             {
