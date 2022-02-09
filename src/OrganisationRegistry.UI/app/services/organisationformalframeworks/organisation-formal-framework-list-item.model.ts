@@ -4,6 +4,7 @@ export class OrganisationFormalFrameworkListItem {
     public formalFrameworkId: string = '',
     public formalFrameworkName: string = '',
     public validFrom: Date,
-    public validTo: Date
+    public validTo: Date,
+    public isEditable: boolean = false
   ) { }
 }

@@ -594,7 +594,11 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Toepassingsgebieden - Toepassingsgebied koppelen',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [
+                Role.OrganisationRegistryBeheerder,
+                Role.OrganisatieBeheerder,
+                Role.VlimpersBeheerder
+              ],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'

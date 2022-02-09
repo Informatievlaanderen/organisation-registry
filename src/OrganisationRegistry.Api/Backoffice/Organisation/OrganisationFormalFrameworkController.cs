@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Configuration;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Pagination;
@@ -10,6 +11,9 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using OrganisationRegistry.Configuration;
+    using OrganisationRegistry.Infrastructure.AppSpecific;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using Queries;
     using Requests;
@@ -27,13 +31,25 @@
 
         /// <summary>Get a list of available formal frameworks for an organisation.</summary>
         [HttpGet]
-        public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
+        public async Task<IActionResult> Get(
+            [FromServices] OrganisationRegistryContext context,
+            [FromServices] IOrganisationRegistryConfiguration configuration,
+            [FromServices] IMemoryCaches memoryCaches,
+            [FromServices] ISecurityService securityService,
+            [FromRoute] Guid organisationId)
         {
             var filtering = Request.ExtractFilteringRequest<OrganisationFormalFrameworkListItemFilter>();
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var pagedOrganisations = new OrganisationFormalFrameworkListQuery(context, organisationId).Fetch(filtering, sorting, pagination);
+            var pagedOrganisations = new OrganisationFormalFrameworkListQuery(
+                context,
+                memoryCaches,
+                configuration,
+                securityService.GetUser(User),
+                organisationId
+                )
+                .Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedOrganisations.PaginationInfo);
             Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);

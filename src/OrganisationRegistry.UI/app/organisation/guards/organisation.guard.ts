@@ -27,11 +27,9 @@ export class OrganisationGuard implements CanActivate, CanActivateChild {
   }
 
   private checkPermissions(): Observable<boolean> {
-    return this
-      .oidcService
-      .canEditOrganisation(this.organisationStore.organisation)
-      .map(canEditOrganisation => {
-        if (canEditOrganisation)
+    return this.organisationStore.canAddAndUpdateFormalFrameworksChanged$
+      .map(allowed => {
+        if (allowed)
           return true;
 
         this.redirectToAuth();

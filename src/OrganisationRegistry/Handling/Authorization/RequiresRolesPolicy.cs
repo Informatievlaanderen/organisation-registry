@@ -2,7 +2,6 @@ namespace OrganisationRegistry.Handling.Authorization
 {
     using System;
     using Infrastructure.Authorization;
-    using Infrastructure.Domain;
     using Organisation.Exceptions;
 
     class RequiresRolesPolicy : ISecurityPolicy
@@ -19,7 +18,7 @@ namespace OrganisationRegistry.Handling.Authorization
 
             _roles = roles;
         }
-        public AuthorizationResult Check(IUser user, ISession session)
+        public AuthorizationResult Check(IUser user)
         {
             foreach (var role in _roles)
             {

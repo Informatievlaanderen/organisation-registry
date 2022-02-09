@@ -25,14 +25,7 @@ namespace OrganisationRegistry.Api.Configuration
 
             Kbo = new KboConfiguration(configuration, terminationConfiguration);
 
-            Authorization = new AuthorizationConfiguration
-            {
-                FormalFrameworkIdsOwnedByVlimpers =
-                    authorizationConfiguration.FormalFrameworkIdsOwnedByVlimpers.SplitGuids(),
-
-                FormalFrameworkIdsOwnedByAuditVlaanderen =
-                    authorizationConfiguration.FormalFrameworkIdsOwnedByAuditVlaanderen.SplitGuids()
-            };
+            Authorization = new AuthorizationConfiguration(authorizationConfiguration);
         }
     }
 }

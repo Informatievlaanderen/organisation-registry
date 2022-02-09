@@ -30,7 +30,7 @@ namespace OrganisationRegistry.Handling
 
         public async Task Handle(Func<ISession, Task> handle)
         {
-            var result = _policy?.Check(_user, _session);
+            var result = _policy?.Check(_user);
 
             if (result?.Exception != null)
                 throw result.Exception!;
@@ -41,7 +41,7 @@ namespace OrganisationRegistry.Handling
 
         public async Task Handle(Action<ISession> handle)
         {
-            var result = _policy?.Check(_user, _session);
+            var result = _policy?.Check(_user);
 
             if (result?.Exception != null)
                 throw result.Exception!;

@@ -6,7 +6,7 @@ namespace OrganisationRegistry.Handling.Authorization
 
     class AdminOnlyPolicy : ISecurityPolicy
     {
-        public AuthorizationResult Check(IUser user, ISession session)
+        public AuthorizationResult Check(IUser user)
         {
             return user.IsInRole(Role.OrganisationRegistryBeheerder) ?
                     AuthorizationResult.Success() :
