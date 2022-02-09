@@ -1,5 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Component } from '@angular/core';
 
 import { BaseListComponent } from 'shared/components/list';
 import { OrganisationFormalFrameworkListItem } from 'services/organisationformalframeworks';

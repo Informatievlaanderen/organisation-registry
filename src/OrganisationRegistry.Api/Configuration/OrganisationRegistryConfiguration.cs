@@ -24,7 +24,6 @@ namespace OrganisationRegistry.Api.Configuration
             _configuration = configuration;
 
             Kbo = new KboConfiguration(configuration, terminationConfiguration);
-
             Authorization = new AuthorizationConfiguration(authorizationConfiguration);
         }
     }
