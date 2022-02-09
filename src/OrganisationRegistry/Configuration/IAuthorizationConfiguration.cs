@@ -4,7 +4,7 @@ namespace OrganisationRegistry.Configuration
 
     public interface IAuthorizationConfiguration
     {
-        Guid[]? FormalFrameworkIdsOwnedByVlimpers { get; }
-        Guid[]? FormalFrameworkIdsOwnedByAuditVlaanderen { get; }
+        Guid[] FormalFrameworkIdsOwnedByVlimpers { get; }
+        Guid[] FormalFrameworkIdsOwnedByAuditVlaanderen { get; }
     }
 }

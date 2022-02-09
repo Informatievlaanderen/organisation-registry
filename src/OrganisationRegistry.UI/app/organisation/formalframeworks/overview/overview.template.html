@@ -6,7 +6,7 @@
             (filter)="search($event)">
         </ww-organisation-formal-framework-filter>
         <div class="cta-title__cta">
-            <a *ngIf="(store.isEditableChanged | async) && !(store.isLimitedByVlimpers | async)"
+            <a *ngIf="store.canAddAndUpdateFormalFrameworksChanged$ | async"
                class="button cta-title__cta" [routerLink]="['./create']">Toepassingsgebied koppelen</a>
             <div class="u-align-right" style="clear: both;"></div>
         </div>
@@ -15,7 +15,6 @@
     <ww-organisation-formal-framework-list
       [items]="organisationFormalFrameworks"
       [isBusy]="isLoading"
-      (changePage)="changePage($event)"
-      [canEdit]="store.isEditableChanged">
+      (changePage)="changePage($event)">
     </ww-organisation-formal-framework-list>
 </div>

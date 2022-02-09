@@ -180,6 +180,25 @@ namespace OrganisationRegistry.Api.Security
                 GetOrganisations(principal));
         }
 
+        public IUser GetUser(ClaimsPrincipal? principal)
+        {
+            if (principal == null)
+                throw new Exception("Could not determine current user");
+
+            var firstName = principal.FindFirst(ClaimTypes.GivenName);
+            var lastName = principal.FindFirst(ClaimTypes.Surname);
+            var acmId = principal.FindFirst(OrganisationRegistryClaims.ClaimAcmId);
+            var ip = principal.FindFirst(OrganisationRegistryClaims.ClaimIp);
+
+            return new User(
+                firstName?.Value,
+                lastName?.Value,
+                acmId?.Value,
+                ip?.Value,
+                GetRoles(principal),
+                GetOrganisations(principal));
+        }
+
         // TODO: see how we can make SecurityService use IUser everywhere, io ClaimsPrincipal.
         public bool CanUseKeyType(IUser user, Guid keyTypeId)
         {

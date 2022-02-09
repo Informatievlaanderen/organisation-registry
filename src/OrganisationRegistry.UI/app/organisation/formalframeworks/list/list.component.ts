@@ -11,6 +11,4 @@ import { OrganisationFormalFrameworkListItem } from 'services/organisationformal
   inputs: ['items', 'isBusy'],
   outputs: ['changePage']
 })
-export class OrganisationFormalFrameworksListComponent extends BaseListComponent<OrganisationFormalFrameworkListItem> {
-  @Input('canEdit') canEdit: Observable<boolean>;
-}
+export class OrganisationFormalFrameworksListComponent extends BaseListComponent<OrganisationFormalFrameworkListItem> {}

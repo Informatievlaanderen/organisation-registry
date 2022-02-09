@@ -4,9 +4,14 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using Configuration;
+    using Handling.Authorization;
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
+    using OrganisationRegistry.Configuration;
+    using OrganisationRegistry.Infrastructure.AppSpecific;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using SqlServer.Infrastructure;
     using SqlServer.Organisation;
 
@@ -19,14 +24,16 @@
         public string ParentOrganisationName { get; }
         public DateTime? ValidFrom { get; }
         public DateTime? ValidTo { get; }
-
         public bool IsActive { get; }
 
-        public OrganisationFormalFrameworkListQueryResult(
-            Guid organisationFormalFrameworkId,
+        public bool IsEditable { get; set; }
+
+        public OrganisationFormalFrameworkListQueryResult(Guid organisationFormalFrameworkId,
             Guid formalFrameworkId, string formalFrameworkName,
             Guid parentOrganisationId, string parentOrganisationName,
-            DateTime? validFrom, DateTime? validTo)
+            DateTime? validFrom, DateTime? validTo,
+            string ovoNumber,
+            IOrganisationRegistryConfiguration configuration, IUser user)
         {
             OrganisationFormalFrameworkId = organisationFormalFrameworkId;
             FormalFrameworkId = formalFrameworkId;
@@ -37,12 +44,19 @@
             ValidTo = validTo;
 
             IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
+            IsEditable =
+                new FormalFrameworkPolicy(() => ovoNumber, formalFrameworkId, configuration)
+                    .Check(user)
+                    .IsSuccessful;
         }
     }
 
     public class OrganisationFormalFrameworkListQuery : Query<OrganisationFormalFrameworkListItem, OrganisationFormalFrameworkListItemFilter, OrganisationFormalFrameworkListQueryResult>
     {
         private readonly OrganisationRegistryContext _context;
+        private readonly IMemoryCaches _memoryCaches;
+        private readonly IOrganisationRegistryConfiguration _configuration;
+        private readonly IUser _user;
         private readonly Guid _organisationId;
 
         protected override ISorting Sorting => new OrganisationFormalFrameworkListSorting();
@@ -55,11 +69,22 @@
                 x.ParentOrganisationId,
                 x.ParentOrganisationName,
                 x.ValidFrom,
-                x.ValidTo);
+                x.ValidTo,
+                _memoryCaches.OvoNumbers[x.OrganisationId],
+                _configuration,
+                _user);
 
-        public OrganisationFormalFrameworkListQuery(OrganisationRegistryContext context, Guid organisationId)
+        public OrganisationFormalFrameworkListQuery(
+            OrganisationRegistryContext context,
+            IMemoryCaches memoryCaches,
+            IOrganisationRegistryConfiguration configuration,
+            IUser user,
+            Guid organisationId)
         {
             _context = context;
+            _memoryCaches = memoryCaches;
+            _configuration = configuration;
+            _user = user;
             _organisationId = organisationId;
         }
 

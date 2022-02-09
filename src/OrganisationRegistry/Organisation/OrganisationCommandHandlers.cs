@@ -190,7 +190,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(AddOrganisationParent message) =>
             Handler.For(message.User, Session)
-                .WithVlimpersParentChildPolicy(message.ParentOrganisationId, message.OrganisationId)
+                .WithVlimpersParentChildPolicy(Session.Get<Organisation>(message.OrganisationId))
                 .Handle(session =>
                 {
                     var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
@@ -210,7 +210,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(UpdateOrganisationParent message) =>
             Handler.For(message.User, Session)
-                .WithVlimpersParentChildPolicy(message.ParentOrganisationId, message.OrganisationId)
+                .WithVlimpersParentChildPolicy(Session.Get<Organisation>(message.OrganisationId))
                 .Handle(session =>
                 {
                     var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
@@ -231,11 +231,14 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(AddOrganisationFormalFramework message) =>
             Handler.For(message.User, Session)
+                .WithPolicy(new FormalFrameworkPolicy(
+                    () => Session.Get<Organisation>(message.OrganisationId).State.OvoNumber,
+                    message.FormalFrameworkId,
+                    _organisationRegistryConfiguration))
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
                     organisation.ThrowIfTerminated(message.User);
-                    organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
                     var formalFramework = session.Get<FormalFramework>(message.FormalFrameworkId);
                     var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
@@ -255,11 +258,14 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(UpdateOrganisationFormalFramework message) =>
             Handler.For(message.User, Session)
+                .WithPolicy(new FormalFrameworkPolicy(
+                    () => Session.Get<Organisation>(message.OrganisationId).State.OvoNumber,
+                    message.FormalFrameworkId,
+                    _organisationRegistryConfiguration))
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
                     organisation.ThrowIfTerminated(message.User);
-                    organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
                     var formalFramework = session.Get<FormalFramework>(message.FormalFrameworkId);
                     var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);

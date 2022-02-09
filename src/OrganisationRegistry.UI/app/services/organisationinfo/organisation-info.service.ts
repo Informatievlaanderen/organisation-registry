@@ -51,6 +51,9 @@ export class OrganisationInfoService implements OnDestroy {
   private canAddAndUpdateParentsChangedSource: BehaviorSubject<boolean>;
   public readonly canAddAndUpdateParentsChanged$: Observable<boolean>;
 
+  private canAddAndUpdateFormalFrameworksChangedSource: BehaviorSubject<boolean>;
+  public readonly canAddAndUpdateFormalFrameworksChanged$: Observable<boolean>;
+
   private organisationIdChangedSource: Subject<string>;
   private readonly organisationIdChanged$: Observable<string>;
 
@@ -120,6 +123,9 @@ export class OrganisationInfoService implements OnDestroy {
 
     this.canAddAndUpdateParentsChangedSource = new BehaviorSubject<boolean>(false);
     this.canAddAndUpdateParentsChanged$ = this.canAddAndUpdateParentsChangedSource.asObservable();
+
+    this.canAddAndUpdateFormalFrameworksChangedSource = new BehaviorSubject<boolean>(false);
+    this.canAddAndUpdateFormalFrameworksChanged$ = this.canAddAndUpdateFormalFrameworksChangedSource.asObservable();
 
     this.isLimitedByVlimpersChangedSource = new BehaviorSubject<boolean>(false);
     this.isLimitedByVlimpersChanged$ = this.isLimitedByVlimpersChangedSource.asObservable();
@@ -202,6 +208,7 @@ export class OrganisationInfoService implements OnDestroy {
           this.canAddDaughtersChangedSource.next(OrganisationInfoService.canAddDaughters(organisation, securityInfo))
           this.canAddAndUpdateRegulationsChangedSource.next(OrganisationInfoService.canAddAndUpdateRegulations(organisation, securityInfo))
           this.canAddAndUpdateParentsChangedSource.next(OrganisationInfoService.canAddAndUpdateParents(organisation, securityInfo))
+          this.canAddAndUpdateFormalFrameworksChangedSource.next(OrganisationInfoService.canAddAndUpdateFormalFrameworks(organisation, securityInfo))
         }));
   }
 
@@ -343,6 +350,25 @@ export class OrganisationInfoService implements OnDestroy {
 
     if (!organisation.underVlimpersManagement &&
       securityInfo.isOrganisatieBeheerderFor(organisation.id))
+      return true;
+
+    return false;
+  }
+
+  private static canAddAndUpdateFormalFrameworks(organisation, securityInfo) {
+    if (!securityInfo.isLoggedIn)
+      return false;
+
+    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+      return true;
+
+    if (organisation.isTerminated)
+      return false;
+
+    if (securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
+      return true;
+
+    if (securityInfo.isOrganisatieBeheerderFor(organisation.id))
       return true;
 
     return false;
