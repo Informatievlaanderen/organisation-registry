@@ -1,3 +1,10 @@
+# [1.129.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.128.0...v1.129.0) (2022-02-09)
+
+
+### Features
+
+* or-663 fixed áll unsubscribes (prove me wrong ;-) ) ([6d58789](https://github.com/informatievlaanderen/organisation-registry/commit/6d58789a89d519c498363583021092a9c7ee74ec))
+
 # [1.128.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.127.0...v1.128.0) (2022-02-08)
 
 
