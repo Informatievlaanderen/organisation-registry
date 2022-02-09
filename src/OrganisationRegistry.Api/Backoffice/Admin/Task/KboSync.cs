@@ -62,7 +62,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
 
             _logger.LogInformation("Found {NumberOfSyncItems} items to sync", itemsInQueue.Count);
 
-            var user = _securityService.GetUser(claimsPrincipal);
+            var user = _securityService.GetRequiredUser(claimsPrincipal);
 
             foreach (var kboSyncQueueItem in itemsInQueue)
             {

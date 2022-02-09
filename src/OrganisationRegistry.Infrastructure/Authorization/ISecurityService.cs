@@ -16,6 +16,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization
         SecurityInformation GetSecurityInformation(ClaimsPrincipal user);
         Role[] GetRoles(ClaimsPrincipal principal);
 
+        IUser GetRequiredUser(ClaimsPrincipal? principal);
         IUser GetUser(ClaimsPrincipal? principal);
         bool CanUseKeyType(IUser user, Guid keyTypeId);
         bool CanUseLabelType(IUser user, Guid labelTypeId);

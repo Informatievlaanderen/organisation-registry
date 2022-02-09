@@ -42,7 +42,7 @@
 
             Func<Guid?, bool> canUseKeyType =
                 keyTypeId => User.Identity.IsAuthenticated &&
-                             securityService.CanUseKeyType(securityService.GetUser(User), keyTypeId.Value);
+                             securityService.CanUseKeyType(securityService.GetRequiredUser(User), keyTypeId.Value);
 
             var pagedOrganisations = new OrganisationKeyListQuery(context, organisationId, canUseKeyType).Fetch(filtering, sorting, pagination);
 
@@ -82,7 +82,7 @@
             if (!securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
-            if (!securityService.CanUseKeyType(securityService.GetUser(User), message.KeyTypeId))
+            if (!securityService.CanUseKeyType(securityService.GetRequiredUser(User), message.KeyTypeId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor dit informatiesysteem.");
 
             if (!TryValidateModel(internalMessage))
@@ -107,7 +107,7 @@
             if (!securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
-            if (!securityService.CanUseKeyType(securityService.GetUser(User), message.KeyTypeId))
+            if (!securityService.CanUseKeyType(securityService.GetRequiredUser(User), message.KeyTypeId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor dit informatiesysteem.");
 
             if (!TryValidateModel(internalMessage))

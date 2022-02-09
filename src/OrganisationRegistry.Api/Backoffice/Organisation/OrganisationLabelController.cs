@@ -42,7 +42,7 @@
 
             Func<Guid?, bool> canUseLabelType =
                 labelTypeId => User.Identity.IsAuthenticated &&
-                             securityService.CanUseLabelType(securityService.GetUser(User), labelTypeId.Value);
+                             securityService.CanUseLabelType(securityService.GetRequiredUser(User), labelTypeId.Value);
 
             var pagedOrganisations = new OrganisationLabelListQuery(context, organisationId, canUseLabelType).Fetch(filtering, sorting, pagination);
 

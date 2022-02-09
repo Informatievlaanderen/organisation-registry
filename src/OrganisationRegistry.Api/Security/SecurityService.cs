@@ -152,7 +152,7 @@ namespace OrganisationRegistry.Api.Security
                 .ToArray();
         }
 
-        public IUser GetUser(ClaimsPrincipal? principal)
+        public IUser GetRequiredUser(ClaimsPrincipal? principal)
         {
             if (principal == null)
                 throw new Exception("Could not determine current user");
