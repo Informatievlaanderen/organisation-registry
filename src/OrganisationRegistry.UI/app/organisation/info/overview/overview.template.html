@@ -19,7 +19,7 @@
            [routerLink]="'./terminate'">Sluit organisatie af</a>
 
         <a
-            *ngIf="store.canEditOrganisationChanged$ | async"
+            *ngIf="store.canUpdateOrganisationChanged$ | async"
            class="button"
            [ngClass]="{'button--disabled': isBusy, 'button--loading': isBusy}"
            [routerLink]="'./edit'">Wijzig</a>
