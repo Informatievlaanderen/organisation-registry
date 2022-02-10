@@ -16,6 +16,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -41,7 +42,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
                 new SequentialOvoNumberGenerator(),
                 null,
                 new DateTimeProvider(),
-                Mock.Of<IOrganisationRegistryConfiguration>(),
+                new OrganisationRegistryConfigurationStub(),
                 Mock.Of<ISecurityService>());
         }
 
@@ -77,7 +78,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
                 new FormalFrameworkId(_formalFrameworkACreated.Id),
                 _childOrganisationCreated.Id,
                 _parentOrganisationBCreated.Id,
-                new ValidFrom(_tomorrow), new ValidTo(_tomorrow));
+                new ValidFrom(_tomorrow), new ValidTo(_tomorrow))
+            {
+                User = new UserBuilder()
+                    .AddRoles(Role.OrganisationRegistryBeheerder)
+                    .Build()
+            };
         }
 
         protected override int ExpectedNumberOfEvents => 2;
