@@ -41,6 +41,10 @@ export class OrganisationDetailComponent implements OnInit, OnDestroy {
       this.store.loadOrganisation(id);
     });
 
+    this.subscriptions.push(
+      this.store.organisationChanged.subscribe(org => this.organisation = org)
+    );
+
     this.enableBankAccounts = this.oidcService.isLoggedIn;
 
     this.enableRegulations = this.featuresService
