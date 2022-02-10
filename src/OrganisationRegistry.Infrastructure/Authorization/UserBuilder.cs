@@ -13,6 +13,10 @@ namespace OrganisationRegistry.Infrastructure.Authorization
 
         public UserBuilder()
         {
+            _firstName = string.Empty;
+            _lastName = string.Empty;
+            _userId = string.Empty;
+            _ip = string.Empty;
             _roles = new List<Role>();
             _organisations = new List<string>();
         }
