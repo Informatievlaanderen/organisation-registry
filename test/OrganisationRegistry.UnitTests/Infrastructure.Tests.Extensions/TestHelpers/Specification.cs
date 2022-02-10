@@ -7,6 +7,7 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
     using FluentAssertions;
     using Microsoft.Extensions.Logging;
     using Moq;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Domain;
     using OrganisationRegistry.Infrastructure.Domain.Exception;
@@ -62,7 +63,9 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
         protected virtual async Task HandleEvents()
         {
             var handler = BuildHandler();
-            await handler.Handle(When());
+            var command = When();
+            command.User ??= new UserBuilder().Build();
+            await handler.Handle(command);
         }
 
         protected IEnumerable<IEvent> NumberTheEvents(IEnumerable<IEvent> toList)
