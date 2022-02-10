@@ -1,3 +1,16 @@
+# [1.130.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.129.0...v1.130.0) (2022-02-10)
+
+
+### Bug Fixes
+
+* make auth section nullable and handle it ([097930f](https://github.com/informatievlaanderen/organisation-registry/commit/097930fe10b36a0f1b79e29ce80a7bfedcb6cff1))
+
+
+### Features
+
+* apply formal framework policy to updates and gets ([aa0fba3](https://github.com/informatievlaanderen/organisation-registry/commit/aa0fba3c787f6481d3435e454e41c383f268c8c0))
+* introduce authorization configuration & restructure ([3878084](https://github.com/informatievlaanderen/organisation-registry/commit/38780843bf95b7895372dca8505603599b84ffb6))
+
 # [1.129.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.128.0...v1.129.0) (2022-02-09)
 
 
