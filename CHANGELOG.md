@@ -1,3 +1,11 @@
+## [1.130.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.130.0...v1.130.1) (2022-02-10)
+
+
+### Bug Fixes
+
+* or-704 make naming consistent, fix edit btn ([879e133](https://github.com/informatievlaanderen/organisation-registry/commit/879e1337ebed21b44fe1f0cc8e90308d4143656b))
+* or-717 subscribe to org changed for title ([dc9fc3b](https://github.com/informatievlaanderen/organisation-registry/commit/dc9fc3bb3aa00a43024f8710aff9d00f5839aad3))
+
 # [1.130.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.129.0...v1.130.0) (2022-02-10)
 
 
