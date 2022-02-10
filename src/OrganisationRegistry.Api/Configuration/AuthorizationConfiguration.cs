@@ -7,17 +7,17 @@ namespace OrganisationRegistry.Api.Configuration
 
     public class AuthorizationConfiguration : IAuthorizationConfiguration
     {
-        public AuthorizationConfiguration(AuthorizationConfigurationSection authorizationConfiguration)
+        public AuthorizationConfiguration(AuthorizationConfigurationSection? authorizationConfiguration)
         {
             FormalFrameworkIdsOwnedByVlimpers =
-                authorizationConfiguration.FormalFrameworkIdsOwnedByVlimpers.SplitGuids() ??
+                authorizationConfiguration?.FormalFrameworkIdsOwnedByVlimpers.SplitGuids() ??
                 Array.Empty<Guid>();
 
             FormalFrameworkIdsOwnedByAuditVlaanderen =
-                authorizationConfiguration.FormalFrameworkIdsOwnedByAuditVlaanderen.SplitGuids() ??
+                authorizationConfiguration?.FormalFrameworkIdsOwnedByAuditVlaanderen.SplitGuids() ??
                 Array.Empty<Guid>();
         }
-        public Guid[] FormalFrameworkIdsOwnedByVlimpers { get; init; }
-        public Guid[] FormalFrameworkIdsOwnedByAuditVlaanderen { get; init; }
+        public Guid[] FormalFrameworkIdsOwnedByVlimpers { get; }
+        public Guid[] FormalFrameworkIdsOwnedByAuditVlaanderen { get; }
     }
 }

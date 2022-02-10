@@ -19,7 +19,7 @@ namespace OrganisationRegistry.Api.Configuration
         public OrganisationRegistryConfiguration(
             ApiConfigurationSection configuration,
             OrganisationTerminationConfigurationSection? terminationConfiguration,
-            AuthorizationConfigurationSection authorizationConfiguration)
+            AuthorizationConfigurationSection? authorizationConfiguration)
         {
             _configuration = configuration;
 
