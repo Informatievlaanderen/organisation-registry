@@ -284,8 +284,17 @@ export class OrganisationInfoService implements OnDestroy {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    return !organisation.isTerminated &&
-      securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder])
+    if (organisation.isTerminated)
+      return false;
+
+    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+      return true;
+
+    if (organisation.underVlimpersManagement &&
+      securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
+      return true;
+
+    return false;
   }
 
   private static canCancelCouplingWithKbo(organisation, securityInfo) {

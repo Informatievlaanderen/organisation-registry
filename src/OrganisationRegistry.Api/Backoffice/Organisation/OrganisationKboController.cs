@@ -89,7 +89,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
 
         /// <summary>Gets the termination status of an organisation coupled with the KBO.</summary>
         [HttpGet("{id}/kbo/{kboNumber}/termination")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
+        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer + "," + Roles.VlimpersBeheerder)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetTerminationStatus(
             [FromServices] OrganisationRegistryContext context,

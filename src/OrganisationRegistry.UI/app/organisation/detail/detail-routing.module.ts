@@ -180,7 +180,7 @@ const routes: Routes = [
             canActivate: [RoleGuard],
             data: {
               title: 'Organisatie - Stopzetten',
-              roles: [Role.OrganisationRegistryBeheerder],
+              roles: [Role.OrganisationRegistryBeheerder, Role.VlimpersBeheerder],
             }
           },
           {
