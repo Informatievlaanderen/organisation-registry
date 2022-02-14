@@ -14,6 +14,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -39,7 +40,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
                 new ValidFrom(),
                 new ValidTo(),
                 new ValidFrom(),
-                new ValidTo());
+                new ValidTo())
+            {
+                User = new UserBuilder()
+                    .AddRoles(Role.OrganisationRegistryBeheerder)
+                    .Build()
+            };
         }
 
         protected override OrganisationCommandHandlers BuildHandler()
@@ -50,7 +56,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
                 new SequentialOvoNumberGenerator(),
                 new UniqueOvoNumberValidatorStub(false),
                 new DateTimeProviderStub(DateTime.Today),
-                Mock.Of<IOrganisationRegistryConfiguration>(),
+                new OrganisationRegistryConfigurationStub(),
                 Mock.Of<ISecurityService>());
         }
 

@@ -26,7 +26,7 @@
         public DateTime? ValidTo { get; }
         public bool IsActive { get; }
 
-        public bool IsEditable { get; set; }
+        public bool IsEditable { get; }
 
         public OrganisationFormalFrameworkListQueryResult(Guid organisationFormalFrameworkId,
             Guid formalFrameworkId, string formalFrameworkName,

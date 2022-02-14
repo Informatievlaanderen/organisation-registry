@@ -16,8 +16,13 @@ namespace OrganisationRegistry.Api.Configuration
             FormalFrameworkIdsOwnedByAuditVlaanderen =
                 authorizationConfiguration?.FormalFrameworkIdsOwnedByAuditVlaanderen.SplitGuids() ??
                 Array.Empty<Guid>();
+
+            LabelIdsAllowedForVlimpers =
+                authorizationConfiguration?.LabelIdsAllowedForVlimpers.SplitGuids() ??
+                Array.Empty<Guid>();
         }
         public Guid[] FormalFrameworkIdsOwnedByVlimpers { get; }
         public Guid[] FormalFrameworkIdsOwnedByAuditVlaanderen { get; }
+        public Guid[] LabelIdsAllowedForVlimpers { get; }
     }
 }

@@ -1,6 +1,8 @@
 namespace OrganisationRegistry.Handling
 {
+    using System;
     using Authorization;
+    using Configuration;
     using Infrastructure.Authorization;
     using Organisation;
 
@@ -12,6 +14,17 @@ namespace OrganisationRegistry.Handling
                 new VlimpersPolicy(
                     organisation.State.UnderVlimpersManagement,
                     organisation.State.OvoNumber));
+        }
+
+        public static Handler WithLabelPolicy(this Handler source, Organisation organisation, Guid labelTypeId,
+            IOrganisationRegistryConfiguration configuration)
+        {
+            return source.WithPolicy(
+                new LabelPolicy(
+                    organisation.State.OvoNumber,
+                    organisation.State.UnderVlimpersManagement,
+                    labelTypeId,
+                    configuration));
         }
 
         public static Handler RequiresBeheerderForOrganisation(this Handler source, Organisation organisation)

@@ -12,5 +12,6 @@ namespace OrganisationRegistry.Tests.Shared.Stubs
         }
         public Guid[]? FormalFrameworkIdsOwnedByVlimpers { get; set; }
         public Guid[]? FormalFrameworkIdsOwnedByAuditVlaanderen { get; set; }
+        public Guid[] LabelIdsAllowedForVlimpers { get; set; }
     }
 }

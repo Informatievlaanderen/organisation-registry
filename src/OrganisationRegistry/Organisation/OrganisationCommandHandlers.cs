@@ -657,6 +657,10 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(AddOrganisationLabel message) =>
             Handler.For(message.User, Session)
+                .WithLabelPolicy(
+                    Session.Get<Organisation>(message.OrganisationId),
+                    message.LabelTypeId,
+                    _organisationRegistryConfiguration)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -677,6 +681,10 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(UpdateOrganisationLabel message) =>
             Handler.For(message.User, Session)
+                .WithLabelPolicy(
+                    Session.Get<Organisation>(message.OrganisationId),
+                    message.LabelTypeId,
+                    _organisationRegistryConfiguration)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
