@@ -15,6 +15,7 @@ namespace OrganisationRegistry.Handling.Authorization
             _isUnderVlimpersManagement = isUnderVlimpersManagement;
             _ovoNumber = ovoNumber;
         }
+
         public AuthorizationResult Check(IUser user)
         {
             if (user.IsInRole(Role.OrganisationRegistryBeheerder))
