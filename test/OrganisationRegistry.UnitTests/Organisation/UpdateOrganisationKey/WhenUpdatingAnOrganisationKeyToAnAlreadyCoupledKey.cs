@@ -72,7 +72,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
                 new KeyTypeId(_organisationKeyAdded.KeyTypeId),
                 "987987654",
                 new ValidFrom(null),
-                new ValidTo(null));
+                new ValidTo(null))
+            {
+                User = new UserBuilder()
+                    .AddRoles(Role.OrganisationRegistryBeheerder)
+                    .Build()
+            };
         }
 
         protected override int ExpectedNumberOfEvents => 0;
