@@ -327,6 +327,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(AddOrganisationKey message) =>
             Handler.For(message.User, Session)
+                .WithKeyPolicy(Session.Get<Organisation>(message.OrganisationId), message.KeyTypeId, _organisationRegistryConfiguration)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -343,6 +344,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(UpdateOrganisationKey message) =>
             Handler.For(message.User, Session)
+                .WithKeyPolicy(Session.Get<Organisation>(message.OrganisationId), message.KeyTypeId, _organisationRegistryConfiguration)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
