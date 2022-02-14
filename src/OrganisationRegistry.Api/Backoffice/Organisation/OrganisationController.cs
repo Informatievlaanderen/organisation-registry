@@ -81,9 +81,6 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
             [FromServices] ISecurityService securityService,
             [FromBody] CreateOrganisationRequest message)
         {
-            if (!securityService.CanAddOrganisation(User, message.ParentOrganisationId))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
@@ -93,6 +90,9 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
 
             if (!string.IsNullOrWhiteSpace(message.KboNumber))
             {
+                if (!securityService.CanAddOrganisation(User, message.ParentOrganisationId))
+                    ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
+
                 await CommandSender.Send(CreateOrganisationRequestMapping.MapToCreateKboOrganisation(message, User));
             }
             else
