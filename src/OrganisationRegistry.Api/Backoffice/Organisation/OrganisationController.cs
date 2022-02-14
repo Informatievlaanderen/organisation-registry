@@ -112,9 +112,6 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         {
             var internalMessage = new UpdateOrganisationInfoInternalRequest(id, message);
 
-            if (!securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
@@ -133,9 +130,6 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid id, [FromBody] UpdateOrganisationInfoNotLimitedByVlimpersRequest message)
         {
             var internalMessage = new UpdateOrganisationInfoNotLimitedByVlimpersInternalRequest(id, message);
-
-            if (!securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);

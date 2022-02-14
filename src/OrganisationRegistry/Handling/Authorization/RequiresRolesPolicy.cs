@@ -4,7 +4,7 @@ namespace OrganisationRegistry.Handling.Authorization
     using Infrastructure.Authorization;
     using Organisation.Exceptions;
 
-    class RequiresRolesPolicy : ISecurityPolicy
+    public class RequiresRolesPolicy : ISecurityPolicy
     {
         private readonly Role[] _roles;
 

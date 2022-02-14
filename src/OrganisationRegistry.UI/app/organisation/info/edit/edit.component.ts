@@ -117,9 +117,9 @@ export class OrganisationInfoEditComponent implements OnInit, OnDestroy {
   edit() {
     this.form.disable();
 
-    const update = this.form.value.underVlimpersManagement && !this.isVlimpersBeheerder ?
-      this.organisationService.updateInfoNotLimitedByVlimpers(this.organisationId, this.form.value) :
-      this.organisationService.update(this.organisationId, this.form.value);
+    const update = this.canEditAllOrganisationFields ?
+      this.organisationService.update(this.organisationId, this.form.value):
+      this.organisationService.updateInfoNotLimitedByVlimpers(this.organisationId, this.form.value);
 
     this.subscriptions.push(
       update
