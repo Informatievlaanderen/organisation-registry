@@ -4,7 +4,7 @@ namespace OrganisationRegistry.Handling.Authorization
     using Infrastructure.Domain;
     using Organisation.Exceptions;
 
-    class AdminOnlyPolicy : ISecurityPolicy
+    public class AdminOnlyPolicy : ISecurityPolicy
     {
         public AuthorizationResult Check(IUser user)
         {

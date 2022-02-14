@@ -51,6 +51,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
         protected override UpdateOrganisationInfo When()
         {
             var user = new UserBuilder()
+                .AddRoles(Role.OrganisationRegistryBeheerder)
                 .Build();
 
             return new UpdateOrganisationInfo(

@@ -77,7 +77,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
         [Fact]
         public void ThrowsAnException()
         {
-            Exception.Should().BeOfType<UserIsNotAuthorizedForVlimpersOrganisations>();
+            Exception.Should().BeOfType<InsufficientRights>();
         }
 
         public WhenTryingToUpdateAVlimpersOrgAsNonVlimpersUser(ITestOutputHelper helper) : base(helper) { }
