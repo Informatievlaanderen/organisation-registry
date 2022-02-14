@@ -6,7 +6,7 @@
             (filter)="search($event)">
         </ww-organisation-key-filter>
         <div class="cta-title__cta">
-            <a *ngIf="(canEditOrganisation | async)" class="button cta-title__cta" [routerLink]="['./create']">Sleutel toevoegen</a>
+            <a *ngIf="(store.canAddAndUpdateKeysChanged$ | async)" class="button cta-title__cta" [routerLink]="['./create']">Sleutel toevoegen</a>
             <div class="u-align-right" style="clear: both;"></div>
         </div>
     </div>

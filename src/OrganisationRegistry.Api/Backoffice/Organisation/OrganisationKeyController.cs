@@ -79,12 +79,6 @@
         {
             var internalMessage = new AddOrganisationKeyInternalRequest(organisationId, message);
 
-            if (!securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
-            if (!securityService.CanUseKeyType(securityService.GetRequiredUser(User), message.KeyTypeId))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor dit informatiesysteem.");
-
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
@@ -103,12 +97,6 @@
         public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationKeyRequest message)
         {
             var internalMessage = new UpdateOrganisationKeyInternalRequest(organisationId, message);
-
-            if (!securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
-
-            if (!securityService.CanUseKeyType(securityService.GetRequiredUser(User), message.KeyTypeId))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor dit informatiesysteem.");
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);

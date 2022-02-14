@@ -27,6 +27,17 @@ namespace OrganisationRegistry.Handling
                     configuration));
         }
 
+        public static Handler WithKeyPolicy(this Handler source, Organisation organisation, Guid keyTypeId,
+            IOrganisationRegistryConfiguration configuration)
+        {
+            return source.WithPolicy(
+                new KeyPolicy(
+                    organisation.State.OvoNumber,
+                    organisation.State.UnderVlimpersManagement,
+                    keyTypeId,
+                    configuration));
+        }
+
         public static Handler RequiresBeheerderForOrganisation(this Handler source, Organisation organisation)
         {
             return source.WithPolicy(

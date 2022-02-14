@@ -20,9 +20,14 @@ namespace OrganisationRegistry.Api.Configuration
             LabelIdsAllowedForVlimpers =
                 authorizationConfiguration?.LabelIdsAllowedForVlimpers.SplitGuids() ??
                 Array.Empty<Guid>();
+
+            KeyIdsAllowedForVlimpers =
+                authorizationConfiguration?.KeyIdsAllowedForVlimpers.SplitGuids() ??
+                Array.Empty<Guid>();
         }
         public Guid[] FormalFrameworkIdsOwnedByVlimpers { get; }
         public Guid[] FormalFrameworkIdsOwnedByAuditVlaanderen { get; }
         public Guid[] LabelIdsAllowedForVlimpers { get; }
+        public Guid[] KeyIdsAllowedForVlimpers { get; }
     }
 }
