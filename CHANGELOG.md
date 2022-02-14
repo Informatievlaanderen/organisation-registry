@@ -1,3 +1,21 @@
+# [1.131.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.130.1...v1.131.0) (2022-02-14)
+
+
+### Bug Fixes
+
+* or-722 allow vlimpersbeheerders to terminate orgs ([c630076](https://github.com/informatievlaanderen/organisation-registry/commit/c6300765c659f07394b0f2f7fe9e0953e1768857))
+* or-724 use vlimpers policy on daughter creation ([dfe1b92](https://github.com/informatievlaanderen/organisation-registry/commit/dfe1b9235346ebd845dec1f0daa0807d8515366f))
+* or-728 apply label policy ([3c3bd26](https://github.com/informatievlaanderen/organisation-registry/commit/3c3bd26272e14670e912ef0ab3041aea68272c29))
+* or-729 apply key policy ([e1b5aed](https://github.com/informatievlaanderen/organisation-registry/commit/e1b5aed794bbe87d66bb7d3ea50cf54bea0cec3a))
+* use correct method ([e25af95](https://github.com/informatievlaanderen/organisation-registry/commit/e25af95debd1502385657194cbd223440f1f3b03))
+* use different policy when adding top-level org ([19a5f93](https://github.com/informatievlaanderen/organisation-registry/commit/19a5f935b462bf33f75f10b93b6c5544899a304d))
+
+
+### Features
+
+* only allow beheerders to update limited info ([3a6c36e](https://github.com/informatievlaanderen/organisation-registry/commit/3a6c36e2edd5314936880291cb20fc351a0f182d))
+* use new policy for organisation info ([0e50ac7](https://github.com/informatievlaanderen/organisation-registry/commit/0e50ac76e93cfc60dc2ea0035e5e8a8407cbef19))
+
 ## [1.130.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.130.0...v1.130.1) (2022-02-10)
 
 
