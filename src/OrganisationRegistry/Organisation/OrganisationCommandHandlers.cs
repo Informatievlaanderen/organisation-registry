@@ -866,7 +866,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(TerminateOrganisation message) =>
             Handler.For(message.User, Session)
-                .WithPolicy(new AdminOnlyPolicy())
+                .WithVlimpersOnlyPolicy(Session.Get<Organisation>(message.OrganisationId))
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);

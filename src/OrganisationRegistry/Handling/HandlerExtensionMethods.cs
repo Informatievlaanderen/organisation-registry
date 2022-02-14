@@ -16,6 +16,13 @@ namespace OrganisationRegistry.Handling
                     organisation.State.OvoNumber));
         }
 
+        public static Handler WithVlimpersOnlyPolicy(this Handler source, Organisation organisation)
+        {
+            return source.WithPolicy(
+                new VlimpersOnlyPolicy(
+                    organisation.State.UnderVlimpersManagement));
+        }
+
         public static Handler WithLabelPolicy(this Handler source, Organisation organisation, Guid labelTypeId,
             IOrganisationRegistryConfiguration configuration)
         {
