@@ -191,7 +191,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(AddOrganisationParent message) =>
             Handler.For(message.User, Session)
-                .WithVlimpersParentChildPolicy(Session.Get<Organisation>(message.OrganisationId))
+                .WithVlimpersPolicy(Session.Get<Organisation>(message.OrganisationId))
                 .Handle(session =>
                 {
                     var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
@@ -211,7 +211,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(UpdateOrganisationParent message) =>
             Handler.For(message.User, Session)
-                .WithVlimpersParentChildPolicy(Session.Get<Organisation>(message.OrganisationId))
+                .WithVlimpersPolicy(Session.Get<Organisation>(message.OrganisationId))
                 .Handle(session =>
                 {
                     var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);

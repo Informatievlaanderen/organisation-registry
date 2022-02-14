@@ -217,12 +217,8 @@ namespace OrganisationRegistry.Organisation
             bool showOnVlaamseOverheidSites,
             Period validity,
             Period operationalValidity,
-            IDateTimeProvider dateTimeProvider,
-            bool isAuthorizedForVlimpers)
+            IDateTimeProvider dateTimeProvider)
         {
-            if (State.UnderVlimpersManagement && !isAuthorizedForVlimpers)
-                throw new UserIsNotAuthorizedForVlimpersOrganisations();
-
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
 

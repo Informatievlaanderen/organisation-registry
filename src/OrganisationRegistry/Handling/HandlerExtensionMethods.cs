@@ -6,10 +6,18 @@ namespace OrganisationRegistry.Handling
 
     public static class HandlerExtensionMethods
     {
-        public static Handler WithVlimpersParentChildPolicy(this Handler source, Organisation organisation)
+        public static Handler WithVlimpersPolicy(this Handler source, Organisation organisation)
         {
             return source.WithPolicy(
-                new VlimpersParentChildPolicy(
+                new VlimpersPolicy(
+                    organisation.State.UnderVlimpersManagement,
+                    organisation.State.OvoNumber));
+        }
+
+        public static Handler RequiresBeheerderForOrganisation(this Handler source, Organisation organisation)
+        {
+            return source.WithPolicy(
+                new BeheerderForOrganisationPolicy(
                     organisation.State.UnderVlimpersManagement,
                     organisation.State.OvoNumber));
         }
