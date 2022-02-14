@@ -2,7 +2,7 @@
     <div class="cta-title">
         <h3 class="h3 cta-title__title">Historiek</h3>
         <div class="cta-title__cta">
-            <a *ngIf="store.canEditParentsChanged$ | async"
+            <a *ngIf="store.canAddAndUpdateParentsChanged$ | async"
                class="button cta-title__cta" [routerLink]="['./create']">Moeder entiteit koppelen</a>
             <div class="u-align-right" style="clear: both;"></div>
         </div>
@@ -12,6 +12,6 @@
       [items]="organisationParents"
       [isBusy]="isLoading"
       (changePage)="changePage($event)"
-      [canEdit]="store.canEditParentsChanged$">
+      [canEdit]="store.canAddAndUpdateParentsChanged$">
     </ww-organisation-parent-list>
 </div>
