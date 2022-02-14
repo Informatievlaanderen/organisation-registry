@@ -96,6 +96,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(CreateOrganisation message) =>
             Handler.For(message.User, Session)
+                .WithVlimpersPolicy(Session.Get<Organisation>(message.ParentOrganisationId))
                 .Handle(session =>
                 {
                     var parentOrganisation =
