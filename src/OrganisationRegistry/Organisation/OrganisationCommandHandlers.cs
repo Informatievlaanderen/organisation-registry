@@ -95,7 +95,13 @@ namespace OrganisationRegistry.Organisation
         }
 
         public Task Handle(CreateOrganisation message) =>
-            Handler.For(message.User, Session)
+            message.ParentOrganisationId == null ?
+            CreateTopLevelOrganisation(message) :
+            CreateDaughter(message);
+
+        private Task CreateDaughter(CreateOrganisation message)
+        {
+            return Handler.For(message.User, Session)
                 .WithVlimpersPolicy(Session.Get<Organisation>(message.ParentOrganisationId))
                 .Handle(session =>
                 {
@@ -133,6 +139,43 @@ namespace OrganisationRegistry.Organisation
 
                     session.Add(organisation);
                 });
+        }
+
+
+        private Task CreateTopLevelOrganisation(CreateOrganisation message)
+        {
+            return Handler.For(message.User, Session)
+                .RequiresAdmin()
+                .Handle(session =>
+                {
+                    if (_uniqueOvoNumberValidator.IsOvoNumberTaken(message.OvoNumber))
+                        throw new OvoNumberNotUnique();
+
+                    var ovoNumber = string.IsNullOrWhiteSpace(message.OvoNumber)
+                        ? _ovoNumberGenerator.GenerateNumber()
+                        : message.OvoNumber;
+
+                    var purposes = message
+                        .Purposes
+                        .Select(purposeId => session.Get<Purpose>(purposeId))
+                        .ToList();
+
+                    var organisation = Organisation.Create(message.OrganisationId,
+                        message.Name,
+                        ovoNumber,
+                        message.ShortName,
+                        message.Article,
+                        null,
+                        message.Description,
+                        purposes,
+                        message.ShowOnVlaamseOverheidSites,
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                        new Period(new ValidFrom(message.OperationalValidFrom), new ValidTo(message.OperationalValidTo)),
+                        _dateTimeProvider);
+
+                    session.Add(organisation);
+                });
+        }
 
         public Task Handle(UpdateOrganisationInfo message) =>
             Handler.For(message.User, Session)
