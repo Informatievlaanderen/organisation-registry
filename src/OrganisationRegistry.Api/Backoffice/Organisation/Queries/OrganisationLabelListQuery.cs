@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using Handling.Authorization;
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
@@ -22,20 +23,21 @@
 
         public bool IsEditable { get; }
 
-        public OrganisationLabelListQueryResult(
-            Guid organisationLabelId,
+        public OrganisationLabelListQueryResult(Guid organisationLabelId,
             string labelTypeName,
             string labelValue,
             DateTime? validFrom,
             DateTime? validTo,
-            bool isEditable)
+            bool isEditable,
+            Guid labelTypeId,
+            Func<Guid, bool> isAuthorizedForLabelType)
         {
             OrganisationLabelId = organisationLabelId;
             LabelTypeName = labelTypeName;
             LabelValue = labelValue;
             ValidFrom = validFrom;
             ValidTo = validTo;
-            IsEditable = isEditable;
+            IsEditable = isEditable && isAuthorizedForLabelType(labelTypeId);
 
             IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
         }
@@ -45,7 +47,7 @@
     {
         private readonly OrganisationRegistryContext _context;
         private readonly Guid _organisationId;
-        private readonly Func<Guid?, bool> _canUseLabelTypeFunc;
+        private readonly Func<Guid, bool> _isAuthorizedForLabelType;
 
         protected override ISorting Sorting => new OrganisationLabelListSorting();
 
@@ -56,16 +58,17 @@
                 x.LabelValue,
                 x.ValidFrom,
                 x.ValidTo,
-                x.IsEditable && _canUseLabelTypeFunc(x.LabelTypeId));
+                x.IsEditable,
+                x.LabelTypeId,
+                _isAuthorizedForLabelType);
 
-        public OrganisationLabelListQuery(
-            OrganisationRegistryContext context,
+        public OrganisationLabelListQuery(OrganisationRegistryContext context,
             Guid organisationId,
-            Func<Guid?, bool> canUseLabelTypeFunc)
+            Func<Guid, bool> isAuthorizedForLabelType)
         {
             _context = context;
             _organisationId = organisationId;
-            _canUseLabelTypeFunc = canUseLabelTypeFunc;
+            _isAuthorizedForLabelType = isAuthorizedForLabelType;
         }
 
         protected override IQueryable<OrganisationLabelListItem> Filter(FilteringHeader<OrganisationLabelListItemFilter> filtering)

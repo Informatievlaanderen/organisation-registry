@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Handling.Authorization;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Pagination;
@@ -11,6 +12,8 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using OrganisationRegistry.Configuration;
+    using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using Queries;
@@ -33,6 +36,8 @@
         [AllowAnonymous]
         public async Task<IActionResult> Get(
             [FromServices] OrganisationRegistryContext context,
+            [FromServices] IOrganisationRegistryConfiguration configuration,
+            [FromServices] IMemoryCaches memoryCaches,
             [FromServices] ISecurityService securityService,
             [FromRoute] Guid organisationId)
         {
@@ -40,11 +45,15 @@
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            Func<Guid?, bool> canUseLabelType =
-                labelTypeId => User.Identity.IsAuthenticated &&
-                             securityService.CanUseLabelType(securityService.GetRequiredUser(User), labelTypeId.Value);
+            Func<Guid, bool> policyFunc = (labelTypeId) => new LabelPolicy(
+                    memoryCaches.OvoNumbers[organisationId],
+                    memoryCaches.UnderVlimpersManagement.Contains(organisationId),
+                    labelTypeId,
+                    configuration)
+                .Check(securityService.GetUser(User))
+                .IsSuccessful;
 
-            var pagedOrganisations = new OrganisationLabelListQuery(context, organisationId, canUseLabelType).Fetch(filtering, sorting, pagination);
+            var pagedOrganisations = new OrganisationLabelListQuery(context, organisationId, policyFunc).Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedOrganisations.PaginationInfo);
             Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
