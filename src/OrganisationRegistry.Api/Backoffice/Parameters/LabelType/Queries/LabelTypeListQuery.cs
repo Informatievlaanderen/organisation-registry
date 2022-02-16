@@ -16,7 +16,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType.Queries
     {
         private readonly OrganisationRegistryContext _context;
         private readonly IOrganisationRegistryConfiguration _configuration;
-        private readonly Func<Guid, bool> _policyFunc;
+        private readonly Func<Guid, bool> _isAuthorizedForLabelType;
 
         protected override IQueryable<LabelTypeListItem> Filter(FilteringHeader<LabelTypeListItem> filtering)
         {
@@ -36,16 +36,16 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType.Queries
                 x.Id,
                 x.Name,
                 x.Id != _configuration.Kbo.KboV2FormalNameLabelTypeId,
-                _policyFunc);
+                _isAuthorizedForLabelType);
 
         protected override ISorting Sorting => new LabelTypeListSorting();
 
         public LabelTypeListQuery(OrganisationRegistryContext context, IOrganisationRegistryConfiguration configuration,
-            Func<Guid, bool> policyFunc)
+            Func<Guid, bool> isAuthorizedForLabelType)
         {
             _context = context;
             _configuration = configuration;
-            _policyFunc = policyFunc;
+            _isAuthorizedForLabelType = isAuthorizedForLabelType;
         }
 
         private class LabelTypeListSorting : ISorting
