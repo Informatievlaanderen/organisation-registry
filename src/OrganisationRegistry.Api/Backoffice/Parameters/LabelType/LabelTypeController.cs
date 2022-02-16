@@ -45,7 +45,7 @@
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            Func<Guid, bool> policyFunc = (labelTypeId) =>
+            Func<Guid, bool> isAuthorizedForLabelType = labelTypeId =>
                 !forOrganisationId.HasValue ||
                 new LabelPolicy(
                         memoryCaches.OvoNumbers[forOrganisationId.Value],
@@ -55,7 +55,7 @@
                     .Check(securityService.GetUser(User))
                     .IsSuccessful;
 
-            var pagedLabelTypes = new LabelTypeListQuery(context, configuration, policyFunc).Fetch(filtering, sorting, pagination);
+            var pagedLabelTypes = new LabelTypeListQuery(context, configuration, isAuthorizedForLabelType).Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedLabelTypes.PaginationInfo);
             Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);

@@ -45,7 +45,7 @@
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            Func<Guid, bool> policyFunc = (labelTypeId) => new LabelPolicy(
+            Func<Guid, bool> isAuthorizedForLabelType = labelTypeId => new LabelPolicy(
                     memoryCaches.OvoNumbers[organisationId],
                     memoryCaches.UnderVlimpersManagement.Contains(organisationId),
                     labelTypeId,
@@ -53,7 +53,7 @@
                 .Check(securityService.GetUser(User))
                 .IsSuccessful;
 
-            var pagedOrganisations = new OrganisationLabelListQuery(context, organisationId, policyFunc).Fetch(filtering, sorting, pagination);
+            var pagedOrganisations = new OrganisationLabelListQuery(context, organisationId, isAuthorizedForLabelType).Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedOrganisations.PaginationInfo);
             Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
