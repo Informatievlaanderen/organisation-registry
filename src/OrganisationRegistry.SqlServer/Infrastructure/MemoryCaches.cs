@@ -50,7 +50,6 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         private List<Guid> _orgsUnderVlimpersManagement = null!;
 
-
         private readonly ILogger<MemoryCaches> _logger;
 
         public IReadOnlyDictionary<Guid, string> OvoNumbers =>
