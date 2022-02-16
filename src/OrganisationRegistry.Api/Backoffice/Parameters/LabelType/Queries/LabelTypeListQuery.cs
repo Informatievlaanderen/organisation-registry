@@ -16,6 +16,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType.Queries
     {
         private readonly OrganisationRegistryContext _context;
         private readonly IOrganisationRegistryConfiguration _configuration;
+        private readonly Func<Guid, bool> _policyFunc;
 
         protected override IQueryable<LabelTypeListItem> Filter(FilteringHeader<LabelTypeListItem> filtering)
         {
@@ -31,19 +32,20 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType.Queries
         }
 
         protected override Expression<Func<LabelTypeListItem, LabelTypeListItemResult>> Transformation =>
-            x => new LabelTypeListItemResult
-            {
-                Id = x.Id,
-                Name = x.Name,
-                UserPermitted = x.Id != _configuration.Kbo.KboV2FormalNameLabelTypeId
-            };
+            x => new LabelTypeListItemResult(
+                x.Id,
+                x.Name,
+                x.Id != _configuration.Kbo.KboV2FormalNameLabelTypeId,
+                _policyFunc);
 
         protected override ISorting Sorting => new LabelTypeListSorting();
 
-        public LabelTypeListQuery(OrganisationRegistryContext context, IOrganisationRegistryConfiguration configuration)
+        public LabelTypeListQuery(OrganisationRegistryContext context, IOrganisationRegistryConfiguration configuration,
+            Func<Guid, bool> policyFunc)
         {
             _context = context;
             _configuration = configuration;
+            _policyFunc = policyFunc;
         }
 
         private class LabelTypeListSorting : ISorting
@@ -60,6 +62,14 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType.Queries
 
     public class LabelTypeListItemResult
     {
+
+        public LabelTypeListItemResult(Guid id, string name, bool userPermitted, Func<Guid, bool> policyFunc)
+        {
+            Id = id;
+            Name = name;
+            UserPermitted = userPermitted && policyFunc(id);
+        }
+
         public Guid Id { get; set; }
 
         public string Name { get; set; }

@@ -48,20 +48,19 @@ export class OrganisationLabelsCreateOrganisationLabelComponent implements OnIni
 
     this.route.parent.parent.params.forEach((params: Params) => {
       this.form.setValue(new CreateOrganisationLabelRequest(params['id']));
+      this.subscriptions.push(this.labelTypeService
+        .getAllUserPermittedLabelTypes(params['id'])
+        .finally(() => this.form.enable())
+        .subscribe(
+          allLabelTypes => this.labelTypes = allLabelTypes.map(k => new SelectItem(k.id, k.name)),
+          error =>
+            this.alertService.setAlert(
+              new AlertBuilder()
+                .error(error)
+                .withTitle('Benaming types konden niet geladen worden!')
+                .withMessage('Er is een fout opgetreden bij het ophalen van de benaming types. Probeer het later opnieuw.')
+                .build())));
     });
-
-    this.subscriptions.push(this.labelTypeService
-      .getAllUserPermittedLabelTypes()
-      .finally(() => this.form.enable())
-      .subscribe(
-        allLabelTypes => this.labelTypes = allLabelTypes.map(k => new SelectItem(k.id, k.name)),
-        error =>
-          this.alertService.setAlert(
-            new AlertBuilder()
-              .error(error)
-              .withTitle('Benaming types konden niet geladen worden!')
-              .withMessage('Er is een fout opgetreden bij het ophalen van de benaming types. Probeer het later opnieuw.')
-              .build())));
   }
 
   ngOnDestroy() {

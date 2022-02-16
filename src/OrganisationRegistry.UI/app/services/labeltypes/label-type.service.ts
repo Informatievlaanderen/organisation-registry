@@ -66,7 +66,7 @@ export class LabelTypeService implements ICrudService<LabelType> {
       .map(this.toLabelTypes);
   }
 
-  public getAllUserPermittedLabelTypes(): Observable<LabelTypeListItem[]> {
+  public getAllUserPermittedLabelTypes(organisationId: string): Observable<LabelTypeListItem[]> {
     let headers = new HeadersBuilder()
       .json()
       .withoutPagination()
@@ -74,7 +74,7 @@ export class LabelTypeService implements ICrudService<LabelType> {
       .build();
 
     return this.http
-      .get(this.labelTypesUrl, { headers: headers })
+      .get(`${this.labelTypesUrl}?forOrganisationId=${organisationId}`, { headers: headers })
       .map(this.toLabelTypes)
       .map(pagedResult => pagedResult.data.filter(x => x.userPermitted))
   }

@@ -48,13 +48,14 @@ export class OrganisationLabelsUpdateOrganisationLabelComponent implements OnIni
   }
 
   ngOnInit() {
-    let allLabelTypesObservable = this.labelTypeService.getAllUserPermittedLabelTypes();
 
     this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let labelId = res[1]['id'];
+
+        let allLabelTypesObservable = this.labelTypeService.getAllUserPermittedLabelTypes(orgId);
 
         this.subscriptions.push(Observable.zip(this.organisationLabelService.get(orgId, labelId), allLabelTypesObservable)
           .subscribe(item => this.setForm(item[0], item[1]),

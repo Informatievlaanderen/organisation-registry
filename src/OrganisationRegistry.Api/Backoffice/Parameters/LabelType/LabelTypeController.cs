@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Handling.Authorization;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Pagination;
@@ -11,6 +12,8 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Configuration;
+    using OrganisationRegistry.Infrastructure.AppSpecific;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using Queries;
     using Requests;
@@ -30,15 +33,29 @@
 
         /// <summary>Get a list of available label types.</summary>
         [HttpGet]
+        [OrganisationRegistryAuthorize]
         public async Task<IActionResult> Get(
             [FromServices] OrganisationRegistryContext context,
-            [FromServices] IOrganisationRegistryConfiguration configuration)
+            [FromServices] IMemoryCaches memoryCaches,
+            [FromServices] ISecurityService securityService,
+            [FromServices] IOrganisationRegistryConfiguration configuration,
+            [FromQuery] Guid? forOrganisationId)
         {
             var filtering = Request.ExtractFilteringRequest<LabelTypeListItem>();
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var pagedLabelTypes = new LabelTypeListQuery(context, configuration).Fetch(filtering, sorting, pagination);
+            Func<Guid, bool> policyFunc = (labelTypeId) =>
+                !forOrganisationId.HasValue ||
+                new LabelPolicy(
+                        memoryCaches.OvoNumbers[forOrganisationId.Value],
+                        memoryCaches.UnderVlimpersManagement.Contains(forOrganisationId.Value),
+                        labelTypeId,
+                        configuration)
+                    .Check(securityService.GetUser(User))
+                    .IsSuccessful;
+
+            var pagedLabelTypes = new LabelTypeListQuery(context, configuration, policyFunc).Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedLabelTypes.PaginationInfo);
             Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
@@ -52,7 +69,8 @@
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid id)
+        public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context,
+            [FromRoute] Guid id)
         {
             var key = await context.LabelTypeList.FirstOrDefaultAsync(x => x.Id == id);
 
