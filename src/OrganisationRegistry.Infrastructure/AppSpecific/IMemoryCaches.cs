@@ -18,5 +18,7 @@ namespace OrganisationRegistry.Infrastructure.AppSpecific
         IReadOnlyDictionary<Guid, string> ContactTypeNames { get; }
 
         IReadOnlyDictionary<Guid, bool> IsSeatPaid { get; }
+        IList<Guid> UnderVlimpersManagement { get; }
+
     }
 }

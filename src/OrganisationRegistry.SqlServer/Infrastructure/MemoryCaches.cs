@@ -27,7 +27,8 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         ContactTypeNames,
         BodySeatNames,
         BodySeatNumbers,
-        IsSeatPaid
+        IsSeatPaid,
+        UnderVlimpersManagement,
     }
 
     // Scoped as SingleInstance()
@@ -46,6 +47,9 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         private Dictionary<Guid, string> _contactTypeNames = null!;
 
         private Dictionary<Guid, bool> _isSeatPaid = null!;
+
+        private List<Guid> _orgsUnderVlimpersManagement = null!;
+
 
         private readonly ILogger<MemoryCaches> _logger;
 
@@ -78,6 +82,9 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         public IReadOnlyDictionary<Guid, bool> IsSeatPaid =>
             ToReadOnlyDictionary(GetCache<bool>(MemoryCacheType.IsSeatPaid));
+
+        public IList<Guid> UnderVlimpersManagement =>
+            new List<Guid>(GetSparseCache<Guid>(MemoryCacheType.UnderVlimpersManagement));
 
         public MemoryCaches(IContextFactory contextFactory, ILogger<MemoryCaches>? logger = null)
         {
@@ -123,6 +130,18 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
                 case MemoryCacheType.IsSeatPaid:
                     return _isSeatPaid as Dictionary<Guid, T> ?? throw new InvalidOperationException();
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(cacheType), cacheType, null);
+            }
+        }
+
+        internal IList<Guid> GetSparseCache<T>(MemoryCacheType cacheType)
+        {
+            switch (cacheType)
+            {
+                case MemoryCacheType.UnderVlimpersManagement:
+                    return _orgsUnderVlimpersManagement ?? throw new InvalidOperationException();
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(cacheType), cacheType, null);
@@ -194,6 +213,13 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                         .ToDictionaryAsync(item => item.BodySeatId, item => item.PaidSeat);
                     break;
 
+                case MemoryCacheType.UnderVlimpersManagement:
+                    _orgsUnderVlimpersManagement = await context.OrganisationDetail.AsNoTracking()
+                        .Where(x => x.UnderVlimpersManagement)
+                        .Select(x => x.Id)
+                        .ToListAsync();
+                    break;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(cacheType), cacheType, null);
             }
@@ -224,7 +250,9 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         IEventHandler<BodySeatUpdated>,
         IEventHandler<ResetMemoryCache>,
         IEventHandler<OrganisationTerminated>,
-        IEventHandler<OrganisationTerminatedV2>
+        IEventHandler<OrganisationTerminatedV2>,
+        IEventHandler<OrganisationPlacedUnderVlimpersManagement>,
+        IEventHandler<OrganisationReleasedFromVlimpersManagement>
     {
     }
 
@@ -388,6 +416,18 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                 .UpdateMemoryCache(message.Body.OrganisationId, null);
         }
 
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationPlacedUnderVlimpersManagement> message)
+        {
+            _memoryCaches.GetSparseCache<Guid>(MemoryCacheType.UnderVlimpersManagement)
+                .Add(message.Body.OrganisationId);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationReleasedFromVlimpersManagement> message)
+        {
+            _memoryCaches.GetSparseCache<Guid>(MemoryCacheType.UnderVlimpersManagement)
+                .Remove(message.Body.OrganisationId);
+        }
+
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<ResetMemoryCache> message)
         {
             await CheckResetCache(message.Body.Events, new[] { typeof(ContactTypeCreated), typeof(ContactTypeUpdated) }, new[] { MemoryCacheType.ContactTypeNames });
@@ -429,16 +469,23 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                     typeof(ParentClearedFromOrganisation)
                 },
                 new[] { MemoryCacheType.OrganisationParents });
+
+            await CheckResetCache(
+                message.Body.Events,
+                new[]
+                {
+                    typeof(OrganisationPlacedUnderVlimpersManagement),
+                    typeof(OrganisationReleasedFromVlimpersManagement),
+                },
+                new[] { MemoryCacheType.UnderVlimpersManagement });
         }
 
         private async Task CheckResetCache(IEnumerable<IEvent> events, Type[] eventTypes, IEnumerable<MemoryCacheType> memoryCacheTypes)
         {
-            using (var context = _contextFactory.Create())
-            {
-                if (events.Any(x => eventTypes.Contains(x.GetType())))
-                    foreach (var memoryCacheType in memoryCacheTypes)
-                        await _memoryCaches.ResetCache(memoryCacheType, context);
-            }
+            await using var context = _contextFactory.Create();
+            if (events.Any(x => eventTypes.Contains(x.GetType())))
+                foreach (var memoryCacheType in memoryCacheTypes)
+                    await _memoryCaches.ResetCache(memoryCacheType, context);
         }
     }
 }
