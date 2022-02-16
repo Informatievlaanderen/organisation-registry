@@ -5,7 +5,6 @@ namespace OrganisationRegistry.Organisation.Events
     using OrganisationTermination;
     using State;
 
-    [Obsolete("Use OrganisationTerminatedV2 instead.")]
     public class OrganisationTerminated : BaseEvent<OrganisationTerminated>
     {
         public Guid OrganisationId => Id;
@@ -18,6 +17,7 @@ namespace OrganisationRegistry.Organisation.Events
         public KboFieldsToTerminate KboFieldsToTerminate { get; }
         public bool ForcedKboTermination { get; }
 
+        [Obsolete("Use OrganisationTerminatedV2 instead.")]
         public OrganisationTerminated(Guid organisationId,
             string name,
             string ovoNumber,
