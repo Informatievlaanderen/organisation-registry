@@ -143,15 +143,6 @@ namespace OrganisationRegistry.Api.Security
                 organisationSecurity.BodyIds);
         }
 
-        public Role[] GetRoles(ClaimsPrincipal principal)
-        {
-            return principal
-                .GetClaims(ClaimTypes.Role)
-                .Where(role => _roleMapping.ContainsKey(role))
-                .Select(role => _roleMapping[role])
-                .ToArray();
-        }
-
         public IUser GetRequiredUser(ClaimsPrincipal? principal)
         {
             if (principal == null)
@@ -171,13 +162,15 @@ namespace OrganisationRegistry.Api.Security
 
             var ip = principal.FindFirst(OrganisationRegistryClaims.ClaimIp);
 
+            var securityInformation = GetSecurityInformation(principal);
+
             return new User(
                 firstName.Value,
                 lastName.Value,
                 acmId.Value,
                 ip?.Value,
-                GetRoles(principal),
-                GetOrganisations(principal));
+                securityInformation.Roles.ToArray(),
+                securityInformation.OvoNumbers);
         }
 
         public IUser GetUser(ClaimsPrincipal? principal)
@@ -190,13 +183,15 @@ namespace OrganisationRegistry.Api.Security
             var acmId = principal.FindFirst(OrganisationRegistryClaims.ClaimAcmId);
             var ip = principal.FindFirst(OrganisationRegistryClaims.ClaimIp);
 
+            var securityInformation = GetSecurityInformation(principal);
+
             return new User(
                 firstName?.Value,
                 lastName?.Value,
                 acmId?.Value,
                 ip?.Value,
-                GetRoles(principal),
-                GetOrganisations(principal));
+                securityInformation.Roles.ToArray(),
+                securityInformation.OvoNumbers);
         }
 
         // TODO: see how we can make SecurityService use IUser everywhere, io ClaimsPrincipal.

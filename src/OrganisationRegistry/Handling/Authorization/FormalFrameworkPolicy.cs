@@ -34,8 +34,7 @@ namespace OrganisationRegistry.Handling.Authorization
                 formalFrameworkIdsOwnedByVlimpers.Contains(_formalFrameworkId))
                 return AuthorizationResult.Success();
 
-            if(user.IsInRole(Role.OrganisatieBeheerder) &&
-               user.Organisations.Contains(_ovoNumberFunc()) &&
+            if(user.IsOrganisatieBeheerderFor(_ovoNumberFunc()) &&
                !formalFrameworkIdsOwnedByVlimpers.Contains(_formalFrameworkId) &&
                !formalFrameworkIdsOwnedByAuditVlaanderen.Contains(_formalFrameworkId))
                 return AuthorizationResult.Success();

@@ -12,5 +12,6 @@ namespace OrganisationRegistry.Infrastructure.Authorization
         bool IsAuthorizedForVlimpersOrganisations { get; }
         List<string> Organisations { get; }
         bool IsInRole(Role role);
+        bool IsOrganisatieBeheerderFor(string ovoNumber);
     }
 }

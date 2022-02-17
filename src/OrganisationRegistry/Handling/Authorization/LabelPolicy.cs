@@ -30,19 +30,29 @@ namespace OrganisationRegistry.Handling.Authorization
             if(user.IsInRole(Role.OrganisationRegistryBeheerder))
                 return AuthorizationResult.Success();
 
-            var labelIdsAllowedByVlimpers = _configuration.Authorization.LabelIdsAllowedForVlimpers;
+            var isVlimpersLabel = IsVlimpersLabel();
 
             if (_underVlimpersManagement &&
-                user.IsInRole(Role.VlimpersBeheerder) &&
-                labelIdsAllowedByVlimpers.Contains(_labelTypeId))
+                user.IsInRole(Role.VlimpersBeheerder) && isVlimpersLabel)
                 return AuthorizationResult.Success();
 
-            if(!_underVlimpersManagement &&
-               user.IsInRole(Role.OrganisatieBeheerder) &&
-               user.Organisations.Contains(_ovoNumber))
+            if (user.IsOrganisatieBeheerderFor(_ovoNumber))
+            {
+                if (_underVlimpersManagement && isVlimpersLabel)
+                {
+                    return AuthorizationResult.Fail(new InsufficientRights());
+                }
                 return AuthorizationResult.Success();
+            }
 
             return AuthorizationResult.Fail(new InsufficientRights());
+        }
+
+        private bool IsVlimpersLabel()
+        {
+            var labelIdsAllowedByVlimpers = _configuration.Authorization.LabelIdsAllowedForVlimpers;
+            var isVlimpersLabel = labelIdsAllowedByVlimpers.Contains(_labelTypeId);
+            return isVlimpersLabel;
         }
     }
 }
