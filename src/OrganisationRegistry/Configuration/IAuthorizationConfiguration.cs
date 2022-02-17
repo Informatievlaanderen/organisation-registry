@@ -8,5 +8,6 @@ namespace OrganisationRegistry.Configuration
         Guid[] FormalFrameworkIdsOwnedByAuditVlaanderen { get; }
         Guid[] LabelIdsAllowedForVlimpers { get; }
         Guid[] KeyIdsAllowedForVlimpers { get; }
+        Guid[] KeyIdsAllowedOnlyForOrafin { get; }
     }
 }

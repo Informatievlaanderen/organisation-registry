@@ -33,6 +33,11 @@ namespace OrganisationRegistry.Handling.Authorization
                 return AuthorizationResult.Success();
 
             var keyIdsAllowedForVlimpers = _configuration.Authorization.KeyIdsAllowedForVlimpers;
+            var keyIdsAllowedOnlyForOrafin = _configuration.Authorization.KeyIdsAllowedOnlyForOrafin;
+
+            if(keyIdsAllowedOnlyForOrafin.Contains(_keyTypeId)
+               && !user.IsInRole(Role.Orafin))
+                return AuthorizationResult.Fail(new InsufficientRights());
 
             if (_underVlimpersManagement &&
                 user.IsInRole(Role.VlimpersBeheerder) &&

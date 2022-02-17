@@ -46,21 +46,22 @@ export class OrganisationKeysCreateOrganisationKeyComponent implements OnInit, O
   ngOnInit() {
     this.form.disable();
     this.route.parent.parent.params.forEach((params: Params) => {
-      this.form.setValue(new CreateOrganisationKeyRequest(params['id']));
-    });
+      let organisationId = params['id'];
+      this.form.setValue(new CreateOrganisationKeyRequest(organisationId));
 
-    this.subscriptions.push(this.keyService
-      .getAllKeyTypes()
-      .finally(() => this.form.enable())
-      .subscribe(
-        allKeys => this.keys = allKeys.map(k => new SelectItem(k.id, k.name)),
-        error =>
-          this.alertService.setAlert(
-            new AlertBuilder()
-              .error(error)
-              .withTitle('Informatiesystemen konden niet geladen worden!')
-              .withMessage('Er is een fout opgetreden bij het ophalen van de informatiesystemen. Probeer het later opnieuw.')
-              .build())));
+      this.subscriptions.push(this.keyService
+        .getAllKeyTypes(organisationId)
+        .finally(() => this.form.enable())
+        .subscribe(
+          allKeys => this.keys = allKeys.map(k => new SelectItem(k.id, k.name)),
+          error =>
+            this.alertService.setAlert(
+              new AlertBuilder()
+                .error(error)
+                .withTitle('Informatiesystemen konden niet geladen worden!')
+                .withMessage('Er is een fout opgetreden bij het ophalen van de informatiesystemen. Probeer het later opnieuw.')
+                .build())));
+    });
   }
 
   ngOnDestroy() {

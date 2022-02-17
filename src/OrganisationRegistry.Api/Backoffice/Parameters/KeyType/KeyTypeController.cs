@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Handling.Authorization;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Pagination;
@@ -11,6 +12,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Configuration;
+    using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using Queries;
@@ -23,22 +25,20 @@
     [OrganisationRegistryRoute("keytypes")]
     public class KeyTypeController : OrganisationRegistryController
     {
-        private readonly ISecurityService _securityService;
-        private readonly IOrganisationRegistryConfiguration _configuration;
-
-        public KeyTypeController(ICommandSender commandSender,
-            ISecurityService securityService,
-            IOrganisationRegistryConfiguration configuration)
+        public KeyTypeController(ICommandSender commandSender)
             : base(commandSender)
         {
-            _securityService = securityService;
-            _configuration = configuration;
         }
 
         /// <summary>Get a list of available key types.</summary>
         [HttpGet]
         [OrganisationRegistryAuthorize]
-        public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
+        public async Task<IActionResult> Get(
+            [FromServices] OrganisationRegistryContext context,
+            [FromServices] IMemoryCaches memoryCaches,
+            [FromServices] ISecurityService securityService,
+            [FromServices] IOrganisationRegistryConfiguration configuration,
+            [FromQuery] Guid? forOrganisationId)
         {
             var filtering = Request.ExtractFilteringRequest<KeyTypeListQuery.KeyTypeListItemFilter>();
             var sorting = Request.ExtractSortingRequest();
@@ -46,10 +46,17 @@
 
             filtering.Filter ??= new KeyTypeListQuery.KeyTypeListItemFilter();
 
-            if (!_securityService.CanUseKeyType(_securityService.GetRequiredUser(User), _configuration.OrafinKeyTypeId))
-                filtering.Filter.ExcludeIds.Add(_configuration.OrafinKeyTypeId);
+            Func<Guid, bool> isAuthorizedForKeyType = keyTypeId =>
+                !forOrganisationId.HasValue ||
+                new KeyPolicy(
+                        memoryCaches.OvoNumbers[forOrganisationId.Value],
+                        memoryCaches.UnderVlimpersManagement.Contains(forOrganisationId.Value),
+                        keyTypeId,
+                        configuration)
+                    .Check(securityService.GetUser(User))
+                    .IsSuccessful;
 
-            var pagedKeyTypes = new KeyTypeListQuery(context).Fetch(filtering, sorting, pagination);
+            var pagedKeyTypes = new KeyTypeListQuery(context, isAuthorizedForKeyType).Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedKeyTypes.PaginationInfo);
             Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
