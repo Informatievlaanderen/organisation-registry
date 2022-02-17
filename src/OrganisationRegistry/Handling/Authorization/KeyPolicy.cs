@@ -43,8 +43,7 @@ namespace OrganisationRegistry.Handling.Authorization
                 return AuthorizationResult.Success();
 
             if(!_underVlimpersManagement &&
-               user.IsInRole(Role.OrganisatieBeheerder) &&
-               user.Organisations.Contains(_ovoNumber))
+               user.IsOrganisatieBeheerderFor(_ovoNumber))
                 return AuthorizationResult.Success();
 
             return AuthorizationResult.Fail(new InsufficientRights());

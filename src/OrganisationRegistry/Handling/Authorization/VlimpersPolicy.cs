@@ -26,8 +26,7 @@ namespace OrganisationRegistry.Handling.Authorization
                 return AuthorizationResult.Success();
 
             if (!_isUnderVlimpersManagement &&
-                user.IsInRole(Role.OrganisatieBeheerder) &&
-                user.Organisations.Contains(_ovoNumber))
+                user.IsOrganisatieBeheerderFor(_ovoNumber))
                 return AuthorizationResult.Success();
 
             return _isUnderVlimpersManagement

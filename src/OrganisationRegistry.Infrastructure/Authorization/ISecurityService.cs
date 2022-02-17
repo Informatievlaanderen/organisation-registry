@@ -14,7 +14,6 @@ namespace OrganisationRegistry.Infrastructure.Authorization
         bool CanEditDelegation(ClaimsPrincipal user, Guid? organisationId, Guid? bodyId);
 
         SecurityInformation GetSecurityInformation(ClaimsPrincipal user);
-        Role[] GetRoles(ClaimsPrincipal principal);
 
         IUser GetRequiredUser(ClaimsPrincipal? principal);
         IUser GetUser(ClaimsPrincipal? principal);

@@ -32,5 +32,11 @@ namespace OrganisationRegistry.Infrastructure.Authorization
         {
             return Roles.Any(x => x == role);
         }
+
+        public bool IsOrganisatieBeheerderFor(string ovoNumber)
+        {
+            return IsInRole(Role.OrganisatieBeheerder) &&
+                   Organisations.Contains(ovoNumber);
+        }
     }
 }
