@@ -70,10 +70,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType.Queries
             UserPermitted = userPermitted && policyFunc(id);
         }
 
-        public Guid Id { get; set; }
+        public Guid Id { get; }
 
-        public string Name { get; set; }
+        public string Name { get; }
 
-        public bool UserPermitted { get; set; }
+        public bool UserPermitted { get; }
     }
 }
