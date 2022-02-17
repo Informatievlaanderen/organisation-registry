@@ -1,3 +1,10 @@
+# [1.133.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.132.0...v1.133.0) (2022-02-17)
+
+
+### Features
+
+* or-729 use keyPolicy only list editable label types ([bd0cb7d](https://github.com/informatievlaanderen/organisation-registry/commit/bd0cb7d92e66d4cbb1296aec6828c39b4de4e9e4))
+
 # [1.132.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.131.0...v1.132.0) (2022-02-17)
 
 
