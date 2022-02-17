@@ -1,3 +1,12 @@
+# [1.132.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.131.0...v1.132.0) (2022-02-17)
+
+
+### Features
+
+* or-728 introduce memory cache for underVlimpersMgmt ([5f1b3ce](https://github.com/informatievlaanderen/organisation-registry/commit/5f1b3ce3b54c0faa364780a411fe4aa40dcb2113))
+* or-728 use labelPolicy only list editable label types ([03c78d6](https://github.com/informatievlaanderen/organisation-registry/commit/03c78d65bb52ce8b32270fb70a79c251969eb137))
+* or-728 use labelPolicy to set isEditable ([22fb809](https://github.com/informatievlaanderen/organisation-registry/commit/22fb8090caecee27702beacd814e79731129f244))
+
 # [1.131.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.130.1...v1.131.0) (2022-02-14)
 
 
