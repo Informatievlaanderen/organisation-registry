@@ -15,5 +15,6 @@ namespace OrganisationRegistry.Infrastructure.Configuration
         public string FormalFrameworkIdsOwnedByAuditVlaanderen { get; set; }
         public string LabelIdsAllowedForVlimpers { get; set; }
         public string KeyIdsAllowedForVlimpers { get; set; }
+        public string KeyIdsAllowedOnlyForOrafin { get; set; }
     }
 }

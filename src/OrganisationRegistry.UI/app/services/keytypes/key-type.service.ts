@@ -66,7 +66,7 @@ export class KeyTypeService implements ICrudService<KeyType> {
       .map(this.toKeyTypes);
   }
 
-  public getAllKeyTypes(): Observable<KeyTypeListItem[]> {
+  public getAllKeyTypes(organisationId: string): Observable<KeyTypeListItem[]> {
     let headers = new HeadersBuilder()
       .json()
       .withoutPagination()
@@ -74,9 +74,9 @@ export class KeyTypeService implements ICrudService<KeyType> {
       .build();
 
     return this.http
-      .get(this.keyTypesUrl, { headers: headers })
+      .get(`${this.keyTypesUrl}?forOrganisationId=${organisationId}`, { headers: headers })
       .map(this.toKeyTypes)
-      .map(pagedResult => pagedResult.data);
+      .map(pagedResult => pagedResult.data.filter(x => x.userPermitted));
   }
 
   public create(keyType: KeyType): Observable<string> {

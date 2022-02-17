@@ -20,20 +20,20 @@
         public bool IsActive { get; }
         public bool IsEditable { get; }
 
-        public OrganisationKeyListQueryResult(
-            Guid organisationKeyId,
+        public OrganisationKeyListQueryResult(Guid organisationKeyId,
             string keyTypeName,
             string keyValue,
             DateTime? validFrom,
             DateTime? validTo,
-            bool isEditable)
+            Guid keyTypeId,
+            Func<Guid, bool> isAuthorizedForKeyType)
         {
             OrganisationKeyId = organisationKeyId;
             KeyTypeName = keyTypeName;
             KeyValue = keyValue;
             ValidFrom = validFrom;
             ValidTo = validTo;
-            IsEditable = isEditable;
+            IsEditable = isAuthorizedForKeyType(keyTypeId);
 
             IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
         }
@@ -43,7 +43,7 @@
     {
         private readonly OrganisationRegistryContext _context;
         private readonly Guid _organisationId;
-        private readonly Func<Guid?, bool> _canUseKeyTypeFunc;
+        private readonly Func<Guid, bool> _canUseKeyTypeFunc;
 
         protected override ISorting Sorting => new OrganisationKeyListSorting();
 
@@ -54,9 +54,10 @@
                 x.KeyValue,
                 x.ValidFrom,
                 x.ValidTo,
-                _canUseKeyTypeFunc(x.KeyTypeId));
+                x.KeyTypeId,
+                _canUseKeyTypeFunc);
 
-        public OrganisationKeyListQuery(OrganisationRegistryContext context, Guid organisationId, Func<Guid?, bool> canUseKeyTypeFunc)
+        public OrganisationKeyListQuery(OrganisationRegistryContext context, Guid organisationId, Func<Guid, bool> canUseKeyTypeFunc)
         {
             _context = context;
             _organisationId = organisationId;

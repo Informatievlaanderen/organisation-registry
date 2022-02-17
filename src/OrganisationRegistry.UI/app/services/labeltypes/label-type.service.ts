@@ -76,7 +76,7 @@ export class LabelTypeService implements ICrudService<LabelType> {
     return this.http
       .get(`${this.labelTypesUrl}?forOrganisationId=${organisationId}`, { headers: headers })
       .map(this.toLabelTypes)
-      .map(pagedResult => pagedResult.data.filter(x => x.userPermitted))
+      .map(pagedResult => pagedResult.data.filter(x => x.userPermitted));
   }
 
   public create(labelType: LabelType): Observable<string> {

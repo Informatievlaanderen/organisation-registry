@@ -48,13 +48,13 @@ export class OrganisationKeysUpdateOrganisationKeyComponent implements OnInit, O
   }
 
   ngOnInit() {
-    let allKeysObservable = this.keyService.getAllKeyTypes();
-
     this.subscriptions.push(Observable.zip(this.route.parent.parent.params, this.route.params)
       .subscribe(res => {
         this.form.disable();
         let orgId = res[0]['id'];
         let keyId = res[1]['id'];
+
+        let allKeysObservable = this.keyService.getAllKeyTypes(orgId);
 
         this.subscriptions.push(Observable.zip(this.organisationKeyService.get(orgId, keyId), allKeysObservable)
           .subscribe(item => this.setForm(item[0], item[1]),

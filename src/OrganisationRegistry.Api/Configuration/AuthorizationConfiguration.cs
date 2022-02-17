@@ -24,10 +24,15 @@ namespace OrganisationRegistry.Api.Configuration
             KeyIdsAllowedForVlimpers =
                 authorizationConfiguration?.KeyIdsAllowedForVlimpers.SplitGuids() ??
                 Array.Empty<Guid>();
+
+            KeyIdsAllowedOnlyForOrafin =
+                authorizationConfiguration?.KeyIdsAllowedOnlyForOrafin.SplitGuids() ??
+                Array.Empty<Guid>();
         }
         public Guid[] FormalFrameworkIdsOwnedByVlimpers { get; }
         public Guid[] FormalFrameworkIdsOwnedByAuditVlaanderen { get; }
         public Guid[] LabelIdsAllowedForVlimpers { get; }
         public Guid[] KeyIdsAllowedForVlimpers { get; }
+        public Guid[] KeyIdsAllowedOnlyForOrafin { get; }
     }
 }
