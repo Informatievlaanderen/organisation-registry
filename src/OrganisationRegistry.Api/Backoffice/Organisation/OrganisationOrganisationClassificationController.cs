@@ -69,7 +69,7 @@
         {
             var internalMessage = new AddOrganisationOrganisationClassificationInternalRequest(organisationId, message);
 
-            if (!securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
+            if (!await securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
             if (!TryValidateModel(internalMessage))
@@ -91,7 +91,7 @@
         {
             var internalMessage = new UpdateOrganisationOrganisationClassificationInternalRequest(organisationId, message);
 
-            if (!securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
+            if (!await securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
             if (!TryValidateModel(internalMessage))

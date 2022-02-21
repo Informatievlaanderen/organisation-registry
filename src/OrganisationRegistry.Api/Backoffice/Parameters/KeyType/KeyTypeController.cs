@@ -46,14 +46,17 @@
 
             filtering.Filter ??= new KeyTypeListQuery.KeyTypeListItemFilter();
 
+            var user = await securityService.GetUser(User);
             Func<Guid, bool> isAuthorizedForKeyType = keyTypeId =>
                 !forOrganisationId.HasValue ||
                 new KeyPolicy(
-                        memoryCaches.OvoNumbers[forOrganisationId.Value],
-                        memoryCaches.UnderVlimpersManagement.Contains(forOrganisationId.Value),
+                        memoryCaches.OvoNumbers[
+                            forOrganisationId.Value],
+                        memoryCaches.UnderVlimpersManagement
+                            .Contains(forOrganisationId.Value),
                         keyTypeId,
                         configuration)
-                    .Check(securityService.GetUser(User))
+                    .Check(user)
                     .IsSuccessful;
 
             var pagedKeyTypes = new KeyTypeListQuery(context, isAuthorizedForKeyType).Fetch(filtering, sorting, pagination);

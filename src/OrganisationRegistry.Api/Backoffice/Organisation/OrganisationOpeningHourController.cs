@@ -69,7 +69,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         {
             var internalMessage = new AddOrganisationOpeningHourInternalRequest(organisationId, message);
 
-            if (!securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
+            if (!await securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
             if (!TryValidateModel(internalMessage))
@@ -91,7 +91,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         {
             var internalMessage = new UpdateOrganisationOpeningHourInternalRequest(organisationId, message);
 
-            if (!securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
+            if (!await securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
             if (!TryValidateModel(internalMessage))

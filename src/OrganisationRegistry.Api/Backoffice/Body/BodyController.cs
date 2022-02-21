@@ -78,7 +78,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromServices] OrganisationRegistryContext context, [FromBody] RegisterBodyRequest message)
         {
-            if (message.OrganisationId.HasValue && !securityService.CanAddBody(User, message.OrganisationId))
+            if (message.OrganisationId.HasValue && !await securityService.CanAddBody(User, message.OrganisationId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
             if (!ModelState.IsValid)

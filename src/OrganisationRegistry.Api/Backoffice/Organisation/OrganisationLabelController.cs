@@ -45,12 +45,13 @@
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
+            var user = await securityService.GetUser(User);
             Func<Guid, bool> isAuthorizedForLabelType = labelTypeId => new LabelPolicy(
                     memoryCaches.OvoNumbers[organisationId],
                     memoryCaches.UnderVlimpersManagement.Contains(organisationId),
                     labelTypeId,
                     configuration)
-                .Check(securityService.GetUser(User))
+                .Check(user)
                 .IsSuccessful;
 
             var pagedOrganisations = new OrganisationLabelListQuery(context, organisationId, isAuthorizedForLabelType).Fetch(filtering, sorting, pagination);

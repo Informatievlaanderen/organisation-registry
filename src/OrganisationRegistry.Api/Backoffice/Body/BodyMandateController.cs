@@ -71,7 +71,7 @@
         {
             var internalMessage = new AddBodyMandateInternalRequest(bodyId, message);
 
-            if (!securityService.CanEditBody(User, internalMessage.BodyId))
+            if (!await securityService.CanEditBody(User, internalMessage.BodyId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor dit orgaan.");
 
             if (!TryValidateModel(internalMessage))
@@ -107,7 +107,7 @@
         {
             var internalMessage = new UpdateBodyMandateInternalRequest(bodyId, message);
 
-            if (!securityService.CanEditBody(User, internalMessage.BodyId))
+            if (!await securityService.CanEditBody(User, internalMessage.BodyId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor dit orgaan.");
 
             if (!TryValidateModel(internalMessage))

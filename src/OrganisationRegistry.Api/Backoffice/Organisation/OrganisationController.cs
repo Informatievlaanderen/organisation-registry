@@ -38,14 +38,10 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var securityInformationFunc = new Func<SecurityInformation>(() =>
-            {
-                var authInfo = HttpContext.GetAuthenticateInfo();
-                return securityService.GetSecurityInformation(authInfo.Principal);
-            });
+            var securityInformation = await securityService.GetSecurityInformation(User);
 
             var pagedOrganisations =
-                new OrganisationListQuery(context, securityInformationFunc)
+                new OrganisationListQuery(context, securityInformation)
                     .Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedOrganisations.PaginationInfo);
@@ -90,7 +86,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
 
             if (!string.IsNullOrWhiteSpace(message.KboNumber))
             {
-                if (!securityService.CanAddOrganisation(User, message.ParentOrganisationId))
+                if (!await securityService.CanAddOrganisation(User, message.ParentOrganisationId))
                     ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
                 await CommandSender.Send(CreateOrganisationRequestMapping.MapToCreateKboOrganisation(message, User));

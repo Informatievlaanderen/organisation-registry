@@ -45,13 +45,17 @@
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            Func<Guid, bool> isAuthorizedForKeyType = keyTypeId => new KeyPolicy(
-                    memoryCaches.OvoNumbers[organisationId],
-                    memoryCaches.UnderVlimpersManagement.Contains(organisationId),
-                    keyTypeId,
-                    configuration)
-                .Check(securityService.GetUser(User))
-                .IsSuccessful;
+            var user = await securityService.GetUser(User);
+            Func<Guid, bool> isAuthorizedForKeyType = keyTypeId =>
+            {
+                return new KeyPolicy(
+                        memoryCaches.OvoNumbers[organisationId],
+                        memoryCaches.UnderVlimpersManagement.Contains(organisationId),
+                        keyTypeId,
+                        configuration)
+                    .Check(user)
+                    .IsSuccessful;
+            };
 
             var pagedOrganisations = new OrganisationKeyListQuery(context, organisationId, isAuthorizedForKeyType).Fetch(filtering, sorting, pagination);
 

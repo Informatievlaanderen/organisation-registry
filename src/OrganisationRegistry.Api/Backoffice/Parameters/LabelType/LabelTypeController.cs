@@ -45,6 +45,7 @@
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
+            var user = await securityService.GetUser(User);
             Func<Guid, bool> isAuthorizedForLabelType = labelTypeId =>
                 !forOrganisationId.HasValue ||
                 new LabelPolicy(
@@ -52,7 +53,7 @@
                         memoryCaches.UnderVlimpersManagement.Contains(forOrganisationId.Value),
                         labelTypeId,
                         configuration)
-                    .Check(securityService.GetUser(User))
+                    .Check(user)
                     .IsSuccessful;
 
             var pagedLabelTypes = new LabelTypeListQuery(context, configuration, isAuthorizedForLabelType).Fetch(filtering, sorting, pagination);

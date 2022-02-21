@@ -4,9 +4,12 @@ namespace OrganisationRegistry.Api.Security
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
+    using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using SqlServer.Infrastructure;
+    using SqlServer;
 
     public class SecurityService : ISecurityService
     {
@@ -22,18 +25,18 @@ namespace OrganisationRegistry.Api.Security
 
         private const string ClaimOrganisation = "urn:be:vlaanderen:wegwijs:organisation";
 
-        private readonly OrganisationRegistryContext _context;
+        private readonly IContextFactory _contextFactory;
         private readonly IOrganisationRegistryConfiguration _configuration;
 
-        public SecurityService(OrganisationRegistryContext context, IOrganisationRegistryConfiguration configuration)
+        public SecurityService(IContextFactory contextFactory, IOrganisationRegistryConfiguration configuration)
         {
-            _context = context;
+            _contextFactory = contextFactory;
             _configuration = configuration;
         }
 
-        public bool CanAddOrganisation(ClaimsPrincipal user, Guid? parentOrganisationId)
+        public async Task<bool> CanAddOrganisation(ClaimsPrincipal user, Guid? parentOrganisationId)
         {
-            var securityInfo = GetSecurityInformation(user);
+            var securityInfo = await GetSecurityInformation(user);
 
             // Admins can do everything
             if (securityInfo.Roles.Contains(Role.OrganisationRegistryBeheerder) ||
@@ -44,9 +47,9 @@ namespace OrganisationRegistry.Api.Security
             return HasPermissionsForOrganisation(securityInfo, parentOrganisationId);
         }
 
-        public bool CanEditOrganisation(ClaimsPrincipal user, Guid organisationId)
+        public async Task<bool> CanEditOrganisation(ClaimsPrincipal user, Guid organisationId)
         {
-            var securityInfo = GetSecurityInformation(user);
+            var securityInfo = await GetSecurityInformation(user);
 
             // Admins can do everything
             if (securityInfo.Roles.Contains(Role.OrganisationRegistryBeheerder) ||
@@ -57,9 +60,9 @@ namespace OrganisationRegistry.Api.Security
             return HasPermissionsForOrganisation(securityInfo, organisationId);
         }
 
-        public bool CanEditDelegation(ClaimsPrincipal user, Guid? organisationId, Guid? bodyId)
+        public async Task<bool> CanEditDelegation(ClaimsPrincipal user, Guid? organisationId, Guid? bodyId)
         {
-            var securityInfo = GetSecurityInformation(user);
+            var securityInfo = await GetSecurityInformation(user);
 
             // Admins can do everything
             if (securityInfo.Roles.Contains(Role.OrganisationRegistryBeheerder) ||
@@ -71,9 +74,9 @@ namespace OrganisationRegistry.Api.Security
                 HasPermissionsForBody(securityInfo, bodyId);
         }
 
-        public bool CanAddBody(ClaimsPrincipal user, Guid? organisationId)
+        public async Task<bool> CanAddBody(ClaimsPrincipal user, Guid? organisationId)
         {
-            var securityInfo = GetSecurityInformation(user);
+            var securityInfo = await GetSecurityInformation(user);
 
             // Admins can do everything
             if (securityInfo.Roles.Contains(Role.OrganisationRegistryBeheerder) ||
@@ -85,9 +88,9 @@ namespace OrganisationRegistry.Api.Security
             return HasPermissionsForOrganisation(securityInfo, organisationId);
         }
 
-        public bool CanEditBody(ClaimsPrincipal user, Guid bodyId)
+        public async Task<bool> CanEditBody(ClaimsPrincipal user, Guid bodyId)
         {
-            var securityInfo = GetSecurityInformation(user);
+            var securityInfo = await GetSecurityInformation(user);
 
             // Admins can do everything
             if (securityInfo.Roles.Contains(Role.OrganisationRegistryBeheerder) ||
@@ -119,7 +122,7 @@ namespace OrganisationRegistry.Api.Security
                 securityInfo.BodyIds.Contains(bodyId.Value);
         }
 
-        public SecurityInformation GetSecurityInformation(ClaimsPrincipal user)
+        public async Task<SecurityInformation> GetSecurityInformation(ClaimsPrincipal user)
         {
             user = user ?? new ClaimsPrincipal();
 
@@ -133,7 +136,7 @@ namespace OrganisationRegistry.Api.Security
                 .ToList();
 
             var organisations = GetOrganisations(user);
-            var organisationSecurity = GetSecurityInformation(organisations);
+            var organisationSecurity = await GetSecurityInformation(organisations);
 
             return new SecurityInformation(
                 $"{firstName} {name}",
@@ -143,7 +146,7 @@ namespace OrganisationRegistry.Api.Security
                 organisationSecurity.BodyIds);
         }
 
-        public IUser GetRequiredUser(ClaimsPrincipal? principal)
+        public async Task<IUser> GetRequiredUser(ClaimsPrincipal? principal)
         {
             if (principal == null)
                 throw new Exception("Could not determine current user");
@@ -162,7 +165,7 @@ namespace OrganisationRegistry.Api.Security
 
             var ip = principal.FindFirst(OrganisationRegistryClaims.ClaimIp);
 
-            var securityInformation = GetSecurityInformation(principal);
+            var securityInformation = await GetSecurityInformation(principal);
 
             return new User(
                 firstName.Value,
@@ -173,7 +176,7 @@ namespace OrganisationRegistry.Api.Security
                 securityInformation.OvoNumbers);
         }
 
-        public IUser GetUser(ClaimsPrincipal? principal)
+        public async Task<IUser> GetUser(ClaimsPrincipal? principal)
         {
             if (principal == null)
                 throw new Exception("Could not determine current user");
@@ -183,7 +186,7 @@ namespace OrganisationRegistry.Api.Security
             var acmId = principal.FindFirst(OrganisationRegistryClaims.ClaimAcmId);
             var ip = principal.FindFirst(OrganisationRegistryClaims.ClaimIp);
 
-            var securityInformation = GetSecurityInformation(principal);
+            var securityInformation = await GetSecurityInformation(principal);
 
             return new User(
                 firstName?.Value,
@@ -225,34 +228,35 @@ namespace OrganisationRegistry.Api.Security
             return true;
         }
 
-        private OrganisationSecurityInformation GetSecurityInformation(IEnumerable<string> ovoNumbers)
+        private async Task<OrganisationSecurityInformation> GetSecurityInformation(IEnumerable<string> ovoNumbers)
         {
-            var organisationTrees = _context
+            await using var context = _contextFactory.Create();
+            var organisationTrees = (await context
                 .OrganisationTreeList
-                .AsQueryable()
+                .AsAsyncQueryable()
                 .Where(x => ovoNumbers.Contains(x.OvoNumber))
                 .Select(x => x.OrganisationTree)
-                .ToList()
+                .ToListAsync())
                 .SelectMany(x => x.Split(new[] {"|"}, StringSplitOptions.RemoveEmptyEntries))
                 .Distinct()
                 .OrderBy(x => x)
                 .ToList();
 
-            var organisationIds = _context
+            var organisationIds = await context
                 .OrganisationDetail
-                .AsQueryable()
+                .AsAsyncQueryable()
                 .Where(x => organisationTrees.Contains(x.OvoNumber))
                 .Select(x => x.Id)
                 .Distinct()
-                .ToList();
+                .ToListAsync();
 
-            var bodyIds = _context
+            var bodyIds = await context
                 .ActiveBodyOrganisationList
-                .AsQueryable()
+                .AsAsyncQueryable()
                 .Where(x => organisationIds.Contains(x.OrganisationId))
                 .Select(x => x.BodyId)
                 .Distinct()
-                .ToList();
+                .ToListAsync();
 
             return new OrganisationSecurityInformation(organisationTrees, organisationIds, bodyIds);
         }

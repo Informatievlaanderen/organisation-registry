@@ -5,6 +5,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
     using System.ComponentModel;
     using System.Linq;
     using System.Linq.Expressions;
+    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Infrastructure;
     using Infrastructure.Search;
@@ -59,7 +60,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
     public class OrganisationListQuery : Query<OrganisationListItem, OrganisationListItemFilter, OrganisationListQueryResult>
     {
         private readonly OrganisationRegistryContext _context;
-        private readonly Func<SecurityInformation> _securityInformationFunc;
+        private readonly SecurityInformation _securityInformation;
 
         protected override ISorting Sorting => new OrganisationListSorting();
 
@@ -73,15 +74,15 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
                 x.ParentOrganisationId,
                 x.ParentOrganisationOvoNumber);
 
-        public OrganisationListQuery(OrganisationRegistryContext context, Func<SecurityInformation> securityInformationFunc)
+        public OrganisationListQuery(OrganisationRegistryContext context, SecurityInformation securityInformation)
         {
             _context = context;
-            _securityInformationFunc = securityInformationFunc;
+            _securityInformation = securityInformation;
         }
 
         protected override IQueryable<OrganisationListItem> Filter(FilteringHeader<OrganisationListItemFilter> filtering)
         {
-            var organisations = _context.OrganisationList.AsQueryable();
+            var organisations = _context.OrganisationList.AsAsyncQueryable();
 
             if (!filtering.ShouldFilter)
                 return organisations.Where(x => x.FormalFrameworkId == null);
@@ -125,9 +126,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
 
             if (filtering.Filter.AuthorizedOnly)
             {
-                var securityInformation = _securityInformationFunc();
-                if (!securityInformation.Roles.Contains(Role.OrganisationRegistryBeheerder))
-                    organisations = organisations.Where(x => securityInformation.OvoNumbers.Contains(x.OvoNumber));
+                if (!_securityInformation.Roles.Contains(Role.OrganisationRegistryBeheerder))
+                    organisations = organisations.Where(x => _securityInformation.OvoNumbers.Contains(x.OvoNumber));
             }
 
             return organisations;

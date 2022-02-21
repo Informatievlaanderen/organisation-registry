@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization
 {
     using System;
     using System.Security.Claims;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Security service for use in event handlers only.
@@ -11,32 +12,32 @@ namespace OrganisationRegistry.Infrastructure.Authorization
     /// </summary>
     public class NotImplementedSecurityService: ISecurityService
     {
-        public bool CanAddOrganisation(ClaimsPrincipal user, Guid? parentOrganisationId)
+        public Task<bool> CanAddOrganisation(ClaimsPrincipal user, Guid? parentOrganisationId)
         {
             throw new NotImplementedException();
         }
 
-        public bool CanEditOrganisation(ClaimsPrincipal user, Guid organisationId)
+        public Task<bool> CanEditOrganisation(ClaimsPrincipal user, Guid organisationId)
         {
             throw new NotImplementedException();
         }
 
-        public bool CanAddBody(ClaimsPrincipal user, Guid? organisationId)
+        public Task<bool> CanAddBody(ClaimsPrincipal user, Guid? organisationId)
         {
             throw new NotImplementedException();
         }
 
-        public bool CanEditBody(ClaimsPrincipal user, Guid bodyId)
+        public Task<bool> CanEditBody(ClaimsPrincipal user, Guid bodyId)
         {
             throw new NotImplementedException();
         }
 
-        public bool CanEditDelegation(ClaimsPrincipal user, Guid? organisationId, Guid? bodyId)
+        public Task<bool> CanEditDelegation(ClaimsPrincipal user, Guid? organisationId, Guid? bodyId)
         {
             throw new NotImplementedException();
         }
 
-        public SecurityInformation GetSecurityInformation(ClaimsPrincipal user)
+        public Task<SecurityInformation> GetSecurityInformation(ClaimsPrincipal user)
         {
             throw new NotImplementedException();
         }
@@ -46,12 +47,12 @@ namespace OrganisationRegistry.Infrastructure.Authorization
             throw new NotImplementedException();
         }
 
-        public IUser GetRequiredUser(ClaimsPrincipal? principal)
+        public Task<IUser> GetRequiredUser(ClaimsPrincipal? principal)
         {
             throw new NotImplementedException();
         }
 
-        public IUser GetUser(ClaimsPrincipal? principal)
+        public Task<IUser> GetUser(ClaimsPrincipal? principal)
         {
             throw new NotImplementedException();
         }

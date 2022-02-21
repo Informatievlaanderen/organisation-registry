@@ -1,6 +1,7 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Body.Requests
 {
     using System;
+    using System.Threading.Tasks;
     using FluentValidation;
     using Infrastructure.Security;
     using Microsoft.AspNetCore.Http;
@@ -52,15 +53,15 @@
 
             RuleFor(x => x.Body.OrganisationId)
                 .NotEmpty()
-                .When(x => UserIsOrganisatieBeheerder(httpContextAccessor, securityService))
+                .WhenAsync(async (x, ct) => await UserIsOrganisatieBeheerder(httpContextAccessor, securityService))
                 .WithMessage("Organisation Id is required for users in role 'organisatieBeheerder'.");
         }
 
-        private static bool UserIsOrganisatieBeheerder(IHttpContextAccessor httpContextAccessor, ISecurityService securityService)
+        private static async Task<bool> UserIsOrganisatieBeheerder(IHttpContextAccessor httpContextAccessor, ISecurityService securityService)
         {
-            var authenticateInfo = httpContextAccessor.HttpContext.GetAuthenticateInfo();
-            return securityService
-                .GetSecurityInformation(authenticateInfo.Principal)
+            var authenticateInfo = await httpContextAccessor.HttpContext.GetAuthenticateInfoAsync();
+            return (await securityService
+                .GetSecurityInformation(authenticateInfo.Principal))
                 .Roles.Contains(Role.OrganisatieBeheerder);
         }
     }
