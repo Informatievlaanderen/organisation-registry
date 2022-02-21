@@ -94,7 +94,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                 .Services
 
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
-                .AddScoped<ISecurityService, SecurityService>()
+                .AddSingleton<ISecurityService, SecurityService>()
 
                 .AddFeatureManagement()
                 .Services

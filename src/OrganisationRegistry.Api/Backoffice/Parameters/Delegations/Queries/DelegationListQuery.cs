@@ -74,7 +74,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Delegations.Queries
     public class DelegationListQuery : Query<DelegationListItem, DelegationListItemFilter, DelegationListQueryResult>
     {
         private readonly OrganisationRegistryContext _context;
-        private readonly Func<SecurityInformation> _securityInformationFunc;
+        private readonly SecurityInformation _securityInformation;
 
         protected override ISorting Sorting => new DelegationListSorting();
 
@@ -96,10 +96,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Delegations.Queries
                 x.ValidFrom,
                 x.ValidTo);
 
-        public DelegationListQuery(OrganisationRegistryContext context, Func<SecurityInformation> securityInformationFunc)
+        public DelegationListQuery(OrganisationRegistryContext context, SecurityInformation securityInformation)
         {
             _context = context;
-            _securityInformationFunc = securityInformationFunc;
+            _securityInformation = securityInformation;
         }
 
         protected override IQueryable<DelegationListItem> Filter(FilteringHeader<DelegationListItemFilter> filtering)
@@ -109,17 +109,16 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Delegations.Queries
             // Only show relevant delegations,
             //  - OrganisationRegistryBeheerder can see everything, so we dont reduce
             //  - OrganisatieBeheerder can see only bodies owned by his organisation
-            var securityInformation = _securityInformationFunc();
-            if (securityInformation.Roles.Contains(Role.OrganisatieBeheerder) && !securityInformation.Roles.Contains(Role.OrganisationRegistryBeheerder))
+            if (_securityInformation.Roles.Contains(Role.OrganisatieBeheerder) && !_securityInformation.Roles.Contains(Role.OrganisationRegistryBeheerder))
             {
                 // If there are no organisations, prevent sending all delegations
-                if (securityInformation.OrganisationIds.Count == 0)
+                if (_securityInformation.OrganisationIds.Count == 0)
                     return new List<DelegationListItem>().AsAsyncQueryable();
 
                 // https://github.com/aspnet/EntityFramework/issues/4114
                 // EF cannot deal with securityInformation.OrganisationIds.Contains(x.BodyOrganisationId.Value)
                 // It tries to evaluate it locally. You first have to turn a Guid list into a Nullable Guid list to get the proper SQL
-                var organisationIds = securityInformation.OrganisationIds.Select(organisationId => (Guid?) organisationId).ToList();
+                var organisationIds = _securityInformation.OrganisationIds.Select(organisationId => (Guid?) organisationId).ToList();
 
                 delegations = delegations
                     .Where(x => organisationIds.Contains(x.BodyOrganisationId));

@@ -37,14 +37,10 @@
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var securityInformationFunc = new Func<SecurityInformation>(() =>
-            {
-                var authInfo = HttpContext.GetAuthenticateInfo();
-                return securityService.GetSecurityInformation(authInfo.Principal);
-            });
+            var securityInformation = await securityService.GetSecurityInformation(User);
 
             var pagedDelegations =
-                new DelegationListQuery(context, securityInformationFunc).Fetch(filtering, sorting, pagination);
+                new DelegationListQuery(context, securityInformation).Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedDelegations.PaginationInfo);
             Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
@@ -66,7 +62,7 @@
             if (delegation == null)
                 return NotFound();
 
-            if (!securityService.CanEditDelegation(User, delegation.OrganisationId, delegation.BodyId))
+            if (!await securityService.CanEditDelegation(User, delegation.OrganisationId, delegation.BodyId))
                 return Unauthorized(); // ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze delegatie.");
 
             return Ok(new DelegationResponse(delegation));

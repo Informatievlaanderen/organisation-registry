@@ -39,7 +39,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
             if (delegation == null)
                 return NotFound();
 
-            if (!securityService.CanEditDelegation(User, delegation.OrganisationId, delegation.BodyId))
+            if (!await securityService.CanEditDelegation(User, delegation.OrganisationId, delegation.BodyId))
                 return Unauthorized(); // ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze delegatie.");
 
             var filtering = Request.ExtractFilteringRequest<DelegationAssignmentListItemFilter>();
@@ -78,7 +78,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
             if (delegation == null)
                 return NotFound();
 
-            if (!securityService.CanEditDelegation(User, delegation.OrganisationId, delegation.BodyId))
+            if (!await securityService.CanEditDelegation(User, delegation.OrganisationId, delegation.BodyId))
                 return Unauthorized(); // ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze delegatie.");
 
             return Ok(new DelegationAssignmentResponse(delegationAssignment));
@@ -105,7 +105,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
             if (delegation == null)
                 return NotFound();
 
-            if (!securityService.CanEditDelegation(User, delegation.OrganisationId, delegation.BodyId))
+            if (!await securityService.CanEditDelegation(User, delegation.OrganisationId, delegation.BodyId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze delegatie.");
 
             if (!TryValidateModel(internalMessage))
@@ -138,7 +138,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
             if (delegation == null)
                 return NotFound();
 
-            if (!securityService.CanEditDelegation(User, delegation.OrganisationId, delegation.BodyId))
+            if (!await securityService.CanEditDelegation(User, delegation.OrganisationId, delegation.BodyId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze delegatie.");
 
             if (!TryValidateModel(internalMessage))
@@ -179,7 +179,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
             if (delegation == null)
                 return NotFound();
 
-            if (!securityService.CanEditDelegation(User, delegation.OrganisationId, delegation.BodyId))
+            if (!await securityService.CanEditDelegation(User, delegation.OrganisationId, delegation.BodyId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze delegatie.");
 
             if (!TryValidateModel(internalMessage))

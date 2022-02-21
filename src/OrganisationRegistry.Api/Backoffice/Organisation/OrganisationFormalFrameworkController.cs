@@ -45,7 +45,7 @@
                 context,
                 memoryCaches,
                 configuration,
-                securityService.GetUser(User),
+                await securityService.GetUser(User),
                 organisationId
                 )
                 .Fetch(filtering, sorting, pagination);

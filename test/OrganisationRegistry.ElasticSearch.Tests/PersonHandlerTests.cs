@@ -46,7 +46,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 .AddSingleton(personCapacityHandler)
                 .BuildServiceProvider();
 
-            _inProcessBus = new InProcessBus(new NullLogger<InProcessBus>(), new SecurityService(fixture.ContextFactory.Create(), new OrganisationRegistryConfigurationStub()));
+            _inProcessBus = new InProcessBus(new NullLogger<InProcessBus>(), new SecurityService(fixture.ContextFactory, new OrganisationRegistryConfigurationStub()));
             var registrar = new BusRegistrar(new NullLogger<BusRegistrar>(), _inProcessBus, () => serviceProvider);
             registrar.RegisterEventHandlers(PeopleRunner.EventHandlers);
         }
