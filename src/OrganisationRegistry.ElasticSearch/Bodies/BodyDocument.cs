@@ -5,7 +5,6 @@ namespace OrganisationRegistry.ElasticSearch.Bodies
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
-    using Configuration;
 
     public class BodyDocument : IDocument
     {

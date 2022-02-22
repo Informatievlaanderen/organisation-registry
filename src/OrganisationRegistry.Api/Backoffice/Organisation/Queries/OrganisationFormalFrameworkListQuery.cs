@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using Configuration;
     using Handling.Authorization;
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;

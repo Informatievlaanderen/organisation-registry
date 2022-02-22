@@ -4,7 +4,6 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Data.Common;
-    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;

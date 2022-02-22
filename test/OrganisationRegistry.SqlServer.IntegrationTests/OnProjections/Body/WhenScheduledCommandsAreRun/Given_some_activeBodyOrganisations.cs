@@ -11,7 +11,7 @@
     using Xunit;
 
     [Collection(SqlServerTestsCollection.Name)]
-    public class Given_some_activeBodyOrganisations
+    public class Given_Some_ActiveBodyOrganisations
     {
         [Fact]
         public async Task Then_The_Correct_UpdateCurrentOrganisationParent_Commands_Are_Generated()

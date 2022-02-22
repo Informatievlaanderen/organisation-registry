@@ -1,6 +1,5 @@
 ﻿namespace OrganisationRegistry.Infrastructure
 {
-    using System;
     using Domain;
     using Events;
 

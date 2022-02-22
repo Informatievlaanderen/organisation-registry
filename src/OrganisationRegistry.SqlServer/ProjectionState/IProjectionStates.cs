@@ -2,7 +2,6 @@
 {
     using System.Data.Common;
     using System.Threading.Tasks;
-    using Infrastructure;
 
     public interface IProjectionStates
     {

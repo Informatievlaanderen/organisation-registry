@@ -1,7 +1,6 @@
 namespace OrganisationRegistry
 {
     using System;
-    using Organisation;
     using Organisation.Exceptions;
 
     public class Period

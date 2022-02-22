@@ -4,7 +4,6 @@
 
 namespace OrganisationRegistry.Import.Piavo
 {
-    using Microsoft.Rest;
     using Models;
 
     /// <summary>

@@ -2,7 +2,6 @@ namespace OrganisationRegistry.SqlServer.Security
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
@@ -20,7 +19,7 @@ namespace OrganisationRegistry.SqlServer.Security
 
     public class OrganisationTreeItem
     {
-        public string OvoNumber { get; set; }
+        public string OvoNumber { get; set; } = null!;
 
         public string? OrganisationTree { get; set; }
     }
@@ -56,7 +55,7 @@ namespace OrganisationRegistry.SqlServer.Security
 
         private readonly IMemoryCaches _memoryCaches;
         private readonly IEventStore _eventStore;
-        private ITree<OvoNumber> _tree;
+        private ITree<OvoNumber> _tree = null!;
 
         private class OvoNumber : INodeValue
         {
@@ -95,7 +94,7 @@ namespace OrganisationRegistry.SqlServer.Security
 
             // And then link up their parents
             foreach (var organisationParent in organisationParents.Where(x => x.Value.HasValue))
-                tree.ChangeNodeParent(new OvoNumber(organisationOvoNumbers[organisationParent.Key]), new OvoNumber(organisationOvoNumbers[organisationParent.Value.Value]));
+                tree.ChangeNodeParent(new OvoNumber(organisationOvoNumbers[organisationParent.Key]), new OvoNumber(organisationOvoNumbers[organisationParent.Value!.Value]));
 
             return tree;
         }
@@ -106,7 +105,7 @@ namespace OrganisationRegistry.SqlServer.Security
             var changes = _tree.GetChanges().ToList();
             _tree.AcceptChanges();
 
-            UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
+            await UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreatedFromKbo> message)
@@ -115,7 +114,7 @@ namespace OrganisationRegistry.SqlServer.Security
             var changes = _tree.GetChanges().ToList();
             _tree.AcceptChanges();
 
-            UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
+            await UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentAssignedToOrganisation> message)
@@ -127,7 +126,7 @@ namespace OrganisationRegistry.SqlServer.Security
             var changes = _tree.GetChanges().ToList();
             _tree.AcceptChanges();
 
-            UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
+            await UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentClearedFromOrganisation> message)
@@ -138,38 +137,37 @@ namespace OrganisationRegistry.SqlServer.Security
             var changes = _tree.GetChanges().ToList();
             _tree.AcceptChanges();
 
-            UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
+            await UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
         }
 
-        private static void UpdateChanges(
+        private static async Task UpdateChanges(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IContextFactory contextFactory,
             IEnumerable<INode<OvoNumber>> changes)
         {
-            using (var context = contextFactory.CreateTransactional(dbConnection, dbTransaction))
+            await using var context = contextFactory.CreateTransactional(dbConnection, dbTransaction);
+
+            var organisationTreeList = await context.OrganisationTreeList.ToListAsync();
+
+            foreach (var change in changes)
             {
-                var contextOrganisationTreeList = context.OrganisationTreeList.ToList();
-
-                foreach (var change in changes)
+                var treeItem = organisationTreeList.SingleOrDefault(x => x.OvoNumber == change.Id);
+                if (treeItem != null)
                 {
-                    var treeItem = contextOrganisationTreeList.SingleOrDefault(x => x.OvoNumber == change.Id);
-                    if (treeItem != null)
-                    {
-                        treeItem.OrganisationTree = change.Traverse().ToSeparatedList();
-                    }
-                    else
-                    {
-                        context.Add(new OrganisationTreeItem
-                        {
-                            OvoNumber = change.Id,
-                            OrganisationTree = change.Traverse().ToSeparatedList()
-                        });
-                    }
+                    treeItem.OrganisationTree = change.Traverse().ToSeparatedList();
                 }
-
-                context.SaveChanges();
+                else
+                {
+                    context.Add(new OrganisationTreeItem
+                    {
+                        OvoNumber = change.Id,
+                        OrganisationTree = change.Traverse().ToSeparatedList()
+                    });
+                }
             }
+
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<Rollback> message)
@@ -182,6 +180,8 @@ namespace OrganisationRegistry.SqlServer.Security
 
             if (anyInterestingEvents)
                 Initialise();
+
+            await Task.CompletedTask;
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)

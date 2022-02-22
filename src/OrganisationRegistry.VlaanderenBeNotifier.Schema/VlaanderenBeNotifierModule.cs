@@ -5,7 +5,6 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.Schema
     using Autofac;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Infrastructure;
-    using Infrastructure.AppSpecific;
     using Infrastructure.Events;
     using Microsoft.Data.SqlClient;
     using Microsoft.EntityFrameworkCore;

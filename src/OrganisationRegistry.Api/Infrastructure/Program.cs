@@ -52,7 +52,6 @@ namespace OrganisationRegistry.Api.Infrastructure
                                     .Build();
                             }
                         }
-                    })
-                ;
+                    });
     }
 }

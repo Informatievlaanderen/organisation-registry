@@ -19,7 +19,6 @@ namespace OrganisationRegistry.Organisation
     using Person;
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
     using Commands;
     using Exceptions;
@@ -32,7 +31,7 @@ namespace OrganisationRegistry.Organisation
 
     public partial class Organisation : AggregateRoot
     {
-        private List<Events.Purpose> _purposes;
+        private List<Events.Purpose> _purposes = null!;
 
         public readonly OrganisationState State;
         private OrganisationBuilding? _mainOrganisationBuilding;
@@ -697,11 +696,11 @@ namespace OrganisationRegistry.Organisation
                 capacity.Id,
                 capacity.Name,
                 person?.Id,
-                person?.FullName,
+                person?.FullName ?? "",
                 functionType?.Id,
-                functionType?.Name,
+                functionType?.Name ?? "",
                 location?.Id,
-                location?.FormattedAddress,
+                location?.FormattedAddress ?? "",
                 contacts.ToDictionary(x => x.ContactType.Id, x => x.Value),
                 validity.Start,
                 validity.End));
@@ -736,11 +735,11 @@ namespace OrganisationRegistry.Organisation
                     capacity.Id,
                     capacity.Name,
                     person?.Id,
-                    person?.FullName,
+                    person?.FullName ?? "",
                     functionType?.Id,
-                    functionType?.Name,
+                    functionType?.Name ?? "",
                     location?.Id,
-                    location?.FormattedAddress,
+                    location?.FormattedAddress ?? "",
                     contacts.ToDictionary(x => x.ContactType.Id, x => x.Value),
                     validity,
                     previousCapacity.IsActive
@@ -1530,15 +1529,11 @@ namespace OrganisationRegistry.Organisation
             var events = new List<IEvent>();
 
             if (_currentOrganisationParent != null && !_currentOrganisationParent.Validity.OverlapsWith(today))
-            {
                 events.Add(new ParentClearedFromOrganisation(Id, _currentOrganisationParent.ParentOrganisationId));
-            }
 
             var newOrganisationParent = State.OrganisationParents.SingleOrDefault(parent => parent.Validity.OverlapsWith(today));
             if (newOrganisationParent != null && !Equals(newOrganisationParent, _currentOrganisationParent))
-            {
                 events.Add(new ParentAssignedToOrganisation(Id, newOrganisationParent.ParentOrganisationId, newOrganisationParent.OrganisationOrganisationParentId));
-            }
 
             // WHY: applying the ParentClearedFromOrganisation would cause the organisationParent to be cleared,
             // which makes it harder to compare with the newOrganisation.

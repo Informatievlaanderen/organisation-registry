@@ -1,11 +1,7 @@
 ﻿namespace OrganisationRegistry.SqlServer.ProjectionState
 {
-    using System;
     using System.Data.Common;
-    using System.Linq;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
-    using Infrastructure;
     using Microsoft.EntityFrameworkCore;
 
     public class ProjectionStates : IProjectionStates

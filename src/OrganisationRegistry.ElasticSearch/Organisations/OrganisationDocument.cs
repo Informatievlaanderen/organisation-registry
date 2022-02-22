@@ -3,9 +3,7 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
     using Nest;
     using System;
     using System.Collections.Generic;
-    using Bodies;
     using Common;
-    using Configuration;
     using Newtonsoft.Json;
 
     public class OrganisationDocument : IDocument

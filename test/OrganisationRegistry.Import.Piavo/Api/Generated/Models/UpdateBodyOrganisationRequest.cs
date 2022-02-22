@@ -4,8 +4,6 @@
 
 namespace OrganisationRegistry.Import.Piavo.Models
 {
-    using System.Linq;
-
     public partial class UpdateBodyOrganisationRequest
     {
         /// <summary>

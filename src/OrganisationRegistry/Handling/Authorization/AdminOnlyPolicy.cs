@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.Handling.Authorization
 {
     using Infrastructure.Authorization;
-    using Infrastructure.Domain;
     using Organisation.Exceptions;
 
     public class AdminOnlyPolicy : ISecurityPolicy

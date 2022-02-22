@@ -9,7 +9,6 @@ namespace OrganisationRegistry.Infrastructure.EventStore
     using Dapper;
     using Events;
     using Newtonsoft.Json;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using AppSpecific;
     using Authorization;

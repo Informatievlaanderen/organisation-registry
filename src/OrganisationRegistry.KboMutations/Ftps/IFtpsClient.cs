@@ -1,6 +1,5 @@
 namespace OrganisationRegistry.KboMutations.Ftps
 {
-    using System.Collections.Generic;
     using System.IO;
 
     public interface IFtpsClient

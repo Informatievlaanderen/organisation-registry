@@ -5,13 +5,10 @@ namespace OrganisationRegistry.Import.Piavo
     using System.Globalization;
     using System.IO;
     using System.Linq;
-    using System.Net;
-    using System.Net.Http;
     using System.Net.Http.Headers;
     using System.Text;
     using Microsoft.Rest;
     using Models;
-    using MediaTypeHeaderValue = Microsoft.Net.Http.Headers.MediaTypeHeaderValue;
 
     public class Program
     {

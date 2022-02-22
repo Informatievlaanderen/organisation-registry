@@ -1,6 +1,5 @@
 ﻿namespace OrganisationRegistry.Capacity
 {
-    using System;
     using Events;
     using Infrastructure.Domain;
 

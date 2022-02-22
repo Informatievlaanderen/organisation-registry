@@ -1,7 +1,6 @@
 ﻿namespace OrganisationRegistry.SqlServer.ProjectionState
 {
     using System;
-    using System.Runtime.Serialization;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;

@@ -8,7 +8,6 @@ namespace OrganisationRegistry.SqlServer.Body
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Body.Events;
     using System.Linq;
-    using System.Runtime.Serialization;
     using System.Threading.Tasks;
     using ContactType;
     using Microsoft.Extensions.Logging;

@@ -2,7 +2,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 {
     using System;
     using System.Collections.Generic;
-    using Api.Infrastructure.OrganisationRegistryConfiguration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using KeyTypes.Events;
