@@ -30,7 +30,7 @@
         public static async Task<List<ICommand>> GetScheduledCommandsToExecute(
             this DbSet<ActiveOrganisationParentListItem> list, DateTime date) =>
             await list.AsQueryable()
-                .Where(item => item.ValidTo.HasValue && item.ValidTo.Value <= date)
+                .Where(item => item.ValidTo.HasValue && item.ValidTo.Value < date)
                 .Select(item => new UpdateCurrentOrganisationParent(new OrganisationId(item.OrganisationId)))
                 .Cast<ICommand>()
                 .AsAsyncEnumerable()
@@ -48,7 +48,7 @@
         public static async Task<List<ICommand>> GetScheduledCommandsToExecute(
             this DbSet<ActiveBodyOrganisationListItem> list, DateTime date) =>
             await list.AsQueryable()
-                .Where(item => item.ValidTo.HasValue && item.ValidTo.Value <= date)
+                .Where(item => item.ValidTo.HasValue && item.ValidTo.Value < date)
                 .Select(item => new UpdateCurrentBodyOrganisation(new BodyId(item.OrganisationId)))
                 .Cast<ICommand>()
                 .AsAsyncEnumerable()
@@ -76,7 +76,7 @@
         private static Dictionary<Guid, IEnumerable<ActiveBodyMandateAssignment>>
             MandateAssignmentsThatHaveBecomeInvalid(DbSet<ActiveBodyMandateAssignment> list, DateTime date) =>
             list.AsQueryable()
-                .Where(item => item.ValidTo.HasValue && item.ValidTo!.Value <= date)
+                .Where(item => item.ValidTo.HasValue && item.ValidTo!.Value < date)
                 .AsEnumerable()
                 .GroupBy(item => item.BodyId)
                 .ToDictionary(group => @group.Key, group => @group.AsEnumerable());
@@ -102,7 +102,7 @@
         public static async Task<List<ICommand>> GetScheduledCommandsToExecute(
             this DbSet<ActiveOrganisationFormalFrameworkListItem> list, DateTime date) =>
             await list.AsAsyncEnumerable()
-                .Where(item => item.ValidTo.HasValue && item.ValidTo.Value <= date)
+                .Where(item => item.ValidTo.HasValue && item.ValidTo.Value < date)
                 .Select(item =>
                     new UpdateOrganisationFormalFrameworkParents(new OrganisationId(item.OrganisationId),
                         new FormalFrameworkId(item.FormalFrameworkId)))
@@ -140,8 +140,8 @@
             var shouldBeInactive =
                 list.AsQueryable()
                     .Where(item => item.IsActive.HasValue && item.IsActive.Value &&
-                                   (item.ValidFrom == null || item.ValidFrom > date) &&
-                                   (item.ValidTo == null || item.ValidTo < date))
+                                   item.ValidFrom != null && item.ValidFrom > date ||
+                                   item.ValidTo != null && item.ValidTo < date)
                     .Select(item => item.OrganisationId)
                     .Distinct();
 

@@ -8,7 +8,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
-
     using System.Linq;
     using System.Threading.Tasks;
     using Capacity;
@@ -235,7 +234,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
             foreach (var capacity in capacities)
                 capacity.ValidTo = message.Body.FieldsToTerminate.Capacities[capacity.OrganisationCapacityId];
 
-            await context.SaveChangesAsync();        }
+            await context.SaveChangesAsync();
+        }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<OrganisationCapacityBecameActive> message)

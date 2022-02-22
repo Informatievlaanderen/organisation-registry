@@ -21,6 +21,7 @@
             var futureActiveOrganisationParent2 = fixture.Create<FutureActiveOrganisationParentListItem>();
             var futureActiveOrganisationParent3 = fixture.Create<FutureActiveOrganisationParentListItem>();
             var futureActiveOrganisationParent4 = fixture.Create<FutureActiveOrganisationParentListItem>();
+            var futureActiveOrganisationParent5 = fixture.Create<FutureActiveOrganisationParentListItem>();
 
             var (service, dateTimeProviderStub) = await ScheduledCommandsScenario.Arrange((testContext, today) =>
             {
@@ -35,6 +36,9 @@
 
                 futureActiveOrganisationParent4.ValidFrom = today.AddMonths(-2);
                 testContext.FutureActiveOrganisationParentList.Add(futureActiveOrganisationParent4);
+
+                futureActiveOrganisationParent5.ValidFrom = today;
+                testContext.FutureActiveOrganisationParentList.Add(futureActiveOrganisationParent5);
             });
 
             var commands = await service.GetCommands(dateTimeProviderStub.Today);
@@ -44,6 +48,7 @@
                 new UpdateCurrentOrganisationParent(new OrganisationId(futureActiveOrganisationParent1.OrganisationId)),
                 new UpdateCurrentOrganisationParent(new OrganisationId(futureActiveOrganisationParent3.OrganisationId)),
                 new UpdateCurrentOrganisationParent(new OrganisationId(futureActiveOrganisationParent4.OrganisationId)),
+                new UpdateCurrentOrganisationParent(new OrganisationId(futureActiveOrganisationParent5.OrganisationId)),
             };
 
             commands.Should().BeEquivalentTo(expectedCommands);
