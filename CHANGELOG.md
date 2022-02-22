@@ -1,3 +1,20 @@
+# [1.134.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.133.0...v1.134.0) (2022-02-22)
+
+
+### Bug Fixes
+
+* fixed a whole range of issues by replacing dayhaspassed event with a commandscheduler service ([46e3726](https://github.com/informatievlaanderen/organisation-registry/commit/46e3726f78e211b479dd0626df10b2e8cd238fde))
+
+
+### Features
+
+* or-711 cleanup of some loose ends ([78cf8af](https://github.com/informatievlaanderen/organisation-registry/commit/78cf8af7a0686ae1ba82d028894350686ea0b262))
+* or-711 extra testcases + bugfixes ([daab2f3](https://github.com/informatievlaanderen/organisation-registry/commit/daab2f3f8958d3d2c5e5095ad549b59685a4e410))
+* or-711 modified sqlservereventreader to ignore dayhaspassed events ([91bec5f](https://github.com/informatievlaanderen/organisation-registry/commit/91bec5f8d47098e9273c3770d413875395391bc2))
+* or-711 null forgiving operators removed ([1194648](https://github.com/informatievlaanderen/organisation-registry/commit/11946486c6fe0f48519816f1005e5f1292470406))
+* or-711 rename some tests ([9a127b6](https://github.com/informatievlaanderen/organisation-registry/commit/9a127b641a70e7664414ff34aa085569701b37ed))
+* or-711 review comments ([8b20fcf](https://github.com/informatievlaanderen/organisation-registry/commit/8b20fcf25941d529a52a761090f11cf13cc2d635))
+
 # [1.133.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.132.0...v1.133.0) (2022-02-17)
 
 
