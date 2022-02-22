@@ -21,6 +21,7 @@
             var activeOrganisationParent2 = fixture.Create<ActiveOrganisationParentListItem>();
             var activeOrganisationParent3 = fixture.Create<ActiveOrganisationParentListItem>();
             var activeOrganisationParent4 = fixture.Create<ActiveOrganisationParentListItem>();
+            var activeOrganisationParent5 = fixture.Create<ActiveOrganisationParentListItem>();
 
             var (service, dateTimeProviderStub) = await ScheduledCommandsScenario.Arrange((testContext, today) =>
             {
@@ -35,6 +36,9 @@
 
                 activeOrganisationParent4.ValidTo = today.AddMonths(-2);
                 testContext.ActiveOrganisationParentList.Add(activeOrganisationParent4);
+
+                activeOrganisationParent5.ValidTo = today;
+                testContext.ActiveOrganisationParentList.Add(activeOrganisationParent5);
             });
 
             var commands = await service.GetCommands(dateTimeProviderStub.Today);

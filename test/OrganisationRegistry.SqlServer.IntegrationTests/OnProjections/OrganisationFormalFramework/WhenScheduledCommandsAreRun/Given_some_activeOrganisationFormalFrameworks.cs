@@ -22,6 +22,7 @@
             var activeOrganisationFormalFramework2 = fixture.Create<ActiveOrganisationFormalFrameworkListItem>();
             var activeOrganisationFormalFramework3 = fixture.Create<ActiveOrganisationFormalFrameworkListItem>();
             var activeOrganisationFormalFramework4 = fixture.Create<ActiveOrganisationFormalFrameworkListItem>();
+            var activeOrganisationFormalFramework5 = fixture.Create<ActiveOrganisationFormalFrameworkListItem>();
 
             var (service, dateTimeProviderStub) = await ScheduledCommandsScenario.Arrange((testContext, today) =>
             {
@@ -36,6 +37,9 @@
 
                 activeOrganisationFormalFramework4.ValidTo = today.AddMonths(-2);
                 testContext.ActiveOrganisationFormalFrameworkList.Add(activeOrganisationFormalFramework4);
+
+                activeOrganisationFormalFramework5.ValidTo = today;
+                testContext.ActiveOrganisationFormalFrameworkList.Add(activeOrganisationFormalFramework5);
             });
 
             var commands = await service.GetCommands(dateTimeProviderStub.Today);

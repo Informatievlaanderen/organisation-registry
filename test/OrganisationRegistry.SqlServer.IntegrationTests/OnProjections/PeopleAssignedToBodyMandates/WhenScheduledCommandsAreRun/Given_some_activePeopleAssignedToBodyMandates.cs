@@ -45,6 +45,7 @@
             var activePeopleAssignedToBodyMandate2 = fixture.Create<ActivePeopleAssignedToBodyMandateListItem>();
             var activePeopleAssignedToBodyMandate3 = fixture.Create<ActivePeopleAssignedToBodyMandateListItem>();
             var activePeopleAssignedToBodyMandate4 = fixture.Create<ActivePeopleAssignedToBodyMandateListItem>();
+            var activePeopleAssignedToBodyMandate5 = fixture.Create<ActivePeopleAssignedToBodyMandateListItem>();
 
             var (service, dateTimeProviderStub) = await ScheduledCommandsScenario.Arrange((testContext, today) =>
             {
@@ -63,6 +64,9 @@
 
                 activePeopleAssignedToBodyMandate4.ValidTo = today.AddMonths(-2);
                 testContext.ActivePeopleAssignedToBodyMandatesList.Add(activePeopleAssignedToBodyMandate4);
+
+                activePeopleAssignedToBodyMandate5.ValidTo = today;
+                testContext.ActivePeopleAssignedToBodyMandatesList.Add(activePeopleAssignedToBodyMandate5);
             });
 
             var commands = (await service.GetCommands(dateTimeProviderStub.Today)).ToList();

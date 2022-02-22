@@ -21,6 +21,7 @@
             var futureActiveBodyOrganisation2 = fixture.Create<FutureActiveBodyOrganisationListItem>();
             var futureActiveBodyOrganisation3 = fixture.Create<FutureActiveBodyOrganisationListItem>();
             var futureActiveBodyOrganisation4 = fixture.Create<FutureActiveBodyOrganisationListItem>();
+            var futureActiveBodyOrganisation5 = fixture.Create<FutureActiveBodyOrganisationListItem>();
 
             var (service, dateTimeProviderStub) = await ScheduledCommandsScenario.Arrange((testContext, today) =>
             {
@@ -35,18 +36,19 @@
 
                 futureActiveBodyOrganisation4.ValidFrom = today.AddMonths(-2);
                 testContext.FutureActiveBodyOrganisationList.Add(futureActiveBodyOrganisation4);
+
+                futureActiveBodyOrganisation5.ValidFrom = today;
+                testContext.FutureActiveBodyOrganisationList.Add(futureActiveBodyOrganisation5);
             });
 
             var commands = await service.GetCommands(dateTimeProviderStub.Today);
 
             var expectedCommands = new List<ICommand>
             {
-                new UpdateCurrentBodyOrganisation(
-                    new BodyId(futureActiveBodyOrganisation1.BodyId)),
-                new UpdateCurrentBodyOrganisation(
-                    new BodyId(futureActiveBodyOrganisation3.BodyId)),
-                new UpdateCurrentBodyOrganisation(
-                    new BodyId(futureActiveBodyOrganisation4.BodyId)),
+                new UpdateCurrentBodyOrganisation(new BodyId(futureActiveBodyOrganisation1.BodyId)),
+                new UpdateCurrentBodyOrganisation(new BodyId(futureActiveBodyOrganisation3.BodyId)),
+                new UpdateCurrentBodyOrganisation(new BodyId(futureActiveBodyOrganisation4.BodyId)),
+                new UpdateCurrentBodyOrganisation(new BodyId(futureActiveBodyOrganisation5.BodyId)),
             };
 
             commands.Should().BeEquivalentTo(expectedCommands);
