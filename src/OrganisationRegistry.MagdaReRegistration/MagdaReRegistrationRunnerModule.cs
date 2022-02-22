@@ -1,12 +1,10 @@
 namespace OrganisationRegistry.MagdaReRegistration
 {
     using System;
-    using System.Reflection;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using ElasticSearch;
     using Infrastructure;
-    using Infrastructure.Events;
     using Magda;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;

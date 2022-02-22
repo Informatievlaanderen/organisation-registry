@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.SqlServer.Event
 {
     using System;
-    using System.Runtime.Serialization;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Infrastructure;

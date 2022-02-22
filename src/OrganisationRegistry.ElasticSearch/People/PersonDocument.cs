@@ -3,9 +3,7 @@
     using Nest;
     using System;
     using System.Collections.Generic;
-    using Bodies;
     using Common;
-    using Configuration;
 
     public class PersonDocument : IDocument
     {

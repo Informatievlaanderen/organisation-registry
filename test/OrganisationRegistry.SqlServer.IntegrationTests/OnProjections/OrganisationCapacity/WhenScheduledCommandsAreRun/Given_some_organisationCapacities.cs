@@ -1,18 +1,17 @@
-﻿namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.OrganisationParent.WhenScheduledCommandsAreRun
+﻿namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.OrganisationCapacity.WhenScheduledCommandsAreRun
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using AutoFixture;
     using FluentAssertions;
     using Organisation;
-    using Organisation.ScheduledActions.Parent;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using Xunit;
 
     [Collection(SqlServerTestsCollection.Name)]
-    public class Given_some_organisationCapacities
+    public class Given_Some_OrganisationCapacities
     {
         [Fact]
         public async Task Then_The_Correct_Commands_Are_Generated()

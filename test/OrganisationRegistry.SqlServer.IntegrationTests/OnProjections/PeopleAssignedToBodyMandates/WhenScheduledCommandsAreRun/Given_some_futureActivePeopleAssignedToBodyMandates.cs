@@ -13,7 +13,7 @@
     using Xunit;
 
     [Collection(SqlServerTestsCollection.Name)]
-    public class Given_some_futureActivePeopleAssignedToBodyMandates
+    public class Given_Some_FutureActivePeopleAssignedToBodyMandates
     {
         [Fact]
         public async Task Then_The_Correct_Commands_Are_Generated()

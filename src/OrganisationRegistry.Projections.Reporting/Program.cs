@@ -17,7 +17,6 @@ namespace OrganisationRegistry.Projections.Reporting
     using System.Threading;
     using System.Threading.Tasks;
     using Amazon;
-    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Configuration;
     using OrganisationRegistry.Configuration.Database;

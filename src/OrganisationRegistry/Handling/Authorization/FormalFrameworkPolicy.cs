@@ -4,8 +4,6 @@ namespace OrganisationRegistry.Handling.Authorization
     using System.Linq;
     using Configuration;
     using Infrastructure.Authorization;
-    using Infrastructure.Domain;
-    using Organisation;
     using Organisation.Exceptions;
 
     public class FormalFrameworkPolicy : ISecurityPolicy

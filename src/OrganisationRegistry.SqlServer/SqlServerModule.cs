@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.SqlServer
 {
     using System;
-    using System.Data.Common;
     using Microsoft.Data.SqlClient;
     using System.Reflection;
     using Autofac;

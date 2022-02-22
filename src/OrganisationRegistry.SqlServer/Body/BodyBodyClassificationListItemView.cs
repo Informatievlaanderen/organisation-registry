@@ -9,7 +9,6 @@ namespace OrganisationRegistry.SqlServer.Body
     using System;
     using System.Data.Common;
     using System.Linq;
-    using System.Runtime.Serialization;
     using System.Threading.Tasks;
     using OrganisationRegistry.Body.Events;
     using OrganisationRegistry.BodyClassification.Events;

@@ -7,7 +7,6 @@ namespace OrganisationRegistry.Projections.Delegations
     using Amazon;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
-    using Be.Vlaanderen.Basisregisters.AspNetCore.Mvc.Formatters.Json;
     using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Configuration;
     using Destructurama;

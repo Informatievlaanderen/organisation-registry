@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.OrganisationParent.WhenScheduledCommandsAreRun
+﻿namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.OrganisationCapacity.WhenScheduledCommandsAreRun
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -9,7 +9,7 @@
     using Xunit;
 
     [Collection(SqlServerTestsCollection.Name)]
-    public class Bugfix_given_an_organisationCapacity_validFrom_null_validTo_null_isActive_true
+    public class Bugfix_Given_An_OrganisationCapacity_ValidFrom_Null_ValidTo_Null_IsActive_True
     {
         [Fact]
         public async Task Then_No_Commands_Are_Generated()

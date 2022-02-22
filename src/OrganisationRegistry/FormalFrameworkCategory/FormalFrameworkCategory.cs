@@ -1,6 +1,5 @@
 ﻿namespace OrganisationRegistry.FormalFrameworkCategory
 {
-    using System;
     using Events;
     using Infrastructure.Domain;
 

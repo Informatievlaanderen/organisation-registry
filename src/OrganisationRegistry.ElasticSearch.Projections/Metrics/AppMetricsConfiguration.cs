@@ -3,8 +3,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Metrics
     using System;
     using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
     using Newtonsoft.Json;
-    using OrganisationRegistry.Configuration.Database.Configuration;
-    using OrganisationRegistry.Infrastructure.Configuration;
 
     public class AppMetricsConfiguration
     {

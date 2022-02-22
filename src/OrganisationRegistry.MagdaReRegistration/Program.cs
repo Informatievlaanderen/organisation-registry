@@ -5,7 +5,6 @@ namespace OrganisationRegistry.MagdaReRegistration
     using System.IO;
     using System.Linq;
     using System.Net.Http;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using Api.Backoffice.Kbo;
     using Api.Infrastructure.Search;
@@ -17,7 +16,6 @@ namespace OrganisationRegistry.MagdaReRegistration
     using global::Magda.RegistreerInschrijving;
     using Infrastructure;
     using Infrastructure.Authorization;
-    using Infrastructure.Bus;
     using Infrastructure.Configuration;
     using Infrastructure.Infrastructure.Json;
     using Magda;

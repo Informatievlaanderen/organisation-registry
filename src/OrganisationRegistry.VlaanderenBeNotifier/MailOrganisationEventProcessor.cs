@@ -14,7 +14,6 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
     using Organisation.Events;
     using Schema;
     using SendGrid;
-    using SqlServer.Infrastructure;
 
     public class MailOrganisationEventProcessor :
         IEventHandler<OrganisationCreated>,

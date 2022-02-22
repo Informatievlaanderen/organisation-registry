@@ -8,7 +8,6 @@
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.EntityFrameworkCore;
     using Infrastructure;
-    using Microsoft.EntityFrameworkCore.Metadata;
     using Microsoft.Extensions.Logging;
     using Organisation;
     using OrganisationRegistry.Body.Events;

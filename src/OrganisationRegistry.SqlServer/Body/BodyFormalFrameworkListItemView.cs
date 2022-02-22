@@ -9,7 +9,6 @@
     using OrganisationRegistry.Body.Events;
 
     using System.Linq;
-    using System.Runtime.Serialization;
     using System.Threading.Tasks;
     using FormalFramework;
     using Microsoft.Extensions.Logging;

@@ -2,7 +2,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
 {
     using System;
     using System.Collections.Generic;
-    using Configuration;
     using FluentAssertions;
     using FormalFramework;
     using Infrastructure.Tests.Extensions.TestHelpers;

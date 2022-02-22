@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api
 {
     using System;
+    using System.Linq;
     using System.Reflection;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
@@ -20,7 +21,6 @@ namespace OrganisationRegistry.Api
     using OrganisationRegistry.Configuration.Database;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Configuration;
-    using ScheduledCommands;
 
     public class ApiModule : Autofac.Module
     {
@@ -62,7 +62,7 @@ namespace OrganisationRegistry.Api
 
             builder
                 .RegisterAssemblyTypes(typeof(OrganisationRegistryApiAssemblyTokenClass).GetTypeInfo().Assembly)
-                .Except<ScheduledCommandsService>()
+                .Where(t => !t.GetInterfaces().Any(i => i == typeof(IHostedService)))
                 .AsImplementedInterfaces();
 
             builder.RegisterType<ProblemDetailsHelper>()
