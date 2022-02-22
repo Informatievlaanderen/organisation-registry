@@ -4,7 +4,6 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
     using System.Linq;
     using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
-    using Day.Commands;
     using Exceptions;
     using Infrastructure;
     using Infrastructure.Security;
@@ -50,10 +49,6 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
 
             switch (task.Type)
             {
-                case TaskType.CheckIfDayHasPassed:
-                    await CommandSender.Send(new CheckIfDayHasPassed {User = securityService.GetRequiredUser(User)});
-                    break;
-
                 case TaskType.RebuildProjection:
                     if (task.Params.Length != 1)
                         throw new RebuildProjectionRequiresAName();

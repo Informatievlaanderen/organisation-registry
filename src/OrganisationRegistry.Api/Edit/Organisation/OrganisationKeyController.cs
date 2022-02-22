@@ -11,6 +11,7 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.FeatureManagement.Mvc;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using Requests;
@@ -62,8 +63,7 @@
                 return BadRequest(ModelState);
 
             var addOrganisationKey = AddOrganisationKeyRequestMapping.Map(internalMessage);
-            addOrganisationKey.User = new User("Orafin", "Edit Api", "Orafin Edit Api", null, new[] { Role.Orafin },
-                Array.Empty<string>());
+            addOrganisationKey.User = WellknownUsers.OrafinUser;
             await CommandSender.Send(addOrganisationKey);
 
             return Created(
@@ -100,8 +100,7 @@
                 return BadRequest(ModelState);
 
             var updateOrganisationKey = UpdateOrganisationKeyRequestMapping.Map(internalMessage);
-            updateOrganisationKey.User = new User("Orafin", "Edit Api", "Orafin Edit Api", null, new[] { Role.Orafin },
-                Array.Empty<string>());
+            updateOrganisationKey.User = WellknownUsers.OrafinUser;
             await CommandSender.Send(updateOrganisationKey);
 
             return Ok();

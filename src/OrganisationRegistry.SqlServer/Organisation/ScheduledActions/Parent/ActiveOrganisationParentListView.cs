@@ -3,19 +3,15 @@
     using System;
     using System.Collections.Generic;
     using System.Data.Common;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
-    using Day.Events;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
     using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
 
@@ -53,8 +49,7 @@
         IEventHandler<OrganisationParentAdded>,
         IEventHandler<OrganisationParentUpdated>,
         IEventHandler<ParentAssignedToOrganisation>,
-        IEventHandler<ParentClearedFromOrganisation>,
-        IReactionHandler<DayHasPassed>
+        IEventHandler<ParentClearedFromOrganisation>
     {
         private readonly Dictionary<Guid, ValidTo> _endDatePerOrganisationOrganisationParentId;
         private readonly IEventStore _eventStore;
@@ -105,7 +100,11 @@
             _endDatePerOrganisationOrganisationParentId.UpdateMemoryCache(message.Body.OrganisationOrganisationParentId, validTo);
 
             if (validTo.IsInPastOf(_dateTimeProvider.Today))
-                return;
+            {
+                Logger.LogDebug("Org {OrganisationId} Parent {ParentOrganisationId} is not valid anymore - validTo: {ValidTo}",
+                    message.Body.OrganisationId, message.Body.ParentOrganisationId, validTo.DateTime);
+                Logger.LogDebug("ValidTo will be updated");
+            }
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
@@ -162,19 +161,6 @@
                 context.ActiveOrganisationParentList.Remove(activeOrganisationParentListItem);
 
                 await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
-        {
-            using (var context = ContextFactory.Create())
-            {
-                return context.ActiveOrganisationParentList
-                    .Where(item => item.ValidTo.HasValue)
-                    .Where(item => item.ValidTo.Value <= message.Body.Date)
-                    .Select(item => new UpdateCurrentOrganisationParent(new OrganisationId(item.OrganisationId)))
-                    .Cast<ICommand>()
-                    .ToList();
             }
         }
 

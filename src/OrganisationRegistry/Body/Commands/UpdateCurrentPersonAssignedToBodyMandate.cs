@@ -16,8 +16,7 @@ namespace OrganisationRegistry.Body.Commands
             MandatesToUpdate = mandatesToUpdate;
         }
 
-        protected bool Equals(UpdateCurrentPersonAssignedToBodyMandate other)
-            => BodyId.Equals(other.BodyId);
+        protected bool Equals(UpdateCurrentPersonAssignedToBodyMandate other) => BodyId.Equals(other.BodyId);
 
         public override bool Equals(object obj)
         {

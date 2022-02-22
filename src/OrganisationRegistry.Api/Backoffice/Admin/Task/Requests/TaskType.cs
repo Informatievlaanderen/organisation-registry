@@ -2,7 +2,6 @@
 {
     public enum TaskType
     {
-        CheckIfDayHasPassed,
         RebuildProjection,
         CompensatingAction,
         SyncFromKbo

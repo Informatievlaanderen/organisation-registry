@@ -5,17 +5,12 @@
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
-    using Day.Events;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Body;
-    using OrganisationRegistry.Body.Commands;
     using OrganisationRegistry.Body.Events;
     using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Events;
     using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
 
@@ -53,8 +48,7 @@
         IEventHandler<BodyOrganisationAdded>,
         IEventHandler<BodyOrganisationUpdated>,
         IEventHandler<BodyAssignedToOrganisation>,
-        IEventHandler<BodyClearedFromOrganisation>,
-        IReactionHandler<DayHasPassed>
+        IEventHandler<BodyClearedFromOrganisation>
     {
         private readonly Dictionary<Guid, ValidTo> _endDatePerBodyOrganisationId;
         private readonly IEventStore _eventStore;
@@ -159,19 +153,6 @@
                 context.ActiveBodyOrganisationList.Remove(activeBodyOrganisationListItem);
 
                 await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
-        {
-            using (var context = ContextFactory.Create())
-            {
-                return context.ActiveBodyOrganisationList
-                    .Where(item => item.ValidTo.HasValue)
-                    .Where(item => item.ValidTo.Value <= message.Body.Date)
-                    .Select(item => new UpdateCurrentBodyOrganisation(new BodyId(item.BodyId)))
-                    .Cast<ICommand>()
-                    .ToList();
             }
         }
 

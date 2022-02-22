@@ -1,22 +1,15 @@
 ﻿namespace OrganisationRegistry.SqlServer.Body.ScheduledActions.PeopleAssignedToBodyMandates
 {
     using System;
-    using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
-    using Day.Events;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
-    using Organisation;
-    using OrganisationRegistry.Body;
-    using OrganisationRegistry.Body.Commands;
     using OrganisationRegistry.Body.Events;
     using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Events;
     using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
 
@@ -65,8 +58,7 @@
         Projection<ActivePeopleAssignedToBodyMandatesListView>,
         IEventHandler<PersonAssignedToDelegationUpdated>,
         IEventHandler<AssignedPersonAssignedToBodyMandate>,
-        IEventHandler<AssignedPersonClearedFromBodyMandate>,
-        IReactionHandler<DayHasPassed>
+        IEventHandler<AssignedPersonClearedFromBodyMandate>
     {
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
@@ -156,29 +148,6 @@
 
             await context.SaveChangesAsync();
         }
-
-        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
-        {
-            await using var context = ContextFactory.Create();
-
-            return GetOutOfDatePeopleAssignedToBodyMandates(message, context)
-                .Select(group =>
-                    new UpdateCurrentPersonAssignedToBodyMandate(
-                        new BodyId(group.Key),
-                        group.Value.Select(item =>
-                            (new BodySeatId(item.BodySeatId), new BodyMandateId(item.BodyMandateId))).ToList()))
-                .Cast<ICommand>().ToList();
-        }
-
-        private static Dictionary<Guid, IEnumerable<ActivePeopleAssignedToBodyMandateListItem>>
-            GetOutOfDatePeopleAssignedToBodyMandates(IEnvelope<DayHasPassed> message,
-                OrganisationRegistryContext context) =>
-            context.ActivePeopleAssignedToBodyMandatesList
-                .Where(item => item.ValidTo.HasValue)
-                .Where(item => item.ValidTo!.Value <= message.Body.Date)
-                .AsEnumerable()
-                .GroupBy(item => item.BodyId)
-                .ToDictionary(group => @group.Key, group => @group.AsEnumerable());
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<RebuildProjection> message)

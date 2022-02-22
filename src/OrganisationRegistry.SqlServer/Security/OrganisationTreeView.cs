@@ -149,9 +149,11 @@ namespace OrganisationRegistry.SqlServer.Security
         {
             using (var context = contextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
+                var contextOrganisationTreeList = context.OrganisationTreeList.ToList();
+
                 foreach (var change in changes)
                 {
-                    var treeItem = context.OrganisationTreeList.SingleOrDefault(x => x.OvoNumber == change.Id);
+                    var treeItem = contextOrganisationTreeList.SingleOrDefault(x => x.OvoNumber == change.Id);
                     if (treeItem != null)
                     {
                         treeItem.OrganisationTree = change.Traverse().ToSeparatedList();

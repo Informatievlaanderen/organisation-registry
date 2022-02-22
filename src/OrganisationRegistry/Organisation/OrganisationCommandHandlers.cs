@@ -20,6 +20,7 @@ namespace OrganisationRegistry.Organisation
     using Person;
     using Purpose;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
     using Exceptions;

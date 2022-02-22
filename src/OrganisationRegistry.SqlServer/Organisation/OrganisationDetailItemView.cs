@@ -10,14 +10,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using OrganisationRegistry.Organisation.Events;
     using System.Linq;
     using System.Threading.Tasks;
-    using Day.Events;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Building.Events;
     using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Commands;
-    using OrganisationRegistry.Location.Events;
-    using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Purpose.Events;
     using OrganisationRegistry.Security;
     using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
