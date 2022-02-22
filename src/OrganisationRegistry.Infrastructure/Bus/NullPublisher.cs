@@ -2,7 +2,6 @@ namespace OrganisationRegistry.Infrastructure.Bus
 {
     using System.Data.Common;
     using System.Threading.Tasks;
-    using Authorization;
     using Events;
 
     public class NullPublisher : IEventPublisher
@@ -12,7 +11,5 @@ namespace OrganisationRegistry.Infrastructure.Bus
         {
             return Task.CompletedTask;
         }
-
-        public async Task ProcessReactions<T>(IEnvelope<T> envelope, IUser user) where T : IEvent<T> {}
     }
 }

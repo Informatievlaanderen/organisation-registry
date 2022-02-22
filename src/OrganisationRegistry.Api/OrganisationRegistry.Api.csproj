@@ -41,9 +41,5 @@
     <Folder Include="Backoffice\Admin" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Update="System.Linq.Async" Version="5.0.0" />
-  </ItemGroup>
-
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

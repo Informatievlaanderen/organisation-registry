@@ -96,45 +96,5 @@ namespace OrganisationRegistry.Infrastructure.Bus
             foreach (var handler in handlers)
                 await handler(dbConnection, dbTransaction, envelope);
         }
-
-        public async Task ProcessReactions<T>(IEnvelope<T> envelope, IUser user) where T : IEvent<T>
-        {
-            if (!_reactionRoutes.TryGetValue(envelope.Body.GetType(), out var reactions))
-                reactions = new List<Func<IMessage, Task<List<ICommand>>>>();
-
-            _logger.LogDebug(
-                "Publishing event {@Event} to {NumberOfReactionHandlers} reaction handler(s)",
-                envelope,
-                reactions.Count);
-
-            // do not await!
-            Task.Factory.StartNew(() =>
-            {
-                try
-                {
-                    reactions
-                        .ForEach(async reaction => (await reaction(envelope))
-                            .ForEach(async command =>
-                            {
-                                try
-                                {
-                                    command.User = user;
-                                    await Send(command);
-                                }
-                                catch (Exception e)
-                                {
-                                    _logger.LogCritical(e, "An error occured while processing reaction Command: {@Command}, Envelope: {@Envelope}", command, envelope);
-                                }
-                            }));
-
-                    if (reactions.Count > 0)
-                        _logger.LogInformation("Processed all reactions");
-                }
-                catch (Exception e)
-                {
-                    _logger.LogCritical(0, e, "Error while handling reactions");
-                }
-            });
-        }
     }
 }
