@@ -14,7 +14,7 @@
     public class Given_Some_ActiveBodyOrganisations
     {
         [Fact]
-        public async Task Then_The_Correct_UpdateCurrentOrganisationParent_Commands_Are_Generated()
+        public async Task Then_The_Correct_Commands_Are_Generated()
         {
             var fixture = new Fixture();
             var activeBodyOrganisation1 = fixture.Create<ActiveBodyOrganisationListItem>();
