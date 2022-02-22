@@ -76,7 +76,7 @@
         private static Dictionary<Guid, IEnumerable<ActiveBodyMandateAssignment>>
             MandateAssignmentsThatHaveBecomeInvalid(DbSet<ActiveBodyMandateAssignment> list, DateTime date) =>
             list.AsQueryable()
-                .Where(item => item.ValidTo.HasValue && item.ValidTo!.Value < date)
+                .Where(item => item.ValidTo.HasValue && item.ValidTo.Value < date)
                 .AsEnumerable()
                 .GroupBy(item => item.BodyId)
                 .ToDictionary(group => @group.Key, group => @group.AsEnumerable());
@@ -94,7 +94,7 @@
         private static Dictionary<Guid, IEnumerable<FutureBodyMandateAssignment>> MandateAssignmentsThatHaveBecomeValid(
             DbSet<FutureBodyMandateAssignment> list, DateTime date) =>
             list.AsQueryable()
-                .Where(item => item.ValidFrom.HasValue && item.ValidFrom!.Value <= date)
+                .Where(item => item.ValidFrom.HasValue && item.ValidFrom.Value <= date)
                 .AsEnumerable()
                 .GroupBy(item => item.BodyId)
                 .ToDictionary(group => group.Key, group => group.AsEnumerable());
