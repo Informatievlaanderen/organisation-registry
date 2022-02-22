@@ -13,12 +13,14 @@ namespace OrganisationRegistry.Api
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Configuration;
     using SqlServer;
     using OrganisationRegistry.Configuration.Database;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Configuration;
+    using ScheduledCommands;
 
     public class ApiModule : Autofac.Module
     {
@@ -60,6 +62,7 @@ namespace OrganisationRegistry.Api
 
             builder
                 .RegisterAssemblyTypes(typeof(OrganisationRegistryApiAssemblyTokenClass).GetTypeInfo().Assembly)
+                .Except<ScheduledCommandsService>()
                 .AsImplementedInterfaces();
 
             builder.RegisterType<ProblemDetailsHelper>()

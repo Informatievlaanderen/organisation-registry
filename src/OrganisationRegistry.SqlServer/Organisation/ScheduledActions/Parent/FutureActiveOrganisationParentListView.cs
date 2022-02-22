@@ -1,21 +1,15 @@
 ﻿namespace OrganisationRegistry.SqlServer.Organisation.ScheduledActions.Parent
 {
     using System;
-    using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
-    using Day.Events;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
     using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
 
@@ -52,8 +46,7 @@
         Projection<FutureActiveOrganisationParentListView>,
         IEventHandler<OrganisationParentAdded>,
         IEventHandler<OrganisationParentUpdated>,
-        IEventHandler<ParentAssignedToOrganisation>,
-        IReactionHandler<DayHasPassed>
+        IEventHandler<ParentAssignedToOrganisation>
     {
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
@@ -106,20 +99,6 @@
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
                 DeleteFutureActiveOrganisationParent(context, message.Body.OrganisationOrganisationParentId);
-        }
-
-        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
-        {
-            using (var context = ContextFactory.Create())
-            {
-                var contextFutureActiveOrganisationParentList = context.FutureActiveOrganisationParentList.ToList();
-                return contextFutureActiveOrganisationParentList
-                    .Where(item => item.ValidFrom.HasValue)
-                    .Where(item => item.ValidFrom.Value <= message.Body.Date)
-                    .Select(item => new UpdateCurrentOrganisationParent(new OrganisationId(item.OrganisationId)))
-                    .Cast<ICommand>()
-                    .ToList();
-            }
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)

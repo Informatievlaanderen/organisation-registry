@@ -3,6 +3,8 @@ namespace OrganisationRegistry.Infrastructure.Bus
     using System;
     using System.Collections.Generic;
     using System.Data.Common;
+    using System.Diagnostics;
+    using System.Runtime.InteropServices.ComTypes;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Authorization;

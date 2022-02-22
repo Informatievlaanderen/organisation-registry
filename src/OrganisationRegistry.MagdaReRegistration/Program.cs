@@ -15,6 +15,7 @@ namespace OrganisationRegistry.MagdaReRegistration
     using Configuration;
     using Destructurama;
     using global::Magda.RegistreerInschrijving;
+    using Infrastructure;
     using Infrastructure.Authorization;
     using Infrastructure.Bus;
     using Infrastructure.Configuration;
@@ -68,10 +69,7 @@ namespace OrganisationRegistry.MagdaReRegistration
                 app.GetService<IHttpClientFactory>(),
                 app.GetService<ILogger<RegistreerInschrijvingCommand>>());
 
-            var claimsIdentity = new User("Magda", "Reregistrator", "Magda Reregistrator", null, new[]
-            {
-                Role.AutomatedTask
-            }, Array.Empty<string>());
+            var claimsIdentity = WellknownUsers.MagdaUser;
 
             foreach (var organisation in allOrganisations)
             {

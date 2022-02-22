@@ -32,6 +32,7 @@ namespace OrganisationRegistry.Api.Infrastructure
     using OrganisationRegistry.Infrastructure.Authorization;
     using SqlServer.Infrastructure;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
+    using ScheduledCommands;
     using Search;
     using Swagger;
     using IContainer = Autofac.IContainer;
@@ -70,6 +71,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                 apiConfiguration.RijksRegisterCertificatePwd);
 
             services
+                .AddHostedService<ScheduledCommandsService>()
                 .AddAuthentication(options =>
                 {
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;

@@ -1,21 +1,15 @@
 ﻿namespace OrganisationRegistry.SqlServer.Body.ScheduledActions.Organisation
 {
     using System;
-    using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
-    using Day.Events;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Body;
-    using OrganisationRegistry.Body.Commands;
     using OrganisationRegistry.Body.Events;
     using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Events;
     using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
 
@@ -52,8 +46,7 @@
         Projection<FutureActiveBodyOrganisationListView>,
         IEventHandler<BodyOrganisationAdded>,
         IEventHandler<BodyOrganisationUpdated>,
-        IEventHandler<BodyAssignedToOrganisation>,
-        IReactionHandler<DayHasPassed>
+        IEventHandler<BodyAssignedToOrganisation>
     {
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
@@ -105,20 +98,6 @@
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
                 DeleteFutureActiveBodyOrganisation(context, message.Body.BodyOrganisationId);
-        }
-
-        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
-        {
-            using (var context = ContextFactory.Create())
-            {
-                var futureActiveBodyOrganisations = context.FutureActiveBodyOrganisationList.ToList();
-                return futureActiveBodyOrganisations
-                    .Where(item => item.ValidFrom.HasValue)
-                    .Where(item => item.ValidFrom.Value <= message.Body.Date)
-                    .Select(item => new UpdateCurrentBodyOrganisation(new BodyId(item.BodyId)))
-                    .Cast<ICommand>()
-                    .ToList();
-            }
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)

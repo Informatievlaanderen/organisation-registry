@@ -1,22 +1,15 @@
 ﻿namespace OrganisationRegistry.SqlServer.Organisation.ScheduledActions.FormalFramework
 {
     using System;
-    using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
-    using Day.Events;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.FormalFramework;
     using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
     using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
 
@@ -53,8 +46,7 @@
         Projection<FutureActiveOrganisationFormalFrameworkListView>,
         IEventHandler<OrganisationFormalFrameworkAdded>,
         IEventHandler<OrganisationFormalFrameworkUpdated>,
-        IEventHandler<FormalFrameworkAssignedToOrganisation>,
-        IReactionHandler<DayHasPassed>
+        IEventHandler<FormalFrameworkAssignedToOrganisation>
     {
         private readonly IEventStore _eventStore;
         private readonly IDateTimeProvider _dateTimeProvider;
@@ -107,20 +99,6 @@
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
                 DeleteFutureActiveOrganisationFormalFramework(context, message.Body.OrganisationFormalFrameworkId);
-        }
-
-        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
-        {
-            using (var context = ContextFactory.Create())
-            {
-                var contextFutureActiveOrganisationFormalFrameworkList = context.FutureActiveOrganisationFormalFrameworkList.ToList();
-                return contextFutureActiveOrganisationFormalFrameworkList
-                    .Where(item => item.ValidFrom.HasValue)
-                    .Where(item => item.ValidFrom.Value <= message.Body.Date)
-                    .Select(item => new UpdateOrganisationFormalFrameworkParents(new OrganisationId(item.OrganisationId), new FormalFrameworkId(item.FormalFrameworkId)))
-                    .Cast<ICommand>()
-                    .ToList();
-            }
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)

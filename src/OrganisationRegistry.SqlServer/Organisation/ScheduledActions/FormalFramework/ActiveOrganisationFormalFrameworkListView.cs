@@ -5,18 +5,12 @@
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
-    using Autofac.Features.OwnedInstances;
-    using Day.Events;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.FormalFramework;
     using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
     using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
 
@@ -54,8 +48,7 @@
         IEventHandler<OrganisationFormalFrameworkAdded>,
         IEventHandler<OrganisationFormalFrameworkUpdated>,
         IEventHandler<FormalFrameworkAssignedToOrganisation>,
-        IEventHandler<FormalFrameworkClearedFromOrganisation>,
-        IReactionHandler<DayHasPassed>
+        IEventHandler<FormalFrameworkClearedFromOrganisation>
     {
         private readonly Dictionary<Guid, ValidTo> _endDatePerOrganisationFormalFrameworkId;
         private readonly IEventStore _eventStore;
@@ -159,20 +152,6 @@
                 context.ActiveOrganisationFormalFrameworkList.Remove(activeOrganisationFormalFramework);
 
                 await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task<List<ICommand>> Handle(IEnvelope<DayHasPassed> message)
-        {
-            using (var context = ContextFactory.Create())
-            {
-                var contextActiveOrganisationFormalFrameworkList = context.ActiveOrganisationFormalFrameworkList.ToList();
-                return contextActiveOrganisationFormalFrameworkList
-                    .Where(item => item.ValidTo.HasValue)
-                    .Where(item => item.ValidTo.Value <= message.Body.Date)
-                    .Select(item => new UpdateOrganisationFormalFrameworkParents(new OrganisationId(item.OrganisationId), new FormalFrameworkId(item.FormalFrameworkId)))
-                    .Cast<ICommand>()
-                    .ToList();
             }
         }
 

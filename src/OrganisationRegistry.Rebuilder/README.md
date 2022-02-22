@@ -112,6 +112,7 @@ TRUNCATE TABLE [Backoffice].[PersonCapacityList];
 TRUNCATE TABLE [Backoffice].[ActivePeopleAssignedToBodyMandatesList];
 TRUNCATE TABLE [Backoffice].[OrganisationParentList];
 TRUNCATE TABLE [Backoffice].[OrganisationTreeList];
+TRUNCATE TABLE [Backoffice].[RegulationSubThemeList];
 delete from [Backoffice].[BodyList];
 delete from [Backoffice].[OrganisationList];
 ```
