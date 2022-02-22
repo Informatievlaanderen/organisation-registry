@@ -3,6 +3,7 @@ Be.Vlaanderen.Basisregisters.Api
 System.Reflection.TypeExtensions
 System.IdentityModel.Tokens.Jwt
 System.Interactive.Async
+System.Linq.Async
 
 Microsoft.Extensions.Configuration.EnvironmentVariables
 Microsoft.Extensions.Configuration.FileExtensions

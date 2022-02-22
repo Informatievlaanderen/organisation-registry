@@ -165,9 +165,6 @@ SELECT CAST(SCOPE_IDENTITY() as int)",
 
                         throw;
                     }
-
-                    foreach (var envelope in envelopes)
-                        await _publisher.ProcessReactions((dynamic)envelope, user);
                 }
             }
         }
