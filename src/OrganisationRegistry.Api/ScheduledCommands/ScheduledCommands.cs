@@ -122,16 +122,9 @@
         public static async Task<List<ICommand>> GetScheduledCommandsToExecute(
             this DbSet<OrganisationCapacityListItem> list, DateTime date)
         {
-            var undetermined =
-                list.AsQueryable()
-                    .Where(item =>
-                        !item.IsActive.HasValue)
-                    .Select(item => item.OrganisationId)
-                    .Distinct();
-
             var shouldBeActive =
                 list.AsQueryable()
-                    .Where(item => item.IsActive.HasValue && !item.IsActive.Value &&
+                    .Where(item => !item.IsActive &&
                                    (item.ValidFrom == null || item.ValidFrom <= date) &&
                                    (item.ValidTo == null || item.ValidTo >= date))
                     .Select(item => item.OrganisationId)
@@ -139,14 +132,13 @@
 
             var shouldBeInactive =
                 list.AsQueryable()
-                    .Where(item => item.IsActive.HasValue && item.IsActive.Value &&
-                                   item.ValidFrom != null && item.ValidFrom > date ||
-                                   item.ValidTo != null && item.ValidTo < date)
+                    .Where(item => item.IsActive &&
+                                   (item.ValidFrom != null && item.ValidFrom > date ||
+                                   item.ValidTo != null && item.ValidTo < date))
                     .Select(item => item.OrganisationId)
                     .Distinct();
 
-            return await undetermined
-                .Union(shouldBeActive)
+            return await shouldBeActive
                 .Union(shouldBeInactive)
                 .Distinct()
                 .Select(id => new UpdateRelationshipValidities(new OrganisationId(id), date))

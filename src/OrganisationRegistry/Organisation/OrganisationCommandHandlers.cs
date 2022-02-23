@@ -872,7 +872,6 @@ namespace OrganisationRegistry.Organisation
                     organisation.ThrowIfTerminated(message.User);
 
                     organisation.UpdateRelationshipValidities(message.Date);
-
                 });
 
         public Task Handle(AddOrganisationOpeningHour message) =>
@@ -888,7 +887,6 @@ namespace OrganisationRegistry.Organisation
                         message.Closes,
                         message.DayOfWeek,
                         new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
                 });
 
         public Task Handle(UpdateOrganisationOpeningHour message) =>
