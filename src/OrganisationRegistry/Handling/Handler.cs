@@ -2,18 +2,17 @@ namespace OrganisationRegistry.Handling
 {
     using System;
     using System.Threading.Tasks;
-    using System.Windows.Input;
     using Authorization;
     using Infrastructure.Authorization;
     using Infrastructure.Domain;
-    using Infrastructure.Messages;
 
     /// <summary>
-    /// Basic handler that can handle all sorts of scenarios
+    ///     Basic handler that can handle all sorts of scenarios
     /// </summary>
-    public class Handler{
-        private readonly IUser _user;
+    public class Handler
+    {
         private readonly ISession _session;
+        private readonly IUser _user;
         private ISecurityPolicy? _policy;
 
         private Handler(IUser user, ISession session)
@@ -23,9 +22,7 @@ namespace OrganisationRegistry.Handling
         }
 
         public static Handler For(IUser user, ISession session)
-        {
-            return new Handler(user, session);
-        }
+            => new Handler(user, session);
 
         public Handler WithPolicy(ISecurityPolicy policy)
         {
@@ -37,8 +34,8 @@ namespace OrganisationRegistry.Handling
         {
             var result = _policy?.Check(_user);
 
-            if (result?.Exception != null)
-                throw result.Exception!;
+            if (result?.Exception is { } exception)
+                throw exception;
 
             await handle(_session);
             await _session.Commit(_user);
@@ -48,8 +45,8 @@ namespace OrganisationRegistry.Handling
         {
             var result = _policy?.Check(_user);
 
-            if (result?.Exception != null)
-                throw result.Exception!;
+            if (result?.Exception is { } exception)
+                throw exception;
 
             handle(_session);
             await _session.Commit(_user);

@@ -7,14 +7,14 @@ namespace OrganisationRegistry.Handling
     using Infrastructure.Domain;
 
     /// <summary>
-    /// Handler specialized in handling scenarios where you want to update an aggregate root
+    ///     Handler specialized in handling scenarios where you want to update an aggregate root
     /// </summary>
     /// <typeparam name="T">The type of aggregate root</typeparam>
     public class UpdateHandler<T> where T : AggregateRoot
     {
+        private readonly T _aggregateRoot;
         private readonly BaseCommand _command;
         private readonly ISession _session;
-        private readonly T _aggregateRoot;
         private ISecurityPolicy? _policy;
 
         private UpdateHandler(BaseCommand command, ISession session, T aggregateRoot)
@@ -24,7 +24,8 @@ namespace OrganisationRegistry.Handling
             _aggregateRoot = aggregateRoot;
         }
 
-        public static UpdateHandler<T> For<TCommand>(BaseCommand<TCommand> command, ISession session) where TCommand : GuidValueObject<TCommand>
+        public static UpdateHandler<T> For<TCommand>(BaseCommand<TCommand> command, ISession session)
+            where TCommand : GuidValueObject<TCommand>
         {
             var commandId = command.Id;
             var aggregate = session.Get<T>(commandId);
@@ -43,8 +44,8 @@ namespace OrganisationRegistry.Handling
 
             var result = _policy?.Check(user);
 
-            if (result?.Exception != null)
-                throw result.Exception!;
+            if (result?.Exception is { } exception)
+                throw exception;
 
             await handle(_session);
             await _session.Commit(user);
@@ -56,8 +57,8 @@ namespace OrganisationRegistry.Handling
 
             var result = _policy?.Check(user);
 
-            if (result?.Exception != null)
-                throw result.Exception!;
+            if (result?.Exception is { } exception)
+                throw exception;
 
             handle(_session);
             await _session.Commit(user);
