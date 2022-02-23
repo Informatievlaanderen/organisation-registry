@@ -23,15 +23,15 @@ namespace OrganisationRegistry.Handling
                     organisation.State.UnderVlimpersManagement));
         }
 
-        public static Handler WithLabelPolicy(this Handler source, Organisation organisation, Guid labelTypeId,
-            IOrganisationRegistryConfiguration configuration)
+        public static Handler WithLabelPolicy(this Handler source, Organisation organisation,
+            IOrganisationRegistryConfiguration configuration, params Guid[] labelTypeIds)
         {
             return source.WithPolicy(
                 new LabelPolicy(
                     organisation.State.OvoNumber,
                     organisation.State.UnderVlimpersManagement,
-                    labelTypeId,
-                    configuration));
+                    configuration,
+                    labelTypeIds));
         }
 
         public static Handler WithKeyPolicy(this Handler source, Organisation organisation, Guid keyTypeId,
@@ -41,8 +41,7 @@ namespace OrganisationRegistry.Handling
                 new KeyPolicy(
                     organisation.State.OvoNumber,
                     organisation.State.UnderVlimpersManagement,
-                    keyTypeId,
-                    configuration));
+                    configuration, keyTypeId));
         }
 
         public static Handler RequiresBeheerderForOrganisation(this Handler source, Organisation organisation)

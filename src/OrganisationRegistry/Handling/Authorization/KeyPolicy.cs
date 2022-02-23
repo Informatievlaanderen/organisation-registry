@@ -10,18 +10,17 @@ namespace OrganisationRegistry.Handling.Authorization
     {
         private readonly string _ovoNumber;
         private readonly bool _underVlimpersManagement;
-        private readonly Guid _keyTypeId;
+        private readonly Guid[] _keyTypeIds;
         private readonly IOrganisationRegistryConfiguration _configuration;
 
-        public KeyPolicy(
-            string ovoNumber,
+        public KeyPolicy(string ovoNumber,
             bool underVlimpersManagement,
-            Guid keyTypeId,
-            IOrganisationRegistryConfiguration configuration)
+            IOrganisationRegistryConfiguration configuration,
+            params Guid[] keyTypeIds)
         {
             _ovoNumber = ovoNumber;
             _underVlimpersManagement = underVlimpersManagement;
-            _keyTypeId = keyTypeId;
+            _keyTypeIds = keyTypeIds;
             _configuration = configuration;
         }
 
@@ -30,16 +29,16 @@ namespace OrganisationRegistry.Handling.Authorization
             if(user.IsInRole(Role.OrganisationRegistryBeheerder))
                 return AuthorizationResult.Success();
 
-            var keyIdsAllowedForVlimpers = _configuration.Authorization.KeyIdsAllowedForVlimpers;
-            var keyIdsAllowedOnlyForOrafin = _configuration.Authorization.KeyIdsAllowedOnlyForOrafin;
+            var containsVlimpersKey = ContainsVlimpersKey(_keyTypeIds);
+            var containsOrafinKey = ContainsOrafinKey(_keyTypeIds);
 
-            if(keyIdsAllowedOnlyForOrafin.Contains(_keyTypeId)
+            if(containsOrafinKey
                && !user.IsInRole(Role.Orafin))
                 return AuthorizationResult.Fail(new InsufficientRights());
 
-            if (_underVlimpersManagement &&
-                user.IsInRole(Role.VlimpersBeheerder) &&
-                keyIdsAllowedForVlimpers.Contains(_keyTypeId))
+            if (containsVlimpersKey &&
+                _underVlimpersManagement &&
+                user.IsInRole(Role.VlimpersBeheerder))
                 return AuthorizationResult.Success();
 
             if(!_underVlimpersManagement &&
@@ -47,6 +46,20 @@ namespace OrganisationRegistry.Handling.Authorization
                 return AuthorizationResult.Success();
 
             return AuthorizationResult.Fail(new InsufficientRights());
+        }
+
+        private bool ContainsOrafinKey(Guid[] keyTypeIds)
+        {
+            var keyTypeIdsAllowedByVlimpers = _configuration.Authorization.KeyIdsAllowedOnlyForOrafin;
+            return keyTypeIds.Any(labelTypeId =>
+                keyTypeIdsAllowedByVlimpers.Contains(labelTypeId));
+        }
+
+        private bool ContainsVlimpersKey(Guid[] keyTypeIds)
+        {
+            var keyTypeIdsAllowedByVlimpers = _configuration.Authorization.KeyIdsAllowedOnlyForOrafin;
+            return keyTypeIds.Any(labelTypeId =>
+                keyTypeIdsAllowedByVlimpers.Contains(labelTypeId));
         }
     }
 }

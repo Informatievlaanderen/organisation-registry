@@ -54,8 +54,7 @@
                             forOrganisationId.Value],
                         memoryCaches.UnderVlimpersManagement
                             .Contains(forOrganisationId.Value),
-                        keyTypeId,
-                        configuration)
+                        configuration, keyTypeId)
                     .Check(user)
                     .IsSuccessful;
 

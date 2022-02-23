@@ -10,18 +10,17 @@ namespace OrganisationRegistry.Handling.Authorization
     {
         private readonly string _ovoNumber;
         private readonly bool _underVlimpersManagement;
-        private readonly Guid _labelTypeId;
+        private readonly Guid[] _labelTypeIds;
         private readonly IOrganisationRegistryConfiguration _configuration;
 
-        public LabelPolicy(
-            string ovoNumber,
+        public LabelPolicy(string ovoNumber,
             bool underVlimpersManagement,
-            Guid labelTypeId,
-            IOrganisationRegistryConfiguration configuration)
+            IOrganisationRegistryConfiguration configuration,
+            params Guid[] labelTypeIds)
         {
             _ovoNumber = ovoNumber;
             _underVlimpersManagement = underVlimpersManagement;
-            _labelTypeId = labelTypeId;
+            _labelTypeIds = labelTypeIds;
             _configuration = configuration;
         }
 
@@ -30,7 +29,7 @@ namespace OrganisationRegistry.Handling.Authorization
             if(user.IsInRole(Role.OrganisationRegistryBeheerder))
                 return AuthorizationResult.Success();
 
-            var isVlimpersLabel = IsVlimpersLabel();
+            var isVlimpersLabel = ContainsVlimpersLabel(_labelTypeIds);
 
             if (_underVlimpersManagement &&
                 user.IsInRole(Role.VlimpersBeheerder) && isVlimpersLabel)
@@ -48,11 +47,11 @@ namespace OrganisationRegistry.Handling.Authorization
             return AuthorizationResult.Fail(new InsufficientRights());
         }
 
-        private bool IsVlimpersLabel()
+        private bool ContainsVlimpersLabel(Guid[] labelTypeIds)
         {
             var labelIdsAllowedByVlimpers = _configuration.Authorization.LabelIdsAllowedForVlimpers;
-            var isVlimpersLabel = labelIdsAllowedByVlimpers.Contains(_labelTypeId);
-            return isVlimpersLabel;
+            return labelTypeIds.Any(labelTypeId =>
+                labelIdsAllowedByVlimpers.Contains(labelTypeId));
         }
     }
 }

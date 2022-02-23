@@ -2,10 +2,15 @@ namespace OrganisationRegistry.Handling
 {
     using System;
     using System.Threading.Tasks;
+    using System.Windows.Input;
     using Authorization;
     using Infrastructure.Authorization;
     using Infrastructure.Domain;
+    using Infrastructure.Messages;
 
+    /// <summary>
+    /// Basic handler that can handle all sorts of scenarios
+    /// </summary>
     public class Handler{
         private readonly IUser _user;
         private readonly ISession _session;

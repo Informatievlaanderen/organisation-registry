@@ -23,6 +23,6 @@ namespace OrganisationRegistry
 
     public class BaseCommand<T> : BaseCommand where T : GuidValueObject<T>
     {
-        protected new T Id { get; set; }
+        public new T Id { get; set; }
     }
 }

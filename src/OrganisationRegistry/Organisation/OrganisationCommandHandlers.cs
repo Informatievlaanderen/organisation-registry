@@ -178,7 +178,7 @@ namespace OrganisationRegistry.Organisation
         }
 
         public Task Handle(UpdateOrganisationInfo message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .RequiresOneOfRole(Role.OrganisationRegistryBeheerder, Role.VlimpersBeheerder)
                 .Handle(session =>
                 {
@@ -203,8 +203,8 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateOrganisationInfoNotLimitedByVlimpers message) =>
-            Handler.For(message.User, Session)
-                .RequiresBeheerderForOrganisation(Session.Get<Organisation>(message.OrganisationId))
+            UpdateHandler<Organisation>.For(message, Session)
+                .RequiresBeheerderForOrganisation()
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -234,8 +234,8 @@ namespace OrganisationRegistry.Organisation
         }
 
         public Task Handle(AddOrganisationParent message) =>
-            Handler.For(message.User, Session)
-                .WithVlimpersPolicy(Session.Get<Organisation>(message.OrganisationId))
+            UpdateHandler<Organisation>.For(message, Session)
+                .WithVlimpersPolicy()
                 .Handle(session =>
                 {
                     var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
@@ -254,8 +254,8 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateOrganisationParent message) =>
-            Handler.For(message.User, Session)
-                .WithVlimpersPolicy(Session.Get<Organisation>(message.OrganisationId))
+            UpdateHandler<Organisation>.For(message, Session)
+                .WithVlimpersPolicy()
                 .Handle(session =>
                 {
                     var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
@@ -275,9 +275,9 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(AddOrganisationFormalFramework message) =>
-            Handler.For(message.User, Session)
-                .WithPolicy(new FormalFrameworkPolicy(
-                    () => Session.Get<Organisation>(message.OrganisationId).State.OvoNumber,
+            UpdateHandler<Organisation>.For(message, Session)
+                .WithPolicy(organisation => new FormalFrameworkPolicy(
+                    () => organisation.State.OvoNumber,
                     message.FormalFrameworkId,
                     _organisationRegistryConfiguration))
                 .Handle(session =>
@@ -302,9 +302,9 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateOrganisationFormalFramework message) =>
-            Handler.For(message.User, Session)
-                .WithPolicy(new FormalFrameworkPolicy(
-                    () => Session.Get<Organisation>(message.OrganisationId).State.OvoNumber,
+            UpdateHandler<Organisation>.For(message, Session)
+                .WithPolicy(organisation => new FormalFrameworkPolicy(
+                    () => organisation.State.OvoNumber,
                     message.FormalFrameworkId,
                     _organisationRegistryConfiguration))
                 .Handle(session =>
@@ -369,8 +369,8 @@ namespace OrganisationRegistry.Organisation
         }
 
         public Task Handle(AddOrganisationKey message) =>
-            Handler.For(message.User, Session)
-                .WithKeyPolicy(Session.Get<Organisation>(message.OrganisationId), message.KeyTypeId, _organisationRegistryConfiguration)
+            UpdateHandler<Organisation>.For(message, Session)
+                .WithKeyPolicy(_organisationRegistryConfiguration, message)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -386,8 +386,8 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateOrganisationKey message) =>
-            Handler.For(message.User, Session)
-                .WithKeyPolicy(Session.Get<Organisation>(message.OrganisationId), message.KeyTypeId, _organisationRegistryConfiguration)
+            UpdateHandler<Organisation>.For(message, Session)
+                .WithKeyPolicy(_organisationRegistryConfiguration, message)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -403,7 +403,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(AddOrganisationRegulation message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -428,7 +428,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateOrganisationRegulation message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -453,7 +453,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(AddOrganisationCapacity message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -482,7 +482,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateOrganisationCapacity message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -511,7 +511,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(AddOrganisationFunction message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -535,7 +535,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateOrganisationFunction message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -559,7 +559,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(AddOrganisationRelation message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -576,7 +576,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateOrganisationRelation message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -593,7 +593,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(AddOrganisationBuilding message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -610,7 +610,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateOrganisationBuilding message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -627,7 +627,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(AddOrganisationLocation message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -648,7 +648,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateOrganisationLocation message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -669,7 +669,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(AddOrganisationContact message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -685,7 +685,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateOrganisationContact message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -701,16 +701,12 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(AddOrganisationLabel message) =>
-            Handler.For(message.User, Session)
-                .WithLabelPolicy(
-                    Session.Get<Organisation>(message.OrganisationId),
-                    message.LabelTypeId,
-                    _organisationRegistryConfiguration)
+            UpdateHandler<Organisation>.For(message, Session)
+                .WithLabelPolicy(_organisationRegistryConfiguration, message)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
                     organisation.ThrowIfTerminated(message.User);
-                    organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
                     var labelType = session.Get<LabelType>(message.LabelTypeId);
 
@@ -725,16 +721,12 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateOrganisationLabel message) =>
-            Handler.For(message.User, Session)
-                .WithLabelPolicy(
-                    Session.Get<Organisation>(message.OrganisationId),
-                    message.LabelTypeId,
-                    _organisationRegistryConfiguration)
+            UpdateHandler<Organisation>.For(message, Session)
+                .WithLabelPolicy(_organisationRegistryConfiguration, message)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
                     organisation.ThrowIfTerminated(message.User);
-                    organisation.ThrowIfUnauthorizedForVlimpers(message.User);
 
                     var labelType = session.Get<LabelType>(message.LabelTypeId);
 
@@ -744,12 +736,11 @@ namespace OrganisationRegistry.Organisation
                         message.OrganisationLabelId,
                         labelType,
                         message.Value,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                        labelTypeId => _securityService.CanUseLabelType(message.User, labelTypeId));
+                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
                 });
 
         public Task Handle(AddOrganisationOrganisationClassification message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -767,7 +758,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateOrganisationOrganisationClassification message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -786,7 +777,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(AddOrganisationBankAccount message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -805,7 +796,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateOrganisationBankAccount message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -824,7 +815,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateMainBuilding message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -834,7 +825,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateMainLocation message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -844,7 +835,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateOrganisationFormalFrameworkParents message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -855,7 +846,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateCurrentOrganisationParent message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -865,7 +856,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateRelationshipValidities message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -875,7 +866,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(AddOrganisationOpeningHour message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -890,7 +881,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(UpdateOrganisationOpeningHour message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .Handle(session =>
                 {
 
@@ -906,8 +897,8 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(TerminateOrganisation message) =>
-            Handler.For(message.User, Session)
-                .WithVlimpersOnlyPolicy(Session.Get<Organisation>(message.OrganisationId))
+            UpdateHandler<Organisation>.For(message, Session)
+                .WithVlimpersOnlyPolicy()
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -921,7 +912,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(PlaceUnderVlimpersManagement message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .RequiresAdmin()
                 .Handle(session =>
                 {
@@ -931,7 +922,7 @@ namespace OrganisationRegistry.Organisation
                 });
 
         public Task Handle(ReleaseFromVlimpersManagement message) =>
-            Handler.For(message.User, Session)
+            UpdateHandler<Organisation>.For(message, Session)
                 .RequiresAdmin()
                 .Handle(session =>
                 {
