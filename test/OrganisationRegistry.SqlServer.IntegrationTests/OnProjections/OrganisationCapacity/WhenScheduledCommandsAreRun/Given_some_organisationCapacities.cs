@@ -25,8 +25,6 @@
             var organisationCapacity2C = fixture.Create<OrganisationCapacityListItem>();
             var organisationCapacity3 = fixture.Create<OrganisationCapacityListItem>();
             var organisationCapacity4 = fixture.Create<OrganisationCapacityListItem>();
-            var organisationCapacity5 = fixture.Create<OrganisationCapacityListItem>();
-            var organisationCapacity6 = fixture.Create<OrganisationCapacityListItem>();
 
             var (service, dateTimeProviderStub) = await ScheduledCommandsScenario.Arrange((testContext, today) =>
             {
@@ -73,18 +71,6 @@
                 organisationCapacity4.ValidTo = null;
                 organisationCapacity4.IsActive = false;
                 testContext.OrganisationCapacityList.Add(organisationCapacity4);
-
-                // should be active -> undetermined (a command)
-                organisationCapacity5.ValidFrom = null;
-                organisationCapacity5.ValidTo = today.AddDays(10);
-                organisationCapacity5.IsActive = null;
-                testContext.OrganisationCapacityList.Add(organisationCapacity5);
-
-                // should be inactive -> undetermined (a command)
-                organisationCapacity6.ValidFrom = today.AddDays(10);
-                organisationCapacity6.ValidTo = null;
-                organisationCapacity6.IsActive = null;
-                testContext.OrganisationCapacityList.Add(organisationCapacity6);
             });
 
             var commands = await service.GetCommands(dateTimeProviderStub.Today);
@@ -95,8 +81,6 @@
                 new UpdateRelationshipValidities(new OrganisationId(organisationCapacity2B.OrganisationId), dateTimeProviderStub.Today),
                 new UpdateRelationshipValidities(new OrganisationId(organisationCapacity2C.OrganisationId), dateTimeProviderStub.Today),
                 new UpdateRelationshipValidities(new OrganisationId(organisationCapacity3.OrganisationId), dateTimeProviderStub.Today),
-                new UpdateRelationshipValidities(new OrganisationId(organisationCapacity5.OrganisationId), dateTimeProviderStub.Today),
-                new UpdateRelationshipValidities(new OrganisationId(organisationCapacity6.OrganisationId), dateTimeProviderStub.Today),
             };
 
             commands.Should().BeEquivalentTo(expectedCommands);

@@ -72,11 +72,11 @@
                     {
                         command.User = WellknownUsers.ScheduledCommandsServiceUser;
                         await _commandSender.Send(command);
+                        _logger.LogInformation("command {@Command} sent successfully", command);
                     }
                     catch (Exception e)
                     {
-                        _logger.LogCritical(e, "An error occured while processing scheduled Command: {@Command}",
-                            command);
+                        _logger.LogCritical(e, "An error occured while processing scheduled Command: {@Command}", command);
                     }
                 }
 

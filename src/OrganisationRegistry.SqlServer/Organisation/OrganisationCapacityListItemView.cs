@@ -29,7 +29,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public Guid OrganisationId { get; set; }
 
         public Guid CapacityId { get; set; }
-        public string CapacityName { get; set; }
+        public string? CapacityName { get; set; }
 
         public Guid? PersonId { get; set; }
         public string? PersonName { get; set; }
@@ -44,7 +44,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
-        public bool? IsActive { get; set; }
+        public bool IsActive { get; set; }
     }
 
     public class OrganisationCapacityListConfiguration : EntityMappingConfiguration<OrganisationCapacityListItem>
@@ -110,7 +110,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public OrganisationCapacityListView(
             ILogger<OrganisationCapacityListView> logger,
             IEventStore eventStore,
-            IContextFactory contextFactory = null) : base(logger, contextFactory)
+            IContextFactory contextFactory) : base(logger, contextFactory)
         {
             _eventStore = eventStore;
         }
