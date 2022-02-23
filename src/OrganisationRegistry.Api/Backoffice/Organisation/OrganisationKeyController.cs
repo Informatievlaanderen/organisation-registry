@@ -49,7 +49,8 @@
             Func<Guid, bool> isAuthorizedForKeyType = keyTypeId => new KeyPolicy(
                     memoryCaches.OvoNumbers[organisationId],
                     memoryCaches.UnderVlimpersManagement.Contains(organisationId),
-                    configuration, keyTypeId)
+                    configuration,
+                    keyTypeId)
                 .Check(user)
                 .IsSuccessful;
 

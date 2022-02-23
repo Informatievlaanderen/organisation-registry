@@ -46,12 +46,14 @@
             var pagination = Request.ExtractPaginationRequest();
 
             var user = await securityService.GetUser(User);
-            Func<Guid, bool> isAuthorizedForLabelType = labelTypeId => new LabelPolicy(
-                    memoryCaches.OvoNumbers[organisationId],
-                    memoryCaches.UnderVlimpersManagement.Contains(organisationId),
-                    configuration, labelTypeId)
-                .Check(user)
-                .IsSuccessful;
+            Func<Guid, bool> isAuthorizedForLabelType = labelTypeId =>
+                new LabelPolicy(
+                        memoryCaches.OvoNumbers[organisationId],
+                        memoryCaches.UnderVlimpersManagement.Contains(organisationId),
+                        configuration,
+                        labelTypeId)
+                    .Check(user)
+                    .IsSuccessful;
 
             var pagedOrganisations = new OrganisationLabelListQuery(context, organisationId, isAuthorizedForLabelType).Fetch(filtering, sorting, pagination);
 

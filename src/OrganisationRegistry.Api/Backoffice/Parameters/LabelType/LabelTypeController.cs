@@ -51,7 +51,8 @@
                 new LabelPolicy(
                         memoryCaches.OvoNumbers[forOrganisationId.Value],
                         memoryCaches.UnderVlimpersManagement.Contains(forOrganisationId.Value),
-                        configuration, labelTypeId)
+                        configuration,
+                        labelTypeId)
                     .Check(user)
                     .IsSuccessful;
 
