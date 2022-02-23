@@ -1,3 +1,10 @@
+## [1.134.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.134.0...v1.134.1) (2022-02-23)
+
+
+### Bug Fixes
+
+* or-740 fixed OrganisationCapacity projection ([7906acc](https://github.com/informatievlaanderen/organisation-registry/commit/7906acce2ba8fff62153c310d4612eb78d52deb2))
+
 # [1.134.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.133.0...v1.134.0) (2022-02-22)
 
 
