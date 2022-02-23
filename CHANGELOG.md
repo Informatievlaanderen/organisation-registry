@@ -1,3 +1,16 @@
+# [1.135.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.134.1...v1.135.0) (2022-02-23)
+
+
+### Bug Fixes
+
+* or-725 beheerders can still edit non-vlimpers labels ([1552971](https://github.com/informatievlaanderen/organisation-registry/commit/155297191f983d2019686021187dab27b3e30aab))
+
+
+### Features
+
+* or-725 exclude vlimpers labels for beheerders ([7ce0185](https://github.com/informatievlaanderen/organisation-registry/commit/7ce018507fbf1ebcfbe0737c6350619428adea6c))
+* or-725 make GetSecurityInformation async ([e193497](https://github.com/informatievlaanderen/organisation-registry/commit/e1934972fecd9d62dfa4a103ac9f95b98eaf18f0))
+
 ## [1.134.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.134.0...v1.134.1) (2022-02-23)
 
 
