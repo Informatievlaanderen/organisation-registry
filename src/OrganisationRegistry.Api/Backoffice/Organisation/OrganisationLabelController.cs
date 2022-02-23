@@ -49,8 +49,7 @@
             Func<Guid, bool> isAuthorizedForLabelType = labelTypeId => new LabelPolicy(
                     memoryCaches.OvoNumbers[organisationId],
                     memoryCaches.UnderVlimpersManagement.Contains(organisationId),
-                    labelTypeId,
-                    configuration)
+                    configuration, labelTypeId)
                 .Check(user)
                 .IsSuccessful;
 

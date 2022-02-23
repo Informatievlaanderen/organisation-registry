@@ -1020,16 +1020,8 @@ namespace OrganisationRegistry.Organisation
         public void UpdateLabel(Guid organisationLabelId,
             LabelType labelType,
             string labelValue,
-            Period validity,
-            Func<Guid, bool> canUseLabelType)
+            Period validity)
         {
-            var previousOrganisationLabel =
-                State.OrganisationLabels.Single(key => key.OrganisationLabelId == organisationLabelId);
-
-            if (!canUseLabelType(previousOrganisationLabel.LabelTypeId) ||
-                !canUseLabelType(labelType.Id))
-                throw new UserIsNotAuthorizedForKeyType();
-
             if (State.OrganisationLabels
                 .Where(organisationLabel => organisationLabel.LabelTypeId == labelType.Id)
                 .Where(organisationLabel => organisationLabel.OrganisationLabelId != organisationLabelId)

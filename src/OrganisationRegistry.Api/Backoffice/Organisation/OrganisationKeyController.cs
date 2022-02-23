@@ -51,8 +51,7 @@
                 return new KeyPolicy(
                         memoryCaches.OvoNumbers[organisationId],
                         memoryCaches.UnderVlimpersManagement.Contains(organisationId),
-                        keyTypeId,
-                        configuration)
+                        configuration, keyTypeId)
                     .Check(user)
                     .IsSuccessful;
             };

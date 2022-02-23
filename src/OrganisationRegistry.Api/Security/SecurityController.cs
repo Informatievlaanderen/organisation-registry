@@ -42,7 +42,7 @@ namespace OrganisationRegistry.Api.Security
         [OrganisationRegistryAuthorize]
         public async Task<IActionResult> Get([FromServices] ISecurityService securityService)
         {
-            return Ok(securityService.GetSecurityInformation(User));
+            return Ok(await securityService.GetSecurityInformation(User));
         }
 
         [HttpGet("info")]
