@@ -50,11 +50,10 @@
             Func<Guid, bool> isAuthorizedForKeyType = keyTypeId =>
                 !forOrganisationId.HasValue ||
                 new KeyPolicy(
-                        memoryCaches.OvoNumbers[
-                            forOrganisationId.Value],
-                        memoryCaches.UnderVlimpersManagement
-                            .Contains(forOrganisationId.Value),
-                        configuration, keyTypeId)
+                        memoryCaches.OvoNumbers[forOrganisationId.Value],
+                        memoryCaches.UnderVlimpersManagement.Contains(forOrganisationId.Value),
+                        configuration,
+                        keyTypeId)
                     .Check(user)
                     .IsSuccessful;
 
