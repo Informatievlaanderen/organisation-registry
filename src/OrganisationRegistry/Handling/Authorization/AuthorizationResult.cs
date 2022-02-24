@@ -1,6 +1,6 @@
 namespace OrganisationRegistry.Handling.Authorization
 {
-    public class AuthorizationResult
+    public readonly struct AuthorizationResult
     {
         public DomainException? Exception { get; }
         public bool IsSuccessful => Exception == null;
