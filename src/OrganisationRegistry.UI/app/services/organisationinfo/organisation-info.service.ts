@@ -404,8 +404,7 @@ export class OrganisationInfoService implements OnDestroy {
       securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
       return true;
 
-    if (!organisation.underVlimpersManagement &&
-      securityInfo.isOrganisatieBeheerderFor(organisation.id))
+    if (securityInfo.isOrganisatieBeheerderFor(organisation.id))
       return true;
 
     return false;
