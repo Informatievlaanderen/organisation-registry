@@ -1,3 +1,16 @@
+# [1.136.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.135.0...v1.136.0) (2022-02-24)
+
+
+### Bug Fixes
+
+* or-725 disallow add label btn when no rights ([95d0b80](https://github.com/informatievlaanderen/organisation-registry/commit/95d0b807b37bfedcaee9f6c7a8568652e595f979))
+
+
+### Features
+
+* or-726 always enable add key for beheerders ([0de5c9f](https://github.com/informatievlaanderen/organisation-registry/commit/0de5c9ffde59a98ee8301abb7b593e3840cb1c6d))
+* or-726 change key policy for beheerders ([b0ce99a](https://github.com/informatievlaanderen/organisation-registry/commit/b0ce99a679dca249375a435e584a0873101ff097))
+
 # [1.135.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.134.1...v1.135.0) (2022-02-23)
 
 
