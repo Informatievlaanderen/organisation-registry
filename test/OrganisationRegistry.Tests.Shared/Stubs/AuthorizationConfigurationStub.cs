@@ -13,10 +13,10 @@ namespace OrganisationRegistry.Tests.Shared.Stubs
             KeyIdsAllowedForVlimpers = Array.Empty<Guid>();
             KeyIdsAllowedOnlyForOrafin = Array.Empty<Guid>();
         }
-        public Guid[]? FormalFrameworkIdsOwnedByVlimpers { get; }
-        public Guid[]? FormalFrameworkIdsOwnedByAuditVlaanderen { get; }
+        public Guid[]? FormalFrameworkIdsOwnedByVlimpers { get; set; }
+        public Guid[]? FormalFrameworkIdsOwnedByAuditVlaanderen { get; set; }
         public Guid[] LabelIdsAllowedForVlimpers { get; set; }
-        public Guid[] KeyIdsAllowedForVlimpers { get; }
-        public Guid[] KeyIdsAllowedOnlyForOrafin { get; }
+        public Guid[] KeyIdsAllowedForVlimpers { get; set; }
+        public Guid[] KeyIdsAllowedOnlyForOrafin { get; set; }
     }
 }
