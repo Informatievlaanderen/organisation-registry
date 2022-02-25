@@ -58,6 +58,12 @@ export class FormGroupTaglist implements OnInit {
         this.buttonElement = <HTMLButtonElement>this.element.querySelector('button.js-select__input');
 
         this.setDisabled(this._disabled);
+        const pills = this.element.querySelectorAll('a.pill__close');
+        if(this.control.disabled)
+          pills.forEach(pill => {
+            pill.removeListener("click");
+            pill.removeAttribute("href")
+          });
       }
     }.bind(this), 0);
   }
@@ -107,6 +113,9 @@ export class FormGroupTaglist implements OnInit {
   }
 
   private setDisabled(value: boolean) {
+    if (value === undefined)
+      return;
+
     if (value) {
       if (this.buttonElement)
         vl.select.setDisabledState(this.selectElement, 'disabled');
