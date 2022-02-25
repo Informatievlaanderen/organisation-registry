@@ -14,7 +14,7 @@
 
         [Order]
         [DisplayName("Moeder entiteit")]
-        public string ParentOrganisationName { get; set; }
+        public string ParentOrganisationName { get; set; } = string.Empty;
 
         [ExcludeFromCsv]
         public Guid OrganisationId { get; set; }
@@ -58,18 +58,14 @@
         public FormalFrameworkOrganisationBase(
             OrganisationDocument document,
             ApiConfigurationSection @params,
-            Guid formalFrameworkId,
             DateTime today)
         {
-            var formalFramework = document.FormalFrameworks
-                ?.Single(
-                    x =>
-                        x.FormalFrameworkId == formalFrameworkId &&
-                        (x.Validity == null ||
-                         x.Validity.OverlapsWith(today)));
-
-            ParentOrganisationId = formalFramework?.ParentOrganisationId;
-            ParentOrganisationName = formalFramework?.ParentOrganisationName;
+            var maybeParent = document.Parents.SingleOrDefault(p => p.Validity.OverlapsWith(today));
+            if (maybeParent is { } parent)
+            {
+                ParentOrganisationId = parent.ParentOrganisationId;
+                ParentOrganisationName = parent.ParentOrganisationName;
+            }
 
             OrganisationId = document.Id;
             OrganisationName = document.Name;
@@ -80,34 +76,38 @@
                 new Uri(string.Format(@params.DataVlaanderenOrganisationUri, document.OvoNumber));
 
             LegalForm = document.OrganisationClassifications
-                ?.SingleOrDefault(x => x.OrganisationClassificationTypeId == @params.LegalFormClassificationTypeId &&
-                                       (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
-                                       (!x.Validity.End.HasValue || x.Validity.End.Value >= today))
+                .SingleOrDefault(x =>
+                    x.OrganisationClassificationTypeId == @params.LegalFormClassificationTypeId &&
+                    (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
+                    (!x.Validity.End.HasValue || x.Validity.End.Value >= today))
                 ?.OrganisationClassificationName;
 
             PolicyDomain = document.OrganisationClassifications
-                ?.SingleOrDefault(x => x.OrganisationClassificationTypeId == @params.PolicyDomainClassificationTypeId &&
-                                       (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
-                                       (!x.Validity.End.HasValue || x.Validity.End.Value >= today))
+                .SingleOrDefault(x =>
+                    x.OrganisationClassificationTypeId == @params.PolicyDomainClassificationTypeId &&
+                    (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
+                    (!x.Validity.End.HasValue || x.Validity.End.Value >= today))
                 ?.OrganisationClassificationName;
 
             ResponsibleMinister = document.OrganisationClassifications
-                ?.SingleOrDefault(x =>
+                .SingleOrDefault(x =>
                     x.OrganisationClassificationTypeId == @params.ResponsibleMinisterClassificationTypeId &&
                     (!x.Validity.Start.HasValue || x.Validity.Start <= today) &&
                     (!x.Validity.End.HasValue || x.Validity.End >= today))
                 ?.OrganisationClassificationName;
 
             MainLocation = document.Locations
-                ?.SingleOrDefault(x => x.IsMainLocation &&
-                                       (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
-                                       (!x.Validity.End.HasValue || x.Validity.End.Value >= today))
+                .SingleOrDefault(x =>
+                    x.IsMainLocation &&
+                    (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
+                    (!x.Validity.End.HasValue || x.Validity.End.Value >= today))
                 ?.FormattedAddress;
 
             Location = document.Locations
-                ?.FirstOrDefault(x => !x.IsMainLocation &&
-                                      (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
-                                      (!x.Validity.End.HasValue || x.Validity.End.Value >= today))
+                .FirstOrDefault(x =>
+                    !x.IsMainLocation &&
+                    (!x.Validity.Start.HasValue || x.Validity.Start.Value <= today) &&
+                    (!x.Validity.End.HasValue || x.Validity.End.Value >= today))
                 ?.FormattedAddress;
         }
     }

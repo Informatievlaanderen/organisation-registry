@@ -72,9 +72,8 @@
         public FormalFrameworkOrganisationExtended(
             OrganisationDocument document,
             ApiConfigurationSection @params,
-            Guid formalFrameworkId,
             DateTime today)
-            : base(document, @params, formalFrameworkId, today)
+            : base(document, @params, today)
         {
             INR = document.Keys
                 ?.SingleOrDefault(x =>

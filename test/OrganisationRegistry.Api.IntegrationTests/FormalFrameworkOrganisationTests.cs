@@ -14,8 +14,8 @@ namespace OrganisationRegistry.Api.IntegrationTests
         [Fact]
         public void HasTheCurrentMinister()
         {
-            var currentlyInactiveDate = DateTime.Today.AddDays(-2);
-            var currentlyActiveDate = DateTime.Today;
+            var today = new DateTime(2022, 2, 2);
+            var aDateInThePast = today.AddDays(-2);
 
             var responsibleMinisterClassificationTypeId = Guid.NewGuid();
 
@@ -23,20 +23,20 @@ namespace OrganisationRegistry.Api.IntegrationTests
             {
                 OrganisationClassifications = new List<OrganisationDocument.OrganisationOrganisationClassification>
                 {
-                    new OrganisationDocument.OrganisationOrganisationClassification(
+                    new(
                         organisationOrganisationClassificationId: Guid.NewGuid(),
-                        organisationClassificationTypeId: responsibleMinisterClassificationTypeId,
-                        organisationClassificationTypeName: "Responsible Minister",
+                        responsibleMinisterClassificationTypeId,
+                        "Responsible Minister",
                         organisationClassificationId: Guid.NewGuid(),
-                        organisationClassificationName: "Not the current minister",
-                        validity: new Period(currentlyInactiveDate, currentlyInactiveDate)),
-                    new OrganisationDocument.OrganisationOrganisationClassification(
+                        "Not the current minister",
+                        validity: new Period(aDateInThePast, aDateInThePast)),
+                    new(
                         organisationOrganisationClassificationId: Guid.NewGuid(),
-                        organisationClassificationTypeId: responsibleMinisterClassificationTypeId,
-                        organisationClassificationTypeName: "Responsible Minister",
+                        responsibleMinisterClassificationTypeId,
+                        "Responsible Minister",
                         organisationClassificationId: Guid.NewGuid(),
-                        organisationClassificationName: "The current minister",
-                        validity: new Period(currentlyActiveDate, currentlyActiveDate))
+                        "The current minister",
+                        validity: new Period(today, today))
                 }
             };
             var apiConfiguration = new ApiConfigurationSection
@@ -49,8 +49,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
                 new FormalFrameworkOrganisationBase(
                     organisationDocument,
                     apiConfiguration,
-                    Guid.NewGuid(),
-                    DateTime.Today);
+                    today);
 
             formalFrameworkOrganisationBase
                 .ResponsibleMinister
@@ -61,30 +60,27 @@ namespace OrganisationRegistry.Api.IntegrationTests
         [Fact]
         public void ShowsTheParentOrgOfTheFormalFramework()
         {
-            var currentlyActiveDate = DateTime.Today;
+            var today = new DateTime(2022, 2, 2);
+            var aDayInThePast = today.AddDays(-50);
+            var theNextDayInThePast = today.AddDays(-49);
 
             var responsibleMinisterClassificationTypeId = Guid.NewGuid();
 
             var parentOrganisationId = Guid.NewGuid();
-            var formalFrameworkId = Guid.NewGuid();
             var organisationDocument = new OrganisationDocument
             {
-                FormalFrameworks = new List<OrganisationDocument.OrganisationFormalFramework>
+                Parents = new List<OrganisationDocument.OrganisationParent>
                 {
-                    new OrganisationDocument.OrganisationFormalFramework(
-                        organisationFormalFrameworkId: Guid.NewGuid(),
-                        formalFrameworkId: Guid.NewGuid(),
-                        formalFrameworkName: "FormalFrameworkName",
+                    new OrganisationDocument.OrganisationParent(
+                        organisationOrganisationParentId: Guid.NewGuid(),
                         parentOrganisationId: Guid.NewGuid(),
-                        parentOrganisationName: "parentOrganisationName",
-                        validity: new Period(currentlyActiveDate, currentlyActiveDate)),
-                    new OrganisationDocument.OrganisationFormalFramework(
-                        organisationFormalFrameworkId: Guid.NewGuid(),
-                        formalFrameworkId: formalFrameworkId,
-                        formalFrameworkName: "FormalFrameworkName",
+                        parentOrganisationName: "Some other organisations parent parent",
+                        validity: new Period(null, aDayInThePast)),
+                    new OrganisationDocument.OrganisationParent(
+                        organisationOrganisationParentId: Guid.NewGuid(),
                         parentOrganisationId: parentOrganisationId,
                         parentOrganisationName: "The Actual ParentOrganisationName",
-                        validity: new Period(currentlyActiveDate, currentlyActiveDate))
+                        validity: new Period(theNextDayInThePast, today)),
                 }
             };
             var apiConfiguration = new ApiConfigurationSection
@@ -97,8 +93,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
                 new FormalFrameworkOrganisationBase(
                     organisationDocument,
                     apiConfiguration,
-                    formalFrameworkId,
-                    DateTime.Today);
+                    today);
 
             formalFrameworkOrganisationBase
                 .ParentOrganisationId
@@ -110,6 +105,5 @@ namespace OrganisationRegistry.Api.IntegrationTests
                 .Should()
                 .Be("The Actual ParentOrganisationName");
         }
-
     }
 }

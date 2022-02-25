@@ -38,6 +38,32 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
         public List<OrganisationOpeningHour> OpeningHours { get; set; }
         public List<OrganisationRegulation> Regulations { get; set; }
 
+        public OrganisationDocument()
+        {
+            Name = string.Empty;
+            OvoNumber = string.Empty;
+            ShortName = string.Empty;
+            Description = string.Empty;
+            KboNumber = string.Empty;
+            Purposes = new List<Purpose>();
+            Labels =  new List<OrganisationLabel>();
+            Keys = new List<OrganisationKey>();
+            Contacts = new List<OrganisationContact>();
+            OrganisationClassifications = new List<OrganisationOrganisationClassification>();
+            Functions = new List<OrganisationFunction>();
+            Relations = new List<OrganisationRelation>();
+            Capacities = new List<OrganisationCapacity>();
+            Parents = new List<OrganisationParent>();
+            FormalFrameworks = new List<OrganisationFormalFramework>();
+            Buildings = new List<OrganisationBuilding>();
+            Locations = new List<OrganisationLocation>();
+            Bodies = new List<OrganisationBody>();
+            BankAccounts = new List<OrganisationBankAccount>();
+            OpeningHours = new List<OrganisationOpeningHour>();
+            Regulations = new List<OrganisationRegulation>();
+            Validity = new Period(); // default: infinitely valid
+        }
+
         public static TypeMappingDescriptor<OrganisationDocument> Mapping(TypeMappingDescriptor<OrganisationDocument> map)
             => map
                 .Properties(

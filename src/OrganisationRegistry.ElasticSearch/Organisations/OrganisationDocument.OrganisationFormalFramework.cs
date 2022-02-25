@@ -17,6 +17,9 @@
 
             protected OrganisationFormalFramework()
             {
+                FormalFrameworkName = string.Empty;
+                ParentOrganisationName = string.Empty;
+                Validity = new Period(); // default infinitely valid
             }
 
             public OrganisationFormalFramework(
