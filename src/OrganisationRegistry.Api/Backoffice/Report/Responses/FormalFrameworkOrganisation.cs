@@ -69,21 +69,18 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
             foreach (var document in documents)
             {
                 var formalFrameworks = document
-                    .FormalFrameworks?
-                    .Where(x =>
+                    .FormalFrameworks.Where(x =>
                         x.FormalFrameworkId == formalFrameworkId &&
-                        (x.Validity == null ||
-                         x.Validity.OverlapsWith(today)))
+                        x.Validity.OverlapsWith(today))
                     .ToList();
 
-                if (formalFrameworks == null || !formalFrameworks.Any())
+                if (!formalFrameworks.Any())
                     continue;
 
                 formalFrameworkOrganisations.Add(
                     new FormalFrameworkOrganisationBase(
                         document,
                         @params,
-                        formalFrameworkId,
                         today));
             }
 
@@ -109,21 +106,18 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
             foreach (var document in documents)
             {
                 var formalFrameworks = document
-                    .FormalFrameworks?
-                    .Where(x =>
+                    .FormalFrameworks.Where(x =>
                         x.FormalFrameworkId == formalFrameworkId &&
-                        (x.Validity == null ||
-                         x.Validity.OverlapsWith(today)))
+                        x.Validity.OverlapsWith(today))
                     .ToList();
 
-                if (formalFrameworks == null || !formalFrameworks.Any())
+                if (!formalFrameworks.Any())
                     continue;
 
                 formalFrameworkOrganisations.Add(
                     new FormalFrameworkOrganisationExtended(
                         document,
                         @params,
-                        formalFrameworkId,
                         today));
             }
 
