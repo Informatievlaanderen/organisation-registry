@@ -185,7 +185,6 @@ export class OrganisationInfoEditComponent implements OnInit, OnDestroy {
 
   private disableNonVlimpersFields() {
     this.form.get('description').disable();
-    console.log('disabling purposeIds')
     this.form.get('purposeIds').disable();
     this.form.get('showOnVlaamseOverheidSites').disable();
   }
