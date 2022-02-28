@@ -18,7 +18,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenTryingToUpdateAVlimpersOrgAsVlimpersUser : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfo>
+    public class WhenTryingToUpdateAVlimpersOrgAsVlimpersUser : Specification<Organisation, OrganisationCommandHandlers, UpdateVlimpersOrganisationInfo>
     {
         private OrganisationCreatedTestDataBuilder _organisationCreatedTestDataBuilder;
 
@@ -47,20 +47,17 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
             };
         }
 
-        protected override UpdateOrganisationInfo When()
+        protected override UpdateVlimpersOrganisationInfo When()
         {
             var user = new UserBuilder()
                 .AddRoles(Role.VlimpersBeheerder)
                 .Build();
 
-            return new UpdateOrganisationInfo(
+            return new UpdateVlimpersOrganisationInfo(
                 _organisationCreatedTestDataBuilder.Id,
                 "Test",
                 Article.None,
                 "testing",
-                "",
-                new List<PurposeId>(),
-                false,
                 new ValidFrom(),
                 new ValidTo(),
                 new ValidFrom(),
@@ -70,7 +67,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
             };
         }
 
-        protected override int ExpectedNumberOfEvents => 5;
+        protected override int ExpectedNumberOfEvents => 4;
 
         [Fact]
         public void UpdatesOrganisationName()
@@ -80,30 +77,23 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
         }
 
         [Fact]
-        public void UpdatesOrganisationShortName()
+        public void UpdatesShortName()
         {
             var organisationCreated = PublishedEvents[1].UnwrapBody<OrganisationShortNameUpdated>();
             organisationCreated.Should().NotBeNull();
         }
 
         [Fact]
-        public void UpdatesOrganisationDescription()
-        {
-            var organisationCreated = PublishedEvents[2].UnwrapBody<OrganisationDescriptionUpdated>();
-            organisationCreated.Should().NotBeNull();
-        }
-
-        [Fact]
         public void UpdatesOrganisationValidity()
         {
-            var organisationCreated = PublishedEvents[3].UnwrapBody<OrganisationValidityUpdated>();
+            var organisationCreated = PublishedEvents[2].UnwrapBody<OrganisationValidityUpdated>();
             organisationCreated.Should().NotBeNull();
         }
 
         [Fact]
         public void UpdatesOrganisationOperationalValidity()
         {
-            var organisationCreated = PublishedEvents[4].UnwrapBody<OrganisationOperationalValidityUpdated>();
+            var organisationCreated = PublishedEvents[3].UnwrapBody<OrganisationOperationalValidityUpdated>();
             organisationCreated.Should().NotBeNull();
         }
 

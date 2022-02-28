@@ -65,11 +65,13 @@ namespace OrganisationRegistry.Handling
                     message.KeyTypeId));
 
         public static UpdateHandler<Organisation> RequiresBeheerderForOrganisation(
-            this UpdateHandler<Organisation> source)
+            this UpdateHandler<Organisation> source,
+            bool allowOrganisationToBeUnderVlimpersManagement)
             => source.WithPolicy(
                 organisation => new BeheerderForOrganisationPolicy(
                     organisation.State.UnderVlimpersManagement,
-                    organisation.State.OvoNumber));
+                    organisation.State.OvoNumber,
+                    allowOrganisationToBeUnderVlimpersManagement));
 
         public static UpdateHandler<Organisation> RequiresAdmin(this UpdateHandler<Organisation> source)
             => source.WithPolicy(_ => new AdminOnlyPolicy());

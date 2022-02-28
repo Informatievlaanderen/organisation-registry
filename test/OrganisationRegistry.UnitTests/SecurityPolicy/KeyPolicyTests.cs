@@ -69,8 +69,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
                         _orafinKeyId)
                     .Check(user);
 
-            authorizationResult.IsSuccessful.Should().BeFalse();
-            authorizationResult.Exception.Should().BeOfType<InsufficientRights>();
+            authorizationResult.ShouldFailWith<InsufficientRights>();
         }
 
         [Theory]
@@ -111,8 +110,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
                         _vlimpersKeyId)
                     .Check(user);
 
-            authorizationResult.IsSuccessful.Should().BeFalse();
-            authorizationResult.Exception.Should().BeOfType<InsufficientRights>();
+            authorizationResult.ShouldFailWith<InsufficientRights>();
         }
 
         [Fact]
@@ -151,8 +149,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
                         _fixture.Create<Guid>())
                     .Check(user);
 
-            authorizationResult.IsSuccessful.Should().BeFalse();
-            authorizationResult.Exception.Should().BeOfType<InsufficientRights>();
+            authorizationResult.ShouldFailWith<InsufficientRights>();
         }
 
         [Fact]
@@ -170,8 +167,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
                         _fixture.Create<Guid>())
                     .Check(user);
 
-            authorizationResult.IsSuccessful.Should().BeFalse();
-            authorizationResult.Exception.Should().BeOfType<InsufficientRights>();
+            authorizationResult.ShouldFailWith<InsufficientRights>();
         }
     }
 }

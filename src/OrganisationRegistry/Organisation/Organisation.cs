@@ -252,7 +252,6 @@ namespace OrganisationRegistry.Organisation
             if(!showOnVlaamseOverheidSites.Equals(State.ShowOnVlaamseOverheidSites))
                 ApplyChange(new OrganisationShowOnVlaamseOverheidSitesUpdated(Id, showOnVlaamseOverheidSites));
 
-
             if(!validity.Equals(State.Validity))
                 ApplyChange(new OrganisationValidityUpdated(Id, validity.Start, validity.End));
 
@@ -282,6 +281,49 @@ namespace OrganisationRegistry.Organisation
 
             if(!showOnVlaamseOverheidSites.Equals(State.ShowOnVlaamseOverheidSites))
                 ApplyChange(new OrganisationShowOnVlaamseOverheidSitesUpdated(Id, showOnVlaamseOverheidSites));
+        }
+
+        public void UpdateVlimpersOrganisationInfo(
+            Article article,
+            string name,
+            string shortName,
+            Period validity,
+            Period operationalValidity,
+            IDateTimeProvider dateTimeProvider)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(name));
+
+            if (HasKboNumber)
+            {
+                KboV2Guards.ThrowIfChanged(State.Name, name);
+                KboV2Guards.ThrowIfChanged(State.ShortName, shortName);
+            }
+
+            if(!string.Equals(name, State.Name))
+                ApplyChange(new OrganisationNameUpdated(Id, name));
+
+
+            if(!string.Equals(shortName, State.ShortName))
+                ApplyChange(new OrganisationShortNameUpdated(Id, shortName));
+
+
+            if(!string.Equals(article, State.Article))
+                ApplyChange(new OrganisationArticleUpdated(Id, article));
+
+
+            if(!validity.Equals(State.Validity))
+                ApplyChange(new OrganisationValidityUpdated(Id, validity.Start, validity.End));
+
+            if(!operationalValidity.Equals(State.OperationalValidity))
+                ApplyChange(new OrganisationOperationalValidityUpdated(Id, operationalValidity.Start, operationalValidity.End));
+
+            var validityOverlapsWithToday = validity.OverlapsWith(dateTimeProvider.Today);
+            if (State.IsActive && !validityOverlapsWithToday)
+                ApplyChange(new OrganisationBecameInactive(Id));
+
+            if (!State.IsActive && validityOverlapsWithToday)
+                ApplyChange(new OrganisationBecameActive(Id));
         }
 
 

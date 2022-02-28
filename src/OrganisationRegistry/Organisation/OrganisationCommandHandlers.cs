@@ -35,6 +35,7 @@ namespace OrganisationRegistry.Organisation
         ICommandHandler<CreateOrganisation>,
         ICommandHandler<UpdateOrganisationInfo>,
         ICommandHandler<UpdateOrganisationInfoNotLimitedByVlimpers>,
+        ICommandHandler<UpdateVlimpersOrganisationInfo>,
         ICommandHandler<AddOrganisationKey>,
         ICommandHandler<UpdateOrganisationKey>,
         ICommandHandler<AddOrganisationRegulation>,
@@ -179,7 +180,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(UpdateOrganisationInfo message) =>
             UpdateHandler<Organisation>.For(message, Session)
-                .RequiresOneOfRole(Role.OrganisationRegistryBeheerder, Role.VlimpersBeheerder)
+                .RequiresBeheerderForOrganisation(allowOrganisationToBeUnderVlimpersManagement: false)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -204,7 +205,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(UpdateOrganisationInfoNotLimitedByVlimpers message) =>
             UpdateHandler<Organisation>.For(message, Session)
-                .RequiresBeheerderForOrganisation()
+                .RequiresBeheerderForOrganisation(allowOrganisationToBeUnderVlimpersManagement: true)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -220,6 +221,29 @@ namespace OrganisationRegistry.Organisation
                         purposes,
                         message.ShowOnVlaamseOverheidSites);
                 });
+
+        public Task Handle(UpdateVlimpersOrganisationInfo message)
+            => UpdateHandler<Organisation>.For(message, Session)
+                .WithVlimpersOnlyPolicy()
+                .Handle(
+                    session =>
+                    {
+                        var organisation = session.Get<Organisation>(message.OrganisationId);
+                        organisation.ThrowIfTerminated(message.User);
+
+                        organisation.UpdateVlimpersOrganisationInfo(
+                            message.Article,
+                            message.Name,
+                            message.ShortName,
+                            new Period(
+                                message.ValidFrom,
+                                message.ValidTo),
+                            new Period(
+                                message.OperationalValidFrom,
+                                message.OperationalValidTo),
+                            _dateTimeProvider);
+                    });
+
 
         private void ThrowIfCircularRelationshipDetected(Organisation organisation, Period validity, Organisation parentOrganisation)
         {
