@@ -19,22 +19,31 @@ export class OrganisationGuard implements CanActivate, CanActivateChild {
   }
 
   public canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    return this.checkPermissions();
+    return this.checkPermissions(route);
   }
 
   public canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    return this.checkPermissions();
+    return this.checkPermissions(route);
   }
 
-  private checkPermissions(): Observable<boolean> {
-    return this.organisationStore.canAddAndUpdateFormalFrameworksChanged$
-      .map(allowed => {
-        if (allowed)
-          return true;
+  private checkPermissions(route): Observable<boolean> {
+    let organisationIdPart = route.data['organisationGuard'].idPart as string;
+    let organisationParams = route.data['organisationGuard'].params as string;
+    let params;
+    eval('params = ' + organisationParams + ';');
 
-        this.redirectToAuth();
-        return false;
-      });
+    this.organisationStore.loadOrganisation(params[organisationIdPart]);
+
+    return this.organisationStore.organisationChanged.flatMap(o => {
+      return this.organisationStore.canUpdateOrganisationChanged$
+
+    }).map(allowed => {
+      if (allowed)
+        return true;
+
+      this.redirectToAuth();
+      return false;
+    });
   }
 
   private redirectToAuth() {

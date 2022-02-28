@@ -43,11 +43,15 @@ namespace OrganisationRegistry.Handling
                     configuration,
                     keyTypeId));
 
-        public static Handler RequiresBeheerderForOrganisation(this Handler source, Organisation organisation)
+        public static Handler RequiresBeheerderForOrganisation(
+            this Handler source,
+            Organisation organisation,
+            bool allowOrganisationToBeUnderVlimpersManagement)
             => source.WithPolicy(
                 new BeheerderForOrganisationPolicy(
                     organisation.State.UnderVlimpersManagement,
-                    organisation.State.OvoNumber));
+                    organisation.State.OvoNumber,
+                    allowOrganisationToBeUnderVlimpersManagement));
 
         public static Handler RequiresAdmin(this Handler source)
             => source.WithPolicy(new AdminOnlyPolicy());

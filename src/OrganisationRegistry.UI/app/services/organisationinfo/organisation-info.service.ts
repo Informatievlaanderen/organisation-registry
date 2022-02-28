@@ -12,6 +12,7 @@ import {OidcService, Role} from 'core/auth';
 
 import {Organisation, OrganisationChild, OrganisationService} from 'services/organisations';
 import {Subscription} from "rxjs/Subscription";
+import {AllowedOrganisationFields} from "./allowed-organisation-fields";
 
 @Injectable()
 export class OrganisationInfoService implements OnDestroy {
@@ -27,8 +28,8 @@ export class OrganisationInfoService implements OnDestroy {
   private canViewVlimpersManagementChangedSource: BehaviorSubject<boolean>;
   public readonly canViewVlimpersManagementChanged$: Observable<boolean>;
 
-  private canUpdateAllOrganisationFieldsChangedSource: BehaviorSubject<boolean>;
-  public readonly canUpdateAllOrganisationFieldsChanged$: Observable<boolean>;
+  private allowedOrganisationFieldsToUpdateChangedSource: BehaviorSubject<AllowedOrganisationFields>;
+  public readonly allowedOrganisationFieldsToUpdateChanged$: Observable<AllowedOrganisationFields>;
 
   private canUpdateOrganisationChangedSource: BehaviorSubject<boolean>;
   public readonly canUpdateOrganisationChanged$: Observable<boolean>;
@@ -106,11 +107,11 @@ export class OrganisationInfoService implements OnDestroy {
     this.canViewVlimpersManagementChangedSource = new BehaviorSubject<boolean>(false);
     this.canViewVlimpersManagementChanged$ = this.canViewVlimpersManagementChangedSource.asObservable();
 
-    this.canUpdateAllOrganisationFieldsChangedSource = new BehaviorSubject<boolean>(false);
-    this.canUpdateAllOrganisationFieldsChanged$ = this.canUpdateAllOrganisationFieldsChangedSource.asObservable();
-
     this.canUpdateOrganisationChangedSource = new BehaviorSubject<boolean>(false);
     this.canUpdateOrganisationChanged$ = this.canUpdateOrganisationChangedSource.asObservable();
+
+    this.allowedOrganisationFieldsToUpdateChangedSource = new BehaviorSubject<AllowedOrganisationFields>(AllowedOrganisationFields.None);
+    this.allowedOrganisationFieldsToUpdateChanged$ = this.allowedOrganisationFieldsToUpdateChangedSource.asObservable();
 
     this.canTerminateOrganisationChangedSource = new BehaviorSubject<boolean>(false);
     this.canTerminateOrganisationChanged$ = this.canTerminateOrganisationChangedSource.asObservable();
@@ -172,20 +173,6 @@ export class OrganisationInfoService implements OnDestroy {
     );
 
     this.subscriptions.push(
-      this.organisationIdChanged$
-        .flatMap(x => this.organisationService.get(x))
-        .subscribe(
-          item => {
-            if (item) {
-              this.currentOrganisation = item;
-              this.organisationChangedSource.next(item);
-            }
-          },
-          error => this.alertLoadError(error)
-        )
-    );
-
-    this.subscriptions.push(
       this.organisationChildrenPageChanged$
         .flatMap(x => {
           let id = x[0];
@@ -213,7 +200,7 @@ export class OrganisationInfoService implements OnDestroy {
           this.canViewKboManagementChangedSource.next(OrganisationInfoService.canViewKboManagement(organisation, securityInfo));
           this.canViewVlimpersManagementChangedSource.next(OrganisationInfoService.canViewVlimpersManagement(organisation, securityInfo));
           this.canUpdateOrganisationChangedSource.next(OrganisationInfoService.canUpdateOrganisation(organisation, securityInfo))
-          this.canUpdateAllOrganisationFieldsChangedSource.next(OrganisationInfoService.canUpdateAllOrganisationFields(organisation, securityInfo));
+          this.allowedOrganisationFieldsToUpdateChangedSource.next(OrganisationInfoService.allowedOrganisationFields(organisation, securityInfo));
           this.canTerminateOrganisationChangedSource.next(OrganisationInfoService.canTerminateOrganisation(organisation, securityInfo))
           this.canCancelCouplingWithKboChangedSource.next(OrganisationInfoService.canCancelCouplingWithKbo(organisation, securityInfo))
           this.canCoupleWithKboChangedSource.next(OrganisationInfoService.canCoupleWithKbo(organisation, securityInfo))
@@ -246,25 +233,30 @@ export class OrganisationInfoService implements OnDestroy {
     return false;
   }
 
-  private static canUpdateAllOrganisationFields(organisation, securityInfo) {
+  private static allowedOrganisationFields(organisation, securityInfo) {
     if (!securityInfo.isLoggedIn)
-      return false;
+      return AllowedOrganisationFields.None;
 
     if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
-      return true;
+      return AllowedOrganisationFields.All;
 
     if (organisation.isTerminated)
-      return false;
+      return AllowedOrganisationFields.None;
 
-    if (!organisation.underVlimpersManagement &&
-      securityInfo.isOrganisatieBeheerderFor(organisation.id))
-      return true;
+    if (securityInfo.isOrganisatieBeheerderFor(organisation.id))
+    {
+      return organisation.underVlimpersManagement ?
+        AllowedOrganisationFields.AllButVlimpers :
+        AllowedOrganisationFields.All;
+    }
 
-    if (organisation.underVlimpersManagement &&
-      securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
-      return true;
+    if (securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder])){
+      return organisation.underVlimpersManagement ?
+        AllowedOrganisationFields.OnlyVlimpers :
+        AllowedOrganisationFields.None;
+    }
 
-    return false;
+    return AllowedOrganisationFields.None;
   }
 
   private static canUpdateOrganisation(organisation, securityInfo) {

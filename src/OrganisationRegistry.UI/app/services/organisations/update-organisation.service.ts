@@ -45,8 +45,20 @@ export class UpdateOrganisationService {
       .map(this.getLocationHeader);
   }
 
-  public updateInfoNotLimitedByVlimpers(organisationId, organisation: UpdateOrganisationRequest): Observable<string> {
+  public updateInfoNotLimitedToVlimpers(organisationId, organisation: UpdateOrganisationRequest): Observable<string> {
     const url = `${this.organisationsUrl}/${organisationId}/notlimitedbyvlimpers`;
+
+    let headers = new HeadersBuilder()
+      .json()
+      .build();
+
+    return this.http
+      .put(url, JSON.stringify(organisation), { headers: headers })
+      .map(this.getLocationHeader);
+  }
+
+  public updateInfoLimitedToVlimpers(organisationId, organisation: UpdateOrganisationRequest): Observable<string> {
+    const url = `${this.organisationsUrl}/${organisationId}/limitedbyvlimpers`;
 
     let headers = new HeadersBuilder()
       .json()

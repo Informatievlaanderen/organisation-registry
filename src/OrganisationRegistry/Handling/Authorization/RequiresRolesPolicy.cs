@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Handling.Authorization
 {
     using System;
+    using System.Linq;
     using Infrastructure.Authorization;
     using Organisation.Exceptions;
 
@@ -20,11 +21,12 @@ namespace OrganisationRegistry.Handling.Authorization
         }
         public AuthorizationResult Check(IUser user)
         {
-            foreach (var role in _roles)
-            {
-                if (user.IsInRole(role))
-                    return AuthorizationResult.Success();
-            }
+            if (user.IsInRole(Role.OrganisationRegistryBeheerder))
+                return AuthorizationResult.Success();
+
+            if (_roles.Any(user.IsInRole))
+                return AuthorizationResult.Success();
+
             return AuthorizationResult.Fail(new InsufficientRights());
         }
     }

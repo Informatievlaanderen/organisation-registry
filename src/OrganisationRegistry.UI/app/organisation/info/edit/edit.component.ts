@@ -10,8 +10,8 @@ import {SelectItem} from 'shared/components/form/form-group-select';
 import {UpdateOrganisationService} from 'services/organisations';
 
 import {PurposeService} from 'services/purposes';
-import {OidcService} from "../../../core/auth";
-import {OrganisationInfoService} from "../../../services";
+import {OidcService} from "core/auth";
+import {AllowedOrganisationFields, OrganisationInfoService} from "services";
 import {Subscription} from "rxjs/Subscription";
 
 @Component({
@@ -24,9 +24,8 @@ export class OrganisationInfoEditComponent implements OnInit, OnDestroy {
   public articles: SelectItem[];
 
   private organisationId: string;
-  private isVlimpersBeheerder: boolean;
-  private canEditAllOrganisationFields: boolean;
   private readonly subscriptions: Subscription[] = new Array<Subscription>();
+  private allowedOrganisationFieldsToUpdate: AllowedOrganisationFields;
 
   constructor(
     private route: ActivatedRoute,
@@ -67,6 +66,10 @@ export class OrganisationInfoEditComponent implements OnInit, OnDestroy {
     ]
   }
 
+  get isFormValid() {
+    return this.form.enabled && this.form.valid;
+  }
+
   ngOnInit() {
     this.form.disable();
     this.subscriptions.push(
@@ -104,23 +107,16 @@ export class OrganisationInfoEditComponent implements OnInit, OnDestroy {
     });
 
     this.subscriptions.push(
-      this.store.canUpdateAllOrganisationFieldsChanged$
+      this.store.allowedOrganisationFieldsToUpdateChanged$
         .subscribe(x => {
-          this.canEditAllOrganisationFields = x;
+          this.allowedOrganisationFieldsToUpdate = x;
         }));
-  }
-
-  get isFormValid() {
-    return this.form.enabled && this.form.valid;
   }
 
   edit() {
     this.form.disable();
 
-    const update = this.canEditAllOrganisationFields ?
-      this.organisationService.update(this.organisationId, this.form.value):
-      this.organisationService.updateInfoNotLimitedByVlimpers(this.organisationId, this.form.value);
-
+    const update = this.getUpdateService(this.allowedOrganisationFieldsToUpdate);
     this.subscriptions.push(
       update
         .finally(() => this.enableForm())
@@ -146,25 +142,65 @@ export class OrganisationInfoEditComponent implements OnInit, OnDestroy {
               .build())));
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   private enableForm() {
     this.form.enable();
     this.form.get('ovoNumber').disable();
     if (this.form.value.kboNumber) {
-      this.form.get('name').disable();
-      this.form.get('shortName').disable();
+      this.disableKboFields();
     }
-    if (!this.canEditAllOrganisationFields) {
-      this.form.get('name').disable();
-      this.form.get('article').disable();
-      this.form.get('shortName').disable();
-      this.form.get('validFrom').disable();
-      this.form.get('validTo').disable();
-      this.form.get('operationalValidFrom').disable();
-      this.form.get('operationalValidTo').disable();
+    switch (this.allowedOrganisationFieldsToUpdate) {
+      case AllowedOrganisationFields.None:
+        this.disableVlimpersFields();
+        this.disableNonVlimpersFields();
+        break;
+      case AllowedOrganisationFields.All:
+        break;
+      case AllowedOrganisationFields.OnlyVlimpers:
+        this.disableNonVlimpersFields();
+        break;
+      case AllowedOrganisationFields.AllButVlimpers:
+        this.disableVlimpersFields();
+        break;
     }
   }
 
-  ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+  private disableKboFields() {
+    this.form.get('name').disable();
+    this.form.get('shortName').disable();
+  }
+
+  private disableVlimpersFields() {
+    this.form.get('name').disable();
+    this.form.get('article').disable();
+    this.form.get('shortName').disable();
+    this.form.get('validFrom').disable();
+    this.form.get('validTo').disable();
+    this.form.get('operationalValidFrom').disable();
+    this.form.get('operationalValidTo').disable();
+  }
+
+  private disableNonVlimpersFields() {
+    this.form.get('description').disable();
+    console.log('disabling purposeIds')
+    this.form.get('purposeIds').disable();
+    this.form.get('showOnVlaamseOverheidSites').disable();
+  }
+
+  private getUpdateService(allowedOrganisationFieldsToUpdate: AllowedOrganisationFields) {
+    switch (allowedOrganisationFieldsToUpdate) {
+      case AllowedOrganisationFields.All:
+        return this.organisationService.update(this.organisationId, this.form.value);
+      case AllowedOrganisationFields.OnlyVlimpers:
+        return this.organisationService.updateInfoLimitedToVlimpers(this.organisationId, this.form.value)
+      case AllowedOrganisationFields.AllButVlimpers:
+        return this.organisationService.updateInfoNotLimitedToVlimpers(this.organisationId, this.form.value);
+      default:
+        console.error('User not allowed to update any fields')
+        break;
+    }
   }
 }

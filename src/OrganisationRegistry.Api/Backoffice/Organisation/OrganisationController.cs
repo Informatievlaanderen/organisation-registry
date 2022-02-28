@@ -32,7 +32,9 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <summary>Get a list of available organisations.</summary>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromServices] ISecurityService securityService)
+        public async Task<IActionResult> Get(
+            [FromServices] OrganisationRegistryContext context,
+            [FromServices] ISecurityService securityService)
         {
             var filtering = Request.ExtractFilteringRequest<OrganisationListItemFilter>();
             var sorting = Request.ExtractSortingRequest();
@@ -92,7 +94,9 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
                 await CommandSender.Send(CreateOrganisationRequestMapping.MapToCreateKboOrganisation(message, User));
             }
             else
+            {
                 await CommandSender.Send(CreateOrganisationRequestMapping.Map(message));
+            }
 
             return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
         }
@@ -104,7 +108,10 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid id, [FromBody] UpdateOrganisationInfoRequest message)
+        public async Task<IActionResult> Put(
+            [FromServices] ISecurityService securityService,
+            [FromRoute] Guid id,
+            [FromBody] UpdateOrganisationInfoRequest message)
         {
             var internalMessage = new UpdateOrganisationInfoInternalRequest(id, message);
 
@@ -119,11 +126,36 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <summary>Update the organisation info that is not limited by vlimpers.</summary>
         /// <response code="200">If the organisation is updated, together with the location.</response>
         /// <response code="400">If the organisation information does not pass validation.</response>
+        [HttpPut("{id}/limitedbyvlimpers")]
+        [OrganisationRegistryAuthorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Put(
+            [FromServices] ISecurityService securityService,
+            [FromRoute] Guid id,
+            [FromBody] UpdateOrganisationInfoLimitedByVlimpersRequest message)
+        {
+            var internalMessage = new UpdateOrganisationInfoLimitedByVlimpersInternalRequest(id, message);
+
+            if (!TryValidateModel(internalMessage))
+                return BadRequest(ModelState);
+
+            await CommandSender.Send(UpdateOrganisationInfoLimitedByVlimpersRequestMapping.Map(internalMessage));
+
+            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.OrganisationId }));
+        }
+
+        /// <summary>Update the organisation info that is not limited by vlimpers.</summary>
+        /// <response code="200">If the organisation is updated, together with the location.</response>
+        /// <response code="400">If the organisation information does not pass validation.</response>
         [HttpPut("{id}/notlimitedbyvlimpers")]
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid id, [FromBody] UpdateOrganisationInfoNotLimitedByVlimpersRequest message)
+        public async Task<IActionResult> Put(
+            [FromServices] ISecurityService securityService,
+            [FromRoute] Guid id,
+            [FromBody] UpdateOrganisationInfoNotLimitedByVlimpersRequest message)
         {
             var internalMessage = new UpdateOrganisationInfoNotLimitedByVlimpersInternalRequest(id, message);
 
