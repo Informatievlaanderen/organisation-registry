@@ -61,7 +61,7 @@ export class FormGroupTaglist implements OnInit {
         const pills = this.element.querySelectorAll('a.pill__close');
         if(this.control.disabled)
           pills.forEach(pill => {
-            pill.removeListener("click");
+            pill.removeAllListeners("click");
             pill.removeAttribute("href")
           });
       }
