@@ -1,3 +1,11 @@
+# [1.137.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.136.0...v1.137.0) (2022-02-28)
+
+
+### Features
+
+* or-739 correcte moeders worden getoond in rapporten ([13c9cfe](https://github.com/informatievlaanderen/organisation-registry/commit/13c9cfe0b7f565f1ecc82d82000f550e173743d0))
+* or-739 refac: grote file opgesplitst ([c78e01e](https://github.com/informatievlaanderen/organisation-registry/commit/c78e01e834e78a7762c14ae001cd5f60b94eef68))
+
 # [1.136.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.135.0...v1.136.0) (2022-02-24)
 
 
