@@ -1,6 +1,6 @@
 namespace OrganisationRegistry.Organisation.Commands
 {
-    public class UpdateVlimpersOrganisationInfo : BaseCommand<OrganisationId>
+    public class UpdateOrganisationInfoLimitedToVlimpers : BaseCommand<OrganisationId>
     {
         public OrganisationId OrganisationId => Id;
 
@@ -12,7 +12,7 @@ namespace OrganisationRegistry.Organisation.Commands
         public ValidFrom OperationalValidFrom { get; }
         public ValidTo OperationalValidTo { get; }
 
-        public UpdateVlimpersOrganisationInfo(OrganisationId organisationId,
+        public UpdateOrganisationInfoLimitedToVlimpers(OrganisationId organisationId,
             string name,
             Article article,
             string shortName,

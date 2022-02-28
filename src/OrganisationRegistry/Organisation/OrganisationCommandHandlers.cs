@@ -34,8 +34,8 @@ namespace OrganisationRegistry.Organisation
         BaseCommandHandler<OrganisationCommandHandlers>,
         ICommandHandler<CreateOrganisation>,
         ICommandHandler<UpdateOrganisationInfo>,
-        ICommandHandler<UpdateOrganisationInfoNotLimitedByVlimpers>,
-        ICommandHandler<UpdateVlimpersOrganisationInfo>,
+        ICommandHandler<UpdateOrganisationInfoNotLimitedToVlimpers>,
+        ICommandHandler<UpdateOrganisationInfoLimitedToVlimpers>,
         ICommandHandler<AddOrganisationKey>,
         ICommandHandler<UpdateOrganisationKey>,
         ICommandHandler<AddOrganisationRegulation>,
@@ -203,7 +203,7 @@ namespace OrganisationRegistry.Organisation
                         _dateTimeProvider);
                 });
 
-        public Task Handle(UpdateOrganisationInfoNotLimitedByVlimpers message) =>
+        public Task Handle(UpdateOrganisationInfoNotLimitedToVlimpers message) =>
             UpdateHandler<Organisation>.For(message, Session)
                 .RequiresBeheerderForOrganisation(allowOrganisationToBeUnderVlimpersManagement: true)
                 .Handle(session =>
@@ -222,7 +222,7 @@ namespace OrganisationRegistry.Organisation
                         message.ShowOnVlaamseOverheidSites);
                 });
 
-        public Task Handle(UpdateVlimpersOrganisationInfo message)
+        public Task Handle(UpdateOrganisationInfoLimitedToVlimpers message)
             => UpdateHandler<Organisation>.For(message, Session)
                 .WithVlimpersOnlyPolicy()
                 .Handle(

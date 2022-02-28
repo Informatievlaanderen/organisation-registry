@@ -3,7 +3,7 @@ namespace OrganisationRegistry.Organisation.Commands
     using System.Collections.Generic;
     using Purpose;
 
-    public class UpdateOrganisationInfoNotLimitedByVlimpers : BaseCommand<OrganisationId>
+    public class UpdateOrganisationInfoNotLimitedToVlimpers : BaseCommand<OrganisationId>
     {
         public OrganisationId OrganisationId => Id;
         public string Description { get; }
@@ -11,7 +11,7 @@ namespace OrganisationRegistry.Organisation.Commands
         public bool ShowOnVlaamseOverheidSites { get; }
 
 
-        public UpdateOrganisationInfoNotLimitedByVlimpers(OrganisationId organisationId, string bodyDescription, List<PurposeId> purposes, bool bodyShowOnVlaamseOverheidSites)
+        public UpdateOrganisationInfoNotLimitedToVlimpers(OrganisationId organisationId, string bodyDescription, List<PurposeId> purposes, bool bodyShowOnVlaamseOverheidSites)
         {
             Id = organisationId;
             Description = bodyDescription;

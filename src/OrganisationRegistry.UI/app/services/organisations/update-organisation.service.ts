@@ -46,7 +46,7 @@ export class UpdateOrganisationService {
   }
 
   public updateInfoNotLimitedToVlimpers(organisationId, organisation: UpdateOrganisationRequest): Observable<string> {
-    const url = `${this.organisationsUrl}/${organisationId}/notlimitedbyvlimpers`;
+    const url = `${this.organisationsUrl}/${organisationId}/notlimitedtovlimpers`;
 
     let headers = new HeadersBuilder()
       .json()
@@ -58,7 +58,7 @@ export class UpdateOrganisationService {
   }
 
   public updateInfoLimitedToVlimpers(organisationId, organisation: UpdateOrganisationRequest): Observable<string> {
-    const url = `${this.organisationsUrl}/${organisationId}/limitedbyvlimpers`;
+    const url = `${this.organisationsUrl}/${organisationId}/limitedtovlimpers`;
 
     let headers = new HeadersBuilder()
       .json()

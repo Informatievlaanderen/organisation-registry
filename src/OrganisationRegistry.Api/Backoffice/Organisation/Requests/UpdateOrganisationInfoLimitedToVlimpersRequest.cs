@@ -9,19 +9,19 @@
     using OrganisationRegistry.Purpose;
     using SqlServer.Organisation;
 
-    public class UpdateOrganisationInfoLimitedByVlimpersInternalRequest
+    public class UpdateOrganisationInfoLimitedToVlimpersInternalRequest
     {
         public Guid OrganisationId { get; set; }
-        public UpdateOrganisationInfoLimitedByVlimpersRequest Body { get; set; }
+        public UpdateOrganisationInfoLimitedToVlimpersRequest Body { get; set; }
 
-        public UpdateOrganisationInfoLimitedByVlimpersInternalRequest(Guid organisationId, UpdateOrganisationInfoLimitedByVlimpersRequest body)
+        public UpdateOrganisationInfoLimitedToVlimpersInternalRequest(Guid organisationId, UpdateOrganisationInfoLimitedToVlimpersRequest body)
         {
             OrganisationId = organisationId;
             Body = body;
         }
     }
 
-    public class UpdateOrganisationInfoLimitedByVlimpersRequest
+    public class UpdateOrganisationInfoLimitedToVlimpersRequest
     {
         public string Name { get; set; }
         public string ShortName { get; set; }
@@ -32,7 +32,7 @@
         public DateTime? OperationalValidTo { get; set; }
     }
 
-    public class UpdateOrganisationInfoLimitedByVlimpersRequestValidator : AbstractValidator<UpdateOrganisationInfoLimitedByVlimpersInternalRequest>
+    public class UpdateOrganisationInfoLimitedByVlimpersRequestValidator : AbstractValidator<UpdateOrganisationInfoLimitedToVlimpersInternalRequest>
     {
         public UpdateOrganisationInfoLimitedByVlimpersRequestValidator()
         {
@@ -55,11 +55,11 @@
         }
     }
 
-    public static class UpdateOrganisationInfoLimitedByVlimpersRequestMapping
+    public static class UpdateOrganisationInfoLimitedToVlimpersRequestMapping
     {
-        public static UpdateVlimpersOrganisationInfo Map(UpdateOrganisationInfoLimitedByVlimpersInternalRequest message)
+        public static UpdateOrganisationInfoLimitedToVlimpers Map(UpdateOrganisationInfoLimitedToVlimpersInternalRequest message)
         {
-            return new UpdateVlimpersOrganisationInfo(
+            return new UpdateOrganisationInfoLimitedToVlimpers(
                 new OrganisationId(message.OrganisationId),
                 message.Body.Name,
                 Article.Parse(message.Body.Article),

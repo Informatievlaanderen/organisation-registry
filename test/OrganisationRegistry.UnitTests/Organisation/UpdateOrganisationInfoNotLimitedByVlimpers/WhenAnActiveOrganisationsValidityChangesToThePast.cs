@@ -19,7 +19,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfoNotL
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAnActiveOrganisationsValidityChangesToThePast : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfoNotLimitedByVlimpers>
+    public class WhenAnActiveOrganisationsValidityChangesToThePast : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfoNotLimitedToVlimpers>
     {
         private OrganisationCreatedTestDataBuilder _organisationCreatedTestDataBuilder;
         private DateTime _yesterday;
@@ -52,13 +52,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfoNotL
             };
         }
 
-        protected override UpdateOrganisationInfoNotLimitedByVlimpers When()
+        protected override UpdateOrganisationInfoNotLimitedToVlimpers When()
         {
             var user = new UserBuilder()
                 .AddRoles(Role.OrganisationRegistryBeheerder)
                 .Build();
 
-            return new UpdateOrganisationInfoNotLimitedByVlimpers(
+            return new UpdateOrganisationInfoNotLimitedToVlimpers(
                 _organisationCreatedTestDataBuilder.Id,
                 "omschrijving",
                 new List<PurposeId> {new PurposeId(_purposeId)},
