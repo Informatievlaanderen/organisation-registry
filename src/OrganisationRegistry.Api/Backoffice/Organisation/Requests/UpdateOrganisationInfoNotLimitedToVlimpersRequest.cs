@@ -8,26 +8,26 @@
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Purpose;
 
-    public class UpdateOrganisationInfoNotLimitedByVlimpersInternalRequest
+    public class UpdateOrganisationInfoNotLimitedToVlimpersInternalRequest
     {
         public Guid OrganisationId { get; set; }
-        public UpdateOrganisationInfoNotLimitedByVlimpersRequest Body { get; set; }
+        public UpdateOrganisationInfoNotLimitedToVlimpersRequest Body { get; set; }
 
-        public UpdateOrganisationInfoNotLimitedByVlimpersInternalRequest(Guid organisationId, UpdateOrganisationInfoNotLimitedByVlimpersRequest body)
+        public UpdateOrganisationInfoNotLimitedToVlimpersInternalRequest(Guid organisationId, UpdateOrganisationInfoNotLimitedToVlimpersRequest body)
         {
             OrganisationId = organisationId;
             Body = body;
         }
     }
 
-    public class UpdateOrganisationInfoNotLimitedByVlimpersRequest
+    public class UpdateOrganisationInfoNotLimitedToVlimpersRequest
     {
         public string Description { get; set; }
         public List<Guid> PurposeIds { get; set; }
         public bool ShowOnVlaamseOverheidSites { get; set; }
     }
 
-    public class UpdateOrganisationInfoNotLimitedByVlimpersRequestValidator : AbstractValidator<UpdateOrganisationInfoNotLimitedByVlimpersInternalRequest>
+    public class UpdateOrganisationInfoNotLimitedByVlimpersRequestValidator : AbstractValidator<UpdateOrganisationInfoNotLimitedToVlimpersInternalRequest>
     {
         public UpdateOrganisationInfoNotLimitedByVlimpersRequestValidator()
         {
@@ -37,11 +37,11 @@
         }
     }
 
-    public static class UpdateOrganisationInfoNotLimitedByVlimpersRequestMapping
+    public static class UpdateOrganisationInfoNotLimitedToVlimpersRequestMapping
     {
-        public static UpdateOrganisationInfoNotLimitedByVlimpers Map(UpdateOrganisationInfoNotLimitedByVlimpersInternalRequest message)
+        public static UpdateOrganisationInfoNotLimitedToVlimpers Map(UpdateOrganisationInfoNotLimitedToVlimpersInternalRequest message)
         {
-            return new UpdateOrganisationInfoNotLimitedByVlimpers(
+            return new UpdateOrganisationInfoNotLimitedToVlimpers(
                 new OrganisationId(message.OrganisationId),
                 message.Body.Description,
                 message.Body.PurposeIds?.Select(x => new PurposeId(x)).ToList(),

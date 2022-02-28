@@ -109,7 +109,6 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put(
-            [FromServices] ISecurityService securityService,
             [FromRoute] Guid id,
             [FromBody] UpdateOrganisationInfoRequest message)
         {
@@ -126,21 +125,20 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <summary>Update the organisation info that is not limited by vlimpers.</summary>
         /// <response code="200">If the organisation is updated, together with the location.</response>
         /// <response code="400">If the organisation information does not pass validation.</response>
-        [HttpPut("{id}/limitedbyvlimpers")]
+        [HttpPut("{id}/limitedtovlimpers")]
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put(
-            [FromServices] ISecurityService securityService,
             [FromRoute] Guid id,
-            [FromBody] UpdateOrganisationInfoLimitedByVlimpersRequest message)
+            [FromBody] UpdateOrganisationInfoLimitedToVlimpersRequest message)
         {
-            var internalMessage = new UpdateOrganisationInfoLimitedByVlimpersInternalRequest(id, message);
+            var internalMessage = new UpdateOrganisationInfoLimitedToVlimpersInternalRequest(id, message);
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            await CommandSender.Send(UpdateOrganisationInfoLimitedByVlimpersRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateOrganisationInfoLimitedToVlimpersRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.OrganisationId }));
         }
@@ -148,21 +146,20 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <summary>Update the organisation info that is not limited by vlimpers.</summary>
         /// <response code="200">If the organisation is updated, together with the location.</response>
         /// <response code="400">If the organisation information does not pass validation.</response>
-        [HttpPut("{id}/notlimitedbyvlimpers")]
+        [HttpPut("{id}/notlimitedtovlimpers")]
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put(
-            [FromServices] ISecurityService securityService,
             [FromRoute] Guid id,
-            [FromBody] UpdateOrganisationInfoNotLimitedByVlimpersRequest message)
+            [FromBody] UpdateOrganisationInfoNotLimitedToVlimpersRequest message)
         {
-            var internalMessage = new UpdateOrganisationInfoNotLimitedByVlimpersInternalRequest(id, message);
+            var internalMessage = new UpdateOrganisationInfoNotLimitedToVlimpersInternalRequest(id, message);
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
 
-            await CommandSender.Send(UpdateOrganisationInfoNotLimitedByVlimpersRequestMapping.Map(internalMessage));
+            await CommandSender.Send(UpdateOrganisationInfoNotLimitedToVlimpersRequestMapping.Map(internalMessage));
 
             return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.OrganisationId }));
         }

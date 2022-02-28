@@ -18,7 +18,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenTryingToUpdateAVlimpersOrgAsVlimpersUser : Specification<Organisation, OrganisationCommandHandlers, UpdateVlimpersOrganisationInfo>
+    public class WhenTryingToUpdateAVlimpersOrgAsVlimpersUser : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfoLimitedToVlimpers>
     {
         private OrganisationCreatedTestDataBuilder _organisationCreatedTestDataBuilder;
 
@@ -47,13 +47,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
             };
         }
 
-        protected override UpdateVlimpersOrganisationInfo When()
+        protected override UpdateOrganisationInfoLimitedToVlimpers When()
         {
             var user = new UserBuilder()
                 .AddRoles(Role.VlimpersBeheerder)
                 .Build();
 
-            return new UpdateVlimpersOrganisationInfo(
+            return new UpdateOrganisationInfoLimitedToVlimpers(
                 _organisationCreatedTestDataBuilder.Id,
                 "Test",
                 Article.None,
