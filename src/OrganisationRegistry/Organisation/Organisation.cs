@@ -2814,7 +2814,8 @@ namespace OrganisationRegistry.Organisation
         {
             if (IsTerminated &&
                 !user.IsInRole(Role.OrganisationRegistryBeheerder) &&
-                !user.IsInRole(Role.AutomatedTask))
+                !user.IsInRole(Role.AutomatedTask) &&
+                !(user.IsInRole(Role.VlimpersBeheerder) && State.UnderVlimpersManagement))
                 throw new OrganisationAlreadyTerminated();
         }
 
