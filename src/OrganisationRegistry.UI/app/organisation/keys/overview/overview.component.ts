@@ -20,7 +20,6 @@ import {OrganisationInfoService} from "../../../services";
 export class OrganisationKeysOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public organisationKeys: PagedResult<OrganisationKeyListItem>;
-  public canEditOrganisation: Observable<boolean>;
 
   private filter: OrganisationKeyFilter = new OrganisationKeyFilter();
   private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Organisatie sleutels');
@@ -45,10 +44,8 @@ export class OrganisationKeysOverviewComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.store
       .organisationChanged
       .subscribe(org => {
-        this.canEditOrganisation = this.oidcService.canEditOrganisation(org);
       }));
 
-    this.canEditOrganisation = Observable.of(false);
     this.subscriptions.push(this.route.parent.parent.params.subscribe((params: Params) => {
       this.organisationId = params['id'];
       this.loadKeys();

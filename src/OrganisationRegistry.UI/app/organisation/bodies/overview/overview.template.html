@@ -6,7 +6,7 @@
             (filter)="search($event)">
         </ww-organisation-body-filter>
         <div class="cta-title__cta">
-            <a *ngIf="(canAddBody | async)" class="button cta-title__cta" [routerLink]="['/bodies/create']" [queryParams]="{ organisationId: organisationId }">Orgaan toevoegen</a>
+            <a *ngIf="(store.canAddBodiesChanged$ | async)" class="button cta-title__cta" [routerLink]="['/bodies/create']" [queryParams]="{ organisationId: organisationId }">Orgaan toevoegen</a>
             <div class="u-align-right" style="clear: both;"></div>
         </div>
     </div>
@@ -14,7 +14,6 @@
     <ww-organisation-body-list
       [items]="organisationBodies"
       [isBusy]="isLoading"
-      (changePage)="changePage($event)"
-      [canEdit]="false">
+      (changePage)="changePage($event)">
     </ww-organisation-body-list>
 </div>

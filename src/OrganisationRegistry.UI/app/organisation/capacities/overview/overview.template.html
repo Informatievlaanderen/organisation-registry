@@ -6,7 +6,7 @@
             (filter)="search($event)">
         </ww-organisation-capacity-filter>
         <div class="cta-title__cta">
-            <a *ngIf="(store.isEditableChanged | async)" class="button cta-title__cta" [routerLink]="['./create']">Hoedanigheid toevoegen</a>
+            <a *ngIf="(store.canAddAndUpdateCapacitiesChanged$ | async)" class="button cta-title__cta" [routerLink]="['./create']">Hoedanigheid toevoegen</a>
             <div class="u-align-right" style="clear: both;"></div>
         </div>
     </div>
@@ -15,6 +15,6 @@
       [items]="organisationCapacities"
       [isBusy]="isLoading"
       (changePage)="changePage($event)"
-      [canEdit]="store.isEditableChanged">
+      [canEdit]="store.canAddAndUpdateCapacitiesChanged$">
     </ww-organisation-capacity-list>
 </div>
