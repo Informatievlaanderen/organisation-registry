@@ -16,6 +16,6 @@
       [items]="organisationLabels"
       [isBusy]="isLoading"
       (changePage)="changePage($event)"
-      [canEdit]="store.isEditableChanged">
+      [canEdit]="store.canAddAndUpdateLabelsChanged$">
     </ww-organisation-label-list>
 </div>
