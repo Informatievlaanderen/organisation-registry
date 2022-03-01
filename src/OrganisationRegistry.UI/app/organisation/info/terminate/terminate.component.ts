@@ -21,7 +21,6 @@ import { Organisation, OrganisationService } from 'services/organisations';
 })
 export class OrganisationTerminateComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
-  public canEditOrganisation: Observable<boolean>;
   public terminateForm: FormGroup;
   public today: string;
   public organisation: Organisation;
@@ -71,10 +70,8 @@ export class OrganisationTerminateComponent implements OnInit, OnDestroy {
         }
       }));
 
-    this.canEditOrganisation = Observable.of(false);
     this.subscriptions.push(this.route.parent.parent.params.subscribe((params: Params) => {
       this.organisationId = params['id'];
-      this.canEditOrganisation = this.oidcService.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
       this.store.loadOrganisation(this.organisationId);
     }));
   }

@@ -229,62 +229,6 @@ export class OidcService implements OnDestroy {
       });
   }
 
-  public canEditOrganisation(organisation : Organisation): Observable<boolean> {
-    let wegwijsBeheerderCheck = this.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
-    let vlimpersBeheerderCheck = this.hasAnyOfRoles([Role.VlimpersBeheerder]);
-    let organisatieBeheerderCheck = this.hasAnyOfRoles([Role.OrganisatieBeheerder]);
-
-    return Observable.zip(wegwijsBeheerderCheck, vlimpersBeheerderCheck, organisatieBeheerderCheck, this.organisationIds)
-      .map(zipped => {
-        let isOrganisationRegistryBeheerder = zipped[0];
-        let isVlimpersBeheerder = zipped[1];
-        let isOrganisatieBeheerder = zipped[2];
-        let organisationIds = zipped[3];
-
-        if (isOrganisationRegistryBeheerder)
-          return true;
-
-        if (organisation.underVlimpersManagement && isVlimpersBeheerder)
-          return true;
-
-        if (isOrganisatieBeheerder && organisationIds.findIndex(x => x === organisation.id) > -1)
-          return true;
-
-        return false;
-      })
-      .catch(err => {
-        return Observable.of(false);
-      });
-  }
-
-  public canAddBody(organisationId): Observable<boolean> {
-    let wegwijsBeheerderCheck = this.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
-    let orgaanBeheerderCheck = this.hasAnyOfRoles([Role.OrgaanBeheerder]);
-    let organisatieBeheerderCheck = this.hasAnyOfRoles([Role.OrganisatieBeheerder]);
-
-    return Observable.zip(wegwijsBeheerderCheck, orgaanBeheerderCheck, organisatieBeheerderCheck, this.organisationIds)
-      .map(zipped => {
-        let isOrganisationRegistryBeheerder = zipped[0];
-        let isOrgaanBeheerder = zipped[1];
-        let isOrganisatieBeheerder = zipped[2];
-        let organisationIds = zipped[3];
-
-        if (isOrganisationRegistryBeheerder)
-          return true;
-
-        if (isOrgaanBeheerder)
-          return true;
-
-        if (isOrganisatieBeheerder && organisationIds.findIndex(x => x === organisationId) > -1)
-            return true;
-
-        return false;
-      })
-      .catch(err => {
-        return Observable.of(false);
-      });
-  }
-
   public canEditBody(bodyId): Observable<boolean> {
     let wegwijsBeheerderCheck = this.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
     let orgaanBeheerderCheck = this.hasAnyOfRoles([Role.OrgaanBeheerder]);

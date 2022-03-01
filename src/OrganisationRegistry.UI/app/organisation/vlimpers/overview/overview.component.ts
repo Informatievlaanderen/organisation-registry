@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router} from '@angular/router';
 
-import { Observable } from 'rxjs/Observable';
 import { Subscription } from 'rxjs/Subscription';
 
 import { OidcService } from 'core/auth';
@@ -18,7 +17,6 @@ import {OrganisationVlimpersService} from "../../../services/organisationvlimper
 })
 export class OrganisationVlimpersOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = false;
-  public canEditOrganisation: Observable<boolean>;
 
   private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Organisatie Vlimpersbeheer');
   private organisationId: string;
@@ -44,11 +42,9 @@ export class OrganisationVlimpersOverviewComponent implements OnInit, OnDestroy 
       .subscribe(organisation => {
         if (organisation) {
           this.organisation = organisation;
-          this.canEditOrganisation = this.oidcService.canEditOrganisation(organisation);
         }
       }));
 
-    this.canEditOrganisation = Observable.of(false);
     this.subscriptions.push(this.route.parent.parent.params.subscribe((params: Params) => {
       this.organisationId = params['id'];
       this.store.loadOrganisation(this.organisationId);
