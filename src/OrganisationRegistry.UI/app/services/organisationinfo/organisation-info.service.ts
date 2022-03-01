@@ -240,6 +240,12 @@ export class OrganisationInfoService implements OnDestroy {
     if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
       return AllowedOrganisationFields.All;
 
+    if (securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder])){
+      return organisation.underVlimpersManagement ?
+        AllowedOrganisationFields.OnlyVlimpers :
+        AllowedOrganisationFields.None;
+    }
+
     if (organisation.isTerminated)
       return AllowedOrganisationFields.None;
 
@@ -248,12 +254,6 @@ export class OrganisationInfoService implements OnDestroy {
       return organisation.underVlimpersManagement ?
         AllowedOrganisationFields.AllButVlimpers :
         AllowedOrganisationFields.All;
-    }
-
-    if (securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder])){
-      return organisation.underVlimpersManagement ?
-        AllowedOrganisationFields.OnlyVlimpers :
-        AllowedOrganisationFields.None;
     }
 
     return AllowedOrganisationFields.None;
@@ -266,12 +266,12 @@ export class OrganisationInfoService implements OnDestroy {
     if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
       return true;
 
-    if (organisation.isTerminated)
-      return false;
-
     if (organisation.underVlimpersManagement &&
       securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
       return true;
+
+    if (organisation.isTerminated)
+      return false;
 
     if (securityInfo.isOrganisatieBeheerderFor(organisation.id))
       return true;
@@ -286,11 +286,11 @@ export class OrganisationInfoService implements OnDestroy {
     if (organisation.isTerminated)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
-      return true;
-
     if (organisation.underVlimpersManagement &&
       securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
+      return true;
+
+    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
       return true;
 
     return false;
@@ -319,12 +319,12 @@ export class OrganisationInfoService implements OnDestroy {
     if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
       return true;
 
-    if (organisation.isTerminated)
-      return false;
-
     if (organisation.underVlimpersManagement &&
       securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
       return true;
+
+    if (organisation.isTerminated)
+      return false;
 
     if (!organisation.underVlimpersManagement &&
       securityInfo.isOrganisatieBeheerderFor(organisation.id))
@@ -356,12 +356,12 @@ export class OrganisationInfoService implements OnDestroy {
     if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
       return true;
 
-    if (organisation.isTerminated)
-      return false;
-
     if (organisation.underVlimpersManagement &&
       securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
       return true;
+
+    if (organisation.isTerminated)
+      return false;
 
     if (!organisation.underVlimpersManagement &&
       securityInfo.isOrganisatieBeheerderFor(organisation.id))
@@ -377,11 +377,11 @@ export class OrganisationInfoService implements OnDestroy {
     if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
       return true;
 
-    if (organisation.isTerminated)
-      return false;
-
     if (securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
       return true;
+
+    if (organisation.isTerminated)
+      return false;
 
     if (securityInfo.isOrganisatieBeheerderFor(organisation.id))
       return true;
@@ -396,12 +396,12 @@ export class OrganisationInfoService implements OnDestroy {
     if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
       return true;
 
-    if (organisation.isTerminated)
-      return false;
-
     if (organisation.underVlimpersManagement &&
       securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
       return true;
+
+    if (organisation.isTerminated)
+      return false;
 
     if (securityInfo.isOrganisatieBeheerderFor(organisation.id))
       return true;
@@ -416,12 +416,12 @@ export class OrganisationInfoService implements OnDestroy {
     if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
       return true;
 
-    if (organisation.isTerminated)
-      return false;
-
     if (organisation.underVlimpersManagement &&
       securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
       return true;
+
+    if (organisation.isTerminated)
+      return false;
 
     if (securityInfo.isOrganisatieBeheerderFor(organisation.id))
       return true;
