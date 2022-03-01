@@ -86,7 +86,7 @@ public static class Config
                     new Claim("vo_id", "E6D110DC-231A-4666-BAFB-C354255EF547"),
                     new Claim(JwtClaimTypes.FamilyName, "Persona"),
                     new Claim(JwtClaimTypes.GivenName, "Vlimpers"),
-                    new Claim("iv_wegwijs_rol_3D", "WegwijsBeheerder-vlimpersbeheerder:OVO002949"),
+                    new Claim("iv_wegwijs_rol_3D", "WegwijsBeheerder-vlimpersbeheerder:OVO001833"),
                 },
                 SubjectId = "vlimpers",
             },
