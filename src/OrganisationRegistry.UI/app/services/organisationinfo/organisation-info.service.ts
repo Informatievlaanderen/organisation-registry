@@ -13,6 +13,7 @@ import {OidcService, Role} from 'core/auth';
 import {Organisation, OrganisationChild, OrganisationService} from 'services/organisations';
 import {Subscription} from "rxjs/Subscription";
 import {AllowedOrganisationFields} from "./allowed-organisation-fields";
+import {OrganisationAuthorization} from "./organisation-authorization";
 
 @Injectable()
 export class OrganisationInfoService implements OnDestroy {
@@ -45,6 +46,36 @@ export class OrganisationInfoService implements OnDestroy {
 
   private canAddDaughtersChangedSource: BehaviorSubject<boolean>;
   public readonly canAddDaughtersChanged$: Observable<boolean>;
+
+  private canAddAndUpdateContactsChangedSource: BehaviorSubject<boolean>;
+  public readonly canAddAndUpdateContactsChanged$: Observable<boolean>;
+
+  private canAddAndUpdateBankAccountsChangedSource: BehaviorSubject<boolean>;
+  public readonly canAddAndUpdateBankAccountsChanged$: Observable<boolean>;
+
+  private canAddAndUpdateFunctionsChangedSource: BehaviorSubject<boolean>;
+  public readonly canAddAndUpdateFunctionsChanged$: Observable<boolean>;
+
+  private canAddAndUpdateLocationsChangedSource: BehaviorSubject<boolean>;
+  public readonly canAddAndUpdateLocationsChanged$: Observable<boolean>;
+
+  private canAddAndUpdateClassificationsChangedSource: BehaviorSubject<boolean>;
+  public readonly canAddAndUpdateClassificationsChanged$: Observable<boolean>;
+
+  private canAddAndUpdateBuildingsChangedSource: BehaviorSubject<boolean>;
+  public readonly canAddAndUpdateBuildingsChanged$: Observable<boolean>;
+
+  private canAddBodiesChangedSource: BehaviorSubject<boolean>;
+  public readonly canAddBodiesChanged$: Observable<boolean>;
+
+  private canAddAndUpdateRelationsChangedSource: BehaviorSubject<boolean>;
+  public readonly canAddAndUpdateRelationsChanged$: Observable<boolean>;
+
+  private canAddAndUpdateOpeningHoursChangedSource: BehaviorSubject<boolean>;
+  public readonly canAddAndUpdateOpeningHoursChanged$: Observable<boolean>;
+
+  private canAddAndUpdateCapacitiesChangedSource: BehaviorSubject<boolean>;
+  public readonly canAddAndUpdateCapacitiesChanged$: Observable<boolean>;
 
   private canAddAndUpdateRegulationsChangedSource: BehaviorSubject<boolean>;
   public readonly canAddAndUpdateRegulationsChanged$: Observable<boolean>;
@@ -140,6 +171,36 @@ export class OrganisationInfoService implements OnDestroy {
     this.canAddAndUpdateLabelsChangedSource = new BehaviorSubject<boolean>(false);
     this.canAddAndUpdateLabelsChanged$ = this.canAddAndUpdateLabelsChangedSource.asObservable();
 
+    this.canAddAndUpdateContactsChangedSource = new BehaviorSubject<boolean>(false);
+    this.canAddAndUpdateContactsChanged$ = this.canAddAndUpdateContactsChangedSource
+
+    this.canAddAndUpdateBankAccountsChangedSource = new BehaviorSubject<boolean>(false);
+    this.canAddAndUpdateBankAccountsChanged$ = this.canAddAndUpdateBankAccountsChangedSource
+
+    this.canAddAndUpdateFunctionsChangedSource = new BehaviorSubject<boolean>(false);
+    this.canAddAndUpdateFunctionsChanged$ = this.canAddAndUpdateFunctionsChangedSource
+
+    this.canAddAndUpdateLocationsChangedSource = new BehaviorSubject<boolean>(false);
+    this.canAddAndUpdateLocationsChanged$ = this.canAddAndUpdateLocationsChangedSource
+
+    this.canAddAndUpdateClassificationsChangedSource = new BehaviorSubject<boolean>(false);
+    this.canAddAndUpdateClassificationsChanged$ = this.canAddAndUpdateClassificationsChangedSource
+
+    this.canAddAndUpdateBuildingsChangedSource = new BehaviorSubject<boolean>(false);
+    this.canAddAndUpdateBuildingsChanged$ = this.canAddAndUpdateBuildingsChangedSource
+
+    this.canAddBodiesChangedSource = new BehaviorSubject<boolean>(false);
+    this.canAddBodiesChanged$ = this.canAddBodiesChangedSource
+
+    this.canAddAndUpdateRelationsChangedSource = new BehaviorSubject<boolean>(false);
+    this.canAddAndUpdateRelationsChanged$ = this.canAddAndUpdateRelationsChangedSource
+
+    this.canAddAndUpdateOpeningHoursChangedSource = new BehaviorSubject<boolean>(false);
+    this.canAddAndUpdateOpeningHoursChanged$ = this.canAddAndUpdateOpeningHoursChangedSource
+
+    this.canAddAndUpdateCapacitiesChangedSource = new BehaviorSubject<boolean>(false);
+    this.canAddAndUpdateCapacitiesChanged$ = this.canAddAndUpdateCapacitiesChangedSource
+
     this.isLimitedByVlimpersChangedSource = new BehaviorSubject<boolean>(false);
     this.isLimitedByVlimpersChanged$ = this.isLimitedByVlimpersChangedSource.asObservable();
 
@@ -197,236 +258,30 @@ export class OrganisationInfoService implements OnDestroy {
           let organisation = combined[0];
           let securityInfo = combined[1];
 
-          this.canViewKboManagementChangedSource.next(OrganisationInfoService.canViewKboManagement(organisation, securityInfo));
-          this.canViewVlimpersManagementChangedSource.next(OrganisationInfoService.canViewVlimpersManagement(organisation, securityInfo));
-          this.canUpdateOrganisationChangedSource.next(OrganisationInfoService.canUpdateOrganisation(organisation, securityInfo))
-          this.allowedOrganisationFieldsToUpdateChangedSource.next(OrganisationInfoService.allowedOrganisationFields(organisation, securityInfo));
-          this.canTerminateOrganisationChangedSource.next(OrganisationInfoService.canTerminateOrganisation(organisation, securityInfo))
-          this.canCancelCouplingWithKboChangedSource.next(OrganisationInfoService.canCancelCouplingWithKbo(organisation, securityInfo))
-          this.canCoupleWithKboChangedSource.next(OrganisationInfoService.canCoupleWithKbo(organisation, securityInfo))
-          this.canAddDaughtersChangedSource.next(OrganisationInfoService.canAddDaughters(organisation, securityInfo))
-          this.canAddAndUpdateRegulationsChangedSource.next(OrganisationInfoService.canAddAndUpdateRegulations(organisation, securityInfo))
-          this.canAddAndUpdateParentsChangedSource.next(OrganisationInfoService.canAddAndUpdateParents(organisation, securityInfo))
-          this.canAddAndUpdateFormalFrameworksChangedSource.next(OrganisationInfoService.canAddAndUpdateFormalFrameworks(organisation, securityInfo))
-          this.canAddAndUpdateKeysChangedSource.next(OrganisationInfoService.canAddAndUpdateKeys(organisation, securityInfo))
-          this.canAddAndUpdateLabelsChangedSource.next(OrganisationInfoService.canAddAndUpdateLabels(organisation, securityInfo))
+          this.canViewKboManagementChangedSource.next(OrganisationAuthorization.canViewKboManagement(organisation, securityInfo));
+          this.canViewVlimpersManagementChangedSource.next(OrganisationAuthorization.canViewVlimpersManagement(organisation, securityInfo));
+          this.canUpdateOrganisationChangedSource.next(OrganisationAuthorization.canUpdateOrganisation(organisation, securityInfo))
+          this.allowedOrganisationFieldsToUpdateChangedSource.next(OrganisationAuthorization.allowedOrganisationFields(organisation, securityInfo));
+          this.canTerminateOrganisationChangedSource.next(OrganisationAuthorization.canTerminateOrganisation(organisation, securityInfo))
+          this.canCancelCouplingWithKboChangedSource.next(OrganisationAuthorization.canCancelCouplingWithKbo(organisation, securityInfo))
+          this.canCoupleWithKboChangedSource.next(OrganisationAuthorization.canCoupleWithKbo(organisation, securityInfo))
+          this.canAddDaughtersChangedSource.next(OrganisationAuthorization.canAddDaughters(organisation, securityInfo))
+          this.canAddAndUpdateRegulationsChangedSource.next(OrganisationAuthorization.canAddAndUpdateRegulations(organisation, securityInfo))
+          this.canAddAndUpdateParentsChangedSource.next(OrganisationAuthorization.canAddAndUpdateParents(organisation, securityInfo))
+          this.canAddAndUpdateFormalFrameworksChangedSource.next(OrganisationAuthorization.canAddAndUpdateFormalFrameworks(organisation, securityInfo))
+          this.canAddAndUpdateKeysChangedSource.next(OrganisationAuthorization.canAddAndUpdateKeys(organisation, securityInfo))
+          this.canAddAndUpdateLabelsChangedSource.next(OrganisationAuthorization.canAddAndUpdateLabels(organisation, securityInfo))
+          this.canAddAndUpdateBankAccountsChangedSource.next(OrganisationAuthorization.canAddAndUpdateBankAccounts(organisation, securityInfo))
+          this.canAddAndUpdateBuildingsChangedSource.next(OrganisationAuthorization.canAddAndUpdateBuildings(organisation, securityInfo))
+          this.canAddAndUpdateCapacitiesChangedSource.next(OrganisationAuthorization.canAddAndUpdateCapacities(organisation, securityInfo))
+          this.canAddAndUpdateClassificationsChangedSource.next(OrganisationAuthorization.canAddAndUpdateClassifications(organisation, securityInfo))
+          this.canAddAndUpdateContactsChangedSource.next(OrganisationAuthorization.canAddAndUpdateContacts(organisation, securityInfo))
+          this.canAddAndUpdateFunctionsChangedSource.next(OrganisationAuthorization.canAddAndUpdateFunctions(organisation, securityInfo))
+          this.canAddAndUpdateLocationsChangedSource.next(OrganisationAuthorization.canAddAndUpdateLocations(organisation, securityInfo))
+          this.canAddAndUpdateOpeningHoursChangedSource.next(OrganisationAuthorization.canAddAndUpdateOpeningHours(organisation, securityInfo))
+          this.canAddAndUpdateRelationsChangedSource.next(OrganisationAuthorization.canAddAndUpdateRelations(organisation, securityInfo))
+          this.canAddBodiesChangedSource.next(OrganisationAuthorization.canAddBodies(organisation, securityInfo))
         }));
-  }
-
-  private static canViewKboManagement(organisation, securityInfo) {
-    if (!securityInfo.isLoggedIn)
-      return false;
-
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
-      return true;
-
-    return false;
-  }
-
-  private static canViewVlimpersManagement(organisation, securityInfo) {
-    if (!securityInfo.isLoggedIn)
-      return false;
-
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
-      return true;
-
-    return false;
-  }
-
-  private static allowedOrganisationFields(organisation, securityInfo) {
-    if (!securityInfo.isLoggedIn)
-      return AllowedOrganisationFields.None;
-
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
-      return AllowedOrganisationFields.All;
-
-    if (organisation.isTerminated)
-      return AllowedOrganisationFields.None;
-
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id))
-    {
-      return organisation.underVlimpersManagement ?
-        AllowedOrganisationFields.AllButVlimpers :
-        AllowedOrganisationFields.All;
-    }
-
-    if (securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder])){
-      return organisation.underVlimpersManagement ?
-        AllowedOrganisationFields.OnlyVlimpers :
-        AllowedOrganisationFields.None;
-    }
-
-    return AllowedOrganisationFields.None;
-  }
-
-  private static canUpdateOrganisation(organisation, securityInfo) {
-    if (!securityInfo.isLoggedIn)
-      return false;
-
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
-      return true;
-
-    if (organisation.isTerminated)
-      return false;
-
-    if (organisation.underVlimpersManagement &&
-      securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
-      return true;
-
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id))
-      return true;
-
-    return false;
-  }
-
-  private static canTerminateOrganisation(organisation, securityInfo) {
-    if (!securityInfo.isLoggedIn)
-      return false;
-
-    if (organisation.isTerminated)
-      return false;
-
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
-      return true;
-
-    if (organisation.underVlimpersManagement &&
-      securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
-      return true;
-
-    return false;
-  }
-
-  private static canCancelCouplingWithKbo(organisation, securityInfo) {
-    if (!securityInfo.isLoggedIn)
-      return false;
-
-    return organisation.kboNumber &&
-      securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder])
-  }
-
-  private static canCoupleWithKbo(organisation, securityInfo) {
-    if (!securityInfo.isLoggedIn)
-      return false;
-
-    return !organisation.kboNumber &&
-      securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder])
-  }
-
-  private static canAddDaughters(organisation, securityInfo) {
-    if (!securityInfo.isLoggedIn)
-      return false;
-
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
-      return true;
-
-    if (organisation.isTerminated)
-      return false;
-
-    if (organisation.underVlimpersManagement &&
-      securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
-      return true;
-
-    if (!organisation.underVlimpersManagement &&
-      securityInfo.isOrganisatieBeheerderFor(organisation.id))
-      return true;
-
-    return false;
-  }
-
-  private static canAddAndUpdateRegulations(organisation, securityInfo) {
-    if (!securityInfo.isLoggedIn)
-      return false;
-
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
-      return true;
-
-    if (organisation.isTerminated)
-      return false;
-
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id))
-      return true;
-
-    return false;
-  }
-
-  private static canAddAndUpdateParents(organisation, securityInfo) {
-    if (!securityInfo.isLoggedIn)
-      return false;
-
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
-      return true;
-
-    if (organisation.isTerminated)
-      return false;
-
-    if (organisation.underVlimpersManagement &&
-      securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
-      return true;
-
-    if (!organisation.underVlimpersManagement &&
-      securityInfo.isOrganisatieBeheerderFor(organisation.id))
-      return true;
-
-    return false;
-  }
-
-  private static canAddAndUpdateFormalFrameworks(organisation, securityInfo) {
-    if (!securityInfo.isLoggedIn)
-      return false;
-
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
-      return true;
-
-    if (organisation.isTerminated)
-      return false;
-
-    if (securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
-      return true;
-
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id))
-      return true;
-
-    return false;
-  }
-
-  private static canAddAndUpdateKeys(organisation, securityInfo) {
-    if (!securityInfo.isLoggedIn)
-      return false;
-
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
-      return true;
-
-    if (organisation.isTerminated)
-      return false;
-
-    if (organisation.underVlimpersManagement &&
-      securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
-      return true;
-
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id))
-      return true;
-
-    return false;
-  }
-
-  private static canAddAndUpdateLabels(organisation, securityInfo) {
-    if (!securityInfo.isLoggedIn)
-      return false;
-
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
-      return true;
-
-    if (organisation.isTerminated)
-      return false;
-
-    if (organisation.underVlimpersManagement &&
-      securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
-      return true;
-
-    if (securityInfo.isOrganisatieBeheerderFor(organisation.id))
-      return true;
-
-    return false;
   }
 
   get organisation() {

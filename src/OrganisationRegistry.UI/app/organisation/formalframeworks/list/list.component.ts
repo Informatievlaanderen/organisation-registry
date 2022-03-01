@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 import { BaseListComponent } from 'shared/components/list';
 import { OrganisationFormalFrameworkListItem } from 'services/organisationformalframeworks';
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'ww-organisation-formal-framework-list',
@@ -10,4 +11,6 @@ import { OrganisationFormalFrameworkListItem } from 'services/organisationformal
   inputs: ['items', 'isBusy'],
   outputs: ['changePage']
 })
-export class OrganisationFormalFrameworksListComponent extends BaseListComponent<OrganisationFormalFrameworkListItem> {}
+export class OrganisationFormalFrameworksListComponent extends BaseListComponent<OrganisationFormalFrameworkListItem> {
+  @Input('canEdit') canEdit: Observable<boolean>;
+}

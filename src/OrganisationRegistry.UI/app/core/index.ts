@@ -11,7 +11,7 @@ import {
   OidcService,
   RolesResolver,
   ToggleGuard,
-  FeatureGuard
+  FeatureGuard,
 } from './auth';
 
 import { AlertComponent, AlertService } from './alert';

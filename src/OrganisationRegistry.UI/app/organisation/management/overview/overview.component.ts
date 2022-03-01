@@ -19,7 +19,6 @@ import { Organisation } from 'services/organisations';
 export class OrganisationManagementOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public organisationTermination: OrganisationTermination;
-  public canEditOrganisation: Observable<boolean>;
 
   private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Organisatie sync');
   private organisationId: string;
@@ -47,11 +46,9 @@ export class OrganisationManagementOverviewComponent implements OnInit, OnDestro
         if (organisation) {
           this.organisation = organisation;
           this.loadSyncStatus();
-          this.canEditOrganisation = this.oidcService.canEditOrganisation(organisation);
         }
       }));
 
-    this.canEditOrganisation = Observable.of(false);
     this.subscriptions.push(this.route.parent.parent.params.subscribe((params: Params) => {
       this.organisationId = params['id'];
       this.store.loadOrganisation(this.organisationId);

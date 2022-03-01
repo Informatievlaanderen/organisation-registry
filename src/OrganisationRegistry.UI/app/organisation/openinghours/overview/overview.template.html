@@ -6,7 +6,7 @@
           (filter)="search($event)">
       </ww-organisation-openinghour-filter>
       <div class="cta-title__cta">
-          <a *ngIf="(store.isEditableChanged | async)" class="button cta-title__cta" [routerLink]="['./create']">Openingsuur toevoegen</a>
+          <a *ngIf="(store.canAddAndUpdateOpeningHoursChanged$ | async)" class="button cta-title__cta" [routerLink]="['./create']">Openingsuur toevoegen</a>
           <div class="u-align-right" style="clear: both;"></div>
       </div>
   </div>
@@ -15,6 +15,6 @@
     [items]="organisationOpeningHours"
     [isBusy]="isLoading"
     (changePage)="changePage($event)"
-    [canEdit]="store.isEditableChanged">
+    [canEdit]="store.canAddAndUpdateOpeningHoursChanged$">
   </ww-organisation-openinghour-list>
 </div>

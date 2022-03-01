@@ -15,6 +15,7 @@ import {
   OrganisationBodyService,
   OrganisationBodyFilter
 } from 'services/organisationbodies';
+import {OrganisationInfoService} from "services";
 
 @Component({
   templateUrl: 'overview.template.html',
@@ -24,7 +25,6 @@ export class OrganisationBodiesOverviewComponent implements OnInit, OnDestroy {
   public isLoading: boolean = true;
   public organisationId: string;
   public organisationBodies: PagedResult<OrganisationBodyListItem>;
-  public canAddBody: Observable<boolean>;
 
   private filter: OrganisationBodyFilter = new OrganisationBodyFilter();
   private readonly alertMessages: BaseAlertMessages = new BaseAlertMessages('Organisatie organen');
@@ -38,16 +38,15 @@ export class OrganisationBodiesOverviewComponent implements OnInit, OnDestroy {
     private router: Router,
     private organisationBodyService: OrganisationBodyService,
     private oidcService: OidcService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private store: OrganisationInfoService
   ) {
     this.organisationBodies = new PagedResult<OrganisationBodyListItem>();
   }
 
   ngOnInit() {
-    this.canAddBody = Observable.of(false);
     this.subscriptions.push(this.route.parent.parent.params.subscribe((params: Params) => {
       this.organisationId = params['id'];
-      this.canAddBody = this.oidcService.canAddBody(this.organisationId);
       this.loadBodies();
     }));
   }

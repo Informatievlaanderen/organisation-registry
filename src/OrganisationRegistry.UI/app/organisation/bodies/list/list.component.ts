@@ -12,5 +12,4 @@ import { OrganisationBodyListItem } from 'services/organisationbodies';
   outputs: ['changePage']
 })
 export class OrganisationBodiesListComponent extends BaseListComponent<OrganisationBodyListItem> {
-  @Input('canEdit') canEdit: Observable<boolean>;
 }
