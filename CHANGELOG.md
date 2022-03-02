@@ -1,3 +1,17 @@
+# [1.138.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.137.0...v1.138.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* or-678 vlimpersbeheerder should not get beheerder role ([eaf7113](https://github.com/informatievlaanderen/organisation-registry/commit/eaf71137a2ef1d937c9b0b9ca29479b3a84dbb77))
+
+
+### Features
+
+* or-678 add identityserver login for orgaanbeheerder ([4cde5ca](https://github.com/informatievlaanderen/organisation-registry/commit/4cde5ca07b515325d3f9d93c8f70da1be92cbb1b))
+* or-678 use more realistic ovo for vlimpers ([0a2cc32](https://github.com/informatievlaanderen/organisation-registry/commit/0a2cc32d9ee801c572fb84dcb3a64a69da8905cd))
+* or-740 migration to fix nullable isActive column ([17c1519](https://github.com/informatievlaanderen/organisation-registry/commit/17c151989813bcace6cd36918e9264cf82d5bf84))
+
 # [1.137.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.136.0...v1.137.0) (2022-02-28)
 
 
