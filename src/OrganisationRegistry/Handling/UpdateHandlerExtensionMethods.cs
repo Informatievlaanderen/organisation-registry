@@ -64,14 +64,19 @@ namespace OrganisationRegistry.Handling
                     configuration,
                     message.KeyTypeId));
 
-        public static UpdateHandler<Organisation> RequiresBeheerderForOrganisation(
-            this UpdateHandler<Organisation> source,
-            bool allowOrganisationToBeUnderVlimpersManagement)
+        public static UpdateHandler<Organisation> RequiresBeheerderForOrganisationButNotUnderVlimpersManagement(
+            this UpdateHandler<Organisation> source)
             => source.WithPolicy(
-                organisation => new BeheerderForOrganisationPolicy(
+                organisation => new BeheerderForOrganisationButNotUnderVlimpersManagementPolicy(
                     organisation.State.UnderVlimpersManagement,
-                    organisation.State.OvoNumber,
-                    allowOrganisationToBeUnderVlimpersManagement));
+                    organisation.State.OvoNumber));
+
+        public static UpdateHandler<Organisation> RequiresBeheerderForOrganisationRegardlessOfVlimpers(
+            this UpdateHandler<Organisation> source)
+            => source.WithPolicy(
+                organisation => new BeheerderForOrganisationRegardlessOfVlimpersPolicy(
+                    organisation.State.UnderVlimpersManagement,
+                    organisation.State.OvoNumber));
 
         public static UpdateHandler<Organisation> RequiresAdmin(this UpdateHandler<Organisation> source)
             => source.WithPolicy(_ => new AdminOnlyPolicy());

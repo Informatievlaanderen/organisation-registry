@@ -231,14 +231,11 @@ namespace OrganisationRegistry.Organisation
             if(!string.Equals(name, State.Name))
                 ApplyChange(new OrganisationNameUpdated(Id, name));
 
-
             if(!string.Equals(shortName, State.ShortName))
                 ApplyChange(new OrganisationShortNameUpdated(Id, shortName));
 
-
             if(!string.Equals(article, State.Article))
                 ApplyChange(new OrganisationArticleUpdated(Id, article));
-
 
             if(!string.Equals(description, State.Description))
                 ApplyChange(new OrganisationDescriptionUpdated(Id, description));
