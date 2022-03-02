@@ -1,3 +1,11 @@
+# [1.140.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.139.0...v1.140.0) (2022-03-02)
+
+
+### Features
+
+* or-735 allow vlimpers to act on terminated vlimpers organisations ([4500134](https://github.com/informatievlaanderen/organisation-registry/commit/450013453ec665adc5da64dd6a37c236911a6ced))
+* or-735 unify client-side authorization ([214e6d4](https://github.com/informatievlaanderen/organisation-registry/commit/214e6d41158fb32577b27f3be019f9816fb78be2))
+
 # [1.139.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.138.0...v1.139.0) (2022-03-02)
 
 
