@@ -180,7 +180,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(UpdateOrganisationInfo message) =>
             UpdateHandler<Organisation>.For(message, Session)
-                .RequiresBeheerderForOrganisation(allowOrganisationToBeUnderVlimpersManagement: false)
+                .RequiresBeheerderForOrganisationButNotUnderVlimpersManagement()
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -205,7 +205,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(UpdateOrganisationInfoNotLimitedToVlimpers message) =>
             UpdateHandler<Organisation>.For(message, Session)
-                .RequiresBeheerderForOrganisation(allowOrganisationToBeUnderVlimpersManagement: true)
+                .RequiresBeheerderForOrganisationRegardlessOfVlimpers()
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);

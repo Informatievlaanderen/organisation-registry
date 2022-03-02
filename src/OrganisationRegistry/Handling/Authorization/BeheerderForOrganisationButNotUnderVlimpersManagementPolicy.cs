@@ -3,12 +3,12 @@ namespace OrganisationRegistry.Handling.Authorization
     using Infrastructure.Authorization;
     using Organisation.Exceptions;
 
-    public class BeheerderForOrganisationRegardlessOfVlimpersPolicy : ISecurityPolicy
+    public class BeheerderForOrganisationButNotUnderVlimpersManagementPolicy : ISecurityPolicy
     {
         private readonly bool _isUnderVlimpersManagement;
         private readonly string _ovoNumber;
 
-        public BeheerderForOrganisationRegardlessOfVlimpersPolicy(
+        public BeheerderForOrganisationButNotUnderVlimpersManagementPolicy(
             bool isUnderVlimpersManagement,
             string ovoNumber)
         {
@@ -21,7 +21,8 @@ namespace OrganisationRegistry.Handling.Authorization
             if (user.IsInRole(Role.OrganisationRegistryBeheerder))
                 return AuthorizationResult.Success();
 
-            if (user.IsOrganisatieBeheerderFor(_ovoNumber))
+            if (!_isUnderVlimpersManagement &&
+                user.IsOrganisatieBeheerderFor(_ovoNumber))
                 return AuthorizationResult.Success();
 
             return AuthorizationResult.Fail(new InsufficientRights());
