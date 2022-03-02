@@ -40,6 +40,34 @@ namespace OrganisationRegistry.UnitTests
                 .NotContain(Roles.OrganisatieBeheerder);
         }
 
+        [Fact]
+        public void OrganisationRegistryBeheerdersDontGetOtherRoleClaims()
+        {
+            var claims = new[]
+            {
+                "WegwijsBeheerder-vlimpersbeheerder:OVO001833",
+                "WegwijsBeheerder-algemeenBeheerder:OVO002949",
+                "WegwijsBeheerder-beheerder:OVO002949",
+                "WegwijsBeheerder-orgaanBeheerder:OVO001835"
+            };
+
+            var fixture = new Fixture();
+            var tokenBuilder = new OrganisationRegistryTokenBuilder(new OpenIdConnectConfigurationSection());
+
+            var identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim(JwtClaimTypes.Subject, fixture.Create<string>()));
+            identity.AddClaims(claims.Select(claim => new Claim(OrganisationRegistryClaims.ClaimRoles, claim)));
+
+            var claimsIdentity = tokenBuilder.ParseRoles(identity);
+
+            claimsIdentity.Claims
+                .Where(claim => claim.Type == ClaimTypes.Role)
+                .Select(claim => claim.Value)
+                .ToList()
+                .Should()
+                .BeEquivalentTo(Roles.OrganisationRegistryBeheerder);
+        }
+
         [Theory]
         [ClassData(typeof(RoleTestData))]
         public void ParsesRoles(string[] claims, string[] resultingRoleClaims)
@@ -96,7 +124,6 @@ namespace OrganisationRegistry.UnitTests
                     {
                         Roles.VlimpersBeheerder
                     },
-
                 };
                 yield return new object[]
                 {
