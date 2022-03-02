@@ -1,3 +1,17 @@
+# [1.139.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.138.0...v1.139.0) (2022-03-02)
+
+
+### Bug Fixes
+
+* or-723 allow tag list to be disabled ([790c836](https://github.com/informatievlaanderen/organisation-registry/commit/790c8361e8f5ffea343e99de34332a77445a0da8))
+* or-723 remove listener correctly, remove disabled ([9e60f66](https://github.com/informatievlaanderen/organisation-registry/commit/9e60f66369c000e0b8b336fa65c6e34599d58b40))
+
+
+### Features
+
+* or-723 rename and change uri for 'limited to vlimpers' ([a15c05a](https://github.com/informatievlaanderen/organisation-registry/commit/a15c05ac2b5dc64238dfa8afb9e88c541bb7b462))
+* or-723 split organisation info update into separate cmds ([7128b08](https://github.com/informatievlaanderen/organisation-registry/commit/7128b08b51c29f1b85c2952069cd2d62b0f66e10))
+
 # [1.138.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.137.0...v1.138.0) (2022-03-02)
 
 
