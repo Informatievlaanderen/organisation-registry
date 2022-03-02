@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Api.Security
 {
     using System;
+    using System.Collections.Generic;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Security.Claims;
@@ -69,40 +70,64 @@ namespace OrganisationRegistry.Api.Security
 
             if (roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryBeheerderRole)))
             {
-                // If any of the roles is wegwijs super admin, the rest doesnt matter
-                AddRoleClaim(identity, OrganisationRegistryApiClaims.OrganisationRegistryBeheerder);
+                AddOrganisationRegistryBeheerderClaim(identity);
             }
             else
             {
-                if (roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryVlimpersRole)))
-                {
-                    AddRoleClaim(identity, OrganisationRegistryApiClaims.VlimpersBeheerder);
-                }
-                // If any of the roles is wegwijs body admin, you are one, regardless on which OVO you got it
-                if (roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryOrgaanBeheerderRole)))
-                {
-                    AddRoleClaim(identity, OrganisationRegistryApiClaims.OrgaanBeheerder);
-
-                    for (var i = 0; i < roles.Count; i++)
-                        roles[i] = roles[i].Replace(OrganisationRegistryClaims.OrganisationRegistryOrgaanBeheerderRole, string.Empty);
-                }
-
-                if (roles.Any(x => x.StartsWith(OrganisationRegistryClaims.OrganisationRegistryInvoerderRole)))
-                {
-                    // If any of the roles is admin, you are an admin and we add the organisations separatly
-                    AddRoleClaim(identity, OrganisationRegistryApiClaims.Invoerder);
-
-                    var adminRoles = roles.Where(x => x.StartsWith(OrganisationRegistryClaims.OrganisationRegistryInvoerderRole));
-                    foreach (var role in adminRoles)
-                    {
-                        // OrganisationRegistryBeheerder-algemeenbeheerder,beheerder:OVO002949
-                        var organisation = role.Replace(OrganisationRegistryClaims.OrganisationRegistryBeheerderPrefix, string.Empty).Split(':')[1];
-                        AddOrganisationClaim(identity, organisation);
-                    }
-                }
+                AddVlimpersBeheerderClaim(roles, identity);
+                AddOrgaanBeheerderClaim(roles, identity);
+                AddOrganisatieBeheerderClaim(roles, identity);
             }
 
             return identity;
+        }
+
+        private static void AddVlimpersBeheerderClaim(IEnumerable<string> roles, ClaimsIdentity identity)
+        {
+            if (!roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryVlimpersRole)))
+                return;
+
+            AddRoleClaim(identity, OrganisationRegistryApiClaims.VlimpersBeheerder);
+        }
+
+        private static void AddOrgaanBeheerderClaim(IList<string> roles, ClaimsIdentity identity)
+        {
+            // If any of the roles is wegwijs body admin, you are one, regardless on which OVO you got it
+
+            if (!roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryOrgaanBeheerderRole)))
+                return;
+
+            AddRoleClaim(identity, OrganisationRegistryApiClaims.OrgaanBeheerder);
+
+            for (var i = 0; i < roles.Count; i++)
+                roles[i] = roles[i].Replace(
+                    OrganisationRegistryClaims.OrganisationRegistryOrgaanBeheerderRole,
+                    string.Empty);
+        }
+
+        private static void AddOrganisatieBeheerderClaim(IReadOnlyCollection<string> roles, ClaimsIdentity identity)
+        {
+            if (!roles.Any(x => x.StartsWith(OrganisationRegistryClaims.OrganisationRegistryInvoerderRole)))
+                return;
+
+            // If any of the roles is admin, you are an admin and we add the organisations separatly
+            AddRoleClaim(identity, OrganisationRegistryApiClaims.Invoerder);
+
+            var adminRoles = roles.Where(
+                x => x.StartsWith(OrganisationRegistryClaims.OrganisationRegistryInvoerderRole));
+            foreach (var role in adminRoles)
+            {
+                // OrganisationRegistryBeheerder-algemeenbeheerder,beheerder:OVO002949
+                var organisation = role.Replace(
+                    OrganisationRegistryClaims.OrganisationRegistryBeheerderPrefix,
+                    string.Empty).Split(':')[1];
+                AddOrganisationClaim(identity, organisation);
+            }
+        }
+
+        private static void AddOrganisationRegistryBeheerderClaim(ClaimsIdentity identity)
+        {
+            AddRoleClaim(identity, OrganisationRegistryApiClaims.OrganisationRegistryBeheerder);
         }
 
         private static void AddRoleClaim(ClaimsIdentity identity, string value)
