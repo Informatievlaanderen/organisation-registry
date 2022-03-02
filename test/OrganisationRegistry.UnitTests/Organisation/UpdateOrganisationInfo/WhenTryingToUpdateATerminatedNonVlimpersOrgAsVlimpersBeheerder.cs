@@ -15,10 +15,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfoLimitedToVlimpers>
+    public class WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser : ExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfoLimitedToVlimpers>
     {
         private OrganisationCreatedTestDataBuilder _organisationCreatedTestDataBuilder;
 
@@ -44,7 +45,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                     .WithValidity(null, null)
                     .Build(),
                 new OrganisationBecameActive(_organisationCreatedTestDataBuilder.Id),
-                new OrganisationPlacedUnderVlimpersManagement(_organisationCreatedTestDataBuilder.Id),
                 new OrganisationTerminatedV2(_organisationCreatedTestDataBuilder.Id,
                     fixture.Create<string>(),
                     fixture.Create<string>(),
@@ -94,36 +94,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
             };
         }
 
-        protected override int ExpectedNumberOfEvents => 4;
+        protected override int ExpectedNumberOfEvents => 0;
 
         [Fact]
         public void UpdatesOrganisationName()
         {
-            var organisationCreated = PublishedEvents[0].UnwrapBody<OrganisationNameUpdated>();
-            organisationCreated.Should().NotBeNull();
+            Exception.Should().BeOfType<InsufficientRights>();
         }
 
-        [Fact]
-        public void UpdatesShortName()
-        {
-            var organisationCreated = PublishedEvents[1].UnwrapBody<OrganisationShortNameUpdated>();
-            organisationCreated.Should().NotBeNull();
-        }
-
-        [Fact]
-        public void UpdatesOrganisationValidity()
-        {
-            var organisationCreated = PublishedEvents[2].UnwrapBody<OrganisationValidityUpdated>();
-            organisationCreated.Should().NotBeNull();
-        }
-
-        [Fact]
-        public void UpdatesOrganisationOperationalValidity()
-        {
-            var organisationCreated = PublishedEvents[3].UnwrapBody<OrganisationOperationalValidityUpdated>();
-            organisationCreated.Should().NotBeNull();
-        }
-
-        public WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser(ITestOutputHelper helper) : base(helper) { }
+        public WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser(ITestOutputHelper helper) : base(helper) { }
     }
 }
