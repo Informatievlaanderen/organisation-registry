@@ -19,7 +19,6 @@ jobs:
             'organisation-registry-elasticsearch',
             'organisation-registry-kbomutations',
             'organisation-registry-reporting',
-            'organisation-registry-scheduler',
             'organisation-registry-ui',
             'organisation-registry-vlaanderenbe',
             'organisation-registry-zorgengezondheid',
