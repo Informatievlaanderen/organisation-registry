@@ -69,17 +69,21 @@ namespace OrganisationRegistry.Api
                 .AsSelf();
 
             builder
-                .Register(_ =>
-                    new OrganisationRegistryConfiguration(
-                        _configuration
-                            .GetSection(ApiConfigurationSection.Name)
-                            .Get<ApiConfigurationSection>(),
-                        _configuration
-                            .GetSection(OrganisationTerminationConfigurationSection.Name)
-                            .Get<OrganisationTerminationConfigurationSection>(),
-                        _configuration
-                            .GetSection(AuthorizationConfigurationSection.Name)
-                            .Get<AuthorizationConfigurationSection>()))
+                .Register(
+                    _ =>
+                        new OrganisationRegistryConfiguration(
+                            _configuration
+                                .GetSection(ApiConfigurationSection.Name)
+                                .Get<ApiConfigurationSection>(),
+                            _configuration
+                                .GetSection(OrganisationTerminationConfigurationSection.Name)
+                                .Get<OrganisationTerminationConfigurationSection>(),
+                            _configuration
+                                .GetSection(AuthorizationConfigurationSection.Name)
+                                .Get<AuthorizationConfigurationSection>(),
+                            _configuration
+                                .GetSection(CachingConfigurationSection.Name)
+                                .Get<CachingConfigurationSection>()))
                 .As<IOrganisationRegistryConfiguration>()
                 .SingleInstance();
 

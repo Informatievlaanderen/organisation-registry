@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Api.Security
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.Caching;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
@@ -13,25 +14,27 @@ namespace OrganisationRegistry.Api.Security
 
     public class SecurityService : ISecurityService
     {
-        private readonly Dictionary<string, Role> _roleMapping = new Dictionary<string, Role>
+        private const string ClaimOrganisation = "urn:be:vlaanderen:wegwijs:organisation";
+        private readonly ObjectCache _cache;
+        private readonly IOrganisationRegistryConfiguration _configuration;
+
+        private readonly IContextFactory _contextFactory;
+
+        private readonly Dictionary<string, Role> _roleMapping = new()
         {
             { Roles.OrganisationRegistryBeheerder, Role.OrganisationRegistryBeheerder },
             { Roles.VlimpersBeheerder, Role.VlimpersBeheerder },
             { Roles.OrganisatieBeheerder, Role.OrganisatieBeheerder },
             { Roles.OrgaanBeheerder, Role.OrgaanBeheerder },
             { Roles.Developer, Role.Developer },
-            { Roles.AutomatedTask, Role.AutomatedTask}
+            { Roles.AutomatedTask, Role.AutomatedTask }
         };
-
-        private const string ClaimOrganisation = "urn:be:vlaanderen:wegwijs:organisation";
-
-        private readonly IContextFactory _contextFactory;
-        private readonly IOrganisationRegistryConfiguration _configuration;
 
         public SecurityService(IContextFactory contextFactory, IOrganisationRegistryConfiguration configuration)
         {
             _contextFactory = contextFactory;
             _configuration = configuration;
+            _cache = MemoryCache.Default;
         }
 
         public async Task<bool> CanAddOrganisation(ClaimsPrincipal user, Guid? parentOrganisationId)
@@ -71,7 +74,7 @@ namespace OrganisationRegistry.Api.Security
 
             // Otherwise you can only edit what you are allowed
             return HasPermissionsForOrganisation(securityInfo, organisationId) ||
-                HasPermissionsForBody(securityInfo, bodyId);
+                   HasPermissionsForBody(securityInfo, bodyId);
         }
 
         public async Task<bool> CanAddBody(ClaimsPrincipal user, Guid? organisationId)
@@ -102,32 +105,14 @@ namespace OrganisationRegistry.Api.Security
             return HasPermissionsForBody(securityInfo, bodyId);
         }
 
-        private static bool HasPermissionsForOrganisation(SecurityInformation securityInfo, Guid? organisationId)
-        {
-            if (!organisationId.HasValue)
-                return false;
-
-            return
-                securityInfo.Roles.Contains(Role.OrganisatieBeheerder) &&
-                securityInfo.OrganisationIds.Contains(organisationId.Value);
-        }
-
-        private static bool HasPermissionsForBody(SecurityInformation securityInfo, Guid? bodyId)
-        {
-            if (!bodyId.HasValue)
-                return false;
-
-            return
-                securityInfo.Roles.Contains(Role.OrganisatieBeheerder) &&
-                securityInfo.BodyIds.Contains(bodyId.Value);
-        }
-
         public async Task<SecurityInformation> GetSecurityInformation(ClaimsPrincipal user)
         {
             user = user ?? new ClaimsPrincipal();
 
             var firstName = user.GetClaim(ClaimTypes.GivenName);
             var name = user.GetClaim(ClaimTypes.Surname);
+            var userId = user.GetClaim(OrganisationRegistryClaims.ClaimAcmId);
+            var isAuthenticated = (bool)user.Identity?.IsAuthenticated;
 
             var roles = user
                 .GetClaims(ClaimTypes.Role)
@@ -135,8 +120,7 @@ namespace OrganisationRegistry.Api.Security
                 .Select(role => _roleMapping[role])
                 .ToList();
 
-            var organisations = GetOrganisations(user);
-            var organisationSecurity = await GetSecurityInformation(organisations);
+            var organisationSecurity = await GetOrganisationSecurityInformation(user, isAuthenticated, userId);
 
             return new SecurityInformation(
                 $"{firstName} {name}",
@@ -206,7 +190,7 @@ namespace OrganisationRegistry.Api.Security
 
             if (_configuration.OrafinKeyTypeId.Equals(keyTypeId))
                 return user.IsInRole(Role.Orafin) ||
-                    user.Organisations.Any(x => x.Equals(_configuration.OrafinOvoCode));
+                       user.Organisations.Any(x => x.Equals(_configuration.OrafinOvoCode));
             // todo: instead of checking the organisations now, check them on creation of jwt.
 
             if (_configuration.VlimpersKeyTypeId.Equals(keyTypeId))
@@ -228,16 +212,66 @@ namespace OrganisationRegistry.Api.Security
             return true;
         }
 
+        private static bool HasPermissionsForOrganisation(SecurityInformation securityInfo, Guid? organisationId)
+        {
+            if (!organisationId.HasValue)
+                return false;
+
+            return
+                securityInfo.Roles.Contains(Role.OrganisatieBeheerder) &&
+                securityInfo.OrganisationIds.Contains(organisationId.Value);
+        }
+
+        private static bool HasPermissionsForBody(SecurityInformation securityInfo, Guid? bodyId)
+        {
+            if (!bodyId.HasValue)
+                return false;
+
+            return
+                securityInfo.Roles.Contains(Role.OrganisatieBeheerder) &&
+                securityInfo.BodyIds.Contains(bodyId.Value);
+        }
+
+        private async Task<OrganisationSecurityInformation> GetOrganisationSecurityInformation(
+            ClaimsPrincipal user,
+            bool isAuthenticated,
+            string subject)
+        {
+            var maybeCachedSecurityInfo = isAuthenticated ? _cache.Get(subject) : null;
+            if (isAuthenticated && maybeCachedSecurityInfo is OrganisationSecurityInformation cachedSecurityInfo)
+            {
+                return cachedSecurityInfo;
+            }
+
+            if (isAuthenticated)
+            {
+                var organisations = GetOrganisations(user);
+                var organisationSecurity = await GetSecurityInformation(organisations);
+                _cache.Set(
+                    new CacheItem(subject, organisationSecurity),
+                    new CacheItemPolicy
+                    {
+                        SlidingExpiration = TimeSpan.FromMinutes(1)
+                    });
+                return organisationSecurity;
+            }
+
+            return new OrganisationSecurityInformation();
+        }
+
         private async Task<OrganisationSecurityInformation> GetSecurityInformation(IEnumerable<string> ovoNumbers)
         {
+            if (!ovoNumbers.Any())
+                return new OrganisationSecurityInformation();
+
             await using var context = _contextFactory.Create();
             var organisationTrees = (await context
-                .OrganisationTreeList
-                .AsAsyncQueryable()
-                .Where(x => ovoNumbers.Contains(x.OvoNumber))
-                .Select(x => x.OrganisationTree)
-                .ToListAsync())
-                .SelectMany(x => x.Split(new[] {"|"}, StringSplitOptions.RemoveEmptyEntries))
+                    .OrganisationTreeList
+                    .AsAsyncQueryable()
+                    .Where(x => ovoNumbers.Contains(x.OvoNumber))
+                    .Select(x => x.OrganisationTree)
+                    .ToListAsync())
+                .SelectMany(x => x.Split(new[] { "|" }, StringSplitOptions.RemoveEmptyEntries))
                 .Distinct()
                 .OrderBy(x => x)
                 .ToList();
@@ -268,18 +302,28 @@ namespace OrganisationRegistry.Api.Security
 
         private class OrganisationSecurityInformation
         {
-            public IList<string> OvoNumbers { get; }
+            public OrganisationSecurityInformation()
+            {
+                OvoNumbers = new List<string>();
+                OrganisationIds = new List<Guid>();
+                BodyIds = new List<Guid>();
+            }
 
-            public IList<Guid> OrganisationIds { get; }
-
-            public IList<Guid> BodyIds { get; }
-
-            public OrganisationSecurityInformation(IList<string> ovoNumbers, IList<Guid> organisationIds, IList<Guid> bodyIds)
+            public OrganisationSecurityInformation(
+                IList<string> ovoNumbers,
+                IList<Guid> organisationIds,
+                IList<Guid> bodyIds)
             {
                 OvoNumbers = ovoNumbers;
                 OrganisationIds = organisationIds;
                 BodyIds = bodyIds;
             }
+
+            public IList<string> OvoNumbers { get; }
+
+            public IList<Guid> OrganisationIds { get; }
+
+            public IList<Guid> BodyIds { get; }
         }
     }
 }
