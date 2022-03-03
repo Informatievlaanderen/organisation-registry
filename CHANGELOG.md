@@ -1,3 +1,11 @@
+## [1.140.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.140.0...v1.140.1) (2022-03-03)
+
+
+### Bug Fixes
+
+* or-678 add vlimpers explicitly to role guards ([d52d9d7](https://github.com/informatievlaanderen/organisation-registry/commit/d52d9d771d95a8a7d1440661636d59aa664bde7f))
+* remove scheduler from deployment scripts ([7d641ba](https://github.com/informatievlaanderen/organisation-registry/commit/7d641ba9a8da0558e837137e10c298aac5171366))
+
 # [1.140.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.139.0...v1.140.0) (2022-03-02)
 
 
