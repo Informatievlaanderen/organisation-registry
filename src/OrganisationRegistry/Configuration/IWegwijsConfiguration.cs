@@ -11,5 +11,6 @@ namespace OrganisationRegistry.Configuration
         Guid FormalShortNameLabelTypeId { get; }
         IKboConfiguration Kbo { get; }
         IAuthorizationConfiguration Authorization { get; }
+        ICachingConfiguration Caching { get; }
     }
 }

@@ -11,12 +11,14 @@ namespace OrganisationRegistry.Api.Configuration
         public OrganisationRegistryConfiguration(
             ApiConfigurationSection configuration,
             OrganisationTerminationConfigurationSection? terminationConfiguration,
-            AuthorizationConfigurationSection? authorizationConfiguration)
+            AuthorizationConfigurationSection? authorizationConfiguration,
+            CachingConfigurationSection? cachingConfiguration)
         {
             _configuration = configuration;
 
             Kbo = new KboConfiguration(configuration, terminationConfiguration);
             Authorization = new AuthorizationConfiguration(authorizationConfiguration);
+            Caching = new CachingConfiguration(cachingConfiguration);
         }
 
         public Guid OrafinKeyTypeId
@@ -36,5 +38,6 @@ namespace OrganisationRegistry.Api.Configuration
 
         public IKboConfiguration Kbo { get; }
         public IAuthorizationConfiguration Authorization { get; }
+        public ICachingConfiguration Caching { get; }
     }
 }
