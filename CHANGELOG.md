@@ -1,3 +1,10 @@
+## [1.140.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.140.1...v1.140.2) (2022-03-03)
+
+
+### Bug Fixes
+
+* or-678 use formal frwk specific guard ([9f25a7d](https://github.com/informatievlaanderen/organisation-registry/commit/9f25a7d929a8f0b0184d2bb517504cbfa469b989))
+
 ## [1.140.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.140.0...v1.140.1) (2022-03-03)
 
 
