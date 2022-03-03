@@ -127,6 +127,7 @@ import {
 
 import {OrganisationVlimpersOverviewComponent} from "organisation/vlimpers";
 import {OrganisationGuard} from "../guards/organisation.guard";
+import {CanAddAndUpdateFormalFrameworksGuard} from "../guards/can-add-update-formal-frameworks.guard";
 
 const routes: Routes = [
   {
@@ -591,7 +592,7 @@ const routes: Routes = [
           {
             path: 'create',
             component: OrganisationFormalFrameworksCreateOrganisationFormalFrameworkComponent,
-            canActivate: [RoleGuard, OrganisationGuard],
+            canActivate: [RoleGuard, CanAddAndUpdateFormalFrameworksGuard],
             data: {
               title: 'Organisatie - Toepassingsgebieden - Toepassingsgebied koppelen',
               roles: [
@@ -608,7 +609,7 @@ const routes: Routes = [
           {
             path: 'edit/:id',
             component: OrganisationFormalFrameworksUpdateOrganisationFormalFrameworkComponent,
-            canActivate: [RoleGuard, OrganisationGuard],
+            canActivate: [RoleGuard, CanAddAndUpdateFormalFrameworksGuard],
             data: {
               title: 'Organisatie - Toepassingsgebieden - Bewerken toepassingsgebied',
               roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder, Role.VlimpersBeheerder],

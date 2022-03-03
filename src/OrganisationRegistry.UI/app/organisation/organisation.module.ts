@@ -11,6 +11,7 @@ import { OrganisationOverviewComponent, OrganisationListComponent, OrganisationF
 import { CreateOrganisationComponent, CreateOrganisationFormComponent } from './create';
 import { OrganisationDetailModule } from './detail';
 import {OrganisationGuard} from "./guards/organisation.guard";
+import {CanAddAndUpdateFormalFrameworksGuard} from "./guards/can-add-update-formal-frameworks.guard";
 
 @NgModule({
   imports: [
@@ -30,7 +31,8 @@ import {OrganisationGuard} from "./guards/organisation.guard";
     CreateOrganisationFormComponent
   ],
   providers:[
-    OrganisationGuard
+    OrganisationGuard,
+    CanAddAndUpdateFormalFrameworksGuard
   ],
   exports: [
     OrganisationRoutingModule
