@@ -11,7 +11,6 @@ import { User } from './user.model';
 
 import { Role } from './role.model';
 import {OidcClient} from "oidc-client";
-import {Organisation} from "../../services/organisations";
 import {Subscription} from "rxjs/Subscription";
 
 interface SecurityInfo {

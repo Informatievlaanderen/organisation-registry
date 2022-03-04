@@ -12,6 +12,7 @@ import { CreateOrganisationFormValues } from './create-child-form';
 import { OrganisationService } from 'services/organisations';
 import { PurposeService } from 'services/purposes';
 import {Subscription} from "rxjs/Subscription";
+import {OidcService} from "core/auth";
 
 @Component({
   templateUrl: 'add-child.template.html',
@@ -31,6 +32,7 @@ export class OrganisationInfoAddChildOrganisationComponent implements OnInit, On
     private route: ActivatedRoute,
     private router: Router,
     private organisationService: OrganisationService,
+    private oidcService: OidcService,
     private purposeService: PurposeService,
     private alertService: AlertService) { }
 
@@ -76,6 +78,7 @@ export class OrganisationInfoAddChildOrganisationComponent implements OnInit, On
 
   private onCreateSuccess(result, organisation) {
     if (result) {
+      this.oidcService.resetSecurityCache();
       this.router.navigate(['./../'], { relativeTo: this.route });
 
       let organisationUrl =
