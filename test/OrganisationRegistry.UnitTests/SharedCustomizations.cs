@@ -1,12 +1,28 @@
 namespace OrganisationRegistry.UnitTests
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Api.Security;
+    using AutoFixture;
+    using AutoFixture.Dsl;
+    using OrganisationRegistry.Security;
     using AutoFixture;
     using AutoFixture.Dsl;
     using OrganisationRegistry.Organisation;
 
-    public static class SharedCustomizations
-    {
+    public static class SharedCustomizations{
+        public static void CustomizeOrganisationSecurityInformation(this IFixture fixture)
+        {
+            fixture.Customize<OrganisationSecurityInformation>(composer =>
+                composer.FromFactory(generator =>
+                    new OrganisationSecurityInformation(
+                        fixture.CreateMany<string>(generator.Next(0, 10)).ToList(),
+                        fixture.CreateMany<Guid>(generator.Next(0, 10)).ToList(),
+                        fixture.CreateMany<Guid>(generator.Next(0, 10)).ToList())
+                ));
+        }
+
         public static void CustomizeArticle(this IFixture fixture)
         {
             fixture.Customize<Article>(

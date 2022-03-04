@@ -5,6 +5,29 @@ namespace OrganisationRegistry.Infrastructure.Authorization
 
     public class SecurityInformation
     {
+        public SecurityInformation(string userName) : this(
+            userName,
+            new List<Role>(),
+            new List<string>(),
+            new List<Guid>(),
+            new List<Guid>())
+        {
+        }
+
+        public SecurityInformation(
+            string userName,
+            IList<Role> roles,
+            IList<string> ovoNumbers,
+            IList<Guid> organisationIds,
+            IList<Guid> bodyIds)
+        {
+            UserName = userName;
+            Roles = roles;
+            OvoNumbers = ovoNumbers;
+            OrganisationIds = organisationIds;
+            BodyIds = bodyIds;
+        }
+
         public string UserName { get; }
 
         public IList<Role> Roles { get; }
@@ -15,15 +38,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization
 
         public IList<Guid> BodyIds { get; }
 
-        public SecurityInformation(string userName) : this(userName, new List<Role>(), new List<string>(), new List<Guid>(), new List<Guid>()) { }
-
-        public SecurityInformation(string userName, IList<Role> roles, IList<string> ovoNumbers, IList<Guid> organisationIds, IList<Guid> bodyIds)
-        {
-            UserName = userName;
-            Roles = roles;
-            OvoNumbers = ovoNumbers;
-            OrganisationIds = organisationIds;
-            BodyIds = bodyIds;
-        }
+        public static SecurityInformation None()
+            => new(string.Empty);
     }
 }

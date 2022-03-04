@@ -5,14 +5,12 @@ namespace OrganisationRegistry.Infrastructure.Authorization
 
     public class User : IUser
     {
-        public List<string> Organisations { get; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string? Ip { get; set; }
-        public string UserId { get; set; }
-        public Role[] Roles { get; set; }
-
-        public User(string firstName, string lastName, string userId, string? ip, Role[] roles,
+        public User(
+            string firstName,
+            string lastName,
+            string userId,
+            string? ip,
+            Role[] roles,
             IEnumerable<string> organisations)
         {
             Organisations = organisations.ToList();
@@ -23,10 +21,17 @@ namespace OrganisationRegistry.Infrastructure.Authorization
             Roles = roles;
         }
 
-        public bool IsAuthorizedForVlimpersOrganisations =>
-            IsInRole(Role.VlimpersBeheerder) ||
-            IsInRole(Role.Developer) ||
-            IsInRole(Role.OrganisationRegistryBeheerder);
+        public List<string> Organisations { get; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string? Ip { get; set; }
+        public string UserId { get; set; }
+        public Role[] Roles { get; set; }
+
+        public bool IsAuthorizedForVlimpersOrganisations
+            => IsInRole(Role.VlimpersBeheerder) ||
+               IsInRole(Role.Developer) ||
+               IsInRole(Role.OrganisationRegistryBeheerder);
 
         public bool IsInRole(Role role)
         {
@@ -34,9 +39,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization
         }
 
         public bool IsOrganisatieBeheerderFor(string ovoNumber)
-        {
-            return IsInRole(Role.OrganisatieBeheerder) &&
-                   Organisations.Contains(ovoNumber);
-        }
+            => IsInRole(Role.OrganisatieBeheerder) &&
+               Organisations.Contains(ovoNumber);
     }
 }

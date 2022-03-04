@@ -1,25 +1,27 @@
 namespace OrganisationRegistry.ElasticSearch.Tests
 {
-    using FluentAssertions;
-    using Infrastructure.Events;
-    using Microsoft.Extensions.Logging;
-    using Projections.Infrastructure;
-    using Scenario;
-    using Xunit;
     using System;
     using Api.Security;
     using Common;
+    using FluentAssertions;
     using Infrastructure.Bus;
     using Infrastructure.Config;
+    using Infrastructure.Events;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
+    using Moq;
     using Organisation.Events;
     using OrganisationRegistry.Tests.Shared.Stubs;
     using Organisations;
+    using Projections.Infrastructure;
     using Projections.Organisations;
+    using Scenario;
     using Scenario.Specimen;
+    using Security;
     using SqlServer.Infrastructure;
+    using Xunit;
 
     [Collection(nameof(ElasticSearchFixture))]
     public class OrganisationHandlerTests
@@ -45,7 +47,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 organisationManagementConfiguration: new OrganisationManagementConfigurationStub());
 
             var organisationBankAccountHandler = new OrganisationBankAccount(
-                logger: _fixture.LoggerFactory.CreateLogger<OrganisationBankAccount>());
+                _fixture.LoggerFactory.CreateLogger<OrganisationBankAccount>());
 
             var testContextFactory = new TestContextFactory(dbContextOptions);
             var serviceProvider = new ServiceCollection()
@@ -54,7 +56,12 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 .AddSingleton(new MemoryCachesMaintainer(new MemoryCaches(testContextFactory), testContextFactory))
                 .BuildServiceProvider();
 
-            _inProcessBus = new InProcessBus(new NullLogger<InProcessBus>(), new SecurityService(fixture.ContextFactory, new OrganisationRegistryConfigurationStub()));
+            _inProcessBus = new InProcessBus(
+                new NullLogger<InProcessBus>(),
+                new SecurityService(
+                    fixture.ContextFactory,
+                    new OrganisationRegistryConfigurationStub(),
+                    Mock.Of<ICache<OrganisationSecurityInformation>>()));
             var registrar = new BusRegistrar(new NullLogger<BusRegistrar>(), _inProcessBus, () => serviceProvider);
             registrar.RegisterEventHandlers(OrganisationsRunner.EventHandlers);
         }
@@ -66,7 +73,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
 
             Handle(scenario.Create<InitialiseProjection>());
 
-            var indices = _fixture.Elastic.ReadClient.Indices.Get(_fixture.ElasticSearchOptions.Value.OrganisationsReadIndex).Indices;
+            var indices = _fixture.Elastic.ReadClient.Indices
+                .Get(_fixture.ElasticSearchOptions.Value.OrganisationsReadIndex).Indices;
             indices.Should().NotBeEmpty();
         }
 
@@ -82,7 +90,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 initialiseProjection,
                 organisationCreated);
 
-            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+            var organisation =
+                _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
 
             organisation.Source.Name.Should().Be(organisationCreated.Name);
             organisation.Source.ShortName.Should().Be(organisationCreated.ShortName);
@@ -105,7 +114,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 kboOrganisationBankAccountAdded,
                 kboOrganisationBankAccountAdded2);
 
-            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(kboOrganisationBankAccountAdded.OrganisationId);
+            var organisation =
+                _fixture.Elastic.ReadClient.Get<OrganisationDocument>(kboOrganisationBankAccountAdded.OrganisationId);
 
             organisation.Source.BankAccounts.Should().BeEquivalentTo(
                 new OrganisationDocument.OrganisationBankAccount(
@@ -150,7 +160,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 kboOrganisationBankAccountToRemoveAdded,
                 kboOrganisationBankAccountRemoved);
 
-            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(kboOrganisationBankAccountAdded.OrganisationId);
+            var organisation =
+                _fixture.Elastic.ReadClient.Get<OrganisationDocument>(kboOrganisationBankAccountAdded.OrganisationId);
 
             organisation.Source.BankAccounts.Should().BeEquivalentTo(
                 new OrganisationDocument.OrganisationBankAccount(
@@ -180,7 +191,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 coupledWithKbo,
                 organisationTerminated);
 
-            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+            var organisation =
+                _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
 
             organisation.Source.Name.Should().Be(organisationCreated.Name);
             organisation.Source.ShortName.Should().Be(organisationCreated.ShortName);
@@ -208,7 +220,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 coupledWithKbo,
                 organisationTerminated);
 
-            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+            var organisation =
+                _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
 
             organisation.Source.Name.Should().Be(organisationCreated.Name);
             organisation.Source.ShortName.Should().Be(organisationCreated.ShortName);
