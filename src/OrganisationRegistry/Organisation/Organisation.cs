@@ -2681,7 +2681,12 @@ namespace OrganisationRegistry.Organisation
 
         private void Apply(OrganisationPlacedUnderVlimpersManagement @event)
         {
-            this.State.UnderVlimpersManagement = true;
+            State.UnderVlimpersManagement = true;
+        }
+
+        private void Apply(OrganisationReleasedFromVlimpersManagement @event)
+        {
+            State.UnderVlimpersManagement = false;
         }
 
         private void Apply(OrganisationTerminatedV2 @event)
