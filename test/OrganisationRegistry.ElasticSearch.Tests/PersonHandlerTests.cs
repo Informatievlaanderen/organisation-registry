@@ -11,6 +11,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
+    using Moq;
     using Organisation.Events;
     using OrganisationRegistry.Tests.Shared.Stubs;
     using People;
@@ -19,6 +20,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using Projections.People;
     using Projections.People.Handlers;
     using Scenario;
+    using Security;
     using Xunit;
 
     [Collection(nameof(ElasticSearchFixture))]
@@ -32,21 +34,26 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             _fixture = fixture;
 
             var personHandler = new Person(
-                logger: _fixture.LoggerFactory.CreateLogger<Person>(),
-                elastic: _fixture.Elastic,
-                contextFactory: _fixture.ContextFactory,
-                elasticSearchOptions: _fixture.ElasticSearchOptions);
+                _fixture.LoggerFactory.CreateLogger<Person>(),
+                _fixture.Elastic,
+                _fixture.ContextFactory,
+                _fixture.ElasticSearchOptions);
 
             var personCapacityHandler = new PersonCapacity(
-                logger: _fixture.LoggerFactory.CreateLogger<PersonCapacity>(),
-                contextFactory: _fixture.ContextFactory);
+                _fixture.LoggerFactory.CreateLogger<PersonCapacity>(),
+                _fixture.ContextFactory);
 
             var serviceProvider = new ServiceCollection()
                 .AddSingleton(personHandler)
                 .AddSingleton(personCapacityHandler)
                 .BuildServiceProvider();
 
-            _inProcessBus = new InProcessBus(new NullLogger<InProcessBus>(), new SecurityService(fixture.ContextFactory, new OrganisationRegistryConfigurationStub()));
+            _inProcessBus = new InProcessBus(
+                new NullLogger<InProcessBus>(),
+                new SecurityService(
+                    fixture.ContextFactory,
+                    new OrganisationRegistryConfigurationStub(),
+                    Mock.Of<ICache<OrganisationSecurityInformation>>()));
             var registrar = new BusRegistrar(new NullLogger<BusRegistrar>(), _inProcessBus, () => serviceProvider);
             registrar.RegisterEventHandlers(PeopleRunner.EventHandlers);
         }
@@ -58,7 +65,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
 
             Handle(scenario.Create<InitialiseProjection>());
 
-            var indices = _fixture.Elastic.ReadClient.Indices.Get(_fixture.ElasticSearchOptions.Value.PeopleReadIndex).Indices;
+            var indices = _fixture.Elastic.ReadClient.Indices.Get(_fixture.ElasticSearchOptions.Value.PeopleReadIndex)
+                .Indices;
             indices.Should().NotBeEmpty();
         }
 
@@ -90,34 +98,34 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var dateOfTermination = scenario.Create<DateTime>().Date;
             var organisationTerminationCapacities = new Dictionary<Guid, DateTime>
             {
-                {capacityAdded.CapacityId, dateOfTermination}
+                { capacityAdded.CapacityId, dateOfTermination }
             };
             var organisationTerminated = new OrganisationTerminated(
-                organisationId: capacityAdded.OrganisationId,
-                name: scenario.Create<string>(),
-                ovoNumber: scenario.Create<string>(),
-                dateOfTermination: dateOfTermination,
+                capacityAdded.OrganisationId,
+                scenario.Create<string>(),
+                scenario.Create<string>(),
+                dateOfTermination,
                 new FieldsToTerminate(
-                    organisationValidity: scenario.Create<DateTime>(),
-                    buildings: new Dictionary<Guid, DateTime>(),
-                    bankAccounts: new Dictionary<Guid, DateTime>(),
-                    capacities: organisationTerminationCapacities,
-                    contacts: new Dictionary<Guid, DateTime>(),
-                    classifications: new Dictionary<Guid, DateTime>(),
-                    functions: new Dictionary<Guid, DateTime>(),
-                    labels: new Dictionary<Guid, DateTime>(),
-                    locations: new Dictionary<Guid, DateTime>(),
-                    parents: new Dictionary<Guid, DateTime>(),
-                    relations: new Dictionary<Guid, DateTime>(),
-                    formalFrameworks: new Dictionary<Guid, DateTime>(),
-                    openingHours: new Dictionary<Guid, DateTime>()),
+                    scenario.Create<DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    organisationTerminationCapacities,
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>()),
                 new KboFieldsToTerminate(
-                    bankAccounts: new Dictionary<Guid, DateTime>(),
-                    registeredOffice: null,
-                    formalName: null,
-                    legalForm: null
+                    new Dictionary<Guid, DateTime>(),
+                    null,
+                    null,
+                    null
                 ),
-                forcedKboTermination: scenario.Create<bool>()
+                scenario.Create<bool>()
             );
 
             Handle(
@@ -136,10 +144,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
 
         private void Handle(params IEvent[] envelopes)
         {
-            foreach (var envelope in envelopes)
-            {
-                _inProcessBus.Publish(null, null, (dynamic)envelope.ToEnvelope());
-            }
+            foreach (var envelope in envelopes) _inProcessBus.Publish(null, null, (dynamic)envelope.ToEnvelope());
         }
     }
 }

@@ -4,7 +4,7 @@
     using System.Linq;
     using FluentAssertions;
     using Newtonsoft.Json;
-    using Security;
+    using OrganisationRegistry.Security;
     using Xunit;
 
     public class TreeTests
@@ -332,11 +332,11 @@
 
     public class OvoNumber : INodeValue
     {
-        public string Id { get; }
-
         public OvoNumber(string ovoNumber)
         {
             Id = ovoNumber;
         }
+
+        public string Id { get; }
     }
 }

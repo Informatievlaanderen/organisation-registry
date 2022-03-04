@@ -11,40 +11,40 @@ namespace OrganisationRegistry.Api.Infrastructure
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Configuration;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
-    using Security;
     using Magda;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc.ApiExplorer;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
-    using SqlServer.Configuration;
-    using OrganisationRegistry.Infrastructure.Configuration;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Diagnostics.HealthChecks;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
     using Microsoft.FeatureManagement;
     using Microsoft.Net.Http.Headers;
     using Microsoft.OpenApi.Models;
     using Newtonsoft.Json;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using SqlServer.Infrastructure;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
+    using OrganisationRegistry.Security;
     using ScheduledCommands;
     using Search;
+    using Security;
+    using SqlServer.Configuration;
+    using SqlServer.Infrastructure;
     using Swagger;
-    using IContainer = Autofac.IContainer;
 
     public class Startup
     {
         private const string DatabaseTag = "db";
 
-        private IContainer _applicationContainer;
-
         private readonly IConfiguration _configuration;
         private readonly ILoggerFactory _loggerFactory;
+
+        private IContainer _applicationContainer;
 
         public Startup(
             IConfiguration configuration,
@@ -62,9 +62,12 @@ namespace OrganisationRegistry.Api.Infrastructure
                 () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
 
             Migrations.Run(_configuration.GetSection(SqlServerConfiguration.Section).Get<SqlServerConfiguration>());
-            var openIdConfiguration = _configuration.GetSection(OpenIdConnectConfigurationSection.Name).Get<OpenIdConnectConfigurationSection>();
-            var apiConfiguration = _configuration.GetSection(ApiConfigurationSection.Name).Get<ApiConfigurationSection>();
-            var editApiConfiguration = _configuration.GetSection(EditApiConfigurationSection.Name).Get<EditApiConfigurationSection>();
+            var openIdConfiguration = _configuration.GetSection(OpenIdConnectConfigurationSection.Name)
+                .Get<OpenIdConnectConfigurationSection>();
+            var apiConfiguration =
+                _configuration.GetSection(ApiConfigurationSection.Name).Get<ApiConfigurationSection>();
+            var editApiConfiguration = _configuration.GetSection(EditApiConfigurationSection.Name)
+                .Get<EditApiConfigurationSection>();
 
             var magdaClientCertificate = MagdaClientCertificate.Create(
                 apiConfiguration.KboCertificate,
@@ -72,25 +75,29 @@ namespace OrganisationRegistry.Api.Infrastructure
 
             services
                 .AddHostedService<ScheduledCommandsService>()
-                .AddAuthentication(options =>
-                {
-                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-
-                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
-                {
-                    options.TokenValidationParameters =
-                        new OrganisationRegistryTokenValidationParameters(openIdConfiguration);
-                })
-                .AddOAuth2Introspection(AuthenticationSchemes.EditApi, options =>
-                {
-                    options.ClientId = editApiConfiguration.ClientId;
-                    options.ClientSecret = editApiConfiguration.ClientSecret;
-                    options.Authority = editApiConfiguration.Authority;
-                    options.IntrospectionEndpoint = editApiConfiguration.IntrospectionEndpoint;
-                })
+                .AddAuthentication(
+                    options =>
+                    {
+                        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    })
+                .AddJwtBearer(
+                    JwtBearerDefaults.AuthenticationScheme,
+                    options =>
+                    {
+                        options.TokenValidationParameters =
+                            new OrganisationRegistryTokenValidationParameters(openIdConfiguration);
+                    })
+                .AddOAuth2Introspection(
+                    AuthenticationSchemes.EditApi,
+                    options =>
+                    {
+                        options.ClientId = editApiConfiguration.ClientId;
+                        options.ClientSecret = editApiConfiguration.ClientSecret;
+                        options.Authority = editApiConfiguration.Authority;
+                        options.IntrospectionEndpoint = editApiConfiguration.IntrospectionEndpoint;
+                    })
                 .Services
 
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
@@ -115,11 +122,12 @@ namespace OrganisationRegistry.Api.Infrastructure
                                 .GetChildren()
                                 .Select(c => c.Value)
                                 .ToArray(),
-                            ExposedHeaders = new []{SearchConstants.SearchMetaDataHeaderName}
+                            ExposedHeaders = new[] { SearchConstants.SearchMetaDataHeaderName }
                         },
                         Localization =
                         {
-                            DefaultCulture = new CultureInfo("nl-BE") { DateTimeFormat = { FirstDayOfWeek = DayOfWeek.Monday } }
+                            DefaultCulture = new CultureInfo("nl-BE")
+                                { DateTimeFormat = { FirstDayOfWeek = DayOfWeek.Monday } }
                         },
                         Swagger =
                         {
@@ -145,7 +153,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                             },
                             XmlCommentPaths = new[]
                             {
-                                typeof(Startup).GetTypeInfo().Assembly.GetName().Name,
+                                typeof(Startup).GetTypeInfo().Assembly.GetName().Name
                             }!
                         },
                         Server =
@@ -180,12 +188,12 @@ namespace OrganisationRegistry.Api.Infrastructure
                                     health.AddSqlServer(
                                         connectionString.Value,
                                         name: $"sqlserver-{connectionString.Key.ToLowerInvariant()}",
-                                        tags: new[] {DatabaseTag, "sql", "sqlserver"});
+                                        tags: new[] { DatabaseTag, "sql", "sqlserver" });
 
                                 health.AddDbContextCheck<OrganisationRegistryContext>(
                                     $"dbcontext-{nameof(OrganisationRegistryContext).ToLowerInvariant()}",
-                                    tags: new[] {DatabaseTag, "sql", "sqlserver"});
-                            },
+                                    tags: new[] { DatabaseTag, "sql", "sqlserver" });
+                            }
                         }
                     });
 
@@ -211,65 +219,66 @@ namespace OrganisationRegistry.Api.Infrastructure
             StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag, loggerFactory).GetAwaiter().GetResult();
 
             app
-                .UseDataDog<Startup>(new DataDogOptions
-                {
-                    Common =
+                .UseDataDog<Startup>(
+                    new DataDogOptions
                     {
-                        ServiceProvider = serviceProvider,
-                        LoggerFactory = loggerFactory,
-                    },
-                    Toggles =
-                    {
-                        Enable = datadogToggle,
-                        Debug = debugDataDogToggle
-                    },
-                    Tracing =
-                    {
-                        ServiceName = _configuration["DataDog:ServiceName"],
-                        LogForwardedForEnabled = true
-                    }
-                })
-
-                .UseDefaultForApi(new StartupUseOptions
-                {
-                    Common =
-                    {
-                        ApplicationContainer = _applicationContainer,
-                        ServiceProvider = serviceProvider,
-                        HostingEnvironment = env,
-                        ApplicationLifetime = appLifetime,
-                        LoggerFactory = loggerFactory,
-                    },
-                    Api =
-                    {
-                        VersionProvider = apiVersionProvider,
-                        Info = groupName => $"Basisregisters Vlaanderen - Organisation Registry API {groupName}",
-                        CSharpClientOptions =
+                        Common =
                         {
-                            ClassName = "OrganisationRegistry",
-                            Namespace = "Be.Vlaanderen.Basisregisters"
+                            ServiceProvider = serviceProvider,
+                            LoggerFactory = loggerFactory
                         },
-                        TypeScriptClientOptions =
+                        Toggles =
                         {
-                            ClassName = "OrganisationRegistry"
+                            Enable = datadogToggle,
+                            Debug = debugDataDogToggle
+                        },
+                        Tracing =
+                        {
+                            ServiceName = _configuration["DataDog:ServiceName"],
+                            LogForwardedForEnabled = true
                         }
-                    },
-                    MiddlewareHooks =
+                    })
+                .UseDefaultForApi(
+                    new StartupUseOptions
                     {
-                        AfterMiddleware = x => x
-                            .UseMiddleware<ApplicationStatusMiddleware>()
-                            .UseMiddleware<AddNoCacheHeadersMiddleware>()
-                            .UseMiddleware<ConfigureClaimsPrincipalSelectorMiddleware>(),
+                        Common =
+                        {
+                            ApplicationContainer = _applicationContainer,
+                            ServiceProvider = serviceProvider,
+                            HostingEnvironment = env,
+                            ApplicationLifetime = appLifetime,
+                            LoggerFactory = loggerFactory
+                        },
+                        Api =
+                        {
+                            VersionProvider = apiVersionProvider,
+                            Info = groupName => $"Basisregisters Vlaanderen - Organisation Registry API {groupName}",
+                            CSharpClientOptions =
+                            {
+                                ClassName = "OrganisationRegistry",
+                                Namespace = "Be.Vlaanderen.Basisregisters"
+                            },
+                            TypeScriptClientOptions =
+                            {
+                                ClassName = "OrganisationRegistry"
+                            }
+                        },
+                        MiddlewareHooks =
+                        {
+                            AfterMiddleware = x => x
+                                .UseMiddleware<ApplicationStatusMiddleware>()
+                                .UseMiddleware<AddNoCacheHeadersMiddleware>()
+                                .UseMiddleware<ConfigureClaimsPrincipalSelectorMiddleware>(),
 
-                        AfterHealthChecks = x => x
-                            .InitialiseAndUpdateDatabase()
-                            .UseOrganisationRegistryExceptionHandler(loggerFactory)
-                            .UseOrganisationRegistryEventSourcing()
-                            //.UseOrganisationRegistryCookieAuthentication(tokenValidationParameters)
-                            //.UseOrganisationRegistryJwtBearerAuthentication(tokenValidationParameters)
-                            .UseAuthentication(),
-                    }
-                });
+                            AfterHealthChecks = x => x
+                                .InitialiseAndUpdateDatabase()
+                                .UseOrganisationRegistryExceptionHandler(loggerFactory)
+                                .UseOrganisationRegistryEventSourcing()
+                                //.UseOrganisationRegistryCookieAuthentication(tokenValidationParameters)
+                                //.UseOrganisationRegistryJwtBearerAuthentication(tokenValidationParameters)
+                                .UseAuthentication()
+                        }
+                    });
         }
 
         private static string GetApiLeadingText(ApiVersionDescription description)

@@ -2,20 +2,23 @@ namespace OrganisationRegistry.Api.Security
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
-    using System.Runtime.Caching;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Configuration;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Security;
     using SqlServer;
 
     public class SecurityService : ISecurityService
     {
         private const string ClaimOrganisation = "urn:be:vlaanderen:wegwijs:organisation";
-        private readonly ObjectCache _cache;
+
+        private readonly ICache<OrganisationSecurityInformation> _cache;
         private readonly IOrganisationRegistryConfiguration _configuration;
 
         private readonly IContextFactory _contextFactory;
@@ -30,11 +33,14 @@ namespace OrganisationRegistry.Api.Security
             { Roles.AutomatedTask, Role.AutomatedTask }
         };
 
-        public SecurityService(IContextFactory contextFactory, IOrganisationRegistryConfiguration configuration)
+        public SecurityService(
+            IContextFactory contextFactory,
+            IOrganisationRegistryConfiguration configuration,
+            ICache<OrganisationSecurityInformation> cache)
         {
             _contextFactory = contextFactory;
             _configuration = configuration;
-            _cache = MemoryCache.Default;
+            _cache = cache;
         }
 
         public async Task<bool> CanAddOrganisation(ClaimsPrincipal user, Guid? parentOrganisationId)
@@ -105,14 +111,14 @@ namespace OrganisationRegistry.Api.Security
             return HasPermissionsForBody(securityInfo, bodyId);
         }
 
-        public async Task<SecurityInformation> GetSecurityInformation(ClaimsPrincipal user)
+        public async Task<SecurityInformation> GetSecurityInformation(ClaimsPrincipal? user)
         {
-            user = user ?? new ClaimsPrincipal();
+            if (user?.Identity == null || !user.Identity.IsAuthenticated)
+                return SecurityInformation.None();
 
-            var firstName = user.GetClaim(ClaimTypes.GivenName);
-            var name = user.GetClaim(ClaimTypes.Surname);
-            var userId = user.GetClaim(OrganisationRegistryClaims.ClaimAcmId);
-            var isAuthenticated = (bool)user.Identity?.IsAuthenticated;
+            var firstName = user.GetRequiredClaim(ClaimTypes.GivenName);
+            var name = user.GetRequiredClaim(ClaimTypes.Surname);
+            var acmId = user.GetRequiredClaim(OrganisationRegistryClaims.ClaimAcmId);
 
             var roles = user
                 .GetClaims(ClaimTypes.Role)
@@ -120,14 +126,20 @@ namespace OrganisationRegistry.Api.Security
                 .Select(role => _roleMapping[role])
                 .ToList();
 
-            var organisationSecurity = await GetOrganisationSecurityInformation(user, isAuthenticated, userId);
+            var organisationSecurityInformation = await _cache.GetOrAdd(
+                acmId,
+                async () =>
+                {
+                    var organisations = GetOrganisations(user);
+                    return await GetSecurityInformation(organisations);
+                });
 
             return new SecurityInformation(
                 $"{firstName} {name}",
                 roles,
-                organisationSecurity.OvoNumbers,
-                organisationSecurity.OrganisationIds,
-                organisationSecurity.BodyIds);
+                organisationSecurityInformation.OvoNumbers,
+                organisationSecurityInformation.OrganisationIds,
+                organisationSecurityInformation.BodyIds);
         }
 
         public async Task<IUser> GetRequiredUser(ClaimsPrincipal? principal)
@@ -162,21 +174,24 @@ namespace OrganisationRegistry.Api.Security
 
         public async Task<IUser> GetUser(ClaimsPrincipal? principal)
         {
-            if (principal == null)
+            if (principal == null || principal.Identity == null)
                 throw new Exception("Could not determine current user");
 
-            var firstName = principal.FindFirst(ClaimTypes.GivenName);
-            var lastName = principal.FindFirst(ClaimTypes.Surname);
-            var acmId = principal.FindFirst(OrganisationRegistryClaims.ClaimAcmId);
-            var ip = principal.FindFirst(OrganisationRegistryClaims.ClaimIp);
+            if (!principal.Identity.IsAuthenticated)
+                return WellknownUsers.Nobody;
+
+            var firstName = principal.GetRequiredClaim(ClaimTypes.GivenName);
+            var lastName = principal.GetRequiredClaim(ClaimTypes.Surname);
+            var acmId = principal.GetRequiredClaim(OrganisationRegistryClaims.ClaimAcmId);
+            var ip = principal.GetOptionalClaim(OrganisationRegistryClaims.ClaimIp);
 
             var securityInformation = await GetSecurityInformation(principal);
 
             return new User(
-                firstName?.Value,
-                lastName?.Value,
-                acmId?.Value,
-                ip?.Value,
+                firstName,
+                lastName,
+                acmId,
+                ip,
                 securityInformation.Roles.ToArray(),
                 securityInformation.OvoNumbers);
         }
@@ -212,6 +227,11 @@ namespace OrganisationRegistry.Api.Security
             return true;
         }
 
+        public void ExpireUserCache(string acmId)
+        {
+            _cache.Expire(acmId);
+        }
+
         private static bool HasPermissionsForOrganisation(SecurityInformation securityInfo, Guid? organisationId)
         {
             if (!organisationId.HasValue)
@@ -232,44 +252,18 @@ namespace OrganisationRegistry.Api.Security
                 securityInfo.BodyIds.Contains(bodyId.Value);
         }
 
-        private async Task<OrganisationSecurityInformation> GetOrganisationSecurityInformation(
-            ClaimsPrincipal user,
-            bool isAuthenticated,
-            string subject)
-        {
-            var maybeCachedSecurityInfo = isAuthenticated ? _cache.Get(subject) : null;
-            if (isAuthenticated && maybeCachedSecurityInfo is OrganisationSecurityInformation cachedSecurityInfo)
-            {
-                return cachedSecurityInfo;
-            }
-
-            if (isAuthenticated)
-            {
-                var organisations = GetOrganisations(user);
-                var organisationSecurity = await GetSecurityInformation(organisations);
-                _cache.Set(
-                    new CacheItem(subject, organisationSecurity),
-                    new CacheItemPolicy
-                    {
-                        SlidingExpiration = TimeSpan.FromMinutes(1)
-                    });
-                return organisationSecurity;
-            }
-
-            return new OrganisationSecurityInformation();
-        }
-
-        private async Task<OrganisationSecurityInformation> GetSecurityInformation(IEnumerable<string> ovoNumbers)
+        private async Task<OrganisationSecurityInformation> GetSecurityInformation(ImmutableArray<string> ovoNumbers)
         {
             if (!ovoNumbers.Any())
                 return new OrganisationSecurityInformation();
 
             await using var context = _contextFactory.Create();
-            var organisationTrees = (await context
+            var organisationTrees =
+                (await context
                     .OrganisationTreeList
                     .AsAsyncQueryable()
                     .Where(x => ovoNumbers.Contains(x.OvoNumber))
-                    .Select(x => x.OrganisationTree)
+                    .Select(x => x.OrganisationTree ?? string.Empty)
                     .ToListAsync())
                 .SelectMany(x => x.Split(new[] { "|" }, StringSplitOptions.RemoveEmptyEntries))
                 .Distinct()
@@ -295,35 +289,11 @@ namespace OrganisationRegistry.Api.Security
             return new OrganisationSecurityInformation(organisationTrees, organisationIds, bodyIds);
         }
 
-        private static IEnumerable<string> GetOrganisations(ClaimsPrincipal user)
+        private static ImmutableArray<string> GetOrganisations(ClaimsPrincipal user)
         {
-            return user.GetClaims(ClaimOrganisation).Select(s => s.ToUpperInvariant());
-        }
-
-        private class OrganisationSecurityInformation
-        {
-            public OrganisationSecurityInformation()
-            {
-                OvoNumbers = new List<string>();
-                OrganisationIds = new List<Guid>();
-                BodyIds = new List<Guid>();
-            }
-
-            public OrganisationSecurityInformation(
-                IList<string> ovoNumbers,
-                IList<Guid> organisationIds,
-                IList<Guid> bodyIds)
-            {
-                OvoNumbers = ovoNumbers;
-                OrganisationIds = organisationIds;
-                BodyIds = bodyIds;
-            }
-
-            public IList<string> OvoNumbers { get; }
-
-            public IList<Guid> OrganisationIds { get; }
-
-            public IList<Guid> BodyIds { get; }
+            return user.GetClaims(ClaimOrganisation)
+                .Select(s => s.ToUpperInvariant())
+                .ToImmutableArray();
         }
     }
 }

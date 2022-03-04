@@ -7,10 +7,10 @@ namespace OrganisationRegistry.Api.Security
     using System.Threading;
     using System.Threading.Tasks;
     using IdentityModel.Client;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
     using Infrastructure;
     using Infrastructure.Security;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
@@ -21,8 +21,8 @@ namespace OrganisationRegistry.Api.Security
     [OrganisationRegistryRoute("security")]
     public class SecurityController : OrganisationRegistryController
     {
-        private readonly OpenIdConnectConfigurationSection _openIdConnectConfiguration;
         private readonly ILogger<SecurityController> _logger;
+        private readonly OpenIdConnectConfigurationSection _openIdConnectConfiguration;
 
         public SecurityController(
             IOptions<OpenIdConnectConfigurationSection> openIdConnectConfiguration,
@@ -37,42 +37,42 @@ namespace OrganisationRegistry.Api.Security
         [HttpGet]
         [OrganisationRegistryAuthorize]
         public async Task<IActionResult> Get([FromServices] ISecurityService securityService)
-        {
-            return Ok(await securityService.GetSecurityInformation(User));
-        }
+            => Ok(await securityService.GetSecurityInformation(User));
 
         [HttpGet("info")]
         public async Task<IActionResult> Info()
-        {
-            return Ok(new OidcClientConfiguration(_openIdConnectConfiguration));
-        }
+            => Ok(new OidcClientConfiguration(_openIdConnectConfiguration));
 
         [HttpGet("exchange")]
         public async Task<IActionResult> ExchangeCode(
             [FromServices] IHttpClientFactory httpClientFactory,
+            [FromServices] ISecurityService securityService,
             string code,
             string verifier,
             CancellationToken cancellationToken)
         {
             using var httpClient = httpClientFactory.CreateClient();
 
-            var tokenEndpointAddress = $"{_openIdConnectConfiguration.Authority}{_openIdConnectConfiguration.TokenEndPoint}";
+            var tokenEndpointAddress =
+                $"{_openIdConnectConfiguration.Authority}{_openIdConnectConfiguration.TokenEndPoint}";
 
-            var tokenResponse = await httpClient.RequestAuthorizationCodeTokenAsync(new AuthorizationCodeTokenRequest
-            {
-                ClientId = _openIdConnectConfiguration.ClientId,
-                ClientSecret = _openIdConnectConfiguration.ClientSecret,
-                RedirectUri = _openIdConnectConfiguration.AuthorizationRedirectUri,
-                Address = tokenEndpointAddress,
-                Code = code,
-                CodeVerifier = verifier
-            }, cancellationToken);
+            var tokenResponse = await httpClient.RequestAuthorizationCodeTokenAsync(
+                new AuthorizationCodeTokenRequest
+                {
+                    ClientId = _openIdConnectConfiguration.ClientId,
+                    ClientSecret = _openIdConnectConfiguration.ClientSecret,
+                    RedirectUri = _openIdConnectConfiguration.AuthorizationRedirectUri,
+                    Address = tokenEndpointAddress,
+                    Code = code,
+                    CodeVerifier = verifier
+                },
+                cancellationToken);
 
             if (tokenResponse.IsError)
             {
                 var message = $"[Error] {tokenResponse.Error}\n" +
-                            $"[ErrorDescription] {tokenResponse.ErrorDescription}\n" +
-                            $"[TokenEndpoint] {tokenEndpointAddress}";
+                              $"[ErrorDescription] {tokenResponse.ErrorDescription}\n" +
+                              $"[TokenEndpoint] {tokenEndpointAddress}";
                 _logger.LogError(message);
                 throw new Exception(
                     message,
@@ -86,6 +86,8 @@ namespace OrganisationRegistry.Api.Security
             var wegwijsTokenBuilder = new OrganisationRegistryTokenBuilder(_openIdConnectConfiguration);
             identity = wegwijsTokenBuilder.ParseRoles(identity);
             var jwtToken = wegwijsTokenBuilder.BuildJwt(identity);
+
+            securityService.ExpireUserCache(identity.GetOptionalClaim(OrganisationRegistryClaims.ClaimAcmId));
 
             return Ok(jwtToken);
         }

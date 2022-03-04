@@ -15,8 +15,10 @@ namespace OrganisationRegistry.Api.Security
     {
         private readonly OpenIdConnectConfigurationSection _configuration;
 
-        public OrganisationRegistryTokenBuilder(OpenIdConnectConfigurationSection configuration) =>
+        public OrganisationRegistryTokenBuilder(OpenIdConnectConfigurationSection configuration)
+        {
             _configuration = configuration;
+        }
 
         public string BuildJwt(ClaimsIdentity identity)
         {
@@ -44,9 +46,15 @@ namespace OrganisationRegistry.Api.Security
 
         public ClaimsIdentity ParseRoles(ClaimsIdentity identity)
         {
-            identity.AddClaim(new Claim(OrganisationRegistryClaims.ClaimUserId, identity.GetClaim(JwtClaimTypes.Subject), ClaimValueTypes.String));
-            identity.AddClaim(new Claim(OrganisationRegistryClaims.ClaimName, JwtClaimTypes.FamilyName, ClaimValueTypes.String));
-            identity.AddClaim(new Claim(OrganisationRegistryClaims.ClaimFirstname, JwtClaimTypes.GivenName, ClaimValueTypes.String));
+            identity.AddClaim(
+                new Claim(
+                    OrganisationRegistryClaims.ClaimUserId,
+                    identity.GetOptionalClaim(JwtClaimTypes.Subject),
+                    ClaimValueTypes.String));
+            identity.AddClaim(
+                new Claim(OrganisationRegistryClaims.ClaimName, JwtClaimTypes.FamilyName, ClaimValueTypes.String));
+            identity.AddClaim(
+                new Claim(OrganisationRegistryClaims.ClaimFirstname, JwtClaimTypes.GivenName, ClaimValueTypes.String));
 
             var roles = identity.GetClaims(OrganisationRegistryClaims.ClaimRoles)
                 .Select(x => x.ToLowerInvariant())
@@ -54,10 +62,11 @@ namespace OrganisationRegistry.Api.Security
                 .Select(x => x.Replace(OrganisationRegistryClaims.OrganisationRegistryBeheerderPrefix, ""))
                 .ToList();
 
-            var developers = _configuration.Developers?.Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries)
+            var developers = _configuration.Developers?.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(x => x.ToLowerInvariant());
             if (developers != null &&
-                developers.Contains(identity.GetClaim(OrganisationRegistryClaims.ClaimAcmId).ToLowerInvariant()))
+                developers.Contains(
+                    identity.GetOptionalClaim(OrganisationRegistryClaims.ClaimAcmId).ToLowerInvariant()))
                 AddRoleClaim(identity, OrganisationRegistryApiClaims.Developer);
 
             if (roles.Count <= 0)

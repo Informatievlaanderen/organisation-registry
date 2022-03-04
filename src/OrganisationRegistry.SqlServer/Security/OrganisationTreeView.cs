@@ -55,6 +55,7 @@ namespace OrganisationRegistry.SqlServer.Security
 
         private readonly IMemoryCaches _memoryCaches;
         private readonly IEventStore _eventStore;
+        private readonly ICache<OrganisationSecurityInformation> _cache;
         private ITree<OvoNumber> _tree = null!;
 
         private class OvoNumber : INodeValue
@@ -71,10 +72,12 @@ namespace OrganisationRegistry.SqlServer.Security
             ILogger<OrganisationTreeView> logger,
             IMemoryCaches memoryCaches,
             IEventStore eventStore,
-            IContextFactory contextFactory) : base(logger, contextFactory)
+            IContextFactory contextFactory,
+            ICache<OrganisationSecurityInformation> cache) : base(logger, contextFactory)
         {
             _memoryCaches = memoryCaches;
             _eventStore = eventStore;
+            _cache = cache;
 
             Initialise();
         }
@@ -105,7 +108,7 @@ namespace OrganisationRegistry.SqlServer.Security
             var changes = _tree.GetChanges().ToList();
             _tree.AcceptChanges();
 
-            await UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
+            await UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes, _cache);
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreatedFromKbo> message)
@@ -114,7 +117,7 @@ namespace OrganisationRegistry.SqlServer.Security
             var changes = _tree.GetChanges().ToList();
             _tree.AcceptChanges();
 
-            await UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
+            await UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes, _cache);
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentAssignedToOrganisation> message)
@@ -126,7 +129,7 @@ namespace OrganisationRegistry.SqlServer.Security
             var changes = _tree.GetChanges().ToList();
             _tree.AcceptChanges();
 
-            await UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
+            await UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes, _cache);
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ParentClearedFromOrganisation> message)
@@ -137,14 +140,15 @@ namespace OrganisationRegistry.SqlServer.Security
             var changes = _tree.GetChanges().ToList();
             _tree.AcceptChanges();
 
-            await UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes);
+            await UpdateChanges(dbConnection, dbTransaction, ContextFactory, changes, _cache);
         }
 
         private static async Task UpdateChanges(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IContextFactory contextFactory,
-            IEnumerable<INode<OvoNumber>> changes)
+            IEnumerable<INode<OvoNumber>> changes,
+            ICache<OrganisationSecurityInformation> cache)
         {
             await using var context = contextFactory.CreateTransactional(dbConnection, dbTransaction);
 
@@ -168,6 +172,7 @@ namespace OrganisationRegistry.SqlServer.Security
             }
 
             await context.SaveChangesAsync();
+            cache.ExpireAll();
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<Rollback> message)
