@@ -18,8 +18,6 @@ Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
 
 Newtonsoft.Json
 
-NEST
-
 Serilog
 Serilog.Extensions.Logging
 Serilog.Sinks.Literate

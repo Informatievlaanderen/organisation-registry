@@ -8,7 +8,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
     using ElasticSearch.Bodies;
     using Infrastructure;
     using Infrastructure.Search.Sorting;
-    using Nest;
+    using Osc;
     using OrganisationRegistry.Infrastructure.Configuration;
     using SortOrder = Infrastructure.Search.Sorting.SortOrder;
 
@@ -47,7 +47,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         }
 
         public static async Task<IList<BodyDocument>> Search(
-            IElasticClient client,
+            IOpenSearchClient client,
             Guid formalFrameworkId,
             int scrollSize,
             string scrollTimeout)

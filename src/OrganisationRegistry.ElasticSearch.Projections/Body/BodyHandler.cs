@@ -18,7 +18,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using Nest;
+    using Osc;
     using Organisation.Events;
     using Person.Events;
     using SeatType.Events;
@@ -89,7 +89,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             _elasticSearchOptions = elasticSearchOptions.Value;
         }
 
-        private async Task PrepareIndex(IElasticClient client, bool deleteIndex)
+        private async Task PrepareIndex(IOpenSearchClient client, bool deleteIndex)
         {
             var indexName = _elasticSearchOptions.BodyWriteIndex;
 

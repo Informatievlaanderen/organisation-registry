@@ -4,13 +4,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People
     using System.Linq.Expressions;
     using System.Threading.Tasks;
     using Client;
-    using Nest;
+    using Osc;
     using ElasticSearch.People;
 
     public static class MassUpdatePersonExtension
     {
         public static void MassUpdatePerson(
-            this ElasticClient client,
+            this OpenSearchClient client,
             Expression<Func<PersonDocument, object>> queryFieldSelector,
             object queryFieldValue,
             string listPropertyName,

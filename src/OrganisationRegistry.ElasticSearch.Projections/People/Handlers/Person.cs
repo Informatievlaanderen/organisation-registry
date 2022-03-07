@@ -13,7 +13,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using Nest;
+    using Osc;
     using SqlServer.ElasticSearchProjections;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Person.Events;
@@ -96,7 +96,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             return new ElasticNoChange();
         }
 
-        private async Task PrepareIndex(IElasticClient client, bool deleteIndex)
+        private async Task PrepareIndex(IOpenSearchClient client, bool deleteIndex)
         {
             var indexName = _elasticSearchOptions.PeopleWriteIndex;
 

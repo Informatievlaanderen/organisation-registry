@@ -2,7 +2,7 @@
 {
     using System;
     using Common;
-    using Nest;
+    using Osc;
     using Newtonsoft.Json;
 
     public partial class OrganisationDocument

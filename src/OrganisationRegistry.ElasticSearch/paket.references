@@ -4,8 +4,6 @@ Microsoft.Extensions.Logging
 Autofac.Extensions.DependencyInjection
 Polly
 
-NEST
-
 Newtonsoft.Json
 
 Serilog

@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using Common;
-    using Nest;
+    using Osc;
 
     public partial class OrganisationDocument
     {

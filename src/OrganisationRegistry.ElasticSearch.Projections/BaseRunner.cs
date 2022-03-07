@@ -13,7 +13,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using Metrics;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using Nest;
+    using Osc;
     using OrganisationRegistry.Infrastructure.Events;
     using SqlServer.ProjectionState;
 

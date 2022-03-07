@@ -1,6 +1,6 @@
 ﻿namespace OrganisationRegistry.ElasticSearch.People
 {
-    using Nest;
+    using Osc;
     using System;
     using System.Collections.Generic;
     using Common;

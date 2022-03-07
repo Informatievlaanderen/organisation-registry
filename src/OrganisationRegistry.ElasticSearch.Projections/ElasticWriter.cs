@@ -6,7 +6,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using System.Threading.Tasks;
     using Client;
     using Microsoft.Extensions.Logging;
-    using Nest;
+    using Osc;
 
     public static class ElasticWriter
     {
