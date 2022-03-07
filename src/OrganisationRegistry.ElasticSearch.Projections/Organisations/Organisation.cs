@@ -43,9 +43,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IElasticEventHandler<OrganisationPlacedUnderVlimpersManagement>,
         IElasticEventHandler<OrganisationReleasedFromVlimpersManagement>
     {
-        private readonly IOrganisationManagementConfiguration _organisationManagementConfiguration;
         private readonly Elastic _elastic;
         private readonly ElasticSearchConfiguration _elasticSearchOptions;
+        private readonly IOrganisationManagementConfiguration _organisationManagementConfiguration;
 
         public Organisation(
             ILogger<Organisation> logger,
@@ -76,8 +76,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationArticleUpdated> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>(
+            => new ElasticPerDocumentChange<OrganisationDocument>(
                 message.Body.OrganisationId,
                 document =>
                 {
@@ -87,14 +86,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.Article = message.Body.Article;
                 }
             );
-        }
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationCoupledWithKbo> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>(
+            => new ElasticPerDocumentChange<OrganisationDocument>(
                 message.Body.OrganisationId,
                 document =>
                 {
@@ -104,14 +101,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.KboNumber = message.Body.KboNumber;
                 }
             );
-        }
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationCouplingWithKboCancelled> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>(
+            => new ElasticPerDocumentChange<OrganisationDocument>(
                 message.Body.OrganisationId,
                 document =>
                 {
@@ -124,14 +119,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.KboNumber = string.Empty;
                 }
             );
-        }
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationCreated> message)
-        {
-            return new ElasticDocumentCreation<OrganisationDocument>(
+            => new ElasticDocumentCreation<OrganisationDocument>(
                 message.Body.OrganisationId,
                 () => new OrganisationDocument
                 {
@@ -149,14 +142,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     Purposes = message.Body.Purposes
                         .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList()
                 });
-        }
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationCreatedFromKbo> message)
-        {
-            return new ElasticDocumentCreation<OrganisationDocument>(
+            => new ElasticDocumentCreation<OrganisationDocument>(
                 message.Body.OrganisationId,
                 () => new OrganisationDocument
                 {
@@ -175,14 +166,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     Purposes = message.Body.Purposes
                         .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList()
                 });
-        }
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationDescriptionUpdated> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>(
+            => new ElasticPerDocumentChange<OrganisationDocument>(
                 message.Body.OrganisationId,
                 document =>
                 {
@@ -192,14 +181,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.Description = message.Body.Description;
                 }
             );
-        }
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationInfoUpdated> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>(
+            => new ElasticPerDocumentChange<OrganisationDocument>(
                 message.Body.OrganisationId,
                 document =>
                 {
@@ -219,14 +206,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList();
                 }
             );
-        }
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationInfoUpdatedFromKbo> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>(
+            => new ElasticPerDocumentChange<OrganisationDocument>(
                 message.Body.OrganisationId,
                 document =>
                 {
@@ -237,14 +222,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.ShortName = message.Body.ShortName;
                 }
             );
-        }
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationNameUpdated> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>(
+            => new ElasticPerDocumentChange<OrganisationDocument>(
                 message.Body.OrganisationId,
                 document =>
                 {
@@ -254,14 +237,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.Name = message.Body.Name;
                 }
             );
-        }
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationOperationalValidityUpdated> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>(
+            => new ElasticPerDocumentChange<OrganisationDocument>(
                 message.Body.OrganisationId,
                 document =>
                 {
@@ -273,7 +254,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         message.Body.OperationalValidTo);
                 }
             );
-        }
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
@@ -287,6 +267,22 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.ChangeTime = message.Timestamp;
 
                     document.ManagedBy = _organisationManagementConfiguration.Vlimpers;
+                }
+            );
+
+        public async Task<IElasticChange> Handle(
+            DbConnection dbConnection,
+            DbTransaction dbTransaction,
+            IEnvelope<OrganisationPurposesUpdated> message)
+            => new ElasticPerDocumentChange<OrganisationDocument>(
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    document.Purposes = message.Body.Purposes
+                        .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList();
                 }
             );
 
@@ -308,27 +304,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
-            IEnvelope<OrganisationPurposesUpdated> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>(
-                message.Body.OrganisationId,
-                document =>
-                {
-                    document.ChangeId = message.Number;
-                    document.ChangeTime = message.Timestamp;
-
-                    document.Purposes = message.Body.Purposes
-                        .Select(x => new OrganisationDocument.Purpose(x.Id, x.Name)).ToList();
-                }
-            );
-        }
-
-        public async Task<IElasticChange> Handle(
-            DbConnection dbConnection,
-            DbTransaction dbTransaction,
             IEnvelope<OrganisationShortNameUpdated> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>(
+            => new ElasticPerDocumentChange<OrganisationDocument>(
                 message.Body.OrganisationId,
                 document =>
                 {
@@ -338,14 +315,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.ShortName = message.Body.ShortName;
                 }
             );
-        }
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationShowOnVlaamseOverheidSitesUpdated> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>(
+            => new ElasticPerDocumentChange<OrganisationDocument>(
                 message.Body.OrganisationId,
                 document =>
                 {
@@ -355,72 +330,64 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites;
                 }
             );
-        }
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationTerminated> message)
-        {
-            if (!message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
-                return new ElasticNoChange();
+            => message.Body.FieldsToTerminate.OrganisationValidity.HasValue
+                ? new ElasticPerDocumentChange<OrganisationDocument>(
+                    message.Body.OrganisationId,
+                    document =>
+                    {
+                        document.ChangeId = message.Number;
+                        document.ChangeTime = message.Timestamp;
 
-            return new ElasticPerDocumentChange<OrganisationDocument>(
-                message.Body.OrganisationId,
-                document =>
-                {
-                    document.ChangeId = message.Number;
-                    document.ChangeTime = message.Timestamp;
+                        document.Validity =
+                            new Period(document.Validity.Start, message.Body.FieldsToTerminate.OrganisationValidity);
 
-                    document.Validity =
-                        new Period(document.Validity.Start, message.Body.FieldsToTerminate.OrganisationValidity);
+                        document.OperationalValidity =
+                            new Period(
+                                document.OperationalValidity?.Start,
+                                message.Body.FieldsToTerminate.OrganisationValidity);
 
-                    document.OperationalValidity =
-                        new Period(
-                            document.OperationalValidity?.Start,
-                            message.Body.FieldsToTerminate.OrganisationValidity);
-
-                    if (message.Body.ForcedKboTermination)
-                        document.KboNumber = string.Empty;
-                }
-            );
-        }
+                        if (message.Body.ForcedKboTermination)
+                            document.KboNumber = string.Empty;
+                    }
+                )
+                : new ElasticNoChange();
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationTerminatedV2> message)
-        {
-            if (!message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
-                return new ElasticNoChange();
+            => message.Body.FieldsToTerminate.OrganisationValidity.HasValue
+                ? new ElasticPerDocumentChange<OrganisationDocument>(
+                    message.Body.OrganisationId,
+                    document =>
+                    {
+                        document.ChangeId = message.Number;
+                        document.ChangeTime = message.Timestamp;
 
-            return new ElasticPerDocumentChange<OrganisationDocument>(
-                message.Body.OrganisationId,
-                document =>
-                {
-                    document.ChangeId = message.Number;
-                    document.ChangeTime = message.Timestamp;
+                        document.Validity =
+                            new Period(document.Validity.Start, message.Body.FieldsToTerminate.OrganisationValidity);
 
-                    document.Validity =
-                        new Period(document.Validity.Start, message.Body.FieldsToTerminate.OrganisationValidity);
+                        document.OperationalValidity =
+                            new Period(
+                                document.OperationalValidity?.Start,
+                                message.Body.FieldsToTerminate.OrganisationValidity);
 
-                    document.OperationalValidity =
-                        new Period(
-                            document.OperationalValidity?.Start,
-                            message.Body.FieldsToTerminate.OrganisationValidity);
-
-                    if (message.Body.ForcedKboTermination)
-                        document.KboNumber = string.Empty;
-                }
-            );
-        }
+                        if (message.Body.ForcedKboTermination)
+                            document.KboNumber = string.Empty;
+                    }
+                )
+                : new ElasticNoChange();
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationTerminationSyncedWithKbo> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>(
+            => new ElasticPerDocumentChange<OrganisationDocument>(
                 message.Body.OrganisationId,
                 document =>
                 {
@@ -430,14 +397,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.KboNumber = string.Empty;
                 }
             );
-        }
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationValidityUpdated> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>(
+            => new ElasticPerDocumentChange<OrganisationDocument>(
                 message.Body.OrganisationId,
                 document =>
                 {
@@ -447,14 +412,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo);
                 }
             );
-        }
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<PurposeUpdated> message)
-        {
-            return new ElasticMassChange
+            => new ElasticMassChange
             (
                 elastic => elastic.TryAsync(
                     () => elastic
@@ -468,7 +431,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Number,
                             message.Timestamp))
             );
-        }
 
         private async Task PrepareIndex(IOpenSearchClient client, bool deleteIndex)
         {
