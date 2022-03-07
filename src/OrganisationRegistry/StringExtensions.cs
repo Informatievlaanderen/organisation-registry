@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Api.Infrastructure.OrganisationRegistryConfiguration
+namespace OrganisationRegistry
 {
     using System;
     using System.Linq;
@@ -6,11 +6,9 @@ namespace OrganisationRegistry.Api.Infrastructure.OrganisationRegistryConfigurat
     public static class StringExtensions
     {
         public static Guid[]? SplitGuids(this string? source)
-        {
-            return source?
+            => source?
                 .Split(',', StringSplitOptions.RemoveEmptyEntries)
                 .Select(Guid.Parse)
                 .ToArray() ?? Array.Empty<Guid>();
-        }
     }
 }

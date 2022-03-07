@@ -7,6 +7,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using System.Reflection;
     using System.Text;
     using System.Threading.Tasks;
+    using Api.Configuration;
     using App.Metrics;
     using App.Metrics.Scheduling;
     using Autofac.Features.OwnedInstances;
@@ -27,6 +28,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using NodaTime;
+    using OrganisationRegistry.Configuration;
     using Serilog;
     using OrganisationRegistry.Configuration.Database;
     using OrganisationRegistry.Configuration.Database.Configuration;
@@ -117,6 +119,14 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                             hostContext.Configuration.GetSection(TogglesConfigurationSection.Name))
                         .Configure<OpenIdConnectConfigurationSection>(
                             hostContext.Configuration.GetSection(OpenIdConnectConfigurationSection.Name));
+
+                    builder
+                        .AddSingleton<IOrganisationManagementConfiguration>(
+                            _ =>
+                                new OrganisationManagementConfigurationConfiguration(
+                                    hostContext.Configuration
+                                        .GetSection(OrganisationManagementConfigurationSection.Name)
+                                        .Get<OrganisationManagementConfigurationSection>()));
 
                     builder
                         .AddSingleton<IClock>(SystemClock.Instance)

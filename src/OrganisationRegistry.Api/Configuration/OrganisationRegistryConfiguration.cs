@@ -8,13 +8,6 @@ namespace OrganisationRegistry.Api.Configuration
     {
         private readonly ApiConfigurationSection _configuration;
 
-        public Guid OrafinKeyTypeId => _configuration.Orafin_KeyTypeId;
-        public Guid VlimpersKeyTypeId => _configuration.Vlimpers_KeyTypeId;
-        public Guid FormalNameLabelTypeId => _configuration.FormalNameLabelTypeId;
-        public Guid FormalShortNameLabelTypeId => _configuration.FormalShortNameLabelTypeId;
-        public string OrafinOvoCode => _configuration.Orafin_OvoCode;
-        public IKboConfiguration Kbo { get; }
-        public IAuthorizationConfiguration Authorization { get; }
         public OrganisationRegistryConfiguration(
             ApiConfigurationSection configuration,
             OrganisationTerminationConfigurationSection? terminationConfiguration,
@@ -25,5 +18,23 @@ namespace OrganisationRegistry.Api.Configuration
             Kbo = new KboConfiguration(configuration, terminationConfiguration);
             Authorization = new AuthorizationConfiguration(authorizationConfiguration);
         }
+
+        public Guid OrafinKeyTypeId
+            => _configuration.Orafin_KeyTypeId;
+
+        public Guid VlimpersKeyTypeId
+            => _configuration.Vlimpers_KeyTypeId;
+
+        public Guid FormalNameLabelTypeId
+            => _configuration.FormalNameLabelTypeId;
+
+        public Guid FormalShortNameLabelTypeId
+            => _configuration.FormalShortNameLabelTypeId;
+
+        public string OrafinOvoCode
+            => _configuration.Orafin_OvoCode;
+
+        public IKboConfiguration Kbo { get; }
+        public IAuthorizationConfiguration Authorization { get; }
     }
 }
