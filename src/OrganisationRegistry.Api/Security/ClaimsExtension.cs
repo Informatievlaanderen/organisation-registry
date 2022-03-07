@@ -29,9 +29,9 @@
             => identity.Claims.Single(x => x.Type == claimType).Value;
 
         public static IEnumerable<string> GetClaims(this ClaimsPrincipal user, string claimType)
-            => user.Claims.Where(x => x.Type == claimType).Select(x => x.Value).ToImmutableList();
+            => user.Claims.Where(x => x.Type == claimType).Select(x => x.Value);
 
         public static IEnumerable<string> GetClaims(this ClaimsIdentity identity, string claimType)
-            => identity.Claims.Where(x => x.Type == claimType).Select(x => x.Value).ToImmutableList();
+            => identity.Claims.Where(x => x.Type == claimType).Select(x => x.Value);
     }
 }

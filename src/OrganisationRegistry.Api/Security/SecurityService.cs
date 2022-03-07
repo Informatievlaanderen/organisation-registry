@@ -124,7 +124,7 @@ namespace OrganisationRegistry.Api.Security
                 .GetClaims(ClaimTypes.Role)
                 .Where(role => _roleMapping.ContainsKey(role))
                 .Select(role => _roleMapping[role])
-                .ToList();
+                .ToImmutableArray();
 
             var organisationSecurityInformation = await _cache.GetOrAdd(
                 acmId,
