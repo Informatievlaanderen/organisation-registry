@@ -24,12 +24,10 @@ namespace OrganisationRegistry.Api.Security
             {
                 return cachedSecurityInfo;
             }
-else
-            {
-                var organisationSecurityInformation = await getOrganisationSecurityInformation();
-                Set(acmId, organisationSecurityInformation);
-                return organisationSecurityInformation;
-            }
+
+            var organisationSecurityInformation = await getOrganisationSecurityInformation();
+            Set(acmId, organisationSecurityInformation);
+            return organisationSecurityInformation;
         }
 
         public void Set(string acmId, OrganisationSecurityInformation organisationSecurity)
@@ -41,7 +39,6 @@ else
                     SlidingExpiration =
                         TimeSpan.FromMinutes(_configuration.Caching.UserCacheSlidingExpirationInMinutes),
                 });
-
         }
 
         public void Expire(string acmId)

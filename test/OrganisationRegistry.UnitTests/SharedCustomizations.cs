@@ -1,9 +1,7 @@
 namespace OrganisationRegistry.UnitTests
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using Api.Security;
     using AutoFixture;
     using AutoFixture.Dsl;
     using OrganisationRegistry.Security;
@@ -11,7 +9,8 @@ namespace OrganisationRegistry.UnitTests
     using AutoFixture.Dsl;
     using OrganisationRegistry.Organisation;
 
-    public static class SharedCustomizations{
+    public static class SharedCustomizations
+    {
         public static void CustomizeOrganisationSecurityInformation(this IFixture fixture)
         {
             fixture.Customize<OrganisationSecurityInformation>(composer =>
