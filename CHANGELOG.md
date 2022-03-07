@@ -1,3 +1,10 @@
+## [1.140.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.140.2...v1.140.3) (2022-03-07)
+
+
+### Bug Fixes
+
+* or-764 release from vlimpers in AR state ([1e5f90a](https://github.com/informatievlaanderen/organisation-registry/commit/1e5f90a547a21d8f0afa95cb354385a145a93011))
+
 ## [1.140.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.140.1...v1.140.2) (2022-03-03)
 
 
