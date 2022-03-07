@@ -7,37 +7,6 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
 
     public partial class OrganisationDocument : IDocument
     {
-        public int ChangeId { get; set; }
-        public DateTimeOffset ChangeTime { get; set; }
-        public Guid Id { get; set; }
-
-        public string Name { get; set; }
-        public string OvoNumber { get; set; }
-        public string ShortName { get; set; }
-        public string? Article { get; set; }
-        public Period Validity { get; set; }
-        public Period? OperationalValidity { get; set; }
-        public string Description { get; set; }
-        public string KboNumber { get; set; }
-        public bool? ShowOnVlaamseOverheidSites { get; set; }
-
-        public List<Purpose> Purposes { get; set; }
-        public List<OrganisationLabel> Labels { get; set; }
-        public List<OrganisationKey> Keys { get; set; }
-        public List<OrganisationContact> Contacts { get; set; }
-        public List<OrganisationOrganisationClassification> OrganisationClassifications { get; set; }
-        public List<OrganisationFunction> Functions { get; set; }
-        public List<OrganisationRelation> Relations { get; set; }
-        public List<OrganisationCapacity> Capacities { get; set; }
-        public List<OrganisationParent> Parents { get; set; }
-        public List<OrganisationFormalFramework> FormalFrameworks { get; set; }
-        public List<OrganisationBuilding> Buildings { get; set; }
-        public List<OrganisationLocation> Locations { get; set; }
-        public List<OrganisationBody> Bodies { get; set; }
-        public List<OrganisationBankAccount> BankAccounts { get; set; }
-        public List<OrganisationOpeningHour> OpeningHours { get; set; }
-        public List<OrganisationRegulation> Regulations { get; set; }
-
         public OrganisationDocument()
         {
             Name = string.Empty;
@@ -46,7 +15,7 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
             Description = string.Empty;
             KboNumber = string.Empty;
             Purposes = new List<Purpose>();
-            Labels =  new List<OrganisationLabel>();
+            Labels = new List<OrganisationLabel>();
             Keys = new List<OrganisationKey>();
             Contacts = new List<OrganisationContact>();
             OrganisationClassifications = new List<OrganisationOrganisationClassification>();
@@ -64,7 +33,40 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
             Validity = new Period(); // default: infinitely valid
         }
 
-        public static TypeMappingDescriptor<OrganisationDocument> Mapping(TypeMappingDescriptor<OrganisationDocument> map)
+        public string OvoNumber { get; set; }
+        public string ShortName { get; set; }
+        public string? Article { get; set; }
+        public Period Validity { get; set; }
+        public Period? OperationalValidity { get; set; }
+        public string Description { get; set; }
+        public string KboNumber { get; set; }
+        public bool? ShowOnVlaamseOverheidSites { get; set; }
+        public string? ManagedBy { get; set; }
+
+        public List<Purpose> Purposes { get; set; }
+        public List<OrganisationLabel> Labels { get; set; }
+        public List<OrganisationKey> Keys { get; set; }
+        public List<OrganisationContact> Contacts { get; set; }
+        public List<OrganisationOrganisationClassification> OrganisationClassifications { get; set; }
+        public List<OrganisationFunction> Functions { get; set; }
+        public List<OrganisationRelation> Relations { get; set; }
+        public List<OrganisationCapacity> Capacities { get; set; }
+        public List<OrganisationParent> Parents { get; set; }
+        public List<OrganisationFormalFramework> FormalFrameworks { get; set; }
+        public List<OrganisationBuilding> Buildings { get; set; }
+        public List<OrganisationLocation> Locations { get; set; }
+        public List<OrganisationBody> Bodies { get; set; }
+        public List<OrganisationBankAccount> BankAccounts { get; set; }
+        public List<OrganisationOpeningHour> OpeningHours { get; set; }
+        public List<OrganisationRegulation> Regulations { get; set; }
+        public int ChangeId { get; set; }
+        public DateTimeOffset ChangeTime { get; set; }
+        public Guid Id { get; set; }
+
+        public string Name { get; set; }
+
+        public static TypeMappingDescriptor<OrganisationDocument> Mapping(
+            TypeMappingDescriptor<OrganisationDocument> map)
             => map
                 .Properties(
                     ps => ps
@@ -110,6 +112,9 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
                         .Boolean(
                             b => b
                                 .Name(p => p.ShowOnVlaamseOverheidSites))
+                        .Keyword(
+                            k => k
+                                .Name(p => p.ManagedBy))
                         .Nested<Purpose>(
                             n => n
                                 .Name(p => p.Purposes)

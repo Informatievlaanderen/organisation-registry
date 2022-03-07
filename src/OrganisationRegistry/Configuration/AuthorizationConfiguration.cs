@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.Api.Configuration
 {
     using System;
-    using Infrastructure.OrganisationRegistryConfiguration;
     using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure.Configuration;
 

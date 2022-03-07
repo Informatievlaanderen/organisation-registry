@@ -10,13 +10,14 @@ namespace OrganisationRegistry.Tests.Shared.Stubs
             Kbo = new KboConfigurationStub();
             Authorization = new AuthorizationConfigurationStub();
         }
+
         public Guid KboKeyTypeId { get; set; }
         public Guid OrafinKeyTypeId { get; set; }
         public Guid VlimpersKeyTypeId { get; set; }
         public string OrafinOvoCode { get; set; }
         public Guid FormalNameLabelTypeId { get; set; }
         public Guid FormalShortNameLabelTypeId { get; set; }
-        public IKboConfiguration Kbo { get; set; }
-        public IAuthorizationConfiguration Authorization { get; set; }
+        public IKboConfiguration Kbo { get; init; }
+        public IAuthorizationConfiguration Authorization { get; init; }
     }
 }

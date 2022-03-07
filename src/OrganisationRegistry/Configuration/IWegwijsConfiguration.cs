@@ -9,7 +9,7 @@ namespace OrganisationRegistry.Configuration
         string OrafinOvoCode { get; }
         Guid FormalNameLabelTypeId { get; }
         Guid FormalShortNameLabelTypeId { get; }
-        public IKboConfiguration Kbo { get; }
-        public IAuthorizationConfiguration Authorization { get; }
+        IKboConfiguration Kbo { get; }
+        IAuthorizationConfiguration Authorization { get; }
     }
 }
