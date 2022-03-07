@@ -6,7 +6,7 @@ namespace OrganisationRegistry.ElasticSearch.Client
     using Configuration;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using Nest;
+    using Osc;
     using Organisations;
     using People;
     using Polly;
@@ -15,7 +15,7 @@ namespace OrganisationRegistry.ElasticSearch.Client
 
     public static class ElasticSearch6BugFix
     {
-        public static async Task<bool> DoesIndexExist(this IElasticClient client, string indexName) => (await client.Indices.ExistsAsync(indexName)).Exists;
+        public static async Task<bool> DoesIndexExist(this IOpenSearchClient client, string indexName) => (await client.Indices.ExistsAsync(indexName)).Exists;
     }
 
     // Scoped as SingleInstance()
@@ -26,16 +26,16 @@ namespace OrganisationRegistry.ElasticSearch.Client
         private Policy RetryPolicy { get; }
         private AsyncRetryPolicy AsyncRetryPolicy { get; }
 
-        public ElasticClient ReadClient { get; }
-        public ElasticClient WriteClient { get; }
+        public OpenSearchClient ReadClient { get; }
+        public OpenSearchClient WriteClient { get; }
 
         public Elastic(
             ILogger<Elastic> logger,
             IOptions<ElasticSearchConfiguration> elasticSearchOptions)
         {
             var configuration = elasticSearchOptions.Value;
-            WriteClient = GetElasticClient(configuration, write: true);
-            ReadClient = GetElasticClient(configuration, write: false);
+            WriteClient = GetOpenSearchClient(configuration, write: true);
+            ReadClient = GetOpenSearchClient(configuration, write: false);
 
             RetryPolicy = Policy
                 .Handle<Exception>()
@@ -58,7 +58,7 @@ namespace OrganisationRegistry.ElasticSearch.Client
                             retryCount, timeSpan.TotalSeconds));
         }
 
-        private static ElasticClient GetElasticClient(ElasticSearchConfiguration configuration, bool write)
+        private static OpenSearchClient GetOpenSearchClient(ElasticSearchConfiguration configuration, bool write)
         {
             var connectionSettings =
                 new ConnectionSettings(new Uri(write ? configuration.WriteConnectionString : configuration.ReadConnectionString))
@@ -81,7 +81,7 @@ namespace OrganisationRegistry.ElasticSearch.Client
             settings.DefaultIndices.Add(typeof(BodyDocument), write ? configuration.BodyWriteIndex : configuration.BodyReadIndex);
             settings.DefaultRelationNames.Add(typeof(BodyDocument), configuration.BodyType);
 
-            return new ElasticClient(settings);
+            return new OpenSearchClient(settings);
         }
 
         public void Try(Action actionToTry)

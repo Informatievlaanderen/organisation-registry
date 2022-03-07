@@ -1,6 +1,6 @@
 ﻿namespace OrganisationRegistry.ElasticSearch.Client
 {
-    using Nest;
+    using Osc;
 
     public static class ThrowOnFailureExtension
     {

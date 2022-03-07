@@ -1,8 +1,10 @@
 namespace OrganisationRegistry.ElasticSearch.Common
 {
+    using Osc;
+
     public static class FormatErrorHelper
     {
-        public static string FormatError(this Nest.IResponse response)
+        public static string FormatError(this IResponse response)
         {
             //ServerError ==> error on elastichsearch side
             //OriginalException ==> error on elastichsearch client side

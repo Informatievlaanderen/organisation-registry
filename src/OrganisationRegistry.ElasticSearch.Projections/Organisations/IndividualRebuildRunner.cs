@@ -10,7 +10,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using Infrastructure.Change;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
-    using Nest;
+    using Osc;
     using OrganisationRegistry.Infrastructure.Events;
     using SqlServer;
     using SqlServer.ProjectionState;

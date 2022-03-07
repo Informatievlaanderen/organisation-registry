@@ -10,7 +10,7 @@ namespace OrganisationRegistry.Api.Search
     using Infrastructure.Security;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
-    using Nest;
+    using Osc;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using System;

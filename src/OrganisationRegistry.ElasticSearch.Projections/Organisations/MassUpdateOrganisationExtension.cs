@@ -4,13 +4,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using System.Linq.Expressions;
     using System.Threading.Tasks;
     using Client;
-    using Nest;
+    using Osc;
     using ElasticSearch.Organisations;
 
     public static class MassUpdateOrganisationExtension
     {
         public static void MassUpdateOrganisation(
-            this ElasticClient client,
+            this OpenSearchClient client,
             Expression<Func<OrganisationDocument, object>> queryFieldSelector,
             object queryFieldValue,
             string listPropertyName,

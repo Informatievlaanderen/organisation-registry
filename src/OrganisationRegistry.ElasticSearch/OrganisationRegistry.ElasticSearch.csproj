@@ -5,5 +5,14 @@
     <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Remove="Elasticsearch.Net" />
+    <PackageReference Remove="NEST" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Osc\Osc.csproj" />
+  </ItemGroup>
+
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

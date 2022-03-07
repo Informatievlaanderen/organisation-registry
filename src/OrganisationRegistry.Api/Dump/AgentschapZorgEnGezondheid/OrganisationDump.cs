@@ -3,7 +3,7 @@ namespace OrganisationRegistry.Api.Dump.AgentschapZorgEnGezondheid
     using System.Collections.Generic;
     using System.Linq;
     using ElasticSearch.Organisations;
-    using Nest;
+    using Osc;
     using System.Threading.Tasks;
 
     public class OrganisationDump
@@ -16,7 +16,7 @@ namespace OrganisationRegistry.Api.Dump.AgentschapZorgEnGezondheid
         /// <param name="scrollTimeout"></param>
         /// <returns></returns>
         public static async Task<IList<OrganisationDocument>> Search(
-            IElasticClient client,
+            IOpenSearchClient client,
             int scrollSize,
             string scrollTimeout)
         {

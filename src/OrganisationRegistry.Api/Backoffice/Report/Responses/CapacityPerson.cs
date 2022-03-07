@@ -8,7 +8,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
     using ElasticSearch.Organisations;
     using Infrastructure;
     using Infrastructure.Search.Sorting;
-    using Nest;
+    using Osc;
     using OrganisationRegistry.Infrastructure.Configuration;
     using SortOrder = Infrastructure.Search.Sorting.SortOrder;
 
@@ -116,7 +116,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         /// <param name="scrollTimeout"></param>
         /// <returns></returns>
         public static async Task<IList<OrganisationDocument>> Search(
-            IElasticClient client,
+            IOpenSearchClient client,
             Guid capacityId,
             int scrollSize,
             string scrollTimeout)

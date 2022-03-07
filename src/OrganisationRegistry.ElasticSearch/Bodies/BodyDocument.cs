@@ -1,7 +1,7 @@
 namespace OrganisationRegistry.ElasticSearch.Bodies
 {
     using Common;
-    using Nest;
+    using Osc;
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;

@@ -5,7 +5,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     using System.Threading.Tasks;
     using Bodies;
     using Client;
-    using Nest;
+    using Osc;
 
     public static class MassUpdateBodyExtension
     {
@@ -26,7 +26,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         /// <param name="changeTime"></param>
         /// <param name="scrollSize"></param>
         public static void MassUpdateBody(
-            this ElasticClient client,
+            this OpenSearchClient client,
             Expression<Func<BodyDocument, object>> queryFieldSelector,
             object queryFieldValue,
             string listPropertyName,

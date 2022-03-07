@@ -15,7 +15,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using Infrastructure.Change;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using Nest;
+    using Osc;
     using Purpose.Events;
 
     public class Organisation :
@@ -315,7 +315,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             return new ElasticNoChange();
         }
 
-        private async Task PrepareIndex(IElasticClient client, bool deleteIndex)
+        private async Task PrepareIndex(IOpenSearchClient client, bool deleteIndex)
         {
             var indexName = _elasticSearchOptions.OrganisationsWriteIndex;
 
