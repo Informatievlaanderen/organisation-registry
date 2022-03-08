@@ -208,7 +208,7 @@ namespace OrganisationRegistry.Api.Infrastructure
             ApiDebugDataDogToggle debugDataDogToggle,
             HealthCheckService healthCheckService)
         {
-            StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag).GetAwaiter().GetResult();
+            StartupHelpers.CheckDatabases(healthCheckService, DatabaseTag, loggerFactory).GetAwaiter().GetResult();
 
             app
                 .UseDataDog<Startup>(new DataDogOptions
@@ -216,7 +216,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                     Common =
                     {
                         ServiceProvider = serviceProvider,
-                        LoggerFactory = loggerFactory
+                        LoggerFactory = loggerFactory,
                     },
                     Toggles =
                     {
@@ -226,6 +226,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                     Tracing =
                     {
                         ServiceName = _configuration["DataDog:ServiceName"],
+                        LogForwardedForEnabled = true
                     }
                 })
 
