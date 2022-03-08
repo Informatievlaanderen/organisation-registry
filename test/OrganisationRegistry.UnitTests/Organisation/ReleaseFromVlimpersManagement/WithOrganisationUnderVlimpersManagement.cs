@@ -32,9 +32,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.ReleaseFromVlimpersManagem
             fixture.CustomizeArticle();
             fixture.CustomizePeriod();
 
-            _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today);
+            _dateTimeProviderStub = new DateTimeProviderStub(fixture.Create<DateTime>());
             _organisationRegistryConfigurationStub = new OrganisationRegistryConfigurationStub();
-            _organisationId = new OrganisationId(Guid.NewGuid());
+            _organisationId = new OrganisationId(fixture.Create<Guid>());
 
             var validity = fixture.Create<Period>();
             var formalValidity = fixture.Create<Period>();
