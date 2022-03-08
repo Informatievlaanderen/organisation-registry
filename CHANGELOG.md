@@ -1,3 +1,13 @@
+# [1.141.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.140.3...v1.141.0) (2022-03-08)
+
+
+### Features
+
+* or-719 enable logging of x-forwarded-for ([691658a](https://github.com/informatievlaanderen/organisation-registry/commit/691658ae53f0e3b91a9292cc4f7da2215e1438ef))
+* or-759 added osc and opensearch.net projects ([ea81231](https://github.com/informatievlaanderen/organisation-registry/commit/ea81231b8580d56b33ff470b2c95baa30ed1b5f0))
+* or-759 changed all elasticsearch reference to opensearch references ([71f92e3](https://github.com/informatievlaanderen/organisation-registry/commit/71f92e3836d11f19b68efb489deca22e063a74b4))
+* or-759 cleanup references ([093d469](https://github.com/informatievlaanderen/organisation-registry/commit/093d469057ddc7f3be4ab708d066b095a8a19d5e))
+
 ## [1.140.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.140.2...v1.140.3) (2022-03-07)
 
 
