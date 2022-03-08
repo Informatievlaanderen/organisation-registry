@@ -61,7 +61,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.ContactTypeId,
                             message.Body.ContactTypeName,
                             message.Body.Value,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -83,7 +83,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.ContactTypeId,
                             message.Body.ContactTypeName,
                             message.Body.Value,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }

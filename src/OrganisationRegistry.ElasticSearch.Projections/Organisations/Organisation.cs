@@ -134,9 +134,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     Name = message.Body.Name,
                     OvoNumber = message.Body.OvoNumber,
                     ShortName = message.Body.ShortName,
-                    Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo),
+                    Validity = Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo),
                     OperationalValidity =
-                        new Period(message.Body.OperationalValidFrom, message.Body.OperationalValidTo),
+                        Period.FromDates(message.Body.OperationalValidFrom, message.Body.OperationalValidTo),
                     Description = message.Body.Description,
                     ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites,
                     Purposes = message.Body.Purposes
@@ -157,9 +157,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     Name = message.Body.Name,
                     OvoNumber = message.Body.OvoNumber,
                     ShortName = message.Body.ShortName,
-                    Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo),
+                    Validity = Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo),
                     OperationalValidity =
-                        new Period(message.Body.OperationalValidFrom, message.Body.OperationalValidTo),
+                        Period.FromDates(message.Body.OperationalValidFrom, message.Body.OperationalValidTo),
                     Description = message.Body.Description,
                     KboNumber = message.Body.KboNumber,
                     ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites,
@@ -196,9 +196,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.Name = message.Body.Name;
                     document.ShortName = message.Body.ShortName;
                     document.Article = message.Body.Article;
-                    document.Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo);
-                    document.OperationalValidity = new Period(
-                        message.Body.OperationalValidFrom,
+                    document.Validity = Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo);
+                    document.OperationalValidity = Period.FromDates(message.Body.OperationalValidFrom,
                         message.Body.OperationalValidTo);
                     document.Description = message.Body.Description;
                     document.ShowOnVlaamseOverheidSites = message.Body.ShowOnVlaamseOverheidSites;
@@ -249,8 +248,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
 
-                    document.OperationalValidity = new Period(
-                        message.Body.OperationalValidFrom,
+                    document.OperationalValidity = Period.FromDates(message.Body.OperationalValidFrom,
                         message.Body.OperationalValidTo);
                 }
             );
@@ -344,11 +342,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         document.ChangeTime = message.Timestamp;
 
                         document.Validity =
-                            new Period(document.Validity.Start, message.Body.FieldsToTerminate.OrganisationValidity);
+                            Period.FromDates(document.Validity.Start, message.Body.FieldsToTerminate.OrganisationValidity);
 
                         document.OperationalValidity =
-                            new Period(
-                                document.OperationalValidity?.Start,
+                            Period.FromDates(document.OperationalValidity?.Start,
                                 message.Body.FieldsToTerminate.OrganisationValidity);
 
                         if (message.Body.ForcedKboTermination)
@@ -370,11 +367,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         document.ChangeTime = message.Timestamp;
 
                         document.Validity =
-                            new Period(document.Validity.Start, message.Body.FieldsToTerminate.OrganisationValidity);
+                            Period.FromDates(document.Validity.Start, message.Body.FieldsToTerminate.OrganisationValidity);
 
                         document.OperationalValidity =
-                            new Period(
-                                document.OperationalValidity?.Start,
+                            Period.FromDates(document.OperationalValidity?.Start,
                                 message.Body.FieldsToTerminate.OrganisationValidity);
 
                         if (message.Body.ForcedKboTermination)
@@ -409,7 +405,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
 
-                    document.Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo);
+                    document.Validity = Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo);
                 }
             );
 

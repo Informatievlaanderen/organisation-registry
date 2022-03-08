@@ -44,7 +44,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.Opens,
                             message.Body.Closes,
                             message.Body.DayOfWeek,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -68,7 +68,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.Opens,
                             message.Body.Closes,
                             message.Body.DayOfWeek,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
 
                 }
             );

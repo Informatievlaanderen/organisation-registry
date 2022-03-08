@@ -63,7 +63,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             message.Body.OrganisationId,
                             organisation.Name,
                             message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -112,7 +112,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         message.Body.OrganisationId,
                         organisation.Name,
                         message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
-                        new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                        Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
             });
 
             return new ElasticPerDocumentChange<PersonDocument>(changes);

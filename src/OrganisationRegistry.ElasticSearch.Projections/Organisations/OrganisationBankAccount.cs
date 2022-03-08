@@ -98,7 +98,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             isIban,
                             bic,
                             isBic,
-                            new Period(validFrom, validTo)));
+                            Period.FromDates(validFrom, validTo)));
                 }
             );
         }
@@ -166,7 +166,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.IsIban,
                             message.Body.Bic,
                             message.Body.IsBic,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }

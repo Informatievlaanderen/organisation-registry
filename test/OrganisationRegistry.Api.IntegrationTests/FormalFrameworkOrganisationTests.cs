@@ -29,14 +29,14 @@ namespace OrganisationRegistry.Api.IntegrationTests
                         "Responsible Minister",
                         organisationClassificationId: Guid.NewGuid(),
                         "Not the current minister",
-                        validity: new Period(aDateInThePast, aDateInThePast)),
+                        validity: Period.FromDates(aDateInThePast, aDateInThePast)),
                     new(
                         organisationOrganisationClassificationId: Guid.NewGuid(),
                         responsibleMinisterClassificationTypeId,
                         "Responsible Minister",
                         organisationClassificationId: Guid.NewGuid(),
                         "The current minister",
-                        validity: new Period(today, today))
+                        validity: Period.FromDates(today, today))
                 }
             };
             var apiConfiguration = new ApiConfigurationSection
@@ -75,12 +75,12 @@ namespace OrganisationRegistry.Api.IntegrationTests
                         organisationOrganisationParentId: Guid.NewGuid(),
                         parentOrganisationId: Guid.NewGuid(),
                         parentOrganisationName: "Some other organisations parent parent",
-                        validity: new Period(null, aDayInThePast)),
+                        validity: Period.FromDates(null, aDayInThePast)),
                     new OrganisationDocument.OrganisationParent(
                         organisationOrganisationParentId: Guid.NewGuid(),
                         parentOrganisationId: parentOrganisationId,
                         parentOrganisationName: "The Actual ParentOrganisationName",
-                        validity: new Period(theNextDayInThePast, today)),
+                        validity: Period.FromDates(theNextDayInThePast, today)),
                 }
             };
             var apiConfiguration = new ApiConfigurationSection

@@ -120,7 +120,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             isMainLocation,
                             locationTypeId,
                             locationTypeName,
-                            new Period(validFrom, validTo)));
+                            Period.FromDates(validFrom, validTo)));
                 }
             );
         }
@@ -145,7 +145,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             bodyIsMainLocation,
                             bodyLocationTypeId,
                             bodyLocationTypeName,
-                            new Period(bodyValidFrom, bodyValidTo)));
+                            Period.FromDates(bodyValidFrom, bodyValidTo)));
 
                 }
             );

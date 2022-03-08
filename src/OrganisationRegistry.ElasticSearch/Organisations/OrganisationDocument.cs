@@ -30,7 +30,7 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
             BankAccounts = new List<OrganisationBankAccount>();
             OpeningHours = new List<OrganisationOpeningHour>();
             Regulations = new List<OrganisationRegulation>();
-            Validity = new Period(); // default: infinitely valid
+            Validity = Period.Infinite();
         }
 
         public string OvoNumber { get; set; }

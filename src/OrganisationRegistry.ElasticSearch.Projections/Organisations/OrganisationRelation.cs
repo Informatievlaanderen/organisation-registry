@@ -60,7 +60,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         message.Body.RelatedOrganisationId,
                         relatedOrganisation.OvoNumber,
                         relatedOrganisation.Name,
-                        new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                        Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
             });
             //relation
             changes.Add(message.Body.RelatedOrganisationId, async document =>
@@ -83,7 +83,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         message.Body.OrganisationId,
                         organisation.OvoNumber,
                         organisation.Name,
-                        new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                        Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
 
             });
             return new ElasticPerDocumentChange<OrganisationDocument>(changes);
@@ -114,7 +114,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         message.Body.RelatedOrganisationId,
                         relatedOrganisation.OvoNumber,
                         relatedOrganisation.Name,
-                        new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                        Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
 
             });
 
@@ -139,7 +139,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         message.Body.OrganisationId,
                         organisation.OvoNumber,
                         organisation.Name,
-                        new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                        Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
             });
 
             return new ElasticPerDocumentChange<OrganisationDocument>(changes);

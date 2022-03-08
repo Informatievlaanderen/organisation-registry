@@ -58,7 +58,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.KeyTypeId,
                             message.Body.KeyTypeName,
                             message.Body.Value,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -80,7 +80,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.KeyTypeId,
                             message.Body.KeyTypeName,
                             message.Body.Value,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }

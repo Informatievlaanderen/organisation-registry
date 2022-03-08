@@ -118,7 +118,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             descriptionRendered,
                             regulationUrl,
                             regulationDate,
-                            new Period(validFrom, validTo)));
+                            Period.FromDates(validFrom, validTo)));
                 }
             );
         }
@@ -146,7 +146,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.DescriptionRendered,
                             message.Body.Url,
                             message.Body.Date,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
