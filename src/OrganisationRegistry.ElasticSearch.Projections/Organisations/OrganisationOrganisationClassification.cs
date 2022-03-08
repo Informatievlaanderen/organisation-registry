@@ -159,7 +159,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             organisationClassificationTypeName,
                             organisationClassificationId,
                             organisationClassificationName,
-                            new Period(validFrom, validTo)));
+                            Period.FromDates(validFrom, validTo)));
 
                 }
             );
@@ -203,7 +203,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.OrganisationClassificationTypeName,
                             message.Body.OrganisationClassificationId,
                             message.Body.OrganisationClassificationName,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }

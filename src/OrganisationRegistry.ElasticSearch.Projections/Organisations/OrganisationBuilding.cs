@@ -68,7 +68,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.BuildingId,
                             message.Body.BuildingName,
                             message.Body.IsMainBuilding,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -95,7 +95,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.BuildingId,
                             message.Body.BuildingName,
                             message.Body.IsMainBuilding,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }

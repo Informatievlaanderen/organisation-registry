@@ -81,7 +81,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.OrganisationOrganisationParentId,
                             message.Body.ParentOrganisationId,
                             message.Body.ParentOrganisationName,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -102,7 +102,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.OrganisationOrganisationParentId,
                             message.Body.ParentOrganisationId,
                             message.Body.ParentOrganisationName,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }

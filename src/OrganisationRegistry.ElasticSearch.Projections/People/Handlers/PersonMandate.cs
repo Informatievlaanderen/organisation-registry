@@ -77,8 +77,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             message.Body.BodySeatName,
                             message.Body.BodySeatNumber,
                             bodySeat.IsPaid,
-                            new Period(
-                                message.Body.ValidFrom,
+                            Period.FromDates(message.Body.ValidFrom,
                                 message.Body.ValidTo)));
                 }
             );
@@ -134,8 +133,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         message.Body.BodySeatName,
                         message.Body.BodySeatNumber,
                         bodySeat.IsPaid,
-                        new Period(
-                            message.Body.ValidFrom,
+                        Period.FromDates(message.Body.ValidFrom,
                             message.Body.ValidTo)));
             });
             return new ElasticPerDocumentChange<PersonDocument>(changes);
@@ -279,8 +277,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             bodySeat.Name,
                             bodySeat.Number,
                             bodySeat.IsPaid,
-                            new Period(
-                                message.Body.ValidFrom,
+                            Period.FromDates(message.Body.ValidFrom,
                                 message.Body.ValidTo)));
 
                 }
@@ -338,8 +335,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         bodySeat.Name,
                         bodySeat.Number,
                         bodySeat.IsPaid,
-                        new Period(
-                            message.Body.ValidFrom,
+                        Period.FromDates(message.Body.ValidFrom,
                             message.Body.ValidTo)));
             });
 

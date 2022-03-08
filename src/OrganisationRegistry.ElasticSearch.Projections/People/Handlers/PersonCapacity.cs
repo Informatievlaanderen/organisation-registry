@@ -214,7 +214,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             message.Body.FunctionName,
                             message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value))
                                 .ToList(),
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
 
                     document.ShowOnVlaamseOverheidSites =
                         await ShouldPersonBeShownOnVlaamseOverheidSites(document);
@@ -282,7 +282,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                                 message.Body.FunctionName,
                                 message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value))
                                     .ToList(),
-                                new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                                Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
 
                         document.ShowOnVlaamseOverheidSites = await ShouldPersonBeShownOnVlaamseOverheidSites(document);
                     }

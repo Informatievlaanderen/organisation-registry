@@ -157,8 +157,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                     Name = message.Body.Name,
                     ShortName = message.Body.ShortName,
                     Description = message.Body.Description,
-                    FormalValidity = new Period(
-                        message.Body.FormalValidFrom,
+                    FormalValidity = Period.FromDates(message.Body.FormalValidFrom,
                         message.Body.FormalValidTo)
                 });
         }
@@ -210,7 +209,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.BodyLifecyclePhaseId,
                             message.Body.LifecyclePhaseTypeId,
                             message.Body.LifecyclePhaseTypeName,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -231,7 +230,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.BodyLifecyclePhaseId,
                             message.Body.LifecyclePhaseTypeId,
                             message.Body.LifecyclePhaseTypeName,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -267,7 +266,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.BodyFormalFrameworkId,
                             message.Body.FormalFrameworkId,
                             message.Body.FormalFrameworkName,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -288,7 +287,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.BodyFormalFrameworkId,
                             message.Body.FormalFrameworkId,
                             message.Body.FormalFrameworkName,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -309,7 +308,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.BodyOrganisationId,
                             message.Body.OrganisationId,
                             message.Body.OrganisationName,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -330,7 +329,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.BodyOrganisationId,
                             message.Body.OrganisationId,
                             message.Body.OrganisationName,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -355,7 +354,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.EntitledToVote,
                             message.Body.SeatTypeId,
                             message.Body.SeatTypeName,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -378,7 +377,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                     bodySeat.EntitledToVote = message.Body.EntitledToVote;
                     bodySeat.SeatTypeId = message.Body.SeatTypeId;
                     bodySeat.SeatTypeName = message.Body.SeatTypeName;
-                    bodySeat.Validity = new Period(message.Body.ValidFrom, message.Body.ValidTo);
+                    bodySeat.Validity = Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo);
                 }
             );
         }
@@ -407,7 +406,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             null,
                             message.Body.PersonId,
                             FormatPersonName(message.Body.PersonFirstName, message.Body.PersonName),
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -435,7 +434,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             null,
                             message.Body.PersonId,
                             FormatPersonName(message.Body.PersonFirstName, message.Body.PersonName),
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -463,7 +462,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             null,
                             null,
                             null,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -491,7 +490,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             null,
                             null,
                             null,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -519,7 +518,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.FunctionTypeName,
                             null,
                             null,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -547,7 +546,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.FunctionTypeName,
                             null,
                             null,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -583,7 +582,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                                 new Contact(
                                     x.Key,
                                     contactTypeNames[x.Key], x.Value)).ToList(),
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }
@@ -619,7 +618,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                                 new Contact(
                                     x.Key,
                                     contactTypeNames[x.Key], x.Value)).ToList(),
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }

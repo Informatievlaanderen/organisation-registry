@@ -111,7 +111,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             labelTypeId,
                             labelTypeName,
                             labelValue,
-                            new Period(validFrom, validTo)));
+                            Period.FromDates(validFrom, validTo)));
                 }
             );
         }
@@ -150,7 +150,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.LabelTypeId,
                             message.Body.LabelTypeName,
                             message.Body.Value,
-                            new Period(message.Body.ValidFrom, message.Body.ValidTo)));
+                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
             );
         }

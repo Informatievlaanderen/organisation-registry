@@ -114,14 +114,14 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                     kboOrganisationBankAccountAdded.IsIban,
                     kboOrganisationBankAccountAdded.Bic,
                     kboOrganisationBankAccountAdded.IsBic,
-                    new Period(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo)),
+                    Period.FromDates(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo)),
                 new OrganisationDocument.OrganisationBankAccount(
                     kboOrganisationBankAccountAdded2.OrganisationBankAccountId,
                     kboOrganisationBankAccountAdded2.BankAccountNumber,
                     kboOrganisationBankAccountAdded2.IsIban,
                     kboOrganisationBankAccountAdded2.Bic,
                     kboOrganisationBankAccountAdded2.IsBic,
-                    new Period(kboOrganisationBankAccountAdded2.ValidFrom, kboOrganisationBankAccountAdded2.ValidTo)));
+                    Period.FromDates(kboOrganisationBankAccountAdded2.ValidFrom, kboOrganisationBankAccountAdded2.ValidTo)));
         }
 
         [EnvVarIgnoreFact]
@@ -159,7 +159,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                     kboOrganisationBankAccountAdded.IsIban,
                     kboOrganisationBankAccountAdded.Bic,
                     kboOrganisationBankAccountAdded.IsBic,
-                    new Period(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo)));
+                    Period.FromDates(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo)));
         }
 
         [EnvVarIgnoreFact]
