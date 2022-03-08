@@ -34,8 +34,6 @@
     <PackageReference Update="App.Metrics.Formatters.Ascii" Version="4.3.0" />
     <PackageReference Update="App.Metrics.Formatters.Json" Version="4.3.0" />
     <PackageReference Update="App.Metrics.Reporting.Console" Version="4.3.0" />
-    <PackageReference Remove="Elasticsearch.Net" />
-    <PackageReference Remove="NEST" />
   </ItemGroup>
 
   <ItemGroup>
