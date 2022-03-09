@@ -2,10 +2,10 @@ namespace OrganisationRegistry.Configuration
 {
     using Infrastructure.Configuration;
 
-    public class OrganisationManagementConfigurationConfiguration : IOrganisationManagementConfiguration
+    public class OrganisationManagementConfiguration : IOrganisationManagementConfiguration
     {
 
-        public OrganisationManagementConfigurationConfiguration(OrganisationManagementConfigurationSection organisationManagementConfigurationSection)
+        public OrganisationManagementConfiguration(OrganisationManagementConfigurationSection organisationManagementConfigurationSection)
         {
             Vlimpers = organisationManagementConfigurationSection.Vlimpers;
         }
