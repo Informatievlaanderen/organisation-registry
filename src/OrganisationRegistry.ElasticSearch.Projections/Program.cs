@@ -123,7 +123,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                     builder
                         .AddSingleton<IOrganisationManagementConfiguration>(
                             _ =>
-                                new OrganisationManagementConfigurationConfiguration(
+                                new OrganisationManagementConfiguration(
                                     hostContext.Configuration
                                         .GetSection(OrganisationManagementConfigurationSection.Name)
                                         .Get<OrganisationManagementConfigurationSection>()));
