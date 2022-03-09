@@ -70,7 +70,7 @@ namespace OrganisationRegistry.Api.Security
                     identity.GetOptionalClaim(OrganisationRegistryClaims.ClaimAcmId).ToLowerInvariant()))
                 AddRoleClaim(identity, OrganisationRegistryApiClaims.Developer);
 
-            if (roles.Count <= 0)
+            if (!roles.Any())
                 return identity;
 
             // OrganisationRegistryBeheerder-algemeenbeheerder,beheerder:OVO002949
