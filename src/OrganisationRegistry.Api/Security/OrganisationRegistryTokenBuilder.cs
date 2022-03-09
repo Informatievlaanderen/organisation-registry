@@ -52,8 +52,10 @@ namespace OrganisationRegistry.Api.Security
                     OrganisationRegistryClaims.ClaimUserId,
                     identity.GetOptionalClaim(JwtClaimTypes.Subject),
                     ClaimValueTypes.String));
+
             identity.AddClaim(
                 new Claim(OrganisationRegistryClaims.ClaimName, JwtClaimTypes.FamilyName, ClaimValueTypes.String));
+
             identity.AddClaim(
                 new Claim(OrganisationRegistryClaims.ClaimFirstname, JwtClaimTypes.GivenName, ClaimValueTypes.String));
 
@@ -61,13 +63,16 @@ namespace OrganisationRegistry.Api.Security
                 .Select(x => x.ToLowerInvariant())
                 .Where(x => x.StartsWith(OrganisationRegistryClaims.OrganisationRegistryBeheerderPrefix))
                 .Select(x => x.Replace(OrganisationRegistryClaims.OrganisationRegistryBeheerderPrefix, ""))
-                .ToImmutableArray();
+                .ToList();
 
-            var developers = _configuration.Developers?.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+            var developers = _configuration.Developers
+                .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(x => x.ToLowerInvariant());
-            if (developers != null &&
-                developers.Contains(
-                    identity.GetOptionalClaim(OrganisationRegistryClaims.ClaimAcmId).ToLowerInvariant()))
+
+            var acmIdClaim = identity.GetOptionalClaim(OrganisationRegistryClaims.ClaimAcmId);
+
+            if (!string.IsNullOrEmpty(acmIdClaim) &&
+                developers.Contains(acmIdClaim.ToLowerInvariant()))
                 AddRoleClaim(identity, OrganisationRegistryApiClaims.Developer);
 
             if (!roles.Any())
