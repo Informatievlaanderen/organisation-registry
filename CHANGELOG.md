@@ -1,3 +1,10 @@
+# [1.142.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.141.0...v1.142.0) (2022-03-09)
+
+
+### Features
+
+* or-507 add managed by field in search api ([1657aa6](https://github.com/informatievlaanderen/organisation-registry/commit/1657aa66224bda190aa67b7346ba9a2acaba1fc0))
+
 # [1.141.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.140.3...v1.141.0) (2022-03-08)
 
 
