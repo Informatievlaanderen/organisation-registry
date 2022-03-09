@@ -1,3 +1,19 @@
+# [1.143.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.142.0...v1.143.0) (2022-03-09)
+
+
+### Bug Fixes
+
+* or-765 don't use ImmutableArray while we're still building the roles ([f9ef143](https://github.com/informatievlaanderen/organisation-registry/commit/f9ef1430fdbe8c98334c8117b8d45f0cb0ddbf61))
+* or-765 make developers setting explicitly nullable ([8d6384d](https://github.com/informatievlaanderen/organisation-registry/commit/8d6384df3fa995d1424587f6318876bbcec84cbf))
+
+
+### Features
+
+* invalidate cache on organisation tree update ([c643498](https://github.com/informatievlaanderen/organisation-registry/commit/c643498991b89719128e12278d44b0d3b0022992))
+* or-765 cache user org information ([6528429](https://github.com/informatievlaanderen/organisation-registry/commit/6528429113497ba575b440832e164df7b83c232d))
+* or-765 use ImmutableArray ([7205b0f](https://github.com/informatievlaanderen/organisation-registry/commit/7205b0f84972fc613387dd096b30ceb18711e06f))
+* reset user's ui security cache on create daughter ([0c62af6](https://github.com/informatievlaanderen/organisation-registry/commit/0c62af63499de808c1fc6d7537f9444269a29dcc))
+
 # [1.142.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.141.0...v1.142.0) (2022-03-09)
 
 
