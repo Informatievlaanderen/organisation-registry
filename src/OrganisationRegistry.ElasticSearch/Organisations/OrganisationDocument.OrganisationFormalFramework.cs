@@ -19,7 +19,7 @@
             {
                 FormalFrameworkName = string.Empty;
                 ParentOrganisationName = string.Empty;
-                Validity = Period.Infinite(); // default infinitely valid
+                Validity = Period.Infinite();
             }
 
             public OrganisationFormalFramework(
