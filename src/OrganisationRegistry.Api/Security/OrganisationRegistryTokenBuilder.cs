@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Api.Security
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Security.Claims;
@@ -60,7 +61,7 @@ namespace OrganisationRegistry.Api.Security
                 .Select(x => x.ToLowerInvariant())
                 .Where(x => x.StartsWith(OrganisationRegistryClaims.OrganisationRegistryBeheerderPrefix))
                 .Select(x => x.Replace(OrganisationRegistryClaims.OrganisationRegistryBeheerderPrefix, ""))
-                .ToList();
+                .ToImmutableArray();
 
             var developers = _configuration.Developers?.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(x => x.ToLowerInvariant());
