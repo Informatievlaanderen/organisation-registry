@@ -32,7 +32,7 @@ namespace OrganisationRegistry.Infrastructure.Configuration
 
         public string JwtAudience { get; set; }
 
-        public string Developers { get; set; }
+        public string? Developers { get; set; }
 
         public int JwtExpiresInMinutes { get; set; }
     }

@@ -65,7 +65,7 @@ namespace OrganisationRegistry.Api.Security
                 .Select(x => x.Replace(OrganisationRegistryClaims.OrganisationRegistryBeheerderPrefix, ""))
                 .ToList();
 
-            var developers = _configuration.Developers
+            var developers = (_configuration.Developers ?? string.Empty)
                 .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(x => x.ToLowerInvariant());
 
@@ -77,11 +77,6 @@ namespace OrganisationRegistry.Api.Security
 
             if (!roles.Any())
                 return identity;
-
-            // OrganisationRegistryBeheerder-algemeenbeheerder,beheerder:OVO002949
-            // OrganisationRegistryBeheerder-beheerder:OVO001831
-            // OrganisationRegistryBeheerder-beheerder:OVO001834
-            // OrganisationRegistryBeheerder-orgaanbeheerder:OVO001834 // mag alle organen beheren, OVO nummer is puur technisch en nutteloos.
 
             if (roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryBeheerderRole)))
             {
