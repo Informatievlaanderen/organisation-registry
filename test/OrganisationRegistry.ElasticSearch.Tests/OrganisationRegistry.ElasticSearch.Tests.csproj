@@ -3,6 +3,9 @@
   <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
   <ItemGroup>
     <None Update="appsettings.json" CopyToOutputDirectory="Always" />
+    <None Update="appsettings.Wodan-Ranger.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrganisationRegistry.Api\OrganisationRegistry.Api.csproj" />

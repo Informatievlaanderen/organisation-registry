@@ -52,50 +52,53 @@ namespace OrganisationRegistry.Infrastructure.Config
                 @interface,
                 executorType,
                 nameof(IHandlerRegistrar.RegisterCommandHandler),
-                new Func<dynamic, Task>(async x =>
-                {
-                    LoggerExtensions.LogTrace(_logger, "Executing inner command handler for {CommandName} - {@Command} using {ExecutorType}.", x.GetType(), x, executorType);
+                new Func<dynamic, Task>(
+                    async x =>
+                    {
+                        LoggerExtensions.LogTrace(_logger, "Executing inner command handler for {CommandName} - {@Command} using {ExecutorType}.", x.GetType(), x, executorType);
 
-                    var serviceProvider = _requestScopedServiceProvider();
-                    dynamic handler = serviceProvider.GetService(executorType);
-                    await handler.Handle(x);
+                        var serviceProvider = _requestScopedServiceProvider();
+                        dynamic handler = serviceProvider.GetService(executorType);
+                        await handler.Handle(x);
 
-                    LoggerExtensions.LogTrace(_logger, "Finished executing inner command handler for {CommandName} - {@Command}.", x.GetType(), x);
-                }));
+                        LoggerExtensions.LogTrace(_logger, "Finished executing inner command handler for {CommandName} - {@Command}.", x.GetType(), x);
+                    }));
 
         private void InvokeEventHandler(Type @interface, Type executorType)
             => InvokeHandler(
                 @interface,
                 executorType,
                 nameof(IHandlerRegistrar.RegisterEventHandler),
-                new Func<DbConnection, DbTransaction, dynamic, Task>(async (dbConnection, dbTransaction, envelope) =>
-                {
-                    LoggerExtensions.LogTrace(_logger, "Executing inner event handler for {EventName} - {@Event} using {ExecutorType}.", envelope.GetType(), envelope, executorType);
+                new Func<DbConnection, DbTransaction, dynamic, Task>(
+                    async (dbConnection, dbTransaction, envelope) =>
+                    {
+                        LoggerExtensions.LogTrace(_logger, "Executing inner event handler for {EventName} - {@Event} using {ExecutorType}.", envelope.GetType(), envelope, executorType);
 
-                    var serviceProvider = _requestScopedServiceProvider();
-                    dynamic handler = serviceProvider.GetService(executorType);
-                    await handler.Handle(dbConnection, dbTransaction, envelope);
+                        var serviceProvider = _requestScopedServiceProvider();
+                        dynamic handler = serviceProvider.GetService(executorType);
+                        await handler.Handle(dbConnection, dbTransaction, envelope);
 
-                    LoggerExtensions.LogTrace(_logger, "Finished executing inner event handler for {EventName} - {@Event}.", envelope.GetType(), envelope);
-                }));
+                        LoggerExtensions.LogTrace(_logger, "Finished executing inner event handler for {EventName} - {@Event}.", envelope.GetType(), envelope);
+                    }));
 
         private void InvokeReactionHandler(Type @interface, Type executorType)
             => InvokeHandler(
                 @interface,
                 executorType,
                 nameof(IHandlerRegistrar.RegisterReaction),
-                new Func<dynamic, Task<List<ICommand>>>(async envelope =>
-                {
-                    LoggerExtensions.LogTrace(_logger, "Executing inner reaction handler for {ReactionName} - {@Event} using {ExecutorType}.", envelope.GetType(), envelope, executorType);
+                new Func<dynamic, Task<List<ICommand>>>(
+                    async envelope =>
+                    {
+                        LoggerExtensions.LogTrace(_logger, "Executing inner reaction handler for {ReactionName} - {@Event} using {ExecutorType}.", envelope.GetType(), envelope, executorType);
 
-                    var serviceProvider = _requestScopedServiceProvider();
-                    dynamic handler = serviceProvider.GetService(executorType);
-                    var commands = await handler.Handle(envelope);
+                        var serviceProvider = _requestScopedServiceProvider();
+                        dynamic handler = serviceProvider.GetService(executorType);
+                        var commands = await handler.Handle(envelope);
 
-                    LoggerExtensions.LogTrace(_logger, "Finished executing inner reaction handler for {ReactionName} - {@Event}, resulting in {@Commands}.", envelope.GetType(), envelope, commands);
+                        LoggerExtensions.LogTrace(_logger, "Finished executing inner reaction handler for {ReactionName} - {@Event}, resulting in {@Commands}.", envelope.GetType(), envelope, commands);
 
-                    return commands;
-                }));
+                        return commands;
+                    }));
 
         private static void RegisterHandlersFromAssembly(Action<Type[]> registerHandlersAction, params Type[] typesFromAssemblyContainingHandlers)
             => typesFromAssemblyContainingHandlers
@@ -107,19 +110,20 @@ namespace OrganisationRegistry.Infrastructure.Config
             var executorTypes = reactionHandlerTypes
                 .Where(t => !t.GetTypeInfo().IsAbstract)
                 .Select(t => new { Type = t, Interfaces = ResolveHandlerInterface(t, handlerInterfaceType) })
-                .Where(e => e.Interfaces != null && e.Interfaces.Any());
+                .Where(e => e.Interfaces != null && e.Interfaces.Any()).ToList();
 
             foreach (var executorType in executorTypes)
-                foreach (var @interface in executorType.Interfaces)
-                    invokeHandlerAction(@interface, executorType.Type);
+            foreach (var @interface in executorType.Interfaces)
+                invokeHandlerAction(@interface, executorType.Type);
         }
 
         private static IEnumerable<Type> ResolveHandlerInterface(Type type, Type handlerInterfaceType)
             => type
                 .GetInterfaces()
-                .Where(i =>
-                    i.GetTypeInfo().IsGenericType &&
-                    i.GetGenericTypeDefinition() == handlerInterfaceType);
+                .Where(
+                    i =>
+                        i.GetTypeInfo().IsGenericType &&
+                        i.GetGenericTypeDefinition() == handlerInterfaceType);
 
         private void InvokeHandler(Type @interface, Type executorType, string registerHandlerName, object handlerInvokerDelegate)
         {

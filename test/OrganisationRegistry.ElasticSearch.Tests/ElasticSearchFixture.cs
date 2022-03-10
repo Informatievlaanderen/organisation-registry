@@ -29,7 +29,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             ContextFactory = new TestContextFactory(dbContextOptions);
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetParent(GetType().GetTypeInfo().Assembly.Location).FullName)
-                .AddJsonFile("appsettings.json", optional: false);
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true);
 
             var configurationRoot = builder.Build();
 

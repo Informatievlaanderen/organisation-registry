@@ -1,35 +1,73 @@
 namespace OrganisationRegistry.ElasticSearch.Tests.Scenario
 {
     using System;
+    using System.Collections.Generic;
     using AutoFixture;
     using AutoFixture.Kernel;
+    using Organisation.Events;
     using Projections.Infrastructure;
 
     public class ScenarioBase<T>
     {
-        private readonly Fixture _fixture;
+        protected readonly Fixture Fixture;
 
         public ScenarioBase(params ISpecimenBuilder[] specimenBuilders)
         {
-            _fixture = new Fixture();
+            Fixture = new Fixture();
 
-            _fixture.Register(() => new InitialiseProjection(typeof(T).FullName));
-            _fixture.Register<DateTime?>(() => _fixture.Create<DateTime>().Date);
+            Fixture.Register(() => new InitialiseProjection(typeof(T).FullName));
+            Fixture.Register<DateTime?>(() => Fixture.Create<DateTime>().Date);
 
             foreach (var specimenBuilder in specimenBuilders)
             {
-                _fixture.Customizations.Add(specimenBuilder);
+                Fixture.Customizations.Add(specimenBuilder);
             }
         }
 
         public TU Create<TU>()
-        {
-            return _fixture.Create<TU>();
-        }
+            => Fixture.Create<TU>();
 
         public void AddCustomization(ISpecimenBuilder customization)
-        {
-            _fixture.Customizations.Add(customization);
-        }
+            => Fixture.Customizations.Add(customization);
+
+        public OrganisationTerminated CreateOrganisationTerminated(
+            Guid organisationId,
+            DateTime dateOfTermination,
+            bool? forcedKboTermination = null,
+            DateTime? dateOfTerminationAccordingToKbo = null,
+            Dictionary<Guid, DateTime>? capacities = null)
+            => new(
+                organisationId,
+                Create<string>(),
+                Create<string>(),
+                dateOfTermination,
+                new FieldsToTerminate(
+                    dateOfTermination,
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    capacities ?? new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>()
+                ),
+                new KboFieldsToTerminate(
+                    new Dictionary<Guid, DateTime>(),
+                    null,
+                    null,
+                    null
+                ),
+                forcedKboTermination ?? Create<bool>(),
+                dateOfTerminationAccordingToKbo
+            )
+            {
+                Version = 0,
+                Timestamp = default
+            };
     }
 }

@@ -1,105 +1,129 @@
 namespace OrganisationRegistry.ElasticSearch.Tests
 {
-    using System;
-    using Api.Security;
-    using Common;
     using FluentAssertions;
-    using Infrastructure.Bus;
-    using Infrastructure.Config;
     using Infrastructure.Events;
+    using Microsoft.Extensions.Logging;
+    using Projections.Infrastructure;
+    using Scenario;
+    using Xunit;
+    using System;
+    using System.Collections.Generic;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Logging.Abstractions;
-    using Moq;
     using Organisation.Events;
     using OrganisationRegistry.Tests.Shared.Stubs;
     using Organisations;
-    using Projections.Infrastructure;
+    using Osc;
     using Projections.Organisations;
-    using Scenario;
     using Scenario.Specimen;
-    using Security;
     using SqlServer.Infrastructure;
-    using Xunit;
 
     [Collection(nameof(ElasticSearchFixture))]
     public class OrganisationHandlerTests
     {
         private readonly ElasticSearchFixture _fixture;
-        private readonly InProcessBus _inProcessBus;
+        private readonly TestEventProcessor _eventProcessor;
 
         public OrganisationHandlerTests(ElasticSearchFixture fixture)
         {
             _fixture = fixture;
 
             var dbContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
-                .UseInMemoryDatabase(
-                    $"org-es-test-{Guid.NewGuid()}",
-                    builder => { }).Options;
-            var context = new OrganisationRegistryContext(
-                dbContextOptions);
+                .UseInMemoryDatabase($"org-es-test-{Guid.NewGuid()}", _ => { }).Options;
 
-            var organisationHandler = new Organisation(
-                logger: _fixture.LoggerFactory.CreateLogger<Organisation>(),
-                elastic: _fixture.Elastic,
-                elasticSearchOptions: _fixture.ElasticSearchOptions,
-                organisationManagementConfiguration: new OrganisationManagementConfigurationStub());
+            var logger = _fixture.LoggerFactory.CreateLogger<Organisation>();
+            var elastic = _fixture.Elastic;
+            var elasticSearchOptions = _fixture.ElasticSearchOptions;
+            var organisationManagementConfiguration = new OrganisationManagementConfigurationStub();
 
-            var organisationBankAccountHandler = new OrganisationBankAccount(
-                _fixture.LoggerFactory.CreateLogger<OrganisationBankAccount>());
+            var organisationHandler = new Organisation(logger, elastic, elasticSearchOptions, organisationManagementConfiguration);
 
             var testContextFactory = new TestContextFactory(dbContextOptions);
+            var organisationBankAccountHandler = new OrganisationBankAccount(new NullLogger<OrganisationBankAccount>());
+            var organisationBody = new OrganisationBody(new NullLogger<OrganisationBody>(), testContextFactory);
+            var organisationBuilding = new OrganisationBuilding(new NullLogger<OrganisationBuilding>());
+            var organisationCapacity = new OrganisationCapacity(new NullLogger<OrganisationCapacity>(), testContextFactory);
+            var organisationContact = new OrganisationContact(new NullLogger<OrganisationContact>());
+            var organisationFormalFramework = new OrganisationFormalFramework(new NullLogger<OrganisationFormalFramework>());
+            var organisationFunction = new OrganisationFunction(new NullLogger<OrganisationFunction>(), testContextFactory);
+            var organisationKey = new OrganisationKey(new NullLogger<OrganisationKey>());
+            var organisationLabel = new OrganisationLabel(new NullLogger<OrganisationLabel>());
+            var organisationLocation = new OrganisationLocation(new NullLogger<OrganisationLocation>());
+            var organisationOpeningHoursSpecification = new OrganisationOpeningHoursSpecification(new NullLogger<OrganisationOpeningHoursSpecification>());
+            var organisationOrganisationClassification = new OrganisationOrganisationClassification(new NullLogger<OrganisationOrganisationClassification>());
+            var organisationParent = new OrganisationParent(new NullLogger<OrganisationParent>());
+            var organisationRegulation = new OrganisationRegulation(new NullLogger<OrganisationRegulation>());
+            var organisationRelation = new OrganisationRelation(new NullLogger<OrganisationRelation>(), testContextFactory);
+
             var serviceProvider = new ServiceCollection()
                 .AddSingleton(organisationHandler)
                 .AddSingleton(organisationBankAccountHandler)
+                .AddSingleton(organisationBody)
+                .AddSingleton(organisationBuilding)
+                .AddSingleton(organisationCapacity)
+                .AddSingleton(organisationContact)
+                .AddSingleton(organisationFormalFramework)
+                .AddSingleton(organisationFunction)
+                .AddSingleton(organisationKey)
+                .AddSingleton(organisationLabel)
+                .AddSingleton(organisationLocation)
+                .AddSingleton(organisationOpeningHoursSpecification)
+                .AddSingleton(organisationOrganisationClassification)
+                .AddSingleton(organisationParent)
+                .AddSingleton(organisationRegulation)
+                .AddSingleton(organisationRelation)
                 .AddSingleton(new MemoryCachesMaintainer(new MemoryCaches(testContextFactory), testContextFactory))
                 .BuildServiceProvider();
 
-            _inProcessBus = new InProcessBus(
-                new NullLogger<InProcessBus>(),
-                new SecurityService(
-                    fixture.ContextFactory,
-                    new OrganisationRegistryConfigurationStub(),
-                    Mock.Of<ICache<OrganisationSecurityInformation>>()));
-            var registrar = new BusRegistrar(new NullLogger<BusRegistrar>(), _inProcessBus, () => serviceProvider);
+            var bus = new ElasticBus(new NullLogger<ElasticBus>());
+            _eventProcessor = new TestEventProcessor(bus, fixture);
+
+            var registrar = new ElasticBusRegistrar(new NullLogger<ElasticBusRegistrar>(), bus, () => serviceProvider);
             registrar.RegisterEventHandlers(OrganisationsRunner.EventHandlers);
         }
 
-        [EnvVarIgnoreFact]
-        public void InitializeProjection_CreatesIndex()
+        [EnvVarIgnoreFactAttribute]
+        public async void InitializeProjection_CreatesIndex()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
 
-            Handle(scenario.Create<InitialiseProjection>());
+            await _eventProcessor.Handle<OrganisationDocument>(
+                new List<IEnvelope>
+                {
+                    scenario.Create<InitialiseProjection>().ToEnvelope()
+                }
+            );
 
-            var indices = _fixture.Elastic.ReadClient.Indices
-                .Get(_fixture.ElasticSearchOptions.Value.OrganisationsReadIndex).Indices;
+            var indices = (await _fixture.Elastic.ReadClient.Indices.GetAsync(_fixture.ElasticSearchOptions.Value.OrganisationsReadIndex)).Indices;
             indices.Should().NotBeEmpty();
         }
 
-        [EnvVarIgnoreFact]
-        public void OrganisationCreated_CreatesDocument()
+        [EnvVarIgnoreFactAttribute]
+        public async void OrganisationCreated_CreatesDocument()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var organisationCreated = scenario.Create<OrganisationCreated>();
 
-            Handle(
-                initialiseProjection,
-                organisationCreated);
+            await _eventProcessor.Handle<OrganisationDocument>(
+                new List<IEnvelope>()
+                {
+                    initialiseProjection.ToEnvelope(),
+                    organisationCreated.ToEnvelope(),
+                }
+            );
 
-            var organisation =
-                _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
 
             organisation.Source.Name.Should().Be(organisationCreated.Name);
             organisation.Source.ShortName.Should().Be(organisationCreated.ShortName);
             organisation.Source.Description.Should().Be(organisationCreated.Description);
         }
 
-        [EnvVarIgnoreFact]
-        public void OrganisationKboBankAccountAdded_AddsBankAccount()
+        [EnvVarIgnoreFactAttribute]
+        public async void OrganisationKboBankAccountAdded_AddsBankAccount()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
 
@@ -108,14 +132,17 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var kboOrganisationBankAccountAdded = scenario.Create<KboOrganisationBankAccountAdded>();
             var kboOrganisationBankAccountAdded2 = scenario.Create<KboOrganisationBankAccountAdded>();
 
-            Handle(
-                initialiseProjection,
-                organisationCreated,
-                kboOrganisationBankAccountAdded,
-                kboOrganisationBankAccountAdded2);
+            await _eventProcessor.Handle<OrganisationDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    organisationCreated.ToEnvelope(),
+                    kboOrganisationBankAccountAdded.ToEnvelope(),
+                    kboOrganisationBankAccountAdded2.ToEnvelope()
+                }
+            );
 
-            var organisation =
-                _fixture.Elastic.ReadClient.Get<OrganisationDocument>(kboOrganisationBankAccountAdded.OrganisationId);
+            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(kboOrganisationBankAccountAdded.OrganisationId);
 
             organisation.Source.BankAccounts.Should().BeEquivalentTo(
                 new OrganisationDocument.OrganisationBankAccount(
@@ -124,18 +151,18 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                     kboOrganisationBankAccountAdded.IsIban,
                     kboOrganisationBankAccountAdded.Bic,
                     kboOrganisationBankAccountAdded.IsBic,
-                    Period.FromDates(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo)),
+                    Common.Period.FromDates(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo)),
                 new OrganisationDocument.OrganisationBankAccount(
                     kboOrganisationBankAccountAdded2.OrganisationBankAccountId,
                     kboOrganisationBankAccountAdded2.BankAccountNumber,
                     kboOrganisationBankAccountAdded2.IsIban,
                     kboOrganisationBankAccountAdded2.Bic,
                     kboOrganisationBankAccountAdded2.IsBic,
-                    Period.FromDates(kboOrganisationBankAccountAdded2.ValidFrom, kboOrganisationBankAccountAdded2.ValidTo)));
+                    Common.Period.FromDates(kboOrganisationBankAccountAdded2.ValidFrom, kboOrganisationBankAccountAdded2.ValidTo)));
         }
 
-        [EnvVarIgnoreFact]
-        public void OrganisationKboBankAccountRemoved_RemovesBankAccount()
+        [EnvVarIgnoreFactAttribute]
+        public async void OrganisationKboBankAccountRemoved_RemovesBankAccount()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
 
@@ -153,15 +180,18 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 kboOrganisationBankAccountToRemoveAdded.ValidFrom,
                 kboOrganisationBankAccountToRemoveAdded.ValidTo);
 
-            Handle(
-                initialiseProjection,
-                organisationCreated,
-                kboOrganisationBankAccountAdded,
-                kboOrganisationBankAccountToRemoveAdded,
-                kboOrganisationBankAccountRemoved);
+            await _eventProcessor.Handle<OrganisationDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    organisationCreated.ToEnvelope(),
+                    kboOrganisationBankAccountAdded.ToEnvelope(),
+                    kboOrganisationBankAccountToRemoveAdded.ToEnvelope(),
+                    kboOrganisationBankAccountRemoved.ToEnvelope()
+                }
+            );
 
-            var organisation =
-                _fixture.Elastic.ReadClient.Get<OrganisationDocument>(kboOrganisationBankAccountAdded.OrganisationId);
+            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(kboOrganisationBankAccountAdded.OrganisationId);
 
             organisation.Source.BankAccounts.Should().BeEquivalentTo(
                 new OrganisationDocument.OrganisationBankAccount(
@@ -170,58 +200,69 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                     kboOrganisationBankAccountAdded.IsIban,
                     kboOrganisationBankAccountAdded.Bic,
                     kboOrganisationBankAccountAdded.IsBic,
-                    Period.FromDates(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo)));
+                    Common.Period.FromDates(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo)));
         }
 
-        [EnvVarIgnoreFact]
-        public void OrganisationTerminated()
+        [EnvVarIgnoreFactAttribute]
+        public async void OrganisationTerminated()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
-            scenario.AddCustomization(new ParameterNameArg<bool>("forcedKboTermination", false));
+            var forcedKboTermination = false;
+            scenario.AddCustomization(new ParameterNameArg<bool>("forcedKboTermination", forcedKboTermination));
 
+            var organisationValidity = scenario.Create<DateTime?>() ?? scenario.Create<DateTime>();
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var organisationCreated = scenario.Create<OrganisationCreated>();
             var coupledWithKbo = scenario.Create<OrganisationCoupledWithKbo>();
-            var organisationTerminated = scenario.Create<OrganisationTerminated>();
+            var organisationTerminated = scenario.CreateOrganisationTerminated(organisationCreated.OrganisationId, organisationValidity, forcedKboTermination);
 
-            Handle(
-                initialiseProjection,
-                organisationCreated,
-                coupledWithKbo,
-                organisationTerminated);
+            await _eventProcessor.Handle<OrganisationDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    organisationCreated.ToEnvelope(),
+                    coupledWithKbo.ToEnvelope(),
+                    organisationTerminated.ToEnvelope(),
+                }
+            );
 
-            var organisation =
-                _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+            await _fixture.Elastic.ReadClient.Indices.RefreshAsync(Indices.Index<OrganisationDocument>());
+            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
 
             organisation.Source.Name.Should().Be(organisationCreated.Name);
             organisation.Source.ShortName.Should().Be(organisationCreated.ShortName);
             organisation.Source.Description.Should().Be(organisationCreated.Description);
             organisation.Source.Validity.Start.Should().Be(organisationCreated.ValidFrom);
-            organisation.Source.Validity.End.Should().Be(organisationTerminated.FieldsToTerminate.OrganisationValidity);
             organisation.Source.KboNumber.Should().Be(coupledWithKbo.KboNumber);
+            organisation.Source.Validity.End.Should().Be(organisationValidity);
         }
 
-        [EnvVarIgnoreFact]
-        public void OrganisationTerminatedWithForcedKboTermination()
+        [EnvVarIgnoreFactAttribute]
+        public async void OrganisationTerminatedWithForcedKboTermination()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
-            scenario.AddCustomization(new ParameterNameArg<bool>("forcedKboTermination", true));
+            var forcedKboTermination = true;
+            scenario.AddCustomization(new ParameterNameArg<bool>("forcedKboTermination", forcedKboTermination));
 
+            var organisationValidity = scenario.Create<DateTime?>() ?? scenario.Create<DateTime>();
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var organisationCreated = scenario.Create<OrganisationCreated>();
             var coupledWithKbo = scenario.Create<OrganisationCoupledWithKbo>();
-            var organisationTerminated = scenario.Create<OrganisationTerminated>();
+            var organisationTerminated = scenario.CreateOrganisationTerminated(organisationCreated.OrganisationId, organisationValidity, forcedKboTermination);
 
-            Handle(
-                initialiseProjection,
-                organisationCreated,
-                coupledWithKbo,
-                organisationTerminated);
+            await _eventProcessor.Handle<OrganisationDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    organisationCreated.ToEnvelope(),
+                    coupledWithKbo.ToEnvelope(),
+                    organisationTerminated.ToEnvelope(),
+                }
+            );
 
-            var organisation =
-                _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
 
             organisation.Source.Name.Should().Be(organisationCreated.Name);
             organisation.Source.ShortName.Should().Be(organisationCreated.ShortName);
@@ -229,14 +270,6 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             organisation.Source.Validity.Start.Should().Be(organisationCreated.ValidFrom);
             organisation.Source.Validity.End.Should().Be(organisationTerminated.FieldsToTerminate.OrganisationValidity);
             organisation.Source.KboNumber.Should().BeEmpty();
-        }
-
-        private void Handle(params IEvent[] envelopes)
-        {
-            foreach (var envelope in envelopes)
-            {
-                _inProcessBus.Publish(null, null, (dynamic)envelope.ToEnvelope());
-            }
         }
     }
 }

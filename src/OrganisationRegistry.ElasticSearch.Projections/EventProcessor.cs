@@ -48,106 +48,107 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 AllowSynchronousContinuations = false
             });
 
-            _messagePump = Task.Factory.StartNew(async () =>
+            _messagePump = Task.Factory.StartNew(
+                async () =>
                 {
-                    try
-                    {
-                        logger.LogInformation("[{Context}] EventProcessor message pump entered ...", "body");
-                        while (await _messageChannel.Reader.WaitToReadAsync(_messagePumpCancellation.Token)
-                            .ConfigureAwait(false))
-                        {
-                            while (_messageChannel.Reader.TryRead(out var message))
-                            {
-                                switch (message)
-                                {
-                                    case Resume _:
-                                        logger.LogInformation("[{Context}] Resuming ...", "body");
-
-                                        using (var context = contextFactory.Create())
-                                        {
-                                            var toggle = await context.Configuration.SingleOrDefaultAsync(item =>
-                                                item.Key == $"{TogglesConfigurationSection.Name}:{nameof(TogglesConfigurationSection.ElasticSearchProjectionsAvailable)}");
-                                            if (!bool.TryParse(toggle?.Value, out var enabled) || enabled)
-                                            {
-                                                await _messageChannel.Writer
-                                                    .WriteAsync(new CatchUp(CatchUpBatchSize),
-                                                        _messagePumpCancellation.Token)
-                                                    .ConfigureAwait(false);
-                                            }
-                                            else
-                                            {
-                                                await scheduler.Schedule(async token =>
-                                                {
-                                                    if (!_messagePumpCancellation.IsCancellationRequested)
-                                                    {
-                                                        await _messageChannel.Writer
-                                                            .WriteAsync(
-                                                                new Resume(), _messagePumpCancellation.Token)
-                                                            .ConfigureAwait(false);
-                                                    }
-                                                }, WhenNotEnabledResumeAfter).ConfigureAwait(false);
-                                            }
-                                        }
-
-                                        break;
-                                    case CatchUp catchUp:
-                                        try
-                                        {
-                                            await cacheRunner.Run();
-                                            await individualRebuildRunner.Run();
-                                            await peopleRunner.Run();
-                                            await bodyRunner.Run();
-                                            await organisationsRunner.Run();
-                                            await scheduler.Schedule(async token =>
-                                            {
-                                                if (!_messagePumpCancellation.IsCancellationRequested)
-                                                {
-                                                    await _messageChannel.Writer
-                                                        .WriteAsync(
-                                                            new Resume(), _messagePumpCancellation.Token)
-                                                        .ConfigureAwait(false);
-                                                }
-                                            }, ResumeAfter).ConfigureAwait(false);
-
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            _logger.LogCritical(0, ex,
-                                                "An exception occurred while handling envelopes.");
-
-                                            await scheduler.Schedule(async token =>
-                                            {
-                                                if (!_messagePumpCancellation.IsCancellationRequested)
-                                                {
-                                                    await _messageChannel.Writer
-                                                        .WriteAsync(new Resume(), _messagePumpCancellation.Token)
-                                                        .ConfigureAwait(false);
-                                                }
-                                            }, ResumeAfter).ConfigureAwait(false);
-                                        }
-
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                    catch (TaskCanceledException)
-                    {
-                        logger.LogInformation("EventProcessor message pump is exiting due to cancellation");
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        logger.LogInformation("EventProcessor message pump is exiting due to cancellation");
-                    }
-                    catch (Exception exception)
-                    {
-                        logger.LogError(exception, "EventProcessor message pump is exiting due to a bug");
-                    }
-                }, _messagePumpCancellation.Token,
+                    var elasticRunners = new ElasticRunners(bodyRunner, peopleRunner, cacheRunner, individualRebuildRunner, organisationsRunner);
+                    await PumpMessages(scheduler, logger, elasticRunners, contextFactory);
+                },
+                _messagePumpCancellation.Token,
                 TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach,
                 TaskScheduler.Default);
         }
 
+        private async Task PumpMessages(Scheduler scheduler, ILogger<EventProcessor> logger, ElasticRunners runners, IContextFactory contextFactory)
+        {
+            try
+            {
+                logger.LogInformation("[{Context}] EventProcessor message pump entered ...", "body");
+                while (await _messageChannel.Reader.WaitToReadAsync(_messagePumpCancellation.Token)
+                           .ConfigureAwait(false))
+                {
+                    while (_messageChannel.Reader.TryRead(out var message))
+                    {
+                        switch (message)
+                        {
+                            case Resume:
+                                await ResumeAction(scheduler, logger, contextFactory);
+                                break;
+                            case CatchUp:
+                                await CatchUpAction(scheduler, runners);
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                logger.LogInformation("EventProcessor message pump is exiting due to cancellation");
+            }
+            catch (OperationCanceledException)
+            {
+                logger.LogInformation("EventProcessor message pump is exiting due to cancellation");
+            }
+            catch (Exception exception)
+            {
+                logger.LogError(exception, "EventProcessor message pump is exiting due to a bug");
+            }
+        }
+
+        private async Task CatchUpAction(Scheduler scheduler, ElasticRunners runners)
+        {
+            try
+            {
+                await runners.CacheRunner.Run();
+                await runners.IndividualRebuildRunner.Run();
+                await runners.PeopleRunner.Run();
+                await runners.BodyRunner.Run();
+                await runners.OrganisationsRunner.Run();
+
+                await ScheduleResume(scheduler, ResumeAfter);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogCritical(0, ex, "An exception occurred while handling envelopes");
+
+                await ScheduleResume(scheduler, ResumeAfter);
+            }
+        }
+
+        private async Task ResumeAction(Scheduler scheduler, ILogger<EventProcessor> logger, IContextFactory contextFactory)
+        {
+            logger.LogInformation("[{Context}] Resuming ...", "body");
+
+            using (var context = contextFactory.Create())
+            {
+                var toggle = await context.Configuration.SingleOrDefaultAsync(
+                    item =>
+                        item.Key == $"{TogglesConfigurationSection.Name}:{nameof(TogglesConfigurationSection.ElasticSearchProjectionsAvailable)}");
+                if (!bool.TryParse(toggle?.Value, out var enabled) || enabled)
+                {
+                    await _messageChannel.Writer
+                        .WriteAsync(new CatchUp(CatchUpBatchSize), _messagePumpCancellation.Token)
+                        .ConfigureAwait(false);
+                }
+                else
+                {
+                    await ScheduleResume(scheduler, WhenNotEnabledResumeAfter);
+                }
+            }
+        }
+
+        private async Task ScheduleResume(Scheduler scheduler, TimeSpan resumeAfter)
+            => await scheduler.Schedule(
+                async _ =>
+                {
+                    if (!_messagePumpCancellation.IsCancellationRequested)
+                    {
+                        await _messageChannel.Writer
+                            .WriteAsync(new Resume(), _messagePumpCancellation.Token)
+                            .ConfigureAwait(false);
+                    }
+                },
+                resumeAfter).ConfigureAwait(false);
 
         private class Resume
         {
@@ -163,12 +164,14 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             public int BatchSize { get; }
         }
 
+        private record ElasticRunners(BodyRunner BodyRunner, PeopleRunner PeopleRunner, CacheRunner CacheRunner, IndividualRebuildRunner IndividualRebuildRunner, OrganisationsRunner OrganisationsRunner);
+
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("[{Context}] Starting event processor ...", "body");
             await _scheduler.StartAsync(cancellationToken).ConfigureAwait(false);
             await _messageChannel.Writer.WriteAsync(new Resume(), cancellationToken).ConfigureAwait(false);
-            _logger.LogInformation("[{Context}] Started event processor.", "body");
+            _logger.LogInformation("[{Context}] Started event processor", "body");
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
@@ -179,7 +182,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
             await _messagePump.ConfigureAwait(false);
             _messagePumpCancellation.Dispose();
             await _scheduler.StopAsync(cancellationToken).ConfigureAwait(false);
-            _logger.LogInformation("[{Context}] Stopped event processor.", "body");
+            _logger.LogInformation("[{Context}] Stopped event processor", "body");
         }
     }
 }
