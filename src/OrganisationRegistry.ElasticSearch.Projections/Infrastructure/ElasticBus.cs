@@ -12,7 +12,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure
     public class ElasticBus
     {
         private readonly ILogger<ElasticBus> _logger;
-        private readonly Dictionary<Type, List<Func<DbConnection, DbTransaction, IMessage, Task<IElasticChange>>>> _eventRoutes = new Dictionary<Type, List<Func<DbConnection, DbTransaction, IMessage, Task<IElasticChange>>>>();
+        private readonly Dictionary<Type, List<Func<DbConnection, DbTransaction, IMessage, Task<IElasticChange>>>> _eventRoutes = new();
 
         public ElasticBus(ILogger<ElasticBus> logger)
         {

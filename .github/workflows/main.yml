@@ -109,6 +109,7 @@ jobs:
         GIT_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
         GIT_AUTHOR_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
         GIT_COMMITTER_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
+        IGNORE_ES_TESTS: ${{ 'IGNORE' }}
 
     - name: Set Release Version
       id: set-version

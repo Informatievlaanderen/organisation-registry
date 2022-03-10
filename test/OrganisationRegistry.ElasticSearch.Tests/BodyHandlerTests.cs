@@ -6,15 +6,17 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using FluentAssertions;
     using Infrastructure.Events;
     using LifecyclePhaseType.Events;
-    using Microsoft.Extensions.Logging;
     using Projections.Body;
     using Projections.Infrastructure;
     using Scenario;
     using Xunit;
     using System;
+    using System.Collections.Generic;
     using App.Metrics;
     using Scenario.Specimen;
     using Function.Events;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging.Abstractions;
     using Organisation.Events;
     using Person.Events;
     using SeatType.Events;
@@ -23,41 +25,60 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     public class BodyHandlerTests
     {
         private readonly ElasticSearchFixture _fixture;
-        private readonly BodyHandler _handler;
+        private readonly TestEventProcessor _eventProcessor;
 
         public BodyHandlerTests(ElasticSearchFixture fixture)
         {
             _fixture = fixture;
-            _handler = new BodyHandler(
-                logger: _fixture.LoggerFactory.CreateLogger<BodyHandler>(),
-                elastic: _fixture.Elastic,
-                contextFactory: _fixture.ContextFactory,
-                elasticSearchOptions: _fixture.ElasticSearchOptions,
+
+            var bodyHandler = new BodyHandler(
+                new NullLogger<BodyHandler>(),
+                _fixture.Elastic,
+                _fixture.ContextFactory,
+                _fixture.ElasticSearchOptions,
                 new MetricsBuilder().Build());
+            var serviceProvider = new ServiceCollection()
+                .AddSingleton(bodyHandler)
+                .BuildServiceProvider();
+
+            var bus = new ElasticBus(new NullLogger<ElasticBus>());
+            _eventProcessor = new TestEventProcessor(bus, fixture);
+
+            var registrar = new ElasticBusRegistrar(new NullLogger<ElasticBusRegistrar>(), bus, () => serviceProvider);
+            registrar.RegisterEventHandlers(BodyRunner.EventHandlers);
         }
 
         [EnvVarIgnoreFact]
-        public void InitializeProjection_CreatesIndex()
+        public async void InitializeProjection_CreatesIndex()
         {
             var scenario = new BodyScenario(Guid.NewGuid());
 
-            Handle(scenario.Create<InitialiseProjection>());
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    scenario.Create<InitialiseProjection>().ToEnvelope(),
+                }
+            );
 
             var indices = _fixture.Elastic.ReadClient.Indices.Get(_fixture.ElasticSearchOptions.Value.BodyWriteIndex).Indices;
             indices.Should().NotBeEmpty();
         }
 
         [EnvVarIgnoreFact]
-        public void BodyRegistered_CreatesDocument()
+        public async void BodyRegistered_CreatesDocument()
         {
             var scenario = new BodyScenario(Guid.NewGuid());
 
             var initialiseProjection = scenario.Create<InitialiseProjection>();
             var bodyRegistered = scenario.Create<BodyRegistered>();
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                }
+            );
 
             var bodyDocument = _fixture.Elastic.ReadClient.Get<BodyDocument>(bodyRegistered.BodyId);
 
@@ -71,7 +92,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         }
 
         [EnvVarIgnoreFact]
-        public void LifecyclePhaseTypeUpdated_UpdatesExistingBodyLifecyclePhases()
+        public async void LifecyclePhaseTypeUpdated_UpdatesExistingBodyLifecyclePhases()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new BodyScenario(bodyId);
@@ -81,11 +102,15 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var bodyLifecyclePhaseAdded = scenario.Create<BodyLifecyclePhaseAdded>();
             var lifecyclePhaseTypeUpdated = scenario.Create<LifecyclePhaseTypeUpdated>();
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                bodyLifecyclePhaseAdded,
-                lifecyclePhaseTypeUpdated);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    bodyLifecyclePhaseAdded.ToEnvelope(),
+                    lifecyclePhaseTypeUpdated.ToEnvelope(),
+                }
+            );
 
             _fixture.Elastic.ReadClient
                 .Get<BodyDocument>(bodyId)
@@ -97,7 +122,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         }
 
         [EnvVarIgnoreFact]
-        public void MultipleBodySeatAddeds_CreatesMultipleBodySeats()
+        public async void MultipleBodySeatAddeds_CreatesMultipleBodySeats()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new ScenarioBase<BodyHandler>(
@@ -108,11 +133,15 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var bodySeatAdded = scenario.Create<BodySeatAdded>();
             var anotherBodySeatAdded = scenario.Create<BodySeatAdded>();
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                bodySeatAdded,
-                anotherBodySeatAdded);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    bodySeatAdded.ToEnvelope(),
+                    anotherBodySeatAdded.ToEnvelope(),
+                }
+            );
 
             _fixture.Elastic.ReadClient
                 .Get<BodyDocument>(bodyId)
@@ -122,7 +151,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         }
 
         [EnvVarIgnoreFact]
-        public void AssignedPersonToBodySeat_AddsMandateToBodySeat()
+        public async void AssignedPersonToBodySeat_AddsMandateToBodySeat()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new BodyScenario(bodyId);
@@ -132,11 +161,15 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var bodySeatAdded = scenario.Create<BodySeatAdded>();
             var assignedPersonToBodySeat = scenario.Create<AssignedPersonToBodySeat>();
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                bodySeatAdded,
-                assignedPersonToBodySeat);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    bodySeatAdded.ToEnvelope(),
+                    assignedPersonToBodySeat.ToEnvelope(),
+                }
+            );
 
             var bodyMandate = _fixture.Elastic.ReadClient
                 .Get<BodyDocument>(bodyId)
@@ -158,7 +191,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         }
 
         [EnvVarIgnoreFact]
-        public void ReassignedPersonToBodySeat_UpdatesMandate()
+        public async void ReassignedPersonToBodySeat_UpdatesMandate()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new BodyScenario(bodyId);
@@ -169,12 +202,16 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var assignedPersonToBodySeat = scenario.Create<AssignedPersonToBodySeat>();
             var reassignedPersonToBodySeat = scenario.Create<ReassignedPersonToBodySeat>();
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                bodySeatAdded,
-                assignedPersonToBodySeat,
-                reassignedPersonToBodySeat);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    bodySeatAdded.ToEnvelope(),
+                    assignedPersonToBodySeat.ToEnvelope(),
+                    reassignedPersonToBodySeat.ToEnvelope(),
+                }
+            );
 
             var bodyMandate = _fixture.Elastic.ReadClient
                 .Get<BodyDocument>(bodyId)
@@ -196,7 +233,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         }
 
         [EnvVarIgnoreFact]
-        public void ReassignedPersonToBodySeat_DoesNotUpdateOtherMandates()
+        public async void ReassignedPersonToBodySeat_DoesNotUpdateOtherMandates()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new ScenarioBase<BodyHandler>(
@@ -213,13 +250,17 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             scenario.AddCustomization(new ParameterNameArg<Guid>("bodyMandateId", assignedPersonToBodySeat.BodyMandateId));
             var reassignedPersonToBodySeat = scenario.Create<ReassignedPersonToBodySeat>();
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                bodySeatAdded,
-                assignedPersonToBodySeat,
-                assignedOtherPersonToBodySeat,
-                reassignedPersonToBodySeat);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    bodySeatAdded.ToEnvelope(),
+                    assignedPersonToBodySeat.ToEnvelope(),
+                    assignedOtherPersonToBodySeat.ToEnvelope(),
+                    reassignedPersonToBodySeat.ToEnvelope(),
+                }
+            );
 
             var bodySeat = _fixture.Elastic.ReadClient
                 .Get<BodyDocument>(bodyId)
@@ -245,7 +286,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         }
 
         [EnvVarIgnoreFact]
-        public void MultipleAssignPersonToBodySeat_CreatesMultipleBodyMandates()
+        public async void MultipleAssignPersonToBodySeat_CreatesMultipleBodyMandates()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new ScenarioBase<BodyHandler>(
@@ -258,12 +299,16 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var assignedPersonToBodySeat = scenario.Create<AssignedPersonToBodySeat>();
             var assignedOtherPersonToBodySeat = scenario.Create<AssignedPersonToBodySeat>();
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                bodySeatAdded,
-                assignedPersonToBodySeat,
-                assignedOtherPersonToBodySeat);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    bodySeatAdded.ToEnvelope(),
+                    assignedPersonToBodySeat.ToEnvelope(),
+                    assignedOtherPersonToBodySeat.ToEnvelope(),
+                }
+            );
 
             _fixture.Elastic.ReadClient
                 .Get<BodyDocument>(bodyId)
@@ -275,7 +320,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         }
 
         [EnvVarIgnoreFact]
-        public void ReassignedOrganisationToBodySeat_UpdatesMandate()
+        public async void ReassignedOrganisationToBodySeat_UpdatesMandate()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new BodyScenario(bodyId);
@@ -286,12 +331,16 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var assignedOrganisationToBodySeat = scenario.Create<AssignedOrganisationToBodySeat>();
             var reassignedOrganisationToBodySeat = scenario.Create<ReassignedOrganisationToBodySeat>();
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                bodySeatAdded,
-                assignedOrganisationToBodySeat,
-                reassignedOrganisationToBodySeat);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    bodySeatAdded.ToEnvelope(),
+                    assignedOrganisationToBodySeat.ToEnvelope(),
+                    reassignedOrganisationToBodySeat.ToEnvelope(),
+                }
+            );
 
             var bodyMandate = _fixture.Elastic.ReadClient
                 .Get<BodyDocument>(bodyId)
@@ -313,7 +362,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         }
 
         [EnvVarIgnoreFact]
-        public void ReassignedFunctionTypeToBodySeat_UpdatesMandate()
+        public async void ReassignedFunctionTypeToBodySeat_UpdatesMandate()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new BodyScenario(bodyId);
@@ -324,12 +373,16 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var assignedFunctionTypeToBodySeat = scenario.Create<AssignedFunctionTypeToBodySeat>();
             var reassignedFunctionToBodySeat = scenario.Create<ReassignedFunctionTypeToBodySeat>();
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                bodySeatAdded,
-                assignedFunctionTypeToBodySeat,
-                reassignedFunctionToBodySeat);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    bodySeatAdded.ToEnvelope(),
+                    assignedFunctionTypeToBodySeat.ToEnvelope(),
+                    reassignedFunctionToBodySeat.ToEnvelope(),
+                }
+            );
 
             var bodyMandate = _fixture.Elastic.ReadClient
                 .Get<BodyDocument>(bodyId)
@@ -351,7 +404,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         }
 
         [EnvVarIgnoreFact]
-        public void PersonAssignedToDelegation_AddsDelegation()
+        public async void PersonAssignedToDelegation_AddsDelegation()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new BodyScenario(bodyId);
@@ -360,22 +413,31 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var bodyRegistered = scenario.Create<BodyRegistered>();
             var bodySeatAdded = scenario.Create<BodySeatAdded>();
             var assignedOrganisationToBodySeat = scenario.Create<AssignedOrganisationToBodySeat>();
-            var personAssignedToDelegation = scenario.Create<PersonAssignedToDelegation>();
+            var personAssignedToDelegation = scenario.CreatePersonAssignedToDelegation(
+                bodyId,
+                bodySeatAdded.BodySeatId,
+                assignedOrganisationToBodySeat.BodyMandateId);
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                bodySeatAdded,
-                assignedOrganisationToBodySeat,
-                personAssignedToDelegation);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    bodySeatAdded.ToEnvelope(),
+                    assignedOrganisationToBodySeat.ToEnvelope(),
+                    personAssignedToDelegation.ToEnvelope(),
+                }
+            );
 
-            var delegation = _fixture.Elastic.ReadClient
+            var bodySeat = _fixture.Elastic.ReadClient
                 .Get<BodyDocument>(bodyId)
                 .Source
                 .Seats
-                .Single()
+                .Single();
+            var bodyMandate = bodySeat
                 .Mandates
-                .Single()
+                .Single();
+            var delegation = bodyMandate
                 .Delegations
                 .Single();
 
@@ -383,15 +445,16 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             delegation.PersonId.Should().Be(personAssignedToDelegation.PersonId);
             delegation.PersonName.Should().Be(personAssignedToDelegation.PersonFullName);
             delegation.Contacts.Should().HaveCount(personAssignedToDelegation.Contacts.Count);
-            foreach (var contact in personAssignedToDelegation.Contacts)
+
+            foreach (var (key, value) in personAssignedToDelegation.Contacts)
             {
-                var delegationContact = delegation.Contacts.Single(x => x.ContactTypeId == contact.Key);
-                delegationContact.Value.Should().Be(contact.Value);
+                var delegationContact = delegation.Contacts.Single(x => x.ContactTypeId == key);
+                delegationContact.Value.Should().Be(value);
             }
         }
 
         [EnvVarIgnoreFact]
-        public void PersonAssignedToDelegationUpdated_UpdatesDelegation()
+        public async void PersonAssignedToDelegationUpdated_UpdatesDelegation()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new BodyScenario(bodyId);
@@ -400,40 +463,50 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var bodyRegistered = scenario.Create<BodyRegistered>();
             var bodySeatAdded = scenario.Create<BodySeatAdded>();
             var assignedOrganisationToBodySeat = scenario.Create<AssignedOrganisationToBodySeat>();
-            var personAssignedToDelegation = scenario.Create<PersonAssignedToDelegation>();
-            var personAssignedToDelegationUpdated = scenario.Create<PersonAssignedToDelegationUpdated>();
+            var personAssignedToDelegation = scenario.CreatePersonAssignedToDelegation(
+                bodyId,
+                bodySeatAdded.BodySeatId,
+                assignedOrganisationToBodySeat.BodyMandateId);
+            var personAssignedToDelegationUpdated = scenario.CreatePersonAssignedToDelegationUpdated(
+                bodyId,
+                bodySeatAdded.BodySeatId,
+                assignedOrganisationToBodySeat.BodyMandateId,
+                personAssignedToDelegation.DelegationAssignmentId);
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                bodySeatAdded,
-                assignedOrganisationToBodySeat,
-                personAssignedToDelegation,
-                personAssignedToDelegationUpdated);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    bodySeatAdded.ToEnvelope(),
+                    assignedOrganisationToBodySeat.ToEnvelope(),
+                    personAssignedToDelegation.ToEnvelope(),
+                    personAssignedToDelegationUpdated.ToEnvelope(),
+                }
+            );
 
-            var delegation = _fixture.Elastic.ReadClient
+            var bodySeat = _fixture.Elastic.ReadClient
                 .Get<BodyDocument>(bodyId)
-                .Source
-                .Seats
-                .Single()
-                .Mandates
-                .Single()
-                .Delegations
-                .Single();
+                .Source.Seats.Single();
+            var bodyMandate = bodySeat
+                .Mandates.Single();
+            var delegation = bodyMandate
+                .Delegations.Single();
 
             delegation.DelegationAssignmentId.Should().Be(personAssignedToDelegationUpdated.DelegationAssignmentId);
             delegation.PersonId.Should().Be(personAssignedToDelegationUpdated.PersonId);
             delegation.PersonName.Should().Be(personAssignedToDelegationUpdated.PersonFullName);
             delegation.Contacts.Should().HaveCount(personAssignedToDelegationUpdated.Contacts.Count);
-            foreach (var contact in personAssignedToDelegationUpdated.Contacts)
+
+            foreach (var (key, value) in personAssignedToDelegationUpdated.Contacts)
             {
-                var delegationContact = delegation.Contacts.Single(x => x.ContactTypeId == contact.Key);
-                delegationContact.Value.Should().Be(contact.Value);
+                var delegationContact = delegation.Contacts.Single(x => x.ContactTypeId == key);
+                delegationContact.Value.Should().Be(value);
             }
         }
 
         [EnvVarIgnoreFact]
-        public void PersonAssignedToDelegationRemoved_RemovesDelegation()
+        public async void PersonAssignedToDelegationRemoved_RemovesDelegation()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new BodyScenario(bodyId);
@@ -442,18 +515,33 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var bodyRegistered = scenario.Create<BodyRegistered>();
             var bodySeatAdded = scenario.Create<BodySeatAdded>();
             var assignedOrganisationToBodySeat = scenario.Create<AssignedOrganisationToBodySeat>();
-            var personAssignedToDelegation = scenario.Create<PersonAssignedToDelegation>();
-            var personAssignedToDelegationUpdated = scenario.Create<PersonAssignedToDelegationUpdated>();
-            var personAssignedToDelegationRemoved = scenario.Create<PersonAssignedToDelegationRemoved>();
+            var personAssignedToDelegation = scenario.CreatePersonAssignedToDelegation(
+                bodyId,
+                bodySeatAdded.BodySeatId,
+                assignedOrganisationToBodySeat.BodyMandateId);
+            var personAssignedToDelegationUpdated = scenario.CreatePersonAssignedToDelegationUpdated(
+                bodyId,
+                bodySeatAdded.BodySeatId,
+                assignedOrganisationToBodySeat.BodyMandateId,
+                personAssignedToDelegation.DelegationAssignmentId);
+            var personAssignedToDelegationRemoved = scenario.CreatePersonAssignedToDelegationRemoved(
+                bodyId,
+                bodySeatAdded.BodySeatId,
+                assignedOrganisationToBodySeat.BodyMandateId,
+                personAssignedToDelegation.DelegationAssignmentId);
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                bodySeatAdded,
-                assignedOrganisationToBodySeat,
-                personAssignedToDelegation,
-                personAssignedToDelegationUpdated,
-                personAssignedToDelegationRemoved);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    bodySeatAdded.ToEnvelope(),
+                    assignedOrganisationToBodySeat.ToEnvelope(),
+                    personAssignedToDelegation.ToEnvelope(),
+                    personAssignedToDelegationUpdated.ToEnvelope(),
+                    personAssignedToDelegationRemoved.ToEnvelope(),
+                }
+            );
 
             _fixture.Elastic.ReadClient
                 .Get<BodyDocument>(bodyId)
@@ -467,7 +555,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         }
 
         [EnvVarIgnoreFact]
-        public void PersonRenamed_RenamesInBodySeat()
+        public async void PersonRenamed_RenamesInBodySeat()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new BodyScenario(bodyId);
@@ -478,12 +566,16 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var assignedPersonToBodySeat = scenario.Create<AssignedPersonToBodySeat>();
             var personUpdated = scenario.Create<PersonUpdated>();
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                bodySeatAdded,
-                assignedPersonToBodySeat,
-                personUpdated);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    bodySeatAdded.ToEnvelope(),
+                    assignedPersonToBodySeat.ToEnvelope(),
+                    personUpdated.ToEnvelope(),
+                }
+            );
 
             var delegation = _fixture.Elastic.ReadClient
                 .Get<BodyDocument>(bodyId)
@@ -499,7 +591,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         }
 
         [EnvVarIgnoreFact]
-        public void OrganisationRenamed_RenamesInBodySeat()
+        public async void OrganisationRenamed_RenamesInBodySeat()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new BodyScenario(bodyId);
@@ -510,12 +602,16 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var assignedOrganisationToBodySeat = scenario.Create<AssignedOrganisationToBodySeat>();
             var organisationInfoUpdated = scenario.Create<OrganisationInfoUpdated>();
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                bodySeatAdded,
-                assignedOrganisationToBodySeat,
-                organisationInfoUpdated);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    bodySeatAdded.ToEnvelope(),
+                    assignedOrganisationToBodySeat.ToEnvelope(),
+                    organisationInfoUpdated.ToEnvelope(),
+                }
+            );
 
             var delegation = _fixture.Elastic.ReadClient
                 .Get<BodyDocument>(bodyId)
@@ -531,7 +627,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         }
 
         [EnvVarIgnoreFact]
-        public void FunctionTypeRenamed_RenamesInBodySeat()
+        public async void FunctionTypeRenamed_RenamesInBodySeat()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new BodyScenario(bodyId);
@@ -542,12 +638,16 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var assignedFunctionTypeToBodySeat = scenario.Create<AssignedFunctionTypeToBodySeat>();
             var functionTypeUpdated = scenario.Create<FunctionUpdated>();
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                bodySeatAdded,
-                assignedFunctionTypeToBodySeat,
-                functionTypeUpdated);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    bodySeatAdded.ToEnvelope(),
+                    assignedFunctionTypeToBodySeat.ToEnvelope(),
+                    functionTypeUpdated.ToEnvelope(),
+                }
+            );
 
             var delegation = _fixture.Elastic.ReadClient
                 .Get<BodyDocument>(bodyId)
@@ -563,7 +663,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         }
 
         [EnvVarIgnoreFact]
-        public void FunctionTypeOrOrganisationOrPersonRenamed_DoesNotCrashBecauseNoDocumentsFound()
+        public async void FunctionTypeOrOrganisationOrPersonRenamed_DoesNotCrashBecauseNoDocumentsFound()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new BodyScenario(bodyId);
@@ -574,16 +674,20 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var organisationInfoUpdated = scenario.Create<OrganisationInfoUpdated>();
             var personUpdated = scenario.Create<PersonUpdated>();
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                functionTypeUpdated,
-                organisationInfoUpdated,
-                personUpdated);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    functionTypeUpdated.ToEnvelope(),
+                    organisationInfoUpdated.ToEnvelope(),
+                    personUpdated.ToEnvelope(),
+                }
+            );
         }
 
         [EnvVarIgnoreFact]
-        public void SeatTypeUpdated_UpdatesBodySeatType()
+        public async void SeatTypeUpdated_UpdatesBodySeatType()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new ScenarioBase<BodyHandler>(
@@ -596,12 +700,16 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             scenario.AddCustomization(new ParameterNameArg<Guid>("seatTypeId", bodySeatAdded.SeatTypeId));
             var seatTypeUpdated = scenario.Create<SeatTypeUpdated>();
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                bodySeatAdded,
-                anotherBodySeatAdded,
-                seatTypeUpdated);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    bodySeatAdded.ToEnvelope(),
+                    anotherBodySeatAdded.ToEnvelope(),
+                    seatTypeUpdated.ToEnvelope(),
+                }
+            );
 
             var seats = _fixture.Elastic.ReadClient
                 .Get<BodyDocument>(bodyId)
@@ -616,7 +724,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         }
 
         [EnvVarIgnoreFact]
-        public void PersonUpdated_UpdatesDelegationsPersonName()
+        public async void PersonUpdated_UpdatesDelegationsPersonName()
         {
             var bodyId = Guid.NewGuid();
             var scenario = new BodyScenario(bodyId);
@@ -625,16 +733,24 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var bodyRegistered = scenario.Create<BodyRegistered>();
             var bodySeatAdded = scenario.Create<BodySeatAdded>();
             var assignedOrganisationToBodySeat = scenario.Create<AssignedOrganisationToBodySeat>();
-            var personAssignedToDelegation = scenario.Create<PersonAssignedToDelegation>();
             var personUpdated = scenario.Create<PersonUpdated>();
+            var personAssignedToDelegation = scenario.CreatePersonAssignedToDelegation(
+                bodyId,
+                bodySeatAdded.BodySeatId,
+                assignedOrganisationToBodySeat.BodyMandateId,
+                $"{personUpdated.FirstName} {personUpdated.Name}");
 
-            Handle(
-                initialiseProjection,
-                bodyRegistered,
-                bodySeatAdded,
-                assignedOrganisationToBodySeat,
-                personAssignedToDelegation,
-                personUpdated);
+            await _eventProcessor.Handle<BodyDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    bodyRegistered.ToEnvelope(),
+                    bodySeatAdded.ToEnvelope(),
+                    assignedOrganisationToBodySeat.ToEnvelope(),
+                    personAssignedToDelegation.ToEnvelope(),
+                    personUpdated.ToEnvelope(),
+                }
+            );
 
             var delegation = _fixture.Elastic.ReadClient
                 .Get<BodyDocument>(bodyId)
@@ -646,15 +762,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 .Delegations
                 .Single();
 
-            delegation.PersonName.Should().Be(personUpdated.FirstName + " " + personUpdated.Name);
-        }
-
-        private void Handle(params IEvent[] envelopes)
-        {
-            foreach (var envelope in envelopes)
-            {
-                _handler.Handle(null, null, (dynamic)envelope.ToEnvelope());
-            }
+            delegation.PersonName.Should().Be($"{personUpdated.FirstName} {personUpdated.Name}");
         }
     }
 }

@@ -7,10 +7,10 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     {
         public EnvVarIgnoreFactAttribute()
         {
-            string envVar = "ES_TESTS";
+            const string envVar = "IGNORE_ES_TESTS";
             var env = Environment.GetEnvironmentVariable(envVar);
-            if (string.IsNullOrEmpty(env))
-                Skip = $"Please set {envVar} env var to run.";
+            if (!string.IsNullOrEmpty(env))
+                Skip = $"Ignored because {envVar} env var is set.";
         }
     }
 }

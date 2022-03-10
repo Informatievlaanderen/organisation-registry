@@ -19,8 +19,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using OrganisationRegistry.Person.Events;
     using SqlServer;
 
-    public class Person :
-        Infrastructure.BaseProjection<Person>,
+    public class Person : BaseProjection<Person>,
         IElasticEventHandler<InitialiseProjection>,
         IElasticEventHandler<PersonCreated>,
         IElasticEventHandler<PersonUpdated>
