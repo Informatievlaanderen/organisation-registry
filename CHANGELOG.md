@@ -1,3 +1,10 @@
+# [1.144.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.143.0...v1.144.0) (2022-03-11)
+
+
+### Features
+
+* or-497 report 'vademecum vlaamse overheid' removed ([ead083e](https://github.com/informatievlaanderen/organisation-registry/commit/ead083e3751aae064bd82fb48259217e18196cbb))
+
 # [1.143.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.142.0...v1.143.0) (2022-03-09)
 
 
