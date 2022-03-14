@@ -33,7 +33,7 @@ We are aware of the risks of possible bugs and security issues that might develo
 
 ## Future developments
 ### Update the code
-We'll regularly evaluate whether the main repository has changed, and if those changes should reflect in our repository.
+We'll evaluate monthly whether the main repository has changed, and if those changes should reflect in our repository.
 
 ### Wait for NuGet package
 Keep an eye out for [this issue on Github](https://github.com/opensearch-project/opensearch-net/issues/25).
