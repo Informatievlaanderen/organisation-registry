@@ -36,7 +36,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false)
-                .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
+                .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true)
                 .Build();
 
             ContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()

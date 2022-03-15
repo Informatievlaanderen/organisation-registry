@@ -37,7 +37,7 @@ namespace OrganisationRegistry.KboMutations
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                     .AddJsonFile($"appsettings.{env.ToLowerInvariant()}.json", optional: true)
-                    .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
+                    .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true)
                     .AddEnvironmentVariables();
 
             var sqlConfiguration = builder.Build().GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>();

@@ -33,7 +33,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true)
-                .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true);
+                .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true);
 
             var connectionString =
                 builder.Build()

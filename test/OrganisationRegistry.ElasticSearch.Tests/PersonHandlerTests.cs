@@ -99,7 +99,6 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             person.Source.Name.Should().Be(personCreated.Name);
         }
 
-        //[Fact(Skip = "Cannot get this test to work, needs the organisation to be in the organisationCache in de dbContext ...")]
         [EnvVarIgnoreFact]
         public async void OrganisationTerminated()
         {
@@ -148,7 +147,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             person.Source.Name.Should().Be(personCreated.Name);
             person.Source.Capacities.Should().HaveCount(1);
             person.Source.Capacities.First().Validity.Start.Should().Be(capacityAdded.ValidFrom);
-//            person.Source.Capacities.First().Validity.End.Should().Be(dateOfTermination);  // todo: fix this line, the validityEnd date is not overwritten (which is like the whole point of this test !!)
+            person.Source.Capacities.First().Validity.End.Should().Be(dateOfTermination);
         }
     }
 }

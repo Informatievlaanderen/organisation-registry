@@ -23,7 +23,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false)
-                .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
+                .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true)
                 .Build();
         }
     }
