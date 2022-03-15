@@ -2,17 +2,24 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Client;
+    using Configuration;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using Organisation.Events;
-    using Projections.Organisations;
+    using Projections.People.Handlers;
     using Specimen;
+    using SqlServer;
 
     /// <summary>
     /// Sets up a fixture which uses the same organisationId for all events
     /// </summary>
-    public class PersonScenario : ScenarioBase<Organisation>
+    public class PersonScenario : ScenarioBase<TestPersonHandler>
     {
         public PersonScenario(Guid personId) :
-            base(new ParameterNameArg<Guid>("personId", personId),
+            base(
+                new ParameterNameArg<Guid>("personId", personId),
                 new ParameterNameArg<Guid?>("personId", personId))
         {
         }
@@ -33,5 +40,16 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario
                 Create<DateTime?>(),
                 Create<DateTime?>()
             );
+    }
+
+    public class TestPersonHandler : Person
+    {
+        public TestPersonHandler(ILogger<Person> logger, Elastic elastic, IContextFactory contextFactory, IOptions<ElasticSearchConfiguration> elasticSearchOptions)
+            : base(logger, elastic, contextFactory, elasticSearchOptions)
+        {
+        }
+
+        protected override Task ClearConfigurations()
+            => Task.CompletedTask;
     }
 }

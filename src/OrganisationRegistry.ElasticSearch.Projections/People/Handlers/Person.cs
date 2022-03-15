@@ -88,11 +88,16 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             Logger.LogInformation("Rebuilding index for {ProjectionName}.", message.Body.ProjectionName);
             await PrepareIndex(_elastic.WriteClient, true);
 
+            await ClearConfigurations();
+
+            return new ElasticNoChange();
+        }
+
+        protected virtual async Task ClearConfigurations()
+        {
             await using var context = _contextFactory.Create();
             await context.Database.ExecuteSqlRawAsync(
                 string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [{OrganisationRegistry.Infrastructure.WellknownSchemas.ElasticSearchProjectionsSchema}].[{tableName}];")));
-
-            return new ElasticNoChange();
         }
 
         private async Task PrepareIndex(IOpenSearchClient client, bool deleteIndex)

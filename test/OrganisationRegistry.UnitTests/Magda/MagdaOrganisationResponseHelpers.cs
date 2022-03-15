@@ -29,7 +29,7 @@ namespace OrganisationRegistry.UnitTests.Magda
             var configurationBuilder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true)
+                .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true)
                 .AddEnvironmentVariables();
 
             var configurationRoot = configurationBuilder.Build();
