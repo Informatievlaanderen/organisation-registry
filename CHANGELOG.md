@@ -1,3 +1,13 @@
+# [1.145.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.144.0...v1.145.0) (2022-03-16)
+
+
+### Features
+
+* or-787 fixed elasticsearch tests (almost) ([80b3d23](https://github.com/informatievlaanderen/organisation-registry/commit/80b3d237148b1868c15b4076d12db0c91331871a))
+* or-787 fixed final es test ([7e7a690](https://github.com/informatievlaanderen/organisation-registry/commit/7e7a690cd5aa0d5d963eef044b806573e0e731ec))
+* or-787 improve EnvVarIgnoreFact ([2ee1532](https://github.com/informatievlaanderen/organisation-registry/commit/2ee15324137d663525d71d52ea1778aba906734b))
+* or-787 resolve review comments ([82406e9](https://github.com/informatievlaanderen/organisation-registry/commit/82406e9834136209c7e00c8a1b46356101b3a84d))
+
 # [1.144.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.143.0...v1.144.0) (2022-03-11)
 
 
