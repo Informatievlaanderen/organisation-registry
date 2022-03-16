@@ -9,7 +9,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
         {
             const string envVar = "IGNORE_ES_TESTS";
             var env = Environment.GetEnvironmentVariable(envVar);
-            if (!string.IsNullOrEmpty(env) && env.Trim().ToUpper() != "FALSE")
+            if (!string.IsNullOrEmpty(env) && !string.Equals(env, "false", StringComparison.InvariantCultureIgnoreCase))
                 Skip = $"Ignored because {envVar} env var is set.";
         }
     }

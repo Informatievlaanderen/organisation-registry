@@ -1,8 +1,6 @@
 namespace OrganisationRegistry.ElasticSearch.Tests.Scenario
 {
     using System;
-    using System.Collections.Generic;
-    using Organisation.Events;
     using Projections.Organisations;
     using Specimen;
 
