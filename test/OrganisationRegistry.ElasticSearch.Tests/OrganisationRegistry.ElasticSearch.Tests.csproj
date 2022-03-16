@@ -2,10 +2,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\packages\Be.Vlaanderen.Basisregisters.Build.Pipeline\Content\Be.Vlaanderen.Basisregisters.Build.Pipeline.Settings.Test.props" />
   <ItemGroup>
-    <None Update="appsettings.json" CopyToOutputDirectory="Always" />
-    <None Update="appsettings.Wodan-Ranger.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
+    <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrganisationRegistry.Api\OrganisationRegistry.Api.csproj" />
