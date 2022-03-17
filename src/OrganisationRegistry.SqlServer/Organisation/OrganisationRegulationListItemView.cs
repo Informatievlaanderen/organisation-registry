@@ -26,6 +26,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public string Name { get; set; }
         public DateTime? Date { get; set; }
         public string? Url { get; set; }
+        public string? WorkRulesUrl { get; set; }
         public string? Description { get; set; }
         public string? DescriptionRendered { get; set; }
         public DateTime? ValidFrom { get; set; }
@@ -112,6 +113,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 OrganisationId = message.Body.OrganisationId,
                 Name = message.Body.Name,
                 Url = message.Body.Uri,
+                WorkRulesUrl = message.Body.WorkRulesUrl,
                 Date = message.Body.Date,
                 Description = message.Body.Description,
                 DescriptionRendered = message.Body.DescriptionRendered,
@@ -136,6 +138,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             regulation.OrganisationRegulationId = message.Body.OrganisationRegulationId;
             regulation.OrganisationId = message.Body.OrganisationId;
             regulation.Url = message.Body.Url;
+            regulation.WorkRulesUrl = message.Body.WorkRulesUrl;
             regulation.Date = message.Body.Date;
             regulation.Description = message.Body.Description;
             regulation.Name = message.Body.Name;

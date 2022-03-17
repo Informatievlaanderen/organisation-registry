@@ -17,6 +17,7 @@ import {
 import { RegulationThemeService } from 'services/regulation-themes';
 import { RegulationSubThemeService } from 'services/regulation-sub-themes';
 import {Subscription} from "rxjs/Subscription";
+import {isOptionalPdf} from "../../../core/validation/validators/is-optional-pdf.validator";
 
 @Component({
   templateUrl: 'create.template.html',
@@ -48,6 +49,7 @@ export class OrganisationRegulationsCreateOrganisationRegulationComponent implem
       regulationSubThemeId: [''],
       name: ['', required],
       url: [''],
+      workRulesUrl: ['', isOptionalPdf],
       date: [''],
       description: [''],
       descriptionRendered: [''],

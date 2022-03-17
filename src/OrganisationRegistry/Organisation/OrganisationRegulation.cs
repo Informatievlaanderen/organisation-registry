@@ -13,6 +13,7 @@
         public string? RegulationSubThemeName { get; }
         public string Name { get; }
         public string? Link { get; }
+        public string? WorkRulesUrl { get; }
         public Period Validity { get; }
         public DateTime? Date { get; }
         public string? Description { get; }
@@ -26,6 +27,7 @@
             string? regulationSubThemeName,
             string name,
             string? link,
+            string? workRulesUrl,
             DateTime? date,
             string? description,
             string? descriptionRendered,
@@ -39,6 +41,7 @@
             RegulationSubThemeName = regulationSubThemeName;
             Name = name;
             Link = link;
+            WorkRulesUrl = workRulesUrl;
             Validity = validity;
             Date = date;
             Description = description;
@@ -46,8 +49,7 @@
         }
 
         public OrganisationRegulation WithValidity(Period period)
-        {
-            return new OrganisationRegulation(
+            => new(
                 OrganisationRegulationId,
                 OrganisationId,
                 RegulationThemeId,
@@ -56,20 +58,16 @@
                 RegulationSubThemeName,
                 Name,
                 Link,
+                WorkRulesUrl,
                 Date,
                 Description,
                 DescriptionRendered,
                 period);
-        }
 
         public OrganisationRegulation WithValidFrom(ValidFrom validFrom)
-        {
-            return WithValidity(new Period(validFrom, Validity.End));
-        }
+            => WithValidity(new Period(validFrom, Validity.End));
 
         public OrganisationRegulation WithValidTo(ValidTo validTo)
-        {
-            return WithValidity(new Period(Validity.Start, validTo));
-        }
+            => WithValidity(new Period(Validity.Start, validTo));
     }
 }

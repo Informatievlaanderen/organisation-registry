@@ -34,6 +34,7 @@
         public string? DescriptionRendered { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
+        public string? WorkRulesUrl { get; set; }
     }
 
     public class UpdateOrganisationRegulationInternalRequestValidator : AbstractValidator<UpdateOrganisationRegulationInternalRequest>
@@ -52,6 +53,17 @@
             RuleFor(x => x.OrganisationId)
                 .NotEmpty()
                 .WithMessage("Organisation Id is required.");
+
+            RuleFor(x => x.Body.WorkRulesUrl)
+                .Custom(
+                    (workRulesUrl, context) =>
+                    {
+                        if (string.IsNullOrWhiteSpace(workRulesUrl))
+                            return;
+
+                        if (!Uri.TryCreate(workRulesUrl, UriKind.Absolute, out _))
+                            context.AddFailure("Arbeidsreglement moet een geldige url zijn.");
+                    });
         }
     }
 
@@ -66,6 +78,7 @@
                 new RegulationSubThemeId(message.Body.RegulationSubThemeId),
                 message.Body.Name,
                 message.Body.Url,
+                message.Body.WorkRulesUrl,
                 message.Body.Date,
                 message.Body.Description,
                 message.Body.DescriptionRendered,

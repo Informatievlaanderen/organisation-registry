@@ -8,6 +8,7 @@ export class CreateOrganisationRegulationRequest {
 
   public name: string = '';
   public url: string = '';
+  public workRulesUrl: string = '';
   public date: string = '';
   public description: string = '';
   public descriptionRendered: string = '';

@@ -1,16 +1,17 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { ActivatedRoute, Router} from '@angular/router';
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
 
-import { Observable } from 'rxjs/Observable';
+import {Observable} from 'rxjs/Observable';
 
-import { AlertService, AlertBuilder} from 'core/alert';
-import { required } from 'core/validation';
+import {AlertService, AlertBuilder} from 'core/alert';
+import {required} from 'core/validation';
+import {isOptionalPdf} from "../../../core/validation/validators/is-optional-pdf.validator";
 
-import { SelectItem } from 'shared/components/form/form-group-select';
+import {SelectItem} from 'shared/components/form/form-group-select';
 
-import { RegulationThemeService } from 'services/regulation-themes';
-import { RegulationSubThemeService } from 'services/regulation-sub-themes';
+import {RegulationThemeService} from 'services/regulation-themes';
+import {RegulationSubThemeService} from 'services/regulation-sub-themes';
 
 import * as showdown from 'showdown';
 
@@ -40,7 +41,6 @@ export class OrganisationRegulationsUpdateOrganisationRegulationComponent implem
     private formBuilder: FormBuilder,
     private regulationThemeService: RegulationThemeService,
     private regulationSubThemeService: RegulationSubThemeService,
-
     private organisationRegulationService: OrganisationRegulationService,
     private alertService: AlertService
   ) {
@@ -53,6 +53,7 @@ export class OrganisationRegulationsUpdateOrganisationRegulationComponent implem
       regulationSubThemeName: [''],
       name: ['', required],
       url: [''],
+      workRulesUrl: ['', isOptionalPdf],
       date: [''],
       description: [''],
       validFrom: [''],
@@ -147,8 +148,8 @@ export class OrganisationRegulationsUpdateOrganisationRegulationComponent implem
   }
 
   showExample(e) {
-    if(this.form.controls['description'].value === '' ||
-      confirm('Let op, hierdoor zult u de huidige tekst verliezen. Wilt u doorgaan?')){
+    if (this.form.controls['description'].value === '' ||
+      confirm('Let op, hierdoor zult u de huidige tekst verliezen. Wilt u doorgaan?')) {
       this.form.controls["description"].patchValue('# h1 Titel\n' +
         'Gevolgd door wat tekst.\n' +
         '## h2 Titel\n' +

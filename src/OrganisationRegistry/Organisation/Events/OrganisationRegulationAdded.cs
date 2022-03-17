@@ -14,6 +14,7 @@ namespace OrganisationRegistry.Organisation.Events
         public string? RegulationSubThemeName { get; }
         public string Name { get; }
         public string? Uri { get; }
+        public string? WorkRulesUrl { get; }
         public DateTime? Date { get; }
         public string? Description { get; }
         public string? DescriptionRendered { get; }
@@ -28,6 +29,7 @@ namespace OrganisationRegistry.Organisation.Events
             string? regulationSubThemeName,
             string name,
             string? uri,
+            string? workRulesUrl,
             DateTime? date,
             string? description,
             string? descriptionRendered,
@@ -43,6 +45,7 @@ namespace OrganisationRegistry.Organisation.Events
             RegulationSubThemeName = regulationSubThemeName;
             Name = name;
             Uri = uri;
+            WorkRulesUrl = workRulesUrl;
             Description = description;
             DescriptionRendered = descriptionRendered;
             Date = date;
@@ -66,6 +69,7 @@ namespace OrganisationRegistry.Organisation.Events
             string name,
             string? uri,
             string? link,
+            string? workRulesUrl,
             DateTime? date,
             string? description,
             string? descriptionRendered,
@@ -81,6 +85,7 @@ namespace OrganisationRegistry.Organisation.Events
             RegulationSubThemeName = regulationSubThemeName;
             Name = name;
             Uri = link ?? uri;
+            WorkRulesUrl = workRulesUrl;
             Description = description;
             DescriptionRendered = descriptionRendered;
             Date = date;
