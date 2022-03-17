@@ -54,6 +54,18 @@
             RuleFor(x => x.OrganisationId)
                 .NotEmpty()
                 .WithMessage("Organisation Id is required.");
+
+            RuleFor(x => x.Body.WorkRulesUrl)
+                .Custom(
+                    (workRulesUrl, context) =>
+                    {
+                        var result = WorkRulesUrl.IsValid(workRulesUrl);
+
+                        foreach (var failure in result)
+                        {
+                            context.AddFailure(failure);
+                        }
+                    });
         }
     }
 

@@ -4,7 +4,7 @@ export function isOptionalPdf(control: AbstractControl): { [key: string]: boolea
   if (control == null || control.value == null || control.value.length === 0)
     return null;
 
-  const pattern = /^.*\.[pP][dD][fF]$/
+  const pattern = /^.+\.[pP][dD][fF]$/
   const stringValue = control.value.toString();
 
   if (!stringValue.match(pattern))
