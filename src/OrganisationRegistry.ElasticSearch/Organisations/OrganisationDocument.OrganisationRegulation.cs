@@ -16,6 +16,7 @@
             public string Name { get; set; }
             public DateTime? Date { get; set; }
             public string? Url { get; set; }
+            public string? WorkRulesUrl { get; set; }
             public string? Description { get; set; }
             public string? DescriptionRendered { get; set; }
             public Period Validity { get; set; }
@@ -34,6 +35,7 @@
                 string? description,
                 string? descriptionRendered,
                 string? url,
+                string? workRulesUrl,
                 DateTime? date,
                 Period validity)
             {
@@ -45,6 +47,7 @@
                 Name = name;
                 Date = date;
                 Url = url;
+                WorkRulesUrl = url;
                 Description = description;
                 DescriptionRendered = descriptionRendered;
                 Validity = validity;
@@ -80,6 +83,10 @@
                     .Text(
                         t => t
                             .Name(p => p.Url)
+                            .Fields(x => x.Keyword(y => y.Name("keyword"))))
+                    .Text(
+                        t => t
+                            .Name(p => p.WorkRulesUrl)
                             .Fields(x => x.Keyword(y => y.Name("keyword"))))
                     .Text(
                         t => t

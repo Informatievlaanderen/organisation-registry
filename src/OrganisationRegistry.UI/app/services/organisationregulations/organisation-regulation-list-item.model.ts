@@ -7,6 +7,7 @@ export class OrganisationRegulationListItem {
     public name: string = '',
     public validFrom: Date,
     public validTo: Date,
-    public link: string
+    public link: string,
+    public workRules: string
   ) { }
 }

@@ -2,6 +2,7 @@
     <label class="form__label" [attr.for]="id">{{label}}</label>
     <div class="form__error" *ngIf="!inline && control.errors && control.touched && control.hasError('required')">'{{name}}' is verplicht.</div>
     <div class="form__error" *ngIf="!inline && control.errors && control.touched && control.hasError('invalidNumber')">'{{name}}' moet numeriek zijn.</div>
+    <div class="form__error" *ngIf="!inline && control.errors && control.touched && control.hasError('invalidPdf')">'{{name}}' moet een geldige PDF zijn.</div>
 
     <div class="form__input">
         <input [attr.id]="id"

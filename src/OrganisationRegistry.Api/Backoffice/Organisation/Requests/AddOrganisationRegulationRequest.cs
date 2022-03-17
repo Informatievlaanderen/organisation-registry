@@ -29,6 +29,8 @@
         public DateTime? Date { get; set; }
         public string Name { get; set; }
         public string? Url { get; set; }
+
+        public string? WorkRulesUrl { get; set; }
         [JsonConverter(typeof(NoConverter))]
         public string? Description { get; set; }
         public string? DescriptionRendered { get; set; }
@@ -66,6 +68,7 @@
                 new RegulationSubThemeId(message.Body.RegulationSubThemeId),
                 message.Body.Name,
                 message.Body.Url,
+                message.Body.WorkRulesUrl,
                 message.Body.Date,
                 message.Body.Description,
                 message.Body.DescriptionRendered,

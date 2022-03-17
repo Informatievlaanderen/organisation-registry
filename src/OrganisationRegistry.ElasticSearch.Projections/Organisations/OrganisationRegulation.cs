@@ -72,6 +72,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 message.Body.Description,
                 message.Body.DescriptionRendered,
                 message.Body.Uri,
+                message.Body.WorkRulesUrl,
                 message.Body.Date,
                 message.Number, message.Timestamp);
         }
@@ -88,6 +89,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             string? description,
             string? descriptionRendered,
             string? regulationUrl,
+            string? workRulesUrl,
             DateTime? regulationDate,
             int messageNumber, DateTimeOffset messageTimestamp)
         {
@@ -117,6 +119,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             description,
                             descriptionRendered,
                             regulationUrl,
+                            workRulesUrl,
                             regulationDate,
                             Period.FromDates(validFrom, validTo)));
                 }
@@ -145,6 +148,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.Description,
                             message.Body.DescriptionRendered,
                             message.Body.Url,
+                            message.Body.WorkRulesUrl,
                             message.Body.Date,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }

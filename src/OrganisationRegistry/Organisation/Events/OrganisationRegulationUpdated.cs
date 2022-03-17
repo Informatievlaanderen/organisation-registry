@@ -26,6 +26,9 @@ namespace OrganisationRegistry.Organisation.Events
         public string? Url { get; }
         public string? PreviousUrl { get; }
 
+        public string? WorkRulesUrl { get; }
+        public string? PreviousWorkRulesUrl { get; }
+
         public DateTime? Date { get; }
         public DateTime? PreviousDate { get; }
 
@@ -51,6 +54,7 @@ namespace OrganisationRegistry.Organisation.Events
             string? regulationSubThemeName,
             string name,
             string? url,
+            string? workRulesUrl,
             DateTime? date,
             string? description,
             string? descriptionRendered,
@@ -64,6 +68,7 @@ namespace OrganisationRegistry.Organisation.Events
             DateTime? previouslyValidFrom,
             DateTime? previouslyValidTo,
             string? previousUrl,
+            string? previousWorkRulesUrl,
             DateTime? previousDate,
             string? previousDescription,
             string? previousDescriptionRendered)
@@ -77,6 +82,7 @@ namespace OrganisationRegistry.Organisation.Events
             RegulationSubThemeName = regulationSubThemeName;
             Name = name;
             Url = url;
+            WorkRulesUrl = workRulesUrl;
             Date = date;
             Description = description;
             DescriptionRendered = descriptionRendered;
@@ -89,6 +95,7 @@ namespace OrganisationRegistry.Organisation.Events
             PreviousRegulationSubThemeName = previousRegulationSubThemeName;
             PreviousName = previousName;
             PreviousUrl = previousUrl;
+            PreviousWorkRulesUrl = previousWorkRulesUrl;
             PreviousDate = previousDate;
             PreviousDescription = previousDescription;
             PreviousDescriptionRendered = previousDescriptionRendered;

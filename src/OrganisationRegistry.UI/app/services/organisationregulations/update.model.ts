@@ -6,6 +6,7 @@ export class UpdateOrganisationRegulationRequest {
     public name: string,
     public description: string,
     public uri: string,
+    public workRulesUrl: string,
     public validFrom: Date,
     public validTo: Date
   ) {

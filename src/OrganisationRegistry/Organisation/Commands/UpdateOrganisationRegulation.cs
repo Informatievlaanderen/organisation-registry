@@ -13,6 +13,7 @@
         public RegulationSubThemeId RegulationSubThemeId { get; }
         public string Name { get; }
         public string? Link { get; }
+        public string? WorkRulesUrl { get; set; }
         public DateTime? Date { get; }
         public string? Description { get; }
         public string? DescriptionRendered { get; }
@@ -25,6 +26,7 @@
             RegulationSubThemeId regulationSubThemeId,
             string name,
             string? link,
+            string? workRulesUrl,
             DateTime? date,
             string? description,
             string? descriptionRendered,
@@ -38,6 +40,7 @@
             RegulationSubThemeId = regulationSubThemeId;
             Name = name;
             Link = link;
+            WorkRulesUrl = workRulesUrl;
             Date = date;
             Description = description;
             DescriptionRendered = descriptionRendered;
