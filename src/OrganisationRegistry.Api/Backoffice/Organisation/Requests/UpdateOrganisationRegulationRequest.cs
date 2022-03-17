@@ -58,11 +58,12 @@
                 .Custom(
                     (workRulesUrl, context) =>
                     {
-                        if (string.IsNullOrWhiteSpace(workRulesUrl))
-                            return;
+                        var result = WorkRulesUrl.IsValid(workRulesUrl);
 
-                        if (!Uri.TryCreate(workRulesUrl, UriKind.Absolute, out _))
-                            context.AddFailure("Arbeidsreglement moet een geldige url zijn.");
+                        foreach (var failure in result)
+                        {
+                            context.AddFailure(failure);
+                        }
                     });
         }
     }
