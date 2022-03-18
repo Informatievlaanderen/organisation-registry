@@ -1,3 +1,17 @@
+# [1.146.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.145.0...v1.146.0) (2022-03-18)
+
+
+### Bug Fixes
+
+* remove scheduler from production gh action ([4b98f44](https://github.com/informatievlaanderen/organisation-registry/commit/4b98f44c541a08222e079cfafe60bf01c0ec3237))
+
+
+### Features
+
+* or-751 add workrules pdf to regulations ([106ef7c](https://github.com/informatievlaanderen/organisation-registry/commit/106ef7cdbad5f0a390ea8b1c71509427eebdd635))
+* or-751 proper validation ([b608995](https://github.com/informatievlaanderen/organisation-registry/commit/b60899511ec2cf529bdefd16296167ae14dd3abb))
+* or-751 unittests ([11b0bed](https://github.com/informatievlaanderen/organisation-registry/commit/11b0bed3f7e0da3b61a3a953ddede1dd6a3774db))
+
 # [1.145.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.144.0...v1.145.0) (2022-03-16)
 
 
