@@ -47,7 +47,7 @@
                 Name = name;
                 Date = date;
                 Url = url;
-                WorkRulesUrl = url;
+                WorkRulesUrl = workRulesUrl;
                 Description = description;
                 DescriptionRendered = descriptionRendered;
                 Validity = validity;

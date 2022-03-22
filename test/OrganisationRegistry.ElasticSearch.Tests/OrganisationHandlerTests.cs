@@ -8,6 +8,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using Xunit;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging.Abstractions;
@@ -83,7 +84,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             registrar.RegisterEventHandlers(OrganisationsRunner.EventHandlers);
         }
 
-        [EnvVarIgnoreFactAttribute]
+        [EnvVarIgnoreFact]
         public async void InitializeProjection_CreatesIndex()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -99,7 +100,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             indices.Should().NotBeEmpty();
         }
 
-        [EnvVarIgnoreFactAttribute]
+        [EnvVarIgnoreFact]
         public async void OrganisationCreated_CreatesDocument()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -122,7 +123,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             organisation.Source.Description.Should().Be(organisationCreated.Description);
         }
 
-        [EnvVarIgnoreFactAttribute]
+        [EnvVarIgnoreFact]
         public async void OrganisationKboBankAccountAdded_AddsBankAccount()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -161,7 +162,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                     Common.Period.FromDates(kboOrganisationBankAccountAdded2.ValidFrom, kboOrganisationBankAccountAdded2.ValidTo)));
         }
 
-        [EnvVarIgnoreFactAttribute]
+        [EnvVarIgnoreFact]
         public async void OrganisationKboBankAccountRemoved_RemovesBankAccount()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -203,7 +204,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                     Common.Period.FromDates(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo)));
         }
 
-        [EnvVarIgnoreFactAttribute]
+        [EnvVarIgnoreFact]
         public async void OrganisationTerminated()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -238,7 +239,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             organisation.Source.Validity.End.Should().Be(organisationValidity);
         }
 
-        [EnvVarIgnoreFactAttribute]
+        [EnvVarIgnoreFact]
         public async void OrganisationTerminatedWithForcedKboTermination()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -270,6 +271,59 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             organisation.Source.Validity.Start.Should().Be(organisationCreated.ValidFrom);
             organisation.Source.Validity.End.Should().Be(organisationTerminated.FieldsToTerminate.OrganisationValidity);
             organisation.Source.KboNumber.Should().BeEmpty();
+        }
+
+        [EnvVarIgnoreFact]
+        public async void BugFix_OrganisationRegulationAdded_DifferentiatesBetweenUrlAndWorkRulesUrl()
+        {
+            var scenario = new OrganisationScenario(Guid.NewGuid());
+
+            var initialiseProjection = scenario.Create<InitialiseProjection>();
+            var organisationCreated = scenario.Create<OrganisationCreated>();
+            var organisationRegulationAdded = scenario.Create<OrganisationRegulationAdded>();
+
+            await _eventProcessor.Handle<OrganisationDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    organisationCreated.ToEnvelope(),
+                    organisationRegulationAdded.ToEnvelope()
+                }
+            );
+
+            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+
+            organisation.Source.Regulations.Count.Should().Be(1);
+            organisation.Source.Regulations.First().Url.Should().Be(organisationRegulationAdded.Uri);
+            organisation.Source.Regulations.First().WorkRulesUrl.Should().Be(organisationRegulationAdded.WorkRulesUrl);
+        }
+
+        [EnvVarIgnoreFact]
+        public async void BugFix_OrganisationRegulationUpdated_DifferentiatesBetweenUrlAndWorkRulesUrl()
+        {
+            var scenario = new OrganisationScenario(Guid.NewGuid());
+
+            var initialiseProjection = scenario.Create<InitialiseProjection>();
+            var organisationCreated = scenario.Create<OrganisationCreated>();
+            var organisationRegulationAdded = scenario.Create<OrganisationRegulationAdded>();
+            var organisationRegulationUpdated =
+                scenario.CreateOrganisationRegulationUpdated(organisationRegulationAdded);
+
+            await _eventProcessor.Handle<OrganisationDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    organisationCreated.ToEnvelope(),
+                    organisationRegulationAdded.ToEnvelope(),
+                    organisationRegulationUpdated.ToEnvelope()
+                }
+            );
+
+            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+
+            organisation.Source.Regulations.Count.Should().Be(1);
+            organisation.Source.Regulations.First().Url.Should().Be(organisationRegulationUpdated.Url);
+            organisation.Source.Regulations.First().WorkRulesUrl.Should().Be(organisationRegulationUpdated.WorkRulesUrl);
         }
     }
 }
