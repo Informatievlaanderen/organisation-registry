@@ -1,3 +1,10 @@
+## [1.146.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.146.0...v1.146.1) (2022-03-22)
+
+
+### Bug Fixes
+
+* or-751 use workRulesUrl instead of url ([a01d774](https://github.com/informatievlaanderen/organisation-registry/commit/a01d774ec7d5947ac5ac9f105a3466ff9d482743))
+
 # [1.146.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.145.0...v1.146.0) (2022-03-18)
 
 
