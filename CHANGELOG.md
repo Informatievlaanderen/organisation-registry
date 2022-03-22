@@ -1,3 +1,10 @@
+## [1.146.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.146.1...v1.146.2) (2022-03-22)
+
+
+### Bug Fixes
+
+* or_899 prevent mixing vlimpers and non-vlimpers on update ([6beb1d0](https://github.com/informatievlaanderen/organisation-registry/commit/6beb1d0290c802320cccaab3df5fe73a07326814))
+
 ## [1.146.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.146.0...v1.146.1) (2022-03-22)
 
 
