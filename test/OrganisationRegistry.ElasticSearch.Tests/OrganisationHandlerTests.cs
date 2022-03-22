@@ -325,5 +325,54 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             organisation.Source.Regulations.First().Url.Should().Be(organisationRegulationUpdated.Url);
             organisation.Source.Regulations.First().WorkRulesUrl.Should().Be(organisationRegulationUpdated.WorkRulesUrl);
         }
+
+        [EnvVarIgnoreFact]
+        public async void OrganisationRegulationAdded_UsesDescriptionRenderedForDescription()
+        {
+            var scenario = new OrganisationScenario(Guid.NewGuid());
+
+            var initialiseProjection = scenario.Create<InitialiseProjection>();
+            var organisationCreated = scenario.Create<OrganisationCreated>();
+            var organisationRegulationAdded = scenario.Create<OrganisationRegulationAdded>();
+
+            await _eventProcessor.Handle<OrganisationDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    organisationCreated.ToEnvelope(),
+                    organisationRegulationAdded.ToEnvelope(),
+                }
+            );
+
+            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+
+            organisation.Source.Regulations.First().Description.Should().Be(organisationRegulationAdded.DescriptionRendered);
+        }
+
+        [EnvVarIgnoreFact]
+        public async void OrganisationRegulationUpdated_UsesDescriptionRenderedForDescription()
+        {
+            var scenario = new OrganisationScenario(Guid.NewGuid());
+
+            var initialiseProjection = scenario.Create<InitialiseProjection>();
+            var organisationCreated = scenario.Create<OrganisationCreated>();
+            var organisationRegulationAdded = scenario.Create<OrganisationRegulationAdded>();
+            var organisationRegulationUpdated =
+                scenario.CreateOrganisationRegulationUpdated(organisationRegulationAdded);
+
+            await _eventProcessor.Handle<OrganisationDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseProjection.ToEnvelope(),
+                    organisationCreated.ToEnvelope(),
+                    organisationRegulationAdded.ToEnvelope(),
+                    organisationRegulationUpdated.ToEnvelope()
+                }
+            );
+
+            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+
+            organisation.Source.Regulations.First().Description.Should().Be(organisationRegulationUpdated.DescriptionRendered);
+        }
     }
 }
