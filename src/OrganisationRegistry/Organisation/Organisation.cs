@@ -405,6 +405,10 @@ namespace OrganisationRegistry.Organisation
             Period validity,
             IDateTimeProvider dateTimeProvider)
         {
+            if (parentOrganisation.State.UnderVlimpersManagement !=
+                State.UnderVlimpersManagement)
+                throw new VlimpersAndNonVlimpersOrganisationCannotBeInParentalRelationship();
+
             if (State.OrganisationParents
                 .Where(organisationParent => organisationParent.OrganisationOrganisationParentId != organisationOrganisationParentId)
                 .Any(organisationParent => organisationParent.Validity.OverlapsWith(validity)))
