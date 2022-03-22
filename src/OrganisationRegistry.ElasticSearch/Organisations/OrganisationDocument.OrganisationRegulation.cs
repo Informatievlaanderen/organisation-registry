@@ -18,7 +18,6 @@
             public string? Url { get; set; }
             public string? WorkRulesUrl { get; set; }
             public string? Description { get; set; }
-            public string? DescriptionRendered { get; set; }
             public Period Validity { get; set; }
 
             protected OrganisationRegulation()
@@ -33,7 +32,6 @@
                 string? regulationSubThemeName,
                 string name,
                 string? description,
-                string? descriptionRendered,
                 string? url,
                 string? workRulesUrl,
                 DateTime? date,
@@ -49,7 +47,6 @@
                 Url = url;
                 WorkRulesUrl = workRulesUrl;
                 Description = description;
-                DescriptionRendered = descriptionRendered;
                 Validity = validity;
             }
 
@@ -91,10 +88,6 @@
                     .Text(
                         t => t
                             .Name(p => p.Description)
-                            .Fields(x => x.Keyword(y => y.Name("keyword"))))
-                    .Text(
-                        t => t
-                            .Name(p => p.DescriptionRendered)
                             .Fields(x => x.Keyword(y => y.Name("keyword"))))
                     .Object<Period>(
                         o => o
