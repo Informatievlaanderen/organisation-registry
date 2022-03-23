@@ -170,7 +170,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.VlimpersBeheerder)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Delete([FromRoute] Guid id, [FromBody] OrganisationTerminationRequest message)
+        public async Task<IActionResult> Terminate([FromRoute] Guid id, [FromBody] OrganisationTerminationRequest message)
         {
             await CommandSender.Send(
                 new TerminateOrganisation(

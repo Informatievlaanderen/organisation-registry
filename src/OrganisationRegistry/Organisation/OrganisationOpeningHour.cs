@@ -29,24 +29,18 @@ namespace OrganisationRegistry.Organisation
         }
 
         public OrganisationOpeningHour WithValidity(Period period)
-        {
-            return new OrganisationOpeningHour(
+            => new(
                 OrganisationOpeningHourId,
                 OrganisationId,
                 Opens,
                 Closes,
                 DayOfWeek,
                 period);
-        }
 
         public OrganisationOpeningHour WithValidFrom(ValidFrom validFrom)
-        {
-            return WithValidity(new Period(validFrom, Validity.End));
-        }
+            => WithValidity(new Period(validFrom, Validity.End));
 
         public OrganisationOpeningHour WithValidTo(ValidTo validTo)
-        {
-            return WithValidity(new Period(Validity.Start, validTo));
-        }
+            => WithValidity(new Period(Validity.Start, validTo));
     }
 }

@@ -1699,6 +1699,7 @@ namespace OrganisationRegistry.Organisation
             IEnumerable<Guid> capacityTypeIdsToTerminateEndOfNextYear,
             IEnumerable<Guid> classificationTypeIdsToTerminateEndOfNextYear,
             IEnumerable<Guid> formalFrameworkIdsToTerminateEndOfNextYear,
+            Guid vlimpersKeyTypeId,
             IDateTimeProvider dateTimeProvider,
             bool forceKboTermination)
         {
@@ -1712,6 +1713,7 @@ namespace OrganisationRegistry.Organisation
                 capacityTypeIdsToTerminateEndOfNextYear,
                 classificationTypeIdsToTerminateEndOfNextYear,
                 formalFrameworkIdsToTerminateEndOfNextYear,
+                vlimpersKeyTypeId,
                 State);
 
             var organisationTerminationKboSummary = forceKboTermination

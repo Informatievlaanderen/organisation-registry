@@ -103,7 +103,7 @@ nuget xunit.categories 2.0.4
 nuget xunit.assert.source 2.4.1
 nuget AutoFixture 4.17.0
 nuget AutoFixture.Xunit2 4.17.0
-nuget FluentAssertions 5.10.3
+nuget FluentAssertions 6.5.1
 nuget Moq 4.16.1
 
 // BUILD STUFF

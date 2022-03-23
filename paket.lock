@@ -212,7 +212,7 @@ NUGET
     Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events (2.3.4) - copy_local: true, copy_content_to_output_dir: always, content: true
       Be.Vlaanderen.Basisregisters.AggregateSource (>= 5.2.1)
       Be.Vlaanderen.Basisregisters.EventHandling (>= 3.1.1)
-      FluentAssertions (>= 5.10.3)
+      FluentAssertions (>= 6.5.1)
       Newtonsoft.Json (>= 13.0.1)
       xunit (>= 2.4.1)
     Be.Vlaanderen.Basisregisters.Utilities.HashCodeCalculator (2.2.12)
@@ -356,7 +356,7 @@ NUGET
       FSharp.Core (>= 4.7.2)
     Fare (2.1.2)
       NETStandard.Library (>= 1.6.1)
-    FluentAssertions (5.10.3)
+    FluentAssertions (6.5.1)
       System.Configuration.ConfigurationManager (>= 4.4)
     FluentFTP (33.0.3)
       System.Console (>= 4.3)
