@@ -12,37 +12,41 @@ namespace OrganisationRegistry.Organisation.OrganisationTermination
             IEnumerable<Guid> capacityTypeIdsToTerminateEndOfNextYear,
             IEnumerable<Guid> classificationTypeIdsToTerminateEndOfNextYear,
             IEnumerable<Guid> formalFrameworkIdsToTerminateEndOfNextYear,
+            Guid vlimpersKeyTypeId,
             OrganisationState state)
         {
             if (state.Validity.Start.IsInFutureOf(dateOfTermination))
                 throw new OrganisationCannotBeTerminatedWithFieldsInTheFuture();
 
             var newValidTo = state.Validity.End.IsInFutureOf(dateOfTermination) ? dateOfTermination : (DateTime?)null;
-            return new OrganisationTerminationSummary
-            {
-                OrganisationNewValidTo = newValidTo,
-                Contacts = FieldsToTerminate(state.OrganisationContacts, dateOfTermination),
-                BankAccounts = FieldsToTerminate(state.OrganisationBankAccounts, dateOfTermination),
-                Functions = FieldsToTerminate(state.OrganisationFunctionTypes, dateOfTermination),
-                Locations = FieldsToTerminate(state.OrganisationLocations, dateOfTermination),
-                Buildings = FieldsToTerminate(state.OrganisationBuildings, dateOfTermination),
-                Labels = FieldsToTerminate(state.OrganisationLabels, dateOfTermination),
-                Relations = FieldsToTerminate(state.OrganisationRelations, dateOfTermination),
-                OpeningHours = FieldsToTerminate(state.OrganisationOpeningHours, dateOfTermination),
-                Capacities = FieldsToTerminateWithEndOfNextYear(capacityTypeIdsToTerminateEndOfNextYear,
+            return new OrganisationTerminationSummary(
+                newValidTo,
+                FieldsToTerminate(state.OrganisationContacts, dateOfTermination),
+                FieldsToTerminate(state.OrganisationBankAccounts, dateOfTermination),
+                FieldsToTerminate(state.OrganisationFunctionTypes, dateOfTermination),
+                FieldsToTerminate(state.OrganisationLocations, dateOfTermination),
+                FieldsToTerminateWithEndOfNextYear(
+                    capacityTypeIdsToTerminateEndOfNextYear,
                     state.OrganisationCapacities,
                     dateOfTermination,
                     field => field.CapacityId),
-                Classifications = FieldsToTerminateWithEndOfNextYear(classificationTypeIdsToTerminateEndOfNextYear,
+                FieldsToTerminate(state.OrganisationBuildings, dateOfTermination),
+                FieldsToTerminate(state.OrganisationLabels, dateOfTermination),
+                FieldsToTerminate(state.OrganisationRelations, dateOfTermination),
+                FieldsToTerminate(state.OrganisationOpeningHours, dateOfTermination),
+                FieldsToTerminateWithEndOfNextYear(
+                    classificationTypeIdsToTerminateEndOfNextYear,
                     state.OrganisationOrganisationClassifications,
                     dateOfTermination,
                     field => field.OrganisationClassificationTypeId),
-                FormalFrameworks = FieldsToTerminateWithEndOfNextYear(formalFrameworkIdsToTerminateEndOfNextYear,
+                FieldsToTerminateWithEndOfNextYear(
+                    formalFrameworkIdsToTerminateEndOfNextYear,
                     state.OrganisationFormalFrameworks,
                     dateOfTermination,
                     field => field.FormalFrameworkId),
-                Regulations = FieldsToTerminate(state.OrganisationRegulations, dateOfTermination),
-            };
+                FieldsToTerminate(state.OrganisationRegulations, dateOfTermination),
+                KeyFieldsToTerminate(state.OrganisationKeys, dateOfTermination, vlimpersKeyTypeId)
+            );
         }
 
         public static OrganisationTerminationKboSummary GetKboFieldsToForceTerminate(DateTime dateOfTermination, KboState kboState)
@@ -56,13 +60,25 @@ namespace OrganisationRegistry.Organisation.OrganisationTermination
             };
         }
 
-        private static Dictionary<Guid, DateTime> FieldsToTerminate(IEnumerable<IOrganisationField> fields, DateTime dateOfTermination)
+        private static Dictionary<Guid, DateTime> FieldsToTerminate(IReadOnlyList<IOrganisationField> fields, DateTime dateOfTermination)
         {
             if (fields.Any(x => x.Validity.Start.IsInFutureOf(dateOfTermination)))
                 throw new OrganisationCannotBeTerminatedWithFieldsInTheFuture();
 
             return fields
                 .Where(x => x.Validity.End.IsInFutureOf(dateOfTermination))
+                .ToDictionary(
+                    x => x.Id,
+                    _ => dateOfTermination);
+        }
+
+        private static Dictionary<Guid, DateTime> KeyFieldsToTerminate(IReadOnlyList<OrganisationKey> fields, DateTime dateOfTermination, Guid keyTypeId)
+        {
+            if (fields.Any(x => x.Validity.Start.IsInFutureOf(dateOfTermination) && x.KeyTypeId == keyTypeId))
+                throw new OrganisationCannotBeTerminatedWithFieldsInTheFuture();
+
+            return fields
+                .Where(x => x.Validity.End.IsInFutureOf(dateOfTermination)  && x.KeyTypeId == keyTypeId)
                 .ToDictionary(
                     x => x.Id,
                     _ => dateOfTermination);

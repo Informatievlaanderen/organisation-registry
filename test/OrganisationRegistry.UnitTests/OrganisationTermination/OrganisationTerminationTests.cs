@@ -1,38 +1,23 @@
-namespace OrganisationRegistry.UnitTests
+namespace OrganisationRegistry.UnitTests.OrganisationTermination
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using AutoFixture;
-    using AutoFixture.Kernel;
     using FluentAssertions;
+    using KeyTypes;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Exceptions;
     using OrganisationRegistry.Organisation.OrganisationTermination;
     using OrganisationRegistry.Organisation.State;
+    using Tests.Shared.TestDataBuilders;
     using Xunit;
 
     public class OrganisationTerminationTests
     {
-        private static List<T> CreateFieldsInThePastOf<T>(DateTime dateOfTermination, ISpecimenBuilder fixture) where T: IOrganisationField, IValidityBuilder<T>
-        {
-            return fixture.CreateMany<T>()
-                .Select(x => x.WithValidity(
-                    new Period(
-                        new ValidFrom(),
-                        new ValidTo(dateOfTermination.AddDays(fixture.Create<int>() * -1)))))
-                .ToList();
-        }
-
-        private static List<T> CreateFieldsOverlappingWith<T>(DateTime dateOfTermination, ISpecimenBuilder fixture) where T: IOrganisationField, IValidityBuilder<T>
-        {
-            return fixture.CreateMany<T>()
-                .Select(x => x.WithValidity(
-                    new Period(
-                        new ValidFrom(dateOfTermination.AddDays(fixture.Create<int>() * -1)),
-                        new ValidTo(dateOfTermination.AddDays(fixture.Create<int>() * +1)))))
-                .ToList();
-        }
+        private static readonly Guid VlimpersKeyTypeId = Guid.NewGuid();
+        private static readonly KeyType VlimpersKeyType = new(new KeyTypeId(VlimpersKeyTypeId), new KeyTypeName("VlimpersKey"));
+        private static readonly KeyType OtherKeyType = new(new KeyTypeId(Guid.NewGuid()), new KeyTypeName("OtherKey"));
 
         [Fact]
         public void ThrowsWhenOrganisationValidityIsInFutureOfTerminationDate()
@@ -53,6 +38,7 @@ namespace OrganisationRegistry.UnitTests
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
+                    VlimpersKeyTypeId,
                     organisationState));
         }
 
@@ -74,12 +60,12 @@ namespace OrganisationRegistry.UnitTests
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
+                    VlimpersKeyTypeId,
                     organisationState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTerminationSummary
-                    {
-                        OrganisationNewValidTo = null
-                    });
+                    new OrganisationTerminationSummaryTestDataBuilder()
+                        .WithOrganisationNewValidTo(null)
+                        .Build());
         }
 
         [Fact]
@@ -100,12 +86,12 @@ namespace OrganisationRegistry.UnitTests
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
+                    VlimpersKeyTypeId,
                     organisationState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTerminationSummary
-                    {
-                        OrganisationNewValidTo = null
-                    });
+                    new OrganisationTerminationSummaryTestDataBuilder()
+                        .WithOrganisationNewValidTo(null)
+                        .Build());
         }
 
         [Fact]
@@ -126,12 +112,12 @@ namespace OrganisationRegistry.UnitTests
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
+                    VlimpersKeyTypeId,
                     organisationState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTerminationSummary
-                    {
-                        OrganisationNewValidTo = dateOfTermination
-                    });
+                    new OrganisationTerminationSummaryTestDataBuilder()
+                        .WithOrganisationNewValidTo(dateOfTermination)
+                        .Build());
         }
 
         [Fact]
@@ -157,6 +143,7 @@ namespace OrganisationRegistry.UnitTests
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
+                    VlimpersKeyTypeId,
                     organisationState));
         }
 
@@ -183,6 +170,7 @@ namespace OrganisationRegistry.UnitTests
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
+                    VlimpersKeyTypeId,
                     organisationState));
         }
 
@@ -210,6 +198,7 @@ namespace OrganisationRegistry.UnitTests
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
+                    VlimpersKeyTypeId,
                     organisationState));
         }
 
@@ -236,6 +225,7 @@ namespace OrganisationRegistry.UnitTests
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
+                    VlimpersKeyTypeId,
                     organisationState));
         }
 
@@ -262,6 +252,7 @@ namespace OrganisationRegistry.UnitTests
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
+                    VlimpersKeyTypeId,
                     organisationState));
         }
 
@@ -289,9 +280,9 @@ namespace OrganisationRegistry.UnitTests
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     new[] {organisationFormalFramework.FormalFrameworkId},
+                    VlimpersKeyTypeId,
                     organisationState));
         }
-
 
         [Fact]
         public void ThrowsWhenAnyClassificationToTerminateEndOfNextYearIsInFutureOfEndOfNextYear()
@@ -317,6 +308,7 @@ namespace OrganisationRegistry.UnitTests
                     Enumerable.Empty<Guid>(),
                     new[] {organisationClassification.OrganisationClassificationTypeId},
                     Enumerable.Empty<Guid>(),
+                    VlimpersKeyTypeId,
                     organisationState));
         }
 
@@ -345,9 +337,9 @@ namespace OrganisationRegistry.UnitTests
                     new[] {organisationCapacity.OrganisationCapacityId},
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
+                    VlimpersKeyTypeId,
                     organisationState));
         }
-
 
         [Fact]
         public void ThrowsWhenAnyOpeningHourValidityIsInFutureOfTerminationDate()
@@ -374,7 +366,63 @@ namespace OrganisationRegistry.UnitTests
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
+                    VlimpersKeyTypeId,
                     organisationState));
+        }
+
+        [Fact]
+        public void ThrowsWhenAnyVlimpersKeyValidityIsInFutureOfTerminationDate()
+        {
+            var fixture = new Fixture();
+
+            var dateOfTermination = fixture.Create<DateTime>();
+
+            var organisationVlimpersKey = fixture.Create<OrganisationKey>()
+                .WithKeyType(VlimpersKeyType)
+                .WithValidity(new Period(
+                    new ValidFrom(dateOfTermination.AddDays(1)),
+                    new ValidTo()));
+
+            var organisationState = new OrganisationState
+            {
+                OrganisationKeys = { organisationVlimpersKey }
+            };
+
+            Assert.Throws<OrganisationCannotBeTerminatedWithFieldsInTheFuture>(
+                () => OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
+                    Enumerable.Empty<Guid>(),
+                    Enumerable.Empty<Guid>(),
+                    Enumerable.Empty<Guid>(),
+                    VlimpersKeyTypeId,
+                    organisationState));
+        }
+
+        [Fact]
+        public void DoesNotThrowWhenAnyOtherKeyValidityIsInFutureOfTerminationDate()
+        {
+            var fixture = new Fixture();
+
+            var dateOfTermination = fixture.Create<DateTime>();
+
+            var organisationOtherKey = fixture.Create<OrganisationKey>()
+                .WithKeyType(OtherKeyType)
+                .WithValidity(new Period(
+                    new ValidFrom(dateOfTermination.AddDays(1)),
+                    new ValidTo()));
+
+            var organisationState = new OrganisationState
+            {
+                OrganisationKeys = { organisationOtherKey }
+            };
+
+            var result = OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
+                    Enumerable.Empty<Guid>(),
+                    Enumerable.Empty<Guid>(),
+                    Enumerable.Empty<Guid>(),
+                    VlimpersKeyTypeId,
+                    organisationState);
+
+            result.Keys.Should().BeEmpty();
         }
 
         [Fact]
@@ -384,70 +432,104 @@ namespace OrganisationRegistry.UnitTests
 
             var dateOfTermination = fixture.Create<DateTime>();
 
-            var overlappingContacts = CreateFieldsOverlappingWith<OrganisationContact>(dateOfTermination, fixture);
-            var overlappingOpeningHours = CreateFieldsOverlappingWith<OrganisationOpeningHour>(dateOfTermination, fixture);
-            var overlappingLabels = CreateFieldsOverlappingWith<OrganisationLabel>(dateOfTermination, fixture);
-            var overlappingFunctions = CreateFieldsOverlappingWith<OrganisationFunction>(dateOfTermination, fixture);
-            var overlappingLocations = CreateFieldsOverlappingWith<OrganisationLocation>(dateOfTermination, fixture);
-            var overlappingBuildings = CreateFieldsOverlappingWith<OrganisationBuilding>(dateOfTermination, fixture);
-            var overlappingParents = CreateFieldsOverlappingWith<OrganisationParent>(dateOfTermination, fixture);
-            var overlappingBankAccounts = CreateFieldsOverlappingWith<OrganisationBankAccount>(dateOfTermination, fixture);
-            var overlappingRelations = CreateFieldsOverlappingWith<OrganisationRelation>(dateOfTermination, fixture);
-            var overlappingCapacities = CreateFieldsOverlappingWith<OrganisationCapacity>(dateOfTermination, fixture);
-            var overlappingClassifications = CreateFieldsOverlappingWith<OrganisationOrganisationClassification>(dateOfTermination, fixture);
-            var overlappingFormalFrameworks = CreateFieldsOverlappingWith<OrganisationFormalFramework>(dateOfTermination, fixture);
-            var overlappingRegulations = CreateFieldsOverlappingWith<OrganisationRegulation>(dateOfTermination, fixture);
+            var overlappingContacts = fixture.CreateFieldsOverlappingWith<OrganisationContact>(dateOfTermination);
+            var overlappingOpeningHours = fixture.CreateFieldsOverlappingWith<OrganisationOpeningHour>(dateOfTermination);
+            var overlappingLabels = fixture.CreateFieldsOverlappingWith<OrganisationLabel>(dateOfTermination);
+            var overlappingFunctions = fixture.CreateFieldsOverlappingWith<OrganisationFunction>(dateOfTermination);
+            var overlappingLocations = fixture.CreateFieldsOverlappingWith<OrganisationLocation>(dateOfTermination);
+            var overlappingBuildings = fixture.CreateFieldsOverlappingWith<OrganisationBuilding>(dateOfTermination);
+            var overlappingParents = fixture.CreateFieldsOverlappingWith<OrganisationParent>(dateOfTermination);
+            var overlappingBankAccounts = fixture.CreateFieldsOverlappingWith<OrganisationBankAccount>(dateOfTermination);
+            var overlappingRelations = fixture.CreateFieldsOverlappingWith<OrganisationRelation>(dateOfTermination);
+            var overlappingCapacities = fixture.CreateFieldsOverlappingWith<OrganisationCapacity>(dateOfTermination);
+            var overlappingClassifications = fixture.CreateFieldsOverlappingWith<OrganisationOrganisationClassification>(dateOfTermination);
+            var overlappingFormalFrameworks = fixture.CreateFieldsOverlappingWith<OrganisationFormalFramework>(dateOfTermination);
+            var overlappingRegulations = fixture.CreateFieldsOverlappingWith<OrganisationRegulation>(dateOfTermination);
 
             var organisationState = new OrganisationState();
             organisationState.OrganisationContacts.AddRange(overlappingContacts);
-            organisationState.OrganisationContacts.AddRange(CreateFieldsInThePastOf<OrganisationContact>(dateOfTermination, fixture));
+            organisationState.OrganisationContacts.AddRange(fixture.CreateFieldsInThePastOf<OrganisationContact>(dateOfTermination));
             organisationState.OrganisationOpeningHours.AddRange(overlappingOpeningHours);
-            organisationState.OrganisationOpeningHours.AddRange(CreateFieldsInThePastOf<OrganisationOpeningHour>(dateOfTermination, fixture));
+            organisationState.OrganisationOpeningHours.AddRange(fixture.CreateFieldsInThePastOf<OrganisationOpeningHour>(dateOfTermination));
             organisationState.OrganisationLabels.AddRange(overlappingLabels);
-            organisationState.OrganisationLabels.AddRange(CreateFieldsInThePastOf<OrganisationLabel>(dateOfTermination, fixture));
+            organisationState.OrganisationLabels.AddRange(fixture.CreateFieldsInThePastOf<OrganisationLabel>(dateOfTermination));
             organisationState.OrganisationFunctionTypes.AddRange(overlappingFunctions);
-            organisationState.OrganisationFunctionTypes.AddRange(CreateFieldsInThePastOf<OrganisationFunction>(dateOfTermination, fixture));
+            organisationState.OrganisationFunctionTypes.AddRange(fixture.CreateFieldsInThePastOf<OrganisationFunction>(dateOfTermination));
             organisationState.OrganisationLocations.AddRange(overlappingLocations);
-            organisationState.OrganisationLocations.AddRange(CreateFieldsInThePastOf<OrganisationLocation>(dateOfTermination, fixture));
+            organisationState.OrganisationLocations.AddRange(fixture.CreateFieldsInThePastOf<OrganisationLocation>(dateOfTermination));
             organisationState.OrganisationBuildings.AddRange(overlappingBuildings);
-            organisationState.OrganisationBuildings.AddRange(CreateFieldsInThePastOf<OrganisationBuilding>(dateOfTermination, fixture));
+            organisationState.OrganisationBuildings.AddRange(fixture.CreateFieldsInThePastOf<OrganisationBuilding>(dateOfTermination));
             organisationState.OrganisationParents.AddRange(overlappingParents);
-            organisationState.OrganisationParents.AddRange(CreateFieldsInThePastOf<OrganisationParent>(dateOfTermination, fixture));
+            organisationState.OrganisationParents.AddRange(fixture.CreateFieldsInThePastOf<OrganisationParent>(dateOfTermination));
             organisationState.OrganisationBankAccounts.AddRange(overlappingBankAccounts);
-            organisationState.OrganisationBankAccounts.AddRange(CreateFieldsInThePastOf<OrganisationBankAccount>(dateOfTermination, fixture));
+            organisationState.OrganisationBankAccounts.AddRange(fixture.CreateFieldsInThePastOf<OrganisationBankAccount>(dateOfTermination));
             organisationState.OrganisationRelations.AddRange(overlappingRelations);
-            organisationState.OrganisationRelations.AddRange(CreateFieldsInThePastOf<OrganisationRelation>(dateOfTermination, fixture));
+            organisationState.OrganisationRelations.AddRange(fixture.CreateFieldsInThePastOf<OrganisationRelation>(dateOfTermination));
             organisationState.OrganisationCapacities.AddRange(overlappingCapacities);
-            organisationState.OrganisationCapacities.AddRange(CreateFieldsInThePastOf<OrganisationCapacity>(dateOfTermination, fixture));
+            organisationState.OrganisationCapacities.AddRange(fixture.CreateFieldsInThePastOf<OrganisationCapacity>(dateOfTermination));
             organisationState.OrganisationOrganisationClassifications.AddRange(overlappingClassifications);
-            organisationState.OrganisationOrganisationClassifications.AddRange(CreateFieldsInThePastOf<OrganisationOrganisationClassification>(dateOfTermination, fixture));
+            organisationState.OrganisationOrganisationClassifications.AddRange(fixture.CreateFieldsInThePastOf<OrganisationOrganisationClassification>(dateOfTermination));
             organisationState.OrganisationFormalFrameworks.AddRange(overlappingFormalFrameworks);
-            organisationState.OrganisationFormalFrameworks.AddRange(CreateFieldsInThePastOf<OrganisationFormalFramework>(dateOfTermination, fixture));
+            organisationState.OrganisationFormalFrameworks.AddRange(fixture.CreateFieldsInThePastOf<OrganisationFormalFramework>(dateOfTermination));
             organisationState.OrganisationRegulations.AddRange(overlappingRegulations);
-            organisationState.OrganisationRegulations.AddRange(CreateFieldsInThePastOf<OrganisationRegulation>(dateOfTermination, fixture));
+            organisationState.OrganisationRegulations.AddRange(fixture.CreateFieldsInThePastOf<OrganisationRegulation>(dateOfTermination));
 
-            OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
+            OrganisationTerminationCalculator.GetFieldsToTerminate(
+                    dateOfTermination,
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
                     Enumerable.Empty<Guid>(),
+                    VlimpersKeyTypeId,
                     organisationState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTerminationSummary
-                    {
-                        OrganisationNewValidTo = new ValidTo(dateOfTermination),
-                        Contacts = overlappingContacts.ToDictionary(x => x.OrganisationContactId, _ => dateOfTermination),
-                        OpeningHours = overlappingOpeningHours.ToDictionary(x => x.OrganisationOpeningHourId, _ => dateOfTermination),
-                        Labels = overlappingLabels.ToDictionary(x => x.OrganisationLabelId, _ => dateOfTermination),
-                        Functions = overlappingFunctions.ToDictionary(x => x.OrganisationFunctionId, _ => dateOfTermination),
-                        Locations = overlappingLocations.ToDictionary(x => x.OrganisationLocationId, _ => dateOfTermination),
-                        Buildings = overlappingBuildings.ToDictionary(x => x.OrganisationBuildingId, _ => dateOfTermination),
-                        BankAccounts = overlappingBankAccounts.ToDictionary(x => x.OrganisationBankAccountId, _ => dateOfTermination),
-                        Relations = overlappingRelations.ToDictionary(x => x.OrganisationRelationId, _ => dateOfTermination),
-                        Capacities = overlappingCapacities.ToDictionary(x => x.OrganisationCapacityId, _ => dateOfTermination),
-                        Classifications = overlappingClassifications.ToDictionary(x => x.OrganisationOrganisationClassificationId, _ => dateOfTermination),
-                        FormalFrameworks = overlappingFormalFrameworks.ToDictionary(x => x.OrganisationFormalFrameworkId, _ => dateOfTermination),
-                        Regulations = overlappingRegulations.ToDictionary(x => x.OrganisationRegulationId, _ => dateOfTermination)
-                    });
+                    new OrganisationTerminationSummaryTestDataBuilder()
+                        .WithOrganisationNewValidTo(new ValidTo(dateOfTermination))
+                        .WithContacts(overlappingContacts.ToDictionary(x => x.OrganisationContactId, _ => dateOfTermination))
+                        .WithOpeningHours(overlappingOpeningHours.ToDictionary(x => x.OrganisationOpeningHourId, _ => dateOfTermination))
+                        .WithLabels(overlappingLabels.ToDictionary(x => x.OrganisationLabelId, _ => dateOfTermination))
+                        .WithFunctions(overlappingFunctions.ToDictionary(x => x.OrganisationFunctionId, _ => dateOfTermination))
+                        .WithLocations(overlappingLocations.ToDictionary(x => x.OrganisationLocationId, _ => dateOfTermination))
+                        .WithBuildings(overlappingBuildings.ToDictionary(x => x.OrganisationBuildingId, _ => dateOfTermination))
+                        .WithBankAccounts(overlappingBankAccounts.ToDictionary(x => x.OrganisationBankAccountId, _ => dateOfTermination))
+                        .WithRelations(overlappingRelations.ToDictionary(x => x.OrganisationRelationId, _ => dateOfTermination))
+                        .WithCapacities(overlappingCapacities.ToDictionary(x => x.OrganisationCapacityId, _ => dateOfTermination))
+                        .WithClassifications(overlappingClassifications.ToDictionary(x => x.OrganisationOrganisationClassificationId, _ => dateOfTermination))
+                        .WithFormalFrameworks(overlappingFormalFrameworks.ToDictionary(x => x.OrganisationFormalFrameworkId, _ => dateOfTermination))
+                        .WithRegulations(overlappingRegulations.ToDictionary(x => x.OrganisationRegulationId, _ => dateOfTermination))
+                        .Build()
+                    );
+        }
+
+        [Fact]
+        public void OverwritesOnlyVlimpersKeyFieldsWhenValiditySpansOverDateOfTermination()
+        {
+            var fixture = new Fixture();
+
+            var dateOfTermination = fixture.Create<DateTime>();
+
+            var overlappingVlimpersKeys = fixture.CreateKeyFieldsOverlappingWith(dateOfTermination, VlimpersKeyType);
+            var overlappingOtherKeys = fixture.CreateKeyFieldsOverlappingWith(dateOfTermination, OtherKeyType);
+
+            var organisationState = new OrganisationState();
+
+            organisationState.OrganisationKeys.AddRange(overlappingVlimpersKeys);
+            organisationState.OrganisationKeys.AddRange(overlappingOtherKeys);
+            organisationState.OrganisationKeys.AddRange(fixture.CreateKeyFieldsInThePastOf(dateOfTermination, VlimpersKeyType));
+            organisationState.OrganisationKeys.AddRange(fixture.CreateKeyFieldsInThePastOf(dateOfTermination, OtherKeyType));
+
+            OrganisationTerminationCalculator.GetFieldsToTerminate(
+                    dateOfTermination,
+                    Enumerable.Empty<Guid>(),
+                    Enumerable.Empty<Guid>(),
+                    Enumerable.Empty<Guid>(),
+                    VlimpersKeyTypeId,
+                    organisationState)
+                .Should().BeEquivalentTo(
+                    new OrganisationTerminationSummaryTestDataBuilder()
+                        .WithOrganisationNewValidTo(new ValidTo(dateOfTermination))
+                        .WithKeys(overlappingVlimpersKeys.ToDictionary(x => x.OrganisationKeyId, _ => dateOfTermination))
+                        .Build()
+                    );
         }
 
         [Fact]
@@ -482,25 +564,26 @@ namespace OrganisationRegistry.UnitTests
 
             var organisationState = new OrganisationState();
             organisationState.OrganisationCapacities.AddRange(capacitiesToTerminateEndOfNextYear);
-            organisationState.OrganisationCapacities.AddRange(CreateFieldsInThePastOf<OrganisationCapacity>(dateOfTermination, fixture));
+            organisationState.OrganisationCapacities.AddRange(fixture.CreateFieldsInThePastOf<OrganisationCapacity>(dateOfTermination));
             organisationState.OrganisationOrganisationClassifications.AddRange(classificationsToTerminateEndOfNextYear);
-            organisationState.OrganisationOrganisationClassifications.AddRange(CreateFieldsInThePastOf<OrganisationOrganisationClassification>(dateOfTermination, fixture));
+            organisationState.OrganisationOrganisationClassifications.AddRange(fixture.CreateFieldsInThePastOf<OrganisationOrganisationClassification>(dateOfTermination));
             organisationState.OrganisationFormalFrameworks.AddRange(formalFrameworksToTerminateEndOfNextYear);
-            organisationState.OrganisationFormalFrameworks.AddRange(CreateFieldsInThePastOf<OrganisationFormalFramework>(dateOfTermination, fixture));
+            organisationState.OrganisationFormalFrameworks.AddRange(fixture.CreateFieldsInThePastOf<OrganisationFormalFramework>(dateOfTermination));
 
             OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
                     capacitiesToTerminateEndOfNextYear.Select(x => x.CapacityId),
                     classificationsToTerminateEndOfNextYear.Select(x => x.OrganisationClassificationTypeId),
                     formalFrameworksToTerminateEndOfNextYear.Select(x => x.FormalFrameworkId),
+                    VlimpersKeyTypeId,
                     organisationState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTerminationSummary
-                    {
-                        OrganisationNewValidTo = new ValidTo(dateOfTermination),
-                        Capacities = capacitiesToTerminateEndOfNextYear.ToDictionary(x => x.OrganisationCapacityId, _ => endOfNextYear),
-                        Classifications = classificationsToTerminateEndOfNextYear.ToDictionary(x => x.OrganisationOrganisationClassificationId, _ => endOfNextYear),
-                        FormalFrameworks = formalFrameworksToTerminateEndOfNextYear.ToDictionary(x => x.OrganisationFormalFrameworkId, _ => endOfNextYear),
-                    });
+                    new OrganisationTerminationSummaryTestDataBuilder()
+                        .WithOrganisationNewValidTo(new ValidTo(dateOfTermination))
+                        .WithCapacities(capacitiesToTerminateEndOfNextYear.ToDictionary(x => x.OrganisationCapacityId, _ => endOfNextYear))
+                        .WithClassifications(classificationsToTerminateEndOfNextYear.ToDictionary(x => x.OrganisationOrganisationClassificationId, _ => endOfNextYear))
+                        .WithFormalFrameworks(formalFrameworksToTerminateEndOfNextYear.ToDictionary(x => x.OrganisationFormalFrameworkId, _ => endOfNextYear))
+                        .Build()
+                    );
         }
 
         [Fact]
@@ -510,35 +593,37 @@ namespace OrganisationRegistry.UnitTests
 
             var dateOfTermination = fixture.Create<DateTime>();
 
-            var overlappingCapacities = CreateFieldsOverlappingWith<OrganisationCapacity>(dateOfTermination, fixture);
-            var overlappingClassifications = CreateFieldsOverlappingWith<OrganisationOrganisationClassification>(dateOfTermination, fixture);
-            var overlappingFormalFrameworks = CreateFieldsOverlappingWith<OrganisationFormalFramework>(dateOfTermination, fixture);
+            var overlappingCapacities = fixture.CreateFieldsOverlappingWith<OrganisationCapacity>(dateOfTermination);
+            var overlappingClassifications = fixture.CreateFieldsOverlappingWith<OrganisationOrganisationClassification>(dateOfTermination);
+            var overlappingFormalFrameworks = fixture.CreateFieldsOverlappingWith<OrganisationFormalFramework>(dateOfTermination);
 
             var organisationState = new OrganisationState();
             organisationState.OrganisationCapacities.AddRange(overlappingCapacities);
-            organisationState.OrganisationCapacities.AddRange(CreateFieldsInThePastOf<OrganisationCapacity>(dateOfTermination, fixture));
+            organisationState.OrganisationCapacities.AddRange(fixture.CreateFieldsInThePastOf<OrganisationCapacity>(dateOfTermination));
             organisationState.OrganisationOrganisationClassifications.AddRange(overlappingClassifications);
-            organisationState.OrganisationOrganisationClassifications.AddRange(CreateFieldsInThePastOf<OrganisationOrganisationClassification>(dateOfTermination, fixture));
+            organisationState.OrganisationOrganisationClassifications.AddRange(fixture.CreateFieldsInThePastOf<OrganisationOrganisationClassification>(dateOfTermination));
             organisationState.OrganisationFormalFrameworks.AddRange(overlappingFormalFrameworks);
-            organisationState.OrganisationFormalFrameworks.AddRange(CreateFieldsInThePastOf<OrganisationFormalFramework>(dateOfTermination, fixture));
+            organisationState.OrganisationFormalFrameworks.AddRange(fixture.CreateFieldsInThePastOf<OrganisationFormalFramework>(dateOfTermination));
 
             var capacityTypeIdsToTerminateEndOfNextYear = fixture.CreateMany<Guid>();
             var classificationTypeIdsToTerminateEndOfNextYear = fixture.CreateMany<Guid>();
             var formalFrameworkIdsToTerminateEndOfNextYear = fixture.CreateMany<Guid>();
 
-            OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
-                    capacityTypeIdsToTerminateEndOfNextYear,
-                    classificationTypeIdsToTerminateEndOfNextYear,
-                    formalFrameworkIdsToTerminateEndOfNextYear,
-                    organisationState)
-                .Should().BeEquivalentTo(
-                    new OrganisationTerminationSummary
-                    {
-                        OrganisationNewValidTo = new ValidTo(dateOfTermination),
-                        Capacities = overlappingCapacities.ToDictionary(x => x.OrganisationCapacityId, _ => dateOfTermination),
-                        Classifications = overlappingClassifications.ToDictionary(x => x.OrganisationOrganisationClassificationId, _ => dateOfTermination),
-                        FormalFrameworks = overlappingFormalFrameworks.ToDictionary(x => x.OrganisationFormalFrameworkId, _ => dateOfTermination),
-                    });
+            var result = OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
+                capacityTypeIdsToTerminateEndOfNextYear,
+                classificationTypeIdsToTerminateEndOfNextYear,
+                formalFrameworkIdsToTerminateEndOfNextYear,
+                VlimpersKeyTypeId,
+                organisationState);
+
+            var expectation = new OrganisationTerminationSummaryTestDataBuilder()
+                .WithOrganisationNewValidTo(new ValidTo(dateOfTermination))
+                .WithCapacities(overlappingCapacities.ToDictionary(x => x.OrganisationCapacityId, _ => dateOfTermination))
+                .WithClassifications(overlappingClassifications.ToDictionary(x => x.OrganisationOrganisationClassificationId, _ => dateOfTermination))
+                .WithFormalFrameworks(overlappingFormalFrameworks.ToDictionary(x => x.OrganisationFormalFrameworkId, _ => dateOfTermination))
+                .Build();
+
+            result.Should().BeEquivalentTo(expectation);
         }
 
         [Fact]
@@ -549,7 +634,7 @@ namespace OrganisationRegistry.UnitTests
             var dateOfTermination = fixture.Create<DateTime>();
 
             var kboState = new KboState();
-            kboState.KboBankAccounts.AddRange(CreateFieldsInThePastOf<OrganisationBankAccount>(dateOfTermination, fixture));
+            kboState.KboBankAccounts.AddRange(fixture.CreateFieldsInThePastOf<OrganisationBankAccount>(dateOfTermination));
             kboState.KboRegisteredOffice = fixture.Create<OrganisationLocation>()
                 .WithValidity(
                     new Period(
@@ -590,7 +675,7 @@ namespace OrganisationRegistry.UnitTests
             var dateOfTermination = fixture.Create<DateTime>();
 
             var kboState = new KboState();
-            kboState.KboBankAccounts.AddRange(CreateFieldsInThePastOf<OrganisationBankAccount>(dateOfTermination, fixture));
+            kboState.KboBankAccounts.AddRange(fixture.CreateFieldsInThePastOf<OrganisationBankAccount>(dateOfTermination));
             kboState.KboRegisteredOffice = fixture.Create<OrganisationLocation>()
                 .WithValidity(
                     new Period(

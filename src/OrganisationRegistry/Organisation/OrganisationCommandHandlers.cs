@@ -933,6 +933,7 @@ namespace OrganisationRegistry.Organisation
                         _organisationRegistryConfiguration.Kbo.OrganisationCapacityTypeIdsToTerminateEndOfNextYear,
                         _organisationRegistryConfiguration.Kbo.OrganisationClassificationTypeIdsToTerminateEndOfNextYear,
                         _organisationRegistryConfiguration.Kbo.FormalFrameworkIdsToTerminateEndOfNextYear,
+                        _organisationRegistryConfiguration.VlimpersKeyTypeId,
                         _dateTimeProvider,
                         message.ForceKboTermination);
                 });

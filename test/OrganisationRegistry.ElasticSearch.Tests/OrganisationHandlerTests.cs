@@ -146,20 +146,23 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(kboOrganisationBankAccountAdded.OrganisationId);
 
             organisation.Source.BankAccounts.Should().BeEquivalentTo(
-                new OrganisationDocument.OrganisationBankAccount(
-                    kboOrganisationBankAccountAdded.OrganisationBankAccountId,
-                    kboOrganisationBankAccountAdded.BankAccountNumber,
-                    kboOrganisationBankAccountAdded.IsIban,
-                    kboOrganisationBankAccountAdded.Bic,
-                    kboOrganisationBankAccountAdded.IsBic,
-                    Common.Period.FromDates(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo)),
-                new OrganisationDocument.OrganisationBankAccount(
-                    kboOrganisationBankAccountAdded2.OrganisationBankAccountId,
-                    kboOrganisationBankAccountAdded2.BankAccountNumber,
-                    kboOrganisationBankAccountAdded2.IsIban,
-                    kboOrganisationBankAccountAdded2.Bic,
-                    kboOrganisationBankAccountAdded2.IsBic,
-                    Common.Period.FromDates(kboOrganisationBankAccountAdded2.ValidFrom, kboOrganisationBankAccountAdded2.ValidTo)));
+                new List<OrganisationDocument.OrganisationBankAccount>
+                {
+                    new(
+                        kboOrganisationBankAccountAdded.OrganisationBankAccountId,
+                        kboOrganisationBankAccountAdded.BankAccountNumber,
+                        kboOrganisationBankAccountAdded.IsIban,
+                        kboOrganisationBankAccountAdded.Bic,
+                        kboOrganisationBankAccountAdded.IsBic,
+                        Common.Period.FromDates(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo)),
+                    new(
+                        kboOrganisationBankAccountAdded2.OrganisationBankAccountId,
+                        kboOrganisationBankAccountAdded2.BankAccountNumber,
+                        kboOrganisationBankAccountAdded2.IsIban,
+                        kboOrganisationBankAccountAdded2.Bic,
+                        kboOrganisationBankAccountAdded2.IsBic,
+                        Common.Period.FromDates(kboOrganisationBankAccountAdded2.ValidFrom, kboOrganisationBankAccountAdded2.ValidTo))
+                });
         }
 
         [EnvVarIgnoreFact]
@@ -195,13 +198,16 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(kboOrganisationBankAccountAdded.OrganisationId);
 
             organisation.Source.BankAccounts.Should().BeEquivalentTo(
-                new OrganisationDocument.OrganisationBankAccount(
-                    kboOrganisationBankAccountAdded.OrganisationBankAccountId,
-                    kboOrganisationBankAccountAdded.BankAccountNumber,
-                    kboOrganisationBankAccountAdded.IsIban,
-                    kboOrganisationBankAccountAdded.Bic,
-                    kboOrganisationBankAccountAdded.IsBic,
-                    Common.Period.FromDates(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo)));
+                new List<OrganisationDocument.OrganisationBankAccount>
+                {
+                    new(
+                        kboOrganisationBankAccountAdded.OrganisationBankAccountId,
+                        kboOrganisationBankAccountAdded.BankAccountNumber,
+                        kboOrganisationBankAccountAdded.IsIban,
+                        kboOrganisationBankAccountAdded.Bic,
+                        kboOrganisationBankAccountAdded.IsBic,
+                        Common.Period.FromDates(kboOrganisationBankAccountAdded.ValidFrom, kboOrganisationBankAccountAdded.ValidTo))
+                });
         }
 
         [EnvVarIgnoreFact]

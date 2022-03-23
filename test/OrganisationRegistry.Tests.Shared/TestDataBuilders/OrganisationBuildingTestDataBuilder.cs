@@ -60,7 +60,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
         }
 
         public OrganisationBuilding Build()
-            => new OrganisationBuilding(
+            => new(
                 _organisationBuildingId,
                 _organisationId,
                 _buildingId,

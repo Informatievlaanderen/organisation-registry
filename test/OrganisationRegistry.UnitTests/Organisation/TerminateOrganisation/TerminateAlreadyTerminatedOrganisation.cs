@@ -17,6 +17,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation
     using OrganisationRegistry.Organisation.State;
     using Tests.Shared;
     using Tests.Shared.Stubs;
+    using Tests.Shared.TestDataBuilders;
     using Xunit;
     using Xunit.Abstractions;
 
@@ -55,7 +56,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation
                     _organisationId,
                     new OrganisationState(),
                     new KboState(),
-                    new OrganisationTerminationSummary(),
+                    new OrganisationTerminationSummaryTestDataBuilder().Build(),
                     false,
                     new OrganisationTerminationKboSummary(),
                     fixture.Create<DateTime>())

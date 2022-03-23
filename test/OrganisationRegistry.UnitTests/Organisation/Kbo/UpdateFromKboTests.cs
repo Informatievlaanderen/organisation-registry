@@ -274,7 +274,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             kboFormalNameLabelAdded.Should().NotBeNull();
 
             kboFormalNameLabelAdded.OrganisationId.Should().Be(_organisationId);
-            kboFormalNameLabelAdded.OrganisationLabelId.Should().NotBeEmpty().And.Should().NotBe(kboFormalNameLabelRemoved.OrganisationLabelId);
+            kboFormalNameLabelAdded.OrganisationLabelId.Should().NotBeEmpty().And.NotBe(kboFormalNameLabelRemoved.OrganisationLabelId);
             kboFormalNameLabelAdded.LabelTypeId.Should().Be(_organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId);
             kboFormalNameLabelAdded.LabelTypeName.Should().Be("KBO formele naam");
             kboFormalNameLabelAdded.Value.Should().Be("NAME FROM KBO");
