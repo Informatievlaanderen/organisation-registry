@@ -26,6 +26,7 @@ namespace OrganisationRegistry.Organisation
     using Handling;
     using Handling.Authorization;
     using Infrastructure.Authorization;
+    using OrganisationTermination;
     using RegulationSubTheme;
     using RegulationTheme;
     using IOrganisationRegistryConfiguration = Configuration.IOrganisationRegistryConfiguration;
@@ -929,11 +930,14 @@ namespace OrganisationRegistry.Organisation
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
 
+                    var fieldsToTerminateConfig = new OrganisationTerminationCalculator.FieldsToTerminateConfig(
+                        _organisationRegistryConfiguration.Kbo.OrganisationCapacityTypeIdsToTerminateEndOfNextYear.FirstOrDefault(),
+                        _organisationRegistryConfiguration.Kbo.OrganisationClassificationTypeIdsToTerminateEndOfNextYear.FirstOrDefault(),
+                        _organisationRegistryConfiguration.Kbo.FormalFrameworkIdsToTerminateEndOfNextYear.FirstOrDefault(),
+                        _organisationRegistryConfiguration.VlimpersKeyTypeId);
+
                     organisation.TerminateOrganisation(message.DateOfTermination,
-                        _organisationRegistryConfiguration.Kbo.OrganisationCapacityTypeIdsToTerminateEndOfNextYear,
-                        _organisationRegistryConfiguration.Kbo.OrganisationClassificationTypeIdsToTerminateEndOfNextYear,
-                        _organisationRegistryConfiguration.Kbo.FormalFrameworkIdsToTerminateEndOfNextYear,
-                        _organisationRegistryConfiguration.VlimpersKeyTypeId,
+                        fieldsToTerminateConfig,
                         _dateTimeProvider,
                         message.ForceKboTermination);
                 });

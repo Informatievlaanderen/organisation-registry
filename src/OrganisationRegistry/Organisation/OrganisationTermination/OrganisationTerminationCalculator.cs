@@ -8,11 +8,14 @@ namespace OrganisationRegistry.Organisation.OrganisationTermination
 
     public static class OrganisationTerminationCalculator
     {
+        public record FieldsToTerminateConfig(
+            Guid RekenhofFormalFrameworkId,
+            Guid RekenhofCapacityId,
+            Guid RekenhofClassificationTypeId,
+            Guid VlimpersKeyTypeId);
+
         public static OrganisationTerminationSummary GetFieldsToTerminate(DateTime dateOfTermination,
-            IEnumerable<Guid> capacityTypeIdsToTerminateEndOfNextYear,
-            IEnumerable<Guid> classificationTypeIdsToTerminateEndOfNextYear,
-            IEnumerable<Guid> formalFrameworkIdsToTerminateEndOfNextYear,
-            Guid vlimpersKeyTypeId,
+            FieldsToTerminateConfig fieldsToTerminateConfig,
             OrganisationState state)
         {
             if (state.Validity.Start.IsInFutureOf(dateOfTermination))
@@ -26,39 +29,40 @@ namespace OrganisationRegistry.Organisation.OrganisationTermination
                 FieldsToTerminate(state.OrganisationFunctionTypes, dateOfTermination),
                 FieldsToTerminate(state.OrganisationLocations, dateOfTermination),
                 FieldsToTerminateWithEndOfNextYear(
-                    capacityTypeIdsToTerminateEndOfNextYear,
                     state.OrganisationCapacities,
                     dateOfTermination,
-                    field => field.CapacityId),
+                    field => field.CapacityId,
+                    fieldsToTerminateConfig.RekenhofCapacityId),
                 FieldsToTerminate(state.OrganisationBuildings, dateOfTermination),
                 FieldsToTerminate(state.OrganisationLabels, dateOfTermination),
                 FieldsToTerminate(state.OrganisationRelations, dateOfTermination),
                 FieldsToTerminate(state.OrganisationOpeningHours, dateOfTermination),
                 FieldsToTerminateWithEndOfNextYear(
-                    classificationTypeIdsToTerminateEndOfNextYear,
                     state.OrganisationOrganisationClassifications,
                     dateOfTermination,
-                    field => field.OrganisationClassificationTypeId),
+                    field => field.OrganisationClassificationTypeId,
+                    fieldsToTerminateConfig.RekenhofClassificationTypeId),
                 FieldsToTerminateWithEndOfNextYear(
-                    formalFrameworkIdsToTerminateEndOfNextYear,
                     state.OrganisationFormalFrameworks,
                     dateOfTermination,
-                    field => field.FormalFrameworkId),
+                    field => field.FormalFrameworkId,
+                    fieldsToTerminateConfig.RekenhofFormalFrameworkId),
                 FieldsToTerminate(state.OrganisationRegulations, dateOfTermination),
-                KeyFieldsToTerminate(state.OrganisationKeys, dateOfTermination, vlimpersKeyTypeId)
+                KeyFieldsToTerminate(
+                    state.OrganisationKeys,
+                    dateOfTermination,
+                    fieldsToTerminateConfig.VlimpersKeyTypeId)
             );
         }
 
         public static OrganisationTerminationKboSummary GetKboFieldsToForceTerminate(DateTime dateOfTermination, KboState kboState)
-        {
-            return new OrganisationTerminationKboSummary
+            => new()
             {
                 KboRegisteredOfficeLocation = KboFieldToTerminate(dateOfTermination, kboState.KboRegisteredOffice),
                 KboFormalNameLabel = KboFieldToTerminate(dateOfTermination, kboState.KboFormalNameLabel),
                 KboLegalForm = KboFieldToTerminate(dateOfTermination, kboState.KboLegalFormOrganisationClassification),
                 KboBankAccounts = KboBankAccountsToTerminate(dateOfTermination, kboState.KboBankAccounts),
             };
-        }
 
         private static Dictionary<Guid, DateTime> FieldsToTerminate(IReadOnlyList<IOrganisationField> fields, DateTime dateOfTermination)
         {
@@ -126,20 +130,58 @@ namespace OrganisationRegistry.Organisation.OrganisationTermination
                 .ToDictionary(x => x.Key, x => x.Value);
         }
 
-        private static KeyValuePair<Guid, DateTime>? KboFieldToTerminate(DateTime dateOfTermination, IOrganisationField? kboField)
+        private static Dictionary<Guid, DateTime> FieldsToTerminateWithEndOfNextYear<T>(
+            IEnumerable<T> fields,
+            DateTime dateOfTermination,
+            Func<T, Guid> fieldToMatchWithIdToTerminateEndOfNextYear,
+            Guid idToTerminateEndOfNextYear) where T : IOrganisationField
         {
-            return kboField != null
+            var endOfNextYear = new DateTime(dateOfTermination.Year + 1, 12, 31);
+
+            var fieldsToTerminate = new List<T>();
+            var fieldsToTerminateEndOfNextYear = new List<T>();
+
+            foreach (var field in fields)
+            {
+                if (fieldToMatchWithIdToTerminateEndOfNextYear(field) == idToTerminateEndOfNextYear)
+                {
+                    fieldsToTerminateEndOfNextYear.Add(field);
+                }
+                else if (field.Validity.End.IsInFutureOf(dateOfTermination))
+                {
+                    fieldsToTerminate.Add(field);
+                }
+            }
+
+            if (fieldsToTerminateEndOfNextYear
+                .Any(x => x.Validity.Start.IsInFutureOf(endOfNextYear)))
+                throw new OrganisationCannotBeTerminatedWithFieldsInTheFuture();
+
+            if (fieldsToTerminate
+                .Any(x => x.Validity.Start.IsInFutureOf(dateOfTermination)))
+                throw new OrganisationCannotBeTerminatedWithFieldsInTheFuture();
+
+            return fieldsToTerminate
+                .ToDictionary(
+                    field => field.Id,
+                    _ => dateOfTermination)
+                .Union(fieldsToTerminateEndOfNextYear
+                    .ToDictionary(
+                        formalFramework => formalFramework.Id,
+                        _ => endOfNextYear))
+                .ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        private static KeyValuePair<Guid, DateTime>? KboFieldToTerminate(DateTime dateOfTermination, IOrganisationField? kboField)
+            => kboField != null
                 ? new KeyValuePair<Guid, DateTime>(
                     kboField.Id,
                     dateOfTermination)
                 : null;
-        }
 
         private static Dictionary<Guid, DateTime> KboBankAccountsToTerminate(DateTime dateOfTermination, IEnumerable<OrganisationBankAccount> kboBankAccounts)
-        {
-            return kboBankAccounts.ToDictionary(
+            => kboBankAccounts.ToDictionary(
                 account => account.OrganisationBankAccountId,
                 _ => dateOfTermination);
-        }
     }
 }
