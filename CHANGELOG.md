@@ -1,3 +1,10 @@
+# [1.147.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.146.2...v1.147.0) (2022-03-24)
+
+
+### Features
+
+* or-698 only expose rendered description as description ([57fc580](https://github.com/informatievlaanderen/organisation-registry/commit/57fc580854750e1dcd0b7b2750a2b568a6de62af))
+
 ## [1.146.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.146.1...v1.146.2) (2022-03-22)
 
 
