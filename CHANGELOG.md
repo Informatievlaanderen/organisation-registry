@@ -1,3 +1,11 @@
+# [1.148.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.147.0...v1.148.0) (2022-03-24)
+
+
+### Features
+
+* or-852 refactor of config parameters ([441e6b6](https://github.com/informatievlaanderen/organisation-registry/commit/441e6b653842398ddec4674fb6c94c403a4ec3e0))
+* or-852 terminate vlimperskey on termination of organisation ([b02b188](https://github.com/informatievlaanderen/organisation-registry/commit/b02b188760a06a9358b865c65fbcd337091744fd))
+
 # [1.147.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.146.2...v1.147.0) (2022-03-24)
 
 
