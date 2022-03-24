@@ -1700,10 +1700,7 @@ namespace OrganisationRegistry.Organisation
         }
 
         public void TerminateOrganisation(DateTime dateOfTermination,
-            IEnumerable<Guid> capacityTypeIdsToTerminateEndOfNextYear,
-            IEnumerable<Guid> classificationTypeIdsToTerminateEndOfNextYear,
-            IEnumerable<Guid> formalFrameworkIdsToTerminateEndOfNextYear,
-            Guid vlimpersKeyTypeId,
+            OrganisationTerminationCalculator.FieldsToTerminateConfig fieldsToTerminateConfig,
             IDateTimeProvider dateTimeProvider,
             bool forceKboTermination)
         {
@@ -1714,10 +1711,7 @@ namespace OrganisationRegistry.Organisation
                 throw new OrganisationAlreadyTerminatedInKbo();
 
             var organisationTermination = OrganisationTerminationCalculator.GetFieldsToTerminate(dateOfTermination,
-                capacityTypeIdsToTerminateEndOfNextYear,
-                classificationTypeIdsToTerminateEndOfNextYear,
-                formalFrameworkIdsToTerminateEndOfNextYear,
-                vlimpersKeyTypeId,
+                fieldsToTerminateConfig,
                 State);
 
             var organisationTerminationKboSummary = forceKboTermination
