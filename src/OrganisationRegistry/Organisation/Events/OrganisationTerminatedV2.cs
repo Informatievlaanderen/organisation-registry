@@ -63,7 +63,8 @@ namespace OrganisationRegistry.Organisation.Events
                     relations: organisationTermination.Relations,
                     formalFrameworks: organisationTermination.FormalFrameworks,
                     openingHours: organisationTermination.OpeningHours,
-                    regulations: organisationTermination.Regulations),
+                    regulations: organisationTermination.Regulations,
+                    keys: organisationTermination.Keys),
                 new KboFieldsToTerminateV2(
                     bankAccounts: organisationTerminationKboSummary.KboBankAccounts,
                     registeredOffice: organisationTerminationKboSummary.KboRegisteredOfficeLocation,
@@ -90,6 +91,7 @@ namespace OrganisationRegistry.Organisation.Events
         public Dictionary<Guid, DateTime> FormalFrameworks { get; }
         public Dictionary<Guid, DateTime> OpeningHours { get; }
         public Dictionary<Guid, DateTime> Regulations { get; }
+        public Dictionary<Guid, DateTime> Keys { get; }
 
         public FieldsToTerminateV2(
             DateTime? organisationValidity,
@@ -104,7 +106,8 @@ namespace OrganisationRegistry.Organisation.Events
             Dictionary<Guid, DateTime> relations,
             Dictionary<Guid, DateTime> formalFrameworks,
             Dictionary<Guid, DateTime> openingHours,
-            Dictionary<Guid, DateTime> regulations)
+            Dictionary<Guid, DateTime> regulations,
+            Dictionary<Guid, DateTime> keys)
         {
             OrganisationValidity = organisationValidity;
             Buildings = buildings;
@@ -119,6 +122,7 @@ namespace OrganisationRegistry.Organisation.Events
             FormalFrameworks = formalFrameworks;
             OpeningHours = openingHours;
             Regulations = regulations;
+            Keys = keys;
         }
     }
 

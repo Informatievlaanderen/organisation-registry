@@ -57,7 +57,8 @@
         Projection<OrganisationKeyListView>,
         IEventHandler<OrganisationKeyAdded>,
         IEventHandler<OrganisationKeyUpdated>,
-        IEventHandler<KeyTypeUpdated>
+        IEventHandler<KeyTypeUpdated>,
+        IEventHandler<OrganisationTerminatedV2>
     {
         protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
         public override string Schema => WellknownSchemas.BackofficeSchema;
@@ -133,6 +134,18 @@
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
             await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var keys = context.OrganisationKeyList.Where(item =>
+                message.Body.FieldsToTerminate.Keys.Keys.Contains(item.OrganisationKeyId));
+
+            foreach (var key in keys)
+                key.ValidTo = message.Body.FieldsToTerminate.Keys[key.OrganisationKeyId];
+
+            await context.SaveChangesAsync();
         }
     }
 }
