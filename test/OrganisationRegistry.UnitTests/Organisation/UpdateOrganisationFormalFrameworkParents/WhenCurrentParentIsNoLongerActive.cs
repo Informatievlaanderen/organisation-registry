@@ -22,9 +22,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
     {
         private SequentialOvoNumberGenerator _sequentialOvoNumberGenerator;
         private DateTimeProviderStub _dateTimeProvider;
-        private OrganisationCreatedTestDataBuilder _organisationCreated;
-        private FormalFrameworkCreatedTestDataBuilder _formalFrameworkCreated;
-        private OrganisationCreatedTestDataBuilder _parentOrganisationCreated;
+        private OrganisationCreatedBuilder _organisationCreated;
+        private FormalFrameworkCreatedBuilder _formalFrameworkCreated;
+        private OrganisationCreatedBuilder _parentOrganisationCreated;
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -32,33 +32,33 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
             _sequentialOvoNumberGenerator =
                 new SequentialOvoNumberGenerator();
 
-            _organisationCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            _parentOrganisationCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            var formalFrameworkCategoryCreated = new FormalFrameworkCategoryCreatedTestDataBuilder();
-            _formalFrameworkCreated = new FormalFrameworkCreatedTestDataBuilder(formalFrameworkCategoryCreated.Id, formalFrameworkCategoryCreated.Name);
-            var anotherFormalFrameworkCreated = new FormalFrameworkCreatedTestDataBuilder(formalFrameworkCategoryCreated.Id, formalFrameworkCategoryCreated.Name);
+            _organisationCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            _parentOrganisationCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            var formalFrameworkCategoryCreated = new FormalFrameworkCategoryCreatedBuilder();
+            _formalFrameworkCreated = new FormalFrameworkCreatedBuilder(formalFrameworkCategoryCreated.Id, formalFrameworkCategoryCreated.Name);
+            var anotherFormalFrameworkCreated = new FormalFrameworkCreatedBuilder(formalFrameworkCategoryCreated.Id, formalFrameworkCategoryCreated.Name);
 
             var organisationFormalFrameworkAdded =
-                new OrganisationFormalFrameworkAddedTestDataBuilder(
+                new OrganisationFormalFrameworkAddedBuilder(
                         _organisationCreated.Id,
                         _formalFrameworkCreated.Id,
                         _parentOrganisationCreated.Id)
                     .WithValidity(_dateTimeProvider.Today.AddDays(-2), _dateTimeProvider.Today.AddDays(-1));
 
             var anotherOrganisationFormalFrameworkAdded =
-                new OrganisationFormalFrameworkAddedTestDataBuilder(
+                new OrganisationFormalFrameworkAddedBuilder(
                         _organisationCreated.Id,
                         anotherFormalFrameworkCreated.Id,
                         _parentOrganisationCreated.Id)
                     .WithValidity(_dateTimeProvider.Today.AddDays(-2), _dateTimeProvider.Today.AddDays(-1));
 
-            var formalFrameworkAssignedToOrganisation = new FormalFrameworkAssignedToOrganisationTestDataBuilder(
+            var formalFrameworkAssignedToOrganisation = new FormalFrameworkAssignedToOrganisationBuilder(
                 organisationFormalFrameworkAdded.OrganisationFormalFrameworkId,
                 organisationFormalFrameworkAdded.FormalFrameworkId,
                 organisationFormalFrameworkAdded.OrganisationId,
                 organisationFormalFrameworkAdded.ParentOrganisationId);
 
-            var anotherFormalFrameworkAssignedToOrganisation = new FormalFrameworkAssignedToOrganisationTestDataBuilder(
+            var anotherFormalFrameworkAssignedToOrganisation = new FormalFrameworkAssignedToOrganisationBuilder(
                 anotherOrganisationFormalFrameworkAdded.OrganisationFormalFrameworkId,
                 anotherOrganisationFormalFrameworkAdded.FormalFrameworkId,
                 anotherOrganisationFormalFrameworkAdded.OrganisationId,

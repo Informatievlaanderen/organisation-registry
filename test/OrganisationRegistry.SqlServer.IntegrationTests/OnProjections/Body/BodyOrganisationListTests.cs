@@ -16,9 +16,9 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
             var sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
             var sequentialBodyNumberGenerator = new SequentialBodyNumberGenerator();
 
-            var bodyRegistered = new BodyRegisteredTestDataBuilder(sequentialBodyNumberGenerator);
-            var organisationCreated = new OrganisationCreatedTestDataBuilder(sequentialOvoNumberGenerator);
-            var bodyOrganisationAdded = new BodyOrganisationAddedTestDataBuilder(bodyRegistered.Id, organisationCreated.Id);
+            var bodyRegistered = new BodyRegisteredBuilder(sequentialBodyNumberGenerator);
+            var organisationCreated = new OrganisationCreatedBuilder(sequentialOvoNumberGenerator);
+            var bodyOrganisationAdded = new BodyOrganisationAddedBuilder(bodyRegistered.Id, organisationCreated.Id);
 
             HandleEvents(
                 organisationCreated.Build(),

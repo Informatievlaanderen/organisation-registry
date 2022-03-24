@@ -5,7 +5,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
     using Organisation;
     using Organisation.Events;
 
-    public class OrganisationCreatedTestDataBuilder
+    public class OrganisationCreatedBuilder
     {
         public OrganisationId Id { get; }
         public string Name { get; }
@@ -15,7 +15,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
         public DateTime? ValidFrom { get; private set; }
         public DateTime? ValidTo { get; private set; }
 
-        public OrganisationCreatedTestDataBuilder(IOvoNumberGenerator ovoNumberGenerator)
+        public OrganisationCreatedBuilder(IOvoNumberGenerator ovoNumberGenerator)
         {
             Id = new OrganisationId(Guid.NewGuid());
             Name = Id.ToString();
@@ -26,7 +26,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
             ValidTo = null;
         }
 
-        public OrganisationCreatedTestDataBuilder WithValidity(DateTime? from, DateTime? to)
+        public OrganisationCreatedBuilder WithValidity(DateTime? from, DateTime? to)
         {
             ValidFrom = from;
             ValidTo = to;
@@ -34,11 +34,14 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
         }
 
         public OrganisationCreated Build()
-            => new OrganisationCreated(
+            => new(
                 Id,
                 Name,
                 OvoNumber,
                 ShortName,
                 Article.None, Description, new List<Purpose>(), false, ValidFrom, ValidTo, null, null);
+
+        public static implicit operator OrganisationCreated(OrganisationCreatedBuilder builder)
+            => builder.Build();
     }
 }

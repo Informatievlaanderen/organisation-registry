@@ -20,16 +20,16 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
 
     public class AsDaughterOfVlimpersOrganisation: Specification<Organisation, OrganisationCommandHandlers, CreateOrganisation>
     {
-        private OrganisationCreatedTestDataBuilder _organisationCreatedTestDataBuilder;
+        private OrganisationCreatedBuilder _organisationCreatedBuilder;
 
         protected override IEnumerable<IEvent> Given()
         {
-            _organisationCreatedTestDataBuilder = new OrganisationCreatedTestDataBuilder(new SequentialOvoNumberGenerator());
+            _organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
 
             return new List<IEvent>
             {
-                _organisationCreatedTestDataBuilder.Build(),
-                new OrganisationPlacedUnderVlimpersManagement(_organisationCreatedTestDataBuilder.Id)
+                _organisationCreatedBuilder.Build(),
+                new OrganisationPlacedUnderVlimpersManagement(_organisationCreatedBuilder.Id)
             };
         }
 
@@ -41,7 +41,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
                 "OVO0001234",
                 "",
                 Article.None,
-                _organisationCreatedTestDataBuilder.Id,
+                _organisationCreatedBuilder.Id,
                 "",
                 new List<PurposeId>(),
                 false,

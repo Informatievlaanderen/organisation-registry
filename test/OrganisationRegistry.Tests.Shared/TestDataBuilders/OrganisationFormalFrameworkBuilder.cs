@@ -5,11 +5,11 @@
     using AutoFixture.Kernel;
     using Organisation;
 
-    public class OrganisationFormalFrameworkTestDataBuilder
+    public class OrganisationFormalFrameworkBuilder
     {
         private OrganisationFormalFramework _organisationFormalFramework;
 
-        public OrganisationFormalFrameworkTestDataBuilder(ISpecimenBuilder fixture)
+        public OrganisationFormalFrameworkBuilder(ISpecimenBuilder fixture)
         {
             _organisationFormalFramework = new OrganisationFormalFramework(
                 fixture.Create<Guid>(),
@@ -20,13 +20,13 @@
                 fixture.Create<Period>());
         }
 
-        public OrganisationFormalFrameworkTestDataBuilder WithValidity(ValidFrom from, ValidTo to)
+        public OrganisationFormalFrameworkBuilder WithValidity(ValidFrom from, ValidTo to)
         {
             _organisationFormalFramework = _organisationFormalFramework.WithValidity(new Period(from, to));
             return this;
         }
 
-        public OrganisationFormalFrameworkTestDataBuilder WithFormalFrameworkId(Guid formalFrameworkId)
+        public OrganisationFormalFrameworkBuilder WithFormalFrameworkId(Guid formalFrameworkId)
         {
             _organisationFormalFramework = new OrganisationFormalFramework(
                 _organisationFormalFramework.OrganisationFormalFrameworkId,
@@ -41,7 +41,7 @@
         public OrganisationFormalFramework Build()
             => _organisationFormalFramework;
 
-        public static implicit operator OrganisationFormalFramework(OrganisationFormalFrameworkTestDataBuilder builder)
+        public static implicit operator OrganisationFormalFramework(OrganisationFormalFrameworkBuilder builder)
             => builder.Build();
     }
 }

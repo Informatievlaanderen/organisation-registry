@@ -46,8 +46,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
             _validFrom = _dateTimeProviderStub.Today;
             _validTo = _dateTimeProviderStub.Today.AddDays(2);
 
-            _childCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator).Build();
-            _parentCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator).Build();
+            _childCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator).Build();
+            _parentCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator).Build();
             return new List<IEvent>
             {
                 _childCreated,

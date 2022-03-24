@@ -21,7 +21,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
 
     public class WhenTryingToChangeKboOwnedData : ExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfo>
     {
-        private OrganisationCreatedTestDataBuilder _organisationCreatedTestDataBuilder;
+        private OrganisationCreatedBuilder _organisationCreatedBuilder;
         private DateTime _yesterday;
 
         protected override OrganisationCommandHandlers BuildHandler()
@@ -37,28 +37,28 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
 
         protected override IEnumerable<IEvent> Given()
         {
-            _organisationCreatedTestDataBuilder = new OrganisationCreatedTestDataBuilder(new SequentialOvoNumberGenerator());
+            _organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
             _yesterday = DateTime.Today.AddDays(-1);
 
             return new List<IEvent>
             {
-                _organisationCreatedTestDataBuilder
+                _organisationCreatedBuilder
                     .WithValidity(null, null)
                     .Build(),
                 new OrganisationCoupledWithKbo(
-                    _organisationCreatedTestDataBuilder.Id,
+                    _organisationCreatedBuilder.Id,
                     "012313212",
-                    _organisationCreatedTestDataBuilder.Name,
+                    _organisationCreatedBuilder.Name,
                     "OVO999999",
                     new DateTime()),
-                new OrganisationBecameActive(_organisationCreatedTestDataBuilder.Id)
+                new OrganisationBecameActive(_organisationCreatedBuilder.Id)
             };
         }
 
         protected override UpdateOrganisationInfo When()
         {
             return new UpdateOrganisationInfo(
-                _organisationCreatedTestDataBuilder.Id,
+                _organisationCreatedBuilder.Id,
                 "Test",
                 Article.None,
                 "testing",

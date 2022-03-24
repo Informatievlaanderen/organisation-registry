@@ -24,16 +24,16 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
         private static readonly DateTimeProviderStub DateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
         private readonly SequentialOvoNumberGenerator _ovoNumberGenerator = new SequentialOvoNumberGenerator();
 
-        private OrganisationCreatedTestDataBuilder _childOrganisationCreated;
-        private OrganisationCreatedTestDataBuilder _parentOrganisationCreated;
-        private OrganisationCreatedTestDataBuilder _grandParentOrganisationCreated;
-        private FormalFrameworkCreatedTestDataBuilder _formalFrameworkACreated;
-        private FormalFrameworkCategoryCreatedTestDataBuilder _formalFrameworkCategoryCreatedTestDataBuilder;
-        private OrganisationFormalFrameworkAddedTestDataBuilder _childBecameDaughterOfParent;
-        private OrganisationFormalFrameworkAddedTestDataBuilder _parentBecameDaughterOfGrandParent;
-        private OrganisationCreatedTestDataBuilder _greatGrandParentOrganisationCreated;
-        private OrganisationFormalFrameworkAddedTestDataBuilder _grandParentBecameDaughterOfGreatGrandParent;
-        private FormalFrameworkCreatedTestDataBuilder _formalFrameworkBCreated;
+        private OrganisationCreatedBuilder _childOrganisationCreated;
+        private OrganisationCreatedBuilder _parentOrganisationCreated;
+        private OrganisationCreatedBuilder _grandParentOrganisationCreated;
+        private FormalFrameworkCreatedBuilder _formalFrameworkACreated;
+        private FormalFrameworkCategoryCreatedBuilder _formalFrameworkCategoryCreatedBuilder;
+        private OrganisationFormalFrameworkAddedBuilder _childBecameDaughterOfParent;
+        private OrganisationFormalFrameworkAddedBuilder _parentBecameDaughterOfGrandParent;
+        private OrganisationCreatedBuilder _greatGrandParentOrganisationCreated;
+        private OrganisationFormalFrameworkAddedBuilder _grandParentBecameDaughterOfGreatGrandParent;
+        private FormalFrameworkCreatedBuilder _formalFrameworkBCreated;
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
@@ -49,19 +49,19 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
 
         protected override IEnumerable<IEvent> Given()
         {
-            _childOrganisationCreated = new OrganisationCreatedTestDataBuilder(_ovoNumberGenerator);
-            _parentOrganisationCreated = new OrganisationCreatedTestDataBuilder(_ovoNumberGenerator);
-            _grandParentOrganisationCreated = new OrganisationCreatedTestDataBuilder(_ovoNumberGenerator);
-            _greatGrandParentOrganisationCreated = new OrganisationCreatedTestDataBuilder(_ovoNumberGenerator);
-            _formalFrameworkCategoryCreatedTestDataBuilder = new FormalFrameworkCategoryCreatedTestDataBuilder();
-            _formalFrameworkACreated = new FormalFrameworkCreatedTestDataBuilder(_formalFrameworkCategoryCreatedTestDataBuilder.Id, _formalFrameworkCategoryCreatedTestDataBuilder.Name);
-            _formalFrameworkBCreated = new FormalFrameworkCreatedTestDataBuilder(_formalFrameworkCategoryCreatedTestDataBuilder.Id, _formalFrameworkCategoryCreatedTestDataBuilder.Name);
+            _childOrganisationCreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
+            _parentOrganisationCreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
+            _grandParentOrganisationCreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
+            _greatGrandParentOrganisationCreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
+            _formalFrameworkCategoryCreatedBuilder = new FormalFrameworkCategoryCreatedBuilder();
+            _formalFrameworkACreated = new FormalFrameworkCreatedBuilder(_formalFrameworkCategoryCreatedBuilder.Id, _formalFrameworkCategoryCreatedBuilder.Name);
+            _formalFrameworkBCreated = new FormalFrameworkCreatedBuilder(_formalFrameworkCategoryCreatedBuilder.Id, _formalFrameworkCategoryCreatedBuilder.Name);
             _childBecameDaughterOfParent =
-                new OrganisationFormalFrameworkAddedTestDataBuilder(_childOrganisationCreated.Id, _formalFrameworkACreated.Id, _parentOrganisationCreated.Id);
+                new OrganisationFormalFrameworkAddedBuilder(_childOrganisationCreated.Id, _formalFrameworkACreated.Id, _parentOrganisationCreated.Id);
             _parentBecameDaughterOfGrandParent =
-                new OrganisationFormalFrameworkAddedTestDataBuilder(_parentOrganisationCreated.Id, _formalFrameworkACreated.Id, _grandParentOrganisationCreated.Id);
+                new OrganisationFormalFrameworkAddedBuilder(_parentOrganisationCreated.Id, _formalFrameworkACreated.Id, _grandParentOrganisationCreated.Id);
             _grandParentBecameDaughterOfGreatGrandParent =
-                new OrganisationFormalFrameworkAddedTestDataBuilder(_grandParentOrganisationCreated.Id, _formalFrameworkACreated.Id, _greatGrandParentOrganisationCreated.Id);
+                new OrganisationFormalFrameworkAddedBuilder(_grandParentOrganisationCreated.Id, _formalFrameworkACreated.Id, _greatGrandParentOrganisationCreated.Id);
 
             return new List<IEvent>
             {
@@ -69,7 +69,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
                 _parentOrganisationCreated.Build(),
                 _grandParentOrganisationCreated.Build(),
                 _greatGrandParentOrganisationCreated.Build(),
-                _formalFrameworkCategoryCreatedTestDataBuilder.Build(),
+                _formalFrameworkCategoryCreatedBuilder.Build(),
                 _formalFrameworkACreated.Build(),
                 _formalFrameworkBCreated.Build(),
                 _childBecameDaughterOfParent.Build(),

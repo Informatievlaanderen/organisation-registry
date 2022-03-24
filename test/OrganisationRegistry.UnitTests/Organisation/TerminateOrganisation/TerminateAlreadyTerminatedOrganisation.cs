@@ -56,7 +56,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation
                     _organisationId,
                     new OrganisationState(),
                     new KboState(),
-                    new OrganisationTerminationSummaryTestDataBuilder().Build(),
+                    new OrganisationTerminationSummaryBuilder().Build(),
                     false,
                     new OrganisationTerminationKboSummary(),
                     fixture.Create<DateTime>())

@@ -63,7 +63,7 @@ namespace OrganisationRegistry.UnitTests.OrganisationTermination
 
             GetFieldsToTerminate(dateOfTermination, organisationState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTerminationSummaryTestDataBuilder()
+                    new OrganisationTerminationSummaryBuilder()
                         .WithOrganisationNewValidTo(null)
                         .Build());
         }
@@ -84,7 +84,7 @@ namespace OrganisationRegistry.UnitTests.OrganisationTermination
 
             GetFieldsToTerminate(dateOfTermination, organisationState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTerminationSummaryTestDataBuilder()
+                    new OrganisationTerminationSummaryBuilder()
                         .WithOrganisationNewValidTo(null)
                         .Build());
         }
@@ -105,7 +105,7 @@ namespace OrganisationRegistry.UnitTests.OrganisationTermination
 
             GetFieldsToTerminate(dateOfTermination, organisationState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTerminationSummaryTestDataBuilder()
+                    new OrganisationTerminationSummaryBuilder()
                         .WithOrganisationNewValidTo(dateOfTermination)
                         .Build());
         }
@@ -228,7 +228,7 @@ namespace OrganisationRegistry.UnitTests.OrganisationTermination
 
             var dateOfTermination = fixture.Create<DateTime>();
 
-            var organisationFormalFramework = new OrganisationFormalFrameworkTestDataBuilder(fixture)
+            var organisationFormalFramework = new OrganisationFormalFrameworkBuilder(fixture)
                 .WithValidity(new ValidFrom(dateOfTermination.AddYears(2)), new ValidTo())
                 .WithFormalFrameworkId(RekenhofFormalFrameworkId);
 
@@ -248,7 +248,7 @@ namespace OrganisationRegistry.UnitTests.OrganisationTermination
 
             var dateOfTermination = fixture.Create<DateTime>();
 
-            var organisationClassification = new OrganisationOrganisationClassificationTestDataBuilder(fixture)
+            var organisationClassification = new OrganisationOrganisationClassificationBuilder(fixture)
                 .WithValidity(new ValidFrom(dateOfTermination.AddYears(2)), new ValidTo())
                 .WithOrganisationClassificationId(RekenhofClassificationTypeId);
 
@@ -268,7 +268,7 @@ namespace OrganisationRegistry.UnitTests.OrganisationTermination
 
             var dateOfTermination = fixture.Create<DateTime>();
 
-            var organisationCapacity = new OrganisationOrganisationCapacityTestDataBuilder(fixture)
+            var organisationCapacity = new OrganisationOrganisationCapacityBuilder(fixture)
                 .WithOrganisationCapacityId(RekenhofCapacityId)
                 .WithValidity(new ValidFrom(dateOfTermination.AddYears(2)), new ValidTo())
                 .Build();
@@ -399,7 +399,7 @@ namespace OrganisationRegistry.UnitTests.OrganisationTermination
 
             GetFieldsToTerminate(dateOfTermination,organisationState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTerminationSummaryTestDataBuilder()
+                    new OrganisationTerminationSummaryBuilder()
                         .WithOrganisationNewValidTo(new ValidTo(dateOfTermination))
                         .WithContacts(overlappingContacts.ToDictionary(x => x.OrganisationContactId, _ => dateOfTermination))
                         .WithOpeningHours(overlappingOpeningHours.ToDictionary(x => x.OrganisationOpeningHourId, _ => dateOfTermination))
@@ -436,7 +436,7 @@ namespace OrganisationRegistry.UnitTests.OrganisationTermination
 
             GetFieldsToTerminate(dateOfTermination, organisationState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTerminationSummaryTestDataBuilder()
+                    new OrganisationTerminationSummaryBuilder()
                         .WithOrganisationNewValidTo(new ValidTo(dateOfTermination))
                         .WithKeys(overlappingVlimpersKeys.ToDictionary(x => x.OrganisationKeyId, _ => dateOfTermination))
                         .Build()
@@ -452,15 +452,15 @@ namespace OrganisationRegistry.UnitTests.OrganisationTermination
 
             var endOfNextYear = new DateTime(dateOfTermination.Year + 1, 12, 31);
 
-            var capacityToTerminateEndOfNextYear = new OrganisationOrganisationCapacityTestDataBuilder(fixture)
+            var capacityToTerminateEndOfNextYear = new OrganisationOrganisationCapacityBuilder(fixture)
                 .WithOrganisationCapacityId(RekenhofCapacityId)
                 .WithValidity(new ValidFrom(dateOfTermination.AddDays(1)), new ValidTo())
                 .Build();
-            var classificationToTerminateEndOfNextYear = new OrganisationOrganisationClassificationTestDataBuilder(fixture)
+            var classificationToTerminateEndOfNextYear = new OrganisationOrganisationClassificationBuilder(fixture)
                 .WithOrganisationClassificationId(RekenhofClassificationTypeId)
                 .WithValidity(new ValidFrom(dateOfTermination.AddDays(1)), new ValidTo())
                 .Build();
-            var formalFrameworkToTerminateEndOfNextYear = new OrganisationFormalFrameworkTestDataBuilder(fixture)
+            var formalFrameworkToTerminateEndOfNextYear = new OrganisationFormalFrameworkBuilder(fixture)
                 .WithFormalFrameworkId(RekenhofFormalFrameworkId)
                 .WithValidity(new ValidFrom(dateOfTermination.AddDays(1)), new ValidTo())
                 .Build();
@@ -479,7 +479,7 @@ namespace OrganisationRegistry.UnitTests.OrganisationTermination
 
             GetFieldsToTerminate(dateOfTermination, organisationState)
                 .Should().BeEquivalentTo(
-                    new OrganisationTerminationSummaryTestDataBuilder()
+                    new OrganisationTerminationSummaryBuilder()
                         .WithOrganisationNewValidTo(new ValidTo(dateOfTermination))
                         .WithCapacities(capacitiesToTerminateEndOfNextYear.ToDictionary(x => x.OrganisationCapacityId, _ => endOfNextYear))
                         .WithClassifications(classificationsToTerminateEndOfNextYear.ToDictionary(x => x.OrganisationOrganisationClassificationId, _ => endOfNextYear))
@@ -509,7 +509,7 @@ namespace OrganisationRegistry.UnitTests.OrganisationTermination
 
             var result = GetFieldsToTerminate(dateOfTermination, organisationState);
 
-            var expectation = new OrganisationTerminationSummaryTestDataBuilder()
+            var expectation = new OrganisationTerminationSummaryBuilder()
                 .WithOrganisationNewValidTo(new ValidTo(dateOfTermination))
                 .WithCapacities(overlappingCapacities.ToDictionary(x => x.OrganisationCapacityId, _ => dateOfTermination))
                 .WithClassifications(overlappingClassifications.ToDictionary(x => x.OrganisationOrganisationClassificationId, _ => dateOfTermination))

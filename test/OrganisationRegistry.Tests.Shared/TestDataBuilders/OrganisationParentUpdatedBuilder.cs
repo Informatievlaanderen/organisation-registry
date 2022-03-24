@@ -3,7 +3,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
     using System;
     using Organisation.Events;
 
-    public class OrganisationParentUpdatedTestDataBuilder
+    public class OrganisationParentUpdatedBuilder
     {
         public Guid OrganisationId { get; }
         public Guid OrganisationOrganisationParentId { get; }
@@ -15,24 +15,25 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
         public Guid PreviousParentOrganisationId { get; set; }
         public string PreviousParentOrganisationName { get; set; }
 
-        public OrganisationParentUpdatedTestDataBuilder(Guid organisationOrganisationParentId, Guid organisationId, Guid parentOrganisationId)
+        public OrganisationParentUpdatedBuilder(Guid organisationOrganisationParentId, Guid organisationId, Guid parentOrganisationId)
         {
             OrganisationOrganisationParentId = organisationOrganisationParentId;
             OrganisationId = organisationId;
             ParentOrganisationId = parentOrganisationId;
             ParentOrganisationName = parentOrganisationId.ToString();
+            PreviousParentOrganisationName = string.Empty;
             ValidFrom = null;
             ValidTo = null;
         }
 
-        public OrganisationParentUpdatedTestDataBuilder WithValidity(DateTime? from, DateTime? to)
+        public OrganisationParentUpdatedBuilder WithValidity(DateTime? from, DateTime? to)
         {
             ValidFrom = from;
             ValidTo = to;
             return this;
         }
 
-        public OrganisationParentUpdatedTestDataBuilder WithPreviousParent(Guid id)
+        public OrganisationParentUpdatedBuilder WithPreviousParent(Guid id)
         {
             PreviousParentOrganisationId = id;
             PreviousParentOrganisationName = id.ToString();
@@ -40,7 +41,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
         }
 
         public OrganisationParentUpdated Build()
-            => new OrganisationParentUpdated(
+            => new(
                 OrganisationId,
                 OrganisationOrganisationParentId,
                 ParentOrganisationId,
@@ -48,5 +49,8 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
                 ValidFrom,
                 ValidTo,
                 PreviousParentOrganisationId, PreviousParentOrganisationName, ValidFrom, ValidTo);
+
+        public static implicit operator OrganisationParentUpdated(OrganisationParentUpdatedBuilder builder)
+            => builder.Build();
     }
 }

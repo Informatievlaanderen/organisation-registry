@@ -21,11 +21,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
     {
         private SequentialOvoNumberGenerator _sequentialOvoNumberGenerator;
         private DateTimeProviderStub _dateTimeProvider;
-        private OrganisationCreatedTestDataBuilder _childOrganisationCreated;
-        private OrganisationCreatedTestDataBuilder _parentOrganisationCreated;
-        private OrganisationCreatedTestDataBuilder _anotherParentOrganisationCreated;
-        private FormalFrameworkCreatedTestDataBuilder _formalFrameworkCreated;
-        private FormalFrameworkCreatedTestDataBuilder _anotherFormalFrameworkCreated;
+        private OrganisationCreatedBuilder _childOrganisationCreated;
+        private OrganisationCreatedBuilder _parentOrganisationCreated;
+        private OrganisationCreatedBuilder _anotherParentOrganisationCreated;
+        private FormalFrameworkCreatedBuilder _formalFrameworkCreated;
+        private FormalFrameworkCreatedBuilder _anotherFormalFrameworkCreated;
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -33,48 +33,48 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
             _sequentialOvoNumberGenerator =
                 new SequentialOvoNumberGenerator();
 
-            _childOrganisationCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            _parentOrganisationCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            _anotherParentOrganisationCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            var formalFrameworkCategoryCreated = new FormalFrameworkCategoryCreatedTestDataBuilder();
-            _formalFrameworkCreated = new FormalFrameworkCreatedTestDataBuilder(formalFrameworkCategoryCreated.Id, formalFrameworkCategoryCreated.Name);
-            _anotherFormalFrameworkCreated = new FormalFrameworkCreatedTestDataBuilder(formalFrameworkCategoryCreated.Id, formalFrameworkCategoryCreated.Name);
+            _childOrganisationCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            _parentOrganisationCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            _anotherParentOrganisationCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            var formalFrameworkCategoryCreated = new FormalFrameworkCategoryCreatedBuilder();
+            _formalFrameworkCreated = new FormalFrameworkCreatedBuilder(formalFrameworkCategoryCreated.Id, formalFrameworkCategoryCreated.Name);
+            _anotherFormalFrameworkCreated = new FormalFrameworkCreatedBuilder(formalFrameworkCategoryCreated.Id, formalFrameworkCategoryCreated.Name);
 
             var organisationFormalFrameworkAdded =
-                new OrganisationFormalFrameworkAddedTestDataBuilder(
+                new OrganisationFormalFrameworkAddedBuilder(
                         _childOrganisationCreated.Id,
                         _formalFrameworkCreated.Id,
                         _parentOrganisationCreated.Id)
                     .WithValidity(_dateTimeProvider.Today.AddDays(-2), _dateTimeProvider.Today.AddDays(-1));
 
             var newOrganisationFormalFrameworkAdded =
-                new OrganisationFormalFrameworkAddedTestDataBuilder(
+                new OrganisationFormalFrameworkAddedBuilder(
                         _childOrganisationCreated.Id,
                         _formalFrameworkCreated.Id,
                         _anotherParentOrganisationCreated.Id)
                     .WithValidity(_dateTimeProvider.Today.AddDays(-1), _dateTimeProvider.Today.AddDays(0));
 
             var organisationFormalFrameworkBAdded =
-                new OrganisationFormalFrameworkAddedTestDataBuilder(
+                new OrganisationFormalFrameworkAddedBuilder(
                         _childOrganisationCreated.Id,
                         _anotherFormalFrameworkCreated.Id,
                         _parentOrganisationCreated.Id)
                     .WithValidity(_dateTimeProvider.Today.AddDays(-1), _dateTimeProvider.Today.AddDays(0));
 
             var anotherOrganisationFormalFrameworkBAdded =
-                new OrganisationFormalFrameworkAddedTestDataBuilder(
+                new OrganisationFormalFrameworkAddedBuilder(
                         _childOrganisationCreated.Id,
                         _anotherFormalFrameworkCreated.Id,
                         _anotherParentOrganisationCreated.Id)
                     .WithValidity(_dateTimeProvider.Today.AddDays(-2), _dateTimeProvider.Today.AddDays(-1));
 
-            var formalFrameworkAssignedToOrganisation = new FormalFrameworkAssignedToOrganisationTestDataBuilder(
+            var formalFrameworkAssignedToOrganisation = new FormalFrameworkAssignedToOrganisationBuilder(
                 organisationFormalFrameworkAdded.OrganisationFormalFrameworkId,
                 organisationFormalFrameworkAdded.FormalFrameworkId,
                 organisationFormalFrameworkAdded.OrganisationId,
                 organisationFormalFrameworkAdded.ParentOrganisationId);
 
-            var anotherFormalFrameworkAssignedToOrganisation = new FormalFrameworkAssignedToOrganisationTestDataBuilder(
+            var anotherFormalFrameworkAssignedToOrganisation = new FormalFrameworkAssignedToOrganisationBuilder(
                 anotherOrganisationFormalFrameworkBAdded.OrganisationFormalFrameworkId,
                 anotherOrganisationFormalFrameworkBAdded.FormalFrameworkId,
                 anotherOrganisationFormalFrameworkBAdded.OrganisationId,

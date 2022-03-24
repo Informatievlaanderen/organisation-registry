@@ -18,16 +18,16 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
         [Fact]
         public void WhenAssigningAFormalFramework()
         {
-            var childOrganisationCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            var parentOrganisationACreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            var parentOrganisationBCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            var formalFrameworkCategoryCreatedTestDataBuilder = new FormalFrameworkCategoryCreatedTestDataBuilder();
-            var formalFrameworkACreated = new FormalFrameworkCreatedTestDataBuilder(formalFrameworkCategoryCreatedTestDataBuilder.Id, formalFrameworkCategoryCreatedTestDataBuilder.Name);
-            var formalFrameworkBCreated = new FormalFrameworkCreatedTestDataBuilder(formalFrameworkCategoryCreatedTestDataBuilder.Id, formalFrameworkCategoryCreatedTestDataBuilder.Name);
+            var childOrganisationCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            var parentOrganisationACreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            var parentOrganisationBCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            var formalFrameworkCategoryCreatedTestDataBuilder = new FormalFrameworkCategoryCreatedBuilder();
+            var formalFrameworkACreated = new FormalFrameworkCreatedBuilder(formalFrameworkCategoryCreatedTestDataBuilder.Id, formalFrameworkCategoryCreatedTestDataBuilder.Name);
+            var formalFrameworkBCreated = new FormalFrameworkCreatedBuilder(formalFrameworkCategoryCreatedTestDataBuilder.Id, formalFrameworkCategoryCreatedTestDataBuilder.Name);
             var formalFrameworkAddedToChild =
-                new OrganisationFormalFrameworkAddedTestDataBuilder(childOrganisationCreated.Id, formalFrameworkACreated.Id, parentOrganisationACreated.Id);
+                new OrganisationFormalFrameworkAddedBuilder(childOrganisationCreated.Id, formalFrameworkACreated.Id, parentOrganisationACreated.Id);
             var parentAssignedToChild =
-                new FormalFrameworkAssignedToOrganisationTestDataBuilder(
+                new FormalFrameworkAssignedToOrganisationBuilder(
                     formalFrameworkAddedToChild.OrganisationFormalFrameworkId, formalFrameworkACreated.Id, childOrganisationCreated.Id, parentOrganisationACreated.Id);
 
 
@@ -61,30 +61,30 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
         [Fact]
         public void WhenChangingAnActiveFormalFrameworkToAnInactiveOne()
         {
-            var childOrganisationACreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            var childOrganisationBCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            var parentOrganisationACreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            var parentOrganisationBCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            var formalFrameworkCategoryCreatedTestDataBuilder = new FormalFrameworkCategoryCreatedTestDataBuilder();
-            var formalFrameworkACreated = new FormalFrameworkCreatedTestDataBuilder(formalFrameworkCategoryCreatedTestDataBuilder.Id, formalFrameworkCategoryCreatedTestDataBuilder.Name);
-            var formalFrameworkBCreated = new FormalFrameworkCreatedTestDataBuilder(formalFrameworkCategoryCreatedTestDataBuilder.Id, formalFrameworkCategoryCreatedTestDataBuilder.Name);
+            var childOrganisationACreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            var childOrganisationBCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            var parentOrganisationACreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            var parentOrganisationBCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            var formalFrameworkCategoryCreatedTestDataBuilder = new FormalFrameworkCategoryCreatedBuilder();
+            var formalFrameworkACreated = new FormalFrameworkCreatedBuilder(formalFrameworkCategoryCreatedTestDataBuilder.Id, formalFrameworkCategoryCreatedTestDataBuilder.Name);
+            var formalFrameworkBCreated = new FormalFrameworkCreatedBuilder(formalFrameworkCategoryCreatedTestDataBuilder.Id, formalFrameworkCategoryCreatedTestDataBuilder.Name);
 
             var formalFrameworkAWithParentAAddedToChildA =
-                new OrganisationFormalFrameworkAddedTestDataBuilder(childOrganisationACreated.Id, formalFrameworkACreated.Id, parentOrganisationACreated.Id);
+                new OrganisationFormalFrameworkAddedBuilder(childOrganisationACreated.Id, formalFrameworkACreated.Id, parentOrganisationACreated.Id);
 
             var parentAAssignedToChildAForFormalFrameworkA =
-                new FormalFrameworkAssignedToOrganisationTestDataBuilder(
+                new FormalFrameworkAssignedToOrganisationBuilder(
                     formalFrameworkAWithParentAAddedToChildA.OrganisationFormalFrameworkId, formalFrameworkACreated.Id, childOrganisationACreated.Id, parentOrganisationACreated.Id);
 
             var formalFrameworkBWithParentAAddedToChildB =
-                new OrganisationFormalFrameworkAddedTestDataBuilder(childOrganisationBCreated.Id, formalFrameworkBCreated.Id, parentOrganisationACreated.Id);
+                new OrganisationFormalFrameworkAddedBuilder(childOrganisationBCreated.Id, formalFrameworkBCreated.Id, parentOrganisationACreated.Id);
 
             var parentAAssignedToChildBForFormalFrameworkB =
-                new FormalFrameworkAssignedToOrganisationTestDataBuilder(
+                new FormalFrameworkAssignedToOrganisationBuilder(
                     formalFrameworkBWithParentAAddedToChildB.OrganisationFormalFrameworkId, formalFrameworkBCreated.Id, childOrganisationBCreated.Id, parentOrganisationACreated.Id);
 
             var formalFrameworkForChildAUpdatedToInactive =
-                new OrganisationFormalFrameworkUpdatedTestDataBuilder(
+                new OrganisationFormalFrameworkUpdatedBuilder(
                     formalFrameworkAWithParentAAddedToChildA.OrganisationFormalFrameworkId,
                     childOrganisationACreated.Id,
                     formalFrameworkACreated.Id,

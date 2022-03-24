@@ -4,7 +4,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
     using FormalFramework;
     using FormalFramework.Events;
 
-    public class FormalFrameworkCreatedTestDataBuilder
+    public class FormalFrameworkCreatedBuilder
     {
         public FormalFrameworkId Id { get; }
         public string Name { get; }
@@ -12,7 +12,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
         public Guid FormalFrameworkCategoryId { get; }
         public string Code { get; }
 
-        public FormalFrameworkCreatedTestDataBuilder(Guid formalFrameworkCategoryId, string formalFrameworkCategoryName)
+        public FormalFrameworkCreatedBuilder(Guid formalFrameworkCategoryId, string formalFrameworkCategoryName)
         {
             Id = new FormalFrameworkId(Guid.NewGuid());
             Name = Id.ToString();
@@ -22,11 +22,14 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
         }
 
         public FormalFrameworkCreated Build()
-            => new FormalFrameworkCreated(
+            => new(
                 Id,
                 Name,
                 Code,
                 FormalFrameworkCategoryId,
                 FormalFrameworkCategoryName);
+
+        public static implicit operator FormalFrameworkCreated(FormalFrameworkCreatedBuilder builder)
+            => builder.Build();
     }
 }

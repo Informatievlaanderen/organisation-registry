@@ -21,7 +21,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
 
     public class WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser : ExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfoLimitedToVlimpers>
     {
-        private OrganisationCreatedTestDataBuilder _organisationCreatedTestDataBuilder;
+        private OrganisationCreatedBuilder _organisationCreatedBuilder;
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
@@ -37,15 +37,15 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
         protected override IEnumerable<IEvent> Given()
         {
             var fixture = new Fixture();
-            _organisationCreatedTestDataBuilder = new OrganisationCreatedTestDataBuilder(new SequentialOvoNumberGenerator());
+            _organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
 
             return new List<IEvent>
             {
-                _organisationCreatedTestDataBuilder
+                _organisationCreatedBuilder
                     .WithValidity(null, null)
                     .Build(),
-                new OrganisationBecameActive(_organisationCreatedTestDataBuilder.Id),
-                new OrganisationTerminatedV2(_organisationCreatedTestDataBuilder.Id,
+                new OrganisationBecameActive(_organisationCreatedBuilder.Id),
+                new OrganisationTerminatedV2(_organisationCreatedBuilder.Id,
                     fixture.Create<string>(),
                     fixture.Create<string>(),
                     fixture.Create<DateTime>(),
@@ -81,7 +81,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                 .Build();
 
             return new UpdateOrganisationInfoLimitedToVlimpers(
-                _organisationCreatedTestDataBuilder.Id,
+                _organisationCreatedBuilder.Id,
                 "Test",
                 Article.None,
                 "testing",

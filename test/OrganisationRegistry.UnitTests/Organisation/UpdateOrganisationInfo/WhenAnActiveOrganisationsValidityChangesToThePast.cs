@@ -20,7 +20,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
 
     public class WhenAnActiveOrganisationsValidityChangesToThePast : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfo>
     {
-        private OrganisationCreatedTestDataBuilder _organisationCreatedTestDataBuilder;
+        private OrganisationCreatedBuilder _organisationCreatedBuilder;
         private DateTime _yesterday;
 
         protected override OrganisationCommandHandlers BuildHandler()
@@ -36,15 +36,15 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
 
         protected override IEnumerable<IEvent> Given()
         {
-            _organisationCreatedTestDataBuilder = new OrganisationCreatedTestDataBuilder(new SequentialOvoNumberGenerator());
+            _organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
             _yesterday = DateTime.Today.AddDays(-1);
 
             return new List<IEvent>
             {
-                _organisationCreatedTestDataBuilder
+                _organisationCreatedBuilder
                     .WithValidity(null, null)
                     .Build(),
-                new OrganisationBecameActive(_organisationCreatedTestDataBuilder.Id)
+                new OrganisationBecameActive(_organisationCreatedBuilder.Id)
             };
         }
 
@@ -55,7 +55,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                 .Build();
 
             return new UpdateOrganisationInfo(
-                _organisationCreatedTestDataBuilder.Id,
+                _organisationCreatedBuilder.Id,
                 "Test",
                 Article.None,
                 "testing",
