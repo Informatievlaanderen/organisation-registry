@@ -1,3 +1,10 @@
+## [1.149.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.149.0...v1.149.1) (2022-03-24)
+
+
+### Bug Fixes
+
+* or-852 eventhandlers ([c037dcd](https://github.com/informatievlaanderen/organisation-registry/commit/c037dcd555e7e7fb142f7926d8e46aa2bde7d808))
+
 # [1.149.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.148.0...v1.149.0) (2022-03-24)
 
 
