@@ -17,7 +17,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         BaseProjection<OrganisationKey>,
         IElasticEventHandler<OrganisationKeyAdded>,
         IElasticEventHandler<OrganisationKeyUpdated>,
-        IElasticEventHandler<KeyTypeUpdated>
+        IElasticEventHandler<KeyTypeUpdated>,
+        IElasticEventHandler<OrganisationTerminatedV2>
     {
         public OrganisationKey(
             ILogger<OrganisationKey> logger) : base(logger)
@@ -81,6 +82,28 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.KeyTypeName,
                             message.Body.Value,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
+                }
+            );
+        }
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+        {
+            return new ElasticPerDocumentChange<OrganisationDocument>
+            (
+                message.Body.OrganisationId, async document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    foreach (var (key, value) in message.Body.FieldsToTerminate.Keys)
+                    {
+                        var organisationKey =
+                            document
+                                .Keys
+                                .Single(x => x.OrganisationKeyId == key);
+
+                        organisationKey.Validity.End = value;
+                    }
                 }
             );
         }

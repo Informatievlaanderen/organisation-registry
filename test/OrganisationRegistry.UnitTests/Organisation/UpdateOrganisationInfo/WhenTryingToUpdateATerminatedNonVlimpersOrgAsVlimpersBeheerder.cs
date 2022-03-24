@@ -61,6 +61,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                         new Dictionary<Guid, DateTime>(),
                         new Dictionary<Guid, DateTime>(),
                         new Dictionary<Guid, DateTime>(),
+                        new Dictionary<Guid, DateTime>(),
                         new Dictionary<Guid, DateTime>()),
                     new KboFieldsToTerminateV2(
                         new Dictionary<Guid, DateTime>(),
