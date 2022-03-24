@@ -1,3 +1,10 @@
+# [1.149.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.148.0...v1.149.0) (2022-03-24)
+
+
+### Features
+
+* or-852 refactoring ([ff9b3d0](https://github.com/informatievlaanderen/organisation-registry/commit/ff9b3d070e54497123cbd71ad076fce54f1a8d96))
+
 # [1.148.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.147.0...v1.148.0) (2022-03-24)
 
 
