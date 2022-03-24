@@ -5,11 +5,11 @@
     using AutoFixture.Kernel;
     using Organisation;
 
-    public class OrganisationOrganisationClassificationTestDataBuilder
+    public class OrganisationOrganisationClassificationBuilder
     {
         private OrganisationOrganisationClassification _organisationOrganisationClassification;
 
-        public OrganisationOrganisationClassificationTestDataBuilder(ISpecimenBuilder fixture)
+        public OrganisationOrganisationClassificationBuilder(ISpecimenBuilder fixture)
         {
             _organisationOrganisationClassification = new OrganisationOrganisationClassification(
                 fixture.Create<Guid>(),
@@ -21,13 +21,13 @@
                 fixture.Create<Period>()
             );
         }
-        public OrganisationOrganisationClassificationTestDataBuilder WithValidity(ValidFrom from, ValidTo to)
+        public OrganisationOrganisationClassificationBuilder WithValidity(ValidFrom from, ValidTo to)
         {
             _organisationOrganisationClassification = _organisationOrganisationClassification.WithValidity(new Period(from, to));
             return this;
         }
 
-        public OrganisationOrganisationClassificationTestDataBuilder WithOrganisationClassificationId(Guid organisationClassificationTypeId)
+        public OrganisationOrganisationClassificationBuilder WithOrganisationClassificationId(Guid organisationClassificationTypeId)
         {
             _organisationOrganisationClassification = new OrganisationOrganisationClassification(
                 _organisationOrganisationClassification.OrganisationOrganisationClassificationId,
@@ -43,7 +43,7 @@
         public OrganisationOrganisationClassification Build()
             => _organisationOrganisationClassification;
 
-        public static implicit operator OrganisationOrganisationClassification(OrganisationOrganisationClassificationTestDataBuilder builder)
+        public static implicit operator OrganisationOrganisationClassification(OrganisationOrganisationClassificationBuilder builder)
             => builder.Build();
     }
 }

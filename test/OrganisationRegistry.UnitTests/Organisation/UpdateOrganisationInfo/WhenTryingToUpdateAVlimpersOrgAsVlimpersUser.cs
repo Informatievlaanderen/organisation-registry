@@ -20,7 +20,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
 
     public class WhenTryingToUpdateAVlimpersOrgAsVlimpersUser : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfoLimitedToVlimpers>
     {
-        private OrganisationCreatedTestDataBuilder _organisationCreatedTestDataBuilder;
+        private OrganisationCreatedBuilder _organisationCreatedBuilder;
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
@@ -35,15 +35,15 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
 
         protected override IEnumerable<IEvent> Given()
         {
-            _organisationCreatedTestDataBuilder = new OrganisationCreatedTestDataBuilder(new SequentialOvoNumberGenerator());
+            _organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
 
             return new List<IEvent>
             {
-                _organisationCreatedTestDataBuilder
+                _organisationCreatedBuilder
                     .WithValidity(null, null)
                     .Build(),
-                new OrganisationBecameActive(_organisationCreatedTestDataBuilder.Id),
-                new OrganisationPlacedUnderVlimpersManagement(_organisationCreatedTestDataBuilder.Id)
+                new OrganisationBecameActive(_organisationCreatedBuilder.Id),
+                new OrganisationPlacedUnderVlimpersManagement(_organisationCreatedBuilder.Id)
             };
         }
 
@@ -54,7 +54,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                 .Build();
 
             return new UpdateOrganisationInfoLimitedToVlimpers(
-                _organisationCreatedTestDataBuilder.Id,
+                _organisationCreatedBuilder.Id,
                 "Test",
                 Article.None,
                 "testing",

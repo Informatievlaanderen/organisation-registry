@@ -18,7 +18,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
         {
             var sequentialBodyNumberGenerator = new SequentialBodyNumberGenerator();
 
-            var bodyRegistered = new BodyRegisteredTestDataBuilder(sequentialBodyNumberGenerator).Build();
+            var bodyRegistered = new BodyRegisteredBuilder(sequentialBodyNumberGenerator).Build();
 
             await HandleEvents(bodyRegistered);
 
@@ -46,7 +46,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
         {
             var sequentialBodyNumberGenerator = new SequentialBodyNumberGenerator();
 
-            var bodyRegistered = new BodyRegisteredTestDataBuilder(sequentialBodyNumberGenerator).Build();
+            var bodyRegistered = new BodyRegisteredBuilder(sequentialBodyNumberGenerator).Build();
             var bodyBalancedParticipationChanged = new BodyBalancedParticipationChanged(
                 bodyId: bodyRegistered.BodyId,
                 balancedParticipationObligatory:true,
@@ -84,7 +84,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
         {
             var sequentialBodyNumberGenerator = new SequentialBodyNumberGenerator();
 
-            var bodyRegistered = new BodyRegisteredTestDataBuilder(sequentialBodyNumberGenerator).Build();
+            var bodyRegistered = new BodyRegisteredBuilder(sequentialBodyNumberGenerator).Build();
             var bodyBalancedParticipationChanged = new BodyBalancedParticipationChanged(
                 bodyId: bodyRegistered.BodyId,
                 balancedParticipationObligatory:false,

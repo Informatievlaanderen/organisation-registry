@@ -3,14 +3,14 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
     using System;
     using Organisation.Events;
 
-    public class FormalFrameworkAssignedToOrganisationTestDataBuilder
+    public class FormalFrameworkAssignedToOrganisationBuilder
     {
         public Guid OrganisationFormalFrameworkId { get; }
         public Guid OrganisationId { get; }
         public Guid FormalFrameworkId { get; }
         public Guid ParentOrganisationId { get; }
 
-        public FormalFrameworkAssignedToOrganisationTestDataBuilder(
+        public FormalFrameworkAssignedToOrganisationBuilder(
             Guid organisationFormalFrameworkId,
             Guid formalFrameworkId,
             Guid organisationId,
@@ -23,10 +23,13 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
         }
 
         public FormalFrameworkAssignedToOrganisation Build()
-            => new FormalFrameworkAssignedToOrganisation(
+            => new(
                 OrganisationId,
                 FormalFrameworkId,
                 ParentOrganisationId,
                 OrganisationFormalFrameworkId);
+
+        public static implicit operator FormalFrameworkAssignedToOrganisation(FormalFrameworkAssignedToOrganisationBuilder builder)
+            => builder.Build();
     }
 }

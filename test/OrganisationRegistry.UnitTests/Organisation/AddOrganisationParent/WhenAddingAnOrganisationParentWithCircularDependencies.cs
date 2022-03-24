@@ -21,9 +21,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
     {
         private DateTimeProviderStub _dateTimeProviderStub;
         private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
-        private OrganisationCreatedTestDataBuilder _organisationACreated;
-        private OrganisationCreatedTestDataBuilder _organisationBCreated;
-        private OrganisationParentAddedTestDataBuilder _organisationABecameDaughterOfOrganisationB;
+        private OrganisationCreatedBuilder _organisationACreated;
+        private OrganisationCreatedBuilder _organisationBCreated;
+        private OrganisationParentAddedBuilder _organisationABecameDaughterOfOrganisationB;
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
@@ -41,9 +41,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
         {
             _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
 
-            _organisationACreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            _organisationBCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            _organisationABecameDaughterOfOrganisationB = new OrganisationParentAddedTestDataBuilder(_organisationACreated.Id, _organisationBCreated.Id);
+            _organisationACreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            _organisationBCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            _organisationABecameDaughterOfOrganisationB = new OrganisationParentAddedBuilder(_organisationACreated.Id, _organisationBCreated.Id);
 
             return new List<IEvent>
             {

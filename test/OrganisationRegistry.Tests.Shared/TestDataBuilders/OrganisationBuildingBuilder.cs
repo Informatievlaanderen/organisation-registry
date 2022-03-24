@@ -3,7 +3,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
     using System;
     using Organisation;
 
-    public class OrganisationBuildingTestDataBuilder
+    public class OrganisationBuildingBuilder
     {
         private Period _validity;
         private Guid _organisationBuildingId;
@@ -11,7 +11,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
         private Guid _buildingId;
         private bool _isMainBuilding;
 
-        public OrganisationBuildingTestDataBuilder()
+        public OrganisationBuildingBuilder()
         {
             _organisationBuildingId = Guid.NewGuid();
             _organisationId = Guid.NewGuid();
@@ -20,7 +20,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
             _validity = new Period();
         }
 
-        public OrganisationBuildingTestDataBuilder(OrganisationBuildingTestDataBuilder dataBuilder)
+        public OrganisationBuildingBuilder(OrganisationBuildingBuilder dataBuilder)
         {
             _organisationBuildingId = dataBuilder._organisationBuildingId;
             _organisationId = dataBuilder._organisationId;
@@ -29,31 +29,31 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
             _validity = dataBuilder._validity;
         }
 
-        public OrganisationBuildingTestDataBuilder WithOrganisationBuildingId(Guid organisationBuildingId)
+        public OrganisationBuildingBuilder WithOrganisationBuildingId(Guid organisationBuildingId)
         {
             _organisationBuildingId = organisationBuildingId;
             return this;
         }
 
-        public OrganisationBuildingTestDataBuilder WithOrganisationId(Guid organisationId)
+        public OrganisationBuildingBuilder WithOrganisationId(Guid organisationId)
         {
             _organisationId = organisationId;
             return this;
         }
 
-        public OrganisationBuildingTestDataBuilder WithBuildingId(Guid buildingId)
+        public OrganisationBuildingBuilder WithBuildingId(Guid buildingId)
         {
             _buildingId = buildingId;
             return this;
         }
 
-        public OrganisationBuildingTestDataBuilder WithMainBuilding(bool isMainBuilding)
+        public OrganisationBuildingBuilder WithMainBuilding(bool isMainBuilding)
         {
             _isMainBuilding = isMainBuilding;
             return this;
         }
 
-        public OrganisationBuildingTestDataBuilder WithValidity(Period validity)
+        public OrganisationBuildingBuilder WithValidity(Period validity)
         {
             _validity = validity;
             return this;
@@ -68,7 +68,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
                 _isMainBuilding,
                 _validity);
 
-        public static implicit operator OrganisationBuilding(OrganisationBuildingTestDataBuilder dataBuilder)
+        public static implicit operator OrganisationBuilding(OrganisationBuildingBuilder dataBuilder)
             => dataBuilder.Build();
     }
 }

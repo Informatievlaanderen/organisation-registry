@@ -21,12 +21,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
     {
         private DateTimeProviderStub _dateTimeProviderStub;
         private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
-        private OrganisationCreatedTestDataBuilder _organisationACreated;
-        private OrganisationCreatedTestDataBuilder _organisationBCreated;
-        private OrganisationCreatedTestDataBuilder _organisationCCreated;
-        private OrganisationParentAddedTestDataBuilder _organisationABecameDaughterOfOrganisationBFor2016;
-        private OrganisationParentAddedTestDataBuilder _organisationBBecameDaughterOfOrganisationCFor2017;
-        private OrganisationParentAddedTestDataBuilder _organisationCBecameDaughterOfOrganisationAFor2018;
+        private OrganisationCreatedBuilder _organisationACreated;
+        private OrganisationCreatedBuilder _organisationBCreated;
+        private OrganisationCreatedBuilder _organisationCCreated;
+        private OrganisationParentAddedBuilder _organisationABecameDaughterOfOrganisationBFor2016;
+        private OrganisationParentAddedBuilder _organisationBBecameDaughterOfOrganisationCFor2017;
+        private OrganisationParentAddedBuilder _organisationCBecameDaughterOfOrganisationAFor2018;
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
@@ -44,20 +44,20 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
         {
             _dateTimeProviderStub = new DateTimeProviderStub(new DateTime(2016, 6, 1));
 
-            _organisationACreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            _organisationBCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            _organisationCCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
+            _organisationACreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            _organisationBCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            _organisationCCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
 
             _organisationABecameDaughterOfOrganisationBFor2016 =
-                new OrganisationParentAddedTestDataBuilder(_organisationACreated.Id, _organisationBCreated.Id)
+                new OrganisationParentAddedBuilder(_organisationACreated.Id, _organisationBCreated.Id)
                     .WithValidity(new DateTime(2016,1,1), new DateTime(2016, 12, 31));
 
             _organisationBBecameDaughterOfOrganisationCFor2017 =
-                new OrganisationParentAddedTestDataBuilder(_organisationBCreated.Id, _organisationCCreated.Id)
+                new OrganisationParentAddedBuilder(_organisationBCreated.Id, _organisationCCreated.Id)
                     .WithValidity(new DateTime(2017, 1, 1), new DateTime(2017, 12, 31));
 
             _organisationCBecameDaughterOfOrganisationAFor2018 =
-                new OrganisationParentAddedTestDataBuilder(_organisationACreated.Id,
+                new OrganisationParentAddedBuilder(_organisationACreated.Id,
                         _organisationBCreated.Id)
                     .WithValidity(new DateTime(2018, 1, 1), new DateTime(2018, 12, 31));
 

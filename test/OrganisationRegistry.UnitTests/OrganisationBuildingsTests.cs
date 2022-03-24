@@ -19,7 +19,7 @@
         public void NewOrganisationBuildingsFromIEnumerableAddsAllOrganisationBuildings()
         {
             new OrganisationBuildings(
-                Enumerable.Repeat(new OrganisationBuildingTestDataBuilder().Build(), 10)
+                Enumerable.Repeat(new OrganisationBuildingBuilder().Build(), 10)
             ).Count.Should().Be(10);
         }
 
@@ -27,8 +27,8 @@
         public void NewOrganisationBuildingsFromParamsAddsAllOrganisationBuildings()
         {
             new OrganisationBuildings(
-                new OrganisationBuildingTestDataBuilder(),
-                new OrganisationBuildingTestDataBuilder()
+                new OrganisationBuildingBuilder(),
+                new OrganisationBuildingBuilder()
             ).Count.Should().Be(2);
         }
 
@@ -36,14 +36,14 @@
         public void OrganisationAlreadyHasAMainBuildingInTheSamePeriod_WhenItHas()
         {
             var organisationBuilding =
-                new OrganisationBuildingTestDataBuilder()
+                new OrganisationBuildingBuilder()
                 .WithValidity(new Period(new ValidFrom(DateTime.Today), new ValidTo(DateTime.Today)))
                 .WithMainBuilding(true).Build();
 
             var organisationBuildings = new OrganisationBuildings(organisationBuilding);
 
             var anotherOrganisationBuilding =
-                new OrganisationBuildingTestDataBuilder()
+                new OrganisationBuildingBuilder()
                     .WithOrganisationId(organisationBuilding.OrganisationId)
                     .WithBuildingId(organisationBuilding.BuildingId)
                     .WithValidity(new Period(new ValidFrom(DateTime.Today), new ValidTo(DateTime.Today)))
@@ -58,14 +58,14 @@
         public void OrganisationDoesNotHaveAMainBuildingInTheSamePeriod_WhenItHasnt()
         {
             var organisationBuilding =
-                new OrganisationBuildingTestDataBuilder()
+                new OrganisationBuildingBuilder()
                 .WithValidity(new Period(new ValidFrom(DateTime.Today), new ValidTo(DateTime.Today)))
                 .WithMainBuilding(true).Build();
 
             var organisationBuildings = new OrganisationBuildings(organisationBuilding);
 
             var anotherOrganisationBuilding =
-                new OrganisationBuildingTestDataBuilder()
+                new OrganisationBuildingBuilder()
                     .WithOrganisationId(organisationBuilding.OrganisationId)
                     .WithBuildingId(organisationBuilding.BuildingId)
                     .WithValidity(new Period(new ValidFrom(DateTime.Today.AddDays(1)), new ValidTo(DateTime.Today.AddDays(1))))
@@ -80,7 +80,7 @@
         public void OrganisationAlreadyHasAMainBuildingInTheSamePeriod_DisregardsTheSameOrganisationBuilding()
         {
             var organisationBuilding =
-                new OrganisationBuildingTestDataBuilder()
+                new OrganisationBuildingBuilder()
                 .WithValidity(new Period(new ValidFrom(DateTime.Today), new ValidTo(DateTime.Today)))
                 .WithMainBuilding(true).Build();
 

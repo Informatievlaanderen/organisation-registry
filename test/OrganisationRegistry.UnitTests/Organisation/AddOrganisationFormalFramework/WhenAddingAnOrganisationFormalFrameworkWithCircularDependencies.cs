@@ -23,11 +23,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationFormalFrame
         private DateTimeProviderStub _dateTimeProviderStub;
         private readonly SequentialOvoNumberGenerator _ovoNumberGenerator = new SequentialOvoNumberGenerator();
 
-        private OrganisationCreatedTestDataBuilder _childOrganisationCreated;
-        private OrganisationCreatedTestDataBuilder _parentOrganisationCreated;
-        private FormalFrameworkCreatedTestDataBuilder _formalFrameworkCreated;
-        private FormalFrameworkCategoryCreatedTestDataBuilder _formalFrameworkCategoryCreated;
-        private OrganisationFormalFrameworkAddedTestDataBuilder _childBecameDaughterOfParent;
+        private OrganisationCreatedBuilder _childOrganisationCreated;
+        private OrganisationCreatedBuilder _parentOrganisationCreated;
+        private FormalFrameworkCreatedBuilder _formalFrameworkCreated;
+        private FormalFrameworkCategoryCreatedBuilder _formalFrameworkCategoryCreated;
+        private OrganisationFormalFrameworkAddedBuilder _childBecameDaughterOfParent;
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
@@ -45,12 +45,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationFormalFrame
         {
             _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
 
-            _childOrganisationCreated = new OrganisationCreatedTestDataBuilder(_ovoNumberGenerator);
-            _parentOrganisationCreated = new OrganisationCreatedTestDataBuilder(_ovoNumberGenerator);
-            _formalFrameworkCategoryCreated = new FormalFrameworkCategoryCreatedTestDataBuilder();
-            _formalFrameworkCreated = new FormalFrameworkCreatedTestDataBuilder(_formalFrameworkCategoryCreated.Id, _formalFrameworkCategoryCreated.Name);
+            _childOrganisationCreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
+            _parentOrganisationCreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
+            _formalFrameworkCategoryCreated = new FormalFrameworkCategoryCreatedBuilder();
+            _formalFrameworkCreated = new FormalFrameworkCreatedBuilder(_formalFrameworkCategoryCreated.Id, _formalFrameworkCategoryCreated.Name);
             _childBecameDaughterOfParent =
-                new OrganisationFormalFrameworkAddedTestDataBuilder(_childOrganisationCreated.Id,
+                new OrganisationFormalFrameworkAddedBuilder(_childOrganisationCreated.Id,
                     _formalFrameworkCreated.Id, _parentOrganisationCreated.Id);
 
             return new List<IEvent>

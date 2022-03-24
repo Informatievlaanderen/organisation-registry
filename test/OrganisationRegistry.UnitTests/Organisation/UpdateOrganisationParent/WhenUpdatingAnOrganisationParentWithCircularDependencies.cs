@@ -21,10 +21,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
     {
         private DateTimeProviderStub _dateTimeProviderStub;
         private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
-        private OrganisationCreatedTestDataBuilder _organisationACreated;
-        private OrganisationCreatedTestDataBuilder _organisationBCreated;
-        private OrganisationParentAddedTestDataBuilder _organisationABecameDaughterOfOrganisationBFor2016;
-        private OrganisationParentAddedTestDataBuilder _organisationBBecameDaughterOfOrganisationFor2017;
+        private OrganisationCreatedBuilder _organisationACreated;
+        private OrganisationCreatedBuilder _organisationBCreated;
+        private OrganisationParentAddedBuilder _organisationABecameDaughterOfOrganisationBFor2016;
+        private OrganisationParentAddedBuilder _organisationBBecameDaughterOfOrganisationFor2017;
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
@@ -42,13 +42,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
         {
             _dateTimeProviderStub = new DateTimeProviderStub(new DateTime(2016, 6, 1));
 
-            _organisationACreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            _organisationBCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
+            _organisationACreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            _organisationBCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
             _organisationABecameDaughterOfOrganisationBFor2016 =
-                new OrganisationParentAddedTestDataBuilder(_organisationACreated.Id, _organisationBCreated.Id)
+                new OrganisationParentAddedBuilder(_organisationACreated.Id, _organisationBCreated.Id)
                     .WithValidity(new DateTime(2016,1,1), new DateTime(2016, 12, 31));
             _organisationBBecameDaughterOfOrganisationFor2017 =
-                new OrganisationParentAddedTestDataBuilder(_organisationACreated.Id,
+                new OrganisationParentAddedBuilder(_organisationACreated.Id,
                         _organisationBCreated.Id)
                     .WithValidity(new DateTime(2017, 1, 1), new DateTime(2017, 12, 31));
 

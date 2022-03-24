@@ -4,7 +4,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
     using Organisation;
     using Organisation.Events;
 
-    public class OrganisationParentAddedTestDataBuilder
+    public class OrganisationParentAddedBuilder
     {
         public OrganisationId OrganisationId { get; }
         public Guid OrganisationOrganisationParentId { get; }
@@ -13,7 +13,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
         public DateTime? ValidFrom { get; private set; }
         public DateTime? ValidTo { get; private set; }
 
-        public OrganisationParentAddedTestDataBuilder(Guid organisationId, Guid parentOrganisationId)
+        public OrganisationParentAddedBuilder(Guid organisationId, Guid parentOrganisationId)
         {
             OrganisationOrganisationParentId = Guid.NewGuid();
             OrganisationId = new OrganisationId(organisationId);
@@ -23,7 +23,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
             ValidTo = null;
         }
 
-        public OrganisationParentAddedTestDataBuilder WithValidity(DateTime? from, DateTime? to)
+        public OrganisationParentAddedBuilder WithValidity(DateTime? from, DateTime? to)
         {
             ValidFrom = from;
             ValidTo = to;
@@ -31,12 +31,15 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
         }
 
         public OrganisationParentAdded Build()
-            => new OrganisationParentAdded(
+            => new(
                 OrganisationId,
                 OrganisationOrganisationParentId,
                 ParentOrganisationId,
                 ParentOrganisationName,
                 ValidFrom,
                 ValidTo);
+
+        public static implicit operator OrganisationParentAdded(OrganisationParentAddedBuilder builder)
+            => builder.Build();
     }
 }

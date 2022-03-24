@@ -3,17 +3,17 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
     using System;
     using Body.Events;
 
-    public class BodyOrganisationAddedTestDataBuilder
+    public class BodyOrganisationAddedBuilder
     {
-        public Guid BodyId { get; set; }
-        public Guid BodyOrganisationId { get; set; }
-        public string BodyName { get; set; }
-        public Guid OrganisationId { get; set; }
-        public string OrganisationName { get; set; }
-        public DateTime? ValidFrom { get; set; }
-        public DateTime? ValidTo { get; set; }
+        public Guid BodyId { get; }
+        public Guid BodyOrganisationId { get; }
+        public string BodyName { get; }
+        public Guid OrganisationId { get; }
+        public string OrganisationName { get; }
+        public DateTime? ValidFrom { get; }
+        public DateTime? ValidTo { get; }
 
-        public BodyOrganisationAddedTestDataBuilder(Guid bodyId, Guid organisationId)
+        public BodyOrganisationAddedBuilder(Guid bodyId, Guid organisationId)
         {
             BodyOrganisationId = Guid.NewGuid();
             BodyId = bodyId;
@@ -25,7 +25,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
         }
 
         public BodyOrganisationAdded Build()
-            => new BodyOrganisationAdded(
+            => new(
                 BodyId,
                 BodyOrganisationId,
                 BodyName,
@@ -33,5 +33,8 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
                 OrganisationName,
                 ValidFrom,
                 ValidTo);
+
+        public static implicit operator BodyOrganisationAdded(BodyOrganisationAddedBuilder builder)
+            => builder.Build();
     }
 }

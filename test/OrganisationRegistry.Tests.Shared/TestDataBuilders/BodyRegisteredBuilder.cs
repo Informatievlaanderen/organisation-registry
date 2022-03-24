@@ -3,7 +3,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
     using System;
     using Body.Events;
 
-    public class BodyRegisteredTestDataBuilder
+    public class BodyRegisteredBuilder
     {
         public Guid Id { get; }
         public string Name { get; }
@@ -13,7 +13,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
         public DateTime? FormalValidFrom { get; }
         public DateTime? FormalValidTo { get; }
 
-        public BodyRegisteredTestDataBuilder(SequentialBodyNumberGenerator sequentialBodyNumberGenerator)
+        public BodyRegisteredBuilder(SequentialBodyNumberGenerator sequentialBodyNumberGenerator)
         {
             Id = Guid.NewGuid();
             Name = Id.ToString();
@@ -25,7 +25,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
         }
 
         public BodyRegistered Build()
-            => new BodyRegistered(
+            => new(
                 Id,
                 Name,
                 BodyNumber,
@@ -33,5 +33,8 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
                 Description,
                 FormalValidFrom,
                 FormalValidTo);
+
+        public static implicit operator BodyRegistered(BodyRegisteredBuilder builder)
+            => builder.Build();
     }
 }

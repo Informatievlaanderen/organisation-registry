@@ -21,7 +21,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfoNotL
 
     public class WhenAnActiveOrganisationsValidityChangesToThePast : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfoNotLimitedToVlimpers>
     {
-        private OrganisationCreatedTestDataBuilder _organisationCreatedTestDataBuilder;
+        private OrganisationCreatedBuilder _organisationCreatedBuilder;
         private DateTime _yesterday;
         private Guid _purposeId;
 
@@ -38,16 +38,16 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfoNotL
 
         protected override IEnumerable<IEvent> Given()
         {
-            _organisationCreatedTestDataBuilder = new OrganisationCreatedTestDataBuilder(new SequentialOvoNumberGenerator());
+            _organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
             _yesterday = DateTime.Today.AddDays(-1);
 
             _purposeId = Guid.NewGuid();
             return new List<IEvent>
             {
-                _organisationCreatedTestDataBuilder
+                _organisationCreatedBuilder
                     .WithValidity(null, null)
                     .Build(),
-                new OrganisationBecameActive(_organisationCreatedTestDataBuilder.Id),
+                new OrganisationBecameActive(_organisationCreatedBuilder.Id),
                 new PurposeCreated(_purposeId, "beleidsveld")
             };
         }
@@ -59,7 +59,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfoNotL
                 .Build();
 
             return new UpdateOrganisationInfoNotLimitedToVlimpers(
-                _organisationCreatedTestDataBuilder.Id,
+                _organisationCreatedBuilder.Id,
                 "omschrijving",
                 new List<PurposeId> {new PurposeId(_purposeId)},
                 true)

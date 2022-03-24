@@ -22,11 +22,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
     {
         private SequentialOvoNumberGenerator _sequentialOvoNumberGenerator;
         private DateTimeProviderStub _dateTimeProvider;
-        private OrganisationCreatedTestDataBuilder _organisationCreated;
-        private OrganisationCreatedTestDataBuilder _parentOrganisationCreated;
-        private OrganisationCreatedTestDataBuilder _newParentOrganisationCreated;
-        private FormalFrameworkCreatedTestDataBuilder _formalFrameworkCreated;
-        private FormalFrameworkCreatedTestDataBuilder _anotherFormalFrameworkCreated;
+        private OrganisationCreatedBuilder _organisationCreated;
+        private OrganisationCreatedBuilder _parentOrganisationCreated;
+        private OrganisationCreatedBuilder _newParentOrganisationCreated;
+        private FormalFrameworkCreatedBuilder _formalFrameworkCreated;
+        private FormalFrameworkCreatedBuilder _anotherFormalFrameworkCreated;
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -34,28 +34,28 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
             _sequentialOvoNumberGenerator =
                 new SequentialOvoNumberGenerator();
 
-            _organisationCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            _parentOrganisationCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            _newParentOrganisationCreated = new OrganisationCreatedTestDataBuilder(_sequentialOvoNumberGenerator);
-            var formalFrameworkCategoryCreated = new FormalFrameworkCategoryCreatedTestDataBuilder();
-            _formalFrameworkCreated = new FormalFrameworkCreatedTestDataBuilder(formalFrameworkCategoryCreated.Id, formalFrameworkCategoryCreated.Name);
-            _anotherFormalFrameworkCreated = new FormalFrameworkCreatedTestDataBuilder(formalFrameworkCategoryCreated.Id, formalFrameworkCategoryCreated.Name);
+            _organisationCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            _parentOrganisationCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            _newParentOrganisationCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
+            var formalFrameworkCategoryCreated = new FormalFrameworkCategoryCreatedBuilder();
+            _formalFrameworkCreated = new FormalFrameworkCreatedBuilder(formalFrameworkCategoryCreated.Id, formalFrameworkCategoryCreated.Name);
+            _anotherFormalFrameworkCreated = new FormalFrameworkCreatedBuilder(formalFrameworkCategoryCreated.Id, formalFrameworkCategoryCreated.Name);
 
             var organisationFormalFrameworkAdded =
-                new OrganisationFormalFrameworkAddedTestDataBuilder(
+                new OrganisationFormalFrameworkAddedBuilder(
                         _organisationCreated.Id,
                         _formalFrameworkCreated.Id,
                         _parentOrganisationCreated.Id)
                     .WithValidity(_dateTimeProvider.Today.AddDays(-2), _dateTimeProvider.Today.AddDays(-1));
 
             var newOrganisationFormalFrameworkAdded =
-                new OrganisationFormalFrameworkAddedTestDataBuilder(
+                new OrganisationFormalFrameworkAddedBuilder(
                         _organisationCreated.Id,
                         _anotherFormalFrameworkCreated.Id,
                         _newParentOrganisationCreated.Id)
                     .WithValidity(_dateTimeProvider.Today.AddDays(-1), _dateTimeProvider.Today.AddDays(0));
 
-            var formalFrameworkAssignedToOrganisation = new FormalFrameworkAssignedToOrganisationTestDataBuilder(
+            var formalFrameworkAssignedToOrganisation = new FormalFrameworkAssignedToOrganisationBuilder(
                 organisationFormalFrameworkAdded.OrganisationFormalFrameworkId,
                 organisationFormalFrameworkAdded.FormalFrameworkId,
                 organisationFormalFrameworkAdded.OrganisationId,

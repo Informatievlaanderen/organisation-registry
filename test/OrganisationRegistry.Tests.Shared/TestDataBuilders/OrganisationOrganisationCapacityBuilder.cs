@@ -6,11 +6,11 @@
     using AutoFixture.Kernel;
     using Organisation;
 
-    public class OrganisationOrganisationCapacityTestDataBuilder
+    public class OrganisationOrganisationCapacityBuilder
     {
         private OrganisationCapacity _organisationOrganisationCapacity;
 
-        public OrganisationOrganisationCapacityTestDataBuilder(ISpecimenBuilder fixture)
+        public OrganisationOrganisationCapacityBuilder(ISpecimenBuilder fixture)
         {
             _organisationOrganisationCapacity = new OrganisationCapacity(
                 fixture.Create<Guid>(),
@@ -28,13 +28,13 @@
                 fixture.Create<bool>()
             );
         }
-        public OrganisationOrganisationCapacityTestDataBuilder WithValidity(ValidFrom from, ValidTo to)
+        public OrganisationOrganisationCapacityBuilder WithValidity(ValidFrom from, ValidTo to)
         {
             _organisationOrganisationCapacity = _organisationOrganisationCapacity.WithValidity(new Period(from, to));
             return this;
         }
 
-        public OrganisationOrganisationCapacityTestDataBuilder WithOrganisationCapacityId(Guid capacityId)
+        public OrganisationOrganisationCapacityBuilder WithOrganisationCapacityId(Guid capacityId)
         {
             _organisationOrganisationCapacity = new OrganisationCapacity(
                 _organisationOrganisationCapacity.OrganisationCapacityId,
@@ -56,7 +56,7 @@
         public OrganisationCapacity Build()
             => _organisationOrganisationCapacity;
 
-        public static implicit operator OrganisationCapacity(OrganisationOrganisationCapacityTestDataBuilder builder)
+        public static implicit operator OrganisationCapacity(OrganisationOrganisationCapacityBuilder builder)
             => builder.Build();
     }
 }
