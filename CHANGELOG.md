@@ -1,3 +1,10 @@
+# [1.150.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.149.1...v1.150.0) (2022-03-25)
+
+
+### Features
+
+* or-910 es tests on ci ([d076279](https://github.com/informatievlaanderen/organisation-registry/commit/d076279aaa225b53ae7e6363594432e0a4f0c1c6))
+
 ## [1.149.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.149.0...v1.149.1) (2022-03-24)
 
 
