@@ -75,7 +75,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
                     document.FirstName = message.Body.FirstName;
                     document.Name = message.Body.Name;
-
                 }
             );
         }

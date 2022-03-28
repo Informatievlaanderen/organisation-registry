@@ -279,7 +279,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             bodySeat.IsPaid,
                             Period.FromDates(message.Body.ValidFrom,
                                 message.Body.ValidTo)));
-
                 }
             );
         }

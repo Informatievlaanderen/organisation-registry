@@ -138,6 +138,9 @@
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
+            if (message.Body.FieldsToTerminate.Keys == null)
+                return;
+
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
             var keys = context.OrganisationKeyList.Where(item =>
                 message.Body.FieldsToTerminate.Keys.Keys.Contains(item.OrganisationKeyId));
