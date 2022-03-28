@@ -91,7 +91,7 @@ namespace OrganisationRegistry.Organisation.Events
         public Dictionary<Guid, DateTime> FormalFrameworks { get; }
         public Dictionary<Guid, DateTime> OpeningHours { get; }
         public Dictionary<Guid, DateTime> Regulations { get; }
-        public Dictionary<Guid, DateTime> Keys { get; }
+        public Dictionary<Guid, DateTime>? Keys { get; }
 
         public FieldsToTerminateV2(
             DateTime? organisationValidity,

@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 {
+    using System;
     using System.Data.Common;
     using System.Collections.Generic;
     using System.Linq;
@@ -88,6 +89,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
+            if (message.Body.FieldsToTerminate.Keys == null)
+                return new ElasticNoChange();
+
             return new ElasticPerDocumentChange<OrganisationDocument>
             (
                 message.Body.OrganisationId, async document =>
