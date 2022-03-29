@@ -255,7 +255,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             DbTransaction dbTransaction,
             IEnvelope<OrganisationCreated> message)
         {
-            await _cache.AddShowOnVlaamseOverheidSites(
+            await _cache.AddOrganisationShowOnVlaamseOverheidSites(
                 _contextFactory,
                 message.Body.OrganisationId,
                 message.Body.ShowOnVlaamseOverheidSites);
@@ -267,7 +267,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             DbTransaction dbTransaction,
             IEnvelope<OrganisationCreatedFromKbo> message)
         {
-            await _cache.AddShowOnVlaamseOverheidSites(_contextFactory, message.Body.OrganisationId, false);
+            await _cache.AddOrganisationShowOnVlaamseOverheidSites(_contextFactory, message.Body.OrganisationId, false);
             return new ElasticNoChange();
         }
 
@@ -291,7 +291,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     if (message.Body.ShowOnVlaamseOverheidSites == message.Body.PreviouslyShownInVlaanderenBe)
                         return;
 
-                    await _cache.UpdateShowOnVlaamseOverheidSites(
+                    await _cache.UpdateOrganisationShowOnVlaamseOverheidSites(
                         _contextFactory,
                         message.Body.OrganisationId,
                         message.Body.ShowOnVlaamseOverheidSites);
@@ -355,7 +355,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             (
                 async elastic =>
                 {
-                    await _cache.UpdateShowOnVlaamseOverheidSites(
+                    await _cache.UpdateOrganisationShowOnVlaamseOverheidSites(
                         _contextFactory,
                         message.Body.OrganisationId,
                         message.Body.ShowOnVlaamseOverheidSites);
@@ -467,7 +467,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     .ToList();
 
             var organisationsInPersonCapacitiesShownOnVlaamseOverheidSites =
-                (await _cache.GetOrganisationIdsShownOnVlaamseOverheidSite(context))
+                (await _cache.GetIdsForOrganisationsShownOnVlaamseOverheidSite(context))
                 .Where(organisationId => organisationIds.Contains(organisationId))
                 .ToList();
 
@@ -479,7 +479,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     .Select(capacity => capacity.PersonCapacityId)
                     .ToList();
 
-            return (await _cache.IsActivePerOrganisationCapacity(context))
+            return (await _cache.GetIsActivePerOrganisationCapacity(context))
                 .Any(
                     capacity => capacitiesWithOrganisationShownOnVlaamseOverheidSites.Contains(
                         capacity.OrganisationCapacityId));

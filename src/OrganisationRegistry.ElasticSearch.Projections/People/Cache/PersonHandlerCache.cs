@@ -37,21 +37,21 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Cache
             Guid organisationId)
             => await context.OrganisationCache.FindAsync(organisationId);
 
-        public async Task<List<Guid>> GetOrganisationIdsShownOnVlaamseOverheidSite(OrganisationRegistryContext context)
+        public async Task<List<Guid>> GetIdsForOrganisationsShownOnVlaamseOverheidSite(OrganisationRegistryContext context)
             => await context.ShowOnVlaamseOverheidSitesPerOrganisationList
                 .AsNoTracking()
                 .Where(organisation => organisation.ShowOnVlaamseOverheidSites)
                 .Select(organisation => organisation.Id)
                 .ToListAsync();
 
-        public async Task<List<IsActivePerOrganisationCapacity>> IsActivePerOrganisationCapacity(
+        public async Task<List<IsActivePerOrganisationCapacity>> GetIsActivePerOrganisationCapacity(
             OrganisationRegistryContext context)
             => await context.IsActivePerOrganisationCapacityList
                 .AsNoTracking()
                 .Where(capacity => capacity.IsActive)
                 .ToListAsync();
 
-        public async Task<CachedOrganisationBody> GetOrganisationForBodyFromCache(
+        public async Task<CachedOrganisationBody> GetOrganisationForBody(
             OrganisationRegistryContext organisationRegistryContext,
             Guid bodyId)
         {
@@ -93,7 +93,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Cache
         }
 
 
-        public async Task AddShowOnVlaamseOverheidSites(
+        public async Task AddOrganisationShowOnVlaamseOverheidSites(
             IContextFactory contextFactory,
             Guid organisationId,
             bool showOnVlaamseOverheidSites)
@@ -114,7 +114,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Cache
             await context.SaveChangesAsync();
         }
 
-        public async Task UpdateShowOnVlaamseOverheidSites(
+        public async Task UpdateOrganisationShowOnVlaamseOverheidSites(
             IContextFactory contextFactory,
             Guid organisationId,
             bool showOnVlaamseOverheidSites)
