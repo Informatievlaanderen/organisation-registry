@@ -66,7 +66,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         x.BodyMandateId == message.Body.BodyMandateId &&
                         x.DelegationAssignmentId == null);
 
-                    var organisationForBody = await _cache.GetOrganisationForBodyFromCache(_contextFactory.Create(), message.Body.BodyId);
+                    var organisationForBody = await _cache.GetOrganisationForBody(_contextFactory.Create(), message.Body.BodyId);
 
                     document.Mandates.Add(
                         new PersonDocument.PersonMandate(
@@ -122,7 +122,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     x.BodyMandateId == message.Body.BodyMandateId &&
                     x.DelegationAssignmentId == null);
 
-                var organisationForBody = await _cache.GetOrganisationForBodyFromCache(_contextFactory.Create(), message.Body.BodyId);
+                var organisationForBody = await _cache.GetOrganisationForBody(_contextFactory.Create(), message.Body.BodyId);
 
                 document.Mandates.Add(
                     new PersonDocument.PersonMandate(
@@ -266,7 +266,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         x.BodyMandateId == message.Body.BodyMandateId &&
                         x.DelegationAssignmentId == message.Body.DelegationAssignmentId);
 
-                    var organisationForBody = await _cache.GetOrganisationForBodyFromCache(_contextFactory.Create(), message.Body.BodyId);
+                    var organisationForBody = await _cache.GetOrganisationForBody(_contextFactory.Create(), message.Body.BodyId);
 
                     document.Mandates.Add(
                         new PersonDocument.PersonMandate(
@@ -324,7 +324,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     x.BodyMandateId == message.Body.BodyMandateId &&
                     x.DelegationAssignmentId == message.Body.DelegationAssignmentId);
 
-                var organisationForBody = await _cache.GetOrganisationForBodyFromCache(_contextFactory.Create(), message.Body.BodyId);
+                var organisationForBody = await _cache.GetOrganisationForBody(_contextFactory.Create(), message.Body.BodyId);
 
                 document.Mandates.Add(
                     new PersonDocument.PersonMandate(
