@@ -3,54 +3,66 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using System;
     using System.Collections.Generic;
     using System.Data.Common;
-    using System.Linq;
     using System.Threading.Tasks;
+    using Cache;
     using Client;
     using Configuration;
     using ElasticSearch.People;
     using Infrastructure;
     using Infrastructure.Change;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using Osc;
-    using SqlServer.ElasticSearchProjections;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Person.Events;
+    using Osc;
     using SqlServer;
+    using SqlServer.ElasticSearchProjections;
 
     public class Person : BaseProjection<Person>,
         IElasticEventHandler<InitialiseProjection>,
         IElasticEventHandler<PersonCreated>,
         IElasticEventHandler<PersonUpdated>
     {
-        private readonly Elastic _elastic;
+        private readonly IPersonHandlerCache _cache;
         private readonly IContextFactory _contextFactory;
+        private readonly Elastic _elastic;
         private readonly ElasticSearchConfiguration _elasticSearchOptions;
-
-        private string[] ProjectionTableNames =>
-            new[]
-            {
-                ShowOnVlaamseOverheidSitesPerOrganisationListConfiguration.TableName,
-                OrganisationPerBodyListConfiguration.TableName
-            };
 
         public Person(
             ILogger<Person> logger,
             Elastic elastic,
             IContextFactory contextFactory,
-            IOptions<ElasticSearchConfiguration> elasticSearchOptions) : base(logger)
+            IOptions<ElasticSearchConfiguration> elasticSearchOptions,
+            IPersonHandlerCache cache) : base(logger)
         {
             _elastic = elastic;
             _contextFactory = contextFactory;
+            _cache = cache;
             _elasticSearchOptions = elasticSearchOptions.Value;
         }
 
-        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
-            IEnvelope<PersonCreated> message)
+        public async Task<IElasticChange> Handle(
+            DbConnection dbConnection,
+            DbTransaction dbTransaction,
+            IEnvelope<InitialiseProjection> message)
         {
-            return new ElasticDocumentCreation<PersonDocument>
-            (
+            if (message.Body.ProjectionName != typeof(Person).FullName)
+                return new ElasticNoChange();
+
+            Logger.LogInformation("Rebuilding index for {ProjectionName}", message.Body.ProjectionName);
+            await PrepareIndex(_elastic.WriteClient, true);
+
+            await using var context = _contextFactory.Create();
+            await _cache.ClearCache(context);
+
+            return new ElasticNoChange();
+        }
+
+        public async Task<IElasticChange> Handle(
+            DbConnection dbConnection,
+            DbTransaction dbTransaction,
+            IEnvelope<PersonCreated> message)
+            => new ElasticDocumentCreation<PersonDocument>(
                 message.Body.PersonId,
                 () => new PersonDocument
                 {
@@ -60,13 +72,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     FirstName = message.Body.FirstName,
                     Name = message.Body.Name
                 });
-        }
 
 
-        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
-        {
-            return new ElasticPerDocumentChange<PersonDocument>
-            (
+        public async Task<IElasticChange> Handle(
+            DbConnection dbConnection,
+            DbTransaction dbTransaction,
+            IEnvelope<PersonUpdated> message)
+            => new ElasticPerDocumentChange<PersonDocument>(
                 message.Body.PersonId,
                 document =>
                 {
@@ -75,36 +87,14 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
                     document.FirstName = message.Body.FirstName;
                     document.Name = message.Body.Name;
-
                 }
             );
-        }
-
-        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<InitialiseProjection> message)
-        {
-            if (message.Body.ProjectionName != typeof(Person).FullName)
-                return new ElasticNoChange();
-
-            Logger.LogInformation("Rebuilding index for {ProjectionName}.", message.Body.ProjectionName);
-            await PrepareIndex(_elastic.WriteClient, true);
-
-            await ClearConfigurations();
-
-            return new ElasticNoChange();
-        }
-
-        protected virtual async Task ClearConfigurations()
-        {
-            await using var context = _contextFactory.Create();
-            await context.Database.ExecuteSqlRawAsync(
-                string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [{OrganisationRegistry.Infrastructure.WellknownSchemas.ElasticSearchProjectionsSchema}].[{tableName}];")));
-        }
 
         private async Task PrepareIndex(IOpenSearchClient client, bool deleteIndex)
         {
             var indexName = _elasticSearchOptions.PeopleWriteIndex;
 
-            if (deleteIndex && (await client.DoesIndexExist(indexName)))
+            if (deleteIndex && await client.DoesIndexExist(indexName))
             {
                 var deleteResult = await client.Indices.DeleteAsync(
                     new DeleteIndexRequest(Indices.Index(new List<IndexName> { indexName })));
@@ -119,9 +109,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     indexName,
                     index => index
                         .Map<PersonDocument>(PersonDocument.Mapping)
-                        .Settings(descriptor => descriptor
-                            .NumberOfShards(_elasticSearchOptions.NumberOfShards)
-                            .NumberOfReplicas(_elasticSearchOptions.NumberOfReplicas)));
+                        .Settings(
+                            descriptor => descriptor
+                                .NumberOfShards(_elasticSearchOptions.NumberOfShards)
+                                .NumberOfReplicas(_elasticSearchOptions.NumberOfReplicas)));
 
                 if (!indexResult.IsValid)
                     throw new Exception($"Could not create people index '{indexName}'.");

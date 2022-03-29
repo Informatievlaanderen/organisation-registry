@@ -11,6 +11,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using People;
     using Person.Events;
     using Projections.Infrastructure;
+    using Projections.Organisations;
     using Projections.People;
     using Projections.People.Cache;
     using Projections.People.Handlers;
@@ -22,9 +23,9 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     [Collection(nameof(ElasticSearchFixture))]
     public class PersonHandlerTests
     {
-        private readonly ElasticSearchFixture _fixture;
         private readonly TestEventProcessor _eventProcessor;
-        private TestContextFactory _testContextFactory;
+        private readonly ElasticSearchFixture _fixture;
+        private readonly TestContextFactory _testContextFactory;
 
         public PersonHandlerTests(ElasticSearchFixture fixture)
         {
@@ -38,13 +39,30 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var elastic = _fixture.Elastic;
             var elasticSearchOptions = _fixture.ElasticSearchOptions;
 
-            var personHandler = new Person(new NullLogger<Person>(), elastic, _testContextFactory, elasticSearchOptions);
+            var personHandlerCache = new PersonHandlerCacheStub();
+            var personHandler = new Person(
+                new NullLogger<Person>(),
+                elastic,
+                _testContextFactory,
+                elasticSearchOptions,
+                personHandlerCache);
 
-            var personCapacity = new PersonCapacity(new NullLogger<PersonCapacity>(), _testContextFactory);
-            var personFunction = new PersonFunction(new NullLogger<PersonFunction>(), _testContextFactory);
-            var personMandate = new PersonMandate(new NullLogger<PersonMandate>(), _testContextFactory);
+            var personCapacity = new PersonCapacity(
+                new NullLogger<PersonCapacity>(),
+                _testContextFactory,
+                personHandlerCache);
+            var personFunction = new PersonFunction(
+                new NullLogger<PersonFunction>(),
+                _testContextFactory,
+                personHandlerCache);
+            var personMandate = new PersonMandate(
+                new NullLogger<PersonMandate>(),
+                _testContextFactory,
+                personHandlerCache);
 
-            var cachedOrganisationForBodies = new CachedOrganisationForBodies(new NullLogger<CachedOrganisationForBodies>(), _testContextFactory);
+            var cachedOrganisationForBodies = new CachedOrganisationForBodies(
+                new NullLogger<CachedOrganisationForBodies>(),
+                _testContextFactory);
 
             var serviceProvider = new ServiceCollection()
                 .AddSingleton(personHandler)
@@ -70,11 +88,13 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 new List<IEnvelope>
                 {
                     scenario.Create<InitialiseProjection>().ToEnvelope(),
-                    scenario.Create<PersonCreated>().ToEnvelope(),
+                    scenario.Create<PersonCreated>().ToEnvelope()
                 }
             );
 
-            var indices = (await _fixture.Elastic.ReadClient.Indices.GetAsync(_fixture.ElasticSearchOptions.Value.PeopleReadIndex)).Indices;
+            var indices =
+                (await _fixture.Elastic.ReadClient.Indices.GetAsync(
+                    _fixture.ElasticSearchOptions.Value.PeopleReadIndex)).Indices;
             indices.Should().NotBeEmpty();
         }
 
@@ -90,7 +110,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 new List<IEnvelope>
                 {
                     initialiseProjection.ToEnvelope(),
-                    personCreated.ToEnvelope(),
+                    personCreated.ToEnvelope()
                 }
             );
 
@@ -108,7 +128,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var contactTypeCacheItem = new ContactTypeCacheItem
             {
                 Id = scenario.Create<Guid>(),
-                Name = scenario.Create<string>(),
+                Name = scenario.Create<string>()
             };
             context.ContactTypeCache.Add(contactTypeCacheItem);
 
@@ -121,28 +141,36 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             context.OrganisationCache.Add(organisationCacheItem);
             await context.SaveChangesAsync();
 
-            var initialiseProjection = scenario.Create<InitialiseProjection>();
+            var initialiseOrganisationProjection = new InitialiseProjection(typeof(Organisation).FullName);
+            var initialisePersonProjection = new InitialiseProjection(typeof(Person).FullName);
             var personCreated = scenario.Create<PersonCreated>();
-            var capacityAdded = scenario.CreateOrganisationCapacityAdded(personCreated.PersonId, organisationCacheItem.Id);
-            var dateOfTermination = capacityAdded.ValidTo?.AddDays(-10) ?? (scenario.Create<DateTime?>() ?? scenario.Create<DateTime>());
+            var capacityAdded = scenario.CreateOrganisationCapacityAdded(
+                personCreated.PersonId,
+                organisationCacheItem.Id);
+            var dateOfTermination = capacityAdded.ValidTo?.AddDays(-10) ??
+                                    (scenario.Create<DateTime?>() ?? scenario.Create<DateTime>());
             var organisationTerminationCapacities = new Dictionary<Guid, DateTime>
             {
                 { capacityAdded.CapacityId, dateOfTermination }
             };
 
-            var organisationTerminated = scenario.CreateOrganisationTerminated(capacityAdded.OrganisationId, dateOfTermination, capacities: organisationTerminationCapacities);
+            var organisationTerminated = scenario.CreateOrganisationTerminated(
+                capacityAdded.OrganisationId,
+                dateOfTermination,
+                capacities: organisationTerminationCapacities);
 
             await _eventProcessor.Handle<PersonDocument>(
                 new List<IEnvelope>
                 {
-                    initialiseProjection.ToEnvelope(),
+                    initialiseOrganisationProjection.ToEnvelope(),
+                    initialisePersonProjection.ToEnvelope(),
                     personCreated.ToEnvelope(),
                     capacityAdded.ToEnvelope(),
-                    organisationTerminated.ToEnvelope(),
+                    organisationTerminated.ToEnvelope()
                 }
             );
 
-            var person = _fixture.Elastic.ReadClient.Get<PersonDocument>(personCreated.PersonId);
+            var person = _fixture.Elastic.WriteClient.Get<PersonDocument>(personCreated.PersonId);
 
             person.Source.Name.Should().Be(personCreated.Name);
             person.Source.Capacities.Should().HaveCount(1);
