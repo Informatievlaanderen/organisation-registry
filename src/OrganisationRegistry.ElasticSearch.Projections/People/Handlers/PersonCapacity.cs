@@ -390,10 +390,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         await elastic.TryAsync(
                             () => elastic
                                 .MassUpdatePersonAsync(
-                                    x => x.Capacities.Single().CapacityId,
+                                    x => x.Capacities.Single().PersonCapacityId,
                                     key,
                                     "capacities",
-                                    "capacityId",
+                                    "personCapacityId",
                                     "validity.end",
                                     value,
                                     message.Number,
@@ -414,10 +414,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         await elastic.TryAsync(
                             () => elastic
                                 .MassUpdatePersonAsync(
-                                    x => x.Capacities.Single().CapacityId,
+                                    x => x.Capacities.Single().PersonCapacityId,
                                     key,
                                     "capacities",
-                                    "capacityId",
+                                    "personCapacityId",
                                     "validity.end",
                                     value,
                                     message.Number,
