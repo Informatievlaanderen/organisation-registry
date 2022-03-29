@@ -4,16 +4,15 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Cache
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Handlers;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Infrastructure;
     using SqlServer;
     using SqlServer.ElasticSearchProjections;
-    using OrganisationRegistry.SqlServer.Infrastructure;
+    using SqlServer.Infrastructure;
 
     public class PersonHandlerCache : IPersonHandlerCache
     {
-        private static IEnumerable<string> ProjectionTableNames
+        private static string[] ProjectionTableNames
             => new[]
             {
                 ShowOnVlaamseOverheidSitesPerOrganisationListConfiguration.TableName,
@@ -21,11 +20,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Cache
             };
 
         public virtual async Task ClearCache(OrganisationRegistryContext context)
-            => await context.Database.ExecuteSqlRawAsync(
-                string.Concat(
-                    ProjectionTableNames.Select(
-                        tableName
-                            => $"TRUNCATE [{WellknownSchemas.ElasticSearchProjectionsSchema}].[{tableName}];")));
+            => await context.Database.DeleteAllRows(
+                WellknownSchemas.ElasticSearchProjectionsSchema,
+                ProjectionTableNames);
 
         public async Task<Dictionary<Guid, string>> GetContactTypeNames(OrganisationRegistryContext context)
             => await context.ContactTypeCache
@@ -37,7 +34,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Cache
             Guid organisationId)
             => await context.OrganisationCache.FindAsync(organisationId);
 
-        public async Task<List<Guid>> GetIdsForOrganisationsShownOnVlaamseOverheidSite(OrganisationRegistryContext context)
+        public async Task<List<Guid>> GetIdsForOrganisationsShownOnVlaamseOverheidSite(
+            OrganisationRegistryContext context)
             => await context.ShowOnVlaamseOverheidSitesPerOrganisationList
                 .AsNoTracking()
                 .Where(organisation => organisation.ShowOnVlaamseOverheidSites)
@@ -66,7 +64,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Cache
                 : CachedOrganisationBody.Empty();
         }
 
-        public async Task UpdateIsActivePerOrganisationCapacity(IContextFactory contextFactory, Guid organisationCapacityId, bool isActive)
+        public async Task UpdateIsActivePerOrganisationCapacity(
+            IContextFactory contextFactory,
+            Guid organisationCapacityId,
+            bool isActive)
         {
             await using var context = contextFactory.Create();
             var isActivePerOrganisationCapacity =
@@ -75,19 +76,16 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Cache
                     .FindAsync(organisationCapacityId);
 
             if (isActivePerOrganisationCapacity == null)
-            {
                 context
                     .IsActivePerOrganisationCapacityList
-                    .Add(new IsActivePerOrganisationCapacity
-                    {
-                        OrganisationCapacityId = organisationCapacityId,
-                        IsActive = isActive
-                    });
-            }
+                    .Add(
+                        new IsActivePerOrganisationCapacity
+                        {
+                            OrganisationCapacityId = organisationCapacityId,
+                            IsActive = isActive
+                        });
             else
-            {
                 isActivePerOrganisationCapacity.IsActive = isActive;
-            }
 
             await context.SaveChangesAsync();
         }
