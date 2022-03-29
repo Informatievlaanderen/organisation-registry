@@ -178,7 +178,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             person.Source.Capacities.First().Validity.End.Should().Be(dateOfTermination);
         }
 
-                [EnvVarIgnoreFact]
+        [EnvVarIgnoreFact]
         public async void OrganisationTerminatedV2()
         {
             var context = _testContextFactory.Create();
