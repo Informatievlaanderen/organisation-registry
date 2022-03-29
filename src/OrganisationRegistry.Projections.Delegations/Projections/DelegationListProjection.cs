@@ -389,11 +389,10 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             if (message.Body.ProjectionName != typeof(DelegationListProjection).FullName)
                 return;
 
-            Logger.LogInformation("Clearing tables for {ProjectionName}.", message.Body.ProjectionName);
+            Logger.LogInformation("Clearing tables for {ProjectionName}", message.Body.ProjectionName);
 
             await using var context = ContextFactory.Create();
-            await context.Database.ExecuteSqlRawAsync(
-                string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [{Schema}].[{tableName}];")));
+            await context.Database.DeleteAllRows(Schema, ProjectionTableNames);
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)

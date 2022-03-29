@@ -950,11 +950,10 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
             if (message.Body.ProjectionName != typeof(BodySeatGenderRatioProjection).FullName)
                 return;
 
-            Logger.LogInformation("Clearing tables for {ProjectionName}.", message.Body.ProjectionName);
+            Logger.LogInformation("Clearing tables for {ProjectionName}", message.Body.ProjectionName);
 
             await using var context = ContextFactory.Create();
-            await context.Database.ExecuteSqlRawAsync(
-                string.Concat(ProjectionTableNames.Select(tableName => $"DELETE FROM [{Schema}].[{tableName}];")));
+            await context.Database.DeleteAllRows(Schema, ProjectionTableNames);
         }
 
         private static CachedPerson GetPersonFromCache(OrganisationRegistryContext context, Guid personId)

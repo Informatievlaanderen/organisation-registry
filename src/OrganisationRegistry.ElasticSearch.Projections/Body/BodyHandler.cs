@@ -67,7 +67,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         private static readonly TimeSpan ScrollTimeout = TimeSpan.FromMinutes(5);
         private readonly TimerOptions _indexTimer;
 
-        private static IEnumerable<string> ProjectionTableNames => Array.Empty<string>();
+        private static string[] ProjectionTableNames => Array.Empty<string>();
 
         public BodyHandler(
             ILogger<BodyHandler> logger,
@@ -135,10 +135,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                 return new ElasticNoChange();
 
             await using var context = _contextFactory.Create();
-            await context.Database.ExecuteSqlRawAsync(
-                string.Concat(ProjectionTableNames.Select(tableName =>
-                    $"DELETE FROM [{OrganisationRegistry.Infrastructure.WellknownSchemas.ElasticSearchProjectionsSchema}].[{tableName}];")));
-
+            await context.Database.DeleteAllRows(
+                OrganisationRegistry.Infrastructure.WellknownSchemas.ElasticSearchProjectionsSchema,
+                ProjectionTableNames);
             return new ElasticNoChange();
         }
 
