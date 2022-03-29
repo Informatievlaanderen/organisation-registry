@@ -1,3 +1,10 @@
+## [1.151.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.151.0...v1.151.1) (2022-03-29)
+
+
+### Bug Fixes
+
+* or-909 terminate personCapacities according to the right id ([0b087b6](https://github.com/informatievlaanderen/organisation-registry/commit/0b087b6762d5fe5b1bb7635d20677fd8cb5828fb))
+
 # [1.151.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.150.0...v1.151.0) (2022-03-29)
 
 
