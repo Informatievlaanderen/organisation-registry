@@ -59,8 +59,9 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             DateTimeOffset changeTime,
             int scrollSize = 100)
         {
-            await client.TryGetAsync(async () =>
-                (await client.WriteClient.Indices.RefreshAsync(Indices.Index<OrganisationDocument>())).ThrowOnFailure());
+            await client.TryGetAsync(
+                async () => (await client.WriteClient.Indices.RefreshAsync(Indices.Index<OrganisationDocument>()))
+                    .ThrowOnFailure());
 
             (await client.WriteClient
                     .UpdateByQueryAsync<OrganisationDocument>(x => x
@@ -85,6 +86,5 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                                 .Add("newChangeTime", changeTime)))))
                 .ThrowOnFailure();
         }
-
     }
 }

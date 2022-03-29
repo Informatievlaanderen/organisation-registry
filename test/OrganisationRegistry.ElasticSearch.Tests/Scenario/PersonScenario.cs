@@ -15,7 +15,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario
     /// <summary>
     /// Sets up a fixture which uses the same organisationId for all events
     /// </summary>
-    public class PersonScenario : ScenarioBase<TestPersonHandler>
+    public class PersonScenario : ScenarioBase<Person>
     {
         public PersonScenario(Guid personId) :
             base(
@@ -40,16 +40,5 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario
                 Create<DateTime?>(),
                 Create<DateTime?>()
             );
-    }
-
-    public class TestPersonHandler : Person
-    {
-        public TestPersonHandler(ILogger<Person> logger, Elastic elastic, IContextFactory contextFactory, IOptions<ElasticSearchConfiguration> elasticSearchOptions)
-            : base(logger, elastic, contextFactory, elasticSearchOptions)
-        {
-        }
-
-        protected override Task ClearConfigurations()
-            => Task.CompletedTask;
     }
 }

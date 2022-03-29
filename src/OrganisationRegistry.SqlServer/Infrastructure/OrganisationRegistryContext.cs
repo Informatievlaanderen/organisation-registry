@@ -70,6 +70,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         public DbSet<DelegationListItem> DelegationList { get; set; }
         public DbSet<DelegationAssignmentListItem> DelegationAssignmentList { get; set; }
+        public DbSet<Delegations.OrganisationPerBody> OrganisationPerBodyList { get; set; }
 
         public DbSet<ActiveBodyOrganisationListItem> ActiveBodyOrganisationList { get; set; }
         public DbSet<FutureActiveBodyOrganisationListItem> FutureActiveBodyOrganisationList { get; set; }
@@ -139,7 +140,6 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         // ElasticSearch
         public DbSet<ShowOnVlaamseOverheidSitesPerOrganisation> ShowOnVlaamseOverheidSitesPerOrganisationList { get; set; }
         public DbSet<IsActivePerOrganisationCapacity> IsActivePerOrganisationCapacityList { get; set; }
-        public DbSet<Delegations.OrganisationPerBody> OrganisationPerBodyList { get; set; }
         public DbSet<ElasticSearchProjections.OrganisationPerBody> OrganisationPerBodyListForES { get; set; }
         public DbSet<OrganisationToRebuild> OrganisationsToRebuild { get; set; }
 

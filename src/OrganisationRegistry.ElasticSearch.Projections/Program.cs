@@ -42,6 +42,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using OrganisationRegistry.Infrastructure.EventStore;
     using Organisations;
     using People;
+    using People.Cache;
+    using People.Handlers;
     using Serilog.Events;
     using SqlServer;
     using SqlServer.Configuration;
@@ -264,6 +266,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                         .AddSingleton<Elastic>()
                         .AddSingleton<IProjectionStates, ProjectionStates>()
                         .AddSingleton<IContextFactory, ContextFactory>()
+                        .AddSingleton<IPersonHandlerCache, PersonHandlerCache>()
                         .AddSingleton<IExternalIpFetcher, ExternalIpFetcher>()
                         .AddSingleton<IRepository, Repository>()
                         .AddSingleton<IEventStore, SqlServerEventStore>()

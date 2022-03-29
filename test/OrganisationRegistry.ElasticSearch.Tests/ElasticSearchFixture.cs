@@ -40,6 +40,17 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                     .Get<ElasticSearchConfiguration>();
 
             ElasticSearchOptions = new OptionsWrapper<ElasticSearchConfiguration>(elasticSearchConfiguration);
+            var guid = Guid.NewGuid().ToString();
+            ElasticSearchOptions.Value.PersonType = guid;
+            ElasticSearchOptions.Value.PeopleReadIndex = guid;
+            ElasticSearchOptions.Value.PeopleWriteIndex = guid;
+
+            var org = Guid.NewGuid().ToString();
+
+            ElasticSearchOptions.Value.OrganisationType = guid;
+            ElasticSearchOptions.Value.OrganisationsReadIndex = guid;
+            ElasticSearchOptions.Value.OrganisationsWriteIndex = guid;
+
             Elastic = new Elastic(LoggerFactory.CreateLogger<Elastic>(), ElasticSearchOptions);
         }
 

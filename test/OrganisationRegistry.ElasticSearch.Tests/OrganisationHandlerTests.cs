@@ -9,6 +9,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using AutoFixture;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging.Abstractions;
@@ -121,6 +122,47 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             organisation.Source.Name.Should().Be(organisationCreated.Name);
             organisation.Source.ShortName.Should().Be(organisationCreated.ShortName);
             organisation.Source.Description.Should().Be(organisationCreated.Description);
+        }
+
+        [EnvVarIgnoreFact]
+        public async void OrganisationCreated_CreatesParent()
+        {
+            var scenario = new ScenarioBase<Organisation>();
+
+            var initialiseProjection = scenario.Create<InitialiseProjection>();
+            var organisationCreated = scenario.Create<OrganisationCreated>();
+            var organisationParentCreated = scenario.Create<OrganisationCreated>();
+            var parentCoupled = new OrganisationParentAdded(
+                organisationCreated.OrganisationId,
+                Guid.NewGuid(),
+                organisationParentCreated.OrganisationId,
+                organisationParentCreated.Name,
+                null,
+                null);
+            var parentNameUpdated = new OrganisationNameUpdated(
+                organisationParentCreated.OrganisationId,
+                "new name koen 123");
+
+            await _eventProcessor.Handle<OrganisationDocument>(
+                new List<IEnvelope>()
+                {
+                    initialiseProjection.ToEnvelope(),
+                    organisationCreated.ToEnvelope(),
+                    organisationParentCreated.ToEnvelope(),
+                    parentCoupled.ToEnvelope(),
+                    parentNameUpdated.ToEnvelope()
+                }
+            );
+
+            var organisation = _fixture.Elastic.ReadClient.Get<OrganisationDocument>(organisationCreated.OrganisationId);
+
+            organisation.Source.Name.Should().Be(organisationCreated.Name);
+            organisation.Source.ShortName.Should().Be(organisationCreated.ShortName);
+            organisation.Source.Description.Should().Be(organisationCreated.Description);
+            organisation.Source.Parents.First().ParentOrganisationId.Should()
+                .Be(organisationParentCreated.OrganisationId);
+            organisation.Source.Parents.First().ParentOrganisationName.Should()
+                .Be(parentNameUpdated.Name);
         }
 
         [EnvVarIgnoreFact]
