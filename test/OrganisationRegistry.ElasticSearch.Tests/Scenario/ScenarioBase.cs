@@ -69,5 +69,46 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario
                 Version = 0,
                 Timestamp = default
             };
+
+        public OrganisationTerminatedV2 CreateOrganisationTerminatedV2(
+            Guid organisationId,
+            DateTime dateOfTermination,
+            bool? forcedKboTermination = null,
+            DateTime? dateOfTerminationAccordingToKbo = null,
+            Dictionary<Guid, DateTime>? capacities = null)
+            => new(
+                organisationId,
+                Create<string>(),
+                Create<string>(),
+                dateOfTermination,
+                new FieldsToTerminateV2(
+                    dateOfTermination,
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    capacities ?? new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>()
+                ),
+                new KboFieldsToTerminateV2(
+                    new Dictionary<Guid, DateTime>(),
+                    null,
+                    null,
+                    null
+                ),
+                forcedKboTermination ?? Create<bool>(),
+                dateOfTerminationAccordingToKbo
+            )
+            {
+                Version = 0,
+                Timestamp = default
+            };
     }
 }

@@ -151,7 +151,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                                     (scenario.Create<DateTime?>() ?? scenario.Create<DateTime>());
             var organisationTerminationCapacities = new Dictionary<Guid, DateTime>
             {
-                { capacityAdded.CapacityId, dateOfTermination }
+                { capacityAdded.OrganisationCapacityId, dateOfTermination }
             };
 
             var organisationTerminated = scenario.CreateOrganisationTerminated(
@@ -167,6 +167,65 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                     personCreated.ToEnvelope(),
                     capacityAdded.ToEnvelope(),
                     organisationTerminated.ToEnvelope()
+                }
+            );
+
+            var person = _fixture.Elastic.WriteClient.Get<PersonDocument>(personCreated.PersonId);
+
+            person.Source.Name.Should().Be(personCreated.Name);
+            person.Source.Capacities.Should().HaveCount(1);
+            person.Source.Capacities.First().Validity.Start.Should().Be(capacityAdded.ValidFrom);
+            person.Source.Capacities.First().Validity.End.Should().Be(dateOfTermination);
+        }
+
+                [EnvVarIgnoreFact]
+        public async void OrganisationTerminatedV2()
+        {
+            var context = _testContextFactory.Create();
+            var scenario = new PersonScenario(Guid.NewGuid());
+
+            var contactTypeCacheItem = new ContactTypeCacheItem
+            {
+                Id = scenario.Create<Guid>(),
+                Name = scenario.Create<string>()
+            };
+            context.ContactTypeCache.Add(contactTypeCacheItem);
+
+            var organisationCacheItem = new OrganisationCacheItem
+            {
+                Id = scenario.Create<Guid>(),
+                Name = scenario.Create<string>(),
+                OvoNumber = scenario.Create<string>()
+            };
+            context.OrganisationCache.Add(organisationCacheItem);
+            await context.SaveChangesAsync();
+
+            var initialiseOrganisationProjection = new InitialiseProjection(typeof(Organisation).FullName);
+            var initialisePersonProjection = new InitialiseProjection(typeof(Person).FullName);
+            var personCreated = scenario.Create<PersonCreated>();
+            var capacityAdded = scenario.CreateOrganisationCapacityAdded(
+                personCreated.PersonId,
+                organisationCacheItem.Id);
+            var dateOfTermination = capacityAdded.ValidTo?.AddDays(-10) ??
+                                    (scenario.Create<DateTime?>() ?? scenario.Create<DateTime>());
+            var organisationTerminationCapacities = new Dictionary<Guid, DateTime>
+            {
+                { capacityAdded.OrganisationCapacityId, dateOfTermination }
+            };
+
+            var organisationTerminatedV2 = scenario.CreateOrganisationTerminatedV2(
+                capacityAdded.OrganisationId,
+                dateOfTermination,
+                capacities: organisationTerminationCapacities);
+
+            await _eventProcessor.Handle<PersonDocument>(
+                new List<IEnvelope>
+                {
+                    initialiseOrganisationProjection.ToEnvelope(),
+                    initialisePersonProjection.ToEnvelope(),
+                    personCreated.ToEnvelope(),
+                    capacityAdded.ToEnvelope(),
+                    organisationTerminatedV2.ToEnvelope()
                 }
             );
 

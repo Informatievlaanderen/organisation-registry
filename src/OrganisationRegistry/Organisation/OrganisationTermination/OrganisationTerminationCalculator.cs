@@ -89,48 +89,6 @@ namespace OrganisationRegistry.Organisation.OrganisationTermination
         }
 
         private static Dictionary<Guid, DateTime> FieldsToTerminateWithEndOfNextYear<T>(
-            IEnumerable<Guid> IdsToTerminateEndOfNextYear,
-            IEnumerable<T> fields,
-            DateTime dateOfTermination,
-            Func<T, Guid> fieldToMatchWithIdToTerminateEndOfNextYear) where T : IOrganisationField
-        {
-            var endOfNextYear = new DateTime(dateOfTermination.Year + 1, 12, 31);
-
-            var fieldsToTerminate = new List<T>();
-            var fieldsToTerminateEndOfNextYear = new List<T>();
-
-            foreach (var field in fields)
-            {
-                if (IdsToTerminateEndOfNextYear.Contains(fieldToMatchWithIdToTerminateEndOfNextYear(field)))
-                {
-                    fieldsToTerminateEndOfNextYear.Add(field);
-                }
-                else if (field.Validity.End.IsInFutureOf(dateOfTermination))
-                {
-                    fieldsToTerminate.Add(field);
-                }
-            }
-
-            if (fieldsToTerminateEndOfNextYear
-                .Any(x => x.Validity.Start.IsInFutureOf(endOfNextYear)))
-                throw new OrganisationCannotBeTerminatedWithFieldsInTheFuture();
-
-            if (fieldsToTerminate
-                .Any(x => x.Validity.Start.IsInFutureOf(dateOfTermination)))
-                throw new OrganisationCannotBeTerminatedWithFieldsInTheFuture();
-
-            return fieldsToTerminate
-                .ToDictionary(
-                    field => field.Id,
-                    _ => dateOfTermination)
-                .Union(fieldsToTerminateEndOfNextYear
-                    .ToDictionary(
-                        formalFramework => formalFramework.Id,
-                        _ => endOfNextYear))
-                .ToDictionary(x => x.Key, x => x.Value);
-        }
-
-        private static Dictionary<Guid, DateTime> FieldsToTerminateWithEndOfNextYear<T>(
             IEnumerable<T> fields,
             DateTime dateOfTermination,
             Func<T, Guid> fieldToMatchWithIdToTerminateEndOfNextYear,
