@@ -1,3 +1,18 @@
+# [1.151.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.150.0...v1.151.0) (2022-03-29)
+
+
+### Bug Fixes
+
+* or-852 make nullable for legacy events ([675b0fa](https://github.com/informatievlaanderen/organisation-registry/commit/675b0fa26efb41ec64cd417ee6872b310a6fed2a))
+* or-909 make ES mass update work in tests ([3073f2c](https://github.com/informatievlaanderen/organisation-registry/commit/3073f2c7cde148c8de3d052262199b45d20f540f))
+* or-909 renames & refactors ([5c78ea1](https://github.com/informatievlaanderen/organisation-registry/commit/5c78ea1fee809646533ad1c5264df6caa6eab4c7))
+
+
+### Features
+
+* or-909 delete indices after test run ([bc77d86](https://github.com/informatievlaanderen/organisation-registry/commit/bc77d86e3b44bf00ba38a1b6f5906e703f96dde5))
+* or-910 fix appsettings ([fa552e4](https://github.com/informatievlaanderen/organisation-registry/commit/fa552e4b2093127c22e35b8335483105506bf85d))
+
 # [1.150.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.149.1...v1.150.0) (2022-03-25)
 
 
