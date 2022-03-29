@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.ElasticSearch.Tests
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Reflection;
     using Client;
@@ -9,6 +10,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Osc;
     using SqlServer;
     using SqlServer.Infrastructure;
 
@@ -40,16 +42,20 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                     .Get<ElasticSearchConfiguration>();
 
             ElasticSearchOptions = new OptionsWrapper<ElasticSearchConfiguration>(elasticSearchConfiguration);
-            var guid = Guid.NewGuid().ToString();
-            ElasticSearchOptions.Value.PersonType = guid;
-            ElasticSearchOptions.Value.PeopleReadIndex = guid;
-            ElasticSearchOptions.Value.PeopleWriteIndex = guid;
+            var personIndex = Guid.NewGuid().ToString();
+            ElasticSearchOptions.Value.PersonType = personIndex;
+            ElasticSearchOptions.Value.PeopleReadIndex = personIndex;
+            ElasticSearchOptions.Value.PeopleWriteIndex = personIndex;
 
-            var org = Guid.NewGuid().ToString();
+            var organisationIndex = Guid.NewGuid().ToString();
+            ElasticSearchOptions.Value.OrganisationType = organisationIndex;
+            ElasticSearchOptions.Value.OrganisationsReadIndex = organisationIndex;
+            ElasticSearchOptions.Value.OrganisationsWriteIndex = organisationIndex;
 
-            ElasticSearchOptions.Value.OrganisationType = guid;
-            ElasticSearchOptions.Value.OrganisationsReadIndex = guid;
-            ElasticSearchOptions.Value.OrganisationsWriteIndex = guid;
+            var bodyIndex = Guid.NewGuid().ToString();
+            ElasticSearchOptions.Value.BodyType = bodyIndex;
+            ElasticSearchOptions.Value.BodyReadIndex = bodyIndex;
+            ElasticSearchOptions.Value.BodyWriteIndex = bodyIndex;
 
             Elastic = new Elastic(LoggerFactory.CreateLogger<Elastic>(), ElasticSearchOptions);
         }
@@ -61,6 +67,25 @@ namespace OrganisationRegistry.ElasticSearch.Tests
 
         public void Dispose()
         {
+            var indices = new List<string>
+            {
+                ElasticSearchOptions.Value.PeopleWriteIndex,
+                ElasticSearchOptions.Value.OrganisationsWriteIndex,
+                ElasticSearchOptions.Value.BodyWriteIndex,
+            };
+
+            foreach (var index in indices)
+            {
+                if (Elastic.WriteClient.DoesIndexExist(index).GetAwaiter().GetResult())
+                {
+                    var deleteResult = Elastic.WriteClient.Indices.DeleteAsync(
+                            new DeleteIndexRequest(Indices.Index(new List<IndexName> { index })))
+                        .GetAwaiter().GetResult();
+
+                    if (!deleteResult.IsValid)
+                        throw new Exception($"Could not delete index '{index}'.");
+                }
+            }
         }
     }
 }
