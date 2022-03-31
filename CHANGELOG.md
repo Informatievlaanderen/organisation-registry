@@ -1,3 +1,10 @@
+# [1.152.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.151.1...v1.152.0) (2022-03-31)
+
+
+### Features
+
+* or-884 default sort by ovoNumber ([9a0e2d5](https://github.com/informatievlaanderen/organisation-registry/commit/9a0e2d5a5b4faf98573871208b2c0bec4a01aa53))
+
 ## [1.151.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.151.0...v1.151.1) (2022-03-29)
 
 
