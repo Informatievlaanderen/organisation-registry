@@ -24,7 +24,7 @@ export class OrganisationOverviewComponent implements OnInit, OnDestroy {
   public canCreateOrganisation: Observable<boolean>;
 
   private filter: OrganisationFilter = new OrganisationFilter();
-  private currentSortBy: string = 'name';
+  private currentSortBy: string = 'ovoNumber';
   private currentSortOrder: SortOrder = SortOrder.Ascending;
 
   private readonly subscriptions: Subscription[] = new Array<Subscription>();
