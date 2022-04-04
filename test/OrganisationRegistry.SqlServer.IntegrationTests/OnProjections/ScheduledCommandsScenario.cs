@@ -18,7 +18,8 @@
             var contextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
                 .UseInMemoryDatabase(
                     $"org-es-test-{Guid.NewGuid()}",
-                    _ => { }).Options;
+                    _ => { })
+                .Options;
 
             var testContextFactory = new TestContextFactory(contextOptions);
             var dateTimeProviderStub = new DateTimeProviderStub(new DateTime(2022, 2, 2));

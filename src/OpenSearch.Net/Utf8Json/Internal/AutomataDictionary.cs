@@ -425,7 +425,7 @@ namespace OpenSearch.Net.Utf8Json.Internal
 
 	internal static class AutomataKeyGen
 	{
-		public static readonly MethodInfo GetKeyMethod = typeof(AutomataKeyGen).GetRuntimeMethod(nameof(GetKey), new[] { typeof(byte*).MakeByRefType(), typeof(int).MakeByRefType() });
+		public static readonly unsafe MethodInfo GetKeyMethod = typeof(AutomataKeyGen).GetRuntimeMethod(nameof(GetKey), new[] { typeof(byte*).MakeByRefType(), typeof(int).MakeByRefType() });
 		public static unsafe ulong GetKey(ref byte* p, ref int rest)
 		{
 			int readSize;

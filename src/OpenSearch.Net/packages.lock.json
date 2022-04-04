@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    ".NETCoreApp,Version=v5.0": {
+    "net6.0": {
       "Microsoft.CSharp": {
         "type": "Direct",
         "requested": "[4.6.0, )",

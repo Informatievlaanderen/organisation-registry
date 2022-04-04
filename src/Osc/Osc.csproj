@@ -8,7 +8,7 @@
       Strongly typed interface to OpenSearch. Fluent and classic object initializer mappings of requests and 
       responses. Uses and exposes OpenSearch.Net.
     </Description>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <LangVersion>9</LangVersion>
   </PropertyGroup>
   
