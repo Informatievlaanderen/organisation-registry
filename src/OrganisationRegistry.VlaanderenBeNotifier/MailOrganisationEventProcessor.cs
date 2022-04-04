@@ -151,8 +151,6 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                 message.Body.Timestamp));
 
             organisation.Name = message.Body.Name;
-
-            throw new NotImplementedException();
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationShowOnVlaamseOverheidSitesUpdated> message)
