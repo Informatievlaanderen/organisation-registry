@@ -1,3 +1,12 @@
+## [1.152.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.152.0...v1.152.1) (2022-04-04)
+
+
+### Bug Fixes
+
+* make property get-only ([323b597](https://github.com/informatievlaanderen/organisation-registry/commit/323b597f26576a3cdc2fc8567559217766e90e63))
+* or-908 trust server in integration tests ([fa2a40c](https://github.com/informatievlaanderen/organisation-registry/commit/fa2a40ccff3bb209c2640056860bb45b13aea756))
+* or-930 fix mail notifs by not throwing randomly ([68194de](https://github.com/informatievlaanderen/organisation-registry/commit/68194de6bf97df81244726cef39f708c3fe91252))
+
 # [1.152.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.151.1...v1.152.0) (2022-03-31)
 
 
