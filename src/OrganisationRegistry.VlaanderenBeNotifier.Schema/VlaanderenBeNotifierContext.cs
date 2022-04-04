@@ -23,7 +23,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.Schema
 
             if (!optionsBuilder.IsConfigured)
                 optionsBuilder.UseSqlServer(
-                    @"Server=localhost,21433;Database=OrganisationRegistry;User ID=sa;Password=E@syP@ssw0rd;",
+                    @"Server=localhost,21433;Database=OrganisationRegistry;User ID=sa;Password=E@syP@ssw0rd;TrustServerCertificate=True;",
                     x => x.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.VlaanderenBeNotifierSchema));
         }
 
@@ -40,7 +40,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.Schema
             var builder = new DbContextOptionsBuilder<VlaanderenBeNotifierContext>();
 
             builder.UseSqlServer(
-                @"Server=localhost,21433;Database=OrganisationRegistry;User ID=sa;Password=E@syP@ssw0rd;",
+                @"Server=localhost,21433;Database=OrganisationRegistry;User ID=sa;Password=E@syP@ssw0rd;TrustServerCertificate=True;",
                 x => x.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.VlaanderenBeNotifierSchema));
 
             return new VlaanderenBeNotifierContext(builder.Options);

@@ -92,6 +92,17 @@ namespace OpenSearch.Net.Extensions
 		internal static IEnumerable<T> DistinctBy<T, TKey>(this IEnumerable<T> items, Func<T, TKey> property) =>
 			items.GroupBy(property).Select(x => x.First());
 
+        /// <summary>
+        /// Manually overloaded because ambiguity on 'DistinctBy' (also exists in linq now)
+        /// </summary>
+        /// <param name="items"></param>
+        /// <param name="property"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="TKey"></typeparam>
+        /// <returns></returns>
+        internal static IEnumerable<T> DistinctBy<T, TKey>(this IOrderedEnumerable<T> items, Func<T, TKey> property) =>
+			items.GroupBy(property).Select(x => x.First());
+
 		internal static string ToTimeUnit(this TimeSpan timeSpan)
 		{
 			var ms = timeSpan.TotalMilliseconds;

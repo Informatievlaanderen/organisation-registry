@@ -27,19 +27,22 @@
             {
                 BodyId = body1Id,
                 BodySeatId = fixture.Create<Guid>(),
-                BodyMandateId = fixture.Create<Guid>()
+                BodyMandateId = fixture.Create<Guid>(),
+                PersonFullName = "test",
             };
             var activePeopleAssignedToBodyMandate1B = new ActivePeopleAssignedToBodyMandateListItem
             {
                 BodyId = body1Id,
                 BodySeatId = fixture.Create<Guid>(),
-                BodyMandateId = fixture.Create<Guid>()
+                BodyMandateId = fixture.Create<Guid>(),
+                PersonFullName = "test",
             };
             var activePeopleAssignedToBodyMandate1C = new ActivePeopleAssignedToBodyMandateListItem
             {
                 BodyId = body1Id,
                 BodySeatId = fixture.Create<Guid>(),
-                BodyMandateId = fixture.Create<Guid>()
+                BodyMandateId = fixture.Create<Guid>(),
+                PersonFullName = "test",
             };
 
             var activePeopleAssignedToBodyMandate2 = fixture.Create<ActivePeopleAssignedToBodyMandateListItem>();

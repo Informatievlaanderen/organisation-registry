@@ -36,7 +36,8 @@ namespace OrganisationRegistry.UnitTests
                 new DbContextOptionsBuilder<OrganisationRegistryContext>()
                     .UseInMemoryDatabase(
                         "kbo-sync-test-" + Guid.NewGuid(),
-                        builder => { }).Options);
+                        _ => { })
+                    .Options);
             _claimsPrincipal = new ClaimsPrincipal();
         }
 
@@ -66,6 +67,7 @@ namespace OrganisationRegistry.UnitTests
                         SyncCompletedAt = _dateTimeProviderStub.UtcNow,
                         SyncStatus = KboSync.SyncStatusSuccess,
                         SyncInfo = string.Empty,
+                        SourceOrganisationStatus = kboSyncQueueItem.SourceOrganisationStatus,
                     },
                     new()
                     {
@@ -77,7 +79,8 @@ namespace OrganisationRegistry.UnitTests
                         SourceOrganisationModifiedAt = kboSyncQueueItem2.SourceOrganisationModifiedAt,
                         SyncCompletedAt = _dateTimeProviderStub.UtcNow,
                         SyncStatus = KboSync.SyncStatusSuccess,
-                        SyncInfo = string.Empty
+                        SyncInfo = string.Empty,
+                        SourceOrganisationStatus = kboSyncQueueItem.SourceOrganisationStatus,
                     }
                 }.AsEnumerable());
         }
@@ -117,7 +120,8 @@ namespace OrganisationRegistry.UnitTests
                         SourceOrganisationModifiedAt = kboSyncQueueItem.SourceOrganisationModifiedAt,
                         SyncCompletedAt = null,
                         SyncStatus = KboSync.SyncStatusError,
-                        SyncInfo = aggregateNotFoundException.ToString()
+                        SyncInfo = aggregateNotFoundException.ToString(),
+                        SourceOrganisationStatus = kboSyncQueueItem.SourceOrganisationStatus,
                     }
                 });
         }
@@ -137,6 +141,7 @@ namespace OrganisationRegistry.UnitTests
                 SourceOrganisationModifiedAt = DateTimeOffset.Now,
                 SyncCompletedAt = null,
                 SyncStatus = null,
+                SourceOrganisationStatus = "test",
             };
 
             _context.KboSyncQueue.Add(kboSyncQueueItem);
@@ -161,7 +166,8 @@ namespace OrganisationRegistry.UnitTests
                         SourceOrganisationModifiedAt = kboSyncQueueItem.SourceOrganisationModifiedAt,
                         SyncCompletedAt = null,
                         SyncStatus = KboSync.SyncStatusNotFound,
-                        SyncInfo = KboSync.SyncInfoNotFound
+                        SyncInfo = KboSync.SyncInfoNotFound,
+                        SourceOrganisationStatus = kboSyncQueueItem.SourceOrganisationStatus,
                     }
                 });
         }
@@ -178,6 +184,7 @@ namespace OrganisationRegistry.UnitTests
                 SourceOrganisationModifiedAt = DateTimeOffset.Now,
                 SyncCompletedAt = null,
                 SyncStatus = null,
+                SourceOrganisationStatus = "test",
             };
 
             context.KboSyncQueue.Add(kboSyncQueueItem);
@@ -186,6 +193,8 @@ namespace OrganisationRegistry.UnitTests
             {
                 Id = Guid.NewGuid(),
                 KboNumber = kboSyncQueueItem.SourceOrganisationKboNumber,
+                Name = "test",
+                OvoNumber = "test",
             };
 
             context.OrganisationDetail.Add(organisationItem);
