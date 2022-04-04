@@ -15,7 +15,7 @@
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly ICommandSender _commandSender;
         private readonly ILogger<ScheduledCommandsService> _logger;
-        private const int IntervalSeconds = 10;
+        private const int IntervalSeconds = 3600;
 
         private static int runCounter = 0;
 
@@ -63,8 +63,6 @@
                         _logger.LogInformation("canceling execution of scheduled tasks");
                         break;
                     }
-
-                    await DelaySeconds(1, cancellationToken);
 
                     _logger.LogDebug("Sending command: {Command}", command.GetType().FullName);
 
