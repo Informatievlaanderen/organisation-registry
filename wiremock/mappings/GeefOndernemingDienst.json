@@ -1,0 +1,17 @@
+{
+    "priority": 1,
+    "request": {
+	"method": "POST",
+        "urlPath": "/GeefOndernemingDienst-02.00/soap/WebService",
+        "bodyPatterns" : [ {
+            "matchesXPath" : {
+                "expression": "//Ondernemingsnummer/text()",
+                "matches": "0563634435|0563634434"
+             }
+        } ]
+    },
+    "response": {
+        "bodyFileName": "GeefOndernemingResponse-{{regexExtract request.body '<Ondernemingsnummer>([0-9]{10})</Ondernemingsnummer>' 'parts'}}{{parts.0}}.xml",
+        "transformers": ["response-template"]
+    }
+}
