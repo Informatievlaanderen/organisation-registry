@@ -6,6 +6,7 @@
     public class WellknownUsers
     {
         public static User ScheduledCommandsServiceUser => Create("ScheduledCommandsService", Role.AutomatedTask);
+        public static User KboSyncServiceUser => Create("KboSyncService", Role.AutomatedTask);
 
         public static User OrafinUser => Create("Orafin", "Edit Api", "Orafin Edit Api", Role.Orafin);
 

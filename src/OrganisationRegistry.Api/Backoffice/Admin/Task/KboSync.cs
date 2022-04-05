@@ -3,7 +3,6 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
@@ -21,7 +20,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
         Task SyncFromKbo(
             ICommandSender commandSender,
             OrganisationRegistryContext context,
-            ClaimsPrincipal claimsPrincipal);
+            IUser user);
     }
 
     public class KboSync : IKboSync
@@ -32,18 +31,15 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
         public const string SyncInfoNotFound = "Er werd geen organisatie gevonden voor dit KBO nummer";
 
         private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly ISecurityService _securityService;
         private readonly int _syncFromKboBatchSize;
         private readonly ILogger<KboSync> _logger;
 
         public KboSync(
             IDateTimeProvider dateTimeProvider,
             IOptions<ApiConfigurationSection> apiOptions,
-            ISecurityService securityService,
             ILogger<KboSync> logger)
         {
             _dateTimeProvider = dateTimeProvider;
-            _securityService = securityService;
             _logger = logger;
             _syncFromKboBatchSize = apiOptions.Value.SyncFromKboBatchSize;
         }
@@ -51,7 +47,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
         public async Task SyncFromKbo(
             ICommandSender commandSender,
             OrganisationRegistryContext context,
-            ClaimsPrincipal claimsPrincipal)
+            IUser user)
         {
             _logger.LogInformation("KBO sync started");
 
@@ -61,8 +57,6 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
                 itemsInQueue = await GetItemsToRetry(context);
 
             _logger.LogInformation("Found {NumberOfSyncItems} items to sync", itemsInQueue.Count);
-
-            var user = await _securityService.GetRequiredUser(claimsPrincipal);
 
             foreach (var kboSyncQueueItem in itemsInQueue)
             {

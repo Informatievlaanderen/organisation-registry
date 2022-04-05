@@ -22,7 +22,6 @@ namespace OrganisationRegistry.Api.Configuration
 
             FormalFrameworkIdsToTerminateEndOfNextYear =
                 terminationConfiguration?.FormalFrameworkIdsToTerminateEndOfNextYear.SplitGuids();
-
         }
         public Guid KboV2FormalNameLabelTypeId => _configuration.KboV2FormalNameLabelTypeId;
 

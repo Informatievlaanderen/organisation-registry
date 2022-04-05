@@ -5,12 +5,14 @@ namespace OrganisationRegistry.UnitTests
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Claims;
+    using System.Threading.Tasks;
     using Api.Backoffice.Admin.Task;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging.Abstractions;
     using Microsoft.Extensions.Options;
     using Moq;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
@@ -26,7 +28,7 @@ namespace OrganisationRegistry.UnitTests
         private readonly DateTimeProviderStub _dateTimeProviderStub;
         private readonly OptionsWrapper<ApiConfigurationSection> _apiConfiguration;
         private readonly OrganisationRegistryContext _context;
-        private readonly ClaimsPrincipal _claimsPrincipal;
+        private readonly User _user;
 
         public KboSyncTests()
         {
@@ -38,7 +40,7 @@ namespace OrganisationRegistry.UnitTests
                         "kbo-sync-test-" + Guid.NewGuid(),
                         _ => { })
                     .Options);
-            _claimsPrincipal = new ClaimsPrincipal();
+            _user = WellknownUsers.KboSyncServiceUser;
         }
 
         [Fact]
@@ -51,7 +53,7 @@ namespace OrganisationRegistry.UnitTests
 
             _context.SaveChanges();
 
-            new KboSync(_dateTimeProviderStub, _apiConfiguration, Mock.Of<ISecurityService>(), new NullLogger<KboSync>()).SyncFromKbo(commandSender, _context, _claimsPrincipal);
+            new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(commandSender, _context, _user);
 
             _context.KboSyncQueue.AsEnumerable().Should().BeEquivalentTo(
                 new List<KboSyncQueueItem>
@@ -86,7 +88,7 @@ namespace OrganisationRegistry.UnitTests
         }
 
         [Fact]
-        public void ProcessesErrors()
+        public async Task ProcessesErrors()
         {
             var commandSender = new Mock<ICommandSender>();
 
@@ -100,12 +102,12 @@ namespace OrganisationRegistry.UnitTests
                 .Setup(sender => sender.Send(It.IsAny<SyncOrganisationWithKbo>()))
                 .Throws(aggregateNotFoundException);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            new KboSync(_dateTimeProviderStub, _apiConfiguration, Mock.Of<ISecurityService>(), new NullLogger<KboSync>()).SyncFromKbo(
+            await new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(
                 commandSender.Object,
                 _context,
-                _claimsPrincipal);
+                _user);
 
             _context.KboSyncQueue.AsEnumerable().Should().BeEquivalentTo(
                 new List<KboSyncQueueItem>
@@ -148,10 +150,10 @@ namespace OrganisationRegistry.UnitTests
 
             _context.SaveChanges();
 
-            new KboSync(_dateTimeProviderStub, _apiConfiguration, Mock.Of<ISecurityService>(), new NullLogger<KboSync>()).SyncFromKbo(
+            new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(
                 commandSender,
                 _context,
-                _claimsPrincipal);
+                _user);
 
             _context.KboSyncQueue.AsEnumerable().Should().BeEquivalentTo(
                 new List<KboSyncQueueItem>

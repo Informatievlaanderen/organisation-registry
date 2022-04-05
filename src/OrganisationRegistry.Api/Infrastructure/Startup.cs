@@ -75,6 +75,7 @@ namespace OrganisationRegistry.Api.Infrastructure
 
             services
                 .AddHostedService<ScheduledCommandsService>()
+                .AddHostedService<SyncFromKboService>()
                 .AddAuthentication(
                     options =>
                     {
