@@ -83,7 +83,7 @@
         }
 
         private static Task DelaySeconds(int intervalSeconds, CancellationToken cancellationToken) =>
-            Task.Delay((int)TimeSpan.FromSeconds(intervalSeconds).TotalMilliseconds, cancellationToken);
+            Task.Delay(TimeSpan.FromSeconds(intervalSeconds), cancellationToken);
 
         /// <summary>
         /// made public for testing purposes

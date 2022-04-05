@@ -82,14 +82,6 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
 
                     break;
 
-                case TaskType.SyncFromKbo:
-                    using (var context = contextFactory().Value)
-                    {
-                        await kboSync.SyncFromKbo(CommandSender, context, User);
-                    }
-
-                    break;
-
                 default:
                     return BadRequest(ModelState);
             }
