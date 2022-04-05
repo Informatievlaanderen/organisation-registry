@@ -68,7 +68,7 @@
 
                     try
                     {
-                        command.User = WellknownUsers.ScheduledCommandsServiceUser;
+                        command.User = WellknownUsers.ScheduledCommandsService;
                         await _commandSender.Send(command);
                         _logger.LogInformation("command {@Command} sent successfully", command);
                     }

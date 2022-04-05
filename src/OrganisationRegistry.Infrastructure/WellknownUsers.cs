@@ -5,12 +5,12 @@
 
     public class WellknownUsers
     {
-        public static User ScheduledCommandsServiceUser => Create("ScheduledCommandsService", Role.AutomatedTask);
-        public static User KboSyncServiceUser => Create("KboSyncService", Role.AutomatedTask);
+        public static User ScheduledCommandsService => Create("ScheduledCommandsService", Role.AutomatedTask);
+        public static User KboSyncService => Create("KboSyncService", Role.AutomatedTask);
 
-        public static User OrafinUser => Create("Orafin", "Edit Api", "Orafin Edit Api", Role.Orafin);
+        public static User Orafin => Create("Orafin", "Edit Api", "Orafin Edit Api", Role.Orafin);
 
-        public static User MagdaUser => Create("Magda", "Reregistrator", "Magda Reregistrator", Role.AutomatedTask);
+        public static User Magda => Create("Magda", "Reregistrator", "Magda Reregistrator", Role.AutomatedTask);
 
         public static User Nobody => Create();
 

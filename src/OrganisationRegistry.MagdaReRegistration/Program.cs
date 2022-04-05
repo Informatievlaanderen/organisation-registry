@@ -67,7 +67,7 @@ namespace OrganisationRegistry.MagdaReRegistration
                 app.GetService<IHttpClientFactory>(),
                 app.GetService<ILogger<RegistreerInschrijvingCommand>>());
 
-            var claimsIdentity = WellknownUsers.MagdaUser;
+            var claimsIdentity = WellknownUsers.Magda;
 
             foreach (var organisation in allOrganisations)
             {

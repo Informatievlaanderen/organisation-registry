@@ -57,7 +57,7 @@ public class SyncFromKboService : BackgroundService
             _logger.LogDebug("Starting KBO Sync");
 
             await using var context = _contextFactory.Create();
-            await _kboSync.SyncFromKbo(_sender, context, WellknownUsers.KboSyncServiceUser);
+            await _kboSync.SyncFromKbo(_sender, context, WellknownUsers.KboSyncService);
             _logger.LogInformation("KBO Synced successfully");
 
             await DelaySeconds(IntervalSeconds, cancellationToken);
