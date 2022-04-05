@@ -40,7 +40,7 @@ namespace OrganisationRegistry.UnitTests
                         "kbo-sync-test-" + Guid.NewGuid(),
                         _ => { })
                     .Options);
-            _user = WellknownUsers.KboSyncServiceUser;
+            _user = WellknownUsers.KboSyncService;
         }
 
         [Fact]
