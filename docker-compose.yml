@@ -23,6 +23,17 @@ services:
     build: tools/IdentityServer/src/IdentityServer/
     ports:
       - "5050:80"
+  wiremock:
+    image: rodolpheche/wiremock:2.29.1
+    container_name: or_wiremock
+    volumes:
+      - ./wiremock/mappings:/home/wiremock/mappings
+      - ./wiremock/files:/home/wiremock/__files
+    ports:
+      - 8080:8080
+    command:
+      - -verbose
+      - -global-response-templating
 volumes:
   mssql-data:
   opensearch-data:
