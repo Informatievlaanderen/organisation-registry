@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+    <SOAP-ENV:Header xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" />
+    <SOAP-ENV:Body xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+        <web:RegistreerInschrijvingResponse xmlns:web="http://webservice.registreerinschrijvingdienst-02_01.repertorium-02_01.vip.vlaanderen.be">
+            <Repliek>
+                <Context>
+                    <Naam>RegistreerInschrijving</Naam>
+                    <Versie>02.01.0000</Versie>
+                    <Bericht>
+                        <Type>ANTWOORD</Type>
+                        <Tijdstip>
+                            <Datum>2022-04-06</Datum>
+                            <Tijd>09:26:04.373</Tijd>
+                        </Tijdstip>
+                        <Afzender>
+                            <Identificatie>vip.vlaanderen.be</Identificatie>
+                            <Naam>MagdaGateway</Naam>
+                            <Referte>39598cd1-54e1-47da-90a7-b6df03b94725</Referte>
+                        </Afzender>
+                        <Ontvanger>
+                            <Identificatie>kb.vlaanderen.be/aiv/organisatieregister-ond-aip</Identificatie>
+                            <Referte>9cfca9a7-8391-49ce-a634-b7be0857feca</Referte>
+                            <Hoedanigheid>7001</Hoedanigheid>
+                        </Ontvanger>
+                    </Bericht>
+                </Context>
+                <Antwoorden>
+                    <Antwoord>
+                        <Referte>9cfca9a7-8391-49ce-a634-b7be0857feca</Referte>
+                        <Inhoud>
+                            <Resultaat Beschrijving="Wel geslaagd">1</Resultaat>
+                        </Inhoud>
+                        <Uitzonderingen>
+                            <Uitzondering>
+                                <Identificatie>40143</Identificatie>
+                                <Oorsprong>MAGDA</Oorsprong>
+                                <Type>WAARSCHUWING</Type>
+                                <Tijdstip>
+                                    <Datum>2022-04-06</Datum>
+                                    <Tijd>09:26:04.372</Tijd>
+                                </Tijdstip>
+                                <Diagnose>De inschrijving in het MAGDA repertorium bestaat al</Diagnose>
+                            </Uitzondering>
+                        </Uitzonderingen>
+                    </Antwoord>
+                </Antwoorden>
+            </Repliek>
+        </web:RegistreerInschrijvingResponse>
+    </SOAP-ENV:Body>
+</soapenv:Envelope>
