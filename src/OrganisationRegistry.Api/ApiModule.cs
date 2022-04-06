@@ -83,7 +83,10 @@ namespace OrganisationRegistry.Api
                                 .Get<AuthorizationConfigurationSection>(),
                             _configuration
                                 .GetSection(CachingConfigurationSection.Name)
-                                .Get<CachingConfigurationSection>()))
+                                .Get<CachingConfigurationSection>(),
+                            _configuration
+                                .GetSection(HostedServicesConfigurationSection.Name)
+                                .Get<HostedServicesConfigurationSection>()))
                 .As<IOrganisationRegistryConfiguration>()
                 .SingleInstance();
 

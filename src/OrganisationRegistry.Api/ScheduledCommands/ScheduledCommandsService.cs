@@ -4,7 +4,9 @@
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using Configuration;
     using Microsoft.Extensions.Logging;
+    using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Commands;
     using SqlServer;
@@ -15,22 +17,27 @@
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly ICommandSender _commandSender;
         private readonly ILogger<ScheduledCommandsService> _logger;
-        private const int IntervalSeconds = 3600;
+        private readonly HostedServiceConfiguration _configuration;
 
-        private static int runCounter = 0;
+        private static int _runCounter;
 
-        public ScheduledCommandsService(IContextFactory contextFactory, IDateTimeProvider dateTimeProvider,
-            ICommandSender commandSender, ILogger<ScheduledCommandsService> logger)
+        public ScheduledCommandsService(
+            IContextFactory contextFactory,
+            IDateTimeProvider dateTimeProvider,
+            ICommandSender commandSender,
+            IOrganisationRegistryConfiguration configuration,
+            ILogger<ScheduledCommandsService> logger)
         {
             _contextFactory = contextFactory;
             _dateTimeProvider = dateTimeProvider;
             _commandSender = commandSender;
+            _configuration = configuration.HostedServices.ScheduledCommandsService;
             _logger = logger;
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            if (Interlocked.CompareExchange(ref runCounter, 1, 0) != 0)
+            if (Interlocked.CompareExchange(ref _runCounter, 1, 0) != 0)
                 return;
 
             try
@@ -43,7 +50,7 @@
             }
             finally
             {
-                Interlocked.Decrement(ref runCounter);
+                Interlocked.Decrement(ref _runCounter);
             }
         }
 
@@ -51,6 +58,12 @@
         {
             while (!cancellationToken.IsCancellationRequested)
             {
+                if (!_configuration.Enabled)
+                {
+                    _logger.LogInformation("ScheduledCommandsService disabled, skipping execution");
+                    continue;
+                }
+
                 var today = _dateTimeProvider.Today;
                 _logger.LogDebug("Processing scheduled commands");
 
@@ -78,7 +91,7 @@
                     }
                 }
 
-                await DelaySeconds(IntervalSeconds, cancellationToken);
+                await DelaySeconds(_configuration.DelayInSeconds, cancellationToken);
             }
         }
 
