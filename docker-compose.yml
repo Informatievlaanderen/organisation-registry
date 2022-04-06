@@ -24,7 +24,7 @@ services:
     ports:
       - "5050:80"
   wiremock:
-    image: rodolpheche/wiremock:2.29.1
+    image: wiremock/wiremock:2.32.0
     container_name: or_wiremock
     volumes:
       - ./wiremock/mappings:/home/wiremock/mappings
