@@ -1,3 +1,20 @@
+# [1.153.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.152.1...v1.153.0) (2022-04-06)
+
+
+### Bug Fixes
+
+* or-921 use hosted service to sync kbo ([3d2cfeb](https://github.com/informatievlaanderen/organisation-registry/commit/3d2cfebd6d8ada19c21ee551c2a987ef6172f7c6))
+
+
+### Features
+
+* or-921 add wiremock config for RegistreerInschrijving ([04b7e16](https://github.com/informatievlaanderen/organisation-registry/commit/04b7e16ba81b2f5968d004a52a2fbb6b59220846))
+* or-921 fix randomInts in ranges ([07a5420](https://github.com/informatievlaanderen/organisation-registry/commit/07a5420c6081e7011ee56cd71197156c2f71cba2))
+* or-921 increase delay for scheduled commands ([887b5ee](https://github.com/informatievlaanderen/organisation-registry/commit/887b5ee09fea0fd7aa8701a2745b5648e3aaa50e))
+* or-921 make hosted services configurable ([0f3f216](https://github.com/informatievlaanderen/organisation-registry/commit/0f3f2166ee5c207486fd1d7744370335c05d86e2))
+* or-921 mock GeefOnderneming with wiremock ([667c3b6](https://github.com/informatievlaanderen/organisation-registry/commit/667c3b66a9db0f9d010165ea11881e8d6720d097))
+* or-921 upgrade wiremock ([a3c5ffb](https://github.com/informatievlaanderen/organisation-registry/commit/a3c5ffb545d6236d0d8a9a907e431a2f86666c43))
+
 ## [1.152.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.152.0...v1.152.1) (2022-04-04)
 
 
