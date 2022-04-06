@@ -19,14 +19,13 @@
         private readonly ILogger<ScheduledCommandsService> _logger;
         private readonly HostedServiceConfiguration _configuration;
 
-        private static int _runCounter;
 
         public ScheduledCommandsService(
             IContextFactory contextFactory,
             IDateTimeProvider dateTimeProvider,
             ICommandSender commandSender,
             IOrganisationRegistryConfiguration configuration,
-            ILogger<ScheduledCommandsService> logger)
+            ILogger<ScheduledCommandsService> logger) : base(logger)
         {
             _contextFactory = contextFactory;
             _dateTimeProvider = dateTimeProvider;
@@ -35,26 +34,7 @@
             _logger = logger;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
-        {
-            if (Interlocked.CompareExchange(ref _runCounter, 1, 0) != 0)
-                return;
-
-            try
-            {
-                await Process(cancellationToken).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occured while processing scheduled commands");
-            }
-            finally
-            {
-                Interlocked.Decrement(ref _runCounter);
-            }
-        }
-
-        private async Task Process(CancellationToken cancellationToken)
+        protected override async Task Process(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {
