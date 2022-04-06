@@ -12,5 +12,6 @@ namespace OrganisationRegistry.Configuration
         IKboConfiguration Kbo { get; }
         IAuthorizationConfiguration Authorization { get; }
         ICachingConfiguration Caching { get; }
+        IHostedServicesConfiguration HostedServices { get; }
     }
 }

@@ -10,6 +10,7 @@ namespace OrganisationRegistry.Tests.Shared.Stubs
             Kbo = new KboConfigurationStub();
             Authorization = new AuthorizationConfigurationStub();
             Caching = new CachingConfigurationStub();
+            HostedServices = new HostedServicesConfigurationStub();
         }
         public Guid KboKeyTypeId { get; set; }
         public Guid OrafinKeyTypeId { get; set; }
@@ -20,5 +21,6 @@ namespace OrganisationRegistry.Tests.Shared.Stubs
         public IKboConfiguration Kbo { get; init; }
         public IAuthorizationConfiguration Authorization { get; init; }
         public ICachingConfiguration Caching { get; init; }
+        public IHostedServicesConfiguration HostedServices { get; }
     }
 }

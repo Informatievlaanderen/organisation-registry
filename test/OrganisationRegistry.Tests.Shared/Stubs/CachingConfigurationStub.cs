@@ -6,9 +6,9 @@ namespace OrganisationRegistry.Tests.Shared.Stubs
     {
         public CachingConfigurationStub()
         {
-            UserCacheSlidingExpirationInMinutes = 1;
+            DelayInSeconds = 1;
         }
 
-        public int UserCacheSlidingExpirationInMinutes { get; }
+        public int DelayInSeconds { get; }
     }
 }

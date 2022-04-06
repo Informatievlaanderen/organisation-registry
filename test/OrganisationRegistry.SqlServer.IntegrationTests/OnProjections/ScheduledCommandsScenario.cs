@@ -9,6 +9,7 @@
     using Moq;
     using OrganisationRegistry.Infrastructure.Commands;
     using TestBases;
+    using Tests.Shared.Stubs;
     using UnitTests;
 
     public class ScheduledCommandsScenario
@@ -31,7 +32,7 @@
             setup(testContext, dateTimeProviderStub.Today);
             await testContext.SaveChangesAsync();
 
-            return (new ScheduledCommandsService(testContextFactory, dateTimeProviderStub, commandSenderMock, loggerMock), dateTimeProviderStub);
+            return (new ScheduledCommandsService(testContextFactory, dateTimeProviderStub, commandSenderMock, new OrganisationRegistryConfigurationStub(), loggerMock), dateTimeProviderStub);
         }
     }
 }
