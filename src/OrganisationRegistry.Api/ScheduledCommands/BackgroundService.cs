@@ -4,13 +4,19 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
 
     public abstract class BackgroundService : IHostedService, IDisposable
     {
+        private readonly ILogger _logger;
         private Task? _executingTask;
         private readonly CancellationTokenSource _stoppingCts = new();
+        private static int _runCounter;
 
-        protected abstract Task ExecuteAsync(CancellationToken cancellationToken);
+        protected BackgroundService(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         public virtual Task StartAsync(CancellationToken cancellationToken)
         {
@@ -41,6 +47,27 @@
                     cancellationToken));
             }
         }
+
+        private async Task ExecuteAsync(CancellationToken cancellationToken)
+        {
+            if (Interlocked.CompareExchange(ref _runCounter, 1, 0) != 0)
+                return;
+
+            try
+            {
+                await Process(cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occured while processing scheduled commands");
+            }
+            finally
+            {
+                Interlocked.Decrement(ref _runCounter);
+            }
+        }
+
+        protected abstract Task Process(CancellationToken cancellationToken);
 
         public virtual void Dispose()
         {
