@@ -59,12 +59,12 @@
                                 <Adressen>
                                     <Adres DatumBegin="2011-11-26">
                                         <Straat>
-                                            <Code>{{range 1000 9999}}</Code>
+                                            <Code>{{randomInt lower=1000 upper=9999 }}</Code>
                                         </Straat>
-                                        <Huisnummer>{{range 1 1000}}</Huisnummer>
+                                        <Huisnummer>{{randomInt lower=1 upper=1000}}</Huisnummer>
                                         <Gemeente>
                                             <NISCode>{{randomInt}}</NISCode>
-                                            <PostCode>{{range 1000 9999}}</PostCode>
+                                            <PostCode>{{randomInt lower=1000 upper=9999}}</PostCode>
                                         </Gemeente>
                                         <Land>
                                             <NISCode>{{randomInt}}</NISCode>
