@@ -7,9 +7,9 @@ namespace OrganisationRegistry.Api.Configuration
     {
         public CachingConfiguration(CachingConfigurationSection? cachingConfigurationSection)
         {
-            DelayInSeconds =
+            UserCacheSlidingExpirationInMinutes =
                 cachingConfigurationSection?.UserCacheSlidingExpirationInMinutes ?? 5;
         }
-        public int DelayInSeconds { get; }
+        public int UserCacheSlidingExpirationInMinutes { get; }
     }
 }

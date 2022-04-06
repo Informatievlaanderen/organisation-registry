@@ -37,7 +37,7 @@ namespace OrganisationRegistry.Api.Security
                 new CacheItemPolicy
                 {
                     SlidingExpiration =
-                        TimeSpan.FromMinutes(_configuration.Caching.DelayInSeconds),
+                        TimeSpan.FromMinutes(_configuration.Caching.UserCacheSlidingExpirationInMinutes),
                 });
         }
 
