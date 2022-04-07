@@ -42,7 +42,7 @@ public class SyncFromKboService : BackgroundService
                 continue;
             }
 
-            _logger.LogDebug("Starting KBO Sync");
+            _logger.LogInformation("Starting KBO Sync");
 
             await using var context = _contextFactory.Create();
             await _kboSync.SyncFromKbo(_sender, context, WellknownUsers.KboSyncService);
