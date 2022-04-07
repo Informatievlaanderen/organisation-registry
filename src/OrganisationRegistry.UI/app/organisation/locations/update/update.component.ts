@@ -84,15 +84,11 @@ export class OrganisationLocationsUpdateOrganisationLocationComponent implements
     this.form.disable();
 
     if (this.isKbo){
-      //value.locationId = this.locationId;
-      //value.locationValue = this.location
-      //{ ...this.organisationLocation, "isMainLocation": value.isMainLocation }
       value.locationId = this.organisationLocation.locationId;
       value.validFrom = this.organisationLocation.validFrom;
       value.validTo = this.organisationLocation.validTo;
       value.source = "KBO";
     }
-    console.log("saving:", value);
 
     this.subscriptions.push(this.organisationLocationService.update(value.organisationId, value)
       .finally(() => this.form.enable())
