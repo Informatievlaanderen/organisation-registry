@@ -1170,6 +1170,7 @@ namespace OrganisationRegistry.Organisation
             bool isMainLocation,
             LocationType locationType,
             Period validity,
+            Source source,
             IDateTimeProvider dateTimeProvider)
         {
             var organisationLocation =
@@ -1181,12 +1182,13 @@ namespace OrganisationRegistry.Organisation
                     isMainLocation,
                     locationType?.Id,
                     locationType?.Name,
-                    validity);
+                    validity,
+                    source);
 
             if (State.OrganisationLocations.AlreadyHasTheSameOrganisationAndLocationInTheSamePeriod(organisationLocation))
                 throw new LocationAlreadyCoupledToInThisPeriod();
 
-            if (organisationLocation.IsMainLocation && State.OrganisationLocations.OrganisationAlreadyHasAMainLocationInTheSamePeriod(organisationLocation))
+            if (organisationLocation.IsMainLocation && State.OrganisationLocations.OrganisationAlreadyHasAMainLocationInTheSamePeriod(organisationLocation, KboState.KboRegisteredOffice))
                 throw new OrganisationAlreadyHasAMainLocationInThisPeriod();
 
             ApplyChange(new OrganisationLocationAdded(
@@ -1257,12 +1259,27 @@ namespace OrganisationRegistry.Organisation
                         new ValidTo()));
         }
 
+        public void UpdateKboRegisteredOfficeLocationIsMainLocation(
+            OrganisationLocation newKboRegisteredOffice)
+        {
+            if (KboState.KboRegisteredOffice is not { } kbkLocation) return;
+            if (newKboRegisteredOffice.LocationId != kbkLocation.LocationId) return;
+            if (newKboRegisteredOffice.IsMainLocation == kbkLocation.IsMainLocation) return;
+
+            ApplyChange(
+                new KboRegisteredOfficeLocationIsMainLocationChanged(
+                    Id,
+                    newKboRegisteredOffice.OrganisationLocationId,
+                    newKboRegisteredOffice.IsMainLocation));
+        }
+
         public void UpdateLocation(
             Guid organisationLocationId,
             Location location,
             bool isMainLocation,
             LocationType locationType,
             Period validity,
+            Source source,
             IDateTimeProvider dateTimeProvider)
         {
             var organisationLocation =
@@ -1274,37 +1291,50 @@ namespace OrganisationRegistry.Organisation
                     isMainLocation,
                     locationType?.Id,
                     locationType?.Name,
-                    validity);
+                    validity,
+                    source);
 
             if (organisationLocation == null)
                 throw new ArgumentNullException(nameof(organisationLocation));
 
-            if (State.OrganisationLocations.AlreadyHasTheSameOrganisationAndLocationInTheSamePeriod(organisationLocation))
-                throw new LocationAlreadyCoupledToInThisPeriod();
-
-            if (organisationLocation.IsMainLocation && State.OrganisationLocations.OrganisationAlreadyHasAMainLocationInTheSamePeriod(organisationLocation))
+            if (organisationLocation.IsMainLocation && State.OrganisationLocations.OrganisationAlreadyHasAMainLocationInTheSamePeriod(organisationLocation, KboState.KboRegisteredOffice))
                 throw new OrganisationAlreadyHasAMainLocationInThisPeriod();
 
-            var previousLocation =
-                State.OrganisationLocations.Single(x => x.OrganisationLocationId == organisationLocationId);
+            if (source == Source.Kbo)
+            {
+                var previousLocation = KboState.KboRegisteredOffice;
 
-            ApplyChange(new OrganisationLocationUpdated(
-                Id,
-                organisationLocationId,
-                location.Id,
-                location.FormattedAddress,
-                isMainLocation,
-                locationType?.Id,
-                locationType?.Name,
-                validity.Start,
-                validity.End,
-                previousLocation.LocationId,
-                previousLocation.FormattedAddress,
-                previousLocation.IsMainLocation,
-                previousLocation.LocationTypeId,
-                previousLocation.LocationTypeName,
-                previousLocation.Validity.Start,
-                previousLocation.Validity.End));
+                if (previousLocation?.OrganisationLocationId != organisationLocation.OrganisationLocationId)
+                    throw new InvalidOperationException();
+
+                UpdateKboRegisteredOfficeLocationIsMainLocation(organisationLocation);
+            }
+            else
+            {
+                if (State.OrganisationLocations.AlreadyHasTheSameOrganisationAndLocationInTheSamePeriod(organisationLocation))
+                    throw new LocationAlreadyCoupledToInThisPeriod();
+
+                var previousLocation =
+                    State.OrganisationLocations.Single(x => x.OrganisationLocationId == organisationLocationId);
+
+                 ApplyChange(new OrganisationLocationUpdated(
+                     Id,
+                     organisationLocationId,
+                     location.Id,
+                     location.FormattedAddress,
+                     isMainLocation,
+                     locationType?.Id,
+                     locationType?.Name,
+                     validity.Start,
+                     validity.End,
+                     previousLocation.LocationId,
+                     previousLocation.FormattedAddress,
+                     previousLocation.IsMainLocation,
+                     previousLocation.LocationTypeId,
+                     previousLocation.LocationTypeName,
+                     previousLocation.Validity.Start,
+                     previousLocation.Validity.End));
+            }
 
             CheckIfMainLocationChanged(organisationLocation, dateTimeProvider.Today);
         }
@@ -2203,7 +2233,8 @@ namespace OrganisationRegistry.Organisation
                     @event.IsMainLocation,
                     @event.LocationTypeId,
                     @event.LocationTypeName,
-                    new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
+                    new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)),
+                    Source.Wegwijs));
         }
 
         private void Apply(KboRegisteredOfficeOrganisationLocationAdded @event)
@@ -2216,7 +2247,8 @@ namespace OrganisationRegistry.Organisation
                 @event.IsMainLocation,
                 @event.LocationTypeId,
                 @event.LocationTypeName,
-                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)));
+                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)),
+                Source.Kbo);
         }
 
         private void Apply(KboRegisteredOfficeOrganisationLocationRemoved @event)
@@ -2234,7 +2266,8 @@ namespace OrganisationRegistry.Organisation
                 @event.IsMainLocation,
                 @event.LocationTypeId,
                 @event.LocationTypeName,
-                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)));
+                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)),
+                Source.Wegwijs);
 
             var oldOrganisationLocation = State.OrganisationLocations.Single(location => location.OrganisationLocationId == @event.OrganisationLocationId);
             State.OrganisationLocations.Remove(oldOrganisationLocation);
@@ -2513,10 +2546,15 @@ namespace OrganisationRegistry.Organisation
             _mainOrganisationBuilding = null;
         }
 
-        private void Apply(MainLocationAssignedToOrganisation @event)
+        private void Apply(KboRegisteredOfficeLocationIsMainLocationChanged @event)
         {
-            _mainOrganisationLocation = State.OrganisationLocations.Single(ob => ob.OrganisationLocationId == @event.OrganisationLocationId);
+            KboState.KboRegisteredOffice!.IsMainLocation = @event.IsMainLocation;
         }
+
+        private void Apply(MainLocationAssignedToOrganisation @event)
+            => _mainOrganisationLocation = KboState.KboRegisteredOffice?.IsMainLocation == true
+                ? KboState.KboRegisteredOffice
+                : State.OrganisationLocations.Single(ob => ob.OrganisationLocationId == @event.OrganisationLocationId);
 
         private void Apply(MainLocationClearedFromOrganisation @event)
         {

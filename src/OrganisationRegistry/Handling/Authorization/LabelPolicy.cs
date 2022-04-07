@@ -9,17 +9,17 @@ namespace OrganisationRegistry.Handling.Authorization
     public class LabelPolicy : ISecurityPolicy
     {
         private readonly string _ovoNumber;
-        private readonly bool _underVlimpersManagement;
+        private readonly bool _isUnderVlimpersManagement;
         private readonly Guid[] _labelTypeIds;
         private readonly IOrganisationRegistryConfiguration _configuration;
 
         public LabelPolicy(string ovoNumber,
-            bool underVlimpersManagement,
+            bool isUnderVlimpersManagement,
             IOrganisationRegistryConfiguration configuration,
             params Guid[] labelTypeIds)
         {
             _ovoNumber = ovoNumber;
-            _underVlimpersManagement = underVlimpersManagement;
+            _isUnderVlimpersManagement = isUnderVlimpersManagement;
             _labelTypeIds = labelTypeIds;
             _configuration = configuration;
         }
@@ -31,13 +31,13 @@ namespace OrganisationRegistry.Handling.Authorization
 
             var isVlimpersLabel = ContainsVlimpersLabel(_labelTypeIds);
 
-            if (_underVlimpersManagement &&
+            if (_isUnderVlimpersManagement &&
                 user.IsInRole(Role.VlimpersBeheerder) && isVlimpersLabel)
                 return AuthorizationResult.Success();
 
             if (user.IsOrganisatieBeheerderFor(_ovoNumber))
             {
-                if (_underVlimpersManagement && isVlimpersLabel)
+                if (_isUnderVlimpersManagement && isVlimpersLabel)
                 {
                     return AuthorizationResult.Fail(new InsufficientRights());
                 }

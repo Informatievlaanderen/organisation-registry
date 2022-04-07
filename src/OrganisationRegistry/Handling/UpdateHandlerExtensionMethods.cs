@@ -49,7 +49,6 @@ namespace OrganisationRegistry.Handling
             => source.WithPolicy(
                 organisation => new KeyPolicy(
                     organisation.State.OvoNumber,
-                    organisation.State.UnderVlimpersManagement,
                     configuration,
                     message.KeyTypeId));
 
@@ -60,7 +59,6 @@ namespace OrganisationRegistry.Handling
             => source.WithPolicy(
                 organisation => new KeyPolicy(
                     organisation.State.OvoNumber,
-                    organisation.State.UnderVlimpersManagement,
                     configuration,
                     message.KeyTypeId));
 
@@ -74,9 +72,7 @@ namespace OrganisationRegistry.Handling
         public static UpdateHandler<Organisation> RequiresBeheerderForOrganisationRegardlessOfVlimpers(
             this UpdateHandler<Organisation> source)
             => source.WithPolicy(
-                organisation => new BeheerderForOrganisationRegardlessOfVlimpersPolicy(
-                    organisation.State.UnderVlimpersManagement,
-                    organisation.State.OvoNumber));
+                organisation => new BeheerderForOrganisationRegardlessOfVlimpersPolicy(organisation.State.OvoNumber));
 
         public static UpdateHandler<Organisation> RequiresAdmin(this UpdateHandler<Organisation> source)
             => source.WithPolicy(_ => new AdminOnlyPolicy());

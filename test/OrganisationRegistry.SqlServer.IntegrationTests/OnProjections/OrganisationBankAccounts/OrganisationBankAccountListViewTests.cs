@@ -12,10 +12,6 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
     [Collection(SqlServerTestsCollection.Name)]
     public class OrganisationBankAccountListViewTests : ListViewTestBase
     {
-        public OrganisationBankAccountListViewTests()
-        {
-        }
-
         [Fact]
         public void BankAccountAdded()
         {
@@ -33,7 +29,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
 
             new OrganisationRegistryContext(ContextOptions).OrganisationBankAccountList.Should().BeEquivalentTo(new List<OrganisationBankAccountListItem>
             {
-                new OrganisationBankAccountListItem(
+                new(
                     organisationBankAccountAdded1.OrganisationBankAccountId,
                     organisationBankAccountAdded1.OrganisationId,
                     organisationBankAccountAdded1.BankAccountNumber,
@@ -43,7 +39,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
                     organisationBankAccountAdded1.ValidFrom,
                     organisationBankAccountAdded1.ValidTo,
                     null),
-                new OrganisationBankAccountListItem(
+                new(
                     organisationBankAccountAdded2.OrganisationBankAccountId,
                     organisationBankAccountAdded2.OrganisationId,
                     organisationBankAccountAdded2.BankAccountNumber,
@@ -73,7 +69,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
 
             new OrganisationRegistryContext(ContextOptions).OrganisationBankAccountList.Should().BeEquivalentTo(new List<OrganisationBankAccountListItem>
             {
-                new OrganisationBankAccountListItem(
+                new(
                     kboOrganisationBankAccountAdded1.OrganisationBankAccountId,
                     kboOrganisationBankAccountAdded1.OrganisationId,
                     kboOrganisationBankAccountAdded1.BankAccountNumber,
@@ -82,8 +78,8 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
                     kboOrganisationBankAccountAdded1.IsBic,
                     kboOrganisationBankAccountAdded1.ValidFrom,
                     kboOrganisationBankAccountAdded1.ValidTo,
-                    Sources.Kbo),
-                new OrganisationBankAccountListItem(
+                    OrganisationRegistry.Organisation.Source.Kbo),
+                new(
                     kboOrganisationBankAccountAdded2.OrganisationBankAccountId,
                     kboOrganisationBankAccountAdded2.OrganisationId,
                     kboOrganisationBankAccountAdded2.BankAccountNumber,
@@ -92,7 +88,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
                     kboOrganisationBankAccountAdded2.IsBic,
                     kboOrganisationBankAccountAdded2.ValidFrom,
                     kboOrganisationBankAccountAdded2.ValidTo,
-                    Sources.Kbo),
+                    OrganisationRegistry.Organisation.Source.Kbo),
             });
         }
 
@@ -124,7 +120,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
 
             new OrganisationRegistryContext(ContextOptions).OrganisationBankAccountList.Should().BeEquivalentTo(new List<OrganisationBankAccountListItem>
             {
-                new OrganisationBankAccountListItem(
+                new(
                     kboOrganisationBankAccountAdded2.OrganisationBankAccountId,
                     kboOrganisationBankAccountAdded2.OrganisationId,
                     kboOrganisationBankAccountAdded2.BankAccountNumber,
@@ -133,7 +129,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
                     kboOrganisationBankAccountAdded2.IsBic,
                     kboOrganisationBankAccountAdded2.ValidFrom,
                     kboOrganisationBankAccountAdded2.ValidTo,
-                    Sources.Kbo),
+                    OrganisationRegistry.Organisation.Source.Kbo),
             });
         }
     }

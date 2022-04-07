@@ -25,7 +25,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public string? Source { get; set; }
 
-        public bool IsEditable => Source != Sources.Kbo;
+        public bool IsEditable => Source != OrganisationRegistry.Organisation.Source.Kbo;
 
         public OrganisationBankAccountListItem() { }
 
@@ -134,7 +134,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 message.Body.IsBic,
                 message.Body.ValidFrom,
                 message.Body.ValidTo,
-                Sources.Kbo);
+                OrganisationRegistry.Organisation.Source.Kbo);
 
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
             await context.OrganisationBankAccountList.AddAsync(organisationBankAccountListItem);

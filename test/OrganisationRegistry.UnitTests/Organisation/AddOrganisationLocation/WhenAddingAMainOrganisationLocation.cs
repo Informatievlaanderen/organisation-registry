@@ -28,6 +28,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
         private DateTime _validTo;
         private DateTime _validFrom;
         private DateTimeProviderStub _dateTimeProviderStub;
+        private string _ovoNumber;
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
@@ -52,9 +53,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
             _validTo = _dateTimeProviderStub.Today.AddDays(2);
 
             _organisationId = Guid.NewGuid();
+            _ovoNumber = "OVO000012345";
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(_organisationId, "Kind en Gezin", _ovoNumber, "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
                 new LocationCreated(_locationId, "12345", "Albert 1 laan 32, 1000 Brussel", "Albert 1 laan 32", "1000", "Brussel", "Belgie")
             };
         }
@@ -68,7 +70,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
                 _isMainLocation,
                 null,
                 new ValidFrom(_validFrom),
-                new ValidTo(_validTo));
+                new ValidTo(_validTo))
+            {
+                User = new UserBuilder().AddRoles(Role.OrganisatieBeheerder).AddOrganisations(_ovoNumber).Build()
+            };
         }
 
         protected override int ExpectedNumberOfEvents => 2;

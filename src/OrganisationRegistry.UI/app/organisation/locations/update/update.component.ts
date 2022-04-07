@@ -12,6 +12,7 @@ import { SearchResult } from 'shared/components/form/form-group-autocomplete';
 import { LocationTypeService } from 'services/locationtypes';
 
 import {
+  OrganisationLocation,
   OrganisationLocationService,
   UpdateOrganisationLocationRequest
 } from 'services/organisationlocations';
@@ -27,8 +28,10 @@ export class OrganisationLocationsUpdateOrganisationLocationComponent implements
   public location: SearchResult;
   private locationId: string;
   private locationTypeId: string;
+  public isKbo: boolean;
 
   private readonly subscriptions: Subscription[] = new Array<Subscription>();
+  private organisationLocation: OrganisationLocation;
 
   constructor(
     private route: ActivatedRoute,
@@ -49,7 +52,7 @@ export class OrganisationLocationsUpdateOrganisationLocationComponent implements
       validFrom: [''],
       validTo: [''],
       source: [''],
-      isEditable: [false]
+      isKbo: [false]
     });
   }
 
@@ -80,6 +83,17 @@ export class OrganisationLocationsUpdateOrganisationLocationComponent implements
   update(value: UpdateOrganisationLocationRequest) {
     this.form.disable();
 
+    if (this.isKbo){
+      //value.locationId = this.locationId;
+      //value.locationValue = this.location
+      //{ ...this.organisationLocation, "isMainLocation": value.isMainLocation }
+      value.locationId = this.organisationLocation.locationId;
+      value.validFrom = this.organisationLocation.validFrom;
+      value.validTo = this.organisationLocation.validTo;
+      value.source = "KBO";
+    }
+    console.log("saving:", value);
+
     this.subscriptions.push(this.organisationLocationService.update(value.organisationId, value)
       .finally(() => this.form.enable())
       .subscribe(
@@ -99,13 +113,19 @@ export class OrganisationLocationsUpdateOrganisationLocationComponent implements
       this.location = new SearchResult(
         organisationLocation.locationId,
         organisationLocation.locationName);
-      // this.locationType = new SearchResult(
-      //   organisationLocation.locationTypeId,
-      //   organisationLocation.locationTypeName);
     }
 
     this.locationTypes = allLocationTypes.map(k => new SelectItem(k.id, k.name));
     this.form.enable();
+
+    this.organisationLocation = organisationLocation;
+    this.isKbo = organisationLocation.isKbo;
+    if (organisationLocation.isKbo){
+      this.form.get('locationId').disable();
+      this.form.get('locationTypeId').disable();
+      this.form.get('validFrom').disable();
+      this.form.get('validTo').disable();
+    }
   }
 
   private handleError(error) {

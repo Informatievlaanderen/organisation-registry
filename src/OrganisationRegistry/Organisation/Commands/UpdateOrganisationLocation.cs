@@ -14,6 +14,7 @@ namespace OrganisationRegistry.Organisation.Commands
         public LocationTypeId LocationTypeId { get; }
         public ValidFrom ValidFrom { get; }
         public ValidTo ValidTo { get; }
+        public Source Source { get; }
 
         public UpdateOrganisationLocation(
             Guid organisationLocationId,
@@ -22,7 +23,8 @@ namespace OrganisationRegistry.Organisation.Commands
             bool isMainLocation,
             LocationTypeId locationTypeId,
             ValidFrom validFrom,
-            ValidTo validTo)
+            ValidTo validTo,
+            Source source)
         {
             Id = organisationId;
 
@@ -32,6 +34,7 @@ namespace OrganisationRegistry.Organisation.Commands
             LocationTypeId = locationTypeId;
             ValidFrom = validFrom;
             ValidTo = validTo;
+            Source = source;
         }
     }
 }

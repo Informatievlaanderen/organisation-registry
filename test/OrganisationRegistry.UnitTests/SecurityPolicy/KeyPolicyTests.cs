@@ -44,7 +44,6 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
             var authorizationResult =
                 new KeyPolicy(
                         _fixture.Create<string>(),
-                        _fixture.Create<bool>(),
                         _configuration,
                         _orafinKeyId)
                     .Check(user);
@@ -64,7 +63,6 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
             var authorizationResult =
                 new KeyPolicy(
                         _fixture.Create<string>(),
-                        _fixture.Create<bool>(),
                         _configuration,
                         _orafinKeyId)
                     .Check(user);
@@ -84,7 +82,6 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
             var authorizationResult =
                 new KeyPolicy(
                         _fixture.Create<string>(),
-                        _fixture.Create<bool>(),
                         _configuration,
                         _vlimpersKeyId)
                     .Check(user);
@@ -105,7 +102,6 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
             var authorizationResult =
                 new KeyPolicy(
                         _fixture.Create<string>(),
-                        _fixture.Create<bool>(),
                         _configuration,
                         _vlimpersKeyId)
                     .Check(user);
@@ -125,7 +121,6 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
             var authorizationResult =
                 new KeyPolicy(
                         ovoNumber,
-                        _fixture.Create<bool>(),
                         _configuration,
                         _fixture.Create<Guid>())
                     .Check(user);
@@ -144,7 +139,6 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
             var authorizationResult =
                 new KeyPolicy(
                         _fixture.Create<string>(),
-                        _fixture.Create<bool>(),
                         _configuration,
                         _fixture.Create<Guid>())
                     .Check(user);
@@ -162,7 +156,6 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
             var authorizationResult =
                 new KeyPolicy(
                         _fixture.Create<string>(),
-                        _fixture.Create<bool>(),
                         _configuration,
                         _fixture.Create<Guid>())
                     .Check(user);

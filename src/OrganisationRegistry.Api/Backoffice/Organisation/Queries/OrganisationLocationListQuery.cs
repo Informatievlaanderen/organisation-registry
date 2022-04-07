@@ -4,9 +4,12 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using Handling.Authorization;
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
+    using OrganisationRegistry.Infrastructure.AppSpecific;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using SqlServer.Infrastructure;
     using SqlServer.Organisation;
 
@@ -30,7 +33,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
             string locationTypeName,
             DateTime? validFrom,
             DateTime? validTo,
-            bool isEditable)
+            string ovoNumber,
+            IUser user)
         {
             OrganisationLocationId = organisationLocationId;
             IsMainLocation = isMainLocation;
@@ -40,14 +44,19 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
             ValidTo = validTo;
 
             IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
-            IsEditable = isEditable;
+            IsEditable =
+                new BeheerderForOrganisationRegardlessOfVlimpersPolicy(ovoNumber)
+                    .Check(user)
+                    .IsSuccessful;
         }
     }
 
     public class OrganisationLocationListQuery : Query<OrganisationLocationListItem, OrganisationLocationListItemFilter, OrganisationLocationListQueryResult>
     {
         private readonly OrganisationRegistryContext _context;
+        private readonly IMemoryCaches _memoryCaches;
         private readonly Guid _organisationId;
+        private readonly IUser _user;
 
         protected override ISorting Sorting => new OrganisationLocationListSorting();
 
@@ -59,12 +68,15 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
                 x.LocationTypeName,
                 x.ValidFrom,
                 x.ValidTo,
-                x.IsEditable);
+                _memoryCaches.OvoNumbers[x.OrganisationId],
+                _user);
 
-        public OrganisationLocationListQuery(OrganisationRegistryContext context, Guid organisationId)
+        public OrganisationLocationListQuery(OrganisationRegistryContext context, IMemoryCaches memoryCaches, Guid organisationId, IUser user)
         {
             _context = context;
+            _memoryCaches = memoryCaches;
             _organisationId = organisationId;
+            _user = user;
         }
 
         protected override IQueryable<OrganisationLocationListItem> Filter(FilteringHeader<OrganisationLocationListItemFilter> filtering)
@@ -96,7 +108,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
             };
 
             public SortingHeader DefaultSortingHeader { get; } =
-                new SortingHeader(nameof(OrganisationLocationListItem.LocationName), SortOrder.Ascending);
+                new(nameof(OrganisationLocationListItem.LocationName), SortOrder.Ascending);
         }
     }
 

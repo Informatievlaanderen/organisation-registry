@@ -21,9 +21,14 @@ namespace OrganisationRegistry.Organisation
                 .Any();
         }
 
-        public bool OrganisationAlreadyHasAMainLocationInTheSamePeriod(OrganisationLocation organisationLocation)
+        public bool OrganisationAlreadyHasAMainLocationInTheSamePeriod(OrganisationLocation organisationLocation, OrganisationLocation? maybeKboRegisteredOffice)
         {
-            return this
+            var locationsToCheck = new OrganisationLocations(this);
+
+            if (maybeKboRegisteredOffice is { } kboRegisteredOffice)
+                locationsToCheck.Add(kboRegisteredOffice);
+
+            return locationsToCheck
                 .Except(organisationLocation.OrganisationLocationId)
                 .OnlyMainLocations()
                 .OverlappingWith(organisationLocation.Validity)

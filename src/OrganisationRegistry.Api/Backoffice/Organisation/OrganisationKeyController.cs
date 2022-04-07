@@ -48,7 +48,6 @@
             var user = await securityService.GetUser(User);
             Func<Guid, bool> isAuthorizedForKeyType = keyTypeId => new KeyPolicy(
                     memoryCaches.OvoNumbers[organisationId],
-                    memoryCaches.UnderVlimpersManagement.Contains(organisationId),
                     configuration,
                     keyTypeId)
                 .Check(user)

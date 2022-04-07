@@ -11,8 +11,9 @@
           [label]="'Locatie'"
           [name]="'Locatie'"
           [control]="form.get('locationId')"
-          [initialValue]="location">
-        </ww-location-autocomplete>      
+          [initialValue]="location"
+        >
+        </ww-location-autocomplete>
 
         <ww-form-group-toggle
           [id]="'isMainLocation'"
@@ -28,15 +29,7 @@
           [control]="form.get('locationTypeId')"
           [placeholder]="'Selecteer locatietype...'"
           [values]="locationTypes">
-        </ww-form-group-select>            
-
-        <!--<ww-location-type-autocomplete
-          [id]="'locationTypeId'"
-          [label]="'Locatietype'"
-          [name]="'Locatietype'"
-          [control]="form.get('locationTypeId')"
-          [initialValue]="locationType">
-        </ww-location-type-autocomplete>-->
+        </ww-form-group-select>
 
         <ww-form-group-datepicker-range
           [fromId]="'validFrom'"
@@ -67,6 +60,66 @@
           </div>
         </div>
       </div>
+<!--      <div *ngIf="isKbo === true" class="form__group">-->
+<!--        <input type="hidden" [id]="'locationId'" [value]="form.get('locationId')" />-->
+<!--&lt;!&ndash;        <ww-location-autocomplete&ndash;&gt;-->
+<!--&lt;!&ndash;          [id]="'locationIdDisplay'"&ndash;&gt;-->
+<!--&lt;!&ndash;          [label]="'Locatie'"&ndash;&gt;-->
+<!--&lt;!&ndash;          [name]="'Locatie'"&ndash;&gt;-->
+<!--&lt;!&ndash;          [control]="form.get('locationId')"&ndash;&gt;-->
+<!--&lt;!&ndash;          [initialValue]="location"&ndash;&gt;-->
+<!--&lt;!&ndash;        >&ndash;&gt;-->
+<!--&lt;!&ndash;        </ww-location-autocomplete>&ndash;&gt;-->
+
+<!--        <ww-form-group-toggle-->
+<!--          [id]="'isMainLocation'"-->
+<!--          [label]="'Hoofdlocatie'"-->
+<!--          [control]="form.get('isMainLocation')"-->
+<!--          [name]="'Hoofdlocatie'">-->
+<!--        </ww-form-group-toggle>-->
+
+<!--&lt;!&ndash;        <ww-form-group-select&ndash;&gt;-->
+<!--&lt;!&ndash;          [id]="'locationTypeId'"&ndash;&gt;-->
+<!--&lt;!&ndash;          [name]="'Locatietype'"&ndash;&gt;-->
+<!--&lt;!&ndash;          [label]="'Locatietype'"&ndash;&gt;-->
+<!--&lt;!&ndash;          [control]="form.get('locationTypeId')"&ndash;&gt;-->
+<!--&lt;!&ndash;          [placeholder]="'Selecteer locatietype...'"&ndash;&gt;-->
+<!--&lt;!&ndash;          [values]="locationTypes">&ndash;&gt;-->
+<!--&lt;!&ndash;        </ww-form-group-select>&ndash;&gt;-->
+<!--        <input type="hidden" [id]="'locationTypeId'" [value]="form.get('locationTypeId')" />-->
+
+<!--&lt;!&ndash;        <ww-form-group-datepicker-range&ndash;&gt;-->
+<!--&lt;!&ndash;          [fromId]="'validFrom'"&ndash;&gt;-->
+<!--&lt;!&ndash;          [fromName]="'Geldig vanaf'"&ndash;&gt;-->
+<!--&lt;!&ndash;          [fromLabel]="'Geldig vanaf'"&ndash;&gt;-->
+<!--&lt;!&ndash;          [fromPlaceholder]="'Geldig vanaf'"&ndash;&gt;-->
+<!--&lt;!&ndash;          [fromControl]="form.get('validFrom')"&ndash;&gt;-->
+<!--&lt;!&ndash;          [toId]="'validTo'"&ndash;&gt;-->
+<!--&lt;!&ndash;          [toName]="'Geldig tot'"&ndash;&gt;-->
+<!--&lt;!&ndash;          [toLabel]="'Geldig tot'"&ndash;&gt;-->
+<!--&lt;!&ndash;          [toPlaceholder]="'Geldig tot'"&ndash;&gt;-->
+<!--&lt;!&ndash;          [toControl]="form.get('validTo')">&ndash;&gt;-->
+<!--&lt;!&ndash;        </ww-form-group-datepicker-range>&ndash;&gt;-->
+
+<!--        <input type="hidden" [id]="'validFrom'" [value]="form.get('validFrom')" />-->
+<!--        <input type="hidden" [id]="'validTo'" [value]="form.get('validTo')" />-->
+
+<!--        <div class="form__row">-->
+<!--          <div class="form__buttons">-->
+<!--            <div class="form__buttons__left">-->
+<!--              <a [routerLink]="['./../..']" class="cancel__button"><i class="vi vi-cross vi-u-link">Annuleer</i></a>-->
+<!--            </div>-->
+<!--            <div class="form__buttons__right">-->
+<!--              <button class="button form__button"-->
+<!--                      type="submit"-->
+<!--                      [ngClass]="{'button&#45;&#45;disabled': !isFormValid, 'button&#45;&#45;loading': form.disabled}"-->
+<!--                      [disabled]="!isFormValid || form.disabled">-->
+<!--                <span>Wijzigingen opslaan</span>-->
+<!--              </button>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
     </form>
   </div>
 </div>

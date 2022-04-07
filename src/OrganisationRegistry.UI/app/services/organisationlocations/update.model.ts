@@ -7,7 +7,8 @@ export class UpdateOrganisationLocationRequest {
     public locationTypeId: string,
     public locationTypeValue: string,
     public validFrom: Date,
-    public validTo: Date
+    public validTo: Date,
+    public source: string
   ) {
   }
 }

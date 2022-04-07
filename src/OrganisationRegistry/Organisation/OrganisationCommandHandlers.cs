@@ -655,6 +655,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(AddOrganisationLocation message) =>
             UpdateHandler<Organisation>.For(message, Session)
+                .RequiresBeheerderForOrganisationRegardlessOfVlimpers()
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -671,11 +672,13 @@ namespace OrganisationRegistry.Organisation
                         message.IsMainLocation,
                         locationType,
                         new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                        Source.Wegwijs,
                         _dateTimeProvider);
                 });
 
         public Task Handle(UpdateOrganisationLocation message) =>
             UpdateHandler<Organisation>.For(message, Session)
+                .RequiresBeheerderForOrganisationRegardlessOfVlimpers()
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -684,14 +687,13 @@ namespace OrganisationRegistry.Organisation
                     var location = session.Get<Location>(message.LocationId);
                     var locationType = message.LocationTypeId != null ? session.Get<LocationType>(message.LocationTypeId) : null;
 
-                    KboV2Guards.ThrowIfRegisteredOffice(_organisationRegistryConfiguration, locationType);
-
                     organisation.UpdateLocation(
                         message.OrganisationLocationId,
                         location,
                         message.IsMainLocation,
                         locationType,
                         new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                        message.Source,
                         _dateTimeProvider);
                 });
 
