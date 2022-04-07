@@ -1,3 +1,16 @@
+# [1.154.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.153.0...v1.154.0) (2022-04-07)
+
+
+### Bug Fixes
+
+* or-921 remove lock to allow multiple hosted services to run ([9dcc8f0](https://github.com/informatievlaanderen/organisation-registry/commit/9dcc8f070e37a6b341a63edf06727ddb95391860))
+
+
+### Features
+
+* or-921 log start of sync using Information ([a5a7e5c](https://github.com/informatievlaanderen/organisation-registry/commit/a5a7e5c2563ec16907aaf001bf432d704f52b829))
+* or-921 rename folder for HostedServices ([fbb3002](https://github.com/informatievlaanderen/organisation-registry/commit/fbb3002fce3996350ab88f052f1a0fa4a2af1d76))
+
 # [1.153.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.152.1...v1.153.0) (2022-04-06)
 
 
