@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Api.ScheduledCommands
+﻿namespace OrganisationRegistry.Api.HostedServices
 {
     using System;
     using System.Threading;

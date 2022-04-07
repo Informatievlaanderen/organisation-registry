@@ -1,20 +1,20 @@
-﻿namespace OrganisationRegistry.Api.ScheduledCommands
+﻿namespace OrganisationRegistry.Api.HostedServices
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
     using Body;
     using Body.Commands;
     using FormalFramework;
-    using Microsoft.EntityFrameworkCore;
+    using OrganisationRegistry.Infrastructure.Commands;
     using Organisation;
     using Organisation.Commands;
-    using OrganisationRegistry.Infrastructure.Commands;
-    using SqlServer.Body.ScheduledActions.Organisation;
-    using SqlServer.Organisation;
-    using SqlServer.Organisation.ScheduledActions.FormalFramework;
-    using SqlServer.Organisation.ScheduledActions.Parent;
+    using OrganisationRegistry.SqlServer.Body.ScheduledActions.Organisation;
+    using OrganisationRegistry.SqlServer.Organisation;
+    using OrganisationRegistry.SqlServer.Organisation.ScheduledActions.FormalFramework;
+    using OrganisationRegistry.SqlServer.Organisation.ScheduledActions.Parent;
     using ActiveBodyMandateAssignment =
         SqlServer.Body.ScheduledActions.PeopleAssignedToBodyMandates.ActivePeopleAssignedToBodyMandateListItem;
     using FutureBodyMandateAssignment =

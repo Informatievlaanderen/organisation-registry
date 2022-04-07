@@ -1,10 +1,10 @@
-﻿namespace OrganisationRegistry.Api.ScheduledCommands;
+﻿namespace OrganisationRegistry.Api.HostedServices;
 
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Backoffice.Admin.Task;
 using Microsoft.Extensions.Logging;
+using Backoffice.Admin.Task;
 using OrganisationRegistry.Configuration;
 using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Commands;

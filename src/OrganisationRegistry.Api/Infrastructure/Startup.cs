@@ -11,6 +11,7 @@ namespace OrganisationRegistry.Api.Infrastructure
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Configuration;
+    using HostedServices;
     using Magda;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Builder;
@@ -30,7 +31,6 @@ namespace OrganisationRegistry.Api.Infrastructure
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
     using OrganisationRegistry.Security;
-    using ScheduledCommands;
     using Search;
     using Security;
     using SqlServer.Configuration;

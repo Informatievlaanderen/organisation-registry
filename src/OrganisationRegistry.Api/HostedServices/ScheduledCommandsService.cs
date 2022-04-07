@@ -1,10 +1,9 @@
-﻿namespace OrganisationRegistry.Api.ScheduledCommands
+﻿namespace OrganisationRegistry.Api.HostedServices
 {
     using System;
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
-    using Configuration;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure;
