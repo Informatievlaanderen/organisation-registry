@@ -11,7 +11,6 @@
         private readonly ILogger _logger;
         private Task? _executingTask;
         private readonly CancellationTokenSource _stoppingCts = new();
-        private static int _runCounter;
 
         protected BackgroundService(ILogger logger)
         {
@@ -50,9 +49,6 @@
 
         private async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            if (Interlocked.CompareExchange(ref _runCounter, 1, 0) != 0)
-                return;
-
             try
             {
                 await Process(cancellationToken).ConfigureAwait(false);
@@ -60,10 +56,6 @@
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occured while processing scheduled commands");
-            }
-            finally
-            {
-                Interlocked.Decrement(ref _runCounter);
             }
         }
 
