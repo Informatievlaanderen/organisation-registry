@@ -1,3 +1,11 @@
+# [1.155.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.154.0...v1.155.0) (2022-04-07)
+
+
+### Features
+
+* or-895 cleanup ([a5e23d0](https://github.com/informatievlaanderen/organisation-registry/commit/a5e23d00fa66bbb7dec61b8841c7355350cc5d3c))
+* or-895 kbolocation can be set as mainlocation ([5214513](https://github.com/informatievlaanderen/organisation-registry/commit/5214513c86bdda4fc3876c0fc9d105c8f0bfa0bb))
+
 # [1.154.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.153.0...v1.154.0) (2022-04-07)
 
 
