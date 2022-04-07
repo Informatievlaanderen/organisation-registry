@@ -2,7 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Api.ScheduledCommands;
+    using Api.HostedServices;
     using Infrastructure;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
