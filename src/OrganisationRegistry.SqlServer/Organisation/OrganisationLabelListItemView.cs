@@ -26,7 +26,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public string? Source { get; set; }
 
-        public bool IsEditable => Source != Sources.Kbo;
+        public bool IsEditable => Source != OrganisationRegistry.Organisation.Source.Kbo;
     }
 
     public class OrganisationLabelListConfiguration : EntityMappingConfiguration<OrganisationLabelListItem>
@@ -131,7 +131,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ValidTo = message.Body.ValidTo
             };
 
-            organisationLabelListItem.Source = Sources.Kbo;
+            organisationLabelListItem.Source = OrganisationRegistry.Organisation.Source.Kbo;
 
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
             await context.OrganisationLabelList.AddAsync(organisationLabelListItem);

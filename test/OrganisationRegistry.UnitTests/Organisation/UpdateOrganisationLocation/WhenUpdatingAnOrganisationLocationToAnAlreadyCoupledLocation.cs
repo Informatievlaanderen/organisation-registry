@@ -26,6 +26,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
         private Guid _organisationId;
         private Guid _locationAId;
         private Guid _locationBId;
+        private string _ovoNumber;
 
         protected override OrganisationCommandHandlers BuildHandler()
         {
@@ -47,9 +48,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
             _organisationLocationAdded = new OrganisationLocationAdded(_organisationId, Guid.NewGuid(), _locationAId, "Gebouw A", false, null, null, null, null) { Version = 2 };
             _anotherOrganisationLocationAdded = new OrganisationLocationAdded(_organisationId, Guid.NewGuid(), _locationBId, "Gebouw B", false, null, null, null, null) { Version = 3 };
 
+            _ovoNumber = "OVO000012345";
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(_organisationId, "Kind en Gezin", _ovoNumber, "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
                 new LocationCreated(_locationAId, "12345", "Albert 1 laan 32, 1000 Brussel", "Albert 1 laan 32", "1000", "Brussel", "Belgie"),
                 new LocationCreated(_locationBId, "12346", "Albert 1 laan 34, 1000 Brussel", "Albert 1 laan 32", "1000", "Brussel", "Belgie"),
                 _organisationLocationAdded,
@@ -66,7 +68,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
                 false,
                 null,
                 new ValidFrom(),
-                new ValidTo());
+                new ValidTo(),
+                Source.Wegwijs)
+            {
+                User = new UserBuilder().AddRoles(Role.OrganisatieBeheerder).AddOrganisations(_ovoNumber).Build()
+            };;
         }
 
         protected override int ExpectedNumberOfEvents => 0;

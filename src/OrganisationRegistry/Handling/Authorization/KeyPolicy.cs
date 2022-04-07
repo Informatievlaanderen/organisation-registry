@@ -11,16 +11,13 @@ namespace OrganisationRegistry.Handling.Authorization
         private readonly IOrganisationRegistryConfiguration _configuration;
         private readonly Guid[] _keyTypeIds;
         private readonly string _ovoNumber;
-        private readonly bool _underVlimpersManagement;
 
         public KeyPolicy(
             string ovoNumber,
-            bool underVlimpersManagement,
             IOrganisationRegistryConfiguration configuration,
             params Guid[] keyTypeIds)
         {
             _ovoNumber = ovoNumber;
-            _underVlimpersManagement = underVlimpersManagement;
             _keyTypeIds = keyTypeIds;
             _configuration = configuration;
         }

@@ -29,7 +29,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public DateTime? ValidTo { get; set; }
         public string? Source { get; set; }
 
-        public bool IsEditable => Source != Sources.Kbo;
+        public bool IsKbo
+            => Source == OrganisationRegistry.Organisation.Source.Kbo;
 
         public OrganisationLocationListItem() { }
 
@@ -90,6 +91,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         Projection<OrganisationLocationListView>,
         IEventHandler<LocationUpdated>,
         IEventHandler<OrganisationLocationAdded>,
+        IEventHandler<KboRegisteredOfficeLocationIsMainLocationChanged>,
         IEventHandler<KboRegisteredOfficeOrganisationLocationAdded>,
         IEventHandler<KboRegisteredOfficeOrganisationLocationRemoved>,
         IEventHandler<OrganisationCouplingWithKboCancelled>,
@@ -161,6 +163,16 @@ namespace OrganisationRegistry.SqlServer.Organisation
             await context.SaveChangesAsync();
         }
 
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeLocationIsMainLocationChanged> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationLocationListItem = context.OrganisationLocationList.Single(b => b.OrganisationLocationId == message.Body.OrganisationLocationId);
+
+            organisationLocationListItem.IsMainLocation = message.Body.IsMainLocation;
+
+            await context.SaveChangesAsync();
+        }
+
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboRegisteredOfficeOrganisationLocationAdded> message)
         {
             var organisationLocationListItem = new OrganisationLocationListItem(
@@ -174,7 +186,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 message.Body.ValidFrom,
                 message.Body.ValidTo);
 
-            organisationLocationListItem.Source = Sources.Kbo;
+            organisationLocationListItem.Source = OrganisationRegistry.Organisation.Source.Kbo;
 
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
             await context.OrganisationLocationList.AddAsync(organisationLocationListItem);

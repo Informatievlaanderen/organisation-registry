@@ -5,14 +5,10 @@ namespace OrganisationRegistry.Handling.Authorization
 
     public class BeheerderForOrganisationRegardlessOfVlimpersPolicy : ISecurityPolicy
     {
-        private readonly bool _isUnderVlimpersManagement;
         private readonly string _ovoNumber;
 
-        public BeheerderForOrganisationRegardlessOfVlimpersPolicy(
-            bool isUnderVlimpersManagement,
-            string ovoNumber)
+        public BeheerderForOrganisationRegardlessOfVlimpersPolicy(string ovoNumber)
         {
-            _isUnderVlimpersManagement = isUnderVlimpersManagement;
             _ovoNumber = ovoNumber;
         }
 

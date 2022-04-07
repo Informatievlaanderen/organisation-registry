@@ -5,7 +5,8 @@ export class OrganisationLocation {
       public locationId: string,
       public locationName: string,
       public validFrom: Date,
-      public validTo: Date
+      public validTo: Date,
+      public source: string
     ) {
 
     }

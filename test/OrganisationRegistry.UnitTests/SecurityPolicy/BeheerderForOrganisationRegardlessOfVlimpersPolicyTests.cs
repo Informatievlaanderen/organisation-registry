@@ -27,9 +27,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
                 .Build();
 
             var authorizationResult =
-                new BeheerderForOrganisationRegardlessOfVlimpersPolicy(
-                        isUnderVlimpersManagement: false,
-                        ovoNumber: ovoNumbers[_fixture.Create<int>() % ovoNumbers.Length])
+                new BeheerderForOrganisationRegardlessOfVlimpersPolicy(ovoNumber: ovoNumbers[_fixture.Create<int>() % ovoNumbers.Length])
                     .Check(user);
 
             authorizationResult.Should().Be(AuthorizationResult.Success());
@@ -45,9 +43,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
                 .Build();
 
             var authorizationResult =
-                new BeheerderForOrganisationRegardlessOfVlimpersPolicy(
-                        isUnderVlimpersManagement: true,
-                        ovoNumber: ovoNumbers[_fixture.Create<int>() % ovoNumbers.Length])
+                new BeheerderForOrganisationRegardlessOfVlimpersPolicy(ovoNumber: ovoNumbers[_fixture.Create<int>() % ovoNumbers.Length])
                     .Check(user);
 
             authorizationResult.Should().Be(AuthorizationResult.Success());
@@ -63,9 +59,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
                 .Build();
 
             var authorizationResult =
-                new BeheerderForOrganisationRegardlessOfVlimpersPolicy(
-                        isUnderVlimpersManagement: _fixture.Create<bool>(),
-                        ovoNumber: _fixture.Create<string>())
+                new BeheerderForOrganisationRegardlessOfVlimpersPolicy(ovoNumber: _fixture.Create<string>())
                     .Check(user);
 
             authorizationResult.Should().Be(AuthorizationResult.Success());
@@ -82,9 +76,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
                 .Build();
 
             var authorizationResult =
-                new BeheerderForOrganisationRegardlessOfVlimpersPolicy(
-                        isUnderVlimpersManagement: _fixture.Create<bool>(),
-                        ovoNumber: ovoNumbers[_fixture.Create<int>() % ovoNumbers.Length])
+                new BeheerderForOrganisationRegardlessOfVlimpersPolicy(ovoNumber: ovoNumbers[_fixture.Create<int>() % ovoNumbers.Length])
                     .Check(user);
 
             authorizationResult.ShouldFailWith<InsufficientRights>();

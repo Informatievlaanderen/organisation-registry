@@ -32,7 +32,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public string? Source { get; set; }
 
-        public bool IsEditable => Source != Sources.Kbo;
+        public bool IsEditable => Source != OrganisationRegistry.Organisation.Source.Kbo;
     }
 
     public class OrganisationOrganisationClassificationListConfiguration : EntityMappingConfiguration<OrganisationOrganisationClassificationListItem>
@@ -163,7 +163,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 ValidTo = message.Body.ValidTo
             };
 
-            organisationOrganisationClassificationListItem.Source = Sources.Kbo;
+            organisationOrganisationClassificationListItem.Source = OrganisationRegistry.Organisation.Source.Kbo;
 
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
             await context.OrganisationOrganisationClassificationList.AddAsync(organisationOrganisationClassificationListItem);

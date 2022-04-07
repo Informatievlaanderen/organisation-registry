@@ -27,6 +27,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Requests
         public Guid? LocationTypeId { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
+        public string? Source { get; set; }
     }
 
     public class UpdateOrganisationLocationInternalRequestValidator : AbstractValidator<UpdateOrganisationLocationInternalRequest>
@@ -67,7 +68,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Requests
                 message.Body.IsMainLocation,
                 message.Body.LocationTypeId.HasValue ? new LocationTypeId(message.Body.LocationTypeId.Value) : null,
                 new ValidFrom(message.Body.ValidFrom),
-                new ValidTo(message.Body.ValidTo));
+                new ValidTo(message.Body.ValidTo),
+                new Source(message.Body.Source));
         }
     }
 }

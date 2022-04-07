@@ -9,10 +9,11 @@ namespace OrganisationRegistry.Organisation
         public Guid OrganisationId { get; }
         public Guid LocationId { get; }
         public string FormattedAddress { get; }
-        public bool IsMainLocation { get; }
+        public bool IsMainLocation { get; set; }
         public Guid? LocationTypeId { get; }
         public string LocationTypeName { get; }
         public Period Validity { get; }
+        public Source Source { get; }
 
         public OrganisationLocation(
             Guid organisationLocationId,
@@ -22,7 +23,8 @@ namespace OrganisationRegistry.Organisation
             bool isMainLocation,
             Guid? locationTypeId,
             string locationTypeName,
-            Period validity)
+            Period validity,
+            Source source)
         {
             OrganisationLocationId = organisationLocationId;
             OrganisationId = organisationId;
@@ -31,18 +33,15 @@ namespace OrganisationRegistry.Organisation
             LocationTypeId = locationTypeId;
             LocationTypeName = locationTypeName;
             Validity = validity;
+            Source = source;
             FormattedAddress = formattedAddress;
         }
 
         public bool IsValid(DateTime date)
-        {
-            return Validity.OverlapsWith(new Period(new ValidFrom(date), new ValidTo(date)));
-        }
+            => Validity.OverlapsWith(new Period(new ValidFrom(date), new ValidTo(date)));
 
         protected bool Equals(OrganisationLocation other)
-        {
-            return OrganisationLocationId.Equals(other.OrganisationLocationId);
-        }
+            => OrganisationLocationId.Equals(other.OrganisationLocationId);
 
         public override bool Equals(object obj)
         {
@@ -53,13 +52,10 @@ namespace OrganisationRegistry.Organisation
         }
 
         public override int GetHashCode()
-        {
-            return OrganisationLocationId.GetHashCode();
-        }
+            => OrganisationLocationId.GetHashCode();
 
         public OrganisationLocation WithValidity(Period period)
-        {
-            return new OrganisationLocation(
+            => new(
                 OrganisationLocationId,
                 OrganisationId,
                 LocationId,
@@ -67,17 +63,13 @@ namespace OrganisationRegistry.Organisation
                 IsMainLocation,
                 LocationTypeId,
                 LocationTypeName,
-                period);
-        }
+                period,
+                Source);
 
         public OrganisationLocation WithValidFrom(ValidFrom validFrom)
-        {
-            return WithValidity(new Period(validFrom, Validity.End));
-        }
+            => WithValidity(new Period(validFrom, Validity.End));
 
         public OrganisationLocation WithValidTo(ValidTo validTo)
-        {
-            return WithValidity(new Period(Validity.Start, validTo));
-        }
+            => WithValidity(new Period(Validity.Start, validTo));
     }
 }

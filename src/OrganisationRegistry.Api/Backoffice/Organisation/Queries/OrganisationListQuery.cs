@@ -5,7 +5,6 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
     using System.ComponentModel;
     using System.Linq;
     using System.Linq.Expressions;
-    using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Infrastructure;
     using Infrastructure.Search;
