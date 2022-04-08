@@ -1977,14 +1977,10 @@ namespace OrganisationRegistry.Organisation
         }
 
         private void Apply(OrganisationBecameActive @event)
-        {
-            State.IsActive = true;
-        }
+            => State.IsActive = true;
 
         private void Apply(OrganisationBecameInactive @event)
-        {
-            State.IsActive = false;
-        }
+            => State.IsActive = false;
 
         private void Apply(OrganisationInfoUpdated @event)
         {
@@ -1999,90 +1995,65 @@ namespace OrganisationRegistry.Organisation
         }
 
         private void Apply(OrganisationNameUpdated @event)
-        {
-            State.Name = @event.Name;
-        }
+            => State.Name = @event.Name;
 
         private void Apply(OrganisationShortNameUpdated @event)
-        {
-            State.ShortName = @event.ShortName;
-        }
+            => State.ShortName = @event.ShortName;
 
         private void Apply(OrganisationDescriptionUpdated @event)
-        {
-            State.Description = @event.Description;
-        }
+            => State.Description = @event.Description;
 
         private void Apply(OrganisationArticleUpdated @event)
-        {
-            State.Article = Article.Parse(@event.Article);
-        }
+            => State.Article = Article.Parse(@event.Article);
 
         private void Apply(OrganisationShowOnVlaamseOverheidSitesUpdated @event)
-        {
-            State.ShowOnVlaamseOverheidSites = @event.ShowOnVlaamseOverheidSites;
-        }
+            => State.ShowOnVlaamseOverheidSites = @event.ShowOnVlaamseOverheidSites;
 
         private void Apply(OrganisationPurposesUpdated @event)
-        {
-            _purposes = @event.Purposes;
-        }
+            => _purposes = @event.Purposes;
 
         private void Apply(OrganisationValidityUpdated @event)
-        {
-            State.Validity = new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo));
-        }
+            => State.Validity = new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo));
 
         private void Apply(OrganisationOperationalValidityUpdated @event)
-        {
-            State.OperationalValidity = new Period(new ValidFrom(@event.OperationalValidFrom), new ValidTo(@event.OperationalValidTo));
-        }
+            => State.OperationalValidity = new Period(new ValidFrom(@event.OperationalValidFrom), new ValidTo(@event.OperationalValidTo));
 
         private void Apply(OrganisationKeyAdded @event)
-        {
-            State.OrganisationKeys.Add(new OrganisationKey(
+            => State.OrganisationKeys.Add(new OrganisationKey(
                 @event.OrganisationKeyId,
                 @event.OrganisationId,
                 @event.KeyTypeId,
                 @event.KeyTypeName,
                 @event.Value,
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
-        }
 
         private void Apply(OrganisationParentAdded @event)
-        {
-            State.OrganisationParents.Add(new OrganisationParent(
+            => State.OrganisationParents.Add(new OrganisationParent(
                 @event.OrganisationOrganisationParentId,
                 @event.ParentOrganisationId,
                 @event.ParentOrganisationName,
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
-        }
 
         private void Apply(OrganisationFormalFrameworkAdded @event)
-        {
-            State.OrganisationFormalFrameworks.Add(new OrganisationFormalFramework(
+            => State.OrganisationFormalFrameworks.Add(new OrganisationFormalFramework(
                 @event.OrganisationFormalFrameworkId,
                 @event.FormalFrameworkId,
                 @event.FormalFrameworkName,
                 @event.ParentOrganisationId,
                 @event.ParentOrganisationName,
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
-        }
 
         private void Apply(OrganisationContactAdded @event)
-        {
-            State.OrganisationContacts.Add(new OrganisationContact(
+            => State.OrganisationContacts.Add(new OrganisationContact(
                 @event.OrganisationContactId,
                 @event.OrganisationId,
                 @event.ContactTypeId,
                 @event.ContactTypeName,
                 @event.Value,
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
-        }
 
         private void Apply(OrganisationFunctionAdded @event)
-        {
-            State.OrganisationFunctionTypes.Add(new OrganisationFunction(
+            => State.OrganisationFunctionTypes.Add(new OrganisationFunction(
                 @event.OrganisationFunctionId,
                 @event.OrganisationId,
                 @event.FunctionId,
@@ -2091,11 +2062,9 @@ namespace OrganisationRegistry.Organisation
                 @event.PersonFullName,
                 @event.Contacts,
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
-        }
 
         private void Apply(OrganisationRelationAdded @event)
-        {
-            State.OrganisationRelations.Add(new OrganisationRelation(
+            => State.OrganisationRelations.Add(new OrganisationRelation(
                 @event.OrganisationRelationId,
                 @event.OrganisationId,
                 @event.OrganisationName,
@@ -2105,11 +2074,9 @@ namespace OrganisationRegistry.Organisation
                 @event.RelatedOrganisationId,
                 @event.RelatedOrganisationName,
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
-        }
 
         private void Apply(OrganisationCapacityAdded @event)
-        {
-            State.OrganisationCapacities.Add(new OrganisationCapacity(
+            => State.OrganisationCapacities.Add(new OrganisationCapacity(
                 @event.OrganisationCapacityId,
                 @event.OrganisationId,
                 @event.CapacityId,
@@ -2123,11 +2090,9 @@ namespace OrganisationRegistry.Organisation
                 @event.Contacts,
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)),
                 false));
-        }
 
         private void Apply(OrganisationOrganisationClassificationAdded @event)
-        {
-            State.OrganisationOrganisationClassifications.Add(new OrganisationOrganisationClassification(
+            => State.OrganisationOrganisationClassifications.Add(new OrganisationOrganisationClassification(
                 @event.OrganisationOrganisationClassificationId,
                 @event.OrganisationId,
                 @event.OrganisationClassificationTypeId,
@@ -2135,11 +2100,9 @@ namespace OrganisationRegistry.Organisation
                 @event.OrganisationClassificationId,
                 @event.OrganisationClassificationName,
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
-        }
 
         private void Apply(KboLegalFormOrganisationOrganisationClassificationAdded @event)
-        {
-            KboState.KboLegalFormOrganisationClassification = new OrganisationOrganisationClassification(
+            => KboState.KboLegalFormOrganisationClassification = new OrganisationOrganisationClassification(
                 @event.OrganisationOrganisationClassificationId,
                 @event.OrganisationId,
                 @event.OrganisationClassificationTypeId,
@@ -2147,65 +2110,50 @@ namespace OrganisationRegistry.Organisation
                 @event.OrganisationClassificationId,
                 @event.OrganisationClassificationName,
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)));
-        }
 
         private void Apply(KboLegalFormOrganisationOrganisationClassificationRemoved @event)
-        {
-            KboState.KboLegalFormOrganisationClassification = null;
-        }
+            => KboState.KboLegalFormOrganisationClassification = null;
 
         private void Apply(OrganisationLabelAdded @event)
-        {
-            State.OrganisationLabels.Add(new OrganisationLabel(
+            => State.OrganisationLabels.Add(new OrganisationLabel(
                 @event.OrganisationLabelId,
                 @event.OrganisationId,
                 @event.LabelTypeId,
                 @event.LabelTypeName,
                 @event.Value,
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
-        }
 
         private void Apply(KboFormalNameLabelAdded @event)
-        {
-            KboState.KboFormalNameLabel = new OrganisationLabel(
+            => KboState.KboFormalNameLabel = new OrganisationLabel(
                 @event.OrganisationLabelId,
                 @event.OrganisationId,
                 @event.LabelTypeId,
                 @event.LabelTypeName,
                 @event.Value,
                 new Period(
-                new ValidFrom(@event.ValidFrom),
-                new ValidTo(@event.ValidTo)));
-        }
+                    new ValidFrom(@event.ValidFrom),
+                    new ValidTo(@event.ValidTo)));
 
         private void Apply(KboFormalNameLabelRemoved @event)
-        {
-            KboState.KboFormalNameLabel = null;
-        }
+            => KboState.KboFormalNameLabel = null;
 
         private void Apply(OrganisationBuildingAdded @event)
-        {
-            var organisationBuilding = new OrganisationBuilding(
+            => State.OrganisationBuildings.Add(new OrganisationBuilding(
                 @event.OrganisationBuildingId,
                 @event.OrganisationId,
                 @event.BuildingId,
                 @event.BuildingName,
                 @event.IsMainBuilding,
-                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)));
-
-            State.OrganisationBuildings.Add(organisationBuilding);
-        }
+                new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
 
         private void Apply(OrganisationOpeningHourAdded @event)
-        {
-            State.OrganisationOpeningHours.Add(new OrganisationOpeningHour(
+            => State.OrganisationOpeningHours.Add(new OrganisationOpeningHour(
                 @event.OrganisationOpeningHourId,
                 @event.OrganisationId,
                 @event.Opens,
                 @event.Closes,
                 @event.DayOfWeek,
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
-        }
 
         private void Apply(OrganisationBuildingUpdated @event)
         {
@@ -2223,8 +2171,7 @@ namespace OrganisationRegistry.Organisation
         }
 
         private void Apply(OrganisationLocationAdded @event)
-        {
-            State.OrganisationLocations.Add(
+            => State.OrganisationLocations.Add(
                 new OrganisationLocation(
                     @event.OrganisationLocationId,
                     @event.OrganisationId,
@@ -2235,26 +2182,21 @@ namespace OrganisationRegistry.Organisation
                     @event.LocationTypeName,
                     new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)),
                     Source.Wegwijs));
-        }
 
         private void Apply(KboRegisteredOfficeOrganisationLocationAdded @event)
-        {
-            KboState.KboRegisteredOffice = new OrganisationLocation(
+            => KboState.KboRegisteredOffice = new OrganisationLocation(
                 @event.OrganisationLocationId,
                 @event.OrganisationId,
                 @event.LocationId,
                 @event.LocationFormattedAddress,
-                @event.IsMainLocation,
+                KboState.KboRegisteredOffice?.IsMainLocation ?? @event.IsMainLocation,
                 @event.LocationTypeId,
                 @event.LocationTypeName,
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)),
                 Source.Kbo);
-        }
 
         private void Apply(KboRegisteredOfficeOrganisationLocationRemoved @event)
-        {
-            KboState.KboRegisteredOffice = null;
-        }
+            => KboState.KboRegisteredOffice = null;
 
         private void Apply(OrganisationLocationUpdated @event)
         {
@@ -2288,8 +2230,7 @@ namespace OrganisationRegistry.Organisation
         }
 
         private void Apply(OrganisationRegulationAdded @event)
-        {
-            State.OrganisationRegulations.Add(new OrganisationRegulation(
+            => State.OrganisationRegulations.Add(new OrganisationRegulation(
                 @event.OrganisationRegulationId,
                 @event.OrganisationId,
                 @event.RegulationThemeId,
@@ -2303,7 +2244,6 @@ namespace OrganisationRegistry.Organisation
                 @event.Description,
                 @event.DescriptionRendered,
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
-        }
 
         private void Apply(OrganisationRegulationUpdated @event)
         {
@@ -2452,8 +2392,7 @@ namespace OrganisationRegistry.Organisation
         }
 
         private void Apply(OrganisationBankAccountAdded @event)
-        {
-            State.OrganisationBankAccounts.Add(
+            => State.OrganisationBankAccounts.Add(
                 new OrganisationBankAccount(
                     @event.OrganisationBankAccountId,
                     @event.OrganisationId,
@@ -2462,11 +2401,9 @@ namespace OrganisationRegistry.Organisation
                     @event.Bic,
                     @event.IsBic,
                     new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
-        }
 
         private void Apply(KboOrganisationBankAccountAdded @event)
-        {
-            KboState.KboBankAccounts.Add(
+            => KboState.KboBankAccounts.Add(
                 new OrganisationBankAccount(
                     @event.OrganisationBankAccountId,
                     @event.OrganisationId,
@@ -2475,13 +2412,10 @@ namespace OrganisationRegistry.Organisation
                     @event.Bic,
                     @event.IsBic,
                     new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo))));
-        }
 
         private void Apply(KboOrganisationBankAccountRemoved @event)
-        {
-            KboState.KboBankAccounts.Remove(KboState.KboBankAccounts.Single(account =>
+            => KboState.KboBankAccounts.Remove(KboState.KboBankAccounts.Single(account =>
                 account.OrganisationBankAccountId == @event.OrganisationBankAccountId));
-        }
 
         private void Apply(OrganisationBankAccountUpdated @event)
         {
@@ -2516,40 +2450,26 @@ namespace OrganisationRegistry.Organisation
         }
 
         private void Apply(ParentAssignedToOrganisation @event)
-        {
-            _currentOrganisationParent = State.OrganisationParents.Single(ob => ob.OrganisationOrganisationParentId == @event.OrganisationOrganisationParentId);
-        }
+            => _currentOrganisationParent = State.OrganisationParents.Single(ob => ob.OrganisationOrganisationParentId == @event.OrganisationOrganisationParentId);
 
         private void Apply(ParentClearedFromOrganisation @event)
-        {
-            _currentOrganisationParent = null;
-        }
+            => _currentOrganisationParent = null;
 
         private void Apply(FormalFrameworkAssignedToOrganisation @event)
-        {
-            State.OrganisationFormalFrameworkParentsPerFormalFramework[@event.FormalFrameworkId] =
+            => State.OrganisationFormalFrameworkParentsPerFormalFramework[@event.FormalFrameworkId] =
                 State.OrganisationFormalFrameworks.Single(off => off.OrganisationFormalFrameworkId == @event.OrganisationFormalFrameworkId);
-        }
 
         private void Apply(FormalFrameworkClearedFromOrganisation @event)
-        {
-            State.OrganisationFormalFrameworkParentsPerFormalFramework.Remove(@event.FormalFrameworkId);
-        }
+            => State.OrganisationFormalFrameworkParentsPerFormalFramework.Remove(@event.FormalFrameworkId);
 
         private void Apply(MainBuildingAssignedToOrganisation @event)
-        {
-            _mainOrganisationBuilding = State.OrganisationBuildings.Single(ob => ob.OrganisationBuildingId == @event.OrganisationBuildingId);
-        }
+            => _mainOrganisationBuilding = State.OrganisationBuildings.Single(ob => ob.OrganisationBuildingId == @event.OrganisationBuildingId);
 
         private void Apply(MainBuildingClearedFromOrganisation @event)
-        {
-            _mainOrganisationBuilding = null;
-        }
+            => _mainOrganisationBuilding = null;
 
         private void Apply(KboRegisteredOfficeLocationIsMainLocationChanged @event)
-        {
-            KboState.KboRegisteredOffice!.IsMainLocation = @event.IsMainLocation;
-        }
+            => KboState.KboRegisteredOffice!.IsMainLocation = @event.IsMainLocation;
 
         private void Apply(MainLocationAssignedToOrganisation @event)
             => _mainOrganisationLocation = KboState.KboRegisteredOffice?.IsMainLocation == true
@@ -2557,23 +2477,17 @@ namespace OrganisationRegistry.Organisation
                 : State.OrganisationLocations.Single(ob => ob.OrganisationLocationId == @event.OrganisationLocationId);
 
         private void Apply(MainLocationClearedFromOrganisation @event)
-        {
-            _mainOrganisationLocation = null;
-        }
+            => _mainOrganisationLocation = null;
 
         private void Apply(OrganisationCapacityBecameActive @event)
-        {
-            State.OrganisationCapacities
+            => State.OrganisationCapacities
                 .Single(ob => ob.OrganisationCapacityId == @event.OrganisationCapacityId)
                 .IsActive = true;
-        }
 
         private void Apply(OrganisationCapacityBecameInactive @event)
-        {
-            State.OrganisationCapacities
+            => State.OrganisationCapacities
                 .Single(ob => ob.OrganisationCapacityId == @event.OrganisationCapacityId)
                 .IsActive = false;
-        }
 
         private void Apply(OrganisationCoupledWithKbo @event)
         {
@@ -2592,14 +2506,10 @@ namespace OrganisationRegistry.Organisation
         }
 
         private void Apply(OrganisationTerminationFoundInKbo @event)
-        {
-            KboState.TerminationInKbo = new KboTermination(@event.TerminationDate, @event.TerminationCode, @event.TerminationReason);
-        }
+            => KboState.TerminationInKbo = new KboTermination(@event.TerminationDate, @event.TerminationCode, @event.TerminationReason);
 
         private void Apply(OrganisationTerminationSyncedWithKbo @event)
-        {
-            KboState.Clear();
-        }
+            => KboState.Clear();
 
         private void Apply(OrganisationTerminated @event)
         {
