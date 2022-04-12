@@ -12,7 +12,7 @@ const routes: Routes = [
     component: LabelTypeOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Benaming types'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: LabelTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Nieuw benaming type'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: LabelTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Bewerken benaming type'
     }
   },

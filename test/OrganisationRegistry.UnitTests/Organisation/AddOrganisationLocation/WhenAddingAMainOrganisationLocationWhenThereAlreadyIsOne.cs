@@ -72,7 +72,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
                 null,
                 new ValidFrom(_validFrom),
                 new ValidTo(_validTo)){
-                User = new UserBuilder().AddRoles(Role.OrganisatieBeheerder).AddOrganisations(_ovoNumber).Build()
+                User = new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build()
             };
         }
 

@@ -2,9 +2,9 @@ namespace OrganisationRegistry.Infrastructure.Authorization
 {
     public enum Role
     {
-        OrganisationRegistryBeheerder,
+        AlgemeenBeheerder,
         VlimpersBeheerder,
-        OrganisatieBeheerder,
+        DecentraalBeheerder,
         OrgaanBeheerder,
         Orafin,
         Developer,

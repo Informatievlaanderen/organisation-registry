@@ -17,8 +17,8 @@ export class User {
     const roles = new Array<Role>();
     for (let role of externalRoles) {
       switch (role) {
-        case 'organisationRegistryBeheerder':
-          roles.push(Role.OrganisationRegistryBeheerder);
+        case 'algemeenBeheerder':
+          roles.push(Role.AlgemeenBeheerder);
           break;
 
         case 'vlimpersBeheerder':
@@ -29,8 +29,8 @@ export class User {
           roles.push(Role.OrgaanBeheerder);
           break;
 
-        case 'organisatieBeheerder':
-          roles.push(Role.OrganisatieBeheerder);
+        case 'decentraalBeheerder':
+          roles.push(Role.DecentraalBeheerder);
           break;
 
         case 'developer':

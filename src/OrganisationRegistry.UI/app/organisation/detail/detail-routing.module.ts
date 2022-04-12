@@ -150,7 +150,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Algemeen - Bewerken organisatie',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder, Role.VlimpersBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.VlimpersBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -163,7 +163,7 @@ const routes: Routes = [
             canActivate: [RoleGuard],
             data: {
               title: 'Organisatie - Algemeen - Koppelen KBO',
-              roles: [Role.OrganisationRegistryBeheerder],
+              roles: [Role.AlgemeenBeheerder],
             }
           },
           {
@@ -172,7 +172,7 @@ const routes: Routes = [
             canActivate: [RoleGuard],
             data: {
               title: 'Organisatie - Algemeen - Koppelen KBO ongedaan maken',
-              roles: [Role.OrganisationRegistryBeheerder],
+              roles: [Role.AlgemeenBeheerder],
             }
           },
           {
@@ -181,7 +181,7 @@ const routes: Routes = [
             canActivate: [RoleGuard],
             data: {
               title: 'Organisatie - Stopzetten',
-              roles: [Role.OrganisationRegistryBeheerder, Role.VlimpersBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.VlimpersBeheerder],
             }
           },
           {
@@ -190,7 +190,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Algemeen - Voeg dochterorganisatie toe',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder, Role.VlimpersBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.VlimpersBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -213,7 +213,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Gebouwen - Gebouw koppelen',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -226,7 +226,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Gebouwen - Bewerken gebouw',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -252,7 +252,7 @@ const routes: Routes = [
             },
             data: {
               title: 'Organisatie - Hoedanigheden - Nieuwe hoedanigheid',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -268,7 +268,7 @@ const routes: Routes = [
             },
             data: {
               title: 'Organisatie - Hoedanigheden - Bewerken hoedanigheid',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -291,7 +291,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Contacten - Nieuw contact',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -304,7 +304,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Contacten - Bewerken contact',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -330,7 +330,7 @@ const routes: Routes = [
             },
             data: {
               title: 'Organisatie - Functies - Nieuwe functie',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -346,7 +346,7 @@ const routes: Routes = [
             },
             data: {
               title: 'Organisatie - Functies - Bewerken functie',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -369,7 +369,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Classificaties - Nieuwe classificatie',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -382,7 +382,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Classificaties - Bewerken classificatie',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -405,7 +405,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Sleutels - Nieuwe sleutel',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder, Role.VlimpersBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.VlimpersBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -418,7 +418,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Sleutels - Bewerken sleutel',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder, Role.VlimpersBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.VlimpersBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -445,7 +445,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Regelgeving - Nieuwe regelgeving',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -458,7 +458,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Regelgeving - Bewerken regelgeving',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -481,7 +481,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Benamingen - Nieuwe benaming',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder, Role.VlimpersBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.VlimpersBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -494,7 +494,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Benamingen - Bewerken benaming',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder, Role.VlimpersBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.VlimpersBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -520,7 +520,7 @@ const routes: Routes = [
             },
             data: {
               title: 'Organisatie - Locaties - Locatie koppelen',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -536,7 +536,7 @@ const routes: Routes = [
             },
             data: {
               title: 'Organisatie - Locaties - Bewerken locatie',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -559,7 +559,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Historiek - Moeder entiteit koppelen',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder, Role.VlimpersBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.VlimpersBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -572,7 +572,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Historiek - Bewerken moeder entiteit',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder, Role.VlimpersBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.VlimpersBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -596,8 +596,8 @@ const routes: Routes = [
             data: {
               title: 'Organisatie - Toepassingsgebieden - Toepassingsgebied koppelen',
               roles: [
-                Role.OrganisationRegistryBeheerder,
-                Role.OrganisatieBeheerder,
+                Role.AlgemeenBeheerder,
+                Role.DecentraalBeheerder,
                 Role.VlimpersBeheerder
               ],
               organisationGuard: {
@@ -612,7 +612,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, CanAddAndUpdateFormalFrameworksGuard],
             data: {
               title: 'Organisatie - Toepassingsgebieden - Bewerken toepassingsgebied',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder, Role.VlimpersBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.VlimpersBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -635,7 +635,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Bankrekeningnummers - Bankrekeningnummer koppelen',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -648,7 +648,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Bankrekeningnummers - Bewerken bankrekeningnummer',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -684,7 +684,7 @@ const routes: Routes = [
             },
             data: {
               title: 'Organisatie - Relaties - Nieuwe relatie',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -700,7 +700,7 @@ const routes: Routes = [
             },
             data: {
               title: 'Organisatie - Relaties - Bewerken relatie',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -723,7 +723,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Openingsuren - Nieuw openingsuur',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -736,7 +736,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Openingsuren - Bewerken openingsuur',
-              roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -754,7 +754,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - KBO-koppeling',
-              roles: [Role.OrganisationRegistryBeheerder],
+              roles: [Role.AlgemeenBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -772,7 +772,7 @@ const routes: Routes = [
             canActivate: [RoleGuard, OrganisationGuard],
             data: {
               title: 'Organisatie - Vlimpers',
-              roles: [Role.OrganisationRegistryBeheerder],
+              roles: [Role.AlgemeenBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'

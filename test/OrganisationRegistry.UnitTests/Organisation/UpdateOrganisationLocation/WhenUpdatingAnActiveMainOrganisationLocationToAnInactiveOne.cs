@@ -75,7 +75,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
                 new ValidTo(_validTo.AddYears(1)),
                 Source.Wegwijs)
             {
-                User = new UserBuilder().AddRoles(Role.OrganisatieBeheerder).AddOrganisations(_ovoNumber).Build()
+                User = new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build()
             };
         }
 

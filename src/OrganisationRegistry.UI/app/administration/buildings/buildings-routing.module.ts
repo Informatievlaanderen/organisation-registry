@@ -12,7 +12,7 @@ const routes: Routes = [
     component: BuildingOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Gebouwen'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: BuildingDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Nieuw gebouw'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: BuildingDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Bewerken gebouw'
     }
   },

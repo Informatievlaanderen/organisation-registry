@@ -204,7 +204,7 @@ export class OrganisationInfoService implements OnDestroy {
     this.isLimitedByVlimpersChangedSource = new BehaviorSubject<boolean>(false);
     this.isLimitedByVlimpersChanged$ = this.isLimitedByVlimpersChangedSource.asObservable();
 
-    this.subscriptions.push(combineLatest(this.organisationChanged$, oidcService.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    this.subscriptions.push(combineLatest(this.organisationChanged$, oidcService.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       .subscribe(combined => {
         const isTerminated = combined[0].isTerminated;
         const isOrganisationRegistryBeheerder = combined[1];
@@ -212,7 +212,7 @@ export class OrganisationInfoService implements OnDestroy {
       }));
 
     this.subscriptions.push(combineLatest(this.organisationChanged$, oidcService.hasAnyOfRoles(
-      [Role.VlimpersBeheerder, Role.OrganisationRegistryBeheerder]))
+      [Role.VlimpersBeheerder, Role.AlgemeenBeheerder]))
       .subscribe(combined => {
         const underVlimpersManagement = combined[0].underVlimpersManagement;
         const hasRightsToVlimpersManagedOrganisations = combined[1];

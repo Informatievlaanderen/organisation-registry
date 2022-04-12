@@ -64,7 +64,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
             {
                 User = new UserBuilder()
                     .AddOrganisations(_organisationBCreated.OvoNumber)
-                    .AddRoles(Role.OrganisatieBeheerder)
+                    .AddRoles(Role.DecentraalBeheerder)
                     .Build()
             };;
         }

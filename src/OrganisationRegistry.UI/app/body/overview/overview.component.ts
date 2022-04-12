@@ -41,9 +41,9 @@ export class BodyOverviewComponent implements OnInit, OnDestroy {
     this.loadBodies();
 
     this.canCreateBody = this.oidcService.roles.map(roles => {
-      if (roles.indexOf(Role.OrganisationRegistryBeheerder) !== -1 ||
+      if (roles.indexOf(Role.AlgemeenBeheerder) !== -1 ||
         roles.indexOf(Role.Developer) !== -1 ||
-        roles.indexOf(Role.OrganisatieBeheerder) !== -1 ||
+        roles.indexOf(Role.DecentraalBeheerder) !== -1 ||
         roles.indexOf(Role.OrgaanBeheerder) !== -1) {
         return true;
       }

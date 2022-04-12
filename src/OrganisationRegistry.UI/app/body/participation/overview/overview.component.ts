@@ -53,7 +53,7 @@ export class BodyParticipationOverviewComponent implements OnInit, OnDestroy {
       let id = params['id'];
       this.bodyId = id;
       this.canManageMep = this.oidcService.roles.map(roles => {
-        return (roles.indexOf(Role.OrgaanBeheerder) !== -1 || roles.indexOf(Role.OrganisationRegistryBeheerder) !== -1);
+        return (roles.indexOf(Role.OrgaanBeheerder) !== -1 || roles.indexOf(Role.AlgemeenBeheerder) !== -1);
       });
 
       this.isLoading = true;

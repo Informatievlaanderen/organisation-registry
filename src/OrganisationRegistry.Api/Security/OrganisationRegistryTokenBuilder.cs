@@ -121,7 +121,7 @@ namespace OrganisationRegistry.Api.Security
                 return;
 
             // If any of the roles is admin, you are an admin and we add the organisations separatly
-            AddRoleClaim(identity, OrganisationRegistryApiClaims.Invoerder);
+            AddRoleClaim(identity, OrganisationRegistryApiClaims.DecentraalBeheerder);
 
             var adminRoles = roles.Where(IsDecentraalBeheerder);
             foreach (var role in adminRoles)
@@ -140,7 +140,7 @@ namespace OrganisationRegistry.Api.Security
 
         private static void AddOrganisationRegistryBeheerderClaim(ClaimsIdentity identity)
         {
-            AddRoleClaim(identity, OrganisationRegistryApiClaims.OrganisationRegistryBeheerder);
+            AddRoleClaim(identity, OrganisationRegistryApiClaims.AlgemeenBeheerder);
         }
 
         private static void AddRoleClaim(ClaimsIdentity identity, string value)

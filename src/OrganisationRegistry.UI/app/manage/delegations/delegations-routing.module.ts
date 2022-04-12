@@ -17,7 +17,7 @@ const routes: Routes = [
     component: DelegationOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
       title: 'Delegaties'
     }
   },
@@ -26,7 +26,7 @@ const routes: Routes = [
     component: DelegationDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
       title: 'Delegaties - Bewerken delegatie'
     }
   },
@@ -38,7 +38,7 @@ const routes: Routes = [
       contactTypes: ContactTypeResolver
     },
     data: {
-      roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
       title: 'Delegaties - Toewijzen delegatie'
     }
   },
@@ -50,7 +50,7 @@ const routes: Routes = [
       contactTypes: ContactTypeResolver
     },
     data: {
-      roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
       title: 'Delegaties - Bewerken toewijzing'
     }
   },
@@ -59,7 +59,7 @@ const routes: Routes = [
     component: DelegationAssignimentsDeleteDelegationAssignmentComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
       title: 'Delegaties - Verwijderen toewijzing'
     }
   },

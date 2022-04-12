@@ -62,7 +62,7 @@
             var authenticateInfo = await httpContextAccessor.HttpContext.GetAuthenticateInfoAsync();
             return (await securityService
                 .GetSecurityInformation(authenticateInfo.Principal))
-                .Roles.Contains(Role.OrganisatieBeheerder);
+                .Roles.Contains(Role.DecentraalBeheerder);
         }
     }
 

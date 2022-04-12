@@ -12,7 +12,7 @@ const routes: Routes = [
     component: BodyClassificationTypeOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Orgaan classificatietypes'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: BodyClassificationTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Nieuw orgaan classificatietype'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: BodyClassificationTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Bewerken orgaan classificatietype'
     }
   },

@@ -79,7 +79,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
         protected override UpdateOrganisationInfo When()
         {
             var user = new UserBuilder()
-                .AddRoles(Role.OrganisatieBeheerder)
+                .AddRoles(Role.DecentraalBeheerder)
                 .AddOrganisations(_organisationCreatedBuilder.OvoNumber)
                 .Build();
 

@@ -29,7 +29,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <summary>Couple an organisation to a KBO number.</summary>
         /// <response code="200">If the organisation was coupled.</response>
         [HttpPut("{id}/kbo/number/{kboNumber}")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> CoupleToKboNumber(
             [FromRoute] Guid id,
@@ -46,7 +46,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <summary>Cancel an organisation's active coupling with a KBO number.</summary>
         /// <response code="200">If the organisation coupling was cancelled.</response>
         [HttpPut("{id}/kbo/cancel")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> CancelCouplingWithKbo([FromRoute] Guid id)
         {
@@ -60,7 +60,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <summary>Update the organisation according to data in the KBO.</summary>
         /// <response code="200">If the organisation was updated.</response>
         [HttpPut("{id}/kbo/sync")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateFromKbo([FromRoute] Guid id)
         {
@@ -76,7 +76,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <summary>Terminate the organisation according to data in the KBO.</summary>
         /// <response code="200">If the organisation was terminated.</response>
         [HttpPut("{id}/kbo/terminate")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> TerminateKboCoupling([FromRoute] Guid id)
         {
@@ -89,7 +89,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
 
         /// <summary>Gets the termination status of an organisation coupled with the KBO.</summary>
         [HttpGet("{id}/kbo/{kboNumber}/termination")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer + "," + Roles.VlimpersBeheerder)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer + "," + Roles.VlimpersBeheerder)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetTerminationStatus(
             [FromServices] OrganisationRegistryContext context,
@@ -106,7 +106,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
 
         /// <summary>Get a list of organisations to be terminated according to the KBO.</summary>
         [HttpGet("kbo/terminated")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
         {

@@ -69,7 +69,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation
                     _organisationId,
                     _dateOfTermination,
                     false)
-                .WithUserRole(Role.OrganisationRegistryBeheerder);
+                .WithUserRole(Role.AlgemeenBeheerder);
         }
 
         protected override OrganisationCommandHandlers BuildHandler()

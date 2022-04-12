@@ -24,7 +24,7 @@ namespace OrganisationRegistry.Handling.Authorization
 
         public AuthorizationResult Check(IUser user)
         {
-            if(user.IsInRole(Role.OrganisationRegistryBeheerder))
+            if(user.IsInRole(Role.AlgemeenBeheerder))
                 return AuthorizationResult.Success();
 
             var formalFrameworkIdsOwnedByVlimpers = _configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers;

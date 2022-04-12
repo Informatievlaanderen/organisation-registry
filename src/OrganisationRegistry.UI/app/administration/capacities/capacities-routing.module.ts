@@ -12,7 +12,7 @@ const routes: Routes = [
     component: CapacityOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Hoedanigheden'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: CapacityDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Nieuwe hoedanigheid'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: CapacityDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Bewerken hoedanigheid'
     }
   },

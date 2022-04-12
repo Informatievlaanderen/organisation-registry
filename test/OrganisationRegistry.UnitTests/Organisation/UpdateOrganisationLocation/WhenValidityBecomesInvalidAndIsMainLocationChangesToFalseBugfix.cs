@@ -72,7 +72,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
                 new ValidTo(new DateTime(2016, 06, 16)),
                 Source.Wegwijs)
             {
-                User = new UserBuilder().AddRoles(Role.OrganisatieBeheerder).AddOrganisations(_ovoNumber).Build()
+                User = new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build()
             };
 
         protected override int ExpectedNumberOfEvents => 2;

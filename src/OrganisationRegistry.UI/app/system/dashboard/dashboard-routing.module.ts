@@ -12,7 +12,7 @@ const routes: Routes = [
     canActivate: [RoleGuard],
     data: {
       title: 'Systeem',
-      roles: [Role.OrganisationRegistryBeheerder, Role.Developer]
+      roles: [Role.AlgemeenBeheerder, Role.Developer]
     }
   }
 ];

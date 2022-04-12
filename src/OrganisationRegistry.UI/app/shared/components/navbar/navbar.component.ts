@@ -1,11 +1,8 @@
-﻿import {Component, OnInit, ChangeDetectionStrategy, Input} from '@angular/core';
+﻿import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 
-import { Observable } from 'rxjs/Observable';
+import {Observable} from 'rxjs/Observable';
 
-import { Role, OidcService } from 'core/auth';
-import { ConfigurationService } from 'core/configuration';
-
-import {FeaturesService} from "../../../services/features";
+import {OidcService, Role} from 'core/auth';
 import {Environments} from "../../../environments";
 
 @Component({
@@ -39,13 +36,13 @@ export class NavbarComponent implements OnInit {
     const roles = this.oidcService.roles;
 
     this.isOrganisationRegistryBeheerder =
-      this.oidcService.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
+      this.oidcService.hasAnyOfRoles([Role.AlgemeenBeheerder]);
 
     this.isVlimpersBeheerder =
       this.oidcService.hasAnyOfRoles([Role.VlimpersBeheerder]);
 
     this.isOrganisatieBeheerder =
-      this.oidcService.hasAnyOfRoles([Role.OrganisatieBeheerder]);
+      this.oidcService.hasAnyOfRoles([Role.DecentraalBeheerder]);
 
     this.isDeveloper =
       this.oidcService.hasAnyOfRoles([Role.Developer]);
@@ -55,19 +52,23 @@ export class NavbarComponent implements OnInit {
 
     this.userName = this.oidcService.userName;
 
-    this.role = roles.map(roles => {
+    this.role = roles.map(x => {
       let role = '';
-      if (roles.indexOf(Role.OrganisationRegistryBeheerder) !== -1) {
-        role = 'Beheerder';
-      } else if (roles.indexOf(Role.VlimpersBeheerder) !== -1) {
-        role = 'Vlimpersbeheerder';
-      } else if (roles.indexOf(Role.OrganisatieBeheerder) !== -1) {
-        role = 'Invoerder';
-      } else if (roles.indexOf(Role.OrgaanBeheerder) !== -1) {
-        role = 'Orgaanbeheerder';
+      if (x.indexOf(Role.AlgemeenBeheerder) !== -1) {
+        role = 'Algemeen beheerder';
+      } else if (x.indexOf(Role.VlimpersBeheerder) !== -1) {
+        role = 'Vlimpers beheerder';
+      } else if (x.indexOf(Role.DecentraalBeheerder) !== -1) {
+        role = 'Decentraal beheerder';
+      } else if (x.indexOf(Role.OrgaanBeheerder) !== -1) {
+        role = 'Orgaan beheerder';
+      } else {
+        role = x.map(role => this.RoleToString(role)).reduce((aggregated,r) => `${aggregated}, ${r}`, "Empty");
       }
 
-      if (roles.indexOf(Role.Developer) !== -1) {
+      console.log("roles: ", x)
+
+      if (x.indexOf(Role.Developer) !== -1) {
         role = role + ' | Ontwikkelaar';
       }
 
@@ -81,5 +82,17 @@ export class NavbarComponent implements OnInit {
 
   logoutClicked(): void {
     this.oidcService.signOut();
+  }
+
+  RoleToString(role: Role): string {
+    switch (role){
+      case Role.AlgemeenBeheerder: return "AlgemeenBeheerder";
+      case Role.AutomatedTask: return "AutomatedTask";
+      case Role.Developer: return "Developer";
+      case Role.OrgaanBeheerder: return "OrgaanBeheerder";
+      case Role.DecentraalBeheerder: return "DecentraalBeheerder";
+      case Role.VlimpersBeheerder: return "VlimpersBeheerder";
+      default: return "Unknown";
+    }
   }
 }

@@ -70,7 +70,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
                 new ValidTo(_validTo))
             {
                 User = new UserBuilder()
-                    .AddRoles(Role.OrganisatieBeheerder)
+                    .AddRoles(Role.DecentraalBeheerder)
                     .AddOrganisations(OvoNumber)
                     .Build()
             };

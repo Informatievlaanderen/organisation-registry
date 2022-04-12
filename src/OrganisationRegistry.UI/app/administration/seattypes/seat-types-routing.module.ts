@@ -12,7 +12,7 @@ const routes: Routes = [
     component: SeatTypeOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Post types'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: SeatTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Nieuw post type'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: SeatTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Bewerken post type'
     }
   },

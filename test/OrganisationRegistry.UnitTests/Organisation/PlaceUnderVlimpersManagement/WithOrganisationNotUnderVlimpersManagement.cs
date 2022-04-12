@@ -58,7 +58,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
         protected override PlaceUnderVlimpersManagement When()
             => new PlaceUnderVlimpersManagement(
                     _organisationId)
-                .WithUserRole(Role.OrganisationRegistryBeheerder);
+                .WithUserRole(Role.AlgemeenBeheerder);
 
         protected override OrganisationCommandHandlers BuildHandler()
             => new OrganisationCommandHandlers(

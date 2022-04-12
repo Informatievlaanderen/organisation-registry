@@ -56,7 +56,7 @@ function createSecurityInfo(
     expires,
     hasAnyOfRoles: ((desiredRoles: Role[]) : boolean => hasAnyOfRoles(roles, desiredRoles)),
     isOrganisatieBeheerderFor: ((organisationId: string) : boolean => {
-      return hasAnyOfRoles(roles, [Role.OrganisatieBeheerder]) &&
+      return hasAnyOfRoles(roles, [Role.DecentraalBeheerder]) &&
         organisationIds.findIndex(x => x === organisationId) > -1;
     })
   };
@@ -210,7 +210,7 @@ export class OidcService implements OnDestroy {
   }
 
   public isVlimpersBeheerder(): Observable<boolean> {
-    let wegwijsBeheerderCheck = this.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
+    let wegwijsBeheerderCheck = this.hasAnyOfRoles([Role.AlgemeenBeheerder]);
     let vlimpersBeheerderCheck = this.hasAnyOfRoles([Role.VlimpersBeheerder]);
 
     return Observable.zip(wegwijsBeheerderCheck, vlimpersBeheerderCheck)
@@ -229,9 +229,9 @@ export class OidcService implements OnDestroy {
   }
 
   public canEditBody(bodyId): Observable<boolean> {
-    let wegwijsBeheerderCheck = this.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
+    let wegwijsBeheerderCheck = this.hasAnyOfRoles([Role.AlgemeenBeheerder]);
     let orgaanBeheerderCheck = this.hasAnyOfRoles([Role.OrgaanBeheerder]);
-    let organisatieBeheerderCheck = this.hasAnyOfRoles([Role.OrganisatieBeheerder]);
+    let organisatieBeheerderCheck = this.hasAnyOfRoles([Role.DecentraalBeheerder]);
 
     return Observable.zip(wegwijsBeheerderCheck, orgaanBeheerderCheck, organisatieBeheerderCheck, this.bodyIds)
       .map(zipped => {

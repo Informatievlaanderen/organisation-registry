@@ -30,7 +30,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
 
         /// <summary>Get a list of available delegation assignments.</summary>
         [HttpGet("{delegationId}/assignments")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.OrganisatieBeheerder)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.DecentraalBeheerder)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromServices] ISecurityService securityService, [FromRoute] Guid delegationId)
         {
@@ -59,7 +59,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
         /// <response code="200">If the delegation assignment is found.</response>
         /// <response code="404">If the delegation assignment cannot be found.</response>
         [HttpGet("{delegationId}/assignments/{id}")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.OrganisatieBeheerder)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.DecentraalBeheerder)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(
@@ -120,7 +120,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
         /// <response code="200">If the delegation assignment is updated, together with the location.</response>
         /// <response code="400">If the delegation assignment information does not pass validation.</response>
         [HttpPut("{delegationId}/assignments/{id}")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.OrganisatieBeheerder)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.DecentraalBeheerder)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put(
@@ -153,7 +153,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
         /// <response code="200">If the delegation assignment is removed, together with the location.</response>
         /// <response code="400">If the delegation assignment information does not pass validation.</response>
         [HttpDelete("{delegationId}/assignments/{delegationAssignmentId}/{bodyId}/{bodySeatId}")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(
