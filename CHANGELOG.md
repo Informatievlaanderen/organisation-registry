@@ -1,3 +1,11 @@
+# [1.156.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.155.0...v1.156.0) (2022-04-12)
+
+
+### Features
+
+* or-936 don't overwrite ismainlocation on kbosync ([9b96e6b](https://github.com/informatievlaanderen/organisation-registry/commit/9b96e6b49b208f33de7d008dd901a1317486e1ea))
+* or-936 unittest for ismainlocation not overwritten by kbosync ([542eecb](https://github.com/informatievlaanderen/organisation-registry/commit/542eecb567fe690962f4504898d060688f0ebae0))
+
 # [1.155.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.154.0...v1.155.0) (2022-04-07)
 
 
