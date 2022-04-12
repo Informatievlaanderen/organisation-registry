@@ -1,3 +1,10 @@
+# [1.157.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.156.0...v1.157.0) (2022-04-12)
+
+
+### Features
+
+* or-933 decentraalbeheerder instead of invoerder/beheerder ([2674dd3](https://github.com/informatievlaanderen/organisation-registry/commit/2674dd3b2ed7bee22759ad6bbdbc498a009ba582))
+
 # [1.156.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.155.0...v1.156.0) (2022-04-12)
 
 
