@@ -62,11 +62,7 @@ export class NavbarComponent implements OnInit {
         role = 'Decentraal beheerder';
       } else if (x.indexOf(Role.OrgaanBeheerder) !== -1) {
         role = 'Orgaan beheerder';
-      } else {
-        role = x.map(role => this.RoleToString(role)).reduce((aggregated,r) => `${aggregated}, ${r}`, "Empty");
       }
-
-      console.log("roles: ", x)
 
       if (x.indexOf(Role.Developer) !== -1) {
         role = role + ' | Ontwikkelaar';
@@ -82,17 +78,5 @@ export class NavbarComponent implements OnInit {
 
   logoutClicked(): void {
     this.oidcService.signOut();
-  }
-
-  RoleToString(role: Role): string {
-    switch (role){
-      case Role.AlgemeenBeheerder: return "AlgemeenBeheerder";
-      case Role.AutomatedTask: return "AutomatedTask";
-      case Role.Developer: return "Developer";
-      case Role.OrgaanBeheerder: return "OrgaanBeheerder";
-      case Role.DecentraalBeheerder: return "DecentraalBeheerder";
-      case Role.VlimpersBeheerder: return "VlimpersBeheerder";
-      default: return "Unknown";
-    }
   }
 }
