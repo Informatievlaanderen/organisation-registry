@@ -1,5 +1,7 @@
 namespace OrganisationRegistry.Infrastructure.Authorization
 {
+    using System;
+
     public class OrganisationRegistryClaims
     {
         public const string ClaimRoles = "iv_wegwijs_rol_3D";
@@ -13,9 +15,13 @@ namespace OrganisationRegistry.Infrastructure.Authorization
 
         public const string OrganisationRegistryBeheerderPrefix = "wegwijsbeheerder-";
 
-        public const string OrganisationRegistryBeheerderRole = "algemeenbeheerder";
-        public const string OrganisationRegistryVlimpersRole = "vlimpersbeheerder";
-        public const string OrganisationRegistryInvoerderRole = "beheerder";
+        public const string OrganisationRegistryAlgemeenBeheerderRole = "algemeenbeheerder";
+        public const string OrganisationRegistryVlimpersBeheerderRole = "vlimpersbeheerder";
+
+        [Obsolete("will be overruled with decentraalbeheerder")]
+        public const string OrganisationRegistryBeheerderRole = "beheerder";
+        public const string OrganisationRegistryDecentraalBeheerderRole = "decentraalbeheerder";
+
         public const string OrganisationRegistryOrgaanBeheerderRole = "orgaanbeheerder";
     }
 }

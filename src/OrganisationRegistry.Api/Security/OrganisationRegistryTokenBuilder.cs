@@ -78,7 +78,7 @@ namespace OrganisationRegistry.Api.Security
             if (!roles.Any())
                 return identity;
 
-            if (roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryBeheerderRole)))
+            if (roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryAlgemeenBeheerderRole)))
             {
                 AddOrganisationRegistryBeheerderClaim(identity);
             }
@@ -94,7 +94,7 @@ namespace OrganisationRegistry.Api.Security
 
         private static void AddVlimpersBeheerderClaim(IEnumerable<string> roles, ClaimsIdentity identity)
         {
-            if (!roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryVlimpersRole)))
+            if (!roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryVlimpersBeheerderRole)))
                 return;
 
             AddRoleClaim(identity, OrganisationRegistryApiClaims.VlimpersBeheerder);
@@ -117,14 +117,13 @@ namespace OrganisationRegistry.Api.Security
 
         private static void AddOrganisatieBeheerderClaim(IReadOnlyCollection<string> roles, ClaimsIdentity identity)
         {
-            if (!roles.Any(x => x.StartsWith(OrganisationRegistryClaims.OrganisationRegistryInvoerderRole)))
+            if (!roles.Any(IsDecentraalBeheerder))
                 return;
 
             // If any of the roles is admin, you are an admin and we add the organisations separatly
             AddRoleClaim(identity, OrganisationRegistryApiClaims.Invoerder);
 
-            var adminRoles = roles.Where(
-                x => x.StartsWith(OrganisationRegistryClaims.OrganisationRegistryInvoerderRole));
+            var adminRoles = roles.Where(IsDecentraalBeheerder);
             foreach (var role in adminRoles)
             {
                 // OrganisationRegistryBeheerder-algemeenbeheerder,beheerder:OVO002949
@@ -134,6 +133,10 @@ namespace OrganisationRegistry.Api.Security
                 AddOrganisationClaim(identity, organisation);
             }
         }
+
+        private static bool IsDecentraalBeheerder(string role)
+            => role.StartsWith(OrganisationRegistryClaims.OrganisationRegistryBeheerderRole)
+               || role.StartsWith(OrganisationRegistryClaims.OrganisationRegistryDecentraalBeheerderRole);
 
         private static void AddOrganisationRegistryBeheerderClaim(ClaimsIdentity identity)
         {
