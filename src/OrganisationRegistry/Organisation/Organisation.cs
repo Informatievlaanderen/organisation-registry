@@ -1231,6 +1231,8 @@ namespace OrganisationRegistry.Organisation
             if (newKboRegisteredOffice?.Location?.Id == KboState.KboRegisteredOffice?.LocationId)
                 return;
 
+            var isMainLocation = KboState.KboRegisteredOffice?.IsMainLocation ?? false;
+
             if (KboState.KboRegisteredOffice != null)
                 ApplyChange(
                     new KboRegisteredOfficeOrganisationLocationRemoved(
@@ -1252,7 +1254,7 @@ namespace OrganisationRegistry.Organisation
                         Guid.NewGuid(),
                         newKboRegisteredOffice.Location.Id,
                         newKboRegisteredOffice.Location.FormattedAddress,
-                        false,
+                        isMainLocation,
                         registeredOfficeLocationType.Id,
                         registeredOfficeLocationType.Name,
                         newKboRegisteredOffice.ValidFrom,
@@ -2189,7 +2191,7 @@ namespace OrganisationRegistry.Organisation
                 @event.OrganisationId,
                 @event.LocationId,
                 @event.LocationFormattedAddress,
-                KboState.KboRegisteredOffice?.IsMainLocation ?? @event.IsMainLocation,
+                @event.IsMainLocation,
                 @event.LocationTypeId,
                 @event.LocationTypeName,
                 new Period(new ValidFrom(@event.ValidFrom), new ValidTo(@event.ValidTo)),
