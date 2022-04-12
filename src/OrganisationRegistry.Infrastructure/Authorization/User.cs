@@ -31,7 +31,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization
         public bool IsAuthorizedForVlimpersOrganisations
             => IsInRole(Role.VlimpersBeheerder) ||
                IsInRole(Role.Developer) ||
-               IsInRole(Role.OrganisationRegistryBeheerder);
+               IsInRole(Role.AlgemeenBeheerder);
 
         public bool IsInRole(Role role)
         {
@@ -39,7 +39,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization
         }
 
         public bool IsOrganisatieBeheerderFor(string ovoNumber)
-            => IsInRole(Role.OrganisatieBeheerder) &&
+            => IsInRole(Role.DecentraalBeheerder) &&
                Organisations.Contains(ovoNumber);
     }
 }

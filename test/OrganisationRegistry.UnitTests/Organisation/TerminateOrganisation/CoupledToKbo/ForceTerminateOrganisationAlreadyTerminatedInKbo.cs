@@ -66,7 +66,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.Coup
                 _organisationId,
                 _dateOfTermination,
                 true)
-                .WithUserRole(Role.OrganisationRegistryBeheerder);
+                .WithUserRole(Role.AlgemeenBeheerder);
         }
 
         protected override OrganisationCommandHandlers BuildHandler()

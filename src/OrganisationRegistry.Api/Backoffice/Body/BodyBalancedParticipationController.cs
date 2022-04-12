@@ -16,7 +16,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
     [OrganisationRegistryRoute("bodies")]
-    [OrganisationRegistryAuthorize(Roles = Roles.OrgaanBeheerder + "," + Roles.OrganisationRegistryBeheerder)]
+    [OrganisationRegistryAuthorize(Roles = Roles.OrgaanBeheerder + "," + Roles.AlgemeenBeheerder)]
     public class BodyBalancedParticipationController : OrganisationRegistryController
     {
         public BodyBalancedParticipationController(ICommandSender commandSender)

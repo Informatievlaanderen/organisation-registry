@@ -57,7 +57,7 @@ namespace OrganisationRegistry.Api.Backoffice.Person
                 return NotFound();
 
             var authInfo = await HttpContext.GetAuthenticateInfoAsync();
-            if (authInfo?.Principal != null && authInfo.Principal.IsInRole(Roles.OrganisationRegistryBeheerder))
+            if (authInfo?.Principal != null && authInfo.Principal.IsInRole(Roles.AlgemeenBeheerder))
                 return Ok(person);
 
             return Ok(new PersonListItem { Id = person.Id, FirstName = person.FirstName, Name = person.Name });
@@ -67,7 +67,7 @@ namespace OrganisationRegistry.Api.Backoffice.Person
         /// <response code="201">If the person is created, together with the location.</response>
         /// <response code="400">If the person information does not pass validation.</response>
         [HttpPost]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromBody] CreatePersonRequest message)
@@ -84,7 +84,7 @@ namespace OrganisationRegistry.Api.Backoffice.Person
         /// <response code="200">If the person is updated, together with the location.</response>
         /// <response code="400">If the person information does not pass validation.</response>
         [HttpPut("{id}")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdatePersonRequest message)

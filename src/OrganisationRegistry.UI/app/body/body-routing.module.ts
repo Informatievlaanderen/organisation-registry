@@ -22,7 +22,7 @@ const routes: Routes = [
       userRoles: RolesResolver
     },
     data: {
-      roles: [Role.OrganisationRegistryBeheerder, Role.OrganisatieBeheerder, Role.OrgaanBeheerder],
+      roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.OrgaanBeheerder],
       title: 'Nieuw orgaan'
     },
     component: CreateBodyComponent

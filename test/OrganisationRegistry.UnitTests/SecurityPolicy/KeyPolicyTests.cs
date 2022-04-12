@@ -34,7 +34,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
 
         [Theory]
         [InlineData(Role.Orafin)]
-        [InlineData(Role.OrganisationRegistryBeheerder)]
+        [InlineData(Role.AlgemeenBeheerder)]
         public void OrafinBeheerderAndAdminIsAuthorizedForOrafinKey(Role role)
         {
             var user = new UserBuilder()
@@ -52,7 +52,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
         }
 
         [Theory]
-        [InlineData(Role.OrganisatieBeheerder)]
+        [InlineData(Role.DecentraalBeheerder)]
         [InlineData(Role.VlimpersBeheerder)]
         public void NonOrafinBeheerderIsNotAuthorizedForOrafinKey(Role role)
         {
@@ -72,7 +72,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
 
         [Theory]
         [InlineData(Role.VlimpersBeheerder)]
-        [InlineData(Role.OrganisationRegistryBeheerder)]
+        [InlineData(Role.AlgemeenBeheerder)]
         public void VlimpersBeheerderAndAdminIsAuthorizedForVlimpersKey(Role role)
         {
             var user = new UserBuilder()
@@ -91,7 +91,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
 
         [Theory]
         [InlineData(Role.Orafin)]
-        [InlineData(Role.OrganisatieBeheerder)]
+        [InlineData(Role.DecentraalBeheerder)]
         [InlineData(Role.OrgaanBeheerder)]
         public void NonVlimpersBeheerderIsNotAuthorizedForVlimpersKey(Role role)
         {
@@ -114,7 +114,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
         {
             var ovoNumber = _fixture.Create<string>();
             var user = new UserBuilder()
-                .AddRoles(Role.OrganisatieBeheerder)
+                .AddRoles(Role.DecentraalBeheerder)
                 .AddOrganisations(ovoNumber)
                 .Build();
 
@@ -132,7 +132,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
         public void BeheerderIsNotAuthorizedForOtherKeysForOtherOrganisation()
         {
             var user = new UserBuilder()
-                .AddRoles(Role.OrganisatieBeheerder)
+                .AddRoles(Role.DecentraalBeheerder)
                 .AddOrganisations(_fixture.Create<string>())
                 .Build();
 

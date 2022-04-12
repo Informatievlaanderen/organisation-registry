@@ -85,7 +85,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
                 new ValidFrom(), new ValidTo())
             {
                 User = new UserBuilder()
-                    .AddRoles(Role.OrganisationRegistryBeheerder)
+                    .AddRoles(Role.AlgemeenBeheerder)
                     .Build()
             };
         }

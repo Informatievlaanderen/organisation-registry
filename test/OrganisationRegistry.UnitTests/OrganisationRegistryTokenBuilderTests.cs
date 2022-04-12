@@ -37,7 +37,7 @@ namespace OrganisationRegistry.UnitTests
                 .Select(claim => claim.Value)
                 .ToList()
                 .Should()
-                .NotContain(Roles.OrganisatieBeheerder);
+                .NotContain(Roles.DecentraalBeheerder);
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace OrganisationRegistry.UnitTests
                 .Select(claim => claim.Value)
                 .ToList()
                 .Should()
-                .BeEquivalentTo(Roles.OrganisationRegistryBeheerder);
+                .BeEquivalentTo(Roles.AlgemeenBeheerder);
         }
 
         [Theory]
@@ -144,7 +144,7 @@ namespace OrganisationRegistry.UnitTests
                     },
                     new[]
                     {
-                        Roles.OrganisatieBeheerder
+                        Roles.DecentraalBeheerder
                     },
                 };
                 yield return new object[]
@@ -155,7 +155,7 @@ namespace OrganisationRegistry.UnitTests
                     },
                     new[]
                     {
-                        Roles.OrganisationRegistryBeheerder
+                        Roles.AlgemeenBeheerder
                     },
                 };
                 yield return new object[]

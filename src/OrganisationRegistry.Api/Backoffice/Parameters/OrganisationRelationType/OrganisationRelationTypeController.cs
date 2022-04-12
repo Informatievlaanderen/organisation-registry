@@ -63,7 +63,7 @@
         /// <response code="201">If the organisation relation type is created, together with the location.</response>
         /// <response code="400">If the organisation relation type information does not pass validation.</response>
         [HttpPost]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromBody] CreateOrganisationRelationTypeRequest message)
@@ -80,7 +80,7 @@
         /// <response code="200">If the organisation relation type is updated, together with the location.</response>
         /// <response code="400">If the organisation relation type information does not pass validation.</response>
         [HttpPut("{id}")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateOrganisationRelationTypeRequest message)

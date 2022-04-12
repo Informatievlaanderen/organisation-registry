@@ -109,7 +109,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Delegations.Queries
             // Only show relevant delegations,
             //  - OrganisationRegistryBeheerder can see everything, so we dont reduce
             //  - OrganisatieBeheerder can see only bodies owned by his organisation
-            if (_securityInformation.Roles.Contains(Role.OrganisatieBeheerder) && !_securityInformation.Roles.Contains(Role.OrganisationRegistryBeheerder))
+            if (_securityInformation.Roles.Contains(Role.DecentraalBeheerder) && !_securityInformation.Roles.Contains(Role.AlgemeenBeheerder))
             {
                 // If there are no organisations, prevent sending all delegations
                 if (_securityInformation.OrganisationIds.Count == 0)

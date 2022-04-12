@@ -26,7 +26,7 @@
 
         /// <summary>Get a list of events.</summary>
         [HttpGet]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
         {
@@ -46,7 +46,7 @@
         /// <response code="200">If the event is found.</response>
         /// <response code="404">If the event cannot be found.</response>
         [HttpGet("{id}")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] int id)

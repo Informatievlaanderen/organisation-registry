@@ -12,7 +12,7 @@ const routes: Routes = [
     component: OrganisationClassificationTypeOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Organisatie classificatietypes'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: OrganisationClassificationTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Nieuw organisatie classificatietype'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: OrganisationClassificationTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Bewerken organisatie classificatietype'
     }
   },

@@ -88,7 +88,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
                 new ValidFrom(DateTimeProviderStub.Today), new ValidTo(DateTimeProviderStub.Today))
             {
                 User = new UserBuilder()
-                    .AddRoles(Role.OrganisationRegistryBeheerder)
+                    .AddRoles(Role.AlgemeenBeheerder)
                     .Build()
             };
         }

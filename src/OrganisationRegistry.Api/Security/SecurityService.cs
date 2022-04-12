@@ -25,9 +25,9 @@ namespace OrganisationRegistry.Api.Security
 
         private readonly Dictionary<string, Role> _roleMapping = new()
         {
-            { Roles.OrganisationRegistryBeheerder, Role.OrganisationRegistryBeheerder },
+            { Roles.AlgemeenBeheerder, Role.AlgemeenBeheerder },
             { Roles.VlimpersBeheerder, Role.VlimpersBeheerder },
-            { Roles.OrganisatieBeheerder, Role.OrganisatieBeheerder },
+            { Roles.DecentraalBeheerder, Role.DecentraalBeheerder },
             { Roles.OrgaanBeheerder, Role.OrgaanBeheerder },
             { Roles.Developer, Role.Developer },
             { Roles.AutomatedTask, Role.AutomatedTask }
@@ -48,7 +48,7 @@ namespace OrganisationRegistry.Api.Security
             var securityInfo = await GetSecurityInformation(user);
 
             // Admins can do everything
-            if (securityInfo.Roles.Contains(Role.OrganisationRegistryBeheerder) ||
+            if (securityInfo.Roles.Contains(Role.AlgemeenBeheerder) ||
                 securityInfo.Roles.Contains(Role.Developer))
                 return true;
 
@@ -61,7 +61,7 @@ namespace OrganisationRegistry.Api.Security
             var securityInfo = await GetSecurityInformation(user);
 
             // Admins can do everything
-            if (securityInfo.Roles.Contains(Role.OrganisationRegistryBeheerder) ||
+            if (securityInfo.Roles.Contains(Role.AlgemeenBeheerder) ||
                 securityInfo.Roles.Contains(Role.Developer))
                 return true;
 
@@ -74,7 +74,7 @@ namespace OrganisationRegistry.Api.Security
             var securityInfo = await GetSecurityInformation(user);
 
             // Admins can do everything
-            if (securityInfo.Roles.Contains(Role.OrganisationRegistryBeheerder) ||
+            if (securityInfo.Roles.Contains(Role.AlgemeenBeheerder) ||
                 securityInfo.Roles.Contains(Role.Developer))
                 return true;
 
@@ -88,7 +88,7 @@ namespace OrganisationRegistry.Api.Security
             var securityInfo = await GetSecurityInformation(user);
 
             // Admins can do everything
-            if (securityInfo.Roles.Contains(Role.OrganisationRegistryBeheerder) ||
+            if (securityInfo.Roles.Contains(Role.AlgemeenBeheerder) ||
                 securityInfo.Roles.Contains(Role.OrgaanBeheerder) ||
                 securityInfo.Roles.Contains(Role.Developer))
                 return true;
@@ -102,7 +102,7 @@ namespace OrganisationRegistry.Api.Security
             var securityInfo = await GetSecurityInformation(user);
 
             // Admins can do everything
-            if (securityInfo.Roles.Contains(Role.OrganisationRegistryBeheerder) ||
+            if (securityInfo.Roles.Contains(Role.AlgemeenBeheerder) ||
                 securityInfo.Roles.Contains(Role.OrgaanBeheerder) ||
                 securityInfo.Roles.Contains(Role.Developer))
                 return true;
@@ -200,7 +200,7 @@ namespace OrganisationRegistry.Api.Security
         public bool CanUseKeyType(IUser user, Guid keyTypeId)
         {
             if (user.IsInRole(Role.Developer) ||
-                user.IsInRole(Role.OrganisationRegistryBeheerder))
+                user.IsInRole(Role.AlgemeenBeheerder))
                 return true;
 
             if (_configuration.OrafinKeyTypeId.Equals(keyTypeId))
@@ -217,7 +217,7 @@ namespace OrganisationRegistry.Api.Security
         public bool CanUseLabelType(IUser user, Guid labelTypeId)
         {
             if (user.IsInRole(Role.Developer) ||
-                user.IsInRole(Role.OrganisationRegistryBeheerder))
+                user.IsInRole(Role.AlgemeenBeheerder))
                 return true;
 
             if (_configuration.FormalNameLabelTypeId.Equals(labelTypeId) ||
@@ -238,7 +238,7 @@ namespace OrganisationRegistry.Api.Security
                 return false;
 
             return
-                securityInfo.Roles.Contains(Role.OrganisatieBeheerder) &&
+                securityInfo.Roles.Contains(Role.DecentraalBeheerder) &&
                 securityInfo.OrganisationIds.Contains(organisationId.Value);
         }
 
@@ -248,7 +248,7 @@ namespace OrganisationRegistry.Api.Security
                 return false;
 
             return
-                securityInfo.Roles.Contains(Role.OrganisatieBeheerder) &&
+                securityInfo.Roles.Contains(Role.DecentraalBeheerder) &&
                 securityInfo.BodyIds.Contains(bodyId.Value);
         }
 

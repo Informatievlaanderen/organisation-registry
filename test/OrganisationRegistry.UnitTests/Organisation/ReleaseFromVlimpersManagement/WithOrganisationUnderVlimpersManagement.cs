@@ -60,7 +60,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.ReleaseFromVlimpersManagem
         protected override ReleaseFromVlimpersManagement When()
             => new ReleaseFromVlimpersManagement(
                     _organisationId)
-                .WithUserRole(Role.OrganisationRegistryBeheerder);
+                .WithUserRole(Role.AlgemeenBeheerder);
 
         protected override OrganisationCommandHandlers BuildHandler()
             => new OrganisationCommandHandlers(

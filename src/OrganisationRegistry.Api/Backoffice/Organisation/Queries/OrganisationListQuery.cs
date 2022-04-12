@@ -125,7 +125,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
 
             if (filtering.Filter.AuthorizedOnly)
             {
-                if (!_securityInformation.Roles.Contains(Role.OrganisationRegistryBeheerder))
+                if (!_securityInformation.Roles.Contains(Role.AlgemeenBeheerder))
                     organisations = organisations.Where(x => _securityInformation.OvoNumbers.Contains(x.OvoNumber));
             }
 

@@ -65,7 +65,7 @@
         /// <response code="201">If the organisation is linked, together with the location.</response>
         /// <response code="400">If the organisation information does not pass validation.</response>
         [HttpPost]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.OrgaanBeheerder)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.OrgaanBeheerder)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] AddBodyOrganisationRequest message)
@@ -87,7 +87,7 @@
         /// <response code="201">If the organisation is updated, together with the location.</response>
         /// <response code="400">If the organisation information does not pass validation.</response>
         [HttpPut("{id}")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.OrgaanBeheerder)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.OrgaanBeheerder)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid bodyId, [FromBody] UpdateBodyOrganisationRequest message)

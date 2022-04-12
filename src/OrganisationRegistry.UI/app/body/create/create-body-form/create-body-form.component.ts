@@ -42,7 +42,7 @@ export class CreateBodyFormComponent implements OnInit {
     private formBuilder: FormBuilder
   ) {
     let roles = this.route.snapshot.data['userRoles'];
-    let isOrganisatieBeheerder = roles.indexOf(Role.OrganisatieBeheerder) !== -1;
+    let isOrganisatieBeheerder = roles.indexOf(Role.DecentraalBeheerder) !== -1;
     this.isOrgaanBeheerder = roles.indexOf(Role.OrgaanBeheerder) !== -1;
 
     this.form = formBuilder.group({

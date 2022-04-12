@@ -7,7 +7,7 @@ namespace OrganisationRegistry.Handling.Authorization
     {
         public AuthorizationResult Check(IUser user)
         {
-            return user.IsInRole(Role.OrganisationRegistryBeheerder) ?
+            return user.IsInRole(Role.AlgemeenBeheerder) ?
                     AuthorizationResult.Success() :
                     AuthorizationResult.Fail(new InsufficientRights());
         }

@@ -55,7 +55,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfoNotL
         protected override UpdateOrganisationInfoNotLimitedToVlimpers When()
         {
             var user = new UserBuilder()
-                .AddRoles(Role.OrganisationRegistryBeheerder)
+                .AddRoles(Role.AlgemeenBeheerder)
                 .Build();
 
             return new UpdateOrganisationInfoNotLimitedToVlimpers(

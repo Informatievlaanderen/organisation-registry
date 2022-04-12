@@ -12,7 +12,7 @@ const routes: Routes = [
     component: LifecyclePhaseTypeOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Levensloopfase types'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: LifecyclePhaseTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Nieuw levensloopfase type'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: LifecyclePhaseTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Bewerken levensloopfase type'
     }
   },

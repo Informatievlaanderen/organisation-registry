@@ -65,7 +65,7 @@ export class OrganisationInfoOverviewComponent implements OnInit, OnDestroy {
       .subscribe(params => {
         this.isBusy = true;
         this.id = params['id'];
-        this.isOrganisationRegistryBeheerder = this.oidcService.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]);
+        this.isOrganisationRegistryBeheerder = this.oidcService.hasAnyOfRoles([Role.AlgemeenBeheerder]);
         this.store.loadOrganisation(this.id);
         this.store.loadChildren(this.id);
       }));

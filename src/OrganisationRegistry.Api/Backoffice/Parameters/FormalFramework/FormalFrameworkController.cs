@@ -94,7 +94,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFramework
         /// <response code="201">If the formal framework is created, together with the location.</response>
         /// <response code="400">If the formal framework information does not pass validation.</response>
         [HttpPost]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromBody] CreateFormalFrameworkRequest message)
@@ -111,7 +111,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFramework
         /// <response code="200">If the formal framework is updated, together with the location.</response>
         /// <response code="400">If the formal framework information does not pass validation.</response>
         [HttpPut("{id}")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put([FromRoute] Guid id, [FromBody] UpdateFormalFrameworkRequest message)

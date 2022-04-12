@@ -12,7 +12,7 @@ const routes: Routes = [
     component: FormalFrameworkOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Toepassingsgebieden'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: FormalFrameworkDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Nieuw toepassingsgebied'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: FormalFrameworkDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Bewerken toepassingsgebied'
     }
   },

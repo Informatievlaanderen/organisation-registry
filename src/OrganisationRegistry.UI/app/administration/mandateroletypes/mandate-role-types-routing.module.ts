@@ -12,7 +12,7 @@ const routes: Routes = [
     component: MandateRoleTypeOverviewComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Mandaat rollen'
     }
   },
@@ -21,7 +21,7 @@ const routes: Routes = [
     component: MandateRoleTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Nieuwe mandaat rol'
     }
   },
@@ -30,7 +30,7 @@ const routes: Routes = [
     component: MandateRoleTypeDetailComponent,
     canActivate: [RoleGuard],
     data: {
-      roles: [Role.OrganisationRegistryBeheerder],
+      roles: [Role.AlgemeenBeheerder],
       title: 'Parameters - Bewerken mandaat rol'
     }
   },

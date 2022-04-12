@@ -167,7 +167,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
         /// <summary>Terminate an organisation.</summary>
         /// <response code="200">If the organisation is terminated.</response>
         [HttpPut("{id}/terminate")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.VlimpersBeheerder)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.VlimpersBeheerder)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Terminate([FromRoute] Guid id, [FromBody] OrganisationTerminationRequest message)

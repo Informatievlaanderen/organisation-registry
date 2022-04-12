@@ -24,7 +24,7 @@ namespace OrganisationRegistry.Api.Backoffice.Vlimpers
         /// <summary>Couple an organisation to a KBO number.</summary>
         /// <response code="200">If the organisation was coupled.</response>
         [HttpPatch("{id}/vlimpers")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Vlimpers(
             [FromRoute] Guid id,

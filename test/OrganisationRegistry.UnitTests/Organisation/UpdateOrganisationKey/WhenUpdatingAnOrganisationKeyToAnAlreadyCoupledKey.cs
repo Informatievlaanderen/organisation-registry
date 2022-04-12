@@ -75,7 +75,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
                 new ValidTo(null))
             {
                 User = new UserBuilder()
-                    .AddRoles(Role.OrganisationRegistryBeheerder)
+                    .AddRoles(Role.AlgemeenBeheerder)
                     .Build()
             };
         }

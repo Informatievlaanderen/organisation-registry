@@ -6,7 +6,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     return false;
@@ -16,7 +16,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     return false;
@@ -26,7 +26,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return AllowedOrganisationFields.None;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return AllowedOrganisationFields.All;
 
     if (securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder])){
@@ -52,7 +52,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     if (organisation.underVlimpersManagement &&
@@ -79,7 +79,7 @@ export class OrganisationAuthorization {
       securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
       return true;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     return false;
@@ -90,7 +90,7 @@ export class OrganisationAuthorization {
       return false;
 
     return organisation.kboNumber &&
-      securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder])
+      securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder])
   }
 
   public static canCoupleWithKbo(organisation, securityInfo) {
@@ -98,14 +98,14 @@ export class OrganisationAuthorization {
       return false;
 
     return !organisation.kboNumber &&
-      securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder])
+      securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder])
   }
 
   public static canAddDaughters(organisation, securityInfo) {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     if (organisation.underVlimpersManagement &&
@@ -126,7 +126,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     if (organisation.isTerminated)
@@ -139,7 +139,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     if (organisation.isTerminated)
@@ -155,7 +155,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     if (organisation.isTerminated)
@@ -171,7 +171,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     if (organisation.isTerminated)
@@ -187,7 +187,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     if (organisation.isTerminated)
@@ -203,7 +203,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     if (organisation.isTerminated)
@@ -219,7 +219,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     if (organisation.isTerminated)
@@ -235,7 +235,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     if (organisation.isTerminated)
@@ -251,7 +251,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     if (organisation.isTerminated)
@@ -267,7 +267,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     if (organisation.isTerminated)
@@ -284,7 +284,7 @@ export class OrganisationAuthorization {
       return false;
 
     if (securityInfo.hasAnyOfRoles([
-      Role.OrganisationRegistryBeheerder,
+      Role.AlgemeenBeheerder,
       Role.OrgaanBeheerder
     ]))
       return true;
@@ -299,7 +299,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     if (organisation.underVlimpersManagement &&
@@ -320,7 +320,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     if (securityInfo.hasAnyOfRoles([Role.VlimpersBeheerder]))
@@ -339,7 +339,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     if (organisation.underVlimpersManagement &&
@@ -359,7 +359,7 @@ export class OrganisationAuthorization {
     if (!securityInfo.isLoggedIn)
       return false;
 
-    if (securityInfo.hasAnyOfRoles([Role.OrganisationRegistryBeheerder]))
+    if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
     if (organisation.underVlimpersManagement &&

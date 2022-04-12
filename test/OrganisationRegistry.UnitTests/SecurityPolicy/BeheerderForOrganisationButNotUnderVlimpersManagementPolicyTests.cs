@@ -22,7 +22,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
         {
             var ovoNumbers = _fixture.CreateMany<string>().ToArray();
             var user = new UserBuilder()
-                .AddRoles(Role.OrganisatieBeheerder)
+                .AddRoles(Role.DecentraalBeheerder)
                 .AddOrganisations(ovoNumbers)
                 .Build();
 
@@ -40,7 +40,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
         {
             var ovoNumbers = _fixture.CreateMany<string>().ToArray();
             var user = new UserBuilder()
-                .AddRoles(Role.OrganisatieBeheerder)
+                .AddRoles(Role.DecentraalBeheerder)
                 .AddOrganisations(ovoNumbers)
                 .Build();
 
@@ -54,7 +54,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
         }
 
         [Theory]
-        [InlineData(Role.OrganisationRegistryBeheerder)]
+        [InlineData(Role.AlgemeenBeheerder)]
         public void OrganisationRegistryBeheerderIsAlwaysAuthorized(Role role, params string[] organisationOvos)
         {
             var user = new UserBuilder()

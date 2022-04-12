@@ -73,7 +73,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationFormalFrame
                 new ValidFrom(), new ValidTo())
             {
                 User = new UserBuilder()
-                    .AddRoles(Role.OrganisationRegistryBeheerder)
+                    .AddRoles(Role.AlgemeenBeheerder)
                     .Build()
             };
         }

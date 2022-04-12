@@ -35,7 +35,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
         /// <summary>Return raw result from magda kbo lookup.</summary>
         /// <response code="200">The raw request/response from magda kbo lookup.</response>
         [HttpGet("{kboNumberInput}")]
-        [OrganisationRegistryAuthorize(Roles = Roles.OrganisationRegistryBeheerder + "," + Roles.Developer)]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get(
             [FromServices] ISecurityService securityService,

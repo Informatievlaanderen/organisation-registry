@@ -1,7 +1,7 @@
 export enum Role {
-  OrganisationRegistryBeheerder,
+  AlgemeenBeheerder,
   VlimpersBeheerder,
-  OrganisatieBeheerder,
+  DecentraalBeheerder,
   OrgaanBeheerder,
   Developer,
   AutomatedTask

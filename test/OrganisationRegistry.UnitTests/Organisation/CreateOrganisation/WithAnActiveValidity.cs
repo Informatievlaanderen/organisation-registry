@@ -42,7 +42,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
                 new ValidTo())
             {
                 User = new UserBuilder()
-                    .AddRoles(Role.OrganisationRegistryBeheerder)
+                    .AddRoles(Role.AlgemeenBeheerder)
                     .Build()
             };
         }
