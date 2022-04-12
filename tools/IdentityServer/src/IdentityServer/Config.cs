@@ -92,17 +92,17 @@ public static class Config
             },
             new TestUser
             {
-                Username = "invoerder",
-                Password = "invoerder",
+                Username = "decentraalbeheerder",
+                Password = "decentraalbeheerder",
                 IsActive = true,
                 Claims = new List<Claim>
                 {
                     new Claim("vo_id", "34E7CF51-0AF1-436E-B187-BEE803525BA6"),
                     new Claim(JwtClaimTypes.FamilyName, "Persona"),
-                    new Claim(JwtClaimTypes.GivenName, "Invoerder"),
-                    new Claim("iv_wegwijs_rol_3D", "WegwijsBeheerder-beheerder:OVO002949"),
+                    new Claim(JwtClaimTypes.GivenName, "Decentraalbeheerder"),
+                    new Claim("iv_wegwijs_rol_3D", "WegwijsBeheerder-decentraalbeheerder:OVO002949"),
                 },
-                SubjectId = "invoerder",
+                SubjectId = "decentraalbeheerder",
             },
             new TestUser
             {
