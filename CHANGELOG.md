@@ -1,3 +1,10 @@
+# [1.159.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.158.0...v1.159.0) (2022-04-13)
+
+
+### Features
+
+* cleanup ([fc893b2](https://github.com/informatievlaanderen/organisation-registry/commit/fc893b2c313b941ba93f59311c4337cac93be2bf))
+
 # [1.158.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.157.0...v1.158.0) (2022-04-12)
 
 
