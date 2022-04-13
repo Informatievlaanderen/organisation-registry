@@ -87,7 +87,7 @@ namespace OrganisationRegistry.Api.Security
             identity = wegwijsTokenBuilder.ParseRoles(identity);
             var jwtToken = wegwijsTokenBuilder.BuildJwt(identity);
 
-            securityService.ExpireUserCache(identity.GetOptionalClaim(OrganisationRegistryClaims.ClaimAcmId));
+            securityService.ExpireUserCache(identity.GetOptionalClaim(AcmIdmConstants.Claims.AcmId));
 
             return Ok(jwtToken);
         }

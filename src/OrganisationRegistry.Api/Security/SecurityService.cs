@@ -118,7 +118,7 @@ namespace OrganisationRegistry.Api.Security
 
             var firstName = user.GetRequiredClaim(ClaimTypes.GivenName);
             var name = user.GetRequiredClaim(ClaimTypes.Surname);
-            var acmId = user.GetRequiredClaim(OrganisationRegistryClaims.ClaimAcmId);
+            var acmId = user.GetRequiredClaim(AcmIdmConstants.Claims.AcmId);
 
             var roles = user
                 .GetClaims(ClaimTypes.Role)
@@ -155,11 +155,11 @@ namespace OrganisationRegistry.Api.Security
             if (lastName == null)
                 throw new Exception("Could not determine current user's last name");
 
-            var acmId = principal.FindFirst(OrganisationRegistryClaims.ClaimAcmId);
+            var acmId = principal.FindFirst(AcmIdmConstants.Claims.AcmId);
             if (acmId == null)
                 throw new Exception("Could not determine current user's acm id");
 
-            var ip = principal.FindFirst(OrganisationRegistryClaims.ClaimIp);
+            var ip = principal.FindFirst(AcmIdmConstants.Claims.Ip);
 
             var securityInformation = await GetSecurityInformation(principal);
 
@@ -182,8 +182,8 @@ namespace OrganisationRegistry.Api.Security
 
             var firstName = principal.GetRequiredClaim(ClaimTypes.GivenName);
             var lastName = principal.GetRequiredClaim(ClaimTypes.Surname);
-            var acmId = principal.GetRequiredClaim(OrganisationRegistryClaims.ClaimAcmId);
-            var ip = principal.GetOptionalClaim(OrganisationRegistryClaims.ClaimIp);
+            var acmId = principal.GetRequiredClaim(AcmIdmConstants.Claims.AcmId);
+            var ip = principal.GetOptionalClaim(AcmIdmConstants.Claims.Ip);
 
             var securityInformation = await GetSecurityInformation(principal);
 

@@ -48,27 +48,27 @@ namespace OrganisationRegistry.Api.Security
         {
             identity.AddClaim(
                 new Claim(
-                    OrganisationRegistryClaims.ClaimUserId,
+                    AcmIdmConstants.Claims.Id,
                     identity.GetOptionalClaim(JwtClaimTypes.Subject),
                     ClaimValueTypes.String));
 
             identity.AddClaim(
-                new Claim(OrganisationRegistryClaims.ClaimName, JwtClaimTypes.FamilyName, ClaimValueTypes.String));
+                new Claim(AcmIdmConstants.Claims.FamilyName, JwtClaimTypes.FamilyName, ClaimValueTypes.String));
 
             identity.AddClaim(
-                new Claim(OrganisationRegistryClaims.ClaimFirstname, JwtClaimTypes.GivenName, ClaimValueTypes.String));
+                new Claim(AcmIdmConstants.Claims.Firstname, JwtClaimTypes.GivenName, ClaimValueTypes.String));
 
-            var roles = identity.GetClaims(OrganisationRegistryClaims.ClaimRoles)
+            var roles = identity.GetClaims(AcmIdmConstants.Claims.Role)
                 .Select(x => x.ToLowerInvariant())
-                .Where(x => x.StartsWith(OrganisationRegistryClaims.OrganisationRegistryBeheerderPrefix))
-                .Select(x => x.Replace(OrganisationRegistryClaims.OrganisationRegistryBeheerderPrefix, ""))
+                .Where(x => x.StartsWith(AcmIdmConstants.RolePrefix))
+                .Select(x => x.Replace(AcmIdmConstants.RolePrefix, ""))
                 .ToList();
 
             var developers = (_configuration.Developers ?? string.Empty)
                 .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(x => x.ToLowerInvariant());
 
-            var acmIdClaim = identity.GetOptionalClaim(OrganisationRegistryClaims.ClaimAcmId);
+            var acmIdClaim = identity.GetOptionalClaim(AcmIdmConstants.Claims.AcmId);
 
             if (!string.IsNullOrEmpty(acmIdClaim) &&
                 developers.Contains(acmIdClaim.ToLowerInvariant()))
@@ -77,7 +77,7 @@ namespace OrganisationRegistry.Api.Security
             if (!roles.Any())
                 return identity;
 
-            if (roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryAlgemeenBeheerderRole)))
+            if (roles.Any(x => x.Contains(AcmIdmConstants.Roles.AlgemeenBeheerder)))
             {
                 AddOrganisationRegistryBeheerderClaim(identity);
             }
@@ -93,7 +93,7 @@ namespace OrganisationRegistry.Api.Security
 
         private static void AddVlimpersBeheerderClaim(IEnumerable<string> roles, ClaimsIdentity identity)
         {
-            if (!roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryVlimpersBeheerderRole)))
+            if (!roles.Any(x => x.Contains(AcmIdmConstants.Roles.VlimpersBeheerder)))
                 return;
 
             AddRoleClaim(identity, Roles.VlimpersBeheerder);
@@ -103,14 +103,14 @@ namespace OrganisationRegistry.Api.Security
         {
             // If any of the roles is wegwijs body admin, you are one, regardless on which OVO you got it
 
-            if (!roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryOrgaanBeheerderRole)))
+            if (!roles.Any(x => x.Contains(AcmIdmConstants.Roles.OrgaanBeheerder)))
                 return;
 
             AddRoleClaim(identity, Roles.OrgaanBeheerder);
 
             for (var i = 0; i < roles.Count; i++)
                 roles[i] = roles[i].Replace(
-                    OrganisationRegistryClaims.OrganisationRegistryOrgaanBeheerderRole,
+                    AcmIdmConstants.Roles.OrgaanBeheerder,
                     string.Empty);
         }
 
@@ -127,15 +127,15 @@ namespace OrganisationRegistry.Api.Security
             {
                 // OrganisationRegistryBeheerder-algemeenbeheerder,beheerder:OVO002949
                 var organisation = role.Replace(
-                    OrganisationRegistryClaims.OrganisationRegistryBeheerderPrefix,
+                    AcmIdmConstants.RolePrefix,
                     string.Empty).Split(':')[1];
                 AddOrganisationClaim(identity, organisation);
             }
         }
 
         private static bool IsDecentraalBeheerder(string role)
-            => role.StartsWith(OrganisationRegistryClaims.OrganisationRegistryBeheerderRole)
-               || role.StartsWith(OrganisationRegistryClaims.OrganisationRegistryDecentraalBeheerderRole);
+            => role.StartsWith(AcmIdmConstants.Roles.Beheerder)
+               || role.StartsWith(AcmIdmConstants.Roles.DecentraalBeheerder);
 
         private static void AddOrganisationRegistryBeheerderClaim(ClaimsIdentity identity)
         {
@@ -151,7 +151,7 @@ namespace OrganisationRegistry.Api.Security
 
         private static void AddOrganisationClaim(ClaimsIdentity identity, string value)
         {
-            var claim = new Claim(OrganisationRegistryClaims.ClaimOrganisation, value, ClaimValueTypes.String);
+            var claim = new Claim(AcmIdmConstants.Claims.Organisation, value, ClaimValueTypes.String);
             if (!identity.HasClaim(ClaimTypes.Role, value))
                 identity.AddClaim(claim);
         }

@@ -28,8 +28,8 @@ namespace OrganisationRegistry.Api.Infrastructure.Security
 
                     var ip = context.Request.HttpContext.Connection.RemoteIpAddress;
 
-                    if (!user.HasClaim(x => x.Type == OrganisationRegistryClaims.ClaimIp))
-                        user.AddClaim(new Claim(OrganisationRegistryClaims.ClaimIp, ip.ToString(), ClaimValueTypes.String));
+                    if (!user.HasClaim(x => x.Type == AcmIdmConstants.Claims.Ip))
+                        user.AddClaim(new Claim(AcmIdmConstants.Claims.Ip, ip.ToString(), ClaimValueTypes.String));
 
                     return authInfo.Principal;
                 }
