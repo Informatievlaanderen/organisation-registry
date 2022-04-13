@@ -2,7 +2,6 @@ namespace OrganisationRegistry.Api.Security
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Security.Claims;
@@ -73,7 +72,7 @@ namespace OrganisationRegistry.Api.Security
 
             if (!string.IsNullOrEmpty(acmIdClaim) &&
                 developers.Contains(acmIdClaim.ToLowerInvariant()))
-                AddRoleClaim(identity, OrganisationRegistryApiClaims.Developer);
+                AddRoleClaim(identity, Roles.Developer);
 
             if (!roles.Any())
                 return identity;
@@ -97,7 +96,7 @@ namespace OrganisationRegistry.Api.Security
             if (!roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryVlimpersBeheerderRole)))
                 return;
 
-            AddRoleClaim(identity, OrganisationRegistryApiClaims.VlimpersBeheerder);
+            AddRoleClaim(identity, Roles.VlimpersBeheerder);
         }
 
         private static void AddOrgaanBeheerderClaim(IList<string> roles, ClaimsIdentity identity)
@@ -107,7 +106,7 @@ namespace OrganisationRegistry.Api.Security
             if (!roles.Any(x => x.Contains(OrganisationRegistryClaims.OrganisationRegistryOrgaanBeheerderRole)))
                 return;
 
-            AddRoleClaim(identity, OrganisationRegistryApiClaims.OrgaanBeheerder);
+            AddRoleClaim(identity, Roles.OrgaanBeheerder);
 
             for (var i = 0; i < roles.Count; i++)
                 roles[i] = roles[i].Replace(
@@ -121,7 +120,7 @@ namespace OrganisationRegistry.Api.Security
                 return;
 
             // If any of the roles is admin, you are an admin and we add the organisations separatly
-            AddRoleClaim(identity, OrganisationRegistryApiClaims.DecentraalBeheerder);
+            AddRoleClaim(identity, Roles.DecentraalBeheerder);
 
             var adminRoles = roles.Where(IsDecentraalBeheerder);
             foreach (var role in adminRoles)
@@ -140,7 +139,7 @@ namespace OrganisationRegistry.Api.Security
 
         private static void AddOrganisationRegistryBeheerderClaim(ClaimsIdentity identity)
         {
-            AddRoleClaim(identity, OrganisationRegistryApiClaims.AlgemeenBeheerder);
+            AddRoleClaim(identity, Roles.AlgemeenBeheerder);
         }
 
         private static void AddRoleClaim(ClaimsIdentity identity, string value)
