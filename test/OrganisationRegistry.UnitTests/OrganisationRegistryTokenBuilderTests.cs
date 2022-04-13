@@ -29,7 +29,7 @@ namespace OrganisationRegistry.UnitTests
                     new[]
                     {
                         new Claim(JwtClaimTypes.Subject, fixture.Create<string>()),
-                        new Claim(OrganisationRegistryClaims.ClaimRoles, roleClaim)
+                        new Claim(AcmIdmConstants.Claims.Role, roleClaim)
                     }));
 
             claimsIdentity.Claims
@@ -56,7 +56,7 @@ namespace OrganisationRegistry.UnitTests
 
             var identity = new ClaimsIdentity();
             identity.AddClaim(new Claim(JwtClaimTypes.Subject, fixture.Create<string>()));
-            identity.AddClaims(claims.Select(claim => new Claim(OrganisationRegistryClaims.ClaimRoles, claim)));
+            identity.AddClaims(claims.Select(claim => new Claim(AcmIdmConstants.Claims.Role, claim)));
 
             var claimsIdentity = tokenBuilder.ParseRoles(identity);
 
@@ -77,7 +77,7 @@ namespace OrganisationRegistry.UnitTests
 
             var identity = new ClaimsIdentity();
             identity.AddClaim(new Claim(JwtClaimTypes.Subject, fixture.Create<string>()));
-            identity.AddClaims(claims.Select(claim => new Claim(OrganisationRegistryClaims.ClaimRoles, claim)));
+            identity.AddClaims(claims.Select(claim => new Claim(AcmIdmConstants.Claims.Role, claim)));
 
             var claimsIdentity = tokenBuilder.ParseRoles(identity);
 
@@ -98,12 +98,12 @@ namespace OrganisationRegistry.UnitTests
 
             var identity = new ClaimsIdentity();
             identity.AddClaim(new Claim(JwtClaimTypes.Subject, fixture.Create<string>()));
-            identity.AddClaims(claims.Select(claim => new Claim(OrganisationRegistryClaims.ClaimRoles, claim)));
+            identity.AddClaims(claims.Select(claim => new Claim(AcmIdmConstants.Claims.Role, claim)));
 
             var claimsIdentity = tokenBuilder.ParseRoles(identity);
 
             claimsIdentity.Claims
-                .Where(claim => claim.Type == OrganisationRegistryClaims.ClaimOrganisation)
+                .Where(claim => claim.Type == AcmIdmConstants.Claims.Organisation)
                 .Select(claim => claim.Value)
                 .ToList()
                 .Should()
