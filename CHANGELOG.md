@@ -1,3 +1,10 @@
+## [1.160.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.160.0...v1.160.1) (2022-04-14)
+
+
+### Bug Fixes
+
+* or-889 use proper name for regelgevingbeheerder ([ae00c79](https://github.com/informatievlaanderen/organisation-registry/commit/ae00c79c12d02dcb6f8e376a718ab60f7ddb70c5))
+
 # [1.160.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.159.0...v1.160.0) (2022-04-14)
 
 
