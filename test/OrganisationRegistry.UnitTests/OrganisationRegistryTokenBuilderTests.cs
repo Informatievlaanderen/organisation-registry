@@ -171,6 +171,17 @@ namespace OrganisationRegistry.UnitTests
                         Roles.OrgaanBeheerder
                     },
                 };
+                yield return new object[]
+                {
+                    new[]
+                    {
+                        "WegwijsBeheerder-regelgevingbeheerder:OVO002949",
+                    },
+                    new[]
+                    {
+                        Roles.RegelgevingBeheerder,
+                    },
+                };
             }
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

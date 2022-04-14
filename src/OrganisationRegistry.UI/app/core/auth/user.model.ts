@@ -33,6 +33,10 @@ export class User {
           roles.push(Role.DecentraalBeheerder);
           break;
 
+        case 'regelgevingBeheerder':
+          roles.push(Role.RegelgevingBeheerder);
+          break;
+
         case 'developer':
           roles.push(Role.Developer);
           break;

@@ -8,5 +8,6 @@
         public const string OrgaanBeheerder = "orgaanBeheerder";
         public const string Developer = "developer";
         public const string AutomatedTask = "automatedTask";
+        public const string RegelgevingBeheerder = "regelgevingBeheerder";
     }
 }

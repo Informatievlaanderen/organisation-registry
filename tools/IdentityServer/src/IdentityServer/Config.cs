@@ -131,6 +131,20 @@ public static class Config
                     new Claim("iv_wegwijs_rol_3D", "WegwijsBeheerder-orgaanbeheerder:OVO001835"),
                 },
                 SubjectId = "organen",
+            },
+            new TestUser
+            {
+                Username = "regelgeving",
+                Password = "regelgeving",
+                IsActive = true,
+                Claims = new List<Claim>
+                {
+                    new Claim("vo_id", "A5C5BFCD-266C-4CC7-9869-4B95E34C090D"),
+                    new Claim(JwtClaimTypes.FamilyName, "Persona"),
+                    new Claim(JwtClaimTypes.GivenName, "Regelgevingbeheerder"),
+                    new Claim("iv_wegwijs_rol_3D", "WegwijsBeheerder-regelgevingbeheerder:OVO001833"),
+                },
+                SubjectId = "regelgeving",
             }
         };
 }
