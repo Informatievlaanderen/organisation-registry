@@ -6,6 +6,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization
         VlimpersBeheerder,
         DecentraalBeheerder,
         OrgaanBeheerder,
+        RegelgevingBeheerder,
         Orafin,
         Developer,
         AutomatedTask

@@ -60,6 +60,8 @@ export class NavbarComponent implements OnInit {
         role = 'Vlimpers beheerder';
       } else if (x.indexOf(Role.DecentraalBeheerder) !== -1) {
         role = 'Decentraal beheerder';
+      } else if (x.indexOf(Role.RegelgevingBeheerder) !== -1) {
+        role = 'Regelgeving beheerder';
       } else if (x.indexOf(Role.OrgaanBeheerder) !== -1) {
         role = 'Orgaan beheerder';
       }

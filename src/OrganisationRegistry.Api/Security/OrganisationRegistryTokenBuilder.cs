@@ -86,9 +86,18 @@ namespace OrganisationRegistry.Api.Security
                 AddVlimpersBeheerderClaim(roles, identity);
                 AddOrgaanBeheerderClaim(roles, identity);
                 AddOrganisatieBeheerderClaim(roles, identity);
+                AddRegelgevingBeheerderClaim(roles, identity);
             }
 
             return identity;
+        }
+
+        private static void AddRegelgevingBeheerderClaim(IEnumerable<string> roles, ClaimsIdentity identity)
+        {
+            if (!roles.Any(x => x.Contains(AcmIdmConstants.Roles.RegelgevingBeheerder)))
+                return;
+
+            AddRoleClaim(identity, Roles.RegelgevingBeheerder);
         }
 
         private static void AddVlimpersBeheerderClaim(IEnumerable<string> roles, ClaimsIdentity identity)

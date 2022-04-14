@@ -19,6 +19,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization
         {
             public const string AlgemeenBeheerder = "algemeenbeheerder";
             public const string VlimpersBeheerder = "vlimpersbeheerder";
+            public const string RegelgevingBeheerder = "regelgevingbeheerder";
 
             [Obsolete("will be overruled with decentraalbeheerder")]
             public const string Beheerder = "beheerder";

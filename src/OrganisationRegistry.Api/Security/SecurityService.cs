@@ -28,6 +28,7 @@ namespace OrganisationRegistry.Api.Security
             { Roles.AlgemeenBeheerder, Role.AlgemeenBeheerder },
             { Roles.VlimpersBeheerder, Role.VlimpersBeheerder },
             { Roles.DecentraalBeheerder, Role.DecentraalBeheerder },
+            { Roles.RegelgevingBeheerder, Role.RegelgevingBeheerder },
             { Roles.OrgaanBeheerder, Role.OrgaanBeheerder },
             { Roles.Developer, Role.Developer },
             { Roles.AutomatedTask, Role.AutomatedTask }
