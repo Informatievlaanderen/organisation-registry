@@ -1,4 +1,5 @@
-﻿namespace OrganisationRegistry
+﻿// ReSharper disable ContextualLoggerProblem
+namespace OrganisationRegistry
 {
     using Infrastructure.Domain;
     using Microsoft.Extensions.Logging;
@@ -15,7 +16,7 @@
             Logger = logger;
             Session = session;
 
-            Logger.LogTrace("Created CommandHandler {CommandHandlerName}.", typeof(T));
+            Logger.LogTrace("Created CommandHandler {CommandHandlerName}", typeof(T));
         }
     }
 }

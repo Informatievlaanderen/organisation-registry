@@ -11,7 +11,7 @@ namespace OrganisationRegistry.Organisation
     {
         public static void ThrowIfRegisteredOffice(
             IOrganisationRegistryConfiguration organisationRegistryConfiguration,
-            LocationType locationType)
+            LocationType? locationType)
         {
             if (organisationRegistryConfiguration.Kbo.KboV2RegisteredOfficeLocationTypeId == Guid.Empty)
                 return;
