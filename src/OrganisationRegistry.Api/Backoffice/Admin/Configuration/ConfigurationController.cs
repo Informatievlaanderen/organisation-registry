@@ -10,7 +10,6 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Configuration.Database;
     using OrganisationRegistry.Infrastructure.Commands;
     using Queries;
@@ -23,11 +22,8 @@
     [OrganisationRegistryAuthorize(Roles = Roles.Developer)]
     public class ConfigurationController : OrganisationRegistryController
     {
-        private readonly ILogger<ConfigurationController> _logger;
-
-        public ConfigurationController(ICommandSender commandSender, ILogger<ConfigurationController> logger) : base(commandSender)
+        public ConfigurationController(ICommandSender commandSender) : base(commandSender)
         {
-            _logger = logger;
         }
 
         /// <summary>Get a list of available configuration values.</summary>
@@ -77,9 +73,9 @@
                 return BadRequest(ModelState);
 
             context.Configuration.Add(new ConfigurationValue(message.Key, message.Description, message.Value));
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
-            return Created(Url.Action(nameof(Get), new { id = message.Key }), null);
+            return Created(Url.Action(nameof(Get), new { id = message.Key }) ?? "", null);
         }
 
         /// <summary>Update a configuration value.</summary>
@@ -98,9 +94,9 @@
             var configurationValue = context.Configuration.Single(x => x.Key == id);
             configurationValue.Value = internalMessage.Body.Value;
             configurationValue.Description = internalMessage.Body.Description;
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.Key }));
+            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.Key }) ?? "");
         }
     }
 }

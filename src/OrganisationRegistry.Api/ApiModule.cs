@@ -98,12 +98,12 @@ namespace OrganisationRegistry.Api
         {
             var defaultServiceProvider = context.Resolve<IServiceProvider>();
 
-            if (!context.TryResolve(out IHttpContextAccessor httpContextAccessor))
+            if (!context.TryResolve(out IHttpContextAccessor? httpContextAccessor))
                 return () => defaultServiceProvider.CreateScope().ServiceProvider;
 
             return () =>
             {
-                var requestServices = httpContextAccessor?.HttpContext?.RequestServices;
+                var requestServices = httpContextAccessor.HttpContext?.RequestServices;
                 return requestServices ?? defaultServiceProvider.CreateScope().ServiceProvider;
             };
         }
