@@ -1,3 +1,10 @@
+# [1.160.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.159.0...v1.160.0) (2022-04-14)
+
+
+### Features
+
+* or-889 allow regelgevingbeheerder to login ([f67f19a](https://github.com/informatievlaanderen/organisation-registry/commit/f67f19ae3f818262c4000584210c75f605991635))
+
 # [1.159.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.158.0...v1.159.0) (2022-04-13)
 
 
