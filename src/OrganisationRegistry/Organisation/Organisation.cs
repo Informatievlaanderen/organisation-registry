@@ -1,3 +1,5 @@
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedParameter.Local
 namespace OrganisationRegistry.Organisation
 {
     using Building;
@@ -726,9 +728,9 @@ namespace OrganisationRegistry.Organisation
         public void AddCapacity(
             Guid organisationCapacityId,
             Capacity capacity,
-            Person person,
-            FunctionType functionType,
-            Location location,
+            Person? person,
+            FunctionType? functionType,
+            Location? location,
             List<Contact> contacts,
             Period validity,
             IDateTimeProvider dateTimeProvider)
@@ -761,9 +763,9 @@ namespace OrganisationRegistry.Organisation
         public void UpdateCapacity(
             Guid organisationCapacityId,
             Capacity capacity,
-            Person person,
-            FunctionType functionType,
-            Location location,
+            Person? person,
+            FunctionType? functionType,
+            Location? location,
             List<Contact> contacts,
             Period validity,
             IDateTimeProvider dateTimeProvider)
@@ -1035,7 +1037,7 @@ namespace OrganisationRegistry.Organisation
 
         public void UpdateKboFormalNameLabel(IMagdaName kboFormalName, LabelType formalNameLabelType)
         {
-            if (KboState.KboFormalNameLabel.Value == kboFormalName.Value)
+            if (KboState.KboFormalNameLabel!.Value == kboFormalName.Value)
                 return;
 
             ApplyChange(
@@ -1168,7 +1170,7 @@ namespace OrganisationRegistry.Organisation
             Guid organisationLocationId,
             Location location,
             bool isMainLocation,
-            LocationType locationType,
+            LocationType? locationType,
             Period validity,
             Source source,
             IDateTimeProvider dateTimeProvider)
@@ -1181,7 +1183,7 @@ namespace OrganisationRegistry.Organisation
                     location.FormattedAddress,
                     isMainLocation,
                     locationType?.Id,
-                    locationType?.Name,
+                    locationType?.Name ?? "",
                     validity,
                     source);
 
@@ -1198,7 +1200,7 @@ namespace OrganisationRegistry.Organisation
                 location.FormattedAddress,
                 isMainLocation,
                 locationType?.Id,
-                locationType?.Name,
+                locationType?.Name ?? "",
                 validity.Start,
                 validity.End));
 
@@ -1208,9 +1210,8 @@ namespace OrganisationRegistry.Organisation
         public void AddKboRegisteredOfficeLocation(
             Guid organisationLocationId,
             Location location,
-            LocationType locationType,
-            Period validity,
-            IDateTimeProvider dateTimeProvider)
+            LocationType? locationType,
+            Period validity)
         {
             ApplyChange(new KboRegisteredOfficeOrganisationLocationAdded(
                 Id,
@@ -1219,16 +1220,16 @@ namespace OrganisationRegistry.Organisation
                 location.FormattedAddress,
                 false,
                 locationType?.Id,
-                locationType?.Name,
+                locationType?.Name ?? "",
                 validity.Start,
                 validity.End));
         }
 
         public void UpdateKboRegisteredOfficeLocations(
-            KboRegisteredOffice newKboRegisteredOffice,
+            KboRegisteredOffice? maybeNewKboRegisteredOffice,
             LocationType registeredOfficeLocationType)
         {
-            if (newKboRegisteredOffice?.Location?.Id == KboState.KboRegisteredOffice?.LocationId)
+            if (maybeNewKboRegisteredOffice?.Location.Id == KboState.KboRegisteredOffice?.LocationId)
                 return;
 
             var isMainLocation = KboState.KboRegisteredOffice?.IsMainLocation ?? false;
@@ -1247,7 +1248,7 @@ namespace OrganisationRegistry.Organisation
                         KboState.KboRegisteredOffice.Validity.End,
                         KboState.KboRegisteredOffice.Validity.End));
 
-            if (newKboRegisteredOffice != null)
+            if (maybeNewKboRegisteredOffice is { } newKboRegisteredOffice)
                 ApplyChange(
                     new KboRegisteredOfficeOrganisationLocationAdded(
                         Id,
@@ -1279,7 +1280,7 @@ namespace OrganisationRegistry.Organisation
             Guid organisationLocationId,
             Location location,
             bool isMainLocation,
-            LocationType locationType,
+            LocationType? locationType,
             Period validity,
             Source source,
             IDateTimeProvider dateTimeProvider)
@@ -1292,7 +1293,7 @@ namespace OrganisationRegistry.Organisation
                     location.FormattedAddress,
                     isMainLocation,
                     locationType?.Id,
-                    locationType?.Name,
+                    locationType?.Name ?? "",
                     validity,
                     source);
 
@@ -1326,7 +1327,7 @@ namespace OrganisationRegistry.Organisation
                      location.FormattedAddress,
                      isMainLocation,
                      locationType?.Id,
-                     locationType?.Name,
+                     locationType?.Name ?? "",
                      validity.Start,
                      validity.End,
                      previousLocation.LocationId,
@@ -1397,12 +1398,12 @@ namespace OrganisationRegistry.Organisation
                 Id,
                 organisationRegulationId,
                 regulationTheme?.Id,
-                regulationTheme?.Name,
+                regulationTheme?.Name ?? "",
                 regulationSubTheme?.Id,
-                regulationSubTheme?.Name,
+                regulationSubTheme?.Name ?? "",
                 name,
                 url,
-                workRulesUrl,
+                workRulesUrl ?? (string?)null,
                 date,
                 description,
                 descriptionRendered,
@@ -1428,12 +1429,12 @@ namespace OrganisationRegistry.Organisation
                 Id,
                 organisationRegulationId,
                 regulationTheme?.Id,
-                regulationTheme?.Name,
+                regulationTheme?.Name ?? "",
                 regulationSubTheme?.Id,
-                regulationSubTheme?.Name,
+                regulationSubTheme?.Name ?? "",
                 name,
                 link,
-                workRulesUrl,
+                workRulesUrl ?? (string?)null,
                 date,
                 description,
                 descriptionRendered,
@@ -1697,8 +1698,8 @@ namespace OrganisationRegistry.Organisation
             ApplyChange(new OrganisationCouplingWithKboCancelled(
                 Id,
                 KboState.KboNumber!.ToDigitsOnly(),
-                KboState.NameBeforeKboCoupling,
-                KboState.ShortNameBeforeKboCoupling,
+                KboState.NameBeforeKboCoupling ?? "",
+                KboState.ShortNameBeforeKboCoupling ?? "",
                 State.Name,
                 State.ShortName,
                 State.OvoNumber,
@@ -1725,7 +1726,7 @@ namespace OrganisationRegistry.Organisation
                     KboState.TerminationInKbo.Value.Date,
                     KboState.KboLegalFormOrganisationClassification?.OrganisationOrganisationClassificationId,
                     KboState.KboFormalNameLabel?.OrganisationLabelId,
-                    KboState.KboRegisteredOffice?.Validity.End.IsInfinite ?? false ? KboState.KboRegisteredOffice.OrganisationLocationId : (Guid?) null,
+                    KboState.KboRegisteredOffice?.Validity.End.IsInfinite ?? false ? KboState.KboRegisteredOffice.OrganisationLocationId : null,
                     KboState.KboBankAccounts
                         .Where(account => account.Validity.End.IsInfinite)
                         .Select(account => account.OrganisationBankAccountId).ToList()));
@@ -2772,8 +2773,11 @@ namespace OrganisationRegistry.Organisation
                 .Where(parent => parent.FormalFrameworkId == formalFramework.Id);
         }
 
-        public void ThrowIfTerminated(IUser user)
+        public void ThrowIfTerminated(IUser? maybeUser)
         {
+            if (maybeUser is not { } user)
+                throw new InvalidOperationException("User must not be null");
+
             if (IsTerminated &&
                 !user.IsInRole(Role.AlgemeenBeheerder) &&
                 !user.IsInRole(Role.AutomatedTask) &&

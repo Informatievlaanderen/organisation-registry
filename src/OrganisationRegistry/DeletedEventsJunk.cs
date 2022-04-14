@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Body.Events
+namespace OrganisationRegistry
 {
     using System;
 

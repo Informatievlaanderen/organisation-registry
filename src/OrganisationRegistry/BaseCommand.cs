@@ -18,11 +18,11 @@ namespace OrganisationRegistry
             set => Id = value;
         }
 
-        public IUser User { get; set; }
+        public IUser? User { get; set; }
     }
 
     public class BaseCommand<T> : BaseCommand where T : GuidValueObject<T>
     {
-        public new T Id { get; set; }
+        public new T Id { get; set; } = null!;
     }
 }

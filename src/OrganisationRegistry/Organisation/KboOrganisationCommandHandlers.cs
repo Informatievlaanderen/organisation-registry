@@ -291,8 +291,7 @@ namespace OrganisationRegistry.Organisation
                 registeredOfficeLocationType,
                 new Period(
                     new ValidFrom(address.ValidFrom),
-                    new ValidTo(address.ValidTo)),
-                _dateTimeProvider);
+                    new ValidTo(address.ValidTo)));
         }
 
         private void AddLegalForm(Organisation organisation, IMagdaLegalForm legalForm,

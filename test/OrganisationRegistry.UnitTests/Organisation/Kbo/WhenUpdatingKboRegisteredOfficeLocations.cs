@@ -40,7 +40,7 @@ public class WhenUpdatingKboRegisteredOfficeLocations
         var newKboRegisteredOffice = CreateKboRegisteredOffice(organisationLocationId, organisationRoot, locationId, false);
         var location = new Location(new LocationId(locationId), fixture.Create<string>(), fixture.Create<Address>());
 
-        organisationRoot.AddKboRegisteredOfficeLocation(newKboRegisteredOffice.OrganisationLocationId, location, locationType, new Period(), dateTimeProviderStub);
+        organisationRoot.AddKboRegisteredOfficeLocation(newKboRegisteredOffice.OrganisationLocationId, location, locationType, new Period());
     }
 
     private static void SetKboLocationAsMainLocation(Guid organisationLocationId, Organisation organisationRoot, Guid locationId)
