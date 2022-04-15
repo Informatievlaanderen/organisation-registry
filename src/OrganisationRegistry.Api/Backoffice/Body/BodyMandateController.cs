@@ -93,7 +93,7 @@
                     break;
             }
 
-            return Created(Url.Action(nameof(Get), new { id = message.BodyMandateId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.BodyMandateId });
         }
 
         /// <summary>Update a mandate for a body.</summary>

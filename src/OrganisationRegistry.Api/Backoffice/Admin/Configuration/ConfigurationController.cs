@@ -75,7 +75,7 @@
             context.Configuration.Add(new ConfigurationValue(message.Key, message.Description, message.Value));
             await context.SaveChangesAsync();
 
-            return Created(Url.Action(nameof(Get), new { id = message.Key }) ?? "", null);
+            return CreatedWithLocation(nameof(Get), new { id = message.Key });
         }
 
         /// <summary>Update a configuration value.</summary>

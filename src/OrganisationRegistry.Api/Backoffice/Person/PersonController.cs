@@ -77,7 +77,7 @@ namespace OrganisationRegistry.Api.Backoffice.Person
 
             await CommandSender.Send(CreatePersonRequestMapping.Map(message));
 
-            return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.Id });
         }
 
         /// <summary>Update a person.</summary>

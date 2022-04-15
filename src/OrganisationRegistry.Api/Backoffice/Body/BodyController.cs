@@ -94,7 +94,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body
                     context.LifecyclePhaseTypeList.SingleOrDefault(x => x.RepresentsActivePhase && x.IsDefaultPhase),
                     context.LifecyclePhaseTypeList.SingleOrDefault(x => !x.RepresentsActivePhase && x.IsDefaultPhase)));
 
-            return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.Id });
         }
     }
 }

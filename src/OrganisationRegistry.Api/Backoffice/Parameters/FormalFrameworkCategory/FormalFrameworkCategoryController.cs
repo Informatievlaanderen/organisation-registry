@@ -73,7 +73,7 @@
 
             await CommandSender.Send(CreateFormalFrameworkCategoryRequestMapping.Map(message));
 
-            return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.Id });
         }
 
         /// <summary>Update a formal framework category.</summary>

@@ -73,7 +73,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassificationType
 
             await CommandSender.Send(CreateBodyClassificationTypeRequestMapping.Map(message));
 
-            return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.Id });
         }
 
         /// <summary>Update an body classification type.</summary>

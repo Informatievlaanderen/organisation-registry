@@ -79,7 +79,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
 
             await CommandSender.Send(CreateOrganisationClassificationRequestMapping.Map(message));
 
-            return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.Id });
         }
 
         /// <summary>Update an organisation classification.</summary>

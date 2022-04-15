@@ -77,7 +77,7 @@
 
             await CommandSender.Send(AddBodyFormalFrameworkRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.BodyFormalFrameworkId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.BodyFormalFrameworkId });
         }
 
         /// <summary>Update a formal framework for a body.</summary>

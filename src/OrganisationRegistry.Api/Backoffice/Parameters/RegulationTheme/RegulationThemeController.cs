@@ -75,7 +75,7 @@
 
             await CommandSender.Send(CreateRegulationThemeRequestMapping.Map(message));
 
-            return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.Id });
         }
 
         /// <summary>Update a regulation theme.</summary>

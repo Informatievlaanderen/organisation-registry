@@ -77,7 +77,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body
 
             await CommandSender.Send(AddBodyContactRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.BodyContactId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.BodyContactId });
         }
 
         /// <summary>Update a contact for an organisation.</summary>

@@ -79,7 +79,7 @@
 
             await CommandSender.Send(AddOrganisationRegulationRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.OrganisationRegulationId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.OrganisationRegulationId });
         }
 
         /// <summary>Update a regulation for an organisation.</summary>

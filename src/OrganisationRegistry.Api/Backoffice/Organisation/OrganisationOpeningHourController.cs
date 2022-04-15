@@ -77,7 +77,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
 
             await CommandSender.Send(AddOrganisationOpeningHourRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.OrganisationOpeningHourId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.OrganisationOpeningHourId });
         }
 
         [HttpPut("{id}")]

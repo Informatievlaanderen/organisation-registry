@@ -74,7 +74,7 @@
 
             await CommandSender.Send(AddOrganisationParentRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.OrganisationOrganisationParentId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.OrganisationOrganisationParentId });
         }
 
         /// <summary>Update a parent for an organisation.</summary>

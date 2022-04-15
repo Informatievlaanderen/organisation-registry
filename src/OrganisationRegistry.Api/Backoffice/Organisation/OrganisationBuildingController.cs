@@ -77,7 +77,7 @@
 
             await CommandSender.Send(AddOrganisationBuildingRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.OrganisationBuildingId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.OrganisationBuildingId });
         }
 
         /// <summary>Update a building for an organisation.</summary>

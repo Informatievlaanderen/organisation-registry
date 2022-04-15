@@ -78,7 +78,7 @@
 
             await CommandSender.Send(AddOrganisationCapacityRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.OrganisationCapacityId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.OrganisationCapacityId });
         }
 
         /// <summary>Update a capacity for an organisation.</summary>

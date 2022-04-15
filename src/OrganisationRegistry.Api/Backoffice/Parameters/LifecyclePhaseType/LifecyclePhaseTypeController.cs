@@ -73,7 +73,7 @@
 
             await CommandSender.Send(CreateLifecyclePhaseTypeRequestMapping.Map(message));
 
-            return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.Id });
         }
 
         /// <summary>Update a lifecyclephase type.</summary>

@@ -78,7 +78,7 @@
 
             await CommandSender.Send(AddBodyLifecyclePhaseRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.BodyLifecyclePhaseId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.BodyLifecyclePhaseId });
         }
 
         /// <summary>Update a lifecycle phase for a body.</summary>

@@ -77,7 +77,7 @@
 
             await CommandSender.Send(AddOrganisationContactRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.OrganisationContactId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.OrganisationContactId });
         }
 
         /// <summary>Update a contact for an organisation.</summary>

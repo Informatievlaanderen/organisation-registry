@@ -77,7 +77,7 @@
 
             await CommandSender.Send(AddOrganisationBankAccountRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.OrganisationBankAccountId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.OrganisationBankAccountId });
         }
 
         /// <summary>Update a bankAccount for an organisation.</summary>
