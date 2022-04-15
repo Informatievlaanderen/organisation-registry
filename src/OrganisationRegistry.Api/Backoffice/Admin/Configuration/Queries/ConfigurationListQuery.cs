@@ -23,10 +23,10 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Configuration.Queries
         {
             var configuration = _context.Configuration.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (!filtering.ShouldFilter || filtering.Filter is not { } filter)
                 return configuration;
 
-            if (!filtering.Filter?.Key.IsNullOrWhiteSpace() ?? false)
+            if (!filter.Key.IsNullOrWhiteSpace())
                 configuration = configuration.Where(x =>
                     x.Key.Contains(filtering.Filter.Key) ||
                     x.Description.Contains(filtering.Filter.Key) ||
