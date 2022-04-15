@@ -18,7 +18,7 @@ namespace OrganisationRegistry
             set => Id = value;
         }
 
-        public IUser? User { get; set; }
+        public IUser? User { get; set; } // todo: this should not be nullable, should be redesigned
     }
 
     public class BaseCommand<T> : BaseCommand where T : GuidValueObject<T>
