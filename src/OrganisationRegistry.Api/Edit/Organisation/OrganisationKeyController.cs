@@ -38,7 +38,9 @@
         /// <remarks>Voegt een organisatiesleutel toe aan een organisatie.
         /// <br />
         /// Organisatiesleutels van hetzelfde type mogen niet overlappen in tijd.</remarks>
+        /// <param name="securityService"></param>
         /// <param name="organisationId">Id van de organisatie.</param>
+        /// <param name="message"></param>
         /// <response code="201">Als het verzoek aanvaard is.</response>
         /// <response code="400">Als het verzoek ongeldige data bevat.<example>a;sdlf</example></response>
         /// <response code="500">Als er een interne fout is opgetreden.</response>
@@ -66,14 +68,16 @@
             addOrganisationKey.User = WellknownUsers.Orafin;
             await CommandSender.Send(addOrganisationKey);
 
-            return Created(
-                Url.Action(nameof(Backoffice.Organisation.OrganisationKeyController.Get),
-                    new { id = message.OrganisationKeyId }), null);
+            return CreatedWithLocation(
+                nameof(Backoffice.Organisation.OrganisationKeyController.Get),
+                    new { id = message.OrganisationKeyId });
         }
 
         /// <summary>Pas een organisatiesleutel aan.</summary>
         /// <param name="organisationId">Id van de organisatie.</param>
+        /// <param name="securityService"></param>
         /// <param name="organisationKeyId">Id van de organisatiesleutel.</param>
+        /// <param name="message"></param>
         /// <response code="200">Indien de organisatiesleutel succesvol is aangepast.</response>
         /// <response code="400">Indien er validatiefouten zijn.</response>
         [HttpPut("{organisationKeyId:guid}")]

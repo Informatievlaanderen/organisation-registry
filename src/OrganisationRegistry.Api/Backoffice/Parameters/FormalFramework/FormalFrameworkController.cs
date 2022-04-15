@@ -104,7 +104,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFramework
 
             await CommandSender.Send(CreateFormalFrameworkRequestMapping.Map(message));
 
-            return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.Id });
         }
 
         /// <summary>Update a formal framework.</summary>

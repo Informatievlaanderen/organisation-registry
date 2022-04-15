@@ -88,7 +88,7 @@
 
             await CommandSender.Send(AddOrganisationFormalFrameworkRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.OrganisationFormalFrameworkId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.OrganisationFormalFrameworkId });
         }
 
         /// <summary>Update a formal framework for an organisation.</summary>

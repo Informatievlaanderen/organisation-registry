@@ -77,7 +77,7 @@
 
             await CommandSender.Send(AddBodySeatRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.BodySeatId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.BodySeatId });
         }
 
         /// <summary>Update a seat for a body.</summary>

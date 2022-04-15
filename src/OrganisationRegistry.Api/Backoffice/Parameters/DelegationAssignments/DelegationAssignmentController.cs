@@ -113,7 +113,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
 
             await CommandSender.Send(AddDelegationAssignmentRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { delegationId = delegationId, id = message.DelegationAssignmentId }), null);
+            return CreatedWithLocation(nameof(Get), new { delegationId = delegationId, id = message.DelegationAssignmentId });
         }
 
         /// <summary>Update a delegation assignment.</summary>

@@ -93,7 +93,7 @@
 
             await CommandSender.Send(AddOrganisationKeyRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.OrganisationKeyId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.OrganisationKeyId });
         }
 
         /// <summary>Update a key for an organisation.</summary>

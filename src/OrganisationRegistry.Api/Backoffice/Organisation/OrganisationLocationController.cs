@@ -84,7 +84,7 @@
 
             await CommandSender.Send(AddOrganisationLocationRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.OrganisationLocationId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.OrganisationLocationId });
         }
 
         /// <summary>Update a location for an organisation.</summary>

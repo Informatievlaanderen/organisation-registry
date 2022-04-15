@@ -73,7 +73,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.SeatType
 
             await CommandSender.Send(CreateSeatTypeRequestMapping.Map(message));
 
-            return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.Id });
         }
 
         /// <summary>Update a seat type.</summary>

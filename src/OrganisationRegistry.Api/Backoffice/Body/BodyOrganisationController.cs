@@ -80,7 +80,7 @@
 
             await CommandSender.Send(AddBodyOrganisationRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.BodyOrganisationId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.BodyOrganisationId });
         }
 
         /// <summary>Update an organisation for a body.</summary>

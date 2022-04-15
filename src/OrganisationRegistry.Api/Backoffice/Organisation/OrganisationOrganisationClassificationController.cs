@@ -77,7 +77,7 @@
 
             await CommandSender.Send(AddOrganisationOrganisationClassificationRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.OrganisationOrganisationClassificationId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.OrganisationOrganisationClassificationId });
         }
 
         /// <summary>Update a classification for an organisation.</summary>

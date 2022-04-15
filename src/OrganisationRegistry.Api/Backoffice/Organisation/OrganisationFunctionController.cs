@@ -78,7 +78,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
 
             await CommandSender.Send(AddOrganisationFunctionRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.OrganisationFunctionId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.OrganisationFunctionId });
         }
 
         /// <summary>Update a function for an organisation.</summary>

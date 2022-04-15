@@ -72,7 +72,7 @@
 
             await CommandSender.Send(CreateBuildingRequestMapping.Map(message));
 
-            return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.Id });
         }
 
         /// <summary>Update a building.</summary>

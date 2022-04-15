@@ -95,7 +95,7 @@
 
             await CommandSender.Send(AddOrganisationLabelRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.OrganisationLabelId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.OrganisationLabelId });
         }
 
         /// <summary>Update a label for an organisation.</summary>

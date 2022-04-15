@@ -78,7 +78,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
 
             await CommandSender.Send(AddOrganisationRelationRequestMapping.Map(internalMessage));
 
-            return Created(Url.Action(nameof(Get), new { id = message.OrganisationRelationId }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.OrganisationRelationId });
         }
 
         /// <summary>Update a relation for an organisation.</summary>
