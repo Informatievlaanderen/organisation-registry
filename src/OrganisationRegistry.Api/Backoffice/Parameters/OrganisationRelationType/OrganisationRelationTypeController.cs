@@ -92,7 +92,7 @@
 
             await CommandSender.Send(UpdateOrganisationRelationTypeRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.OrganisationRelationTypeId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.OrganisationRelationTypeId });
         }
     }
 }

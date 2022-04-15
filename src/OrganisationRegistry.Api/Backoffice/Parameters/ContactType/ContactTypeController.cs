@@ -92,7 +92,7 @@
 
             await CommandSender.Send(UpdateContactTypeRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.ContactTypeId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.ContactTypeId });
         }
     }
 }

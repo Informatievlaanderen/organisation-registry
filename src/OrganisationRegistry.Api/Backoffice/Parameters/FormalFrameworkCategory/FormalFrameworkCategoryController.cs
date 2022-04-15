@@ -92,7 +92,7 @@
 
             await CommandSender.Send(UpdateFormalFrameworkCategoryRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.FormalFrameworkCategoryId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.FormalFrameworkCategoryId });
         }
     }
 }

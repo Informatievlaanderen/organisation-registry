@@ -26,7 +26,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Configuration.Queries
             if (!filtering.ShouldFilter)
                 return configuration;
 
-            if (!filtering.Filter.Key.IsNullOrWhiteSpace())
+            if (!filtering.Filter?.Key.IsNullOrWhiteSpace() ?? false)
                 configuration = configuration.Where(x =>
                     x.Key.Contains(filtering.Filter.Key) ||
                     x.Description.Contains(filtering.Filter.Key) ||
@@ -42,8 +42,8 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Configuration.Queries
                 nameof(ConfigurationValue.Key)
             };
 
-            public SortingHeader DefaultSortingHeader { get; } =
-                new SortingHeader(nameof(ConfigurationValue.Key), SortOrder.Ascending);
+            public SortingHeader DefaultSortingHeader { get; }
+                = new(nameof(ConfigurationValue.Key), SortOrder.Ascending);
         }
     }
 }

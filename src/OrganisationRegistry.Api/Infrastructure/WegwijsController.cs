@@ -13,10 +13,24 @@
         }
 
         [NonAction]
-        public virtual OkResult OkWithLocation(string location)
+        protected OkResult OkWithLocationHeader(string action, object? parameters)
         {
-            Response.Headers.Add("Location", location);
+            var maybeLocationHeader = Url.Action(action, parameters);
+            if (maybeLocationHeader is not { } locationHeader)
+                throw new ApiException($"Action {action} does not exist");
+
+            Response.Headers.Add("Location", locationHeader);
             return Ok();
+        }
+
+        [NonAction]
+        protected CreatedResult CreatedWithLocation(string action, object? parameters)
+        {
+            var maybeLocationHeader = Url.Action(action, parameters);
+            if (maybeLocationHeader is not { } locationHeader)
+                throw new ApiException($"Action {action} does not exist");
+
+            return Created(locationHeader, null);
         }
     }
 }

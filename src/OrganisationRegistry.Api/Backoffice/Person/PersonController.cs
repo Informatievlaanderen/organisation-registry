@@ -96,7 +96,7 @@ namespace OrganisationRegistry.Api.Backoffice.Person
 
             await CommandSender.Send(UpdatePersonRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.PersonId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.PersonId });
         }
     }
 }

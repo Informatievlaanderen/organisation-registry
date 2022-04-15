@@ -146,7 +146,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
 
             await CommandSender.Send(UpdateDelegationAssignmentRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { delegationId = delegationId, id = id }));
+            return OkWithLocationHeader(nameof(Get), new { delegationId = delegationId, id = id });
         }
 
         /// <summary>Remove a delegation assignment.</summary>
@@ -187,7 +187,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.DelegationAssignments
 
             await CommandSender.Send(RemoveDelegationAssignmentRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { delegationId = delegationId, id = delegationAssignmentId }));
+            return OkWithLocationHeader(nameof(Get), new { delegationId = delegationId, id = delegationAssignmentId });
         }
     }
 }

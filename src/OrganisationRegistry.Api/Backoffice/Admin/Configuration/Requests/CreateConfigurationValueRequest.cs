@@ -4,9 +4,9 @@
 
     public class CreateConfigurationValueRequest
     {
-        public string Key { get; set; }
-        public string Description { get; set; }
-        public string Value { get; set; }
+        public string Key { get; set; } = null!;
+        public string Description { get; set; } = null!;
+        public string Value { get; set; } = null!;
     }
 
     public class CreateConfigurationValueRequestValidator : AbstractValidator<CreateConfigurationValueRequest>

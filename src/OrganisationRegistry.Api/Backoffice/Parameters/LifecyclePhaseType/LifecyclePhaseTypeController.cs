@@ -92,7 +92,7 @@
 
             await CommandSender.Send(UpdateLifecyclePhaseTypeRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.LifecyclePhaseTypeId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.LifecyclePhaseTypeId });
         }
     }
 }

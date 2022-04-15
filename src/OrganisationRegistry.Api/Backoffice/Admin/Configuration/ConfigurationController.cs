@@ -96,7 +96,7 @@
             configurationValue.Description = internalMessage.Body.Description;
             await context.SaveChangesAsync();
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.Key }) ?? "");
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.Key });
         }
     }
 }

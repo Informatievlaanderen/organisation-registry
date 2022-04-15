@@ -55,7 +55,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body
 
             await CommandSender.Send(UpdateBodyBalancedParticipationRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.BodyId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.BodyId });
         }
     }
 }

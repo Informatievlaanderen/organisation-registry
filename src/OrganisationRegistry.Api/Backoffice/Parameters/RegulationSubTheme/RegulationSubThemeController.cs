@@ -98,7 +98,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationSubTheme
 
             await CommandSender.Send(UpdateRegulationSubThemeRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.RegulationSubThemeId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.RegulationSubThemeId });
         }
     }
 }

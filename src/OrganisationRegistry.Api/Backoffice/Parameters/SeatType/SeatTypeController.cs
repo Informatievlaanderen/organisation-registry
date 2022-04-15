@@ -92,7 +92,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.SeatType
 
             await CommandSender.Send(UpdateSeatTypeRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.SeatTypeId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.SeatTypeId });
         }
     }
 }

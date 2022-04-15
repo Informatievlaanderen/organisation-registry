@@ -95,7 +95,7 @@
 
             await CommandSender.Send(UpdateOrganisationClassificationTypeRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.OrganisationClassificationTypeId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.OrganisationClassificationTypeId });
         }
     }
 }

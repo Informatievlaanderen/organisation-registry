@@ -92,7 +92,7 @@
 
             await CommandSender.Send(UpdateFunctionTypeRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.FunctionId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.FunctionId });
         }
     }
 }

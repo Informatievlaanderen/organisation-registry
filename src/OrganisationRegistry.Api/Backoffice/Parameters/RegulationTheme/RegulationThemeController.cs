@@ -94,7 +94,7 @@
 
             await CommandSender.Send(UpdateRegulationThemeRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.RegulationThemeId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.RegulationThemeId });
         }
     }
 }

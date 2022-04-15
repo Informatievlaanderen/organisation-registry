@@ -123,7 +123,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFramework
 
             await CommandSender.Send(UpdateFormalFrameworkRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.FormalFrameworkId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.FormalFrameworkId });
         }
     }
 }
