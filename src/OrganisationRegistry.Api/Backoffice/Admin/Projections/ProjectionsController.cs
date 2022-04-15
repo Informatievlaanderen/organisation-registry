@@ -102,9 +102,9 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Projections
             state.Name = message.Name;
             state.EventNumber = message.EventNumber;
 
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id }));
+            return OkWithLocationHeader(nameof(Get), new { id });
         }
     }
 }

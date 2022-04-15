@@ -91,7 +91,7 @@
 
             await CommandSender.Send(UpdateBuildingRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.BuildingId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.BuildingId });
         }
     }
 }

@@ -99,7 +99,7 @@
 
             await CommandSender.Send(UpdateBodyFormalFrameworkRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.BodyId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.BodyId });
         }
     }
 }

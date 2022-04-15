@@ -92,7 +92,7 @@
 
             await CommandSender.Send(UpdateCapacityRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.CapacityId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.CapacityId });
         }
     }
 }

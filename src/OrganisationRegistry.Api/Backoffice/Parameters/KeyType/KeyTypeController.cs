@@ -114,7 +114,7 @@
 
             await CommandSender.Send(UpdateKeyTypeRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.KeyTypeId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.KeyTypeId });
         }
     }
 }

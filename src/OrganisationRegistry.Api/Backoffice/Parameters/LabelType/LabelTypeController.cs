@@ -114,7 +114,7 @@
 
             await CommandSender.Send(UpdateLabelTypeRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.LabelTypeId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.LabelTypeId });
         }
     }
 }

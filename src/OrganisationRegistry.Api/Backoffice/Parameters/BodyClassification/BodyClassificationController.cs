@@ -98,7 +98,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassification
 
             await CommandSender.Send(UpdateBodyClassificationRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.BodyClassificationId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.BodyClassificationId });
         }
     }
 }

@@ -25,7 +25,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Events.Queries
         [JsonConverter(typeof(TimestampConverter))]
         public DateTime Timestamp { get; }
 
-        public IEvent Data { get; }
+        public IEvent? Data { get; }
         public string Ip { get; }
         public string LastName { get; }
         public string FirstName { get; }
@@ -44,7 +44,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Events.Queries
             string userId)
         {
             var eventType = name.ToEventType();
-            var eventData = (IEvent) JsonConvert.DeserializeObject(data, eventType);
+            var eventData = (IEvent?)JsonConvert.DeserializeObject(data, eventType);
 
             Id = id;
             Number = number;
@@ -87,10 +87,10 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Events.Queries
                 x.Name,
                 x.Timestamp,
                 x.Data,
-                x.Ip,
-                x.LastName,
-                x.FirstName,
-                x.UserId);
+                x.Ip ?? "",
+                x.LastName ?? "",
+                x.FirstName ?? "",
+                x.UserId ?? "");
 
         public EventListQuery(OrganisationRegistryContext context)
         {
@@ -101,29 +101,29 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Events.Queries
         {
             var events = _context.Events.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (!filtering.ShouldFilter || filtering.Filter is not { } filter)
                 return events;
 
-            if (filtering.Filter.EventNumber.HasValue && filtering.Filter.EventNumber > 0)
-                events = events.Where(x => x.Number == filtering.Filter.EventNumber.Value);
+            if (filter.EventNumber is > 0)
+                events = events.Where(x => x.Number == filter.EventNumber.Value);
 
-            if (filtering.Filter.AggregateId.HasValue)
-                events = events.Where(x => x.Id == filtering.Filter.AggregateId);
+            if (filter.AggregateId.HasValue)
+                events = events.Where(x => x.Id == filter.AggregateId);
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
-                events = events.Where(x => x.Name.Contains(filtering.Filter.Name));
+            if (!filter.Name.IsNullOrWhiteSpace())
+                events = events.Where(x => x.Name.Contains(filter.Name));
 
-            if (!filtering.Filter.FirstName.IsNullOrWhiteSpace())
-                events = events.Where(x => x.FirstName.Contains(filtering.Filter.FirstName));
+            if (!filter.FirstName.IsNullOrWhiteSpace())
+                events = events.Where(x => x.FirstName != null && x.FirstName.Contains(filter.FirstName));
 
-            if (!filtering.Filter.LastName.IsNullOrWhiteSpace())
-                events = events.Where(x => x.LastName.Contains(filtering.Filter.LastName));
+            if (!filter.LastName.IsNullOrWhiteSpace())
+                events = events.Where(x => x.LastName != null && x.LastName.Contains(filter.LastName));
 
-            if (!filtering.Filter.Data.IsNullOrWhiteSpace())
-                events = events.Where(x => x.Data.Contains(filtering.Filter.Data));
+            if (!filter.Data.IsNullOrWhiteSpace())
+                events = events.Where(x => x.Data.Contains(filter.Data));
 
-            if (!filtering.Filter.Ip.IsNullOrWhiteSpace())
-                events = events.Where(x => x.Ip.Contains(filtering.Filter.Ip));
+            if (!filter.Ip.IsNullOrWhiteSpace())
+                events = events.Where(x => x.Ip != null && x.Ip.Contains(filter.Ip));
 
             return events;
         }
@@ -149,10 +149,10 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Events.Queries
     {
         public Guid? AggregateId { get; set; }
         public int? EventNumber { get; set; }
-        public string Name { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Data { get; set; }
-        public string Ip { get; set; }
+        public string Name { get; set; } = null!;
+        public string FirstName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
+        public string Data { get; set; } = null!;
+        public string Ip { get; set; } = null!;
     }
 }

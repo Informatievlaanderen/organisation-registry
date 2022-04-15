@@ -98,7 +98,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
 
             await CommandSender.Send(UpdateOrganisationClassificationRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.OrganisationClassificationId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.OrganisationClassificationId });
         }
     }
 }

@@ -98,7 +98,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
                 await CommandSender.Send(CreateOrganisationRequestMapping.Map(message));
             }
 
-            return Created(Url.Action(nameof(Get), new { id = message.Id }), null);
+            return CreatedWithLocation(nameof(Get), new { id = message.Id });
         }
 
         /// <summary>Update an organisation.</summary>
@@ -119,7 +119,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
 
             await CommandSender.Send(UpdateOrganisationInfoRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.OrganisationId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.OrganisationId });
         }
 
         /// <summary>Update the organisation info that is not limited by vlimpers.</summary>
@@ -140,7 +140,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
 
             await CommandSender.Send(UpdateOrganisationInfoLimitedToVlimpersRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.OrganisationId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.OrganisationId });
         }
 
         /// <summary>Update the organisation info that is not limited by vlimpers.</summary>
@@ -161,7 +161,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
 
             await CommandSender.Send(UpdateOrganisationInfoNotLimitedToVlimpersRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.OrganisationId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.OrganisationId });
         }
 
         /// <summary>Terminate an organisation.</summary>

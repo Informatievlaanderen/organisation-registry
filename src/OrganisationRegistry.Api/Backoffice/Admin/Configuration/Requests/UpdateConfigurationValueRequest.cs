@@ -16,8 +16,8 @@
 
     public class UpdateConfigurationValueRequest
     {
-        public string Description { get; set; }
-        public string Value { get; set; }
+        public string Description { get; set; } = null!;
+        public string Value { get; set; }= null!;
     }
 
     public class UpdateConfigurationValueRequestValidator : AbstractValidator<UpdateConfigurationValueInternalRequest>

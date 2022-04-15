@@ -100,7 +100,7 @@
 
             await CommandSender.Send(UpdateBodyLifecyclePhaseRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.BodyId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.BodyId });
         }
     }
 }

@@ -92,7 +92,7 @@
 
             await CommandSender.Send(UpdateMandateRoleTypeRequestMapping.Map(internalMessage));
 
-            return OkWithLocation(Url.Action(nameof(Get), new { id = internalMessage.MandateRoleTypeId }));
+            return OkWithLocationHeader(nameof(Get), new { id = internalMessage.MandateRoleTypeId });
         }
     }
 }
