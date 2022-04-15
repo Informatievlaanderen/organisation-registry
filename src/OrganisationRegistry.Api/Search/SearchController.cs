@@ -97,7 +97,7 @@ namespace OrganisationRegistry.Api.Search
                 return BadRequest();
 
             _log.LogDebug(
-                "[{IndexName}] Searched for '{SearchTerm}' (Offset: {Offset}, Limit: {Limit}, Fields: {Fields}, Sort: {Sort}, Scroll: {Scroll}).",
+                "[{IndexName}] Searched for '{SearchTerm}' (Offset: {Offset}, Limit: {Limit}, Fields: {Fields}, Sort: {Sort}, Scroll: {Scroll})",
                 indexName, q, offset, limit, fields, sort, scroll);
 
             switch (indexName.ToLower())
@@ -150,15 +150,16 @@ namespace OrganisationRegistry.Api.Search
                 return BadRequest();
 
             _log.LogDebug(
-                "[{IndexName}] Searched for '{SearchTerm}' (Offset: {Offset}, Limit: {Limit}, Fields: {Fields}, Sort: {Sort}, Scroll: {Scroll}).",
+                "[{IndexName}] Searched for '{SearchTerm}' (Offset: {Offset}, Limit: {Limit}, Fields: {Fields}, Sort: {Sort}, Scroll: {Scroll})",
                 indexName, q, offset, limit, fields, sort, scroll);
 
             var jsonSerializerSettings = JsonConvert.DefaultSettings();
             jsonSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             jsonSerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
 
-            var resolver = (OrganisationRegistryContractResolver)jsonSerializerSettings.ContractResolver;
-            resolver.SetStringDefaultValueToEmptyString = true;
+            var maybeResolver = (OrganisationRegistryContractResolver?)jsonSerializerSettings.ContractResolver;
+            if(maybeResolver is { } resolver)
+                resolver.SetStringDefaultValueToEmptyString = true;
 
             switch (indexName.ToLower())
             {
