@@ -1,3 +1,25 @@
+# [1.161.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.160.1...v1.161.0) (2022-04-15)
+
+
+### Bug Fixes
+
+* or-945 update paket ([ce188db](https://github.com/informatievlaanderen/organisation-registry/commit/ce188dba73e30e2e593dd5089ec0d2f565e5500a))
+
+
+### Features
+
+* added todo comment ([8021dff](https://github.com/informatievlaanderen/organisation-registry/commit/8021dff58656d435c994144ec78b4a6879b82b8c))
+* cleanup json stuff ([f5a5fd8](https://github.com/informatievlaanderen/organisation-registry/commit/f5a5fd8206936bd04364b45bf240a2612f74d6e3))
+* configurationlistquery analogue to eventlistquery ([a6cb507](https://github.com/informatievlaanderen/organisation-registry/commit/a6cb50790ce6608d60d8bdd61633d26b1af3676e))
+* exclude OpenSearch project form R# inspection ([8bc5421](https://github.com/informatievlaanderen/organisation-registry/commit/8bc5421b5867ebc50b7d46c69e9dc061859e6f8e))
+* excluded AgentschapZorgEnGezondheidFtpDump from inspection ([6e9e037](https://github.com/informatievlaanderen/organisation-registry/commit/6e9e037a5ac59d0947a9b5350a89f71640a9c6cb))
+* fixed async await ([6005802](https://github.com/informatievlaanderen/organisation-registry/commit/6005802b37e4d1dcedb541593292a135667b58aa))
+* nullable fixes for Organisation AR ([2cbb561](https://github.com/informatievlaanderen/organisation-registry/commit/2cbb561bd3a4285e76f07a6acc92ea4f36926123))
+* nullable fixes for OrganisationCommandHandlers ([c8f731e](https://github.com/informatievlaanderen/organisation-registry/commit/c8f731ecaebead040c50566aea6726a9104d99eb))
+* okwithlocation -> okwithlocationheader ([ad47125](https://github.com/informatievlaanderen/organisation-registry/commit/ad471255e739442f42a6f25d161f8fa8ee8fad32))
+* return create -> createWithLocationHeader ([092b458](https://github.com/informatievlaanderen/organisation-registry/commit/092b4588d7aaa5493d9953111def2bfdf9949a70))
+* some more nullability cleanup ([462c252](https://github.com/informatievlaanderen/organisation-registry/commit/462c25216f80e6b5dff1bbe128640ec1beb04132))
+
 ## [1.160.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.160.0...v1.160.1) (2022-04-14)
 
 
