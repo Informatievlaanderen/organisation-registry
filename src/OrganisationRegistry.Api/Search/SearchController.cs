@@ -153,13 +153,16 @@ namespace OrganisationRegistry.Api.Search
                 "[{IndexName}] Searched for '{SearchTerm}' (Offset: {Offset}, Limit: {Limit}, Fields: {Fields}, Sort: {Sort}, Scroll: {Scroll})",
                 indexName, q, offset, limit, fields, sort, scroll);
 
-            var jsonSerializerSettings = JsonConvert.DefaultSettings();
+            var getSerializerSettings = JsonConvert.DefaultSettings ?? (() => new JsonSerializerSettings());
+            var jsonSerializerSettings = getSerializerSettings();
             jsonSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             jsonSerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
 
             var maybeResolver = (OrganisationRegistryContractResolver?)jsonSerializerSettings.ContractResolver;
-            if(maybeResolver is { } resolver)
-                resolver.SetStringDefaultValueToEmptyString = true;
+            if (maybeResolver is not { } resolver)
+                throw new NullReferenceException("Resolver should not be null");
+
+            resolver.SetStringDefaultValueToEmptyString = true;
 
             switch (indexName.ToLower())
             {
