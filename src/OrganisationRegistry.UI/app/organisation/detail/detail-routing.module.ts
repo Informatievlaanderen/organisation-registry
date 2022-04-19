@@ -592,14 +592,9 @@ const routes: Routes = [
           {
             path: 'create',
             component: OrganisationFormalFrameworksCreateOrganisationFormalFrameworkComponent,
-            canActivate: [RoleGuard, CanAddAndUpdateFormalFrameworksGuard],
+            canActivate: [CanAddAndUpdateFormalFrameworksGuard],
             data: {
               title: 'Organisatie - Toepassingsgebieden - Toepassingsgebied koppelen',
-              roles: [
-                Role.AlgemeenBeheerder,
-                Role.DecentraalBeheerder,
-                Role.VlimpersBeheerder
-              ],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -609,10 +604,9 @@ const routes: Routes = [
           {
             path: 'edit/:id',
             component: OrganisationFormalFrameworksUpdateOrganisationFormalFrameworkComponent,
-            canActivate: [RoleGuard, CanAddAndUpdateFormalFrameworksGuard],
+            canActivate: [CanAddAndUpdateFormalFrameworksGuard],
             data: {
               title: 'Organisatie - Toepassingsgebieden - Bewerken toepassingsgebied',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder, Role.VlimpersBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'

@@ -6,6 +6,7 @@ namespace OrganisationRegistry.Configuration
     {
         Guid[] FormalFrameworkIdsOwnedByVlimpers { get; }
         Guid[] FormalFrameworkIdsOwnedByAuditVlaanderen { get; }
+        Guid[] FormalFrameworkIdsOwnedByRegelgevingDbBeheerder { get; }
         Guid[] LabelIdsAllowedForVlimpers { get; }
         Guid[] KeyIdsAllowedForVlimpers { get; }
         Guid[] KeyIdsAllowedOnlyForOrafin { get; }

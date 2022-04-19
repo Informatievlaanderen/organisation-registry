@@ -16,6 +16,10 @@ namespace OrganisationRegistry.Api.Configuration
                 authorizationConfiguration?.FormalFrameworkIdsOwnedByAuditVlaanderen.SplitGuids() ??
                 Array.Empty<Guid>();
 
+            FormalFrameworkIdsOwnedByRegelgevingDbBeheerder =
+                authorizationConfiguration?.FormalFrameworkIdsOwnedByRegelgevingDbBeheerder.SplitGuids() ??
+                Array.Empty<Guid>();
+
             LabelIdsAllowedForVlimpers =
                 authorizationConfiguration?.LabelIdsAllowedForVlimpers.SplitGuids() ??
                 Array.Empty<Guid>();
@@ -30,6 +34,7 @@ namespace OrganisationRegistry.Api.Configuration
         }
         public Guid[] FormalFrameworkIdsOwnedByVlimpers { get; }
         public Guid[] FormalFrameworkIdsOwnedByAuditVlaanderen { get; }
+        public Guid[] FormalFrameworkIdsOwnedByRegelgevingDbBeheerder { get; }
         public Guid[] LabelIdsAllowedForVlimpers { get; }
         public Guid[] KeyIdsAllowedForVlimpers { get; }
         public Guid[] KeyIdsAllowedOnlyForOrafin { get; }
