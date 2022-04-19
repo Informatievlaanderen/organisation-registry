@@ -11,10 +11,11 @@ namespace OrganisationRegistry.Infrastructure.Configuration
         [JsonConverter(typeof(TimestampConverter))]
         public DateTime Created => DateTime.Now;
 
-        public string FormalFrameworkIdsOwnedByVlimpers { get; set; }
-        public string FormalFrameworkIdsOwnedByAuditVlaanderen { get; set; }
-        public string LabelIdsAllowedForVlimpers { get; set; }
-        public string KeyIdsAllowedForVlimpers { get; set; }
-        public string KeyIdsAllowedOnlyForOrafin { get; set; }
+        public string FormalFrameworkIdsOwnedByVlimpers { get; set; } = null!;
+        public string FormalFrameworkIdsOwnedByAuditVlaanderen { get; set; } = null!;
+        public string LabelIdsAllowedForVlimpers { get; set; } = null!;
+        public string KeyIdsAllowedForVlimpers { get; set; } = null!;
+        public string KeyIdsAllowedOnlyForOrafin { get; set; } = null!;
+        public string FormalFrameworkIdsOwnedByRegelgevingDbBeheerder { get; set; } = null!;
     }
 }

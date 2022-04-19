@@ -29,14 +29,22 @@ namespace OrganisationRegistry.Handling.Authorization
 
             var formalFrameworkIdsOwnedByVlimpers = _configuration.Authorization.FormalFrameworkIdsOwnedByVlimpers;
             var formalFrameworkIdsOwnedByAuditVlaanderen = _configuration.Authorization.FormalFrameworkIdsOwnedByAuditVlaanderen;
+            var formalFrameworkIdsOwnedByRegelgevingDbBeheerder = _configuration.Authorization.FormalFrameworkIdsOwnedByRegelgevingDbBeheerder;
+
+            var formalFrameworkIdsExcludedForOrganisatieBeheerder = formalFrameworkIdsOwnedByVlimpers
+                .Union(formalFrameworkIdsOwnedByAuditVlaanderen)
+                .Union(formalFrameworkIdsOwnedByRegelgevingDbBeheerder);
+
+            if (user.IsInRole(Role.RegelgevingBeheerder) &&
+                formalFrameworkIdsOwnedByRegelgevingDbBeheerder.Contains(_formalFrameworkId))
+                return AuthorizationResult.Success();
 
             if (user.IsInRole(Role.VlimpersBeheerder) &&
                 formalFrameworkIdsOwnedByVlimpers.Contains(_formalFrameworkId))
                 return AuthorizationResult.Success();
 
             if(user.IsOrganisatieBeheerderFor(_ovoNumberFunc()) &&
-               !formalFrameworkIdsOwnedByVlimpers.Contains(_formalFrameworkId) &&
-               !formalFrameworkIdsOwnedByAuditVlaanderen.Contains(_formalFrameworkId))
+               !formalFrameworkIdsExcludedForOrganisatieBeheerder.Contains(_formalFrameworkId))
                 return AuthorizationResult.Success();
 
             return AuthorizationResult.Fail(new InsufficientRights());
