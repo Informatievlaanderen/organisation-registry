@@ -770,6 +770,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(AddOrganisationOrganisationClassification message) =>
             UpdateHandler<Organisation>.For(message, Session)
+                .WithOrganisationClassificationTypePolicy(_organisationRegistryConfiguration, message)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -788,6 +789,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(UpdateOrganisationOrganisationClassification message) =>
             UpdateHandler<Organisation>.For(message, Session)
+                .WithOrganisationClassificationTypePolicy(_organisationRegistryConfiguration, message)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);

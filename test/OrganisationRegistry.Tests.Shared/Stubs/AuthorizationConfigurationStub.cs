@@ -10,6 +10,7 @@ namespace OrganisationRegistry.Tests.Shared.Stubs
             FormalFrameworkIdsOwnedByVlimpers = Array.Empty<Guid>();
             FormalFrameworkIdsOwnedByAuditVlaanderen = Array.Empty<Guid>();
             FormalFrameworkIdsOwnedByRegelgevingDbBeheerder = Array.Empty<Guid>();
+            OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder = Array.Empty<Guid>();
             LabelIdsAllowedForVlimpers = Array.Empty<Guid>();
             KeyIdsAllowedForVlimpers = Array.Empty<Guid>();
             KeyIdsAllowedOnlyForOrafin = Array.Empty<Guid>();
@@ -20,5 +21,6 @@ namespace OrganisationRegistry.Tests.Shared.Stubs
         public Guid[] LabelIdsAllowedForVlimpers { get; set; }
         public Guid[] KeyIdsAllowedForVlimpers { get; set; }
         public Guid[] KeyIdsAllowedOnlyForOrafin { get; set; }
+        public Guid[] OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder { get; set; }
     }
 }
