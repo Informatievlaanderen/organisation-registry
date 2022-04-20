@@ -1,3 +1,10 @@
+# [1.162.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.161.0...v1.162.0) (2022-04-20)
+
+
+### Features
+
+* or-953 extend formalframeworkpolicy for regelgevingdbbeheerder ([346190f](https://github.com/informatievlaanderen/organisation-registry/commit/346190f4e58fb9835ad1070690d7ce2c21802d36))
+
 # [1.161.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.160.1...v1.161.0) (2022-04-15)
 
 
