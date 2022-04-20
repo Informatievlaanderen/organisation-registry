@@ -5,13 +5,17 @@
     <Title>OSC - OpenSearch .NET high level client</Title>
     <PackageTags>opensearch;opensearch;search;lucene;osc</PackageTags>
     <Description>
-      Strongly typed interface to OpenSearch. Fluent and classic object initializer mappings of requests and 
+      Strongly typed interface to OpenSearch. Fluent and classic object initializer mappings of requests and
       responses. Uses and exposes OpenSearch.Net.
     </Description>
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>9</LangVersion>
   </PropertyGroup>
-  
+
+  <PropertyGroup>
+    <NoWarn>8618,1591</NoWarn>
+  </PropertyGroup>
+
   <PropertyGroup>
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
