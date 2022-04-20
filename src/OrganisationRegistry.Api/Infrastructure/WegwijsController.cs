@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.Api.Infrastructure
 {
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using OrganisationRegistry.Infrastructure.Commands;
 
@@ -32,5 +33,9 @@
 
             return Created(locationHeader, null);
         }
+
+        [NonAction]
+        protected Task<IActionResult> OkAsync(object? value)
+            => Task.FromResult((IActionResult)Ok(value));
     }
 }

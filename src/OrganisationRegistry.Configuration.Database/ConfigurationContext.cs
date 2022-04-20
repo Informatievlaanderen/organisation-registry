@@ -5,7 +5,7 @@
 
     public class ConfigurationContext : DbContext
     {
-        public DbSet<ConfigurationValue> Configuration { get; set; }
+        public DbSet<ConfigurationValue> Configuration { get; set; } = null!;
 
         // This needs to be DbContextOptions<T> for Autofac!
         public ConfigurationContext(DbContextOptions<ConfigurationContext> options) : base(options)

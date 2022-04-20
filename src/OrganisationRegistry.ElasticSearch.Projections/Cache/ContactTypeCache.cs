@@ -41,11 +41,12 @@
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ContactTypeUpdated> message)
         {
             await using var context = _contextFactory.Create();
-            var contactType = await context
+            var maybeContactType = await context
                 .ContactTypeCache
                 .FindAsync(message.Body.ContactTypeId);
 
-            contactType.Name = message.Body.Name;
+            if (maybeContactType is { } contactType)
+                contactType.Name = message.Body.Name;
 
             await context.SaveChangesAsync();
         }

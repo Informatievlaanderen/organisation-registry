@@ -21,8 +21,8 @@
         private readonly IMetricsOutputFormatter _formatter;
 
         /// <inheritdoc />
-        public IFilterMetrics Filter { get; set; }
-	
+        public IFilterMetrics? Filter { get; set; }
+
         /// <inheritdoc />
         public TimeSpan FlushInterval { get; set; }
 
@@ -32,7 +32,7 @@
             get => _formatter;
             set => throw new NotSupportedException("The formatter cannot be replaced");
         }
-	
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SerilogMetricSnapshotWriter"/> class.
         /// </summary>

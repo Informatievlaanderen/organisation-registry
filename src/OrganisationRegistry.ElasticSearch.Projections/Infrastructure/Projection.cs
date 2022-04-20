@@ -12,7 +12,7 @@
         {
             Logger = logger;
 
-            Logger.LogTrace("Created EventHandler {ProjectionName}.", typeof(T));
+            Logger.LogTrace("Created EventHandler {ProjectionName}", typeof(T));
         }
     }
 }

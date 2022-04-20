@@ -24,7 +24,7 @@ namespace App.Metrics
         /// </returns>
         public static IMetricsBuilder ToSerilog(
             this IMetricsReportingBuilder metricReporterProviderBuilder,
-            Action<SerilogMetricsReporterOptions> setupAction)
+            Action<SerilogMetricsReporterOptions>? setupAction)
         {
             if (metricReporterProviderBuilder == null)
                 throw new ArgumentNullException(nameof(metricReporterProviderBuilder));

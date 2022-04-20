@@ -181,9 +181,9 @@ namespace OrganisationRegistry.ElasticSearch.Tests
 
             bodyMandate.BodyMandateId.Should().Be(assignedPersonToBodySeat.BodyMandateId);
             bodyMandate.OrganisationId.Should().Be(null);
-            bodyMandate.OrganisationName.Should().Be(null);
+            bodyMandate.OrganisationName.Should().Be(string.Empty);
             bodyMandate.FunctionTypeId.Should().Be(null);
-            bodyMandate.FunctionTypeName.Should().Be(null);
+            bodyMandate.FunctionTypeName.Should().Be(string.Empty);
             bodyMandate.PersonId.Should().Be(assignedPersonToBodySeat.PersonId);
             bodyMandate.PersonName.Should().Be(assignedPersonToBodySeat.PersonFirstName + " " + assignedPersonToBodySeat.PersonName);
             bodyMandate.Validity.Start.Should().Be(assignedPersonToBodySeat.ValidFrom);
@@ -223,9 +223,9 @@ namespace OrganisationRegistry.ElasticSearch.Tests
 
             bodyMandate.BodyMandateId.Should().Be(reassignedPersonToBodySeat.BodyMandateId);
             bodyMandate.OrganisationId.Should().Be(null);
-            bodyMandate.OrganisationName.Should().Be(null);
+            bodyMandate.OrganisationName.Should().Be(string.Empty);
             bodyMandate.FunctionTypeId.Should().Be(null);
-            bodyMandate.FunctionTypeName.Should().Be(null);
+            bodyMandate.FunctionTypeName.Should().Be(string.Empty);
             bodyMandate.PersonId.Should().Be(reassignedPersonToBodySeat.PersonId);
             bodyMandate.PersonName.Should().Be(reassignedPersonToBodySeat.PersonFirstName + " " + reassignedPersonToBodySeat.PersonName);
             bodyMandate.Validity.Start.Should().Be(reassignedPersonToBodySeat.ValidFrom);
@@ -276,9 +276,9 @@ namespace OrganisationRegistry.ElasticSearch.Tests
 
             otherBodyMandate.BodyMandateId.Should().Be(assignedOtherPersonToBodySeat.BodyMandateId);
             otherBodyMandate.OrganisationId.Should().Be(null);
-            otherBodyMandate.OrganisationName.Should().Be(null);
+            otherBodyMandate.OrganisationName.Should().Be(string.Empty);
             otherBodyMandate.FunctionTypeId.Should().Be(null);
-            otherBodyMandate.FunctionTypeName.Should().Be(null);
+            otherBodyMandate.FunctionTypeName.Should().Be(string.Empty);
             otherBodyMandate.PersonId.Should().Be(assignedOtherPersonToBodySeat.PersonId);
             otherBodyMandate.PersonName.Should().Be(assignedOtherPersonToBodySeat.PersonFirstName + " " + assignedOtherPersonToBodySeat.PersonName);
             otherBodyMandate.Validity.Start.Should().Be(assignedOtherPersonToBodySeat.ValidFrom);
@@ -354,9 +354,9 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             bodyMandate.OrganisationId.Should().Be(reassignedOrganisationToBodySeat.OrganisationId);
             bodyMandate.OrganisationName.Should().Be(reassignedOrganisationToBodySeat.OrganisationName);
             bodyMandate.FunctionTypeId.Should().Be(null);
-            bodyMandate.FunctionTypeName.Should().Be(null);
+            bodyMandate.FunctionTypeName.Should().Be(string.Empty);
             bodyMandate.PersonId.Should().Be(null);
-            bodyMandate.PersonName.Should().Be(null);
+            bodyMandate.PersonName.Should().Be(string.Empty);
             bodyMandate.Validity.Start.Should().Be(reassignedOrganisationToBodySeat.ValidFrom);
             bodyMandate.Validity.End.Should().Be(reassignedOrganisationToBodySeat.ValidTo);
         }
@@ -398,7 +398,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             bodyMandate.FunctionTypeId.Should().Be(reassignedFunctionToBodySeat.FunctionTypeId);
             bodyMandate.FunctionTypeName.Should().Be(reassignedFunctionToBodySeat.FunctionTypeName);
             bodyMandate.PersonId.Should().Be(null);
-            bodyMandate.PersonName.Should().Be(null);
+            bodyMandate.PersonName.Should().Be(string.Empty);
             bodyMandate.Validity.Start.Should().Be(reassignedFunctionToBodySeat.ValidFrom);
             bodyMandate.Validity.End.Should().Be(reassignedFunctionToBodySeat.ValidTo);
         }

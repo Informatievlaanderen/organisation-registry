@@ -56,11 +56,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
             if (organisationToRebuilds.Count == 0)
             {
-                _logger.LogInformation("[{ProjectionName}] No organisations to rebuild.", ProjectionName, organisationToRebuilds);
+                _logger.LogInformation("[{ProjectionName}] No organisations to rebuild", ProjectionName);
                 return;
             }
 
-            _logger.LogInformation("[{ProjectionName}] Found {NumberOfOrganisations} organisations to rebuild.", ProjectionName, organisationToRebuilds.Count);
+            _logger.LogInformation("[{ProjectionName}] Found {NumberOfOrganisations} organisations to rebuild", ProjectionName, organisationToRebuilds.Count);
 
             try
             {
@@ -72,7 +72,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             lastProcessedEventNumber)
                         .ToList();
 
-                    _logger.LogInformation("[{ProjectionName}] Found {NumberOfEnvelopes} envelopes (until #{MaxEventNumber}) to process for Organisation {OrgId}.",
+                    _logger.LogInformation("[{ProjectionName}] Found {NumberOfEnvelopes} envelopes (until #{MaxEventNumber}) to process for Organisation {OrgId}",
                         ProjectionName, envelopes.Count, envelopes.Last().Number, organisation.OrganisationId);
 
                     var allChanges = new List<ElasticChanges>();
@@ -99,7 +99,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             }
             catch (Exception ex)
             {
-                _logger.LogCritical(0, ex, "[{ProjectionName}] An exception occurred while handling envelopes.", ProjectionName);
+                _logger.LogCritical(0, ex, "[{ProjectionName}] An exception occurred while handling envelopes", ProjectionName);
                 throw;
             }
         }
@@ -176,6 +176,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         {
                             _logger.LogInformation("Wrote page {PageNumber}", next.Page);
                         });
+
+                    await Task.CompletedTask;
                 });
                 documentCache.Clear();
             }

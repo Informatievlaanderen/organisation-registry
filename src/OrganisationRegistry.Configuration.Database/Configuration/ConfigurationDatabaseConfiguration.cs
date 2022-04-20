@@ -12,7 +12,7 @@ namespace OrganisationRegistry.Configuration.Database.Configuration
         [JsonConverter(typeof(TimestampConverter))]
         public DateTime Created => DateTime.Now;
 
-        public string ConnectionString { get; set; }
+        public string ConnectionString { get; set; } = null!;
 
         public ConfigurationDatabaseConfiguration Obfuscate()
         {

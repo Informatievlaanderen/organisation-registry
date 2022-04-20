@@ -30,12 +30,7 @@ namespace OrganisationRegistry.Configuration.Database
 
             services.Configure<ConfigurationDatabaseConfiguration>(configuration.GetSection(ConfigurationDatabaseConfiguration.Section));
 
-            logger.LogInformation(
-                "Added {Context} to services:" +
-                Environment.NewLine +
-                "\tSchema: {Schema}" +
-                Environment.NewLine +
-                "\tTableName: {TableName}",
+            logger.LogInformation("Added {Context} to services:\n\tSchema: {Schema}\n\tTableName: {TableName}",
                 nameof(ConfigurationContext), WellknownSchemas.OrganisationRegistrySchema, MigrationTables.Default);
         }
 
@@ -46,7 +41,7 @@ namespace OrganisationRegistry.Configuration.Database
             string backofficeProjectionsConnectionString)
         {
             services
-                .AddScoped(s => new TraceDbConnection<ConfigurationContext>(
+                .AddScoped(_ => new TraceDbConnection<ConfigurationContext>(
                     new SqlConnection(backofficeProjectionsConnectionString),
                     configuration["DataDog:ServiceName"]))
                 .AddDbContext<ConfigurationContext>((provider, options) => options
@@ -67,7 +62,7 @@ namespace OrganisationRegistry.Configuration.Database
             services
                 .AddDbContext<ConfigurationContext>(options => options
                     .UseLoggerFactory(loggerFactory)
-                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), sqlServerOptions => { }));
+                    .UseInMemoryDatabase(Guid.NewGuid().ToString(), _ => { }));
 
             logger.LogWarning("Running InMemory for {Context}!", nameof(ConfigurationContext));
         }

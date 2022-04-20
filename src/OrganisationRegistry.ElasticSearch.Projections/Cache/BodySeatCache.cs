@@ -46,12 +46,15 @@
             IEnvelope<BodySeatUpdated> message)
         {
             await using var context = _contextFactory.Create();
-            var organisation = await context
+            var maybeOrganisation = await context
                 .BodySeatCache
                 .FindAsync(message.Body.BodySeatId);
 
-            organisation.Name = message.Body.Name;
-            organisation.IsPaid = message.Body.PaidSeat;
+            if (maybeOrganisation is { } organisation)
+            {
+                organisation.Name = message.Body.Name;
+                organisation.IsPaid = message.Body.PaidSeat;
+            }
 
             await context.SaveChangesAsync();
         }

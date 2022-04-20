@@ -15,6 +15,8 @@
 
             protected OrganisationParent()
             {
+                Validity = Period.Infinite();
+                ParentOrganisationName = string.Empty;
             }
 
             public OrganisationParent(

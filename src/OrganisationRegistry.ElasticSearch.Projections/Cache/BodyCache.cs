@@ -44,11 +44,12 @@
             IEnvelope<BodyInfoChanged> message)
         {
             await using var context = _contextFactory.Create();
-            var organisation = await context
+            var maybeOrganisation = await context
                 .BodyCache
                 .FindAsync(message.Body.BodyId);
 
-            organisation.Name = message.Body.Name;
+            if (maybeOrganisation is { } organisation)
+                organisation.Name = message.Body.Name;
 
             await context.SaveChangesAsync();
         }

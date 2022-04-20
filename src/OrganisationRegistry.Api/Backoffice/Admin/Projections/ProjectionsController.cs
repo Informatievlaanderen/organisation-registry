@@ -46,7 +46,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Projections
                 .Select(x => x.FullName)
                 .OrderBy(x => x);
 
-            return Ok(projections);
+            return await OkAsync(projections);
         }
 
         /// <summary>Get a list of available projection states.</summary>
