@@ -10,11 +10,11 @@ using System.Reflection;
 [assembly: AssemblyCompany("Vlaamse overheid")]
 namespace System {
     internal static class AssemblyVersionInformation {
-        internal const string AssemblyVersion = "2.0.0.0";
-        internal const string AssemblyFileVersion = "2.0.0.0";
-        internal const string AssemblyInformationalVersion = "";
-        internal const string AssemblyProduct = "Basisregisters Vlaanderen";
-        internal const string AssemblyCopyright = "Copyright (c) Vlaamse overheid";
-        internal const string AssemblyCompany = "Vlaamse overheid";
+        internal const System.String AssemblyVersion = "2.0.0.0";
+        internal const System.String AssemblyFileVersion = "2.0.0.0";
+        internal const System.String AssemblyInformationalVersion = "";
+        internal const System.String AssemblyProduct = "Basisregisters Vlaanderen";
+        internal const System.String AssemblyCopyright = "Copyright (c) Vlaamse overheid";
+        internal const System.String AssemblyCompany = "Vlaamse overheid";
     }
 }
