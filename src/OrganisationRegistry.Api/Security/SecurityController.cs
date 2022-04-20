@@ -41,7 +41,7 @@ namespace OrganisationRegistry.Api.Security
 
         [HttpGet("info")]
         public async Task<IActionResult> Info()
-            => Ok(new OidcClientConfiguration(_openIdConnectConfiguration));
+            => await OkAsync(new OidcClientConfiguration(_openIdConnectConfiguration));
 
         [HttpGet("exchange")]
         public async Task<IActionResult> ExchangeCode(
@@ -70,12 +70,11 @@ namespace OrganisationRegistry.Api.Security
 
             if (tokenResponse.IsError)
             {
-                var message = $"[Error] {tokenResponse.Error}\n" +
-                              $"[ErrorDescription] {tokenResponse.ErrorDescription}\n" +
-                              $"[TokenEndpoint] {tokenEndpointAddress}";
-                _logger.LogError(message);
+                _logger.LogError("[Error] {Error}\nErrorDescription] {ErrorDescription}\nTokenEndpoint] {TokenEndpointAddress}", tokenResponse.Error, tokenResponse.ErrorDescription, tokenEndpointAddress);
                 throw new Exception(
-                    message,
+                    $"[Error] {tokenResponse.Error}\n" +
+                    $"[ErrorDescription] {tokenResponse.ErrorDescription}\n" +
+                    $"[TokenEndpoint] {tokenEndpointAddress}",
                     tokenResponse.Exception);
             }
 
@@ -87,7 +86,9 @@ namespace OrganisationRegistry.Api.Security
             identity = wegwijsTokenBuilder.ParseRoles(identity);
             var jwtToken = wegwijsTokenBuilder.BuildJwt(identity);
 
-            securityService.ExpireUserCache(identity.GetOptionalClaim(AcmIdmConstants.Claims.AcmId));
+            var maybeAcmIdClaim = identity.GetOptionalClaim(AcmIdmConstants.Claims.AcmId);
+            if (maybeAcmIdClaim is { } acmIdClaim)
+                securityService.ExpireUserCache(acmIdClaim);
 
             return Ok(jwtToken);
         }

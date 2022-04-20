@@ -153,16 +153,7 @@ namespace OrganisationRegistry.Api.Search
                 "[{IndexName}] Searched for '{SearchTerm}' (Offset: {Offset}, Limit: {Limit}, Fields: {Fields}, Sort: {Sort}, Scroll: {Scroll})",
                 indexName, q, offset, limit, fields, sort, scroll);
 
-            var getSerializerSettings = JsonConvert.DefaultSettings ?? (() => new JsonSerializerSettings());
-            var jsonSerializerSettings = getSerializerSettings();
-            jsonSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-            jsonSerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
-
-            var maybeResolver = (OrganisationRegistryContractResolver?)jsonSerializerSettings.ContractResolver;
-            if (maybeResolver is not { } resolver)
-                throw new NullReferenceException("Resolver should not be null");
-
-            resolver.SetStringDefaultValueToEmptyString = true;
+            var jsonSerializerSettings = GetJsonSerializerSettings();
 
             switch (indexName.ToLower())
             {
@@ -190,8 +181,7 @@ namespace OrganisationRegistry.Api.Search
                                 continue;
 
                             organisation.Parents = organisation.Parents
-                                .Where(x => x.Validity == null ||
-                                            (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
+                                .Where(x => (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
                                             (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now))
                                 .ToList();
                         }
@@ -265,12 +255,13 @@ namespace OrganisationRegistry.Api.Search
             [FromQuery] string sort,
             [FromQuery] bool? scroll)
         {
-            if (string.IsNullOrWhiteSpace(q.ToString()))
+            var searchTerm = q.ToString();
+            if (string.IsNullOrWhiteSpace(searchTerm))
                 return BadRequest();
 
             _log.LogDebug(
-                "[{IndexName}] Searched for '{SearchTerm}' (Offset: {Offset}, Limit: {Limit}, Fields: {Fields}, Sort: {Sort}, Scroll: {Scroll}).",
-                indexName, q, offset, limit, fields, sort, scroll);
+                "[{IndexName}] Searched for '{SearchTerm}' (Offset: {Offset}, Limit: {Limit}, Fields: {Fields}, Sort: {Sort}, Scroll: {Scroll})",
+                indexName, searchTerm, offset, limit, fields, sort, scroll);
 
             switch (indexName.ToLower())
             {
@@ -311,7 +302,7 @@ namespace OrganisationRegistry.Api.Search
             if (string.IsNullOrWhiteSpace(id))
                 return BadRequest();
 
-            _log.LogDebug("[{indexName}] Scrolling for '{ScrollId}'.", indexName, id);
+            _log.LogDebug("[{IndexName}] Scrolling for '{ScrollId}'", indexName, id);
 
             switch (indexName.ToLower())
             {
@@ -471,7 +462,7 @@ namespace OrganisationRegistry.Api.Search
                     sortDescriptor.Field(part, descending ? SortOrder.Descending : SortOrder.Ascending);
                 }
 
-                search = search.Sort(s => sortDescriptor);
+                search = search.Sort(_ => sortDescriptor);
             }
             else
             {
@@ -493,12 +484,7 @@ namespace OrganisationRegistry.Api.Search
 
         private IActionResult BuildApiSearchResult<T>(ISearchResponse<T> searchResults) where T : class
         {
-            var jsonSerializerSettings = JsonConvert.DefaultSettings();
-            jsonSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-            jsonSerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
-
-            var resolver = (OrganisationRegistryContractResolver)jsonSerializerSettings.ContractResolver;
-            resolver.SetStringDefaultValueToEmptyString = true;
+            var jsonSerializerSettings = GetJsonSerializerSettings();
 
             if (!searchResults.IsValid)
             {
@@ -543,6 +529,21 @@ namespace OrganisationRegistry.Api.Search
                     .GetProperties()
                     .Select(x => x.Name.ToCamelCase())
                     .Except(new List<string> { "bankAccounts" }).ToList());
+        }
+
+        private static JsonSerializerSettings GetJsonSerializerSettings()
+        {
+            var getSerializerSettings = JsonConvert.DefaultSettings ?? (() => new JsonSerializerSettings());
+            var jsonSerializerSettings = getSerializerSettings();
+            jsonSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            jsonSerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
+
+            var maybeResolver = (OrganisationRegistryContractResolver?)jsonSerializerSettings.ContractResolver;
+            if (maybeResolver is not { } resolver)
+                throw new NullReferenceException("Resolver should not be null");
+
+            resolver.SetStringDefaultValueToEmptyString = true;
+            return jsonSerializerSettings;
         }
     }
 }

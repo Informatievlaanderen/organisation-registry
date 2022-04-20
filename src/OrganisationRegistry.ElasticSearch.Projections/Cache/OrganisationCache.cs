@@ -64,11 +64,12 @@
             IEnvelope<OrganisationInfoUpdated> message)
         {
             await using var context = _contextFactory.Create();
-            var organisation = await context
+            var maybeOrganisation = await context
                 .OrganisationCache
                 .FindAsync(message.Body.OrganisationId);
 
-            organisation.Name = message.Body.Name;
+            if (maybeOrganisation is { } organisation)
+                organisation.Name = message.Body.Name;
 
             await context.SaveChangesAsync();
         }
@@ -77,11 +78,12 @@
             IEnvelope<OrganisationNameUpdated> message)
         {
             await using var context = _contextFactory.Create();
-            var organisation = await context
+            var maybeOrganisation = await context
                 .OrganisationCache
                 .FindAsync(message.Body.OrganisationId);
 
-            organisation.Name = message.Body.Name;
+            if (maybeOrganisation is { } organisation)
+                organisation.Name = message.Body.Name;
 
             await context.SaveChangesAsync();
         }
@@ -90,11 +92,12 @@
             IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             await using var context = _contextFactory.Create();
-            var organisation = await context
+            var maybeOrganisation = await context
                 .OrganisationCache
                 .FindAsync(message.Body.OrganisationId);
 
-            organisation.Name = message.Body.Name;
+            if (maybeOrganisation is { } organisation)
+                organisation.Name = message.Body.Name;
 
             await context.SaveChangesAsync();
         }
@@ -103,11 +106,12 @@
             IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
             await using var context = _contextFactory.Create();
-            var organisation = await context
+            var maybeOrganisation = await context
                 .OrganisationCache
                 .FindAsync(message.Body.OrganisationId);
 
-            organisation.Name = message.Body.NameBeforeKboCoupling;
+            if (maybeOrganisation is { } organisation)
+                organisation.Name = message.Body.NameBeforeKboCoupling;
 
             await context.SaveChangesAsync();
         }

@@ -7,27 +7,19 @@ namespace OrganisationRegistry.Api.Infrastructure.Security
 
     public static class GetAuthenticateInfoExtensions
     {
-        public static async Task<AuthenticateResult> GetAuthenticateInfoAsync(this HttpContext source)
+        public static async Task<AuthenticateResult?> GetAuthenticateInfoAsync(this HttpContext source)
         {
             var bearerInfo = await source.GetBearerAuthenticateInfo();
-            if (bearerInfo != null && bearerInfo.Succeeded)
-                return bearerInfo;
-
-            return null;
+            return bearerInfo is { Succeeded: true } ? bearerInfo : null;
         }
 
-        public static AuthenticateResult GetAuthenticateInfo(this HttpContext source)
+        public static AuthenticateResult? GetAuthenticateInfo(this HttpContext source)
         {
             var bearerInfo = source.GetBearerAuthenticateInfo().GetAwaiter().GetResult();
-            if (bearerInfo != null && bearerInfo.Succeeded)
-                return bearerInfo;
-
-            return null;
+            return bearerInfo is { Succeeded: true } ? bearerInfo : null;
         }
 
         private static Task<AuthenticateResult> GetBearerAuthenticateInfo(this HttpContext source)
-        {
-            return source.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
-        }
+            => source.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
     }
 }

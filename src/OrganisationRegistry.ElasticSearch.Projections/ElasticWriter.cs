@@ -65,6 +65,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections
                 {
                     logger.LogInformation("Writing page {PageNumber}", next.Page);
                 });
+
+                await Task.CompletedTask;
             });
         }
     }

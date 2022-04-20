@@ -26,7 +26,7 @@
         /// <summary>
         /// Gets or sets the <see cref="IFilterMetrics" /> to use for this reporter.
         /// </summary>
-        public IFilterMetrics Filter { get; set; }
+        public IFilterMetrics? Filter { get; set; }
 
         /// <summary>
         /// Gets or sets the Serilog message template used for different metric types.

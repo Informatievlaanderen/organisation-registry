@@ -17,7 +17,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure
         public ElasticBus(ILogger<ElasticBus> logger)
         {
             _logger = logger;
-            _logger.LogTrace("Creating ElasticBus.");
+            _logger.LogTrace("Creating ElasticBus");
         }
 
         public void RegisterEventHandler<T>(Func<DbConnection, DbTransaction, IEnvelope<T>, Task<IElasticChange>> handler) where T : IEvent<T>
@@ -36,10 +36,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure
             if (!_eventRoutes.TryGetValue(envelope.Body.GetType(), out var handlers))
                 handlers = new List<Func<DbConnection, DbTransaction, IMessage, Task<IElasticChange>>>();
 
-            _logger.LogDebug(
-                $"Publishing event {{@Event}} to {{NumberOfEventHandlers}} event {(handlers.Count == 1 ? "handler" : "handlers")}.",
-                envelope,
-                handlers.Count);
+            _logger.LogDebug("Publishing event {@Event} to {NumberOfEventHandlers} event handlers", envelope, handlers.Count);
 
             var changes = new List<IElasticChange>();
 

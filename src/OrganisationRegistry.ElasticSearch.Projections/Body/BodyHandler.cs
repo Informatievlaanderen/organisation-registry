@@ -128,7 +128,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
             if (message.Body.ProjectionName != typeof(BodyHandler).FullName)
                 return new ElasticNoChange();
 
-            Logger.LogInformation("Rebuilding index for {ProjectionName}.", message.Body.ProjectionName);
+            Logger.LogInformation("Rebuilding index for {ProjectionName}", message.Body.ProjectionName);
             await PrepareIndex(_elastic.WriteClient, true);
 
             if (!ProjectionTableNames.Any())
@@ -144,8 +144,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyRegistered> message)
         {
-            return new ElasticDocumentCreation<BodyDocument>
-            (
+            return await new ElasticDocumentCreation<BodyDocument>(
                 message.Body.BodyId,
                 () => new BodyDocument
                 {
@@ -156,15 +155,16 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                     Name = message.Body.Name,
                     ShortName = message.Body.ShortName,
                     Description = message.Body.Description,
-                    FormalValidity = Period.FromDates(message.Body.FormalValidFrom,
+                    FormalValidity = Period.FromDates(
+                        message.Body.FormalValidFrom,
                         message.Body.FormalValidTo)
-                });
+                }).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyInfoChanged> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return await new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -175,12 +175,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                     document.ShortName = message.Body.ShortName;
                     document.Description = message.Body.Description;
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyNumberAssigned> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return await new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -189,13 +189,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                     document.ChangeTime = message.Timestamp;
                     document.BodyNumber = message.Body.BodyNumber;
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyLifecyclePhaseAdded> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return await new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -210,13 +210,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.LifecyclePhaseTypeName,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyLifecyclePhaseUpdated> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return await new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -231,13 +231,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.LifecyclePhaseTypeName,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<LifecyclePhaseTypeUpdated> message)
         {
-            return new ElasticMassChange
+            return await new ElasticMassChange
             (
                 elastic => elastic.TryAsync(() => elastic
                     .MassUpdateBodyAsync(
@@ -246,13 +246,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                         "lifecyclePhaseTypeName", message.Body.Name,
                         message.Number,
                         message.Timestamp))
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyFormalFrameworkAdded> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return await new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -267,13 +267,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.FormalFrameworkName,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyFormalFrameworkUpdated> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return await new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -288,13 +288,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.FormalFrameworkName,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyOrganisationAdded> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return await new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -309,14 +309,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.OrganisationName,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodyOrganisationUpdated> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
-            (
+            return await new ElasticPerDocumentChange<BodyDocument>(
                 message.Body.BodyId,
                 document =>
                 {
@@ -330,13 +329,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.OrganisationName,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodySeatAdded> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return await new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -355,13 +354,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.SeatTypeName,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<BodySeatUpdated> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return await new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -378,13 +377,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                     bodySeat.SeatTypeName = message.Body.SeatTypeName;
                     bodySeat.Validity = Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo);
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<AssignedPersonToBodySeat> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return await new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -400,20 +399,20 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                         new BodyDocument.BodyMandate(
                             message.Body.BodyMandateId,
                             null,
+                            string.Empty,
                             null,
-                            null,
-                            null,
+                            string.Empty,
                             message.Body.PersonId,
                             FormatPersonName(message.Body.PersonFirstName, message.Body.PersonName),
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<ReassignedPersonToBodySeat> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return await new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -428,20 +427,20 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                         new BodyDocument.BodyMandate(
                             message.Body.BodyMandateId,
                             null,
+                            string.Empty,
                             null,
-                            null,
-                            null,
+                            string.Empty,
                             message.Body.PersonId,
                             FormatPersonName(message.Body.PersonFirstName, message.Body.PersonName),
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<AssignedOrganisationToBodySeat> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return await new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -458,18 +457,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.OrganisationId,
                             message.Body.OrganisationName,
                             null,
+                            string.Empty,
                             null,
-                            null,
-                            null,
+                            string.Empty,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<ReassignedOrganisationToBodySeat> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return await new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -486,18 +485,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.OrganisationId,
                             message.Body.OrganisationName,
                             null,
+                            string.Empty,
                             null,
-                            null,
-                            null,
+                            string.Empty,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<AssignedFunctionTypeToBodySeat> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return await new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -516,16 +515,16 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.FunctionTypeId,
                             message.Body.FunctionTypeName,
                             null,
-                            null,
+                            string.Empty,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<ReassignedFunctionTypeToBodySeat> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return await new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -544,10 +543,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                             message.Body.FunctionTypeId,
                             message.Body.FunctionTypeName,
                             null,
-                            null,
+                            string.Empty,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
@@ -625,7 +624,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<PersonAssignedToDelegationRemoved> message)
         {
-            return new ElasticPerDocumentChange<BodyDocument>
+            return await new ElasticPerDocumentChange<BodyDocument>
             (
                 message.Body.BodyId,
                 document =>
@@ -641,19 +640,19 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                     bodyMandate.Delegations.RemoveExistingListItems(
                         x => x.DelegationAssignmentId == message.Body.DelegationAssignmentId);
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<PersonUpdated> message)
         {
-            return new ElasticMassChange(
+            return await new ElasticMassChange(
                 async elastic =>
                 {
                     await UpdatePersonForMandates(message, elastic);
                     await UpdatePersonForDelegations(message, elastic);
                 }
-            );
+            ).ToAsyncResult();
         }
 
         private async Task UpdatePersonForDelegations(IEnvelope<PersonUpdated> message, Elastic elastic)
@@ -760,27 +759,19 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<OrganisationInfoUpdated> message)
-        {
-            return UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name);
-        }
+            => await UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<OrganisationNameUpdated> message)
-        {
-            return UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name);
-        }
+            => await UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<OrganisationInfoUpdatedFromKbo> message)
-        {
-            return UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name);
-        }
+            => await UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<OrganisationCouplingWithKboCancelled> message)
-        {
-            return UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
-        }
+            => await UpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling).ToAsyncResult();
 
         private IElasticChange UpdateMandateOrganisationName(Guid organisationId, string organisationName)
         {
@@ -843,7 +834,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<FunctionUpdated> message)
         {
-            return new ElasticMassChange
+            return await new ElasticMassChange
             (
                 async elastic =>
                 {
@@ -900,13 +891,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                         {
                             Logger.LogInformation("Writing page {PageNumber}", next.Page);
                         });
-                });
+                }).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction,
             IEnvelope<SeatTypeUpdated> message)
         {
-            return new ElasticMassChange
+            return await new ElasticMassChange
             (
                 async elastic => await elastic
                     .MassUpdateBodyAsync(
@@ -915,7 +906,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
                         "seatTypeName", message.Body.Name,
                         message.Number,
                         message.Timestamp)
-            );
+            ).ToAsyncResult();
         }
     }
 }

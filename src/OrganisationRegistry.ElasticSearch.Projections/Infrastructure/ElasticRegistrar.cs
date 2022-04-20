@@ -24,7 +24,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure
             _bus = bus;
             _requestScopedServiceProvider = requestScopedServiceProvider;
 
-            _logger.LogTrace("Creating BusRegistrar.");
+            _logger.LogTrace("Creating BusRegistrar");
         }
 
         public void RegisterEventHandlers(params Type[] eventHandlerTypes)
@@ -37,17 +37,20 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure
                 nameof(ElasticBus.RegisterEventHandler),
                 new Func<DbConnection, DbTransaction, dynamic, Task<IElasticChange>>(async (dbConnection, dbTransaction, envelope) =>
                 {
-                    LoggerExtensions.LogTrace(_logger, "Executing inner event handler for {EventName} - {@Event} using {ExecutorType}.", envelope.GetType(), envelope, executorType);
+                    LoggerExtensions.LogTrace(_logger, "Executing inner event handler for {EventName} - {@Event} using {ExecutorType}", envelope.GetType(), envelope, executorType);
 
                     try
                     {
                         var serviceProvider = _requestScopedServiceProvider();
-                        dynamic handler = serviceProvider.GetService(executorType);
-                        return await handler.Handle(dbConnection, dbTransaction, envelope);
+                        dynamic? maybeHandler = serviceProvider.GetService(executorType);
+                        if (maybeHandler is { } handler)
+                            return await handler.Handle(dbConnection, dbTransaction, envelope);
+                        else
+                            throw new NullReferenceException("Handler cannot be null");
                     }
                     finally
                     {
-                        LoggerExtensions.LogTrace(_logger, "Finished executing inner event handler for {EventName} - {@Event}.", envelope.GetType(), envelope);
+                        LoggerExtensions.LogTrace(_logger, "Finished executing inner event handler for {EventName} - {@Event}", envelope.GetType(), envelope);
 
                     }
                 }));
@@ -57,7 +60,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure
             var executorTypes = reactionHandlerTypes
                 .Where(t => !t.GetTypeInfo().IsAbstract)
                 .Select(t => new { Type = t, Interfaces = ResolveHandlerInterface(t, handlerInterfaceType) })
-                .Where(e => e.Interfaces != null && e.Interfaces.Any());
+                .Where(e => e.Interfaces.Any());
 
             foreach (var executorType in executorTypes)
                 foreach (var @interface in executorType.Interfaces)
@@ -84,7 +87,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure
                 .Single(mi => mi.GetParameters().Length == 1)
                 .MakeGenericMethod(messageType);
 
-            _logger.LogTrace("Registering {ExecutorType} for {MessageType}.", executorType, messageType);
+            _logger.LogTrace("Registering {ExecutorType} for {MessageType}", executorType, messageType);
             registerExecutorMethod.Invoke(_bus, new[] { handlerInvokerDelegate });
         }
     }

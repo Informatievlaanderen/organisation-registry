@@ -6,11 +6,13 @@
 
     public class ConfigurationValue
     {
-        public string Key { get; set; }
-        public string Description { get; set; }
-        public string Value { get; set; }
+        public string Key { get; set; } = null!;
+        public string Description { get; set; } = null!;
+        public string Value { get; set; } = null!;
 
-        public ConfigurationValue() { }
+        public ConfigurationValue()
+        {
+        }
 
         public ConfigurationValue(string key, string description, string value)
         {

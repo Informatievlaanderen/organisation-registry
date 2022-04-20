@@ -14,8 +14,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Body
     public class BodyRunner : BaseRunner<BodyDocument>
     {
         public const string ElasticSearchProjectionsProjectionName = "ElasticSearchBodiesProjection";
-        private static readonly string ProjectionFullName = typeof(BodyHandler).FullName;
-        private new const string ProjectionName = nameof(Projections.Body);
+        private static readonly string ProjectionFullName = typeof(BodyHandler).FullName!;
+        private new const string ProjectionName = nameof(Body);
 
         public new static readonly Type[] EventHandlers =
         {
