@@ -10,8 +10,9 @@ import { OrganisationRoutingModule } from './organisation-routing.module';
 import { OrganisationOverviewComponent, OrganisationListComponent, OrganisationFilterComponent } from './overview';
 import { CreateOrganisationComponent, CreateOrganisationFormComponent } from './create';
 import { OrganisationDetailModule } from './detail';
-import {OrganisationGuard} from "./guards/organisation.guard";
-import {CanAddAndUpdateFormalFrameworksGuard} from "./guards/can-add-update-formal-frameworks.guard";
+import { OrganisationGuard } from "./guards/organisation.guard";
+import { CanAddAndUpdateFormalFrameworksGuard } from "./guards/can-add-update-formal-frameworks.guard";
+import { CanAddAndUpdateOrganisationClassificationTypeGuard } from "./guards/can-add-update-organisation-classification-type.guard";
 
 @NgModule({
   imports: [
@@ -32,7 +33,8 @@ import {CanAddAndUpdateFormalFrameworksGuard} from "./guards/can-add-update-form
   ],
   providers:[
     OrganisationGuard,
-    CanAddAndUpdateFormalFrameworksGuard
+    CanAddAndUpdateFormalFrameworksGuard,
+    CanAddAndUpdateOrganisationClassificationTypeGuard
   ],
   exports: [
     OrganisationRoutingModule

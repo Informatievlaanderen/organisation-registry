@@ -24,18 +24,20 @@
 
         public OrganisationOrganisationClassificationListQueryResult(
             Guid organisationOrganisationClassificationId,
+            Guid organisationClassificationTypeId,
             string organisationClassificationTypeName,
             string organisationClassificationName,
             DateTime? validFrom,
             DateTime? validTo,
-            bool isEditable)
+            bool isEditable,
+            Func<Guid, bool> isAuthorizedForOrganisationClassificationType)
         {
             OrganisationOrganisationClassificationId = organisationOrganisationClassificationId;
             OrganisationClassificationTypeName = organisationClassificationTypeName;
             OrganisationClassificationName = organisationClassificationName;
             ValidFrom = validFrom;
             ValidTo = validTo;
-            IsEditable = isEditable;
+            IsEditable = isEditable && isAuthorizedForOrganisationClassificationType(organisationClassificationTypeId);
 
             IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
         }
@@ -45,22 +47,26 @@
     {
         private readonly OrganisationRegistryContext _context;
         private readonly Guid _organisationId;
+        private readonly Func<Guid, bool> _isAuthorizedForOrganisationClassificationType;
 
         protected override ISorting Sorting => new OrganisationOrganisationClassificationListSorting();
 
         protected override Expression<Func<OrganisationOrganisationClassificationListItem, OrganisationOrganisationClassificationListQueryResult>> Transformation =>
             x => new OrganisationOrganisationClassificationListQueryResult(
                 x.OrganisationOrganisationClassificationId,
+                x.OrganisationClassificationTypeId,
                 x.OrganisationClassificationTypeName,
                 x.OrganisationClassificationName,
                 x.ValidFrom,
                 x.ValidTo,
-                x.IsEditable);
+                x.IsEditable,
+                _isAuthorizedForOrganisationClassificationType);
 
-        public OrganisationOrganisationClassificationListQuery(OrganisationRegistryContext context, Guid organisationId)
+        public OrganisationOrganisationClassificationListQuery(OrganisationRegistryContext context, Guid organisationId, Func<Guid, bool> isAuthorizedForOrganisationClassificationType)
         {
             _context = context;
             _organisationId = organisationId;
+            _isAuthorizedForOrganisationClassificationType = isAuthorizedForOrganisationClassificationType;
         }
 
         protected override IQueryable<OrganisationOrganisationClassificationListItem> Filter(FilteringHeader<OrganisationOrganisationClassificationListItemFilter> filtering)

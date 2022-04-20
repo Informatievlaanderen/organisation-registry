@@ -128,6 +128,7 @@ import {
 import {OrganisationVlimpersOverviewComponent} from "organisation/vlimpers";
 import {OrganisationGuard} from "../guards/organisation.guard";
 import {CanAddAndUpdateFormalFrameworksGuard} from "../guards/can-add-update-formal-frameworks.guard";
+import {CanAddAndUpdateOrganisationClassificationTypeGuard} from "../guards/can-add-update-organisation-classification-type.guard";
 
 const routes: Routes = [
   {
@@ -366,10 +367,9 @@ const routes: Routes = [
           {
             path: 'create',
             component: OrganisationOrganisationClassificationsCreateOrganisationOrganisationClassificationComponent,
-            canActivate: [RoleGuard, OrganisationGuard],
+            canActivate: [CanAddAndUpdateOrganisationClassificationTypeGuard],
             data: {
               title: 'Organisatie - Classificaties - Nieuwe classificatie',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -379,10 +379,9 @@ const routes: Routes = [
           {
             path: 'edit/:id',
             component: OrganisationOrganisationClassificationsUpdateOrganisationOrganisationClassificationComponent,
-            canActivate: [RoleGuard, OrganisationGuard],
+            canActivate: [CanAddAndUpdateOrganisationClassificationTypeGuard],
             data: {
               title: 'Organisatie - Classificaties - Bewerken classificatie',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'

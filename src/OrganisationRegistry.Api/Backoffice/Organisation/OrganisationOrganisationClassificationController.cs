@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Handling.Authorization;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Pagination;
@@ -10,6 +11,9 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Caching.Memory;
+    using OrganisationRegistry.Configuration;
+    using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using Queries;
@@ -28,13 +32,32 @@
 
         /// <summary>Get a list of available classifications for an organisation.</summary>
         [HttpGet]
-        public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
+        public async Task<IActionResult> Get(
+            [FromServices] OrganisationRegistryContext context,
+            [FromServices] IOrganisationRegistryConfiguration configuration,
+            [FromServices] IMemoryCaches memoryCaches,
+            [FromServices] ISecurityService securityService,
+            [FromRoute] Guid organisationId)
         {
             var filtering = Request.ExtractFilteringRequest<OrganisationOrganisationClassificationListItemFilter>();
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var pagedOrganisations = new OrganisationOrganisationClassificationListQuery(context, organisationId).Fetch(filtering, sorting, pagination);
+            var user = await securityService.GetUser(User);
+            Func<Guid, bool> isAuthorizedForOrganisationClassificationType = id =>
+                new OrganisationClassificationTypePolicy(
+                    memoryCaches.OvoNumbers[organisationId],
+                    configuration,
+                    id)
+                    .Check(user)
+                    .IsSuccessful;
+
+            var pagedOrganisations =
+                new OrganisationOrganisationClassificationListQuery(
+                    context,
+                    organisationId,
+                    isAuthorizedForOrganisationClassificationType)
+                    .Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedOrganisations.PaginationInfo);
             Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
@@ -65,12 +88,9 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationOrganisationClassificationRequest message)
+        public async Task<IActionResult> Post([FromRoute] Guid organisationId, [FromBody] AddOrganisationOrganisationClassificationRequest message)
         {
             var internalMessage = new AddOrganisationOrganisationClassificationInternalRequest(organisationId, message);
-
-            if (!await securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
@@ -87,12 +107,9 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationOrganisationClassificationRequest message)
+        public async Task<IActionResult> Put([FromRoute] Guid organisationId, [FromBody] UpdateOrganisationOrganisationClassificationRequest message)
         {
             var internalMessage = new UpdateOrganisationOrganisationClassificationInternalRequest(organisationId, message);
-
-            if (!await securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);

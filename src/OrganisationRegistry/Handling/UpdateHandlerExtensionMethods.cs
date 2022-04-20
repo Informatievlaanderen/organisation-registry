@@ -62,6 +62,28 @@ namespace OrganisationRegistry.Handling
                     configuration,
                     message.KeyTypeId));
 
+        public static UpdateHandler<Organisation> WithOrganisationClassificationTypePolicy(
+            this UpdateHandler<Organisation> source,
+            IOrganisationRegistryConfiguration configuration,
+            AddOrganisationOrganisationClassification message)
+            => source.WithPolicy(
+                organisation =>
+                    new OrganisationClassificationTypePolicy(
+                        organisation.State.OvoNumber,
+                        configuration,
+                        message.OrganisationClassificationTypeId));
+
+        public static UpdateHandler<Organisation> WithOrganisationClassificationTypePolicy(
+            this UpdateHandler<Organisation> source,
+            IOrganisationRegistryConfiguration configuration,
+            UpdateOrganisationOrganisationClassification message)
+            => source.WithPolicy(
+                organisation =>
+                    new OrganisationClassificationTypePolicy(
+                        organisation.State.OvoNumber,
+                        configuration,
+                        message.OrganisationClassificationTypeId));
+
         public static UpdateHandler<Organisation> RequiresBeheerderForOrganisationButNotUnderVlimpersManagement(
             this UpdateHandler<Organisation> source)
             => source.WithPolicy(
