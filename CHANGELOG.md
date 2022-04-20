@@ -1,3 +1,10 @@
+# [1.164.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.163.0...v1.164.0) (2022-04-20)
+
+
+### Features
+
+* or-954 classificatie kandidaat deugdelijk bestuur voor regelgevingdbbeheerder ([bb1a53b](https://github.com/informatievlaanderen/organisation-registry/commit/bb1a53b38337ee375bfb50732bf4f9ccecb9aa36))
+
 # [1.163.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.162.0...v1.163.0) (2022-04-20)
 
 
