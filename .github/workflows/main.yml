@@ -111,29 +111,29 @@ jobs:
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
 
-    - name: Cache SonarCloud scanner
-      id: cache-sonar-scanner
-      uses: actions/cache@v1
-      with:
-        path: ./.sonar/scanner
-        key: ${{ runner.os }}-sonar-scanner
-        restore-keys: ${{ runner.os }}-sonar-scanner
+#    - name: Cache SonarCloud scanner
+#      id: cache-sonar-scanner
+#      uses: actions/cache@v1
+#      with:
+#        path: ./.sonar/scanner
+#        key: ${{ runner.os }}-sonar-scanner
+#        restore-keys: ${{ runner.os }}-sonar-scanner
+#
+#    - name: Install SonarCloud scanner
+#      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+#      shell: bash
+#      run: |
+#        mkdir .sonar
+#        mkdir .sonar/scanner
+#        dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
 
-    - name: Install SonarCloud scanner
-      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-      shell: bash
-      run: |
-        mkdir .sonar
-        mkdir .sonar/scanner
-        dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
-
-    - name: Build and analyze
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      shell: bash
-      run: |
-        ./.sonar/scanner/dotnet-sonarscanner begin /k:"Informatievlaanderen_organisation-registry" /o:"informatievlaanderen" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+#    - name: Build and analyze
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+#        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#      shell: bash
+#      run: |
+#        ./.sonar/scanner/dotnet-sonarscanner begin /k:"Informatievlaanderen_organisation-registry" /o:"informatievlaanderen" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
 
     - name: Run Semantic Release
       shell: bash
@@ -150,13 +150,13 @@ jobs:
         GIT_COMMITTER_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
         IGNORE_ES_TESTS: FALSE
 
-    - name: Build and analyze
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      shell: bash
-      run: |
-        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+#    - name: Build and analyze
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+#        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#      shell: bash
+#      run: |
+#        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
     - name: Set Release Version
       id: set-version
