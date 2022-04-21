@@ -76,7 +76,7 @@ export class OrganisationCapacitiesCreateOrganisationCapacityComponent implement
       .getAllCapacities()
       .finally(() => this.enableForm())
       .subscribe(
-        allCapacityTypes => this.capacities = allCapacityTypes.map(k => new SelectItem(k.id, k.name)),
+        allCapacities => this.capacities = allCapacities.map(k => new SelectItem(k.id, k.name)),
         error =>
           this.alertService.setAlert(
             new AlertBuilder()

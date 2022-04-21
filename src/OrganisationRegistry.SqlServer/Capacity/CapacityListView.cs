@@ -62,7 +62,7 @@
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<CapacityCreated> message)
         {
-            var capacityType = new CapacityListItem
+            var capacity = new CapacityListItem
             {
                 Id = message.Body.CapacityId,
                 Name = message.Body.Name,
@@ -70,7 +70,7 @@
 
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                await context.CapacityList.AddAsync(capacityType);
+                await context.CapacityList.AddAsync(capacity);
                 await context.SaveChangesAsync();
             }
         }

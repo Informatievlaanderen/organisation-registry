@@ -14,9 +14,9 @@ namespace OrganisationRegistry.Organisation.Commands
 
         public Guid OrganisationCapacityId { get; }
         public CapacityId CapacityId { get; }
-        public PersonId PersonId { get; }
-        public FunctionTypeId FunctionTypeId { get; }
-        public LocationId LocationId { get; }
+        public PersonId? PersonId { get; }
+        public FunctionTypeId? FunctionTypeId { get; }
+        public LocationId? LocationId { get; }
         public Dictionary<ContactTypeId, string> Contacts { get; }
         public ValidFrom ValidFrom { get; }
         public ValidTo ValidTo { get; }
@@ -25,10 +25,10 @@ namespace OrganisationRegistry.Organisation.Commands
             Guid organisationCapacityId,
             OrganisationId organisationId,
             CapacityId capacityId,
-            PersonId personId,
-            FunctionTypeId functionTypeId,
-            LocationId locationId,
-            Dictionary<ContactTypeId, string> contacts,
+            PersonId? personId,
+            FunctionTypeId? functionTypeId,
+            LocationId? locationId,
+            Dictionary<ContactTypeId, string>? contacts,
             ValidFrom validFrom,
             ValidTo validTo)
         {

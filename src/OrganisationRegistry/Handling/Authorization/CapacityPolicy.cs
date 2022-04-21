@@ -6,20 +6,20 @@ using Configuration;
 using Infrastructure.Authorization;
 using Organisation.Exceptions;
 
-public class OrganisationCapacityTypePolicy : ISecurityPolicy
+public class CapacityPolicy : ISecurityPolicy
 {
     private readonly string _ovoNumber;
-    private readonly Guid _organisationCapacityTypeId;
+    private readonly Guid _organisationCapacityId;
     private readonly IOrganisationRegistryConfiguration _configuration;
 
-    public OrganisationCapacityTypePolicy(
+    public CapacityPolicy(
         string ovoNumber,
         IOrganisationRegistryConfiguration configuration,
-        Guid organisationCapacityTypeId)
+        Guid organisationCapacityId)
     {
         _ovoNumber = ovoNumber;
         _configuration = configuration;
-        _organisationCapacityTypeId = organisationCapacityTypeId;
+        _organisationCapacityId = organisationCapacityId;
     }
 
     public AuthorizationResult Check(IUser user)
@@ -27,14 +27,14 @@ public class OrganisationCapacityTypePolicy : ISecurityPolicy
         if (user.IsInRole(Role.AlgemeenBeheerder))
             return AuthorizationResult.Success();
 
-        var organisationCapacityTypeIdsOwnedByRegelgevingDbBeheerder = _configuration.Authorization.OrganisationCapacityTypeIdsOwnedByRegelgevingDbBeheerder;
+        var organisationCapacityIdsOwnedByRegelgevingDbBeheerder = _configuration.Authorization.CapacityIdsOwnedByRegelgevingDbBeheerder;
 
         if (user.IsInRole(Role.RegelgevingBeheerder) &&
-            organisationCapacityTypeIdsOwnedByRegelgevingDbBeheerder.Contains(_organisationCapacityTypeId))
+            organisationCapacityIdsOwnedByRegelgevingDbBeheerder.Contains(_organisationCapacityId))
             return AuthorizationResult.Success();
 
         if (user.IsOrganisatieBeheerderFor(_ovoNumber) &&
-            !organisationCapacityTypeIdsOwnedByRegelgevingDbBeheerder.Contains(_organisationCapacityTypeId))
+            !organisationCapacityIdsOwnedByRegelgevingDbBeheerder.Contains(_organisationCapacityId))
             return AuthorizationResult.Success();
 
         return AuthorizationResult.Fail(new InsufficientRights());
