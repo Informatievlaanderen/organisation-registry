@@ -9,10 +9,11 @@ namespace OrganisationRegistry.Infrastructure.Configuration
         public static string Name = "OrganisationTermination";
 
         [JsonConverter(typeof(TimestampConverter))]
-        public DateTime Created => DateTime.Now;
+        public DateTime Created
+            => DateTime.Now;
 
-        public string OrganisationCapacityTypeIdsToTerminateEndOfNextYear { get; set; }
-        public string OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; set; }
-        public string FormalFrameworkIdsToTerminateEndOfNextYear { get; set; }
+        public string OrganisationCapacityIdsToTerminateEndOfNextYear { get; set; } = null!;
+        public string OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; set; } = null!;
+        public string FormalFrameworkIdsToTerminateEndOfNextYear { get; set; } = null!;
     }
 }

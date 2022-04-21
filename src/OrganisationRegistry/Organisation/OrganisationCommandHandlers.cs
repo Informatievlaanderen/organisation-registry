@@ -935,9 +935,9 @@ namespace OrganisationRegistry.Organisation
                     var organisation = session.Get<Organisation>(message.OrganisationId);
 
                     var fieldsToTerminateConfig = new OrganisationTerminationCalculator.FieldsToTerminateConfig(
-                        _organisationRegistryConfiguration.Kbo.OrganisationCapacityTypeIdsToTerminateEndOfNextYear?.FirstOrDefault() ?? Guid.Empty,
-                        _organisationRegistryConfiguration.Kbo.OrganisationClassificationTypeIdsToTerminateEndOfNextYear?.FirstOrDefault() ?? Guid.Empty,
                         _organisationRegistryConfiguration.Kbo.FormalFrameworkIdsToTerminateEndOfNextYear?.FirstOrDefault() ?? Guid.Empty,
+                        _organisationRegistryConfiguration.Kbo.OrganisationCapacityIdsToTerminateEndOfNextYear?.FirstOrDefault() ?? Guid.Empty,
+                        _organisationRegistryConfiguration.Kbo.OrganisationClassificationTypeIdsToTerminateEndOfNextYear?.FirstOrDefault() ?? Guid.Empty,
                         _organisationRegistryConfiguration.VlimpersKeyTypeId);
 
                     organisation.TerminateOrganisation(message.DateOfTermination,

@@ -14,8 +14,8 @@ namespace OrganisationRegistry.Api.Configuration
         {
             _configuration = configuration;
 
-            OrganisationCapacityTypeIdsToTerminateEndOfNextYear =
-                terminationConfiguration?.OrganisationCapacityTypeIdsToTerminateEndOfNextYear.SplitGuids();
+            OrganisationCapacityIdsToTerminateEndOfNextYear =
+                terminationConfiguration?.OrganisationCapacityIdsToTerminateEndOfNextYear.SplitGuids();
 
             OrganisationClassificationTypeIdsToTerminateEndOfNextYear =
                 terminationConfiguration?.OrganisationClassificationTypeIdsToTerminateEndOfNextYear.SplitGuids();
@@ -29,7 +29,7 @@ namespace OrganisationRegistry.Api.Configuration
 
         public Guid KboV2LegalFormOrganisationClassificationTypeId => _configuration.KboV2LegalFormOrganisationClassificationTypeId;
 
-        public Guid[]? OrganisationCapacityTypeIdsToTerminateEndOfNextYear { get; }
+        public Guid[]? OrganisationCapacityIdsToTerminateEndOfNextYear { get; }
         public Guid[]? OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; }
         public Guid[]? FormalFrameworkIdsToTerminateEndOfNextYear { get; }
     }
