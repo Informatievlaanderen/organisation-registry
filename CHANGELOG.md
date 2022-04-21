@@ -1,3 +1,18 @@
+# [1.166.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.165.0...v1.166.0) (2022-04-21)
+
+
+### Bug Fixes
+
+* or-955 rename CapacityType -> CapacityTypeId + fix order of parameters ([6a4474e](https://github.com/informatievlaanderen/organisation-registry/commit/6a4474ecca6ffee79796212e6689395be13b7201))
+
+
+### Features
+
+* or-955 hoedanigheid contactpersoon db ([9258bee](https://github.com/informatievlaanderen/organisation-registry/commit/9258bee4a703cab6c6c1e9e1720e4a2fc8972173))
+* or-955 query capacities ([00c9859](https://github.com/informatievlaanderen/organisation-registry/commit/00c98590f35ad89ae988b2770f0b5b87e5e7cc25))
+* or-955 ui + settings ([9dafb4c](https://github.com/informatievlaanderen/organisation-registry/commit/9dafb4c16d1ad69854079f6f66344908a940a1f0))
+* or-955 updatehandler + unittests ([7b2a8c7](https://github.com/informatievlaanderen/organisation-registry/commit/7b2a8c7b9da4c43038ccd8d52f3ef25daf49fd7d))
+
 # [1.165.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.164.0...v1.165.0) (2022-04-21)
 
 
