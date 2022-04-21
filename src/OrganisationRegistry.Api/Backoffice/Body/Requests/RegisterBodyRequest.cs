@@ -8,7 +8,7 @@
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.LifecyclePhaseType;
+    using LifecyclePhaseType;
     using OrganisationRegistry.Organisation;
     using SqlServer.Body;
     using SqlServer.LifecyclePhaseType;
@@ -85,8 +85,8 @@
     {
         public static RegisterBody Map(
             RegisterBodyRequest message,
-            LifecyclePhaseTypeListItem activeLifecyclePhaseTypeListItem,
-            LifecyclePhaseTypeListItem inactiveLifecyclePhaseTypeListItem)
+            LifecyclePhaseTypeListItem? activeLifecyclePhaseTypeListItem,
+            LifecyclePhaseTypeListItem? inactiveLifecyclePhaseTypeListItem)
         {
             return new RegisterBody(
                 new BodyId(message.Id),

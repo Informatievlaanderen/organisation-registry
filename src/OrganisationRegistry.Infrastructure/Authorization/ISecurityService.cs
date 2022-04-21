@@ -14,7 +14,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization
 
         Task<bool> CanEditDelegation(ClaimsPrincipal user, Guid? organisationId, Guid? bodyId);
 
-        Task<SecurityInformation> GetSecurityInformation(ClaimsPrincipal user);
+        Task<SecurityInformation> GetSecurityInformation(ClaimsPrincipal? user);
 
         Task<IUser> GetRequiredUser(ClaimsPrincipal? principal);
         Task<IUser> GetUser(ClaimsPrincipal? principal);

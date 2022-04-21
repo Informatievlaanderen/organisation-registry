@@ -53,13 +53,20 @@
 
             RuleFor(x => x.Body.OrganisationId)
                 .NotEmpty()
-                .WhenAsync(async (x, ct) => await UserIsOrganisatieBeheerder(httpContextAccessor, securityService))
+                .WhenAsync(async (_, _) => await UserIsOrganisatieBeheerder(httpContextAccessor, securityService))
                 .WithMessage("Organisation Id is required for users in role 'organisatieBeheerder'.");
         }
 
         private static async Task<bool> UserIsOrganisatieBeheerder(IHttpContextAccessor httpContextAccessor, ISecurityService securityService)
         {
-            var authenticateInfo = await httpContextAccessor.HttpContext.GetAuthenticateInfoAsync();
+            var maybeHttpContext = httpContextAccessor.HttpContext;
+            if (maybeHttpContext is not { } httpContext)
+                throw new NullReferenceException("httpContext should not be null");
+
+            var maybeAuthenticateInfo = await httpContext.GetAuthenticateInfoAsync();
+            if (maybeAuthenticateInfo is not { } authenticateInfo)
+                throw new NullReferenceException("authenticateInfo should not be null");
+
             return (await securityService
                 .GetSecurityInformation(authenticateInfo.Principal))
                 .Roles.Contains(Role.DecentraalBeheerder);

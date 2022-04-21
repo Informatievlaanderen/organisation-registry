@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Api.Backoffice.Admin.Status
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
@@ -34,7 +35,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Status
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok("I'm ok!");
+            return await OkAsync("I'm ok!");
         }
 
         [HttpGet]
@@ -42,7 +43,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Status
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetToggles([FromServices] IOptions<TogglesConfigurationSection> toggles)
         {
-            return Ok(toggles.Value);
+            return await OkAsync(toggles.Value);
         }
 
         [HttpGet]
@@ -55,6 +56,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Status
             {
                 features.Add(featureName.ToCamelCase(), await featureManager.IsEnabledAsync(featureName));
             }
+
             return Ok(features);
         }
 
@@ -80,16 +82,30 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Status
                 Ip = await externalIpFetcher.Fetch()
             };
 
-            var jsonSerializerSettings = JsonConvert.DefaultSettings();
-            var resolver = (DefaultContractResolver)jsonSerializerSettings.ContractResolver;
-            resolver.NamingStrategy.ProcessDictionaryKeys = true;
+            var jsonSerializerSettings = GetJsonSerializerSettings();
 
             return new ContentResult
             {
                 ContentType = "application/json",
-                StatusCode = (int) HttpStatusCode.OK,
+                StatusCode = (int)HttpStatusCode.OK,
                 Content = JsonConvert.SerializeObject(summary, Formatting.Indented, jsonSerializerSettings)
             };
+        }
+
+        private static JsonSerializerSettings GetJsonSerializerSettings()
+        {
+            var getSerializerSettings = JsonConvert.DefaultSettings ?? (() => new JsonSerializerSettings());
+            var jsonSerializerSettings = getSerializerSettings();
+
+            var maybeResolver = (DefaultContractResolver?)jsonSerializerSettings.ContractResolver;
+            if (maybeResolver is not { } resolver)
+                throw new NullReferenceException("Resolver should not be null");
+
+            if (resolver.NamingStrategy is not { } namingStrategy)
+                throw new NullReferenceException("Resolver.NamingStrategy should not be null");
+
+            namingStrategy.ProcessDictionaryKeys = true;
+            return jsonSerializerSettings;
         }
 
         private static Dictionary<string, object> PrintConfig(IConfiguration configuration)

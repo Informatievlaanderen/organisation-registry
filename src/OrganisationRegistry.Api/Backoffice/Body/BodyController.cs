@@ -85,7 +85,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body
                 return BadRequest(ModelState);
 
             var authInfo = await HttpContext.GetAuthenticateInfoAsync();
-            if (authInfo.Principal == null || !authInfo.Principal.IsInRole(Roles.Developer))
+            if (authInfo?.Principal == null || !authInfo.Principal.IsInRole(Roles.Developer))
                 message.BodyNumber = string.Empty;
 
             await CommandSender.Send(
