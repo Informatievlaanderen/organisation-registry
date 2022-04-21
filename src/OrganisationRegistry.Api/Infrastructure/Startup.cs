@@ -30,7 +30,6 @@ namespace OrganisationRegistry.Api.Infrastructure
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
-    using OrganisationRegistry.Security;
     using Search;
     using Security;
     using SqlServer.Configuration;

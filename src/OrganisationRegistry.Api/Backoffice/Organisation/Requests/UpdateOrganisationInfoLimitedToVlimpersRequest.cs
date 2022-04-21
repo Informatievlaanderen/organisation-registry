@@ -1,12 +1,9 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Requests
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using FluentValidation;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-    using OrganisationRegistry.Purpose;
     using SqlServer.Organisation;
 
     public class UpdateOrganisationInfoLimitedToVlimpersInternalRequest

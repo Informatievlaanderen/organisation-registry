@@ -29,7 +29,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public Guid OrganisationId { get; set; }
 
         public Guid CapacityId { get; set; }
-        public string? CapacityName { get; set; }
+        public string CapacityName { get; set; } = null!;
 
         public Guid? PersonId { get; set; }
         public string? PersonName { get; set; }
