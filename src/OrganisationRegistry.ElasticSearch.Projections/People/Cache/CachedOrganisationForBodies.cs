@@ -45,11 +45,11 @@
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
         {
             await using var context = _contextFactory.Create();
-            var body = await context
+            var maybeBody = await context
                 .OrganisationPerBodyListForES
                 .FindAsync(message.Body.BodyId);
 
-            if (body == null)
+            if (maybeBody is not { } body)
                 return;
 
             context.OrganisationPerBodyListForES.Remove(body);
@@ -61,12 +61,12 @@
         {
             await using var context = _contextFactory.Create();
 
-            var organisation = await context.OrganisationCache.FindAsync(message.Body.OrganisationId);
-            var body = await context
+            var organisation = await context.OrganisationCache.FindRequiredAsync(message.Body.OrganisationId);
+            var maybeBody = await context
                 .OrganisationPerBodyListForES
                 .FindAsync(message.Body.BodyId);
 
-            if (body == null)
+            if (maybeBody is not { } body)
                 return;
 
             body.OrganisationId = message.Body.BodyOrganisationId;

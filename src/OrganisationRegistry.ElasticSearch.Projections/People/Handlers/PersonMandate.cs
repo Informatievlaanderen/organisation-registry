@@ -54,7 +54,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                 message.Body.PersonId, async document =>
                 {
                     await using var organisationRegistryContext = _contextFactory.Create();
-                    var bodySeat = await organisationRegistryContext.BodySeatCache.FindAsync(message.Body.BodySeatId);
+                    var bodySeat = await organisationRegistryContext.BodySeatCache.FindRequiredAsync(message.Body.BodySeatId);
 
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -110,7 +110,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             changes.Add(message.Body.PersonId, async document =>
             {
                 await using var organisationRegistryContext = _contextFactory.Create();
-                var bodySeat = await organisationRegistryContext.BodySeatCache.FindAsync(message.Body.BodySeatId);
+                var bodySeat = await organisationRegistryContext.BodySeatCache.FindRequiredAsync(message.Body.BodySeatId);
 
                 document.ChangeId = message.Number;
                 document.ChangeTime = message.Timestamp;
@@ -253,8 +253,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                 async document =>
                 {
                     await using var organisationRegistryContext = _contextFactory.Create();
-                    var bodySeat = await organisationRegistryContext.BodySeatCache.FindAsync(message.Body.BodySeatId);
-                    var body = await organisationRegistryContext.BodyCache.FindAsync(message.Body.BodyId);
+                    var bodySeat = await organisationRegistryContext.BodySeatCache.FindRequiredAsync(message.Body.BodySeatId);
+                    var body = await organisationRegistryContext.BodyCache.FindRequiredAsync(message.Body.BodyId);
 
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -310,8 +310,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             changes.Add(message.Body.PersonId, async document =>
             {
                 await using var organisationRegistryContext = _contextFactory.Create();
-                var bodySeat = await organisationRegistryContext.BodySeatCache.FindAsync(message.Body.BodySeatId);
-                var body = await organisationRegistryContext.BodyCache.FindAsync(message.Body.BodyId);
+                var bodySeat = await organisationRegistryContext.BodySeatCache.FindRequiredAsync(message.Body.BodySeatId);
+                var body = await organisationRegistryContext.BodyCache.FindRequiredAsync(message.Body.BodyId);
 
                 document.ChangeId = message.Number;
                 document.ChangeTime = message.Timestamp;
@@ -370,7 +370,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                 async elastic =>
                 {
                     await using var organisationRegistryContext = _contextFactory.Create();
-                    var organisation = await organisationRegistryContext.OrganisationCache.FindAsync(message.Body.OrganisationId);
+                    var organisation = await organisationRegistryContext.OrganisationCache.FindRequiredAsync(message.Body.OrganisationId);
 
                     await elastic.TryAsync(() => elastic
                         .MassUpdatePersonAsync(
