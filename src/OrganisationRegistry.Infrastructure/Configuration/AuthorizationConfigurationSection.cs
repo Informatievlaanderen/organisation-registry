@@ -18,5 +18,6 @@ namespace OrganisationRegistry.Infrastructure.Configuration
         public string KeyIdsAllowedOnlyForOrafin { get; set; } = null!;
         public string FormalFrameworkIdsOwnedByRegelgevingDbBeheerder { get; set; } = null!;
         public string OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder { get; set; } = null!;
+        public string OrganisationCapacityTypeIdsOwnedByRegelgevingDbBeheerder { get; set; } = null!;
     }
 }
