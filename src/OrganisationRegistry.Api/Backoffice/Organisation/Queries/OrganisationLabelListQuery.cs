@@ -76,10 +76,10 @@
                 .AsQueryable()
                 .Where(x => x.OrganisationId == _organisationId).AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return organisationLabels;
 
-            if (filtering.Filter.ActiveOnly)
+            if (filter.ActiveOnly)
                 organisationLabels = organisationLabels.Where(x =>
                     (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
                     (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));

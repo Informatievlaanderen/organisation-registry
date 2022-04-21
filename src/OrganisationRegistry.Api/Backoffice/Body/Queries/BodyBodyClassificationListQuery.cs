@@ -64,10 +64,10 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Queries
                 .AsQueryable()
                 .Where(x => x.BodyId == _bodyId).AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return bodyBodyClassifications;
 
-            if (filtering.Filter.ActiveOnly)
+            if (filter.ActiveOnly)
                 bodyBodyClassifications = bodyBodyClassifications.Where(x =>
                     (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
                     (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));

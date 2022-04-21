@@ -22,10 +22,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType.Queries
         {
             var labelTypes = _context.LabelTypeList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return labelTypes;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 labelTypes = labelTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
 
             return labelTypes;

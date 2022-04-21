@@ -43,29 +43,22 @@
             _organisationId = organisationId;
         }
 
+        /// <summary>
+        /// Get active children without filtering
+        /// </summary>
+        /// <param name="filtering"></param>
+        /// <returns></returns>
         protected override IQueryable<OrganisationChildListItem> Filter(FilteringHeader<OrganisationChildListItem> filtering)
-        {
-            var organisationChildren = _context.OrganisationChildrenList
+            => _context.OrganisationChildrenList
                 .AsQueryable()
-                .Where(x => x.ParentOrganisationId == _organisationId).AsQueryable();
-
-            // Only possible to get active children
-            organisationChildren = organisationChildren
+                .Where(x => x.ParentOrganisationId == _organisationId)
+                .AsQueryable()
                 .Where(x =>
                     (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
                     (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today))
                 .Where(x =>
                     (!x.OrganisationValidFrom.HasValue || x.OrganisationValidFrom <= DateTime.Today) &&
                     (!x.OrganisationValidTo.HasValue || x.OrganisationValidTo >= DateTime.Today));
-
-            if (!filtering.ShouldFilter)
-                return organisationChildren;
-
-            //if (!filtering.Filter.Name.IsNullOrWhiteSpace())
-            //    organisations = organisations.Where(x => x.Name.Contains(filtering.Filter.Name));
-
-            return organisationChildren;
-        }
 
         private class OrganisationChildListSorting : ISorting
         {

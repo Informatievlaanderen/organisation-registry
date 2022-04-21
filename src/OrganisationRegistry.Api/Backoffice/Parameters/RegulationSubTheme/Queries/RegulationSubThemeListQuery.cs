@@ -49,18 +49,16 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationSubTheme.Quer
         {
             var regulationSubThemes = _context.RegulationSubThemeList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return regulationSubThemes;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 regulationSubThemes = regulationSubThemes.Where(x => x.Name.Contains(filtering.Filter.Name));
 
-            // TODO: be able to filter on active
-
-            if (!filtering.Filter.RegulationThemeName.IsNullOrWhiteSpace())
+            if (!filter.RegulationThemeName.IsNullOrWhiteSpace())
                 regulationSubThemes = regulationSubThemes.Where(x => x.RegulationThemeName.Contains(filtering.Filter.RegulationThemeName));
 
-            if (!filtering.Filter.RegulationThemeId.IsEmptyGuid())
+            if (!filter.RegulationThemeId.IsEmptyGuid())
                 regulationSubThemes = regulationSubThemes.Where(x => x.RegulationThemeId == filtering.Filter.RegulationThemeId);
 
             return regulationSubThemes;

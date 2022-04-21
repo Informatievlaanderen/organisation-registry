@@ -24,10 +24,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationTheme.Queries
         {
             var regulationThemes = _context.RegulationThemeList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return regulationThemes;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 regulationThemes = regulationThemes.Where(x => x.Name.Contains(filtering.Filter.Name));
 
             return regulationThemes;

@@ -55,19 +55,9 @@
         }
 
         protected override IQueryable<OrganisationParentListItem> Filter(FilteringHeader<OrganisationParentListItem> filtering)
-        {
-            var organisationParents = _context.OrganisationParentList
+            => _context.OrganisationParentList
                 .AsQueryable()
                 .Where(x => x.OrganisationId == _organisationId).AsQueryable();
-
-            if (!filtering.ShouldFilter)
-                return organisationParents;
-
-            //if (!filtering.Filter.Name.IsNullOrWhiteSpace())
-            //    organisations = organisations.Where(x => x.Name.Contains(filtering.Filter.Name));
-
-            return organisationParents;
-        }
 
         private class OrganisationParentListSorting : ISorting
         {

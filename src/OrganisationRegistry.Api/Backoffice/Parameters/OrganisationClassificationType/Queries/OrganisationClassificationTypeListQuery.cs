@@ -37,15 +37,15 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
 
         protected override IQueryable<OrganisationClassificationTypeListItem> Filter(FilteringHeader<OrganisationClassificationTypeListItem> filtering)
         {
-            var OrganisationClassificationTypes = _context.OrganisationClassificationTypeList.AsQueryable();
+            var organisationClassificationTypes = _context.OrganisationClassificationTypeList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
-                return OrganisationClassificationTypes;
+            if (filtering.Filter is not { } filter)
+                return organisationClassificationTypes;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
-                OrganisationClassificationTypes = OrganisationClassificationTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
+            if (!filter.Name.IsNullOrWhiteSpace())
+                organisationClassificationTypes = organisationClassificationTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
 
-            return OrganisationClassificationTypes;
+            return organisationClassificationTypes;
         }
 
         private class OrganisationClassificationTypeListSorting : ISorting

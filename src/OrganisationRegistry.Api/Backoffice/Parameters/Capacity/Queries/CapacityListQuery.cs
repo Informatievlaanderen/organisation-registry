@@ -24,10 +24,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Capacity.Queries
         {
             var capacities = _context.CapacityList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return capacities;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 capacities = capacities.Where(x => x.Name.Contains(filtering.Filter.Name));
 
             return capacities;

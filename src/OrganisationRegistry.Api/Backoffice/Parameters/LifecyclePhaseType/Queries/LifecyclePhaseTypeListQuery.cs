@@ -24,10 +24,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LifecyclePhaseType.Quer
         {
             var lifecyclePhaseTypes = _context.LifecyclePhaseTypeList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return lifecyclePhaseTypes;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 lifecyclePhaseTypes = lifecyclePhaseTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
 
             return lifecyclePhaseTypes;

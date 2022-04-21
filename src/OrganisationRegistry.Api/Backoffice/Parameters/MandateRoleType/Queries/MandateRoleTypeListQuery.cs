@@ -24,10 +24,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.MandateRoleType.Queries
         {
             var mandateRoleTypes = _context.MandateRoleTypeList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return mandateRoleTypes;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 mandateRoleTypes = mandateRoleTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
 
             return mandateRoleTypes;

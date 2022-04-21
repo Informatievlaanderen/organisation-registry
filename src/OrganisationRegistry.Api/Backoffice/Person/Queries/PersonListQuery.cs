@@ -56,16 +56,16 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Queries
         {
             var people = _context.PersonList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return people;
 
-            if (!filtering.Filter.FirstName.IsNullOrWhiteSpace())
+            if (!filter.FirstName.IsNullOrWhiteSpace())
                 people = people.Where(x => x.FirstName.Contains(filtering.Filter.FirstName));
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 people = people.Where(x => x.Name.Contains(filtering.Filter.Name));
 
-            if (!filtering.Filter.FullName.IsNullOrWhiteSpace())
+            if (!filter.FullName.IsNullOrWhiteSpace())
                 people = people.Where(x => x.FullName.Contains(filtering.Filter.FullName));
 
             return people;

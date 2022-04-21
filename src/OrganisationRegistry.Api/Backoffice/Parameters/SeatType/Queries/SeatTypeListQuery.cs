@@ -24,10 +24,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.SeatType.Queries
         {
             var seatTypes = _context.SeatTypeList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return seatTypes;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 seatTypes = seatTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
 
             return seatTypes;

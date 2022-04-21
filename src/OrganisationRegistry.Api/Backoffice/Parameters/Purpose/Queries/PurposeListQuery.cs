@@ -24,10 +24,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Purpose.Queries
         {
             var purposes = _context.PurposeList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return purposes;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 purposes = purposes.Where(x => x.Name.Contains(filtering.Filter.Name));
 
             return purposes;

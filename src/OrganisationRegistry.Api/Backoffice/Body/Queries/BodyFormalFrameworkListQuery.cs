@@ -62,10 +62,10 @@
                 .AsQueryable()
                 .Where(x => x.BodyId == _bodyId).AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return bodyFormalFrameworks;
 
-            if (filtering.Filter.ActiveOnly)
+            if (filter.ActiveOnly)
                 bodyFormalFrameworks = bodyFormalFrameworks.Where(x =>
                     (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
                     (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));
