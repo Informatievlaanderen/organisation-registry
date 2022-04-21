@@ -124,31 +124,31 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Delegations.Queries
                     .Where(x => organisationIds.Contains(x.BodyOrganisationId));
             }
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return delegations;
 
-            if (!filtering.Filter.BodyName.IsNullOrWhiteSpace())
-                delegations = delegations.Where(x => x.BodyName.Contains(filtering.Filter.BodyName));
+            if (!filter.BodyName.IsNullOrWhiteSpace())
+                delegations = delegations.Where(x => x.BodyName.Contains(filter.BodyName));
 
-            if (!filtering.Filter.BodyOrganisationName.IsNullOrWhiteSpace())
-                delegations = delegations.Where(x => x.BodyOrganisationName.Contains(filtering.Filter.BodyOrganisationName));
+            if (!filter.BodyOrganisationName.IsNullOrWhiteSpace())
+                delegations = delegations.Where(x => x.BodyOrganisationName.Contains(filter.BodyOrganisationName));
 
-            if (!filtering.Filter.OrganisationName.IsNullOrWhiteSpace())
-                delegations = delegations.Where(x => x.OrganisationName.Contains(filtering.Filter.OrganisationName));
+            if (!filter.OrganisationName.IsNullOrWhiteSpace())
+                delegations = delegations.Where(x => x.OrganisationName.Contains(filter.OrganisationName));
 
-            if (!filtering.Filter.FunctionTypeName.IsNullOrWhiteSpace())
-                delegations = delegations.Where(x => x.FunctionTypeName.Contains(filtering.Filter.FunctionTypeName));
+            if (!filter.FunctionTypeName.IsNullOrWhiteSpace())
+                delegations = delegations.Where(x => x.FunctionTypeName.Contains(filter.FunctionTypeName));
 
-            if (!filtering.Filter.BodySeatName.IsNullOrWhiteSpace())
-                delegations = delegations.Where(x => x.BodySeatName.Contains(filtering.Filter.BodySeatName));
+            if (!filter.BodySeatName.IsNullOrWhiteSpace())
+                delegations = delegations.Where(x => x.BodySeatName.Contains(filter.BodySeatName));
 
-            if (!filtering.Filter.BodySeatNumber.IsNullOrWhiteSpace())
-                delegations = delegations.Where(x => x.BodySeatNumber.Contains(filtering.Filter.BodySeatNumber));
+            if (!filter.BodySeatNumber.IsNullOrWhiteSpace())
+                delegations = delegations.Where(x => x.BodySeatNumber.Contains(filter.BodySeatNumber));
 
-            if (filtering.Filter.EmptyDelegationsOnly)
+            if (filter.EmptyDelegationsOnly)
                 delegations = delegations.Where(x => !x.IsDelegated);
 
-            if (filtering.Filter.ActiveMandatesOnly)
+            if (filter.ActiveMandatesOnly)
                 delegations = delegations.Where(x =>
                     (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
                     (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));

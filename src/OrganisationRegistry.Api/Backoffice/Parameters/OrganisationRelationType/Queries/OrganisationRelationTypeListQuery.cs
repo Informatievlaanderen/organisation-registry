@@ -24,10 +24,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationRelationTyp
         {
             var organisationRelationTypes = _context.OrganisationRelationTypeList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return organisationRelationTypes;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 organisationRelationTypes = organisationRelationTypes.Where(x =>
                     x.Name.Contains(filtering.Filter.Name) ||
                     x.InverseName.Contains(filtering.Filter.Name));

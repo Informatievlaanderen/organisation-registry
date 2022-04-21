@@ -24,10 +24,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.FunctionType.Queries
         {
             var functionTypes = _context.FunctionTypeList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return functionTypes;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 functionTypes = functionTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
 
             return functionTypes;

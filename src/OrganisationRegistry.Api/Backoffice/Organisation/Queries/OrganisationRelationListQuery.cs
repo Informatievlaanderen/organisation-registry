@@ -68,10 +68,10 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
                 .AsQueryable()
                 .Where(x => x.OrganisationId == _organisationId);
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return organisationRelations;
 
-            if (filtering.Filter.ActiveOnly)
+            if (filter.ActiveOnly)
                 organisationRelations = organisationRelations.Where(x =>
                     (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
                     (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));

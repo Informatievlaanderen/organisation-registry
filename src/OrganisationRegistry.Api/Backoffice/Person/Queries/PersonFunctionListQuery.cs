@@ -59,16 +59,9 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Queries
         }
 
         protected override IQueryable<PersonFunctionListItem> Filter(FilteringHeader<PersonFunctionListItem> filtering)
-        {
-            var personFunctions = _context.PersonFunctionList
+            => _context.PersonFunctionList
                 .AsQueryable()
                 .Where(x => x.PersonId == _personId).AsQueryable();
-
-            if (!filtering.ShouldFilter)
-                return personFunctions;
-
-            return personFunctions;
-        }
 
         private class PersonFunctionListSorting : ISorting
         {

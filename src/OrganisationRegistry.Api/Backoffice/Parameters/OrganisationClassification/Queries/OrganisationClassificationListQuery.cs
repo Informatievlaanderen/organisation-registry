@@ -61,18 +61,16 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
         {
             var organisationClassifications = _context.OrganisationClassificationList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return organisationClassifications;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 organisationClassifications = organisationClassifications.Where(x => x.Name.Contains(filtering.Filter.Name));
 
-            // TODO: be able to filter on active
-
-            if (!filtering.Filter.OrganisationClassificationTypeName.IsNullOrWhiteSpace())
+            if (!filter.OrganisationClassificationTypeName.IsNullOrWhiteSpace())
                 organisationClassifications = organisationClassifications.Where(x => x.OrganisationClassificationTypeName.Contains(filtering.Filter.OrganisationClassificationTypeName));
 
-            if (!filtering.Filter.OrganisationClassificationTypeId.IsEmptyGuid())
+            if (!filter.OrganisationClassificationTypeId.IsEmptyGuid())
                 organisationClassifications = organisationClassifications.Where(x => x.OrganisationClassificationTypeId == filtering.Filter.OrganisationClassificationTypeId);
 
             return organisationClassifications;

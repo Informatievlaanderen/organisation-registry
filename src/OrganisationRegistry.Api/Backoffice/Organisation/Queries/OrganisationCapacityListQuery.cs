@@ -85,7 +85,7 @@
                 .AsQueryable()
                 .Where(x => x.OrganisationId == _organisationId).AsQueryable();
 
-            if (!filtering.ShouldFilter || filtering.Filter is not { } filter)
+            if (filtering.Filter is not { } filter)
                 return organisationCapacities;
 
             if (filter.ActiveOnly)

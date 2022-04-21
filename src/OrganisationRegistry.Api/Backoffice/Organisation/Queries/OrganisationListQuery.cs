@@ -83,47 +83,47 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
         {
             var organisations = _context.OrganisationList.AsAsyncQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return organisations.Where(x => x.FormalFrameworkId == null);
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
-                organisations = organisations.Where(x => x.Name.Contains(filtering.Filter.Name) || x.ShortName.Contains(filtering.Filter.Name));
+            if (!filter.Name.IsNullOrWhiteSpace())
+                organisations = organisations.Where(x => x.Name.Contains(filter.Name) || x.ShortName.Contains(filter.Name));
 
-            if (!filtering.Filter.OvoNumber.IsNullOrWhiteSpace())
-                organisations = organisations.Where(x => x.OvoNumber.Contains(filtering.Filter.OvoNumber));
+            if (!filter.OvoNumber.IsNullOrWhiteSpace())
+                organisations = organisations.Where(x => x.OvoNumber.Contains(filter.OvoNumber));
 
-            if (filtering.Filter.ActiveOnly)
+            if (filter.ActiveOnly)
                 organisations = organisations.Where(x =>
                     (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
                     (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));
 
-            organisations = filtering.Filter.FormalFrameworkId.IsEmptyGuid() ?
+            organisations = filter.FormalFrameworkId.IsEmptyGuid() ?
                 organisations.Where(x => x.FormalFrameworkId == null) :
-                organisations.Where(x => x.FormalFrameworkId == filtering.Filter.FormalFrameworkId);
+                organisations.Where(x => x.FormalFrameworkId == filter.FormalFrameworkId);
 
-            if (filtering.Filter.ActiveOnly && !filtering.Filter.FormalFrameworkId.IsEmptyGuid())
+            if (filter.ActiveOnly && !filter.FormalFrameworkId.IsEmptyGuid())
                 organisations = organisations.Where(x =>
                     x.FormalFrameworkValidities.Any(y =>
                         (!y.ValidFrom.HasValue || y.ValidFrom <= DateTime.Today) &&
                         (!y.ValidTo.HasValue || y.ValidTo >= DateTime.Today)));
 
-            if (!filtering.Filter.OrganisationClassificationId.IsEmptyGuid())
+            if (!filter.OrganisationClassificationId.IsEmptyGuid())
                 organisations = organisations.Where(x =>
                     x.OrganisationClassificationValidities.Any(y =>
-                        y.OrganisationClassificationId == filtering.Filter.OrganisationClassificationId &&
-                        (!filtering.Filter.ActiveOnly ||
+                        y.OrganisationClassificationId == filter.OrganisationClassificationId &&
+                        (!filter.ActiveOnly ||
                          ((!y.ValidFrom.HasValue || y.ValidFrom <= DateTime.Today) &&
                           (!y.ValidTo.HasValue || y.ValidTo >= DateTime.Today)))));
 
-            if (!filtering.Filter.OrganisationClassificationTypeId.IsEmptyGuid())
+            if (!filter.OrganisationClassificationTypeId.IsEmptyGuid())
                 organisations = organisations.Where(x =>
                     x.OrganisationClassificationValidities.Any(y =>
-                        y.OrganisationClassificationTypeId == filtering.Filter.OrganisationClassificationTypeId &&
-                        (!filtering.Filter.ActiveOnly ||
+                        y.OrganisationClassificationTypeId == filter.OrganisationClassificationTypeId &&
+                        (!filter.ActiveOnly ||
                          ((!y.ValidFrom.HasValue || y.ValidFrom <= DateTime.Today) &&
                          (!y.ValidTo.HasValue || y.ValidTo >= DateTime.Today)))));
 
-            if (filtering.Filter.AuthorizedOnly)
+            if (filter.AuthorizedOnly)
             {
                 if (!_securityInformation.Roles.Contains(Role.AlgemeenBeheerder))
                     organisations = organisations.Where(x => _securityInformation.OvoNumbers.Contains(x.OvoNumber));

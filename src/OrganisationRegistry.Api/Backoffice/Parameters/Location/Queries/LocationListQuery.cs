@@ -61,22 +61,22 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Location.Queries
         {
             var locations = _context.LocationList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return locations;
 
-            if (!filtering.Filter.Street.IsNullOrWhiteSpace())
+            if (!filter.Street.IsNullOrWhiteSpace())
                 locations = locations.Where(x => x.Street.Contains(filtering.Filter.Street));
 
-            if (!filtering.Filter.ZipCode.IsNullOrWhiteSpace())
+            if (!filter.ZipCode.IsNullOrWhiteSpace())
                 locations = locations.Where(x => x.ZipCode.Contains(filtering.Filter.ZipCode));
 
-            if (!filtering.Filter.City.IsNullOrWhiteSpace())
+            if (!filter.City.IsNullOrWhiteSpace())
                 locations = locations.Where(x => x.City.Contains(filtering.Filter.City));
 
-            if (!filtering.Filter.Country.IsNullOrWhiteSpace())
+            if (!filter.Country.IsNullOrWhiteSpace())
                 locations = locations.Where(x => x.Country.Contains(filtering.Filter.Country));
 
-            if (filtering.Filter.NonCrabOnly)
+            if (filter.NonCrabOnly)
                 locations = locations.Where(x => string.IsNullOrEmpty(x.CrabLocationId));
 
             return locations;

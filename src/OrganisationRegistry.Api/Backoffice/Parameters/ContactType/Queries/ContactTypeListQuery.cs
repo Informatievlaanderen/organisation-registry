@@ -24,10 +24,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.ContactType.Queries
         {
             var contactTypes = _context.ContactTypeList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return contactTypes;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 contactTypes = contactTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
 
             return contactTypes;

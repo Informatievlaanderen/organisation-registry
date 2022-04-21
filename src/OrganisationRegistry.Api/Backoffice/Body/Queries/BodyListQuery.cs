@@ -74,16 +74,16 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Queries
         {
             var bodies = _context.BodyList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return bodies;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 bodies = bodies.Where(x => x.Name.Contains(filtering.Filter.Name) || x.ShortName.Contains(filtering.Filter.Name));
 
-            if (!filtering.Filter.Organisation.IsNullOrWhiteSpace())
+            if (!filter.Organisation.IsNullOrWhiteSpace())
                 bodies = bodies.Where(x => x.Organisation.Contains(filtering.Filter.Organisation));
 
-            if (filtering.Filter.ActiveOnly)
+            if (filter.ActiveOnly)
                 bodies = bodies.Where(x =>
                     x.BodyLifecyclePhaseValidities.Any(y =>
                         y.RepresentsActivePhase &&

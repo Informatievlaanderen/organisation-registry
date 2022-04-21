@@ -37,10 +37,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LocationType.Queries
         {
             var locationTypes = _context.LocationTypeList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return locationTypes;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 locationTypes = locationTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
 
             return locationTypes;

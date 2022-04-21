@@ -22,15 +22,15 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassificationType.
 
         protected override IQueryable<BodyClassificationTypeListItem> Filter(FilteringHeader<BodyClassificationTypeListItem> filtering)
         {
-            var BodyClassificationTypes = _context.BodyClassificationTypeList.AsQueryable();
+            var bodyClassificationTypes = _context.BodyClassificationTypeList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
-                return BodyClassificationTypes;
+            if (filtering.Filter is not { } filter)
+                return bodyClassificationTypes;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
-                BodyClassificationTypes = BodyClassificationTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
+            if (!filter.Name.IsNullOrWhiteSpace())
+                bodyClassificationTypes = bodyClassificationTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
 
-            return BodyClassificationTypes;
+            return bodyClassificationTypes;
         }
 
         private class BodyClassificationTypeListSorting : ISorting

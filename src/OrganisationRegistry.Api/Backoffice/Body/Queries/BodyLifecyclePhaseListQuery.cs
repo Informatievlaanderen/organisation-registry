@@ -59,19 +59,9 @@
         }
 
         protected override IQueryable<BodyLifecyclePhaseListItem> Filter(FilteringHeader<BodyLifecyclePhaseListItem> filtering)
-        {
-            var bodyLifecyclePhases = _context.BodyLifecyclePhaseList
+            => _context.BodyLifecyclePhaseList
                 .AsQueryable()
                 .Where(x => x.BodyId == _bodyId).AsQueryable();
-
-            if (!filtering.ShouldFilter)
-                return bodyLifecyclePhases;
-
-            //if (!filtering.Filter.Name.IsNullOrWhiteSpace())
-            //    bodies = bodies.Where(x => x.Name.Contains(filtering.Filter.Name));
-
-            return bodyLifecyclePhases;
-        }
 
         private class BodyLifecyclePhaseListSorting : ISorting
         {

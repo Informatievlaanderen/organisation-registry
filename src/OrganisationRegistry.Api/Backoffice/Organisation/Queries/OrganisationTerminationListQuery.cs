@@ -58,10 +58,10 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
         {
             var organisationTerminations = _context.OrganisationTerminationList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return organisationTerminations;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 organisationTerminations = organisationTerminations.Where(x => x.Name.Contains(filtering.Filter.Name));
 
             return organisationTerminations;

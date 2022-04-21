@@ -24,27 +24,19 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Building.Queries
         {
             var buildings = _context.BuildingList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return buildings;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 buildings = buildings.Where(x => x.Name.Contains(filtering.Filter.Name));
 
-            if (!filtering.Filter.VimId.IsNullOrWhiteSpace())
-            {
-                int vimId;
-                if (int.TryParse(filtering.Filter.VimId, out vimId))
-                {
-                    buildings = buildings.Where(x => x.VimId == vimId);
-                }
-                else
-                {
-                    // Somebody entered a non numeric VimId, since they all need to be numeric, you get no results!
-                    return new List<BuildingListItem>().AsAsyncQueryable();
-                }
-            }
-
-            return buildings;
+            if (filter.VimId.IsNullOrWhiteSpace())
+                return buildings;
+            
+            // When somebody entered a non numeric VimId, since they all need to be numeric, you get no results!
+            return int.TryParse(filtering.Filter.VimId, out var vimId)
+                ? buildings.Where(x => x.VimId == vimId)
+                : new List<BuildingListItem>().AsAsyncQueryable();
         }
 
         private class BuildingListSorting : ISorting

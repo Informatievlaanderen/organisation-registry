@@ -101,7 +101,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Events.Queries
         {
             var events = _context.Events.AsQueryable();
 
-            if (!filtering.ShouldFilter || filtering.Filter is not { } filter)
+            if (filtering.Filter is not { } filter)
                 return events;
 
             if (filter.EventNumber is > 0)

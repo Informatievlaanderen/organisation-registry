@@ -28,13 +28,13 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Queries
         {
             var keyTypes = _context.KeyTypeList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return keyTypes;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 keyTypes = keyTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
 
-            if (filtering.Filter.ExcludeIds != null && filtering.Filter.ExcludeIds.Any())
+            if (filter.ExcludeIds != null && filtering.Filter.ExcludeIds.Any())
                 keyTypes = keyTypes.Where(x => !filtering.Filter.ExcludeIds.Contains(x.Id));
 
             return keyTypes;

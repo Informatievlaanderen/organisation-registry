@@ -81,16 +81,9 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Queries
         }
 
         protected override IQueryable<PersonMandateListItem> Filter(FilteringHeader<PersonMandateListItem> filtering)
-        {
-            var personMandates = _context.PersonMandateList
+            => _context.PersonMandateList
                 .AsQueryable()
                 .Where(x => x.PersonId == _personId).AsQueryable();
-
-            if (!filtering.ShouldFilter)
-                return personMandates;
-
-            return personMandates;
-        }
 
         private class PersonMandateListSorting : ISorting
         {

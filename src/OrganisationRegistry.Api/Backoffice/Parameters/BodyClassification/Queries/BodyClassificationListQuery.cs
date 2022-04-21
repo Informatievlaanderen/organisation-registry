@@ -57,18 +57,16 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassification.Quer
         {
             var bodyClassifications = _context.BodyClassificationList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return bodyClassifications;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 bodyClassifications = bodyClassifications.Where(x => x.Name.Contains(filtering.Filter.Name));
 
-            // TODO: be able to filter on active
-
-            if (!filtering.Filter.BodyClassificationTypeName.IsNullOrWhiteSpace())
+            if (!filter.BodyClassificationTypeName.IsNullOrWhiteSpace())
                 bodyClassifications = bodyClassifications.Where(x => x.BodyClassificationTypeName.Contains(filtering.Filter.BodyClassificationTypeName));
 
-            if (!filtering.Filter.BodyClassificationTypeId.IsEmptyGuid())
+            if (!filter.BodyClassificationTypeId.IsEmptyGuid())
                 bodyClassifications = bodyClassifications.Where(x => x.BodyClassificationTypeId == filtering.Filter.BodyClassificationTypeId);
 
             return bodyClassifications;

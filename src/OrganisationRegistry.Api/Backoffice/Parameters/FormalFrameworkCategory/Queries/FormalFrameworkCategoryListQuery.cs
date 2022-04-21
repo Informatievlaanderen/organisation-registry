@@ -24,10 +24,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFrameworkCategory
         {
             var formalFrameworkCategories = _context.FormalFrameworkCategoryList.AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (filtering.Filter is not { } filter)
                 return formalFrameworkCategories;
 
-            if (!filtering.Filter.Name.IsNullOrWhiteSpace())
+            if (!filter.Name.IsNullOrWhiteSpace())
                 formalFrameworkCategories = formalFrameworkCategories.Where(x => x.Name.Contains(filtering.Filter.Name));
 
             return formalFrameworkCategories;

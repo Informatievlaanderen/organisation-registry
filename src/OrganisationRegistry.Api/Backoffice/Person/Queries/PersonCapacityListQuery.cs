@@ -59,16 +59,9 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Queries
         }
 
         protected override IQueryable<PersonCapacityListItem> Filter(FilteringHeader<PersonCapacityListItem> filtering)
-        {
-            var personCapacities = _context.PersonCapacityList
+            => _context.PersonCapacityList
                 .AsQueryable()
                 .Where(x => x.PersonId == _personId).AsQueryable();
-
-            if (!filtering.ShouldFilter)
-                return personCapacities;
-
-            return personCapacities;
-        }
 
         private class PersonCapacityListSorting : ISorting
         {

@@ -23,7 +23,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Configuration.Queries
         {
             var configuration = _context.Configuration.AsQueryable();
 
-            if (!filtering.ShouldFilter || filtering.Filter is not { } filter)
+            if (filtering.Filter is not { } filter)
                 return configuration;
 
             if (!filter.Key.IsNullOrWhiteSpace())
