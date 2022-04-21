@@ -84,6 +84,28 @@ namespace OrganisationRegistry.Handling
                         configuration,
                         message.OrganisationClassificationTypeId));
 
+        public static UpdateHandler<Organisation> WithCapacityPolicy(
+            this UpdateHandler<Organisation> source,
+            IOrganisationRegistryConfiguration configuration,
+            AddOrganisationCapacity message)
+            => source.WithPolicy(
+                organisation =>
+                    new CapacityPolicy(
+                        organisation.State.OvoNumber,
+                        configuration,
+                        message.CapacityId));
+
+        public static UpdateHandler<Organisation> WithCapacityPolicy(
+            this UpdateHandler<Organisation> source,
+            IOrganisationRegistryConfiguration configuration,
+            UpdateOrganisationCapacity message)
+            => source.WithPolicy(
+                organisation =>
+                    new CapacityPolicy(
+                        organisation.State.OvoNumber,
+                        configuration,
+                        message.CapacityId));
+
         public static UpdateHandler<Organisation> RequiresBeheerderForOrganisationButNotUnderVlimpersManagement(
             this UpdateHandler<Organisation> source)
             => source.WithPolicy(

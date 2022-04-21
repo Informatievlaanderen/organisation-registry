@@ -481,15 +481,16 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(AddOrganisationCapacity message) =>
             UpdateHandler<Organisation>.For(message, Session)
+                .WithCapacityPolicy(_organisationRegistryConfiguration, message)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
                     organisation.ThrowIfTerminated(message.User);
 
                     var capacity = session.Get<Capacity>(message.CapacityId);
-                    var person = message.PersonId != null ? session.Get<Person>(message.PersonId) : null;
-                    var function = message.FunctionId != null ? session.Get<FunctionType>(message.FunctionId) : null;
-                    var location = message.LocationId != null ? session.Get<Location>(message.LocationId) : null;
+                    var person = message.PersonId is { } ? session.Get<Person>(message.PersonId) : null;
+                    var function = message.FunctionId is { } ? session.Get<FunctionType>(message.FunctionId) : null;
+                    var location = message.LocationId is { } ? session.Get<Location>(message.LocationId) : null;
 
                     var contacts = message.Contacts.Select(contact =>
                     {
@@ -510,15 +511,16 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(UpdateOrganisationCapacity message) =>
             UpdateHandler<Organisation>.For(message, Session)
+                .WithCapacityPolicy(_organisationRegistryConfiguration, message)
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
                     organisation.ThrowIfTerminated(message.User);
 
                     var capacity = session.Get<Capacity>(message.CapacityId);
-                    var person = message.PersonId != null ? session.Get<Person>(message.PersonId) : null;
-                    var function = message.FunctionTypeId != null ? session.Get<FunctionType>(message.FunctionTypeId) : null;
-                    var location = message.LocationId != null ? session.Get<Location>(message.LocationId) : null;
+                    var person = message.PersonId is { } ? session.Get<Person>(message.PersonId) : null;
+                    var function = message.FunctionTypeId is { } ? session.Get<FunctionType>(message.FunctionTypeId) : null;
+                    var location = message.LocationId is { } ? session.Get<Location>(message.LocationId) : null;
 
                     var contacts = message.Contacts.Select(contact =>
                     {
