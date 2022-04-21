@@ -14,22 +14,26 @@
     {
         public Guid OrganisationCapacityId { get; }
         public string CapacityName { get; }
-        public string FunctionName { get; }
+        public string? FunctionName { get; }
         public Guid? PersonId { get; }
-        public string PersonName { get; }
+        public string? PersonName { get; }
         public DateTime? ValidFrom { get; }
         public DateTime? ValidTo { get; }
 
         public bool IsActive { get; }
 
+        public bool IsEditable { get; }
+
         public OrganisationCapacityListQueryResult(
             Guid organisationCapacityId,
+            Guid capacityId,
             string capacityName,
-            string functionName,
+            string? functionName,
             Guid? personId,
-            string personName,
+            string? personName,
             DateTime? validFrom,
-            DateTime? validTo)
+            DateTime? validTo,
+            Func<Guid, bool> isAuthorizedForCapacity)
         {
             OrganisationCapacityId = organisationCapacityId;
             CapacityName = capacityName;
@@ -40,6 +44,8 @@
             ValidTo = validTo;
 
             IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
+
+            IsEditable = isAuthorizedForCapacity(capacityId);
         }
     }
 
@@ -47,23 +53,30 @@
     {
         private readonly OrganisationRegistryContext _context;
         private readonly Guid _organisationId;
+        private readonly Func<Guid, bool> _isAuthorizedForCapacity;
 
         protected override ISorting Sorting => new OrganisationCapacityListSorting();
 
         protected override Expression<Func<OrganisationCapacityListItem, OrganisationCapacityListQueryResult>> Transformation =>
             x => new OrganisationCapacityListQueryResult(
                 x.OrganisationCapacityId,
+                x.CapacityId,
                 x.CapacityName,
                 x.FunctionName,
                 x.PersonId,
                 x.PersonName,
                 x.ValidFrom,
-                x.ValidTo);
+                x.ValidTo,
+                _isAuthorizedForCapacity);
 
-        public OrganisationCapacityListQuery(OrganisationRegistryContext context, Guid organisationId)
+        public OrganisationCapacityListQuery(
+            OrganisationRegistryContext context,
+            Guid organisationId,
+            Func<Guid, bool> isAuthorizedForCapacity)
         {
             _context = context;
             _organisationId = organisationId;
+            _isAuthorizedForCapacity = isAuthorizedForCapacity;
         }
 
         protected override IQueryable<OrganisationCapacityListItem> Filter(FilteringHeader<OrganisationCapacityListItemFilter> filtering)
@@ -72,10 +85,10 @@
                 .AsQueryable()
                 .Where(x => x.OrganisationId == _organisationId).AsQueryable();
 
-            if (!filtering.ShouldFilter)
+            if (!filtering.ShouldFilter || filtering.Filter is not { } filter)
                 return organisationCapacities;
 
-            if (filtering.Filter.ActiveOnly)
+            if (filter.ActiveOnly)
                 organisationCapacities = organisationCapacities.Where(x =>
                     (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
                     (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));

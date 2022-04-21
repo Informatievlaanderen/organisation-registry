@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Handling.Authorization;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Pagination;
@@ -10,6 +11,8 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using OrganisationRegistry.Configuration;
+    using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using Queries;
@@ -29,13 +32,32 @@
 
         /// <summary>Get a list of available capacities for an organisation.</summary>
         [HttpGet]
-        public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
+        public async Task<IActionResult> Get(
+            [FromServices] OrganisationRegistryContext context,
+            [FromServices] IOrganisationRegistryConfiguration configuration,
+            [FromServices] IMemoryCaches memoryCaches,
+            [FromServices] ISecurityService securityService,
+            [FromRoute] Guid organisationId)
         {
             var filtering = Request.ExtractFilteringRequest<OrganisationCapacityListItemFilter>();
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var pagedOrganisations = new OrganisationCapacityListQuery(context, organisationId).Fetch(filtering, sorting, pagination);
+            var user = await securityService.GetUser(User);
+            Func<Guid, bool> isAuthorizedForCapacity = id =>
+                new CapacityPolicy(
+                        memoryCaches.OvoNumbers[organisationId],
+                        configuration,
+                        id)
+                    .Check(user)
+                    .IsSuccessful;
+
+            var pagedOrganisations =
+                new OrganisationCapacityListQuery(
+                    context,
+                    organisationId,
+                    isAuthorizedForCapacity)
+                    .Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedOrganisations.PaginationInfo);
             Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
