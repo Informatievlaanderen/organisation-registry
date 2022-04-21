@@ -4,7 +4,7 @@
     using FluentValidation;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
-    using OrganisationRegistry.FormalFramework;
+    using FormalFramework;
 
     public class AddBodyFormalFrameworkInternalRequest
     {

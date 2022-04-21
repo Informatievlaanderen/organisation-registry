@@ -7,7 +7,7 @@
     using Function;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
-    using OrganisationRegistry.ContactType;
+    using ContactType;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Person;
 

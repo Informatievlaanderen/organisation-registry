@@ -6,7 +6,7 @@
 
     public class BodySeatNumberGenerator : NumberGenerator, IBodySeatNumberGenerator
     {
-        public BodySeatNumberGenerator(OrganisationRegistryContext context) : base("POS", "Post nummer", () => context.BodySeatList.Max(item => item.BodySeatNumber))
+        public BodySeatNumberGenerator(OrganisationRegistryContext context) : base("POS", "Post nummer", () => context.BodySeatList.Max(item => item.BodySeatNumber) ?? "")
         { }
     }
 }

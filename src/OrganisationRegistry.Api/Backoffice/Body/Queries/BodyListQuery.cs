@@ -81,7 +81,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Queries
                 bodies = bodies.Where(x => x.Name.Contains(filtering.Filter.Name) || x.ShortName.Contains(filtering.Filter.Name));
 
             if (!filter.Organisation.IsNullOrWhiteSpace())
-                bodies = bodies.Where(x => x.Organisation.Contains(filtering.Filter.Organisation));
+                bodies = bodies.Where(x => x.Organisation != null && x.Organisation.Contains(filtering.Filter.Organisation));
 
             if (filter.ActiveOnly)
                 bodies = bodies.Where(x =>
@@ -109,8 +109,8 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Queries
 
     public class BodyListItemFilter
     {
-        public string Name { get; set; }
-        public string Organisation { get; set; }
+        public string? Name { get; set; }
+        public string? Organisation { get; set; }
         public bool ActiveOnly { get; set; }
     }
 }

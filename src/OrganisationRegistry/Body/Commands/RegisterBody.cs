@@ -11,26 +11,26 @@
 
         public string Name { get; }
         public string ShortName { get; }
-        public OrganisationId OrganisationId { get; }
+        public OrganisationId? OrganisationId { get; }
         public string Description { get; }
 
         public Period Validity { get; }
         public Period FormalValidity { get; }
 
-        public LifecyclePhaseTypeId ActiveLifecyclePhaseTypeId { get; }
-        public LifecyclePhaseTypeId InactiveLifecyclePhaseTypeId { get; }
+        public LifecyclePhaseTypeId? ActiveLifecyclePhaseTypeId { get; }
+        public LifecyclePhaseTypeId? InactiveLifecyclePhaseTypeId { get; }
 
         public RegisterBody(
             BodyId bodyId,
             string name,
             string bodyNumber,
             string shortName,
-            OrganisationId organisationId,
+            OrganisationId? organisationId,
             string description,
             Period validity,
             Period formalValidity,
-            LifecyclePhaseTypeId activeLifecyclePhaseTypeId,
-            LifecyclePhaseTypeId inactiveLifecyclePhaseTypeId)
+            LifecyclePhaseTypeId? activeLifecyclePhaseTypeId,
+            LifecyclePhaseTypeId? inactiveLifecyclePhaseTypeId)
         {
             Id = bodyId;
 

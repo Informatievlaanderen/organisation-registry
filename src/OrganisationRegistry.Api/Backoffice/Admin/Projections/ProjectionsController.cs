@@ -41,7 +41,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Projections
                     return
                         typeInfo.IsClass &&
                         !typeInfo.IsAbstract &&
-                        typeInfo.ImplementedInterfaces.Any(y => y == typeof(SqlServer.Infrastructure.IProjectionMarker));
+                        typeInfo.ImplementedInterfaces.Any(y => y == typeof(IProjectionMarker));
                 })
                 .Select(x => x.FullName)
                 .OrderBy(x => x);

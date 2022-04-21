@@ -4,8 +4,8 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Requests
     using FluentValidation;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
-    using OrganisationRegistry.BodyClassification;
-    using OrganisationRegistry.BodyClassificationType;
+    using BodyClassification;
+    using BodyClassificationType;
 
     public class AddBodyBodyClassificationInternalRequest
     {

@@ -94,7 +94,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
                 {
                     kboSyncQueueItem.SyncStatus = SyncStatusError;
                     kboSyncQueueItem.SyncInfo = e.ToString();
-                    _logger.LogError(e, e.Message);
+                    _logger.LogError(e, "Error while syncing {SyncItem}", kboSyncQueueItem.Id);
                 }
             }
 

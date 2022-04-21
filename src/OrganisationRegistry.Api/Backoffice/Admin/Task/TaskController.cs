@@ -9,7 +9,6 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
     using Infrastructure.Security;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
@@ -53,7 +52,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
                     if (task.Params.Length != 1)
                         throw new RebuildProjectionRequiresAName();
 
-                    _logger.LogInformation("Projection Rebuild for {ProjectionName} requested.", task.Params[0]);
+                    _logger.LogInformation("Projection Rebuild for {ProjectionName} requested", task.Params[0]);
                     await CommandSender.Send(new RebuildProjection(task.Params[0]));
                     break;
 
@@ -61,21 +60,17 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
                     if (task.Params.Length != 1)
                         throw new CompensatingActionRequiresAName();
 
-                    _logger.LogInformation("Requested execution of {CompensatingAction}.", task.Params[0]);
-                    using (var context = contextFactory().Value)
+                    _logger.LogInformation("Requested execution of {CompensatingAction}", task.Params[0]);
+                    await using (var context = contextFactory().Value)
                     {
                         switch (task.Params[0].ToLowerInvariant())
                         {
                             case "2017-05-18-fix-bodies":
-                                CompensatingAction20170518FixBodies(context);
+                                await CompensatingAction20170518FixBodies(context);
                                 break;
 
                             case "2017-05-18-fix-body-seats":
-                                CompensatingAction20170518FixBodySeats(context);
-                                break;
-
-                            case "2017-11-24-fix-body-mandates":
-                                CompensatingAction20171124FixBodyMandates(context);
+                                await CompensatingAction20170518FixBodySeats(context);
                                 break;
                         }
                     }
@@ -98,7 +93,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
                 .Select(x => x.Id)
                 .ToList();
 
-            _logger.LogInformation("Fixing {NumberOfBodies} bodies.", bodiesInNeedOfFixing.Count);
+            _logger.LogInformation("Fixing {NumberOfBodies} bodies", bodiesInNeedOfFixing.Count);
             foreach (var bodyId in bodiesInNeedOfFixing)
                 await CommandSender.Send(new AssignBodyNumber(new BodyId(bodyId)));
         }
@@ -111,30 +106,9 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
                 .Where(x => x.BodySeatNumber == null || x.BodySeatNumber == "")
                 .ToList();
 
-            _logger.LogInformation("Fixing {NumberOfBodySeats} body seats.", seatsInNeedOfFixing.Count);
+            _logger.LogInformation("Fixing {NumberOfBodySeats} body seats", seatsInNeedOfFixing.Count);
             foreach (var bodySeat in seatsInNeedOfFixing)
                 await CommandSender.Send(new AssignBodySeatNumber(new BodyId(bodySeat.BodyId), new BodySeatId(bodySeat.BodySeatId)));
-        }
-
-        private void CompensatingAction20171124FixBodyMandates(OrganisationRegistryContext context)
-        {
-            var mandatesInNeedOfFixing = context.BodyMandateList
-                .FromSqlRaw(@"
-                    SELECT A.*
-                    FROM [OrganisationRegistry].[BodyMandateList] A
-	                    INNER JOIN [OrganisationRegistry].[BodyMandateList] B
-		                    ON A.BodyMandateId <> B.BodyMandateId AND
-			                    A.BodyId = B.BodyId AND
-			                    A.BodySeatId = B.BodySeatId AND
-			                    (A.ValidFrom = B.ValidFrom OR (ISNULL(A.ValidFrom, B.ValidFrom) IS NULL)) AND
-			                    (A.ValidTo = B.ValidTo OR (ISNULL(A.ValidTo, B.ValidTo) IS NULL))")
-                .ToList();
-
-            _logger.LogInformation("Fixing {NumberOfBodyMandates} body seats.", mandatesInNeedOfFixing.Count);
-            foreach (var mandate in mandatesInNeedOfFixing)
-            {
-
-            }
         }
     }
 }

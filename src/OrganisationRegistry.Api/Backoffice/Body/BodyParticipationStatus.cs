@@ -24,10 +24,10 @@ namespace OrganisationRegistry.Api.Backoffice.Body
                 .Include(item => item.PostsPerType)
                 .SingleOrDefault(item => item.BodyId == id)
                 ?.PostsPerType
-                ?.Where(post =>
+                .Where(post =>
                     (!post.BodySeatValidFrom.HasValue || post.BodySeatValidFrom <= DateTime.Today) &&
                     (!post.BodySeatValidTo.HasValue || post.BodySeatValidTo >= DateTime.Today))
-                ?.Where(post => post.EntitledToVote);
+                .Where(post => post.EntitledToVote);
 
             var bodySeatGenderRatioPostsPerTypeItems = activePostsPerTypeQuery?.ToList() ?? new List<BodySeatGenderRatioPostsPerTypeItem>();
             if (!bodySeatGenderRatioPostsPerTypeItems.Any())
@@ -103,7 +103,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body
                     .Include(item => item.PostsPerType)
                     .SingleOrDefault(item => item.BodyId == id)
                     ?.PostsPerType
-                    ?.Any(post =>
+                    .Any(post =>
                         post.BodyId == id &&
                         (!post.BodySeatValidFrom.HasValue || post.BodySeatValidFrom <= DateTime.Today) &&
                         (!post.BodySeatValidTo.HasValue || post.BodySeatValidTo >= DateTime.Today));
