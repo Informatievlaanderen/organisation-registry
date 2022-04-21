@@ -7,7 +7,7 @@ namespace OrganisationRegistry.Configuration
         Guid KboV2FormalNameLabelTypeId { get; }
         Guid KboV2RegisteredOfficeLocationTypeId { get; }
         Guid KboV2LegalFormOrganisationClassificationTypeId { get; }
-        Guid[]? OrganisationCapacityTypeIdsToTerminateEndOfNextYear { get; }
+        Guid[]? OrganisationCapacityIdsToTerminateEndOfNextYear { get; }
         Guid[]? OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; }
         Guid[]? FormalFrameworkIdsToTerminateEndOfNextYear { get; }
     }
