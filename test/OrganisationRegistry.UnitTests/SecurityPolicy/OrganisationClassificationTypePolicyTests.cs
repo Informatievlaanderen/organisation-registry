@@ -9,13 +9,13 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
     using Tests.Shared.Stubs;
     using Xunit;
 
-    public class OrganisationCapacityTypePolicyTests
+    public class OrganisationClassificationTypePolicyTests
     {
         private readonly Fixture _fixture;
         private readonly Guid _regelgevingDbClassificationTypeId;
         private readonly OrganisationRegistryConfigurationStub _configuration;
 
-        public OrganisationCapacityTypePolicyTests()
+        public OrganisationClassificationTypePolicyTests()
         {
             _fixture = new Fixture();
 

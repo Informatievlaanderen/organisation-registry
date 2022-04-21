@@ -66,12 +66,9 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Post([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] AddOrganisationCapacityRequest message)
+        public async Task<IActionResult> Post([FromRoute] Guid organisationId, [FromBody] AddOrganisationCapacityRequest message)
         {
             var internalMessage = new AddOrganisationCapacityInternalRequest(organisationId, message);
-
-            if (!await securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);
@@ -88,12 +85,9 @@
         [OrganisationRegistryAuthorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationCapacityRequest message)
+        public async Task<IActionResult> Put([FromRoute] Guid organisationId, [FromBody] UpdateOrganisationCapacityRequest message)
         {
             var internalMessage = new UpdateOrganisationCapacityInternalRequest(organisationId, message);
-
-            if (!await securityService.CanEditOrganisation(User, internalMessage.OrganisationId))
-                ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
             if (!TryValidateModel(internalMessage))
                 return BadRequest(ModelState);

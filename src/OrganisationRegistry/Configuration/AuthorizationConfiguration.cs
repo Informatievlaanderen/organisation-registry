@@ -20,6 +20,10 @@ namespace OrganisationRegistry.Api.Configuration
                 authorizationConfiguration?.OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder.SplitGuids() ??
                 Array.Empty<Guid>();
 
+            OrganisationCapacityTypeIdsOwnedByRegelgevingDbBeheerder =
+                authorizationConfiguration?.OrganisationCapacityTypeIdsOwnedByRegelgevingDbBeheerder.SplitGuids() ??
+                Array.Empty<Guid>();
+
             FormalFrameworkIdsOwnedByRegelgevingDbBeheerder =
                 authorizationConfiguration?.FormalFrameworkIdsOwnedByRegelgevingDbBeheerder.SplitGuids() ??
                 Array.Empty<Guid>();
@@ -43,5 +47,6 @@ namespace OrganisationRegistry.Api.Configuration
         public Guid[] KeyIdsAllowedForVlimpers { get; }
         public Guid[] KeyIdsAllowedOnlyForOrafin { get; }
         public Guid[] OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder { get; }
+        public Guid[] OrganisationCapacityTypeIdsOwnedByRegelgevingDbBeheerder { get; }
     }
 }

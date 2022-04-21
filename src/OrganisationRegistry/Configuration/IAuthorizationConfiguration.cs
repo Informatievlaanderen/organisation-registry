@@ -11,5 +11,6 @@ namespace OrganisationRegistry.Configuration
         Guid[] KeyIdsAllowedForVlimpers { get; }
         Guid[] KeyIdsAllowedOnlyForOrafin { get; }
         Guid[] OrganisationClassificationTypeIdsOwnedByRegelgevingDbBeheerder { get; }
+        Guid[] OrganisationCapacityTypeIdsOwnedByRegelgevingDbBeheerder { get; }
     }
 }
