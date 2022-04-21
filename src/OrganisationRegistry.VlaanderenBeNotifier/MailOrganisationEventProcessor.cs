@@ -14,6 +14,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
     using Organisation.Events;
     using Schema;
     using SendGrid;
+    using SqlServer;
 
     public class MailOrganisationEventProcessor :
         IEventHandler<OrganisationCreated>,
@@ -141,7 +142,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
         public async Task Handle(DbConnection connection, DbTransaction transaction, IEnvelope<OrganisationNameUpdated> message)
         {
             await using var ctx = new VlaanderenBeNotifierTransactionalContext(connection, transaction);
-            var organisation = await ctx.OrganisationCache.FindAsync(message.Body.OrganisationId);
+            var organisation = await ctx.OrganisationCache.FindRequiredAsync(message.Body.OrganisationId);
 
             SendMails(OrganisationNameChanged(
                 message.Body.OrganisationId,

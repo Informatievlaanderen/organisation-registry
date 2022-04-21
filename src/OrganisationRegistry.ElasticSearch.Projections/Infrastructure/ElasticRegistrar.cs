@@ -7,6 +7,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure
     using System.Reflection;
     using System.Threading.Tasks;
     using Change;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
 
     public class ElasticBusRegistrar
@@ -42,11 +43,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure
                     try
                     {
                         var serviceProvider = _requestScopedServiceProvider();
-                        dynamic? maybeHandler = serviceProvider.GetService(executorType);
-                        if (maybeHandler is { } handler)
-                            return await handler.Handle(dbConnection, dbTransaction, envelope);
-                        else
-                            throw new NullReferenceException("Handler cannot be null");
+                        dynamic handler = serviceProvider.GetRequiredService(executorType);
+                        return await handler.Handle(dbConnection, dbTransaction, envelope);
                     }
                     finally
                     {
@@ -54,6 +52,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure
 
                     }
                 }));
+
 
         private static void RegisterHandlers(Type handlerInterfaceType, Action<Type, Type> invokeHandlerAction, params Type[] reactionHandlerTypes)
         {

@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.ElasticSearch.Projections;
+﻿namespace OrganisationRegistry.SqlServer;
 
 using System;
 using System.Threading.Tasks;
