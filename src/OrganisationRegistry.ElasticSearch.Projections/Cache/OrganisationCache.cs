@@ -64,12 +64,11 @@
             IEnvelope<OrganisationInfoUpdated> message)
         {
             await using var context = _contextFactory.Create();
-            var maybeOrganisation = await context
+            var organisation = await context
                 .OrganisationCache
-                .FindAsync(message.Body.OrganisationId);
+                .FindRequiredAsync(message.Body.OrganisationId);
 
-            if (maybeOrganisation is { } organisation)
-                organisation.Name = message.Body.Name;
+            organisation.Name = message.Body.Name;
 
             await context.SaveChangesAsync();
         }
@@ -78,12 +77,11 @@
             IEnvelope<OrganisationNameUpdated> message)
         {
             await using var context = _contextFactory.Create();
-            var maybeOrganisation = await context
+            var organisation = await context
                 .OrganisationCache
-                .FindAsync(message.Body.OrganisationId);
+                .FindRequiredAsync(message.Body.OrganisationId);
 
-            if (maybeOrganisation is { } organisation)
-                organisation.Name = message.Body.Name;
+            organisation.Name = message.Body.Name;
 
             await context.SaveChangesAsync();
         }
@@ -92,12 +90,11 @@
             IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             await using var context = _contextFactory.Create();
-            var maybeOrganisation = await context
+            var organisation = await context
                 .OrganisationCache
-                .FindAsync(message.Body.OrganisationId);
+                .FindRequiredAsync(message.Body.OrganisationId);
 
-            if (maybeOrganisation is { } organisation)
-                organisation.Name = message.Body.Name;
+            organisation.Name = message.Body.Name;
 
             await context.SaveChangesAsync();
         }
@@ -106,12 +103,11 @@
             IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
             await using var context = _contextFactory.Create();
-            var maybeOrganisation = await context
+            var organisation = await context
                 .OrganisationCache
-                .FindAsync(message.Body.OrganisationId);
+                .FindRequiredAsync(message.Body.OrganisationId);
 
-            if (maybeOrganisation is { } organisation)
-                organisation.Name = message.Body.NameBeforeKboCoupling;
+            organisation.Name = message.Body.NameBeforeKboCoupling;
 
             await context.SaveChangesAsync();
         }
