@@ -13,6 +13,7 @@ import { OrganisationDetailModule } from './detail';
 import { OrganisationGuard } from "./guards/organisation.guard";
 import { CanAddAndUpdateFormalFrameworksGuard } from "./guards/can-add-update-formal-frameworks.guard";
 import { CanAddAndUpdateOrganisationClassificationTypeGuard } from "./guards/can-add-update-organisation-classification-type.guard";
+import {CanAddAndUpdateCapacityGuard} from "./guards/can-add-update-capacity.guard";
 
 @NgModule({
   imports: [
@@ -34,7 +35,8 @@ import { CanAddAndUpdateOrganisationClassificationTypeGuard } from "./guards/can
   providers:[
     OrganisationGuard,
     CanAddAndUpdateFormalFrameworksGuard,
-    CanAddAndUpdateOrganisationClassificationTypeGuard
+    CanAddAndUpdateOrganisationClassificationTypeGuard,
+    CanAddAndUpdateCapacityGuard,
   ],
   exports: [
     OrganisationRoutingModule
