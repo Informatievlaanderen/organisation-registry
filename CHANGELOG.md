@@ -1,3 +1,12 @@
+# [1.165.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.164.0...v1.165.0) (2022-04-21)
+
+
+### Features
+
+* findrequiredasync ([98feaff](https://github.com/informatievlaanderen/organisation-registry/commit/98feafff7f200bf9b768199b979a31de64be5ab3))
+* refactoring ([cc3c34e](https://github.com/informatievlaanderen/organisation-registry/commit/cc3c34eb637067bf9884ccd4c568eb562e7be6f0))
+* refactoring nullability async await etc ([34d67c1](https://github.com/informatievlaanderen/organisation-registry/commit/34d67c1f34d0bdd97553776166e9b52e80b0caf1))
+
 # [1.164.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.163.0...v1.164.0) (2022-04-20)
 
 
