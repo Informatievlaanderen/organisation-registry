@@ -35,7 +35,7 @@ export class CanAddAndUpdateFormalFrameworksGuard implements CanActivate, CanAct
     this.organisationStore.loadOrganisation(params[organisationIdPart]);
 
     return this.organisationStore.organisationChanged.flatMap(o => {
-      return this.organisationStore.canAddAndUpdateFormalFrameworksChanged$
+      return this.organisationStore.canAddAndUpdateFormalFrameworksChanged$;
     }).map(allowed => {
       if (allowed)
         return true;

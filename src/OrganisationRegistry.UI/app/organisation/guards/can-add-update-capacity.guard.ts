@@ -11,7 +11,7 @@ import {OidcService} from "core/auth";
 import {OrganisationInfoService} from "../../services";
 
 @Injectable()
-export class CanAddAndUpdateOrganisationClassificationTypeGuard implements CanActivate, CanActivateChild {
+export class CanAddAndUpdateCapacityGuard implements CanActivate, CanActivateChild {
   constructor(
     private oidcService: OidcService,
     private organisationStore: OrganisationInfoService
@@ -35,7 +35,7 @@ export class CanAddAndUpdateOrganisationClassificationTypeGuard implements CanAc
     this.organisationStore.loadOrganisation(params[organisationIdPart]);
 
     return this.organisationStore.organisationChanged.flatMap(o => {
-      return this.organisationStore.canAddAndUpdateClassificationsChanged$;
+      return this.organisationStore.canAddAndUpdateCapacitiesChanged$;
     }).map(allowed => {
       if (allowed)
         return true;
