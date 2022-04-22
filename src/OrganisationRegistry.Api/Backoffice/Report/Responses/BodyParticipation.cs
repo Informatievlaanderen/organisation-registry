@@ -15,10 +15,10 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
     public class BodyParticipation
     {
         [ExcludeFromCsv] public Guid BodyId { get; set; }
-        [DisplayName("Orgaan")] public string BodyName { get; set; }
+        [DisplayName("Orgaan")] public string? BodyName { get; set; }
 
         [ExcludeFromCsv] public bool? IsEffective { get; set; }
-        [DisplayName("Is Effectief")] public string IsEffectiveTranslation { get; set; }
+        [DisplayName("Is Effectief")] public string? IsEffectiveTranslation { get; set; }
 
         [DisplayName("Percentage Man")] public decimal MalePercentage { get; set; }
         [DisplayName("Percentage Vrouw")] public decimal FemalePercentage { get; set; }
@@ -52,8 +52,11 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
             FilteringHeader<BodyParticipationFilter> filteringHeader,
             DateTime today)
         {
+            if (filteringHeader.Filter is not { } filter)
+                throw new NullReferenceException("filteringHeader.Filter should not be null");
+
             // No checkboxes are enabled
-            if (!filteringHeader.Filter.EntitledToVote && !filteringHeader.Filter.NotEntitledToVote)
+            if (!filter.EntitledToVote && !filter.NotEntitledToVote)
                 return new List<BodyParticipation>();
 
             var body = context.BodySeatGenderRatioBodyList
@@ -67,10 +70,10 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
                     (!post.BodySeatValidTo.HasValue || post.BodySeatValidTo >= today));
 
             // One of the checkboxes is checked
-            if (filteringHeader.Filter.EntitledToVote ^ filteringHeader.Filter.NotEntitledToVote)
-                if (filteringHeader.Filter.EntitledToVote)
+            if (filter.EntitledToVote ^ filter.NotEntitledToVote)
+                if (filter.EntitledToVote)
                     activeSeatsPerType = activeSeatsPerType.Where(x => x.EntitledToVote);
-                else if (filteringHeader.Filter.NotEntitledToVote)
+                else if (filter.NotEntitledToVote)
                     activeSeatsPerType = activeSeatsPerType.Where(x => !x.EntitledToVote);
 
             var bodySeatGenderRatioPostsPerTypeItems = activeSeatsPerType.ToList();

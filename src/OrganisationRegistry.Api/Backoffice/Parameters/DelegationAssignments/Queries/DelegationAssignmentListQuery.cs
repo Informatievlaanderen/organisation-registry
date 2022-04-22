@@ -15,7 +15,7 @@
         public Guid Id { get; }
 
         public Guid PersonId { get; }
-        public string PersonName { get; }
+        public string? PersonName { get; }
 
         public DateTime? ValidFrom { get; }
         public DateTime? ValidTo { get; }
@@ -23,7 +23,7 @@
         public DelegationAssignmentListQueryResult(
             Guid id,
             Guid personId,
-            string personName,
+            string? personName,
             DateTime? validFrom,
             DateTime? validTo)
         {
@@ -80,6 +80,6 @@
 
     public class DelegationAssignmentListItemFilter
     {
-        public string PersonName { get; set; }
+        public string? PersonName { get; set; }
     }
 }

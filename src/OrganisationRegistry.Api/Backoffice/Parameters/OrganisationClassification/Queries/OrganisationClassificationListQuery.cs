@@ -17,7 +17,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
         public bool Active { get; }
         public string Name { get; }
         public int Order { get; }
-        public string ExternalKey { get; }
+        public string? ExternalKey { get; }
         public string OrganisationClassificationTypeName { get; }
 
         public OrganisationClassificationListQueryResult(
@@ -25,7 +25,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
             bool active,
             string name,
             int order,
-            string externalKey,
+            string? externalKey,
             string organisationClassificationTypeName)
         {
             Id = id;
@@ -64,11 +64,11 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
             if (filtering.Filter is not { } filter)
                 return organisationClassifications;
 
-            if (!filter.Name.IsNullOrWhiteSpace())
-                organisationClassifications = organisationClassifications.Where(x => x.Name.Contains(filter.Name));
+            if (filter.Name is { } name && name.IsNotEmptyOrWhiteSpace())
+                organisationClassifications = organisationClassifications.Where(x => x.Name.Contains(name));
 
-            if (!filter.OrganisationClassificationTypeName.IsNullOrWhiteSpace())
-                organisationClassifications = organisationClassifications.Where(x => x.OrganisationClassificationTypeName.Contains(filter.OrganisationClassificationTypeName));
+            if (filter.OrganisationClassificationTypeName is { } organisationClassificationTypeName && organisationClassificationTypeName.IsNotEmptyOrWhiteSpace())
+                organisationClassifications = organisationClassifications.Where(x => x.OrganisationClassificationTypeName.Contains(organisationClassificationTypeName));
 
             if (!filter.OrganisationClassificationTypeId.IsEmptyGuid())
                 organisationClassifications = organisationClassifications.Where(x => x.OrganisationClassificationTypeId == filter.OrganisationClassificationTypeId);
@@ -93,9 +93,9 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
 
     public class OrganisationClassificationListItemFilter
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public bool Active { get; set; }
         public Guid OrganisationClassificationTypeId { get; set; }
-        public string OrganisationClassificationTypeName { get; set; }
+        public string? OrganisationClassificationTypeName { get; set; }
     }
 }

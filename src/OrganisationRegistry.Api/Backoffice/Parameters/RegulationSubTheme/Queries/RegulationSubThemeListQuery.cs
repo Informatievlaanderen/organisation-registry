@@ -52,11 +52,11 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationSubTheme.Quer
             if (filtering.Filter is not { } filter)
                 return regulationSubThemes;
 
-            if (!filter.Name.IsNullOrWhiteSpace())
-                regulationSubThemes = regulationSubThemes.Where(x => x.Name.Contains(filter.Name));
+            if (filter.Name is { } name && name.IsNotEmptyOrWhiteSpace())
+                regulationSubThemes = regulationSubThemes.Where(x => x.Name.Contains(name));
 
-            if (!filter.RegulationThemeName.IsNullOrWhiteSpace())
-                regulationSubThemes = regulationSubThemes.Where(x => x.RegulationThemeName.Contains(filter.RegulationThemeName));
+            if (filter.RegulationThemeName is { } regulationThemeName && regulationThemeName.IsNotEmptyOrWhiteSpace())
+                regulationSubThemes = regulationSubThemes.Where(x => x.RegulationThemeName.Contains(regulationThemeName));
 
             if (!filter.RegulationThemeId.IsEmptyGuid())
                 regulationSubThemes = regulationSubThemes.Where(x => x.RegulationThemeId == filter.RegulationThemeId);
@@ -79,8 +79,8 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationSubTheme.Quer
 
     public class RegulationSubThemeListItemFilter
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public Guid RegulationThemeId { get; set; }
-        public string RegulationThemeName { get; set; }
+        public string? RegulationThemeName { get; set; }
     }
 }

@@ -10,5 +10,8 @@ namespace OrganisationRegistry
                 .Split(',', StringSplitOptions.RemoveEmptyEntries)
                 .Select(Guid.Parse)
                 .ToArray() ?? Array.Empty<Guid>();
+
+        public static bool IsNotEmptyOrWhiteSpace(this string source)
+            => source.Trim().Any();
     }
 }

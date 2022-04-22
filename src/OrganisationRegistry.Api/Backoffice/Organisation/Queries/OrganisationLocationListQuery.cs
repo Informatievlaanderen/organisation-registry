@@ -18,7 +18,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
         public Guid OrganisationLocationId { get; }
         public bool IsMainLocation { get; }
         public string LocationName { get; }
-        public string LocationTypeName { get; }
+        public string? LocationTypeName { get; }
         public DateTime? ValidFrom { get; }
         public DateTime? ValidTo { get; }
 
@@ -30,7 +30,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
             Guid organisationLocationId,
             bool isMainLocation,
             string locationName,
-            string locationTypeName,
+            string? locationTypeName,
             DateTime? validFrom,
             DateTime? validTo,
             string ovoNumber,

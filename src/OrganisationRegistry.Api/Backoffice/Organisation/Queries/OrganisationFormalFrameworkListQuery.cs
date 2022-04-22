@@ -18,9 +18,9 @@
     {
         public Guid OrganisationFormalFrameworkId { get; }
         public Guid FormalFrameworkId { get; }
-        public string FormalFrameworkName { get; }
+        public string? FormalFrameworkName { get; }
         public Guid ParentOrganisationId { get; }
-        public string ParentOrganisationName { get; }
+        public string? ParentOrganisationName { get; }
         public DateTime? ValidFrom { get; }
         public DateTime? ValidTo { get; }
         public bool IsActive { get; }
@@ -28,8 +28,8 @@
         public bool IsEditable { get; }
 
         public OrganisationFormalFrameworkListQueryResult(Guid organisationFormalFrameworkId,
-            Guid formalFrameworkId, string formalFrameworkName,
-            Guid parentOrganisationId, string parentOrganisationName,
+            Guid formalFrameworkId, string? formalFrameworkName,
+            Guid parentOrganisationId, string? parentOrganisationName,
             DateTime? validFrom, DateTime? validTo,
             string ovoNumber,
             IOrganisationRegistryConfiguration configuration, IUser user)

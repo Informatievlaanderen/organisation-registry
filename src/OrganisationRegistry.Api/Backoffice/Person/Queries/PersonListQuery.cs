@@ -5,7 +5,6 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Queries
     using System.ComponentModel;
     using System.Linq;
     using System.Linq.Expressions;
-    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Infrastructure;
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
@@ -59,14 +58,14 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Queries
             if (filtering.Filter is not { } filter)
                 return people;
 
-            if (!filter.FirstName.IsNullOrWhiteSpace())
-                people = people.Where(x => x.FirstName.Contains(filter.FirstName));
+            if (filter.FirstName is { } firstName && firstName.IsNotEmptyOrWhiteSpace())
+                people = people.Where(x => x.FirstName.Contains(firstName));
 
-            if (!filter.Name.IsNullOrWhiteSpace())
-                people = people.Where(x => x.Name.Contains(filter.Name));
+            if (filter.Name is { } name && name.IsNotEmptyOrWhiteSpace())
+                people = people.Where(x => x.Name.Contains(name));
 
-            if (!filter.FullName.IsNullOrWhiteSpace())
-                people = people.Where(x => x.FullName.Contains(filter.FullName));
+            if (filter.FullName is { } fullName && fullName.IsNotEmptyOrWhiteSpace())
+                people = people.Where(x => x.FullName.Contains(fullName));
 
             return people;
         }
@@ -86,8 +85,8 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Queries
 
     public class PersonListItemFilter
     {
-        public string FirstName { get; set; }
-        public string Name { get; set; }
-        public string FullName { get; set; }
+        public string? FirstName { get; set; }
+        public string? Name { get; set; }
+        public string? FullName { get; set; }
     }
 }

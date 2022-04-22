@@ -60,11 +60,11 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassification.Quer
             if (filtering.Filter is not { } filter)
                 return bodyClassifications;
 
-            if (!filter.Name.IsNullOrWhiteSpace())
-                bodyClassifications = bodyClassifications.Where(x => x.Name.Contains(filter.Name));
+            if (filter.Name is { } name && name.IsNotEmptyOrWhiteSpace())
+                bodyClassifications = bodyClassifications.Where(x => x.Name.Contains(name));
 
-            if (!filter.BodyClassificationTypeName.IsNullOrWhiteSpace())
-                bodyClassifications = bodyClassifications.Where(x => x.BodyClassificationTypeName.Contains(filter.BodyClassificationTypeName));
+            if (filter.BodyClassificationTypeName is { } bodyClassificationTypeName && bodyClassificationTypeName.IsNotEmptyOrWhiteSpace())
+                bodyClassifications = bodyClassifications.Where(x => x.BodyClassificationTypeName.Contains(bodyClassificationTypeName));
 
             if (!filter.BodyClassificationTypeId.IsEmptyGuid())
                 bodyClassifications = bodyClassifications.Where(x => x.BodyClassificationTypeId == filter.BodyClassificationTypeId);
@@ -89,9 +89,9 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassification.Quer
 
     public class BodyClassificationListItemFilter
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public bool Active { get; set; }
         public Guid BodyClassificationTypeId { get; set; }
-        public string BodyClassificationTypeName { get; set; }
+        public string? BodyClassificationTypeName { get; set; }
     }
 }

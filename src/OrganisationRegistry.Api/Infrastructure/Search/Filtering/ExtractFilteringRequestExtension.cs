@@ -11,7 +11,7 @@
             var filtering = request.Headers["x-filtering"];
 
             if (string.IsNullOrEmpty(filtering))
-                return new FilteringHeader<T>(default(T));
+                return new FilteringHeader<T>(default);
 
             try
             {
@@ -19,7 +19,7 @@
             }
             catch
             {
-                return new FilteringHeader<T>(default(T));
+                return new FilteringHeader<T>(default);
             }
         }
     }

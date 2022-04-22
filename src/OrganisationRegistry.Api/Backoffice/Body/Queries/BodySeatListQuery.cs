@@ -13,7 +13,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Queries
     public class BodySeatListQueryResult
     {
         public Guid BodySeatId { get; }
-        public string BodySeatNumber { get; }
+        public string? BodySeatNumber { get; }
         public string Name { get; }
         public Guid SeatTypeId { get; }
         public string SeatTypeName{ get; }
@@ -26,7 +26,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Queries
 
         public BodySeatListQueryResult(
             Guid bodySeatId,
-            string bodySeatNumber,
+            string? bodySeatNumber,
             string name,
             Guid seatTypeId,
             string seatTypeName,

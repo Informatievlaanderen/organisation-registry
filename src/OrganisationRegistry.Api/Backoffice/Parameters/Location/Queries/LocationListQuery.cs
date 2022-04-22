@@ -4,7 +4,6 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Location.Queries
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
@@ -64,16 +63,16 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Location.Queries
             if (filtering.Filter is not { } filter)
                 return locations;
 
-            if (!filter.Street.IsNullOrWhiteSpace())
-                locations = locations.Where(x => x.Street.Contains(filter.Street));
+            if (filter.Street is { } street && street.IsNotEmptyOrWhiteSpace())
+                locations = locations.Where(x => x.Street.Contains(street));
 
-            if (!filter.ZipCode.IsNullOrWhiteSpace())
-                locations = locations.Where(x => x.ZipCode.Contains(filter.ZipCode));
+            if (filter.ZipCode is { } zipCode && zipCode.IsNotEmptyOrWhiteSpace())
+                locations = locations.Where(x => x.ZipCode.Contains(zipCode));
 
-            if (!filter.City.IsNullOrWhiteSpace())
+            if (filter.City is { } city && city.IsNotEmptyOrWhiteSpace())
                 locations = locations.Where(x => x.City.Contains(filter.City));
 
-            if (!filter.Country.IsNullOrWhiteSpace())
+            if (filter.Country is { } country && country.IsNotEmptyOrWhiteSpace())
                 locations = locations.Where(x => x.Country.Contains(filter.Country));
 
             if (filter.NonCrabOnly)
@@ -102,10 +101,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Location.Queries
     {
         public Guid Id { get; set; }
 
-        public string Street { get; set; }
-        public string ZipCode { get; set; }
-        public string City { get; set; }
-        public string Country { get; set; }
+        public string? Street { get; set; }
+        public string? ZipCode { get; set; }
+        public string? City { get; set; }
+        public string? Country { get; set; }
         public bool NonCrabOnly { get; set; }
     }
 }

@@ -77,11 +77,11 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Queries
             if (filtering.Filter is not { } filter)
                 return bodies;
 
-            if (!filter.Name.IsNullOrWhiteSpace())
-                bodies = bodies.Where(x => x.Name.Contains(filter.Name) || x.ShortName.Contains(filter.Name));
+            if (filter.Name is { } name && name.IsNotEmptyOrWhiteSpace())
+                bodies = bodies.Where(x => x.Name.Contains(name) || (x.ShortName != null && x.ShortName.Contains(name)));
 
-            if (!filter.Organisation.IsNullOrWhiteSpace())
-                bodies = bodies.Where(x => x.Organisation != null && x.Organisation.Contains(filter.Organisation));
+            if (filter.Organisation is { } organisation && organisation.IsNotEmptyOrWhiteSpace())
+                bodies = bodies.Where(x => x.Organisation != null && x.Organisation.Contains(organisation));
 
             if (filter.ActiveOnly)
                 bodies = bodies.Where(x =>

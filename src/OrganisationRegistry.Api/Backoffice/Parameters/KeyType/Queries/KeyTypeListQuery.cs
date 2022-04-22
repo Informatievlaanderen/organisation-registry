@@ -4,7 +4,6 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Queries
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
@@ -31,10 +30,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Queries
             if (filtering.Filter is not { } filter)
                 return keyTypes;
 
-            if (!filter.Name.IsNullOrWhiteSpace())
-                keyTypes = keyTypes.Where(x => x.Name.Contains(filter.Name));
+            if (filter.Name is { } name && name.IsNotEmptyOrWhiteSpace())
+                keyTypes = keyTypes.Where(x => x.Name.Contains(name));
 
-            if (filter.ExcludeIds != null && filter.ExcludeIds.Any())
+            if (filter.ExcludeIds.Any())
                 keyTypes = keyTypes.Where(x => !filter.ExcludeIds.Contains(x.Id));
 
             return keyTypes;
@@ -48,16 +47,11 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Queries
 
         public class KeyTypeListItemFilter
         {
-            public KeyTypeListItemFilter()
-            {
-                ExcludeIds = new List<Guid>();
-            }
             public Guid Id { get; set; }
 
-            public string Name { get; set; }
+            public string? Name { get; set; }
 
-            public List<Guid> ExcludeIds { get; }
-
+            public List<Guid> ExcludeIds { get; } = new();
         }
 
         private class KeyTypeListSorting : ISorting

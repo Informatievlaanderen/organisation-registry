@@ -10,9 +10,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Options;
     using OrganisationRegistry.Infrastructure.Commands;
-    using OrganisationRegistry.Infrastructure.Configuration;
     using Queries;
     using Requests;
     using Security;
@@ -23,14 +21,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
     [OrganisationRegistryRoute("organisationclassifications")]
     public class OrganisationClassificationController : OrganisationRegistryController
     {
-        private readonly ApiConfigurationSection _config;
-
         public OrganisationClassificationController(
-            ICommandSender commandSender,
-            IOptions<ApiConfigurationSection> config)
+            ICommandSender commandSender)
             : base(commandSender)
         {
-            _config = config.Value;
         }
 
         /// <summary>Get a list of available organisation classifications.</summary>
