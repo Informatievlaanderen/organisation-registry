@@ -4,7 +4,6 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
@@ -61,8 +60,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
             if (filtering.Filter is not { } filter)
                 return organisationTerminations;
 
-            if (!filter.Name.IsNullOrWhiteSpace())
-                organisationTerminations = organisationTerminations.Where(x => x.Name.Contains(filter.Name));
+            if (filter.Name is { } name && name.IsNotEmptyOrWhiteSpace())
+                organisationTerminations = organisationTerminations.Where(x => x.Name.Contains(name));
 
             return organisationTerminations;
         }
@@ -85,10 +84,10 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
 
     public class OrganisationTerminationListItemFilter
     {
-        public string Name { get; set; }
-        public string KboNumber { get; set; }
+        public string? Name { get; set; }
+        public string? KboNumber { get; set; }
         public DateTime Date { get; set; }
-        public string Code { get; set; }
-        public string Reason { get; set; }
+        public string? Code { get; set; }
+        public string? Reason { get; set; }
     }
 }

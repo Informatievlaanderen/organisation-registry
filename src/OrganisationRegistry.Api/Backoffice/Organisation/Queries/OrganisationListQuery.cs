@@ -26,13 +26,13 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
         public string Name { get; }
 
         [DisplayName("Korte naam")]
-        public string ShortName { get; }
+        public string? ShortName { get; }
 
         [DisplayName("OVO-nummer moeder entiteit")]
-        public string ParentOrganisationOvoNumber { get; }
+        public string? ParentOrganisationOvoNumber { get; }
 
         [DisplayName("Moeder entiteit")]
-        public string ParentOrganisation { get; }
+        public string? ParentOrganisation { get; }
 
         [ExcludeFromCsv]
         public Guid? ParentOrganisationId { get; }
@@ -41,10 +41,10 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
             Guid id,
             string ovoNumber,
             string name,
-            string shortName,
-            string parentOrganisation,
+            string? shortName,
+            string? parentOrganisation,
             Guid? parentOrganisationId,
-            string parentOrganisationOvoNumber)
+            string? parentOrganisationOvoNumber)
         {
             Id = id;
             OvoNumber = ovoNumber;
@@ -86,11 +86,11 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
             if (filtering.Filter is not { } filter)
                 return organisations.Where(x => x.FormalFrameworkId == null);
 
-            if (!filter.Name.IsNullOrWhiteSpace())
-                organisations = organisations.Where(x => x.Name.Contains(filter.Name) || x.ShortName.Contains(filter.Name));
+            if (filter.Name is { } name && name.IsNotEmptyOrWhiteSpace())
+                organisations = organisations.Where(x => x.Name.Contains(name) || (x.ShortName != null && x.ShortName.Contains(name)));
 
-            if (!filter.OvoNumber.IsNullOrWhiteSpace())
-                organisations = organisations.Where(x => x.OvoNumber.Contains(filter.OvoNumber));
+            if (filter.OvoNumber is { } ovoNumber && ovoNumber.IsNotEmptyOrWhiteSpace())
+                organisations = organisations.Where(x => x.OvoNumber.Contains(ovoNumber));
 
             if (filter.ActiveOnly)
                 organisations = organisations.Where(x =>
@@ -148,8 +148,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
 
     public class OrganisationListItemFilter
     {
-        public string Name { get; set; }
-        public string OvoNumber { get; set; }
+        public string? Name { get; set; }
+        public string? OvoNumber { get; set; }
         public Guid? FormalFrameworkId { get; set; }
         public Guid? OrganisationClassificationId { get; set; }
         public Guid? OrganisationClassificationTypeId { get; set; }

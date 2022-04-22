@@ -59,14 +59,14 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFramework.Queries
             if (!filter.Ids.IsNullOrEmpty())
                 formalFrameworks = formalFrameworks.Where(x => filter.Ids.Contains(x.Id));
 
-            if (!filter.Name.IsNullOrWhiteSpace())
-                formalFrameworks = formalFrameworks.Where(x => x.Name.Contains(filter.Name));
+            if (filter.Name is { } name && name.IsNotEmptyOrWhiteSpace())
+                formalFrameworks = formalFrameworks.Where(x => x.Name.Contains(name));
 
-            if (!filter.Code.IsNullOrWhiteSpace())
-                formalFrameworks = formalFrameworks.Where(x => x.Code.Contains(filter.Code));
+            if (filter.Code is { } code && code.IsNotEmptyOrWhiteSpace())
+                formalFrameworks = formalFrameworks.Where(x => x.Code.Contains(code));
 
-            if (!filter.FormalFrameworkCategoryName.IsNullOrWhiteSpace())
-                formalFrameworks = formalFrameworks.Where(x => x.FormalFrameworkCategoryName.Contains(filter.FormalFrameworkCategoryName));
+            if (filter.FormalFrameworkCategoryName is { } formalFrameworkCategoryName && formalFrameworkCategoryName.IsNotEmptyOrWhiteSpace())
+                formalFrameworks = formalFrameworks.Where(x => x.FormalFrameworkCategoryName.Contains(formalFrameworkCategoryName));
 
             return formalFrameworks;
         }
@@ -87,17 +87,12 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFramework.Queries
 
     public class FormalFrameworkListItemFilter
     {
-        public IList<Guid> Ids { get; set; }
+        public IList<Guid> Ids { get; set; } = new List<Guid>();
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
-        public string Code { get; set; }
+        public string? Code { get; set; }
 
-        public string FormalFrameworkCategoryName { get; set; }
-
-        public FormalFrameworkListItemFilter()
-        {
-            Ids = new List<Guid>();
-        }
+        public string? FormalFrameworkCategoryName { get; set; }
     }
 }

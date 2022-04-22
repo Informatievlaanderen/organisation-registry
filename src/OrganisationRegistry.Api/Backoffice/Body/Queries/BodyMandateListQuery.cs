@@ -16,15 +16,15 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Queries
         public Guid BodyMandateId { get; }
         public BodyMandateType BodyMandateType { get; }
         public Guid BodySeatId { get; }
-        public string BodySeatNumber { get; }
+        public string? BodySeatNumber { get; }
         public string BodySeatName { get; }
 
         public Guid DelegatorId { get; }
         public string DelegatorName { get; }
         public Guid? DelegatedId { get; }
-        public string DelegatedName { get; }
+        public string? DelegatedName { get; }
         public Guid? AssignedToId { get; set; }
-        public string AssignedToName { get; set; }
+        public string? AssignedToName { get; set; }
         public Guid? BodySeatTypeId { get; }
         public string? BodySeatTypeName { get; }
 
@@ -36,14 +36,14 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Queries
         public BodyMandateListQueryResult(Guid bodyMandateId,
             BodyMandateType bodyMandateType,
             Guid bodySeatId,
-            string bodySeatNumber,
+            string? bodySeatNumber,
             string bodySeatName,
             Guid delegatorId,
             string delegatorName,
             Guid? delegatedId,
-            string delegatedName,
+            string? delegatedName,
             Guid? assignedToId,
-            string assignedToName,
+            string? assignedToName,
             Guid? bodySeatTypeId,
             string? bodySeatTypeName,
             DateTime? validFrom,

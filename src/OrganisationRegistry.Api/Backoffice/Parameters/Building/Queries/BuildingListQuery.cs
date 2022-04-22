@@ -27,14 +27,14 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Building.Queries
             if (filtering.Filter is not { } filter)
                 return buildings;
 
-            if (!filter.Name.IsNullOrWhiteSpace())
-                buildings = buildings.Where(x => x.Name.Contains(filter.Name));
+            if (filter.Name is { } name && name.IsNotEmptyOrWhiteSpace())
+                buildings = buildings.Where(x => x.Name.Contains(name));
 
-            if (filter.VimId.IsNullOrWhiteSpace())
+            if (filter.VimId is not { } unparsedVimId || unparsedVimId.IsNullOrWhiteSpace())
                 return buildings;
 
             // When somebody entered a non numeric VimId, since they all need to be numeric, you get no results!
-            return int.TryParse(filter.VimId, out var vimId)
+            return int.TryParse(unparsedVimId, out var vimId)
                 ? buildings.Where(x => x.VimId == vimId)
                 : new List<BuildingListItem>().AsAsyncQueryable();
         }
@@ -54,7 +54,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Building.Queries
 
     public class BuildingListItemFilter
     {
-        public string Name { get; set; }
-        public string VimId { get; set; }
+        public string? Name { get; set; }
+        public string? VimId { get; set; }
     }
 }

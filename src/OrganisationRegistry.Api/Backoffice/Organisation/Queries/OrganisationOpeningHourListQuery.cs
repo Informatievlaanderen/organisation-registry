@@ -19,7 +19,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
 
         public string Closes { get; }
 
-        public string DayOfWeek { get; }
+        public string? DayOfWeek { get; }
 
         public DateTime? ValidFrom { get; }
 
