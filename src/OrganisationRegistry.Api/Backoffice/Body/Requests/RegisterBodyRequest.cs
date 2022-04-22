@@ -1,9 +1,7 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Body.Requests
 {
     using System;
-    using System.Threading.Tasks;
     using FluentValidation;
-    using Infrastructure.Security;
     using Microsoft.AspNetCore.Http;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
@@ -17,15 +15,15 @@
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
-        public string BodyNumber { get; set; }
+        public string? BodyNumber { get; set; }
 
-        public string ShortName { get; set; }
+        public string? ShortName { get; set; }
 
         public Guid? OrganisationId { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         public DateTime? ValidFrom { get; set; }
 
@@ -68,16 +66,8 @@
 
             RuleFor(x => x.OrganisationId)
                 .NotEmpty()
-                .WhenAsync(async (x, ct) => await UserIsOrganisatieBeheerder(httpContextAccessor, securityService))
+                .WhenAsync(async (_, _) => await httpContextAccessor.UserIsDecentraalBeheerder(securityService.GetSecurityInformation))
                 .WithMessage("Organisation Id is required for users in role 'organisatieBeheerder'.");
-        }
-
-        private static async Task<bool> UserIsOrganisatieBeheerder(IHttpContextAccessor httpContextAccessor, ISecurityService securityService)
-        {
-            var authenticateInfo = await httpContextAccessor.HttpContext.GetAuthenticateInfoAsync();
-            return (await securityService
-                .GetSecurityInformation(authenticateInfo.Principal))
-                .Roles.Contains(Role.DecentraalBeheerder);
         }
     }
 
@@ -87,8 +77,7 @@
             RegisterBodyRequest message,
             LifecyclePhaseTypeListItem? activeLifecyclePhaseTypeListItem,
             LifecyclePhaseTypeListItem? inactiveLifecyclePhaseTypeListItem)
-        {
-            return new RegisterBody(
+            => new(
                 new BodyId(message.Id),
                 message.Name,
                 message.BodyNumber,
@@ -103,6 +92,5 @@
                     new ValidTo(message.FormalValidTo)),
                 activeLifecyclePhaseTypeListItem != null ? new LifecyclePhaseTypeId(activeLifecyclePhaseTypeListItem.Id) : null,
                 inactiveLifecyclePhaseTypeListItem != null ? new LifecyclePhaseTypeId(inactiveLifecyclePhaseTypeListItem.Id) : null);
-        }
     }
 }

@@ -15,7 +15,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario
         {
             Fixture = new Fixture();
 
-            Fixture.Register(() => new InitialiseProjection(typeof(T).FullName));
+            Fixture.Register(() => new InitialiseProjection(typeof(T).FullName!));
             Fixture.Register<DateTime?>(() => Fixture.Create<DateTime>().Date);
 
             foreach (var specimenBuilder in specimenBuilders)

@@ -2,15 +2,9 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using Client;
-    using Configuration;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
     using Organisation.Events;
     using Projections.People.Handlers;
     using Specimen;
-    using SqlServer;
 
     /// <summary>
     /// Sets up a fixture which uses the same organisationId for all events

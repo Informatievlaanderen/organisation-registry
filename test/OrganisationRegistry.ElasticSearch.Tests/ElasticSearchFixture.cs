@@ -23,14 +23,16 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             var dbContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
                 .UseInMemoryDatabase(
                     $"org-es-test-{Guid.NewGuid()}",
-                    builder => { }).Options;
-            var context = new OrganisationRegistryContext(
-                dbContextOptions);
+                    _ => { }).Options;
 
             LoggerFactory = new LoggerFactory();
             ContextFactory = new TestContextFactory(dbContextOptions);
+            var maybeConfigurationBasePath = Directory.GetParent(GetType().GetTypeInfo().Assembly.Location)?.FullName;
+            if (maybeConfigurationBasePath is not { } configurationBasePath)
+                throw new NullReferenceException("Configuration base path cannot be null");
+
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetParent(GetType().GetTypeInfo().Assembly.Location).FullName)
+                .SetBasePath(configurationBasePath)
                 .AddJsonFile("appsettings.json", optional: false)
                 .AddJsonFile($"appsettings.{Environment.MachineName}.json", optional: true);
 

@@ -115,7 +115,7 @@
                 await elastic.TryAsync(
                     () =>
                     {
-                        var bulkAllObservable = elastic.WriteClient.BulkAll(
+                        elastic.WriteClient.BulkAll(
                             documentCache.Values,
                             b => b
                                 .BackOffTime("30s")
@@ -125,11 +125,10 @@
                                 .Size(1000)
                         ).Wait(
                             TimeSpan.FromMinutes(15),
-                            next =>
+                            _ =>
                             {
                                 //_logger.LogInformation("[{ProjectionName}] Flushed documents, page {PageNumber}", ProjectionName, next.Page);
                             });
-                        ;
 
                         return Task.CompletedTask;
                     });

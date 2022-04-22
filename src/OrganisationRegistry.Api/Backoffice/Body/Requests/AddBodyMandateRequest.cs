@@ -29,8 +29,8 @@
         public Guid BodySeatId { get; set; }
         public BodyMandateType? BodyMandateType { get; set; }
         public Guid DelegatorId { get; set; }
-        public Guid? DelegatedId { get; set; }
-        public Dictionary<Guid, string> Contacts { get; set; }
+        public Guid DelegatedId { get; set; }
+        public Dictionary<Guid, string>? Contacts { get; set; } = null;
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }
@@ -81,7 +81,7 @@
                 new BodyMandateId(message.Body.BodyMandateId),
                 new BodySeatId(message.Body.BodySeatId),
                 new PersonId(message.Body.DelegatorId),
-                message.Body.Contacts?.ToDictionary(x => new ContactTypeId(x.Key), x => x.Value),
+                message.Body.Contacts?.ToDictionary(x => new ContactTypeId(x.Key), x => x.Value) ?? new Dictionary<ContactTypeId, string>(),
                 new Period(
                     new ValidFrom(message.Body.ValidFrom),
                     new ValidTo(message.Body.ValidTo)));
@@ -94,7 +94,7 @@
                 new BodyMandateId(message.Body.BodyMandateId),
                 new BodySeatId(message.Body.BodySeatId),
                 new OrganisationId(message.Body.DelegatorId),
-                new FunctionTypeId(message.Body.DelegatedId.Value),
+                new FunctionTypeId(message.Body.DelegatedId),
                 new Period(
                     new ValidFrom(message.Body.ValidFrom),
                     new ValidTo(message.Body.ValidTo)));

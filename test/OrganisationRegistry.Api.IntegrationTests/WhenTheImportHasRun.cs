@@ -21,7 +21,7 @@
         private async Task<IEnumerable<T>> Get<T>(string requestUri)
         {
             var items = await _fixture.HttpClient.GetStringAsync(requestUri);
-            return JsonConvert.DeserializeObject<IEnumerable<T>>(items);
+            return JsonConvert.DeserializeObject<IEnumerable<T>>(items) ?? new List<T>();
         }
 
         [Fact]
