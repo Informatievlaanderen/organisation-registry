@@ -22,7 +22,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Requests
     public class AddBodySeatRequest
     {
         public Guid BodySeatId { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public bool PaidSeat { get; set; }
         public bool EntitledToVote { get; set; }
         public Guid SeatTypeId { get; set; }

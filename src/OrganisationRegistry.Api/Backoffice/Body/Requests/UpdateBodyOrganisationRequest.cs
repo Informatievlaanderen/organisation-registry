@@ -1,9 +1,7 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Body.Requests
 {
     using System;
-    using System.Threading.Tasks;
     using FluentValidation;
-    using Infrastructure.Security;
     using Microsoft.AspNetCore.Http;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
@@ -53,30 +51,20 @@
 
             RuleFor(x => x.Body.OrganisationId)
                 .NotEmpty()
-                .WhenAsync(async (x, ct) => await UserIsOrganisatieBeheerder(httpContextAccessor, securityService))
+                .WhenAsync(async (_, _) => await httpContextAccessor.UserIsDecentraalBeheerder(securityService.GetSecurityInformation))
                 .WithMessage("Organisation Id is required for users in role 'organisatieBeheerder'.");
-        }
-
-        private static async Task<bool> UserIsOrganisatieBeheerder(IHttpContextAccessor httpContextAccessor, ISecurityService securityService)
-        {
-            var authenticateInfo = await httpContextAccessor.HttpContext.GetAuthenticateInfoAsync();
-            return (await securityService
-                .GetSecurityInformation(authenticateInfo.Principal))
-                .Roles.Contains(Role.DecentraalBeheerder);
         }
     }
 
     public static class UpdateBodyOrganisationRequestMapping
     {
         public static UpdateBodyOrganisation Map(UpdateBodyOrganisationInternalRequest message)
-        {
-            return new UpdateBodyOrganisation(
+            => new(
                 new BodyId(message.BodyId),
                 new BodyOrganisationId(message.Body.BodyOrganisationId),
                 new OrganisationId(message.Body.OrganisationId),
                 new Period(
                     new ValidFrom(message.Body.ValidFrom),
                     new ValidTo(message.Body.ValidTo)));
-        }
     }
 }

@@ -28,7 +28,12 @@ namespace OrganisationRegistry.Api.IntegrationTests
 
         public ApiFixture()
         {
-            Directory.SetCurrentDirectory(Directory.GetParent(typeof(Startup).GetTypeInfo().Assembly.Location).Parent.Parent.Parent.FullName);
+            var maybeRootDirectory = Directory
+                .GetParent(typeof(Startup).GetTypeInfo().Assembly.Location)?.Parent?.Parent?.Parent?.FullName;
+            if (maybeRootDirectory is not { } rootDirectory)
+                throw new NullReferenceException("Root directory cannot be null");
+
+            Directory.SetCurrentDirectory(rootDirectory);
 
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -87,11 +92,12 @@ namespace OrganisationRegistry.Api.IntegrationTests
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
-                _webHost?.Dispose();
+                _webHost.Dispose();
         }
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             Dispose(true);
         }
     }

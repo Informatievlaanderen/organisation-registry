@@ -5,7 +5,7 @@ namespace OrganisationRegistry
 
     public static class StringExtensions
     {
-        public static Guid[]? SplitGuids(this string? source)
+        public static Guid[] SplitGuids(this string? source)
             => source?
                 .Split(',', StringSplitOptions.RemoveEmptyEntries)
                 .Select(Guid.Parse)

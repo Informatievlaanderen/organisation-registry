@@ -70,26 +70,21 @@ namespace OrganisationRegistry.Body
 
         public async Task Handle(RegisterBody message)
         {
-            if (_uniqueBodyNumberValidator.IsBodyNumberTaken(message.BodyNumber))
-                throw new BodyNumberNotUnique();
-
-            var bodyNumber = string.IsNullOrWhiteSpace(message.BodyNumber)
-                ? _bodyNumberGenerator.GenerateNumber()
-                : message.BodyNumber;
+            var bodyNumber = GetBodyNumber(message);
 
             var organisation =
-                message.OrganisationId != null
-                    ? Session.Get<Organisation>(message.OrganisationId)
+                message.OrganisationId is { } organisationId
+                    ? Session.Get<Organisation>(organisationId)
                     : null;
 
             var activeLifecyclePhaseType =
-                message.ActiveLifecyclePhaseTypeId != null
-                    ? Session.Get<LifecyclePhaseType>(message.ActiveLifecyclePhaseTypeId)
+                message.ActiveLifecyclePhaseTypeId is { } activeLifecyclePhaseTypeId
+                    ? Session.Get<LifecyclePhaseType>(activeLifecyclePhaseTypeId)
                     : null;
 
             var inActiveLifecyclePhaseType =
-                message.InactiveLifecyclePhaseTypeId != null
-                    ? Session.Get<LifecyclePhaseType>(message.InactiveLifecyclePhaseTypeId)
+                message.InactiveLifecyclePhaseTypeId is { } inactiveLifecyclePhaseTypeId
+                    ? Session.Get<LifecyclePhaseType>(inactiveLifecyclePhaseTypeId)
                     : null;
 
             var body = new Body(
@@ -106,6 +101,17 @@ namespace OrganisationRegistry.Body
 
             Session.Add(body);
             await Session.Commit(message.User);
+        }
+
+        private string GetBodyNumber(RegisterBody message)
+        {
+            if (message.BodyNumber is not { } bodyNumber)
+                return _bodyNumberGenerator.GenerateNumber();
+
+            if (_uniqueBodyNumberValidator.IsBodyNumberTaken(bodyNumber))
+                throw new BodyNumberNotUnique();
+
+            return message.BodyNumber;
         }
 
         public async Task Handle(UpdateBodyInfo message)

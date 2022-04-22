@@ -5,7 +5,6 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Queries
     using System.ComponentModel;
     using System.Linq;
     using System.Linq.Expressions;
-    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Infrastructure;
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
@@ -19,27 +18,27 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Queries
         public Guid Id { get; }
 
         [DisplayName("Orgaan nummer")]
-        public string BodyNumber { get; }
+        public string? BodyNumber { get; }
 
         [DisplayName("Naam")]
         public string Name { get; }
 
         [DisplayName("Korte naam")]
-        public string ShortName { get; }
+        public string? ShortName { get; }
 
         [ExcludeFromCsv]
         public Guid? OrganisationId { get; }
 
         [DisplayName("Organisatie")]
-        public string Organisation { get; }
+        public string? Organisation { get; }
 
         public BodyListQueryResult(
             Guid id,
-            string bodyNumber,
+            string? bodyNumber,
             string name,
-            string shortName,
+            string? shortName,
             Guid? organisationId,
-            string organisation)
+            string? organisation)
         {
             Id = id;
             BodyNumber = bodyNumber;

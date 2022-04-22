@@ -3,6 +3,8 @@ using AutoFixture.Kernel;
 
 namespace OrganisationRegistry.ElasticSearch.Tests.Scenario.Specimen
 {
+    using System;
+
     public class ParameterNameArg<T> : ISpecimenBuilder
     {
         private readonly string _parameterName;
@@ -16,6 +18,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario.Specimen
 
         public object Create(object request, ISpecimenContext context)
         {
+            Console.WriteLine("Create Specimen");
+
             if (!(request is ParameterInfo pi))
                 return new NoSpecimen();
 
@@ -23,7 +27,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario.Specimen
                 pi.Name != _parameterName)
                 return new NoSpecimen();
 
-            return _value;
+            return _value ?? (object)new NoSpecimen();
         }
     }
 }

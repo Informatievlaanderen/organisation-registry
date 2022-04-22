@@ -23,7 +23,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Requests
     {
         public Guid BodyContactId { get; set; }
         public Guid ContactTypeId { get; set; }
-        public string ContactValue { get; set; }
+        public string ContactValue { get; set; } = null!;
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }

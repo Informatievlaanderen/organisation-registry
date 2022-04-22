@@ -48,6 +48,7 @@ namespace OrganisationRegistry.Body
             _bodyLifecyclePhases = new List<BodyLifecyclePhase>();
             _bodySeats = new BodySeats();
             _bodyBodyClassifications = new List<BodyBodyClassification>();
+            _formalValidity = new Period();
         }
 
         public Body(

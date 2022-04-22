@@ -25,7 +25,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
                 new DbContextOptionsBuilder<OrganisationRegistryContext>()
                     .UseInMemoryDatabase(
                         "org-classifications-test",
-                        builder => { }).Options);
+                        _ => { }).Options);
 
             var organisationClassificationId = Guid.NewGuid();
             var mepFormalFrameworkId = Guid.NewGuid();
@@ -35,7 +35,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
             };
 
             var activeItemOrganisationId = AddItem(context, currentlyActiveDate, organisationClassificationId, mepFormalFrameworkId);
-            var inactiveItemOrganisationId = AddItem(context, currentlyInactiveDate, organisationClassificationId, mepFormalFrameworkId);
+            AddItem(context, currentlyInactiveDate, organisationClassificationId, mepFormalFrameworkId);
 
             context.SaveChanges();
 

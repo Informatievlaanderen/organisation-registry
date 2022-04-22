@@ -141,8 +141,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             context.OrganisationCache.Add(organisationCacheItem);
             await context.SaveChangesAsync();
 
-            var initialiseOrganisationProjection = new InitialiseProjection(typeof(Organisation).FullName);
-            var initialisePersonProjection = new InitialiseProjection(typeof(Person).FullName);
+            var initialiseOrganisationProjection = new InitialiseProjection(typeof(Organisation).FullName!);
+            var initialisePersonProjection = new InitialiseProjection(typeof(Person).FullName!);
             var personCreated = scenario.Create<PersonCreated>();
             var capacityAdded = scenario.CreateOrganisationCapacityAdded(
                 personCreated.PersonId,
@@ -200,8 +200,8 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             context.OrganisationCache.Add(organisationCacheItem);
             await context.SaveChangesAsync();
 
-            var initialiseOrganisationProjection = new InitialiseProjection(typeof(Organisation).FullName);
-            var initialisePersonProjection = new InitialiseProjection(typeof(Person).FullName);
+            var initialiseOrganisationProjection = new InitialiseProjection(typeof(Organisation).FullName!);
+            var initialisePersonProjection = new InitialiseProjection(typeof(Person).FullName!);
             var personCreated = scenario.Create<PersonCreated>();
             var capacityAdded = scenario.CreateOrganisationCapacityAdded(
                 personCreated.PersonId,

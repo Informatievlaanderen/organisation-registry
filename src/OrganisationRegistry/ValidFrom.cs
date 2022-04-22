@@ -63,7 +63,7 @@ namespace OrganisationRegistry
             return DateTime.Value.CompareTo(other.DateTime.Value);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
             => obj is ValidFrom && Equals((ValidFrom) obj);
 
         public bool Equals(ValidFrom other)
