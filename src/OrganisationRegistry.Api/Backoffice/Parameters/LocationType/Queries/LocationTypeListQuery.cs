@@ -41,7 +41,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LocationType.Queries
                 return locationTypes;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                locationTypes = locationTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
+                locationTypes = locationTypes.Where(x => x.Name.Contains(filter.Name));
 
             return locationTypes;
         }

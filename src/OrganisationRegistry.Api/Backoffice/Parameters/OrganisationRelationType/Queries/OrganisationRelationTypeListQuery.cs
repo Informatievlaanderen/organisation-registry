@@ -29,8 +29,8 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationRelationTyp
 
             if (!filter.Name.IsNullOrWhiteSpace())
                 organisationRelationTypes = organisationRelationTypes.Where(x =>
-                    x.Name.Contains(filtering.Filter.Name) ||
-                    x.InverseName.Contains(filtering.Filter.Name));
+                    x.Name.Contains(filter.Name) ||
+                    x.InverseName.Contains(filter.Name));
 
             return organisationRelationTypes;
         }

@@ -26,7 +26,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType.Queries
                 return labelTypes;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                labelTypes = labelTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
+                labelTypes = labelTypes.Where(x => x.Name.Contains(filter.Name));
 
             return labelTypes;
         }

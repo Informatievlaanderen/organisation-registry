@@ -65,16 +65,16 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Location.Queries
                 return locations;
 
             if (!filter.Street.IsNullOrWhiteSpace())
-                locations = locations.Where(x => x.Street.Contains(filtering.Filter.Street));
+                locations = locations.Where(x => x.Street.Contains(filter.Street));
 
             if (!filter.ZipCode.IsNullOrWhiteSpace())
-                locations = locations.Where(x => x.ZipCode.Contains(filtering.Filter.ZipCode));
+                locations = locations.Where(x => x.ZipCode.Contains(filter.ZipCode));
 
             if (!filter.City.IsNullOrWhiteSpace())
-                locations = locations.Where(x => x.City.Contains(filtering.Filter.City));
+                locations = locations.Where(x => x.City.Contains(filter.City));
 
             if (!filter.Country.IsNullOrWhiteSpace())
-                locations = locations.Where(x => x.Country.Contains(filtering.Filter.Country));
+                locations = locations.Where(x => x.Country.Contains(filter.Country));
 
             if (filter.NonCrabOnly)
                 locations = locations.Where(x => string.IsNullOrEmpty(x.CrabLocationId));

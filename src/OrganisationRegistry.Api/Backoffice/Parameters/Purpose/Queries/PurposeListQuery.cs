@@ -28,7 +28,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Purpose.Queries
                 return purposes;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                purposes = purposes.Where(x => x.Name.Contains(filtering.Filter.Name));
+                purposes = purposes.Where(x => x.Name.Contains(filter.Name));
 
             return purposes;
         }

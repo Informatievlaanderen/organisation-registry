@@ -28,7 +28,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFrameworkCategory
                 return formalFrameworkCategories;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                formalFrameworkCategories = formalFrameworkCategories.Where(x => x.Name.Contains(filtering.Filter.Name));
+                formalFrameworkCategories = formalFrameworkCategories.Where(x => x.Name.Contains(filter.Name));
 
             return formalFrameworkCategories;
         }

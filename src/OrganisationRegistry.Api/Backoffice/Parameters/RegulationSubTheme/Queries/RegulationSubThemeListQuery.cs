@@ -53,13 +53,13 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationSubTheme.Quer
                 return regulationSubThemes;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                regulationSubThemes = regulationSubThemes.Where(x => x.Name.Contains(filtering.Filter.Name));
+                regulationSubThemes = regulationSubThemes.Where(x => x.Name.Contains(filter.Name));
 
             if (!filter.RegulationThemeName.IsNullOrWhiteSpace())
-                regulationSubThemes = regulationSubThemes.Where(x => x.RegulationThemeName.Contains(filtering.Filter.RegulationThemeName));
+                regulationSubThemes = regulationSubThemes.Where(x => x.RegulationThemeName.Contains(filter.RegulationThemeName));
 
             if (!filter.RegulationThemeId.IsEmptyGuid())
-                regulationSubThemes = regulationSubThemes.Where(x => x.RegulationThemeId == filtering.Filter.RegulationThemeId);
+                regulationSubThemes = regulationSubThemes.Where(x => x.RegulationThemeId == filter.RegulationThemeId);
 
             return regulationSubThemes;
         }

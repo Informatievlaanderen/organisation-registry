@@ -28,7 +28,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LifecyclePhaseType.Quer
                 return lifecyclePhaseTypes;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                lifecyclePhaseTypes = lifecyclePhaseTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
+                lifecyclePhaseTypes = lifecyclePhaseTypes.Where(x => x.Name.Contains(filter.Name));
 
             return lifecyclePhaseTypes;
         }

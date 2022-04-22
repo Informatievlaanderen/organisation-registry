@@ -28,7 +28,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Capacity.Queries
                 return capacities;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                capacities = capacities.Where(x => x.Name.Contains(filtering.Filter.Name));
+                capacities = capacities.Where(x => x.Name.Contains(filter.Name));
 
             return capacities;
         }

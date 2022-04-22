@@ -43,7 +43,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
                 return organisationClassificationTypes;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                organisationClassificationTypes = organisationClassificationTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
+                organisationClassificationTypes = organisationClassificationTypes.Where(x => x.Name.Contains(filter.Name));
 
             return organisationClassificationTypes;
         }

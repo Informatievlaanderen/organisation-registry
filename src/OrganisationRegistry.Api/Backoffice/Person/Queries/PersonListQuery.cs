@@ -60,13 +60,13 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Queries
                 return people;
 
             if (!filter.FirstName.IsNullOrWhiteSpace())
-                people = people.Where(x => x.FirstName.Contains(filtering.Filter.FirstName));
+                people = people.Where(x => x.FirstName.Contains(filter.FirstName));
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                people = people.Where(x => x.Name.Contains(filtering.Filter.Name));
+                people = people.Where(x => x.Name.Contains(filter.Name));
 
             if (!filter.FullName.IsNullOrWhiteSpace())
-                people = people.Where(x => x.FullName.Contains(filtering.Filter.FullName));
+                people = people.Where(x => x.FullName.Contains(filter.FullName));
 
             return people;
         }

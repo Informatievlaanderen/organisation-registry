@@ -28,7 +28,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassificationType.
                 return bodyClassificationTypes;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                bodyClassificationTypes = bodyClassificationTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
+                bodyClassificationTypes = bodyClassificationTypes.Where(x => x.Name.Contains(filter.Name));
 
             return bodyClassificationTypes;
         }
