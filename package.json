@@ -114,7 +114,7 @@
     "awesome-typescript-loader": "3.5.0",
     "codelyzer": "0.0.28",
     "commitizen": "4.2.1",
-    "compression-webpack-plugin": "0.4.0",
+    "compression-webpack-plugin": "1.1.12",
     "copy-webpack-plugin": "4.6.0",
     "css-loader": "0.28.11",
     "cz-conventional-changelog": "3.3.0",
