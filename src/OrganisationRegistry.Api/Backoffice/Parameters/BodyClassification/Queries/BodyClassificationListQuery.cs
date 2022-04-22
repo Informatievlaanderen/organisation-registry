@@ -61,13 +61,13 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassification.Quer
                 return bodyClassifications;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                bodyClassifications = bodyClassifications.Where(x => x.Name.Contains(filtering.Filter.Name));
+                bodyClassifications = bodyClassifications.Where(x => x.Name.Contains(filter.Name));
 
             if (!filter.BodyClassificationTypeName.IsNullOrWhiteSpace())
-                bodyClassifications = bodyClassifications.Where(x => x.BodyClassificationTypeName.Contains(filtering.Filter.BodyClassificationTypeName));
+                bodyClassifications = bodyClassifications.Where(x => x.BodyClassificationTypeName.Contains(filter.BodyClassificationTypeName));
 
             if (!filter.BodyClassificationTypeId.IsEmptyGuid())
-                bodyClassifications = bodyClassifications.Where(x => x.BodyClassificationTypeId == filtering.Filter.BodyClassificationTypeId);
+                bodyClassifications = bodyClassifications.Where(x => x.BodyClassificationTypeId == filter.BodyClassificationTypeId);
 
             return bodyClassifications;
         }

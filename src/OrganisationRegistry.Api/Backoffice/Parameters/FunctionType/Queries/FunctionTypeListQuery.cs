@@ -28,7 +28,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.FunctionType.Queries
                 return functionTypes;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                functionTypes = functionTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
+                functionTypes = functionTypes.Where(x => x.Name.Contains(filter.Name));
 
             return functionTypes;
         }

@@ -28,7 +28,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.SeatType.Queries
                 return seatTypes;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                seatTypes = seatTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
+                seatTypes = seatTypes.Where(x => x.Name.Contains(filter.Name));
 
             return seatTypes;
         }

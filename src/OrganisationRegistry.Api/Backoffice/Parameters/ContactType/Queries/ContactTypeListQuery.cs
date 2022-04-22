@@ -28,7 +28,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.ContactType.Queries
                 return contactTypes;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                contactTypes = contactTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
+                contactTypes = contactTypes.Where(x => x.Name.Contains(filter.Name));
 
             return contactTypes;
         }

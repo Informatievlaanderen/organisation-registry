@@ -28,7 +28,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationTheme.Queries
                 return regulationThemes;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                regulationThemes = regulationThemes.Where(x => x.Name.Contains(filtering.Filter.Name));
+                regulationThemes = regulationThemes.Where(x => x.Name.Contains(filter.Name));
 
             return regulationThemes;
         }

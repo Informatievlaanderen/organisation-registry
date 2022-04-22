@@ -65,13 +65,13 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
                 return organisationClassifications;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                organisationClassifications = organisationClassifications.Where(x => x.Name.Contains(filtering.Filter.Name));
+                organisationClassifications = organisationClassifications.Where(x => x.Name.Contains(filter.Name));
 
             if (!filter.OrganisationClassificationTypeName.IsNullOrWhiteSpace())
-                organisationClassifications = organisationClassifications.Where(x => x.OrganisationClassificationTypeName.Contains(filtering.Filter.OrganisationClassificationTypeName));
+                organisationClassifications = organisationClassifications.Where(x => x.OrganisationClassificationTypeName.Contains(filter.OrganisationClassificationTypeName));
 
             if (!filter.OrganisationClassificationTypeId.IsEmptyGuid())
-                organisationClassifications = organisationClassifications.Where(x => x.OrganisationClassificationTypeId == filtering.Filter.OrganisationClassificationTypeId);
+                organisationClassifications = organisationClassifications.Where(x => x.OrganisationClassificationTypeId == filter.OrganisationClassificationTypeId);
 
             return organisationClassifications;
         }

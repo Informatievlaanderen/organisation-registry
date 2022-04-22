@@ -32,10 +32,10 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Queries
                 return keyTypes;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                keyTypes = keyTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
+                keyTypes = keyTypes.Where(x => x.Name.Contains(filter.Name));
 
-            if (filter.ExcludeIds != null && filtering.Filter.ExcludeIds.Any())
-                keyTypes = keyTypes.Where(x => !filtering.Filter.ExcludeIds.Contains(x.Id));
+            if (filter.ExcludeIds != null && filter.ExcludeIds.Any())
+                keyTypes = keyTypes.Where(x => !filter.ExcludeIds.Contains(x.Id));
 
             return keyTypes;
         }

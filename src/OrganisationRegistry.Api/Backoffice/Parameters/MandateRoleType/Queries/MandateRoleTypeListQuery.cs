@@ -28,7 +28,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.MandateRoleType.Queries
                 return mandateRoleTypes;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                mandateRoleTypes = mandateRoleTypes.Where(x => x.Name.Contains(filtering.Filter.Name));
+                mandateRoleTypes = mandateRoleTypes.Where(x => x.Name.Contains(filter.Name));
 
             return mandateRoleTypes;
         }

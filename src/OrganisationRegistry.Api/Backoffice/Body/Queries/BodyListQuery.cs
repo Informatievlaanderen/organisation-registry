@@ -78,10 +78,10 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Queries
                 return bodies;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                bodies = bodies.Where(x => x.Name.Contains(filtering.Filter.Name) || x.ShortName.Contains(filtering.Filter.Name));
+                bodies = bodies.Where(x => x.Name.Contains(filter.Name) || x.ShortName.Contains(filter.Name));
 
             if (!filter.Organisation.IsNullOrWhiteSpace())
-                bodies = bodies.Where(x => x.Organisation != null && x.Organisation.Contains(filtering.Filter.Organisation));
+                bodies = bodies.Where(x => x.Organisation != null && x.Organisation.Contains(filter.Organisation));
 
             if (filter.ActiveOnly)
                 bodies = bodies.Where(x =>

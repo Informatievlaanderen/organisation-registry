@@ -62,7 +62,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
                 return organisationTerminations;
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                organisationTerminations = organisationTerminations.Where(x => x.Name.Contains(filtering.Filter.Name));
+                organisationTerminations = organisationTerminations.Where(x => x.Name.Contains(filter.Name));
 
             return organisationTerminations;
         }

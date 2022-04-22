@@ -28,9 +28,9 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Configuration.Queries
 
             if (!filter.Key.IsNullOrWhiteSpace())
                 configuration = configuration.Where(x =>
-                    x.Key.Contains(filtering.Filter.Key) ||
-                    x.Description.Contains(filtering.Filter.Key) ||
-                    x.Value.Contains(filtering.Filter.Key));
+                    x.Key.Contains(filter.Key) ||
+                    x.Description.Contains(filter.Key) ||
+                    x.Value.Contains(filter.Key));
 
             return configuration;
         }

@@ -57,16 +57,16 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFramework.Queries
                 return formalFrameworks;
 
             if (!filter.Ids.IsNullOrEmpty())
-                formalFrameworks = formalFrameworks.Where(x => filtering.Filter.Ids.Contains(x.Id));
+                formalFrameworks = formalFrameworks.Where(x => filter.Ids.Contains(x.Id));
 
             if (!filter.Name.IsNullOrWhiteSpace())
-                formalFrameworks = formalFrameworks.Where(x => x.Name.Contains(filtering.Filter.Name));
+                formalFrameworks = formalFrameworks.Where(x => x.Name.Contains(filter.Name));
 
             if (!filter.Code.IsNullOrWhiteSpace())
-                formalFrameworks = formalFrameworks.Where(x => x.Code.Contains(filtering.Filter.Code));
+                formalFrameworks = formalFrameworks.Where(x => x.Code.Contains(filter.Code));
 
             if (!filter.FormalFrameworkCategoryName.IsNullOrWhiteSpace())
-                formalFrameworks = formalFrameworks.Where(x => x.FormalFrameworkCategoryName.Contains(filtering.Filter.FormalFrameworkCategoryName));
+                formalFrameworks = formalFrameworks.Where(x => x.FormalFrameworkCategoryName.Contains(filter.FormalFrameworkCategoryName));
 
             return formalFrameworks;
         }
