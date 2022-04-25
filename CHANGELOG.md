@@ -1,3 +1,17 @@
+# [1.167.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.166.1...v1.167.0) (2022-04-25)
+
+
+### Bug Fixes
+
+* or-974 review comments ([c32382f](https://github.com/informatievlaanderen/organisation-registry/commit/c32382f1d036aac6d8dae6efa8f0d1230c13c8b7))
+
+
+### Features
+
+* or-974 most remaining references to filtering.Filter -> filter ([f762f5e](https://github.com/informatievlaanderen/organisation-registry/commit/f762f5e5db2c7da5b6e70116f8c89f2faad1f4a7))
+* or-974 refactoring 20220422 /1 ([1e55bf1](https://github.com/informatievlaanderen/organisation-registry/commit/1e55bf1fdf8e9d46bc318c549b30220a56b1b304))
+* or-974 refactoring 20220422 /2 ([6f07e23](https://github.com/informatievlaanderen/organisation-registry/commit/6f07e23631617642b60c161498d33a559ccb318b))
+
 ## [1.166.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.166.0...v1.166.1) (2022-04-22)
 
 # [1.166.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.165.0...v1.166.0) (2022-04-21)
