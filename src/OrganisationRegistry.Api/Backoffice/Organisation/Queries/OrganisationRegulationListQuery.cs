@@ -4,9 +4,12 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
+    using Handling.Authorization;
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
+    using OrganisationRegistry.Infrastructure.AppSpecific;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using SqlServer.Infrastructure;
     using SqlServer.Organisation;
 
@@ -22,13 +25,17 @@
 
         public bool IsActive { get; }
 
+        public bool IsEditable { get; }
+
         public OrganisationRegulationListQueryResult(
             Guid organisationRegulationId,
             string? regulationThemeName,
             string? regulationSubThemeName,
             string? name,
             DateTime? validFrom,
-            DateTime? validTo)
+            DateTime? validTo,
+            string ovoNumber,
+            IUser user)
         {
             OrganisationRegulationId = organisationRegulationId;
             RegulationThemeName = regulationThemeName;
@@ -38,12 +45,16 @@
             Name = name;
 
             IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
+
+            IsEditable = new RegulationPolicy(ovoNumber).Check(user).IsSuccessful;
         }
     }
 
     public class OrganisationRegulationListQuery : Query<OrganisationRegulationListItem, OrganisationRegulationListItemFilter, OrganisationRegulationListQueryResult>
     {
         private readonly OrganisationRegistryContext _context;
+        private readonly IMemoryCaches _memoryCaches;
+        private readonly IUser _user;
         private readonly Guid _organisationId;
 
         protected override ISorting Sorting => new OrganisationRegulationListSorting();
@@ -55,11 +66,19 @@
                 x.RegulationSubThemeName,
                 x.Name,
                 x.ValidFrom,
-                x.ValidTo);
+                x.ValidTo,
+                _memoryCaches.OvoNumbers[x.OrganisationId],
+                _user);
 
-        public OrganisationRegulationListQuery(OrganisationRegistryContext context, Guid organisationId)
+        public OrganisationRegulationListQuery(
+            OrganisationRegistryContext context,
+            IMemoryCaches memoryCaches,
+            IUser user,
+            Guid organisationId)
         {
             _context = context;
+            _memoryCaches = memoryCaches;
+            _user = user;
             _organisationId = organisationId;
         }
 

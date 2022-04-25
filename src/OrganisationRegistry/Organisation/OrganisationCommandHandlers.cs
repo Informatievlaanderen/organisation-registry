@@ -429,6 +429,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(AddOrganisationRegulation message) =>
             UpdateHandler<Organisation>.For(message, Session)
+                .WithRegulationPolicy()
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);
@@ -455,6 +456,7 @@ namespace OrganisationRegistry.Organisation
 
         public Task Handle(UpdateOrganisationRegulation message) =>
             UpdateHandler<Organisation>.For(message, Session)
+                .WithRegulationPolicy()
                 .Handle(session =>
                 {
                     var organisation = session.Get<Organisation>(message.OrganisationId);

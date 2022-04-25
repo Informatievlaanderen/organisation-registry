@@ -106,6 +106,12 @@ namespace OrganisationRegistry.Handling
                         configuration,
                         message.CapacityId));
 
+        public static UpdateHandler<Organisation> WithRegulationPolicy(
+            this UpdateHandler<Organisation> source)
+            => source.WithPolicy(
+                organisation =>
+                    new RegulationPolicy(organisation.State.OvoNumber));
+
         public static UpdateHandler<Organisation> RequiresBeheerderForOrganisationButNotUnderVlimpersManagement(
             this UpdateHandler<Organisation> source)
             => source.WithPolicy(

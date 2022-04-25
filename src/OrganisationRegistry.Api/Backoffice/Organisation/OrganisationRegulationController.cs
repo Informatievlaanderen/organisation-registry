@@ -11,6 +11,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.FeatureManagement.Mvc;
+    using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using Queries;
@@ -31,13 +32,23 @@
 
         /// <summary>Get a list of available regulations for an organisation.</summary>
         [HttpGet]
-        public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context, [FromRoute] Guid organisationId)
+        public async Task<IActionResult> Get(
+            [FromServices] OrganisationRegistryContext context,
+            [FromServices] IMemoryCaches memoryCaches,
+            [FromServices] ISecurityService securityService,
+            [FromRoute] Guid organisationId)
         {
             var filtering = Request.ExtractFilteringRequest<OrganisationRegulationListItemFilter>();
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
-            var pagedOrganisations = new OrganisationRegulationListQuery(context, organisationId).Fetch(filtering, sorting, pagination);
+            var pagedOrganisations = new OrganisationRegulationListQuery(
+                context,
+                memoryCaches,
+                await securityService.GetUser(User),
+                organisationId
+                )
+                .Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedOrganisations.PaginationInfo);
             Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
@@ -68,7 +79,7 @@
         [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Post([FromServices] ISecurityService securityService,
+        public async Task<IActionResult> Post(
             [FromRoute] Guid organisationId,
             [FromBody] AddOrganisationRegulationRequest message)
         {
@@ -89,7 +100,9 @@
         [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Put([FromServices] ISecurityService securityService, [FromRoute] Guid organisationId, [FromBody] UpdateOrganisationRegulationRequest message)
+        public async Task<IActionResult> Put(
+            [FromRoute] Guid organisationId,
+            [FromBody] UpdateOrganisationRegulationRequest message)
         {
             var internalMessage = new UpdateOrganisationRegulationInternalRequest(organisationId, message);
 
