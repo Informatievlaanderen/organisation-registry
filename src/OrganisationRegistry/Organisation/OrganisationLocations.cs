@@ -13,13 +13,10 @@ namespace OrganisationRegistry.Organisation
         public OrganisationLocations(params OrganisationLocation[] organisationLocations) : base(organisationLocations) { }
 
         public bool AlreadyHasTheSameOrganisationAndLocationInTheSamePeriod(OrganisationLocation organisationLocation)
-        {
-            return this
-                .Except(organisationLocation.OrganisationLocationId)
+            => Except(organisationLocation.OrganisationLocationId)
                 .WithLocation(organisationLocation.LocationId)
                 .OverlappingWith(organisationLocation.Validity)
                 .Any();
-        }
 
         public bool OrganisationAlreadyHasAMainLocationInTheSamePeriod(OrganisationLocation organisationLocation, OrganisationLocation? maybeKboRegisteredOffice)
         {
@@ -36,42 +33,30 @@ namespace OrganisationRegistry.Organisation
         }
 
         public OrganisationLocations Except(Guid organisationLocationId)
-        {
-            return new OrganisationLocations(
+            => new(
                 this.Where(ob => ob.OrganisationLocationId != organisationLocationId));
-        }
 
         public OrganisationLocations WithLocation(Guid locationId)
-        {
-            return new OrganisationLocations(
+            => new(
                 this.Where(ob => ob.LocationId == locationId));
-        }
 
         public OrganisationLocations OverlappingWith(Period validity)
-        {
-            return new OrganisationLocations(
+            => new(
                 this.Where(ob => ob.Validity.OverlapsWith(validity)));
-        }
 
         public OrganisationLocations OnlyMainLocations()
-        {
-            return new OrganisationLocations(
+            => new(
                 this.Where(ob => ob.IsMainLocation));
-        }
 
-        public OrganisationLocation TryFindMainOrganisationLocationValidFor(DateTime date, Guid locationId)
-        {
-            return this
+        public OrganisationLocation? TryFindMainOrganisationLocationValidFor(DateTime date, Guid locationId)
+            => this
                 .Where(location => location.LocationId == locationId)
                 .Where(location => location.IsMainLocation)
                 .SingleOrDefault(location => location.IsValid(date));
-        }
 
-        public OrganisationLocation TryFindMainOrganisationLocationValidFor(DateTime date)
-        {
-            return this
+        public OrganisationLocation? TryFindMainOrganisationLocationValidFor(DateTime date)
+            => this
                 .Where(location => location.IsMainLocation)
                 .SingleOrDefault(location => location.IsValid(date));
-        }
     }
 }
