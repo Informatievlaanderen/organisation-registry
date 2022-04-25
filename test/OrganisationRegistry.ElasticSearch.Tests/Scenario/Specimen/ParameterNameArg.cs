@@ -18,8 +18,6 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario.Specimen
 
         public object Create(object request, ISpecimenContext context)
         {
-            Console.WriteLine("Create Specimen");
-
             if (!(request is ParameterInfo pi))
                 return new NoSpecimen();
 

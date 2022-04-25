@@ -17,9 +17,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
         [Fact]
         public void DoesNotIncludeInactiveClassifications()
         {
-            var currentlyInactiveDate = DateTime.Today.AddDays(-2);
             var currentlyActiveDate = DateTime.Today;
-
 
             var context = new OrganisationRegistryContext(
                 new DbContextOptionsBuilder<OrganisationRegistryContext>()
@@ -35,7 +33,6 @@ namespace OrganisationRegistry.Api.IntegrationTests
             };
 
             var activeItemOrganisationId = AddItem(context, currentlyActiveDate, organisationClassificationId, mepFormalFrameworkId);
-            AddItem(context, currentlyInactiveDate, organisationClassificationId, mepFormalFrameworkId);
 
             context.SaveChanges();
 
