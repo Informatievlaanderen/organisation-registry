@@ -8,8 +8,6 @@
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
-    using OrganisationRegistry.Infrastructure.AppSpecific;
-    using OrganisationRegistry.Infrastructure.Authorization;
     using SqlServer.Infrastructure;
     using SqlServer.Organisation;
 
@@ -34,8 +32,7 @@
             string? name,
             DateTime? validFrom,
             DateTime? validTo,
-            string ovoNumber,
-            IUser user)
+            Func<bool> isAuthorizedForRegulation)
         {
             OrganisationRegulationId = organisationRegulationId;
             RegulationThemeName = regulationThemeName;
@@ -46,16 +43,15 @@
 
             IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
 
-            IsEditable = new RegulationPolicy().Check(user).IsSuccessful;
+            IsEditable = isAuthorizedForRegulation();
         }
     }
 
     public class OrganisationRegulationListQuery : Query<OrganisationRegulationListItem, OrganisationRegulationListItemFilter, OrganisationRegulationListQueryResult>
     {
         private readonly OrganisationRegistryContext _context;
-        private readonly IMemoryCaches _memoryCaches;
-        private readonly IUser _user;
         private readonly Guid _organisationId;
+        private readonly Func<bool> _isAuthorizedForRegulation;
 
         protected override ISorting Sorting => new OrganisationRegulationListSorting();
 
@@ -67,19 +63,16 @@
                 x.Name,
                 x.ValidFrom,
                 x.ValidTo,
-                _memoryCaches.OvoNumbers[x.OrganisationId],
-                _user);
+                _isAuthorizedForRegulation);
 
         public OrganisationRegulationListQuery(
             OrganisationRegistryContext context,
-            IMemoryCaches memoryCaches,
-            IUser user,
-            Guid organisationId)
+            Guid organisationId,
+            Func<bool> isAuthorizedForRegulation)
         {
             _context = context;
-            _memoryCaches = memoryCaches;
-            _user = user;
             _organisationId = organisationId;
+            _isAuthorizedForRegulation = isAuthorizedForRegulation;
         }
 
         protected override IQueryable<OrganisationRegulationListItem> Filter(FilteringHeader<OrganisationRegulationListItemFilter> filtering)
