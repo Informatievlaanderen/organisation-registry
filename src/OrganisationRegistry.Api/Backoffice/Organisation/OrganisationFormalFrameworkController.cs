@@ -14,6 +14,7 @@
     using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using Queries;
     using Requests;
     using SqlServer.Infrastructure;

@@ -1,7 +1,5 @@
-namespace OrganisationRegistry.Configuration
+namespace OrganisationRegistry.Infrastructure.Configuration
 {
-    using System;
-
     public interface IOrganisationManagementConfiguration
     {
         string Vlimpers { get; }

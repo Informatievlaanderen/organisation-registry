@@ -1,6 +1,6 @@
 namespace OrganisationRegistry.Tests.Shared.Stubs
 {
-    using Configuration;
+    using Infrastructure.Configuration;
 
     public class CachingConfigurationStub : ICachingConfiguration
     {

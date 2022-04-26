@@ -11,6 +11,7 @@
     using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using SqlServer.Infrastructure;
     using SqlServer.Organisation;
 

@@ -11,6 +11,8 @@ namespace OrganisationRegistry.Api.Security
     using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Infrastructure.Authorization.Cache;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Security;
     using SqlServer;
 

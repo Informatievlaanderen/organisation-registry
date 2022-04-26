@@ -4,7 +4,6 @@ namespace OrganisationRegistry.Api.Infrastructure
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
-    using Api.Configuration;
     using Api.Security;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
@@ -30,6 +29,7 @@ namespace OrganisationRegistry.Api.Infrastructure
     using Newtonsoft.Json;
     using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Infrastructure.Authorization.Cache;
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
     using OrganisationRegistry.Security;

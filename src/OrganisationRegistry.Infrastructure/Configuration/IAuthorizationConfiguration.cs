@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Configuration
+namespace OrganisationRegistry.Infrastructure.Configuration
 {
     using System;
 

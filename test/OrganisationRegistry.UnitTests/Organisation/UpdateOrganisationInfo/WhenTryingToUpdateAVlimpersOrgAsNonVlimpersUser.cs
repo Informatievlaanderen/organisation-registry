@@ -8,6 +8,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using Purpose;
     using Tests.Shared;
     using Tests.Shared.TestDataBuilders;

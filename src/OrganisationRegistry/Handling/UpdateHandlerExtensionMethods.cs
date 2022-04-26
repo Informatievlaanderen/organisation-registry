@@ -2,8 +2,8 @@ namespace OrganisationRegistry.Handling
 {
     using System.Linq;
     using Authorization;
-    using Configuration;
     using Infrastructure.Authorization;
+    using Infrastructure.Configuration;
     using Organisation;
     using Organisation.Commands;
 

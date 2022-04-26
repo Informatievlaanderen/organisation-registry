@@ -20,8 +20,11 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
     using OnProjections;
     using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure;
+    using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Infrastructure.Authorization.Cache;
     using OrganisationRegistry.Infrastructure.Bus;
     using OrganisationRegistry.Infrastructure.Config;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Security;
     using Tests.Shared.Stubs;

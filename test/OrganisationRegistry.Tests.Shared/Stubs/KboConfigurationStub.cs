@@ -1,7 +1,7 @@
 namespace OrganisationRegistry.Tests.Shared.Stubs
 {
     using System;
-    using Configuration;
+    using Infrastructure.Configuration;
 
     public class KboConfigurationStub: IKboConfiguration
     {

@@ -8,6 +8,7 @@
     using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Commands;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using SqlServer;
 
     public class ScheduledCommandsService : BackgroundService

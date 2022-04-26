@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Configuration;
+namespace OrganisationRegistry.Infrastructure.Configuration;
 
 public interface IHostedServicesConfiguration
 {

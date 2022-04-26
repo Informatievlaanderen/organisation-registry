@@ -5,7 +5,7 @@ namespace OrganisationRegistry.Organisation
     using LabelType;
     using LocationType;
     using OrganisationClassificationType;
-    using IOrganisationRegistryConfiguration = Configuration.IOrganisationRegistryConfiguration;
+    using IOrganisationRegistryConfiguration = Infrastructure.Configuration.IOrganisationRegistryConfiguration;
 
     public static class KboV2Guards
     {

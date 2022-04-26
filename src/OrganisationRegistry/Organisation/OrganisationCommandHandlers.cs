@@ -29,7 +29,7 @@ namespace OrganisationRegistry.Organisation
     using OrganisationTermination;
     using RegulationSubTheme;
     using RegulationTheme;
-    using IOrganisationRegistryConfiguration = Configuration.IOrganisationRegistryConfiguration;
+    using IOrganisationRegistryConfiguration = Infrastructure.Configuration.IOrganisationRegistryConfiguration;
 
     public class OrganisationCommandHandlers :
         BaseCommandHandler<OrganisationCommandHandlers>,

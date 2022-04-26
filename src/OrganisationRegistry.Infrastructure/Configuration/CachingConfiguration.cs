@@ -1,8 +1,5 @@
-namespace OrganisationRegistry.Api.Configuration
+namespace OrganisationRegistry.Infrastructure.Configuration
 {
-    using OrganisationRegistry.Configuration;
-    using OrganisationRegistry.Infrastructure.Configuration;
-
     public class CachingConfiguration : ICachingConfiguration
     {
         public CachingConfiguration(CachingConfigurationSection? cachingConfigurationSection)

@@ -3,6 +3,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
     using System;
     using System.Linq;
     using OrganisationRegistry.Configuration;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Organisation;
     using SqlServer;
 

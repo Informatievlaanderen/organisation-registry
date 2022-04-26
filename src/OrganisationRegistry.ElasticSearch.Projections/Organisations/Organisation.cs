@@ -14,6 +14,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using OrganisationRegistry.Configuration;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
     using Osc;

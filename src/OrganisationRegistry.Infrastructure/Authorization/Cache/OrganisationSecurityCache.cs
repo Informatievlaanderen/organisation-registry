@@ -1,10 +1,9 @@
-namespace OrganisationRegistry.Api.Security
+namespace OrganisationRegistry.Infrastructure.Authorization.Cache
 {
     using System;
     using System.Runtime.Caching;
     using System.Threading.Tasks;
-    using OrganisationRegistry.Configuration;
-    using OrganisationRegistry.Security;
+    using OrganisationRegistry.Infrastructure.Configuration;
 
     public class OrganisationSecurityCache: ICache<OrganisationSecurityInformation>
     {

@@ -17,7 +17,7 @@ namespace OrganisationRegistry.Organisation
     using OrganisationClassification;
     using OrganisationClassificationType;
     using Purpose;
-    using IOrganisationRegistryConfiguration = Configuration.IOrganisationRegistryConfiguration;
+    using IOrganisationRegistryConfiguration = Infrastructure.Configuration.IOrganisationRegistryConfiguration;
 
     public class KboOrganisationCommandHandlers :
         BaseCommandHandler<KboOrganisationCommandHandlers>,
