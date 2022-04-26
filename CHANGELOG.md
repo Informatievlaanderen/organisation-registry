@@ -1,3 +1,21 @@
+# [1.168.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.167.0...v1.168.0) (2022-04-26)
+
+
+### Bug Fixes
+
+* fix of the fix ([c9e1287](https://github.com/informatievlaanderen/organisation-registry/commit/c9e12875e1c758ae8352328b04bafec57c903ee5))
+* rebuilder with injected sequrity tree list ([539a954](https://github.com/informatievlaanderen/organisation-registry/commit/539a954ad8dd96b3df8fffff7b9f101160e0aa07))
+* structurize fix of the fix ([3d2aab0](https://github.com/informatievlaanderen/organisation-registry/commit/3d2aab04906da49fb7754f07fd1755385a00860b))
+
+
+### Features
+
+* or-890 added unit tests ([b7a2206](https://github.com/informatievlaanderen/organisation-registry/commit/b7a2206822fcdf187788192b6903c7bf62342cb2))
+* or-890 backend regelgeving ([65ba5fa](https://github.com/informatievlaanderen/organisation-registry/commit/65ba5faec27528dc9087447ba046588b2c9911d4))
+* or-890 regulation policy ui + fixes ([6cbc08c](https://github.com/informatievlaanderen/organisation-registry/commit/6cbc08c217d13092b791c6debf0f0d65b1bd1548))
+* or-890 review comments -> isEditable + policy checking ([ccebf06](https://github.com/informatievlaanderen/organisation-registry/commit/ccebf06ff0af1a7660ae51d867496a55a7f1b7d3))
+* or-890 small refactoring ([e9c9058](https://github.com/informatievlaanderen/organisation-registry/commit/e9c9058b4ce64924c350b3ef24183e0740cf0d06))
+
 # [1.167.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.166.1...v1.167.0) (2022-04-25)
 
 
