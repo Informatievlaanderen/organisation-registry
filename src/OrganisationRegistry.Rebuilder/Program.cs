@@ -36,6 +36,10 @@ namespace OrganisationRegistry.Rebuilder
     using SqlServer.Infrastructure;
     using SqlServer.ProjectionState;
     using IClock = NodaTime.IClock;
+    using OrganisationRegistry.Security;
+    using OrganisationRegistry.Api.Security;
+    using OrganisationRegistry.Api.Configuration;
+    using OrganisationRegistry.Configuration;
 
     public class Program
     {
@@ -98,16 +102,33 @@ namespace OrganisationRegistry.Rebuilder
                 })
                 .ConfigureServices((hostContext, builder) =>
                 {
-                    builder
-                        .Configure<InfrastructureConfigurationSection>(hostContext.Configuration.GetSection(InfrastructureConfigurationSection.Name))
-                        .Configure<TogglesConfigurationSection>(hostContext.Configuration.GetSection(TogglesConfigurationSection.Name))
-                        .Configure<OpenIdConnectConfigurationSection>(hostContext.Configuration.GetSection(OpenIdConnectConfigurationSection.Name));
+                builder
+                    .Configure<InfrastructureConfigurationSection>(hostContext.Configuration.GetSection(InfrastructureConfigurationSection.Name))
+                    .Configure<TogglesConfigurationSection>(hostContext.Configuration.GetSection(TogglesConfigurationSection.Name))
+                    .Configure<OpenIdConnectConfigurationSection>(hostContext.Configuration.GetSection(OpenIdConnectConfigurationSection.Name));
 
-                    builder.AddSingleton<IClock>(SystemClock.Instance);
-                    builder.AddSingleton<MemoryCaches, MemoryCaches>();
-                    builder.AddSingleton<IMemoryCaches, MemoryCaches>(provider => provider.GetRequiredService<MemoryCaches>());
-                    builder.AddSingleton<IContextFactory, ContextFactory>();
-                    builder.AddSingleton<IMemoryCachesMaintainer, MemoryCachesMaintainer>();
+                builder.AddSingleton<IClock>(SystemClock.Instance);
+                builder.AddSingleton<MemoryCaches, MemoryCaches>();
+                builder.AddSingleton<IMemoryCaches, MemoryCaches>(provider => provider.GetRequiredService<MemoryCaches>());
+                builder.AddSingleton<IContextFactory, ContextFactory>();
+                builder.AddSingleton<IMemoryCachesMaintainer, MemoryCachesMaintainer>();
+                builder.AddSingleton<ICache<OrganisationSecurityInformation>, OrganisationSecurityCache>();
+                builder.AddSingleton<IOrganisationRegistryConfiguration>(new OrganisationRegistryConfiguration(
+                       hostContext.Configuration
+                            .GetSection(ApiConfigurationSection.Name)
+                            .Get<ApiConfigurationSection>(),
+                        hostContext.Configuration
+                            .GetSection(OrganisationTerminationConfigurationSection.Name)
+                            .Get<OrganisationTerminationConfigurationSection>(),
+                        hostContext.Configuration
+                            .GetSection(AuthorizationConfigurationSection.Name)
+                            .Get<AuthorizationConfigurationSection>(),
+                        hostContext.Configuration
+                            .GetSection(CachingConfigurationSection.Name)
+                            .Get<CachingConfigurationSection>(),
+                        hostContext.Configuration
+                            .GetSection(HostedServicesConfigurationSection.Name)
+                            .Get<HostedServicesConfigurationSection>()));
 
                     builder.AddSingleton<RebuildProcessor>();
 
