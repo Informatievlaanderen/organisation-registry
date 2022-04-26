@@ -12,19 +12,19 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
     public class CapacityPolicyTests
     {
         private readonly Fixture _fixture;
-        private readonly Guid _regelgevingDbClassificationTypeId;
+        private readonly Guid _regelgevingDbCapacityId;
         private readonly OrganisationRegistryConfigurationStub _configuration;
 
         public CapacityPolicyTests()
         {
             _fixture = new Fixture();
 
-            _regelgevingDbClassificationTypeId = _fixture.Create<Guid>();
+            _regelgevingDbCapacityId = _fixture.Create<Guid>();
             _configuration = new OrganisationRegistryConfigurationStub
             {
                 Authorization = new AuthorizationConfigurationStub
                 {
-                    CapacityIdsOwnedByRegelgevingDbBeheerder = new[] { _regelgevingDbClassificationTypeId },
+                    CapacityIdsOwnedByRegelgevingDbBeheerder = new[] { _regelgevingDbCapacityId },
                 }
             };
         }
@@ -42,7 +42,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
                 .Build();
 
             var authorizationResult =
-                CreatePolicy(_fixture.Create<string>(), _regelgevingDbClassificationTypeId)
+                CreatePolicy(_fixture.Create<string>(), _regelgevingDbCapacityId)
                     .Check(user);
 
             authorizationResult.Should().Be(AuthorizationResult.Success());
@@ -60,7 +60,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
                 .Build();
 
             var authorizationResult =
-                CreatePolicy(_fixture.Create<string>(), _regelgevingDbClassificationTypeId)
+                CreatePolicy(_fixture.Create<string>(), _regelgevingDbCapacityId)
                     .Check(user);
 
             authorizationResult.ShouldFailWith<InsufficientRights>();
@@ -92,7 +92,7 @@ namespace OrganisationRegistry.UnitTests.SecurityPolicy
                 .Build();
 
             var authorizationResult =
-                CreatePolicy(ovoNumber, _regelgevingDbClassificationTypeId)
+                CreatePolicy(ovoNumber, _regelgevingDbCapacityId)
                     .Check(user);
 
             authorizationResult.ShouldFailWith<InsufficientRights>();
