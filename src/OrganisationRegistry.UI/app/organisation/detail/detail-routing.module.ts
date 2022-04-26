@@ -130,6 +130,7 @@ import {OrganisationGuard} from "../guards/organisation.guard";
 import {CanAddAndUpdateFormalFrameworksGuard} from "../guards/can-add-update-formal-frameworks.guard";
 import {CanAddAndUpdateOrganisationClassificationTypeGuard} from "../guards/can-add-update-organisation-classification-type.guard";
 import {CanAddAndUpdateCapacityGuard} from "../guards/can-add-update-capacity.guard";
+import {CanAddAndUpdateRegulationGuard} from "../guards/can-add-update-regulation.guard";
 
 const routes: Routes = [
   {
@@ -440,10 +441,9 @@ const routes: Routes = [
           {
             path: 'create',
             component: OrganisationRegulationsCreateOrganisationRegulationComponent,
-            canActivate: [RoleGuard, OrganisationGuard],
+            canActivate: [CanAddAndUpdateRegulationGuard],
             data: {
               title: 'Organisatie - Regelgeving - Nieuwe regelgeving',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'
@@ -453,10 +453,9 @@ const routes: Routes = [
           {
             path: 'edit/:id',
             component: OrganisationRegulationsUpdateOrganisationRegulationComponent,
-            canActivate: [RoleGuard, OrganisationGuard],
+            canActivate: [CanAddAndUpdateRegulationGuard],
             data: {
               title: 'Organisatie - Regelgeving - Bewerken regelgeving',
-              roles: [Role.AlgemeenBeheerder, Role.DecentraalBeheerder],
               organisationGuard: {
                 params: 'route.parent.parent.params',
                 idPart: 'id'

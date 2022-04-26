@@ -129,8 +129,8 @@ export class OrganisationAuthorization {
     if (securityInfo.hasAnyOfRoles([Role.AlgemeenBeheerder]))
       return true;
 
-    if (organisation.isTerminated)
-      return false;
+    if (securityInfo.hasAnyOfRoles([Role.RegelgevingBeheerder]))
+      return true;
 
     return false;
   }
