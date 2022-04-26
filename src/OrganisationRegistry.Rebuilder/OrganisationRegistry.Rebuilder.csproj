@@ -4,13 +4,11 @@
   <ItemGroup>
     <Content Include="appsettings.json" CopyToOutputDirectory="Always" />
     <Content Include="appsettings.*.json" CopyToOutputDirectory="Always" />
-    <None Remove="appsettings.laptop-10lrp5e7.json" />
     <Content Include="Dockerfile" CopyToOutputDirectory="Always" />
     <Content Include="init.sh" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OrganisationRegistry.Api\OrganisationRegistry.Api.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.Configuration.Database\OrganisationRegistry.Configuration.Database.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.Infrastructure\OrganisationRegistry.Infrastructure.csproj" />
     <ProjectReference Include="..\OrganisationRegistry.SqlServer\OrganisationRegistry.SqlServer.csproj" />
@@ -20,6 +18,6 @@
   <ItemGroup>
     <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
   </ItemGroup>
-  
+
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
