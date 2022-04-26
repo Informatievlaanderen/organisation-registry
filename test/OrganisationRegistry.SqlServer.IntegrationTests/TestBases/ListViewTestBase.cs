@@ -8,6 +8,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
     using System.Reflection;
     using System.Threading.Tasks;
     using Api;
+    using Api.Security;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Infrastructure;
@@ -17,10 +18,13 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
     using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using OnProjections;
+    using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Bus;
     using OrganisationRegistry.Infrastructure.Config;
     using OrganisationRegistry.Infrastructure.Events;
+    using OrganisationRegistry.Security;
+    using Tests.Shared.Stubs;
 
     public abstract class ListViewTestBase
     {
@@ -57,9 +61,13 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
             DbContextOptions<OrganisationRegistryContext> dbContextOptions)
         {
             services.AddOptions();
+            services.AddSingleton<ICache<OrganisationSecurityInformation>, OrganisationSecurityCache>()
+                .AddSingleton<IOrganisationRegistryConfiguration>(
+                    new OrganisationRegistryConfigurationStub());
 
             var builder = new ContainerBuilder();
             builder.RegisterModule(new TestRunnerModule(configuration, services, new NullLoggerFactory(), dbContextOptions));
+
             return new AutofacServiceProvider(builder.Build());
         }
 

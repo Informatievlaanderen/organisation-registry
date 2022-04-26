@@ -33,16 +33,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.laptop-10lrp5e7.json" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Include="..\..\SolutionInfo.cs" Link="Properties\SolutionInfo.cs" />
     <Content Include="..\..\organisationregistry-api.pfx" Link="organisationregistry-api.pfx" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Backoffice\Admin" />
+    <Folder Include="Configuration" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />

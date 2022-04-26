@@ -4,6 +4,7 @@ namespace OrganisationRegistry.Api.Infrastructure
     using System.Globalization;
     using System.Linq;
     using System.Reflection;
+    using Api.Configuration;
     using Api.Security;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
@@ -27,9 +28,11 @@ namespace OrganisationRegistry.Api.Infrastructure
     using Microsoft.Net.Http.Headers;
     using Microsoft.OpenApi.Models;
     using Newtonsoft.Json;
+    using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
+    using OrganisationRegistry.Security;
     using Search;
     using Security;
     using SqlServer.Configuration;
@@ -99,19 +102,32 @@ namespace OrganisationRegistry.Api.Infrastructure
                         options.IntrospectionEndpoint = editApiConfiguration.IntrospectionEndpoint;
                     })
                 .Services
-
                 .AddSingleton<IActionContextAccessor, ActionContextAccessor>()
                 .AddSingleton<ISecurityService, SecurityService>()
-
+                .AddSingleton<ICache<OrganisationSecurityInformation>, OrganisationSecurityCache>()
+                .AddSingleton<IOrganisationRegistryConfiguration>(
+                    new OrganisationRegistryConfiguration(
+                        _configuration
+                            .GetSection(ApiConfigurationSection.Name)
+                            .Get<ApiConfigurationSection>(),
+                        _configuration
+                            .GetSection(OrganisationTerminationConfigurationSection.Name)
+                            .Get<OrganisationTerminationConfigurationSection>(),
+                        _configuration
+                            .GetSection(AuthorizationConfigurationSection.Name)
+                            .Get<AuthorizationConfigurationSection>(),
+                        _configuration
+                            .GetSection(CachingConfigurationSection.Name)
+                            .Get<CachingConfigurationSection>(),
+                        _configuration
+                            .GetSection(HostedServicesConfigurationSection.Name)
+                            .Get<HostedServicesConfigurationSection>()))
                 .AddFeatureManagement()
                 .Services
-
                 .AddHttpClient()
-
                 .AddHttpClient(MagdaModule.HttpClientName)
                 .ConfigurePrimaryHttpMessageHandler(() => new MagdaHttpClientHandler(magdaClientCertificate))
                 .Services
-
                 .ConfigureDefaultForApi<Startup>(
                     new StartupConfigureOptions
                     {
@@ -169,15 +185,15 @@ namespace OrganisationRegistry.Api.Infrastructure
                             ConfigureMvcCore = cfg =>
                             {
                                 cfg.OutputFormatters.Add(new CsvOutputFormatter(new CsvFormatterOptions()));
-                                cfg.FormatterMappings.SetMediaTypeMappingForFormat("csv", MediaTypeHeaderValue.Parse("text/csv"));
+                                cfg.FormatterMappings.SetMediaTypeMappingForFormat(
+                                    "csv",
+                                    MediaTypeHeaderValue.Parse("text/csv"));
                                 cfg.EnableEndpointRouting = false;
                             },
                             AfterMvc = builder => builder
                                 .AddFormatterMappings()
-                                .ConfigureApiBehaviorOptions(options =>
-                                {
-                                    options.SuppressModelStateInvalidFilter = true;
-                                }),
+                                .ConfigureApiBehaviorOptions(
+                                    options => { options.SuppressModelStateInvalidFilter = true; }),
                             AfterHealthChecks = health =>
                             {
                                 var connectionStrings = _configuration
