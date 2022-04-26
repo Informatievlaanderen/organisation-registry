@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Security
+namespace OrganisationRegistry.Infrastructure.Authorization.Cache
 {
     using System;
     using System.Threading.Tasks;

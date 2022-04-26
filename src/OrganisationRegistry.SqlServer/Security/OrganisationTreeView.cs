@@ -12,6 +12,8 @@ namespace OrganisationRegistry.SqlServer.Security
     using Organisation;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.AppSpecific;
+    using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Infrastructure.Authorization.Cache;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Infrastructure.EventStore;
     using OrganisationRegistry.Organisation.Events;

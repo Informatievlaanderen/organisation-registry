@@ -2,8 +2,8 @@ namespace OrganisationRegistry.Handling.Authorization
 {
     using System;
     using System.Linq;
-    using Configuration;
     using Infrastructure.Authorization;
+    using Infrastructure.Configuration;
     using Organisation.Exceptions;
 
     public class FormalFrameworkPolicy : ISecurityPolicy

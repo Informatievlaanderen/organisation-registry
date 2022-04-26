@@ -23,6 +23,7 @@ namespace OrganisationRegistry.Rebuilder
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Configuration.Database.Configuration;
     using Infrastructure.Authorization;
+    using Infrastructure.Authorization.Cache;
     using Infrastructure.Bus;
     using Infrastructure.Config;
     using OrganisationRegistry.Infrastructure.Configuration;
@@ -37,8 +38,6 @@ namespace OrganisationRegistry.Rebuilder
     using SqlServer.ProjectionState;
     using IClock = NodaTime.IClock;
     using OrganisationRegistry.Security;
-    using OrganisationRegistry.Api.Security;
-    using OrganisationRegistry.Api.Configuration;
     using OrganisationRegistry.Configuration;
 
     public class Program

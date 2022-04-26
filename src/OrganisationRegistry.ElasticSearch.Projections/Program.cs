@@ -7,7 +7,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using System.Reflection;
     using System.Text;
     using System.Threading.Tasks;
-    using Api.Configuration;
     using App.Metrics;
     using App.Metrics.Scheduling;
     using Autofac.Features.OwnedInstances;

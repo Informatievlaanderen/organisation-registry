@@ -7,6 +7,7 @@ namespace OrganisationRegistry.UnitTests
     using OrganisationRegistry.Security;
     using AutoFixture;
     using AutoFixture.Dsl;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Organisation;
 
     public static class SharedCustomizations

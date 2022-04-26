@@ -1,7 +1,5 @@
-namespace OrganisationRegistry.Configuration
+namespace OrganisationRegistry.Infrastructure.Configuration
 {
-    using Infrastructure.Configuration;
-
     public class OrganisationManagementConfiguration : IOrganisationManagementConfiguration
     {
 

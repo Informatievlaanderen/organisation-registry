@@ -14,6 +14,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainBuilding
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using Tests.Shared;
     using Xunit.Abstractions;
 

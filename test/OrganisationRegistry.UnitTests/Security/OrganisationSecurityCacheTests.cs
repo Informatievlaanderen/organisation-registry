@@ -4,6 +4,8 @@ namespace OrganisationRegistry.UnitTests.Security
     using Api.Security;
     using AutoFixture;
     using FluentAssertions;
+    using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Infrastructure.Authorization.Cache;
     using OrganisationRegistry.Security;
     using Tests.Shared.Stubs;
     using Xunit;

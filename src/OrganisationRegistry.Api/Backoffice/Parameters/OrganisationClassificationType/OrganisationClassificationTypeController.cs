@@ -12,6 +12,7 @@
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure.Commands;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using Queries;
     using Requests;
     using Security;

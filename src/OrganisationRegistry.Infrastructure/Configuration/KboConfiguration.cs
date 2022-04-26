@@ -1,8 +1,6 @@
-namespace OrganisationRegistry.Api.Configuration
+namespace OrganisationRegistry.Infrastructure.Configuration
 {
     using System;
-    using OrganisationRegistry.Configuration;
-    using OrganisationRegistry.Infrastructure.Configuration;
 
     public class KboConfiguration : IKboConfiguration
     {

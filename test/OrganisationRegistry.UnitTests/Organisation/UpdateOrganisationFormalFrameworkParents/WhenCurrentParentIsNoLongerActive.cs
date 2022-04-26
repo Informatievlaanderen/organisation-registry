@@ -9,6 +9,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using Tests.Shared;
     using Tests.Shared.TestDataBuilders;
     using OrganisationRegistry.Infrastructure.Events;

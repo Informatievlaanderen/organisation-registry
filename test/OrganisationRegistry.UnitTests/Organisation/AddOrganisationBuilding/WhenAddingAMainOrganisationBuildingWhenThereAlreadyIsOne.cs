@@ -15,6 +15,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Organisation.Exceptions;
     using Tests.Shared;
     using Xunit.Abstractions;
