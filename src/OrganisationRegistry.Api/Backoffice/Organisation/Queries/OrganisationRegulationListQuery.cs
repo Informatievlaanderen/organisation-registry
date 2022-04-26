@@ -46,7 +46,7 @@
 
             IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
 
-            IsEditable = new RegulationPolicy(ovoNumber).Check(user).IsSuccessful;
+            IsEditable = new RegulationPolicy().Check(user).IsSuccessful;
         }
     }
 

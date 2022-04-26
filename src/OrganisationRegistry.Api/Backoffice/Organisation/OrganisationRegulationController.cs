@@ -16,7 +16,6 @@
     using OrganisationRegistry.Infrastructure.Commands;
     using Queries;
     using Requests;
-    using Security;
     using SqlServer.Infrastructure;
 
     [ApiVersion("1.0")]
@@ -76,7 +75,7 @@
         /// <response code="201">If the regulation is created, together with the location.</response>
         /// <response code="400">If the regulation information does not pass validation.</response>
         [HttpPost]
-        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
+        [OrganisationRegistryAuthorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post(
@@ -97,7 +96,7 @@
         /// <response code="201">If the regulation is updated, together with the location.</response>
         /// <response code="400">If the regulation information does not pass validation.</response>
         [HttpPut("{id}")]
-        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder + "," + Roles.Developer)]
+        [OrganisationRegistryAuthorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Put(
