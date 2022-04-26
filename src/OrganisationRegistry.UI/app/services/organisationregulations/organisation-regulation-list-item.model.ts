@@ -8,6 +8,7 @@ export class OrganisationRegulationListItem {
     public validFrom: Date,
     public validTo: Date,
     public link: string,
-    public workRules: string
+    public workRules: string,
+    public isEditable: boolean,
   ) { }
 }

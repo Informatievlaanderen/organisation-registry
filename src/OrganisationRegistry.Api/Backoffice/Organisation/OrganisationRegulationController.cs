@@ -2,6 +2,7 @@
 {
     using System;
     using System.Threading.Tasks;
+    using Handling.Authorization;
     using Infrastructure;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Pagination;
@@ -11,7 +12,6 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.FeatureManagement.Mvc;
-    using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using Queries;
@@ -33,7 +33,6 @@
         [HttpGet]
         public async Task<IActionResult> Get(
             [FromServices] OrganisationRegistryContext context,
-            [FromServices] IMemoryCaches memoryCaches,
             [FromServices] ISecurityService securityService,
             [FromRoute] Guid organisationId)
         {
@@ -41,12 +40,16 @@
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
+            var user = await securityService.GetUser(User);
+            var isAuthorizedForRegulation = () =>
+                new RegulationPolicy()
+                    .Check(user)
+                    .IsSuccessful;
+
             var pagedOrganisations = new OrganisationRegulationListQuery(
                 context,
-                memoryCaches,
-                await securityService.GetUser(User),
-                organisationId
-                )
+                organisationId,
+                isAuthorizedForRegulation)
                 .Fetch(filtering, sorting, pagination);
 
             Response.AddPaginationResponse(pagedOrganisations.PaginationInfo);
