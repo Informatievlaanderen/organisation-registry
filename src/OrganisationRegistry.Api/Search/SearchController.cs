@@ -162,7 +162,7 @@ namespace OrganisationRegistry.Api.Search
                         var response = await GetSearch<OrganisationDocument>(
                             elastic,
                             q,
-                            offset - 1,
+                            offset,
                             limit,
                             FilterOrganisationFields(
                                 fields,
@@ -171,7 +171,7 @@ namespace OrganisationRegistry.Api.Search
                             scroll);
 
                         Response.AddElasticsearchMetaDataResponse(new ElasticsearchMetaData<OrganisationDocument>(response));
-                        Response.AddPaginationResponse(new PaginationInfo(offset, limit, (int)response.Total, (int)Math.Ceiling((double)response.Total / limit)));
+                        Response.AddPaginationResponse(new PaginationInfo(offset/limit+1, limit, (int)response.Total, (int)Math.Ceiling((double)response.Total / limit)));
 
                         var organisations = response.Hits.Select(x => x.Source);
 
@@ -197,7 +197,7 @@ namespace OrganisationRegistry.Api.Search
                         };
                     }
 
-                case PeopleIndexName:
+                case PeopleIndexName: // Possibly not used
                     {
                         var response = await GetSearch<PersonDocument>(elastic, q, offset - 1, limit, fields, sort, scroll);
 
@@ -217,7 +217,7 @@ namespace OrganisationRegistry.Api.Search
                         };
                     }
 
-                case BodiesIndexName:
+                case BodiesIndexName: // Possibly not used
                     {
                         var response = await GetSearch<BodyDocument>(elastic, q, offset - 1, limit, fields, sort, scroll);
 

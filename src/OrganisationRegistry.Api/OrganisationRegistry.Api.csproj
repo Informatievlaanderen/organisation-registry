@@ -39,7 +39,6 @@
 
   <ItemGroup>
     <Folder Include="Backoffice\Admin" />
-    <Folder Include="Configuration" />
   </ItemGroup>
 
   <Import Project="..\..\.paket\Paket.Restore.targets" />
