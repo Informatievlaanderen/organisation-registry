@@ -1,3 +1,10 @@
+## [1.168.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.168.0...v1.168.1) (2022-04-27)
+
+
+### Bug Fixes
+
+* or-963 added NuGet.config ([068a90a](https://github.com/informatievlaanderen/organisation-registry/commit/068a90a9014d0299a0a58d4ffe65ebcf29479a64))
+
 # [1.168.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.167.0...v1.168.0) (2022-04-26)
 
 
