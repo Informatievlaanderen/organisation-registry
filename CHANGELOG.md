@@ -1,3 +1,10 @@
+## [1.168.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.168.1...v1.168.2) (2022-04-27)
+
+
+### Bug Fixes
+
+* or-428 navigatie verspringt niet meer per 1 ([2eb81ce](https://github.com/informatievlaanderen/organisation-registry/commit/2eb81ceb9b8f818fe45bf3b3a48f5c7ba18f8365))
+
 ## [1.168.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.168.0...v1.168.1) (2022-04-27)
 
 
