@@ -33,6 +33,11 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
             Validity = Period.Infinite();
         }
 
+        public int ChangeId { get; set; }
+        public DateTimeOffset ChangeTime { get; set; }
+        public Guid Id { get; set; }
+
+        public string Name { get; set; }
         public string OvoNumber { get; set; }
         public string ShortName { get; set; }
         public string? Article { get; set; }
@@ -59,11 +64,7 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
         public List<OrganisationBankAccount> BankAccounts { get; set; }
         public List<OrganisationOpeningHour> OpeningHours { get; set; }
         public List<OrganisationRegulation> Regulations { get; set; }
-        public int ChangeId { get; set; }
-        public DateTimeOffset ChangeTime { get; set; }
-        public Guid Id { get; set; }
 
-        public string Name { get; set; }
 
         public static TypeMappingDescriptor<OrganisationDocument> Mapping(
             TypeMappingDescriptor<OrganisationDocument> map)
