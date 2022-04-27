@@ -1,3 +1,10 @@
+# [1.169.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.168.2...v1.169.0) (2022-04-27)
+
+
+### Features
+
+* or-944 empty arrays and order of fields correct for search api ([5fa7e52](https://github.com/informatievlaanderen/organisation-registry/commit/5fa7e5208424942519d697df0644dceaf521ac75))
+
 ## [1.168.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.168.1...v1.168.2) (2022-04-27)
 
 
