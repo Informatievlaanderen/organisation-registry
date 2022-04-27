@@ -32,8 +32,11 @@ export class OrganisationSearchService {
       .json()
       .build();
 
+    const offset = (page-1)*pageSize;
+    const limit = pageSize;
+
     return this.http
-      .get(`${this.url}?q=${query}&offset=${page}&limit=${pageSize}&fields=${this.fields}`, { headers: headers })
+      .get(`${this.url}?q=${query}&offset=${offset}&limit=${limit}&fields=${this.fields}`, { headers: headers })
       .map(this.toOrganisations);
   }
 
