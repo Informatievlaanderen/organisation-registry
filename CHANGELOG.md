@@ -1,3 +1,15 @@
+# [1.171.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.170.0...v1.171.0) (2022-04-28)
+
+
+### Bug Fixes
+
+* or-974 make mandatory fields not nullable ([2938fb9](https://github.com/informatievlaanderen/organisation-registry/commit/2938fb90886429a5ed2c7083cec282d57d1b55be))
+
+
+### Features
+
+* add matomo tracking ([1fd5aaa](https://github.com/informatievlaanderen/organisation-registry/commit/1fd5aaa934d6b42429b4f4898dc9d05c3542c521))
+
 # [1.170.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.169.0...v1.170.0) (2022-04-28)
 
 
