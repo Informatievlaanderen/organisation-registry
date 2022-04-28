@@ -50,8 +50,8 @@ export class OrganisationSearchComponent implements OnInit, OnDestroy {
   private loadOrganisations(event?: PagedEvent) {
     this.isLoading = true;
     let organisations = (event === undefined)
-      ? this.searchService.search(this.query)
-      : this.searchService.search(this.query, event.page, event.pageSize);
+      ? this.searchService.search(this.query, 'ovoNumber', SortOrder.Ascending)
+      : this.searchService.search(this.query, event.sortBy, event.sortOrder, event.page, event.pageSize);
 
     this.subscriptions.push(organisations
       .finally(() => this.isLoading = false)

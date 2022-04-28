@@ -1,16 +1,13 @@
-import { Injectable } from '@angular/core';
-import { Response, Headers, Http } from '@angular/http';
+import {Injectable} from '@angular/core';
+import {Http, Response} from '@angular/http';
 
-import { Observable } from 'rxjs/Observable';
+import {Observable} from 'rxjs/Observable';
 
-import { ConfigurationService } from 'core/configuration';
-import { HeadersBuilder } from 'core/http';
-import { PagedResult, PagedResultFactory, SortOrder } from 'core/pagination';
-import { ICrudService } from 'core/crud';
+import {ConfigurationService} from 'core/configuration';
+import {HeadersBuilder} from 'core/http';
+import {PagedResult, PagedResultFactory, SortOrder} from 'core/pagination';
 
-import {
-  OrganisationDocument
-} from './';
+import {OrganisationDocument} from './';
 
 @Injectable()
 export class OrganisationSearchService {
@@ -25,6 +22,8 @@ export class OrganisationSearchService {
 
   public search(
     query: string,
+    sortBy:string,
+    sortOrder:SortOrder,
     page: number = 1,
     pageSize: number = this.configurationService.defaultPageSize): Observable<PagedResult<OrganisationDocument>> {
 
@@ -34,9 +33,11 @@ export class OrganisationSearchService {
 
     const offset = (page-1)*pageSize;
     const limit = pageSize;
+    const sortOrderPrefix = sortOrder === SortOrder.Descending?"-":"";
+    const sort = `${sortOrderPrefix}${sortBy}`;
 
     return this.http
-      .get(`${this.url}?q=${query}&offset=${offset}&limit=${limit}&fields=${this.fields}`, { headers: headers })
+      .get(`${this.url}?q=${query}&offset=${offset}&limit=${limit}&sort=${sort}&fields=${this.fields}`, { headers: headers })
       .map(this.toOrganisations);
   }
 

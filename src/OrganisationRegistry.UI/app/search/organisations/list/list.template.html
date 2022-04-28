@@ -2,39 +2,69 @@
   <div class="u-table-overflow">
     <table id="addressTable" class="data-table">
       <thead>
-        <tr class="data-table__header">
-          <th class="data-table__header-title" style="width: 12%">OVO-nummer</th>
-          <th class="data-table__header-title" style="width: 44%">Naam</th>
-          <th class="data-table__header-title" style="width: 44%">Moeder entiteit</th>
-        </tr>
+      <tr class="data-table__header">
+        <th class="data-table__header-title" style="width: 12%">
+          <a class="data-table__header-title--sortable"
+             [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('ovoNumber')}"
+             (click)="sortBy('ovoNumber')">
+            OVO-nummer
+            <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+               [ngClass]="{'vi-u-180deg': isSortedByDescending('ovoNumber')}"></i>
+          </a>
+        </th>
+        <th class="data-table__header-title" style="width: 44%">
+          <a class="data-table__header-title--sortable"
+             [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('name.keyword')}"
+             (click)="sortBy('name.keyword')">
+            Naam
+            <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+               [ngClass]="{'vi-u-180deg': isSortedByDescending('name.keyword')}"></i>
+          </a>
+        </th>
+        <th class="data-table__header-title" style="width: 44%">
+          <a class="data-table__header-title--sortable"
+             [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('parents.parentOrganisationName.keyword')}"
+             (click)="sortBy('parents.parentOrganisationName.keyword')">
+            Moeder entiteit
+            <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+               [ngClass]="{'vi-u-180deg': isSortedByDescending('parents.parentOrganisationName.keyword')}"></i>
+          </a>
+        </th>
+      </tr>
       </thead>
       <tbody>
-        <template [ngIf]="isBusy">
-          <tr><td colspan="3">Bezig met laden...</td></tr>
-        </template>
-        <template [ngIf]="!isBusy">
-          <tr *ngIf="!hasData(data)">
-            <td colspan="3">Geen data beschikbaar...</td>
-          </tr>
-          <tr *ngFor="let organisation of data" class="ww-organisation-row">
-            <td class="data-table__body-title ww-ovoNumber"><a [routerLink]="['/organisations', organisation.id]" title="{{organisation.ovoNumber}}">{{organisation.ovoNumber}}</a></td>
-            <td class="data-table__body-title ww-name">
-              <a [routerLink]="['/organisations', organisation.id]" title="{{organisation.name}}">{{organisation.name}}</a>
-              <div *ngIf="organisation.shortName && organisation.shortName !== organisation.name" class="ww-shortname">
-                <a [routerLink]="['/organisations', organisation.id]" title="{{organisation.shortName}}">{{organisation.shortName}}</a>
-              </div>
-            </td>
-            <td class="data-table__body-title ww-parentOrganisation">
-              <a
-                *ngIf="organisation.parents && organisation.parents[0] && organisation.parents[0].parentOrganisationId"
-                [routerLink]="['/organisations', organisation.parents[0].parentOrganisationId]"
-                title="{{organisation.parents[0].parentOrganisation}}">{{organisation.parents[0].parentOrganisationName}}</a>
-              <span
-                *ngIf="!organisation.parents || !organisation.parents[0] || !organisation.parents[0].parentOrganisationId"
-                class="properties--disabled">n.v.t.</span>
-            </td>
-          </tr>
-        </template>
+      <template [ngIf]="isBusy">
+        <tr>
+          <td colspan="3">Bezig met laden...</td>
+        </tr>
+      </template>
+      <template [ngIf]="!isBusy">
+        <tr *ngIf="!hasData(data)">
+          <td colspan="3">Geen data beschikbaar...</td>
+        </tr>
+        <tr *ngFor="let organisation of data" class="ww-organisation-row">
+          <td class="data-table__body-title ww-ovoNumber"><a [routerLink]="['/organisations', organisation.id]"
+                                                             title="{{organisation.ovoNumber}}">{{organisation.ovoNumber}}</a>
+          </td>
+          <td class="data-table__body-title ww-name">
+            <a [routerLink]="['/organisations', organisation.id]"
+               title="{{organisation.name}}">{{organisation.name}}</a>
+            <div *ngIf="organisation.shortName && organisation.shortName !== organisation.name" class="ww-shortname">
+              <a [routerLink]="['/organisations', organisation.id]"
+                 title="{{organisation.shortName}}">{{organisation.shortName}}</a>
+            </div>
+          </td>
+          <td class="data-table__body-title ww-parentOrganisation">
+            <a
+              *ngIf="organisation.parents && organisation.parents[0] && organisation.parents[0].parentOrganisationId"
+              [routerLink]="['/organisations', organisation.parents[0].parentOrganisationId]"
+              title="{{organisation.parents[0].parentOrganisation}}">{{organisation.parents[0].parentOrganisationName}}</a>
+            <span
+              *ngIf="!organisation.parents || !organisation.parents[0] || !organisation.parents[0].parentOrganisationId"
+              class="properties--disabled">n.v.t.</span>
+          </td>
+        </tr>
+      </template>
       </tbody>
     </table>
   </div>
