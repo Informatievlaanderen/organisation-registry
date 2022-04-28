@@ -186,7 +186,8 @@
   "release": {
     "branches": [
       "master",
-      "main"
+      "main",
+      "hotfix\/.*"
     ],
     "verifyConditions": [
       "@semantic-release/changelog",
