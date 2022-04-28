@@ -608,6 +608,8 @@ namespace OrganisationRegistry.Api.Search
                 throw new NullReferenceException("Resolver should not be null");
 
             resolver.SetStringDefaultValueToEmptyString = true;
+            resolver.RemoveEmptyArrays = true;
+
             return jsonSerializerSettings;
         }
     }
