@@ -1,3 +1,15 @@
+# [1.170.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.169.0...v1.170.0) (2022-04-28)
+
+
+### Bug Fixes
+
+* or-944 fix broken login ([ad167c4](https://github.com/informatievlaanderen/organisation-registry/commit/ad167c42b4eb128fdf1e609e791d3012192a271e))
+
+
+### Features
+
+* or-947 enable box sorting ([05c7f8c](https://github.com/informatievlaanderen/organisation-registry/commit/05c7f8c74ded99de296dc949d7d51af7247a4a3d))
+
 # [1.169.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.168.2...v1.169.0) (2022-04-27)
 
 
