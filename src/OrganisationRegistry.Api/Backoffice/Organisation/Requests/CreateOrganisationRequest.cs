@@ -7,7 +7,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Requests
     using FluentValidation;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-    using OrganisationRegistry.Purpose;
+    using Purpose;
     using SqlServer.Location;
     using SqlServer.Organisation;
 

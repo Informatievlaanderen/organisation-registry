@@ -1,33 +1,33 @@
 namespace OrganisationRegistry.Api.Search
 {
-    using ElasticSearch.Bodies;
-    using ElasticSearch.Client;
-    using ElasticSearch.Common;
-    using ElasticSearch.Organisations;
-    using ElasticSearch.People;
-    using Infrastructure;
-    using Infrastructure.Search;
-    using Infrastructure.Security;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
-    using Osc;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Net;
     using System.Threading.Tasks;
-    using Infrastructure.Helpers;
-    using Infrastructure.Search.Pagination;
-    using OrganisationRegistry.Infrastructure.Commands;
-    using OrganisationRegistry.Infrastructure.Infrastructure.Json;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using ElasticSearch;
+    using ElasticSearch.Bodies;
+    using ElasticSearch.Client;
+    using ElasticSearch.Common;
+    using ElasticSearch.Organisations;
+    using ElasticSearch.People;
+    using Infrastructure;
+    using Infrastructure.Helpers;
+    using Infrastructure.Search;
+    using Infrastructure.Search.Pagination;
     using Infrastructure.Search.Sorting;
+    using Infrastructure.Security;
     using Microsoft.AspNetCore.Http;
-    using SortOrder = Osc.SortOrder;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using OrganisationRegistry.Infrastructure.Commands;
+    using OrganisationRegistry.Infrastructure.Infrastructure.Json;
+    using Osc;
+    using SortOrder = Infrastructure.Search.Sorting.SortOrder;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
@@ -280,10 +280,10 @@ namespace OrganisationRegistry.Api.Search
             }
         }
 
-        private static (string part, Infrastructure.Search.Sorting.SortOrder sortOrder) GetSorting(string sortPart)
+        private static (string part, SortOrder sortOrder) GetSorting(string sortPart)
             => sortPart.StartsWith("-")
-                ? (sortPart[1..], Infrastructure.Search.Sorting.SortOrder.Descending)
-                : (sortPart, Infrastructure.Search.Sorting.SortOrder.Ascending);
+                ? (sortPart[1..], SortOrder.Descending)
+                : (sortPart, SortOrder.Ascending);
 
         /// <summary>Search all organisations.</summary>
         [HttpPost("{indexName}")]
@@ -514,7 +514,7 @@ namespace OrganisationRegistry.Api.Search
                 {
                     var descending = sortPart.StartsWith("-");
                     var part = descending ? sortPart.Substring(1) : sortPart;
-                    sortDescriptor.Field(part, descending ? SortOrder.Descending : SortOrder.Ascending);
+                    sortDescriptor.Field(part, descending ? Osc.SortOrder.Descending : Osc.SortOrder.Ascending);
                 }
 
                 search = search.Sort(_ => sortDescriptor);

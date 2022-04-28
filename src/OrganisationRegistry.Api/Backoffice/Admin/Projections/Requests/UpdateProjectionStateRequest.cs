@@ -18,9 +18,9 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Projections.Requests
 
     public class UpdateProjectionStateRequest
     {
-        public string Name { get; set; }
+        public string Name { get; init; } = null!;
 
-        public int EventNumber { get; set; }
+        public int EventNumber { get; init; }
     }
 
     public class UpdateProjectionStateRequestValidator : AbstractValidator<UpdateProjectionStateInternalRequest>

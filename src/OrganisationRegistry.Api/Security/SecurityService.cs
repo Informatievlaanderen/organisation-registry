@@ -8,12 +8,10 @@ namespace OrganisationRegistry.Api.Security
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Microsoft.EntityFrameworkCore;
-    using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Authorization.Cache;
     using OrganisationRegistry.Infrastructure.Configuration;
-    using OrganisationRegistry.Security;
     using SqlServer;
 
     public class SecurityService : ISecurityService

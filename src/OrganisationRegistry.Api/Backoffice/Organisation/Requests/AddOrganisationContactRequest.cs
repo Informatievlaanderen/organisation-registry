@@ -1,8 +1,8 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Requests
 {
     using System;
+    using ContactType;
     using FluentValidation;
-    using OrganisationRegistry.ContactType;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using SqlServer.Organisation;

@@ -129,7 +129,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo.Responses
 
             public BankAccount(BankrekeningType bankrekeningType)
             {
-                var possibleAccountNumbers = new string[]
+                var possibleAccountNumbers = new[]
                 {
                     bankrekeningType.IBAN,
                     bankrekeningType.Rekeningnummer,
@@ -198,7 +198,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo.Responses
 
         private static DateTime? ParseKboDate(string d)
         {
-            return string.IsNullOrEmpty(d) ? (DateTime?)null : DateTime.ParseExact(d, KBODateFormat, null);
+            return string.IsNullOrEmpty(d) ? null : DateTime.ParseExact(d, KBODateFormat, null);
         }
     }
 

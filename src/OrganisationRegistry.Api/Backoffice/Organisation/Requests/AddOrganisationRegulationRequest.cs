@@ -6,8 +6,8 @@
     using Newtonsoft.Json;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-    using OrganisationRegistry.RegulationTheme;
     using RegulationSubTheme;
+    using RegulationTheme;
 
     public class AddOrganisationRegulationInternalRequest
     {

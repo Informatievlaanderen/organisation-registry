@@ -4,7 +4,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Requests
     using FluentValidation;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
-    using OrganisationRegistry.SeatType;
+    using SeatType;
     using SqlServer.Body;
 
     public class UpdateBodySeatInternalRequest
@@ -22,7 +22,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Requests
     public class UpdateBodySeatRequest
     {
         public Guid BodySeatId { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public bool PaidSeat { get; set; }
         public bool EntitledToVote { get; set; }
         public Guid SeatTypeId { get; set; }
@@ -64,8 +64,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Requests
     public static class UpdateBodySeatRequestMapping
     {
         public static UpdateBodySeat Map(UpdateBodySeatInternalRequest message)
-        {
-            return new UpdateBodySeat(
+            => new(
                 new BodyId(message.BodyId),
                 new BodySeatId(message.Body.BodySeatId),
                 message.Body.Name,
@@ -75,6 +74,5 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Requests
                 new Period(
                     new ValidFrom(message.Body.ValidFrom),
                     new ValidTo(message.Body.ValidTo)));
-        }
     }
 }

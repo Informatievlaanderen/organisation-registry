@@ -2,7 +2,7 @@
 {
     using System;
     using FluentValidation;
-    using OrganisationRegistry.LabelType;
+    using LabelType;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using SqlServer.Organisation;

@@ -18,7 +18,7 @@ namespace OrganisationRegistry.Body.Commands
 
         protected bool Equals(UpdateCurrentPersonAssignedToBodyMandate other) => BodyId.Equals(other.BodyId);
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;

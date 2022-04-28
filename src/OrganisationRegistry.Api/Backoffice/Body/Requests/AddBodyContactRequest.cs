@@ -1,10 +1,10 @@
 namespace OrganisationRegistry.Api.Backoffice.Body.Requests
 {
     using System;
+    using ContactType;
     using FluentValidation;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
-    using ContactType;
     using SqlServer.Body;
 
     public class AddBodyContactInternalRequest

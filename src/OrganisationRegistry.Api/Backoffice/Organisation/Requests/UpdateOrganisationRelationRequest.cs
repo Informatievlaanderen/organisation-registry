@@ -4,7 +4,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Requests
     using FluentValidation;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-    using OrganisationRegistry.OrganisationRelationType;
+    using OrganisationRelationType;
 
     public class UpdateOrganisationRelationInternalRequest
     {

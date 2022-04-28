@@ -3,16 +3,17 @@ namespace OrganisationRegistry.Api.Infrastructure
     using System;
     using System.Collections;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Mvc.Formatters;
-    using System.Reflection;
-    using System.Linq;
     using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
     using System.Runtime.CompilerServices;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc.Formatters;
+    using Microsoft.Net.Http.Headers;
 
-    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property)]
     public sealed class OrderAttribute : Attribute
     {
         public OrderAttribute([CallerLineNumber]int order = 0)
@@ -42,7 +43,7 @@ namespace OrganisationRegistry.Api.Infrastructure
         public CsvOutputFormatter(CsvFormatterOptions csvFormatterOptions)
         {
             ContentType = "text/csv";
-            SupportedMediaTypes.Add(Microsoft.Net.Http.Headers.MediaTypeHeaderValue.Parse("text/csv"));
+            SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse("text/csv"));
 
             _options = csvFormatterOptions ?? throw new ArgumentNullException(nameof(csvFormatterOptions));
 

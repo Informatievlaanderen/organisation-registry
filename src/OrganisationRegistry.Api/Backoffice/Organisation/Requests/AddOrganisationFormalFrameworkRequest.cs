@@ -2,7 +2,7 @@
 {
     using System;
     using FluentValidation;
-    using OrganisationRegistry.FormalFramework;
+    using FormalFramework;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
 

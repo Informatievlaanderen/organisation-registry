@@ -2,10 +2,10 @@
 {
     using System;
     using FluentValidation;
+    using OrganisationClassification;
+    using OrganisationClassificationType;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-    using OrganisationRegistry.OrganisationClassification;
-    using OrganisationRegistry.OrganisationClassificationType;
 
     public class AddOrganisationOrganisationClassificationInternalRequest
     {

@@ -2,9 +2,9 @@
 {
     using System;
     using FluentValidation;
+    using LifecyclePhaseType;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
-    using LifecyclePhaseType;
 
     public class AddBodyLifecyclePhaseInternalRequest
     {

@@ -7,6 +7,7 @@ namespace OrganisationRegistry.Api
     using Autofac.Extensions.DependencyInjection;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
+    using Configuration.Database;
     using ElasticSearch;
     using Infrastructure.Search;
     using Infrastructure.Security;
@@ -15,13 +16,12 @@ namespace OrganisationRegistry.Api
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Configuration;
-    using SqlServer;
-    using OrganisationRegistry.Configuration.Database;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Configuration;
+    using SqlServer;
+    using Module = Autofac.Module;
 
-    public class ApiModule : Autofac.Module
+    public class ApiModule : Module
     {
         private readonly IConfiguration _configuration;
         private readonly IServiceCollection _services;

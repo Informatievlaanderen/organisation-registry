@@ -6,8 +6,8 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
     using System.Threading.Tasks;
     using ElasticSearch.Organisations;
     using Infrastructure.Search.Sorting;
-    using Osc;
     using OrganisationRegistry.Infrastructure.Configuration;
+    using Osc;
     using SortOrder = Infrastructure.Search.Sorting.SortOrder;
 
     public class FormalFrameworkOrganisation

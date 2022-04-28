@@ -5,7 +5,6 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Requests
     using OrganisationRegistry.Person;
     using OrganisationRegistry.Person.Commands;
     using SqlServer.Person;
-    using Sex = OrganisationRegistry.Person.Sex;
 
     public class UpdatePersonInternalRequest
     {

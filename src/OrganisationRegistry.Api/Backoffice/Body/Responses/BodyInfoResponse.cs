@@ -7,11 +7,11 @@
     {
         public Guid Id { get; }
 
-        public string BodyNumber { get; }
+        public string? BodyNumber { get; }
         public string Name { get; }
-        public string ShortName { get; }
+        public string? ShortName { get; }
 
-        public string Description { get; }
+        public string? Description { get; }
 
         public BodyInfoResponse(BodyDetail projectionItem)
         {

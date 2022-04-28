@@ -1,3 +1,4 @@
+// ReSharper disable UnusedMember.Local
 namespace OrganisationRegistry.BodyClassification
 {
     using System;
@@ -13,7 +14,11 @@ namespace OrganisationRegistry.BodyClassification
         private Guid _bodyClassificationTypeId;
         private string _bodyClassificationTypeName;
 
-        public BodyClassification() { }
+        public BodyClassification()
+        {
+            _bodyClassificationTypeName = string.Empty;
+            Name = string.Empty;
+        }
 
         public BodyClassification(
             BodyClassificationId id,
@@ -22,6 +27,8 @@ namespace OrganisationRegistry.BodyClassification
             bool active,
             BodyClassificationType bodyClassificationType)
         {
+            _bodyClassificationTypeName = string.Empty;
+            Name = string.Empty;
             ApplyChange(new BodyClassificationCreated(id, name, order, active, bodyClassificationType.Id, bodyClassificationType.Name));
         }
 

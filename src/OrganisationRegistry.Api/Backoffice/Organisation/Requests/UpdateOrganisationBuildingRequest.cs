@@ -1,8 +1,8 @@
 ﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Requests
 {
     using System;
+    using Building;
     using FluentValidation;
-    using OrganisationRegistry.Building;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
 

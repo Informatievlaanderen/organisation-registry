@@ -2,9 +2,9 @@
 {
     using System;
     using FluentValidation;
+    using FormalFramework;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
-    using FormalFramework;
 
     public class AddBodyFormalFrameworkInternalRequest
     {

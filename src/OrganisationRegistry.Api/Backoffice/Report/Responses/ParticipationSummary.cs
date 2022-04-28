@@ -164,8 +164,8 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
             return bodiesWithAssignments
                 .Select(body =>
                 {
-                    var effectiveKey = new { BodyId = body.BodyId, BodySeatTypeIsEffective = true};
-                    var subsidiaryKey = new { BodyId = body.BodyId, BodySeatTypeIsEffective = false};
+                    var effectiveKey = new { body.BodyId, BodySeatTypeIsEffective = true};
+                    var subsidiaryKey = new { body.BodyId, BodySeatTypeIsEffective = false};
 
                     var effectiveSeats =
                         activeSeatsPerBodyAndIsEffective.ContainsKey(effectiveKey)
