@@ -11,7 +11,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
     using GeefOnderneming = global::Magda.GeefOnderneming;
     using RegistreerInschrijving = global::Magda.RegistreerInschrijving;
 
-    public class KboOrganisationRetriever: IKboOrganisationRetriever
+    public class KboOrganisationRetriever : IKboOrganisationRetriever
     {
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IGeefOndernemingQuery _geefOndernemingQuery;
@@ -38,8 +38,9 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
 
             var registerInscription = await _registerInscriptionCommand.Execute(user, kboNumberDotLess);
 
-            var registerInscriptionReply = registerInscription?.Body?.RegistreerInschrijvingResponse?.Repliek?.Antwoorden?.Antwoord;
-            if (registerInscriptionReply == null)
+            var maybeRegisterInscriptionReply =
+                registerInscription?.Body?.RegistreerInschrijvingResponse?.Repliek?.Antwoorden?.Antwoord;
+            if (maybeRegisterInscriptionReply is not { } registerInscriptionReply)
                 throw new Exception("Geen antwoord van magda gekregen.");
 
             LogExceptions(registerInscriptionReply);
@@ -54,8 +55,9 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
 
             var giveOrganisation = await _geefOndernemingQuery.Execute(user, kboNumberDotLess);
 
-            var giveOrganisationReply = giveOrganisation.Body?.GeefOndernemingResponse?.Repliek?.Antwoorden?.Antwoord;
-            if (giveOrganisationReply == null)
+            var maybeGiveOrganisationReply =
+                giveOrganisation?.Body?.GeefOndernemingResponse?.Repliek?.Antwoorden?.Antwoord;
+            if (maybeGiveOrganisationReply is not { } giveOrganisationReply)
                 throw new Exception("Geen antwoord van magda gekregen.");
 
             LogExceptions(giveOrganisationReply);
@@ -82,9 +84,9 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
                 .ForEach(type => _logger.LogWarning($"{type.Diagnose}"));
 
             reply.Uitzonderingen?
-                 .Where(type => type.Type == RegistreerInschrijving.UitzonderingTypeType.FOUT)
-                 .ToList()
-                 .ForEach(type => _logger.LogError($"{type.Diagnose}"));
+                .Where(type => type.Type == RegistreerInschrijving.UitzonderingTypeType.FOUT)
+                .ToList()
+                .ForEach(type => _logger.LogError($"{type.Diagnose}"));
         }
 
         private void LogExceptions(GeefOnderneming.AntwoordType reply)

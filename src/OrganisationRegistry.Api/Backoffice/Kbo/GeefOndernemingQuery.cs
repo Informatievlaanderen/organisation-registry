@@ -24,7 +24,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
 
     public interface IGeefOndernemingQuery
     {
-        Task<Envelope<GeefOndernemingResponseBody>> Execute(IUser user, string kboNumberDotLess);
+        Task<Envelope<GeefOndernemingResponseBody>?> Execute(IUser user, string kboNumberDotLess);
     }
 
     public class GeefOndernemingQuery : IGeefOndernemingQuery
@@ -46,7 +46,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
             _logger = logger;
         }
 
-        public async Task<Envelope<GeefOndernemingResponseBody>> Execute(IUser user, string kboNumberDotLess)
+        public async Task<Envelope<GeefOndernemingResponseBody>?> Execute(IUser user, string kboNumberDotLess)
         {
             using (var organisationRegistryContext = _contextFactory().Value)
             {
@@ -63,7 +63,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
             }
         }
 
-        private async Task<Envelope<T>> PerformMagdaRequest<T>(string endpoint, string signedEnvelope)
+        private async Task<Envelope<T>?> PerformMagdaRequest<T>(string endpoint, string signedEnvelope)
         {
             using (var client = _httpClientFactory.CreateClient(MagdaModule.HttpClientName))
             {
@@ -88,7 +88,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
 
                         using (var reader = new StringReader(await response.Content.ReadAsStringAsync()))
                         {
-                            return (Envelope<T>) serializer.Deserialize(reader);
+                            return (Envelope<T>?) serializer.Deserialize(reader);
                         }
                     }
                 }

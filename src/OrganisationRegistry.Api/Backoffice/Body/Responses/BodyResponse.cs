@@ -9,12 +9,12 @@
 
         public string BodyNumber { get; }
         public string Name { get; }
-        public string ShortName { get; }
+        public string? ShortName { get; }
 
-        public string Organisation { get; }
+        public string? Organisation { get; }
         public Guid? OrganisationId { get; }
 
-        public string Description { get; }
+        public string? Description { get; }
 
         public DateTime? FormalValidFrom { get; }
         public DateTime? FormalValidTo { get; }

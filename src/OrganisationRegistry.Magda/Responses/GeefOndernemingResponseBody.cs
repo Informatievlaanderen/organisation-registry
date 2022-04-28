@@ -8,6 +8,6 @@ namespace OrganisationRegistry.Magda.Responses
     public class GeefOndernemingResponseBody
     {
         [XmlElement(Namespace = "http://webservice.geefondernemingdienst-02_00.onderneming-02_00.vip.vlaanderen.be")]
-        public GeefOndernemingResponse GeefOndernemingResponse { get; set; }
+        public GeefOndernemingResponse? GeefOndernemingResponse { get; set; }
     }
 }

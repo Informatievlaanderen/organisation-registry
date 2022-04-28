@@ -24,7 +24,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
 
     public interface IRegistreerInschrijvingCommand
     {
-        Task<Envelope<RegistreerInschrijvingResponseBody>> Execute(IUser user, string kboNumber);
+        Task<Envelope<RegistreerInschrijvingResponseBody>?> Execute(IUser user, string kboNumber);
     }
 
     public class RegistreerInschrijvingCommand : IRegistreerInschrijvingCommand
@@ -46,7 +46,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
             _logger = logger;
         }
 
-        public async Task<Envelope<RegistreerInschrijvingResponseBody>> Execute(IUser user, string kboNumber)
+        public async Task<Envelope<RegistreerInschrijvingResponseBody>?> Execute(IUser user, string kboNumber)
         {
             using (var organisationRegistryContext = _contextFactory().Value)
             {
@@ -63,7 +63,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
             }
         }
 
-        private async Task<Envelope<T>> PerformMagdaRequest<T>(string endpoint, string signedEnvelope)
+        private async Task<Envelope<T>?> PerformMagdaRequest<T>(string endpoint, string signedEnvelope)
         {
             using (var client = _httpClientFactory.CreateClient(MagdaModule.HttpClientName))
             {
@@ -87,8 +87,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
 
                         using (var reader = new StringReader(await response.Content.ReadAsStringAsync()))
                         {
-                            var performMagdaRequest = (Envelope<T>) serializer.Deserialize(reader);
-                            return performMagdaRequest;
+                            return (Envelope<T>?) serializer.Deserialize(reader);
                         }
                     }
                 }
