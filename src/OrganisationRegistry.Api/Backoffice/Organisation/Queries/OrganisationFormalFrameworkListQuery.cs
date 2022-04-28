@@ -8,7 +8,6 @@
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
-    using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure.AppSpecific;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Configuration;

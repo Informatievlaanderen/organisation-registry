@@ -1,11 +1,11 @@
 namespace OrganisationRegistry.Api.Backoffice.Body.Requests
 {
     using System;
+    using BodyClassification;
+    using BodyClassificationType;
     using FluentValidation;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
-    using OrganisationRegistry.BodyClassification;
-    using OrganisationRegistry.BodyClassificationType;
 
     public class UpdateBodyBodyClassificationInternalRequest
     {

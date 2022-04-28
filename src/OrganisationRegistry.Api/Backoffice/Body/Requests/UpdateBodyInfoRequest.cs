@@ -20,11 +20,11 @@
 
     public class UpdateBodyInfoRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
-        public string ShortName { get; set; }
+        public string? ShortName { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
     }
 
     public class UpdateBodyInfoRequestValidator : AbstractValidator<UpdateBodyInfoInternalRequest>
@@ -48,12 +48,10 @@
     public static class UpdateBodyInfoRequestMapping
     {
         public static UpdateBodyInfo Map(UpdateBodyInfoInternalRequest message)
-        {
-            return new UpdateBodyInfo(
+            => new(
                 new BodyId(message.BodyId),
                 message.Body.Name,
                 message.Body.ShortName,
                 message.Body.Description);
-        }
     }
 }

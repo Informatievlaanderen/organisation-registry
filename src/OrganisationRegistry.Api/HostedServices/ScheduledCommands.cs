@@ -4,17 +4,17 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
     using Body;
     using Body.Commands;
     using FormalFramework;
-    using OrganisationRegistry.Infrastructure.Commands;
+    using Microsoft.EntityFrameworkCore;
     using Organisation;
     using Organisation.Commands;
-    using OrganisationRegistry.SqlServer.Body.ScheduledActions.Organisation;
-    using OrganisationRegistry.SqlServer.Organisation;
-    using OrganisationRegistry.SqlServer.Organisation.ScheduledActions.FormalFramework;
-    using OrganisationRegistry.SqlServer.Organisation.ScheduledActions.Parent;
+    using OrganisationRegistry.Infrastructure.Commands;
+    using SqlServer.Body.ScheduledActions.Organisation;
+    using SqlServer.Organisation;
+    using SqlServer.Organisation.ScheduledActions.FormalFramework;
+    using SqlServer.Organisation.ScheduledActions.Parent;
     using ActiveBodyMandateAssignment =
         SqlServer.Body.ScheduledActions.PeopleAssignedToBodyMandates.ActivePeopleAssignedToBodyMandateListItem;
     using FutureBodyMandateAssignment =
@@ -79,15 +79,15 @@
                 .Where(item => item.ValidTo.HasValue && item.ValidTo.Value < date)
                 .AsEnumerable()
                 .GroupBy(item => item.BodyId)
-                .ToDictionary(group => @group.Key, group => @group.AsEnumerable());
+                .ToDictionary(group => group.Key, group => group.AsEnumerable());
 
         public static Task<List<ICommand>> GetScheduledCommandsToExecute(this DbSet<FutureBodyMandateAssignment> list,
             DateTime date) =>
             Task.FromResult(MandateAssignmentsThatHaveBecomeValid(list, date)
                 .Select(group =>
                     new UpdateCurrentPersonAssignedToBodyMandate(
-                        new BodyId(@group.Key),
-                        @group.Value.Select(item =>
+                        new BodyId(group.Key),
+                        group.Value.Select(item =>
                             (new BodySeatId(item.BodySeatId), new BodyMandateId(item.BodyMandateId))).ToList()))
                 .Cast<ICommand>().ToList());
 

@@ -3,11 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using ContactType;
     using FluentValidation;
     using Function;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
-    using OrganisationRegistry.ContactType;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Person;
 
@@ -29,8 +29,8 @@
         public Guid BodySeatId { get; set; }
         public BodyMandateType? BodyMandateType { get; set; }
         public Guid DelegatorId { get; set; }
-        public Guid? DelegatedId { get; set; }
-        public Dictionary<Guid, string> Contacts { get; set; }
+        public Guid DelegatedId { get; set; }
+        public Dictionary<Guid, string> Contacts { get; set; } = new();
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }
@@ -75,34 +75,29 @@
     public static class UpdateBodyMandateRequestMapping
     {
         public static ReassignPersonToBodySeat MapForPerson(UpdateBodyMandateInternalRequest message)
-        {
-            return new ReassignPersonToBodySeat(
+            => new(
                 new BodyId(message.BodyId),
                 new BodyMandateId(message.Body.BodyMandateId),
                 new BodySeatId(message.Body.BodySeatId),
                 new PersonId(message.Body.DelegatorId),
-                message.Body.Contacts?.ToDictionary(x => new ContactTypeId(x.Key), x => x.Value),
+                message.Body.Contacts.ToDictionary(x => new ContactTypeId(x.Key), x => x.Value),
                 new Period(
                     new ValidFrom(message.Body.ValidFrom),
                     new ValidTo(message.Body.ValidTo)));
-        }
 
         public static ReassignFunctionTypeToBodySeat MapForFunctionType(UpdateBodyMandateInternalRequest message)
-        {
-            return new ReassignFunctionTypeToBodySeat(
+            => new(
                 new BodyId(message.BodyId),
                 new BodyMandateId(message.Body.BodyMandateId),
                 new BodySeatId(message.Body.BodySeatId),
                 new OrganisationId(message.Body.DelegatorId),
-                new FunctionTypeId(message.Body.DelegatedId.Value),
+                new FunctionTypeId(message.Body.DelegatedId),
                 new Period(
                     new ValidFrom(message.Body.ValidFrom),
                     new ValidTo(message.Body.ValidTo)));
-        }
 
         public static ReassignOrganisationToBodySeat MapForOrganisation(UpdateBodyMandateInternalRequest message)
-        {
-            return new ReassignOrganisationToBodySeat(
+            => new(
                 new BodyId(message.BodyId),
                 new BodyMandateId(message.Body.BodyMandateId),
                 new BodySeatId(message.Body.BodySeatId),
@@ -110,6 +105,5 @@
                 new Period(
                     new ValidFrom(message.Body.ValidFrom),
                     new ValidTo(message.Body.ValidTo)));
-        }
     }
 }

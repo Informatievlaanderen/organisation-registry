@@ -2,8 +2,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Requests
 {
     using System;
     using FluentValidation;
-    using OrganisationRegistry.Location;
-    using OrganisationRegistry.LocationType;
+    using Location;
+    using LocationType;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
 

@@ -1,12 +1,12 @@
 ﻿namespace OrganisationRegistry.Api.Infrastructure.Configuration
 {
-    using Microsoft.AspNetCore.Builder;
-    using SqlServer;
     using System.Linq;
     using System.Reflection;
+    using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using OrganisationRegistry.Infrastructure.Config;
     using OrganisationRegistry.Infrastructure.Events;
+    using SqlServer;
 
     public static class UseOrganisationRegistryEventSourcingExtension
     {

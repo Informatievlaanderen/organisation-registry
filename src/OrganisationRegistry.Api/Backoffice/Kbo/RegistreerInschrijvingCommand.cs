@@ -140,10 +140,10 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
                             {
                                 Hoedanigheid = _magdaConfiguration.RepertoriumCapacity,
                                 Identificatie = _magdaConfiguration.Sender,
-                                BetrokkenSubject = new BetrokkenSubjectType()
+                                BetrokkenSubject = new BetrokkenSubjectType
                                 {
                                     Type = "OND",
-                                    Subjecten = new []{ new SubjectType()
+                                    Subjecten = new []{ new SubjectType
                                     {
                                         Sleutel = socialSecurityId,
                                         Type = "OND"

@@ -3,11 +3,11 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using ContactType;
     using FluentValidation;
     using Function;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
-    using ContactType;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Person;
 

@@ -7,12 +7,12 @@
     {
         public BodyId BodyId => Id;
 
-        public string BodyNumber { get; }
+        public string? BodyNumber { get; }
 
         public string Name { get; }
-        public string ShortName { get; }
+        public string? ShortName { get; }
         public OrganisationId? OrganisationId { get; }
-        public string Description { get; }
+        public string? Description { get; }
 
         public Period Validity { get; }
         public Period FormalValidity { get; }
@@ -23,10 +23,10 @@
         public RegisterBody(
             BodyId bodyId,
             string name,
-            string bodyNumber,
-            string shortName,
+            string? bodyNumber,
+            string? shortName,
             OrganisationId? organisationId,
-            string description,
+            string? description,
             Period validity,
             Period formalValidity,
             LifecyclePhaseTypeId? activeLifecyclePhaseTypeId,

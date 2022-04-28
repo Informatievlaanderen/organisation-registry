@@ -1,7 +1,7 @@
 ﻿namespace OrganisationRegistry.Api.Infrastructure.Search
 {
-    using Osc;
     using Newtonsoft.Json;
+    using Osc;
 
     public class ElasticsearchMetaData<T> where T : class
     {

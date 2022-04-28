@@ -8,7 +8,6 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
-    using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure.Configuration;
     using SqlServer.Infrastructure;
     using SqlServer.OrganisationClassificationType;

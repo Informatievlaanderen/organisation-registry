@@ -5,7 +5,6 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;

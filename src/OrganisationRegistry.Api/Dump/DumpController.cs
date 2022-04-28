@@ -1,18 +1,18 @@
 namespace OrganisationRegistry.Api.Dump
 {
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Xml;
     using AgentschapZorgEnGezondheid;
     using ElasticSearch.Client;
     using Infrastructure;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Infrastructure;
-    using System.Text;
-    using System.Threading.Tasks;
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Serialization;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
-    using System.Xml;
-    using Microsoft.AspNetCore.Http;
-    using Newtonsoft.Json.Serialization;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]

@@ -6,7 +6,7 @@
     using FluentValidation;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-    using OrganisationRegistry.Purpose;
+    using Purpose;
     using SqlServer.Organisation;
 
     public class UpdateOrganisationInfoInternalRequest

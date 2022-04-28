@@ -8,8 +8,8 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
     using ElasticSearch.Bodies;
     using Infrastructure;
     using Infrastructure.Search.Sorting;
-    using Osc;
     using OrganisationRegistry.Infrastructure.Configuration;
+    using Osc;
     using SortOrder = Infrastructure.Search.Sorting.SortOrder;
 
     public class FormalFrameworkBody

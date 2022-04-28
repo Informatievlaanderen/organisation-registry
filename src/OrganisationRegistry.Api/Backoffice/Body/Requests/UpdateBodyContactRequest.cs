@@ -1,10 +1,10 @@
 namespace OrganisationRegistry.Api.Backoffice.Body.Requests
 {
     using System;
+    using ContactType;
     using FluentValidation;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
-    using OrganisationRegistry.ContactType;
     using SqlServer.Body;
 
     public class UpdateBodyContactInternalRequest
@@ -23,7 +23,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Requests
     {
         public Guid BodyContactId { get; set; }
         public Guid ContactTypeId { get; set; }
-        public string ContactValue { get; set; }
+        public string ContactValue { get; set; } = null!;
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }

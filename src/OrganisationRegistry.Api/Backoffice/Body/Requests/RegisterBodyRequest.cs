@@ -2,11 +2,11 @@
 {
     using System;
     using FluentValidation;
+    using LifecyclePhaseType;
     using Microsoft.AspNetCore.Http;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Commands;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using LifecyclePhaseType;
     using OrganisationRegistry.Organisation;
     using SqlServer.Body;
     using SqlServer.LifecyclePhaseType;

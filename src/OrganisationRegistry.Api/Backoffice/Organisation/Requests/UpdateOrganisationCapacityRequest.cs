@@ -3,11 +3,11 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Requests
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Capacity;
+    using ContactType;
     using FluentValidation;
     using Function;
-    using OrganisationRegistry.Capacity;
-    using OrganisationRegistry.ContactType;
-    using OrganisationRegistry.Location;
+    using Location;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Person;
