@@ -8,7 +8,6 @@ namespace OrganisationRegistry.SqlServer.Body
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Body.Events;
     using SeatType;
-
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
@@ -19,16 +18,16 @@ namespace OrganisationRegistry.SqlServer.Body
         public Guid BodySeatId { get; set; }
         public Guid BodyId { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
-        public string? BodySeatNumber { get; set; }
+        public string BodySeatNumber { get; set; } = null!;
 
         public bool PaidSeat { get; set; }
 
         public bool EntitledToVote { get; set; }
 
         public Guid SeatTypeId { get; set; }
-        public string SeatTypeName { get; set; }
+        public string SeatTypeName { get; set; } = null!;
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
@@ -46,7 +45,8 @@ namespace OrganisationRegistry.SqlServer.Body
                 .IsClustered(false);
 
             b.Property(p => p.BodySeatNumber)
-                .HasMaxLength(SeatNumberLength);
+                .HasMaxLength(SeatNumberLength)
+                .IsRequired();
 
             b.Property(p => p.BodyId).IsRequired();
 
@@ -76,8 +76,11 @@ namespace OrganisationRegistry.SqlServer.Body
         IEventHandler<BodySeatUpdated>,
         IEventHandler<BodySeatNumberAssigned>
     {
-        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-        public override string Schema => WellknownSchemas.BackofficeSchema;
+        protected override string[] ProjectionTableNames
+            => Enum.GetNames(typeof(ProjectionTables));
+
+        public override string Schema
+            => WellknownSchemas.BackofficeSchema;
 
         public enum ProjectionTables
         {
@@ -94,7 +97,10 @@ namespace OrganisationRegistry.SqlServer.Body
             _eventStore = eventStore;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatAdded> message)
+        public async Task Handle(
+            DbConnection dbConnection,
+            DbTransaction dbTransaction,
+            IEnvelope<BodySeatAdded> message)
         {
             var bodySeatListItem = new BodySeatListItem
             {
@@ -117,11 +123,14 @@ namespace OrganisationRegistry.SqlServer.Body
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
+        public async Task Handle(
+            DbConnection dbConnection,
+            DbTransaction dbTransaction,
+            IEnvelope<BodySeatUpdated> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var bodySeat = context.BodySeatList.SingleOrDefault(item => item.BodySeatId == message.Body.BodySeatId);
+                var bodySeat = context.BodySeatList.Single(item => item.BodySeatId == message.Body.BodySeatId);
 
                 bodySeat.BodySeatId = message.Body.BodySeatId;
                 bodySeat.BodyId = message.Body.BodyId;
@@ -137,11 +146,14 @@ namespace OrganisationRegistry.SqlServer.Body
             }
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatNumberAssigned> message)
+        public async Task Handle(
+            DbConnection dbConnection,
+            DbTransaction dbTransaction,
+            IEnvelope<BodySeatNumberAssigned> message)
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var bodySeat = context.BodySeatList.SingleOrDefault(item => item.BodySeatId == message.Body.BodySeatId);
+                var bodySeat = context.BodySeatList.Single(item => item.BodySeatId == message.Body.BodySeatId);
 
                 bodySeat.BodySeatNumber = message.Body.BodySeatNumber;
 
@@ -149,7 +161,10 @@ namespace OrganisationRegistry.SqlServer.Body
             }
         }
 
-        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+        public override async Task Handle(
+            DbConnection dbConnection,
+            DbTransaction dbTransaction,
+            IEnvelope<RebuildProjection> message)
         {
             await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
         }

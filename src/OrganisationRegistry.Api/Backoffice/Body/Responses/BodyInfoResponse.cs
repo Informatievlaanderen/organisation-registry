@@ -7,7 +7,7 @@
     {
         public Guid Id { get; }
 
-        public string? BodyNumber { get; }
+        public string BodyNumber { get; }
         public string Name { get; }
         public string? ShortName { get; }
 

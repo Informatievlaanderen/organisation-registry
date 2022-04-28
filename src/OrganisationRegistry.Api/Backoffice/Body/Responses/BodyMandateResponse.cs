@@ -13,7 +13,7 @@
         public Guid BodyId { get; set; }
 
         public Guid BodySeatId { get; set; }
-        public string? BodySeatNumber { get; set; }
+        public string BodySeatNumber { get; set; }
         public string BodySeatName { get; set; }
 
         public Guid DelegatorId { get; set; }
