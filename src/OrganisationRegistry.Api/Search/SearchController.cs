@@ -25,7 +25,9 @@ namespace OrganisationRegistry.Api.Search
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using ElasticSearch;
+    using Infrastructure.Search.Sorting;
     using Microsoft.AspNetCore.Http;
+    using SortOrder = Osc.SortOrder;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
@@ -98,7 +100,13 @@ namespace OrganisationRegistry.Api.Search
 
             _log.LogDebug(
                 "[{IndexName}] Searched for '{SearchTerm}' (Offset: {Offset}, Limit: {Limit}, Fields: {Fields}, Sort: {Sort}, Scroll: {Scroll})",
-                indexName, q, offset, limit, fields, sort, scroll);
+                indexName,
+                q,
+                offset,
+                limit,
+                fields,
+                sort,
+                scroll);
 
             switch (indexName.ToLower())
             {
@@ -151,96 +159,131 @@ namespace OrganisationRegistry.Api.Search
 
             _log.LogDebug(
                 "[{IndexName}] Searched for '{SearchTerm}' (Offset: {Offset}, Limit: {Limit}, Fields: {Fields}, Sort: {Sort}, Scroll: {Scroll})",
-                indexName, q, offset, limit, fields, sort, scroll);
+                indexName,
+                q,
+                offset,
+                limit,
+                fields,
+                sort,
+                scroll);
 
             var jsonSerializerSettings = GetJsonSerializerSettings();
 
             switch (indexName.ToLower())
             {
                 case OrganisationsIndexName:
-                    {
-                        var response = await GetSearch<OrganisationDocument>(
-                            elastic,
-                            q,
-                            offset,
+                {
+                    var response = await GetSearch<OrganisationDocument>(
+                        elastic,
+                        q,
+                        offset,
+                        limit,
+                        FilterOrganisationFields(
+                            fields,
+                            (await HttpContext.GetAuthenticateInfoAsync())?.Succeeded ?? false),
+                        sort,
+                        scroll);
+
+                    Response.AddElasticsearchMetaDataResponse(
+                        new ElasticsearchMetaData<OrganisationDocument>(response));
+                    Response.AddPaginationResponse(
+                        new PaginationInfo(
+                            offset / limit + 1,
                             limit,
-                            FilterOrganisationFields(
-                                fields,
-                                (await HttpContext.GetAuthenticateInfoAsync())?.Succeeded ?? false),
-                            sort,
-                            scroll);
+                            (int)response.Total,
+                            (int)Math.Ceiling((double)response.Total / limit)));
 
-                        Response.AddElasticsearchMetaDataResponse(new ElasticsearchMetaData<OrganisationDocument>(response));
-                        Response.AddPaginationResponse(new PaginationInfo(offset/limit+1, limit, (int)response.Total, (int)Math.Ceiling((double)response.Total / limit)));
+                    var sortPart = sort.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(x => x.Trim())
+                        .First();
 
-                        var organisations = response.Hits.Select(x => x.Source);
+                    var (part, sortOrder) = GetSorting(sortPart);
+                    Response.AddSortingResponse(part, sortOrder);
 
-                        foreach (var organisation in organisations)
-                        {
-                            if (organisation.Parents.IsNullOrEmpty())
-                                continue;
+                    var organisations = response.Hits.Select(x => x.Source);
 
-                            organisation.Parents = organisation.Parents
-                                .Where(x => (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
-                                            (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now))
-                                .ToList();
-                        }
+                    foreach (var organisation in organisations)
+                    {
+                        if (organisation.Parents.IsNullOrEmpty())
+                            continue;
 
-                        return new ContentResult
-                        {
-                            ContentType = "application/json",
-                            StatusCode = (int)HttpStatusCode.OK,
-                            Content = JsonConvert.SerializeObject(
-                                organisations,
-                                Formatting.Indented,
-                                jsonSerializerSettings)
-                        };
+                        organisation.Parents = organisation.Parents
+                            .Where(
+                                x => (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
+                                     (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now))
+                            .ToList();
                     }
+
+                    return new ContentResult
+                    {
+                        ContentType = "application/json",
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Content = JsonConvert.SerializeObject(
+                            organisations,
+                            Formatting.Indented,
+                            jsonSerializerSettings)
+                    };
+                }
 
                 case PeopleIndexName: // Possibly not used
+                {
+                    var response = await GetSearch<PersonDocument>(elastic, q, offset - 1, limit, fields, sort, scroll);
+
+                    Response.AddElasticsearchMetaDataResponse(new ElasticsearchMetaData<PersonDocument>(response));
+                    Response.AddPaginationResponse(
+                        new PaginationInfo(
+                            offset,
+                            limit,
+                            (int)response.Total,
+                            (int)Math.Ceiling((double)response.Total / limit)));
+
+                    var people = response.Hits.Select(x => x.Source);
+
+                    return new ContentResult
                     {
-                        var response = await GetSearch<PersonDocument>(elastic, q, offset - 1, limit, fields, sort, scroll);
-
-                        Response.AddElasticsearchMetaDataResponse(new ElasticsearchMetaData<PersonDocument>(response));
-                        Response.AddPaginationResponse(new PaginationInfo(offset, limit, (int)response.Total, (int)Math.Ceiling((double)response.Total / limit)));
-
-                        var people = response.Hits.Select(x => x.Source);
-
-                        return new ContentResult
-                        {
-                            ContentType = "application/json",
-                            StatusCode = (int)HttpStatusCode.OK,
-                            Content = JsonConvert.SerializeObject(
-                                people,
-                                Formatting.Indented,
-                                jsonSerializerSettings)
-                        };
-                    }
+                        ContentType = "application/json",
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Content = JsonConvert.SerializeObject(
+                            people,
+                            Formatting.Indented,
+                            jsonSerializerSettings)
+                    };
+                }
 
                 case BodiesIndexName: // Possibly not used
+                {
+                    var response = await GetSearch<BodyDocument>(elastic, q, offset - 1, limit, fields, sort, scroll);
+
+                    Response.AddElasticsearchMetaDataResponse(new ElasticsearchMetaData<BodyDocument>(response));
+                    Response.AddPaginationResponse(
+                        new PaginationInfo(
+                            offset,
+                            limit,
+                            (int)response.Total,
+                            (int)Math.Ceiling((double)response.Total / limit)));
+
+                    var bodies = response.Hits.Select(x => x.Source);
+
+                    return new ContentResult
                     {
-                        var response = await GetSearch<BodyDocument>(elastic, q, offset - 1, limit, fields, sort, scroll);
-
-                        Response.AddElasticsearchMetaDataResponse(new ElasticsearchMetaData<BodyDocument>(response));
-                        Response.AddPaginationResponse(new PaginationInfo(offset, limit, (int)response.Total, (int)Math.Ceiling((double)response.Total / limit)));
-
-                        var bodies = response.Hits.Select(x => x.Source);
-
-                        return new ContentResult
-                        {
-                            ContentType = "application/json",
-                            StatusCode = (int)HttpStatusCode.OK,
-                            Content = JsonConvert.SerializeObject(
-                                bodies,
-                                Formatting.Indented,
-                                jsonSerializerSettings)
-                        };
-                    }
+                        ContentType = "application/json",
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Content = JsonConvert.SerializeObject(
+                            bodies,
+                            Formatting.Indented,
+                            jsonSerializerSettings)
+                    };
+                }
 
                 default:
                     return NotFound();
             }
         }
+
+        private static (string part, Infrastructure.Search.Sorting.SortOrder sortOrder) GetSorting(string sortPart)
+            => sortPart.StartsWith("-")
+                ? (sortPart[1..], Infrastructure.Search.Sorting.SortOrder.Descending)
+                : (sortPart, Infrastructure.Search.Sorting.SortOrder.Ascending);
 
         /// <summary>Search all organisations.</summary>
         [HttpPost("{indexName}")]
@@ -261,7 +304,13 @@ namespace OrganisationRegistry.Api.Search
 
             _log.LogDebug(
                 "[{IndexName}] Searched for '{SearchTerm}' (Offset: {Offset}, Limit: {Limit}, Fields: {Fields}, Sort: {Sort}, Scroll: {Scroll})",
-                indexName, searchTerm, offset, limit, fields, sort, scroll);
+                indexName,
+                searchTerm,
+                offset,
+                limit,
+                fields,
+                sort,
+                scroll);
 
             switch (indexName.ToLower())
             {
@@ -332,23 +381,25 @@ namespace OrganisationRegistry.Api.Search
         {
             var searchResults = await elastic
                 .ReadClient
-                .SearchAsync<T>(search => BuildApiSearch(
-                    search,
-                    offset,
-                    limit,
-                    fields,
-                    sort,
-                    scroll,
-                    new Expression<Func<T, object>>[]
-                    {
-                        defaultField => defaultField.Id,
-                        defaultField => defaultField.ChangeId,
-                        defaultField => defaultField.ChangeTime
-                    },
-                    defaultSort => defaultSort.Name.Suffix("keyword"),
-                    query => query
-                        .Bool(b => b
-                            .Must(m => m.QueryString(qs => qs.Query(q))))));
+                .SearchAsync<T>(
+                    search => BuildApiSearch(
+                        search,
+                        offset,
+                        limit,
+                        fields,
+                        sort,
+                        scroll,
+                        new Expression<Func<T, object>>[]
+                        {
+                            defaultField => defaultField.Id,
+                            defaultField => defaultField.ChangeId,
+                            defaultField => defaultField.ChangeTime
+                        },
+                        defaultSort => defaultSort.Name.Suffix("keyword"),
+                        query => query
+                            .Bool(
+                                b => b
+                                    .Must(m => m.QueryString(qs => qs.Query(q))))));
 
             return BuildApiSearchResult(searchResults);
         }
@@ -363,25 +414,28 @@ namespace OrganisationRegistry.Api.Search
             bool? scroll)
             where T : class, IDocument
         {
-            return await elastic
+            var searchResponse = await elastic
                 .ReadClient
-                .SearchAsync<T>(search => BuildApiSearch(
-                    search,
-                    offset,
-                    limit,
-                    fields,
-                    sort,
-                    scroll,
-                    new Expression<Func<T, object>>[]
-                    {
-                        defaultField => defaultField.Id,
-                        defaultField => defaultField.ChangeId,
-                        defaultField => defaultField.ChangeTime
-                    },
-                    defaultSort => defaultSort.Name.Suffix("keyword"),
-                    query => query
-                        .Bool(b => b
-                            .Must(m => m.QueryString(qs => qs.Query(q))))));
+                .SearchAsync<T>(
+                    search => BuildApiSearch(
+                        search,
+                        offset,
+                        limit,
+                        fields,
+                        sort,
+                        scroll,
+                        new Expression<Func<T, object>>[]
+                        {
+                            defaultField => defaultField.Id,
+                            defaultField => defaultField.ChangeId,
+                            defaultField => defaultField.ChangeTime
+                        },
+                        defaultSort => defaultSort.Name.Suffix("keyword"),
+                        query => query
+                            .Bool(
+                                b => b
+                                    .Must(m => m.QueryString(qs => qs.Query(q))))));
+            return searchResponse;
         }
 
         private async Task<IActionResult> PostApiSearch<T>(
@@ -396,21 +450,22 @@ namespace OrganisationRegistry.Api.Search
         {
             var searchResults = await elastic
                 .ReadClient
-                .SearchAsync<T>(search => BuildApiSearch(
-                    search,
-                    offset,
-                    limit,
-                    fields,
-                    sort,
-                    scroll,
-                    new Expression<Func<T, object>>[]
-                    {
-                        defaultField => defaultField.Id,
-                        defaultField => defaultField.ChangeId,
-                        defaultField => defaultField.ChangeTime
-                    },
-                    defaultSort => defaultSort.Name.Suffix("keyword"),
-                    query => query.Raw(q.ToString())));
+                .SearchAsync<T>(
+                    search => BuildApiSearch(
+                        search,
+                        offset,
+                        limit,
+                        fields,
+                        sort,
+                        scroll,
+                        new Expression<Func<T, object>>[]
+                        {
+                            defaultField => defaultField.Id,
+                            defaultField => defaultField.ChangeId,
+                            defaultField => defaultField.ChangeTime
+                        },
+                        defaultSort => defaultSort.Name.Suffix("keyword"),
+                        query => query.Raw(q.ToString())));
 
             return BuildApiSearchResult(searchResults);
         }
@@ -471,10 +526,14 @@ namespace OrganisationRegistry.Api.Search
 
             if (!string.IsNullOrWhiteSpace(fields))
                 search = search
-                    .Source(source => source.Includes(x => x
-                        .Fields(defaultFieldsFunc)
-                        .Fields(fields.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(y => y.Trim())
-                            .Distinct().ToArray())));
+                    .Source(
+                        source => source.Includes(
+                            x => x
+                                .Fields(defaultFieldsFunc)
+                                .Fields(
+                                    fields.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+                                        .Select(y => y.Trim())
+                                        .Distinct().ToArray())));
 
             if (scroll.HasValue && scroll.Value)
                 search = search.Scroll(ScrollTimeout);
@@ -511,10 +570,12 @@ namespace OrganisationRegistry.Api.Search
             if (!string.IsNullOrWhiteSpace(fields))
                 fields = isAuthenticated
                     ? fields
-                    : string.Join(',', fields.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
-                        .Select(y => y.Trim())
-                        .Except(new List<string> { "bankAccounts" })
-                        .Distinct());
+                    : string.Join(
+                        ',',
+                        fields.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(y => y.Trim())
+                            .Except(new List<string> { "bankAccounts" })
+                            .Distinct());
 
             if (!string.IsNullOrWhiteSpace(fields)) return fields;
 
@@ -522,13 +583,17 @@ namespace OrganisationRegistry.Api.Search
             //the fields parameter will be empty and default to all fields, so second validation is needed
 
             return isAuthenticated
-                ? string.Join(',', typeof(OrganisationDocument)
-                    .GetProperties()
-                    .Select(x => x.Name.ToCamelCase()))
-                : string.Join(',', typeof(OrganisationDocument)
-                    .GetProperties()
-                    .Select(x => x.Name.ToCamelCase())
-                    .Except(new List<string> { "bankAccounts" }).ToList());
+                ? string.Join(
+                    ',',
+                    typeof(OrganisationDocument)
+                        .GetProperties()
+                        .Select(x => x.Name.ToCamelCase()))
+                : string.Join(
+                    ',',
+                    typeof(OrganisationDocument)
+                        .GetProperties()
+                        .Select(x => x.Name.ToCamelCase())
+                        .Except(new List<string> { "bankAccounts" }).ToList());
         }
 
         private static JsonSerializerSettings GetJsonSerializerSettings()
