@@ -8,9 +8,9 @@ namespace OrganisationRegistry.Magda.Common
     public class Envelope<T>
     {
         [XmlElement(Namespace = "http://schemas.xmlsoap.org/soap/envelope/")]
-        public Header Header { get; set; }
+        public Header? Header { get; set; }
 
         [XmlElement(Namespace = "http://schemas.xmlsoap.org/soap/envelope/")]
-        public T Body { get; set; }
+        public T? Body { get; set; }
     }
 }

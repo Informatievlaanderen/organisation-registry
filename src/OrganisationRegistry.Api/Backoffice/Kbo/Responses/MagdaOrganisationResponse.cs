@@ -7,7 +7,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo.Responses
     using global::Magda.GeefOnderneming;
     using OrganisationRegistry.Organisation;
 
-    public class MagdaOrganisationResponse: IMagdaOrganisationResponse
+    public class MagdaOrganisationResponse : IMagdaOrganisationResponse
     {
         private const string KBODateFormat = "yyyy-MM-dd";
 
@@ -20,17 +20,17 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo.Responses
 
         public DateTime? ValidFrom { get; }
 
-        public string KboNumber { get; }
+        public string? KboNumber { get; }
 
         public List<IMagdaBankAccount> BankAccounts { get; }
 
-        public IMagdaLegalForm LegalForm { get; }
+        public IMagdaLegalForm? LegalForm { get; }
 
-        public IMagdaAddress Address { get; }
+        public IMagdaAddress? Address { get; }
 
-        public IMagdaTermination Termination { get; }
+        public IMagdaTermination? Termination { get; }
 
-        public MagdaOrganisationResponse(Onderneming2_0Type onderneming, IDateTimeProvider dateTimeProvider)
+        public MagdaOrganisationResponse(Onderneming2_0Type? onderneming, IDateTimeProvider dateTimeProvider)
         {
             FormalName = new Name(onderneming?.Namen?.MaatschappelijkeNamen);
 
@@ -48,8 +48,9 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo.Responses
 
             var legalForm = onderneming
                 ?.Rechtsvormen
-                ?.FirstOrDefault(type =>
-                    OverlapsWithToday(type, dateTimeProvider.Today));
+                ?.FirstOrDefault(
+                    type =>
+                        OverlapsWithToday(type, dateTimeProvider.Today));
 
             if (legalForm != null)
                 LegalForm = new MagdaLegalForm(legalForm);
@@ -76,29 +77,30 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo.Responses
 
         public class Name : IMagdaName
         {
-            public string Value { get; }
+            public string? Value { get; }
             public DateTime? ValidFrom { get; }
 
-            public Name(NaamOndernemingType[] namen)
+            public Name(NaamOndernemingType[]? namen)
             {
                 var name = FirstValidDutchOrOtherwise(namen);
                 Value = name?.Naam.Trim();
                 ValidFrom = ParseKboDate(name?.DatumBegin);
             }
 
-            private static NaamOndernemingType FirstValidDutchOrOtherwise(NaamOndernemingType[] names)
+            private static NaamOndernemingType? FirstValidDutchOrOtherwise(NaamOndernemingType[]? maybeNames)
             {
-                if (names == null)
+                if (maybeNames is not { } names)
                     return null;
 
-                var dutchName = FirstValidOrMostRecent(names?.Where(IsDutch));
+                var maybeDutchName = FirstValidOrMostRecent(names.Where(IsDutch));
 
-                return dutchName?.Naam != null ?
-                    dutchName :
-                    FirstValidOrMostRecent(names);
+                if (maybeDutchName is { Naam: { } } dutchName)
+                    return dutchName;
+
+                return FirstValidOrMostRecent(names);
             }
 
-            private static NaamOndernemingType FirstValidOrMostRecent(IEnumerable<NaamOndernemingType> names)
+            private static NaamOndernemingType? FirstValidOrMostRecent(IEnumerable<NaamOndernemingType> names)
             {
                 var naamOndernemingTypes = names as NaamOndernemingType[] ?? names.ToArray();
 
@@ -116,7 +118,10 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo.Responses
 
             private static bool IsValid(NaamOndernemingType x)
             {
-                return (string.IsNullOrEmpty(x.DatumBegin) || DateTime.ParseExact(x.DatumBegin, KBODateFormat, null) <= DateTime.UtcNow) && (string.IsNullOrEmpty(x.DatumEinde) || DateTime.ParseExact(x.DatumEinde, KBODateFormat, null) >= DateTime.UtcNow);
+                return (string.IsNullOrEmpty(x.DatumBegin) ||
+                        DateTime.ParseExact(x.DatumBegin, KBODateFormat, null) <= DateTime.UtcNow) &&
+                       (string.IsNullOrEmpty(x.DatumEinde) ||
+                        DateTime.ParseExact(x.DatumEinde, KBODateFormat, null) >= DateTime.UtcNow);
             }
         }
 
@@ -146,7 +151,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo.Responses
 
         public class MagdaLegalForm : IMagdaLegalForm
         {
-            public string Code { get; }
+            public string? Code { get; }
             public DateTime? ValidFrom { get; }
             public DateTime? ValidTo { get; }
 
@@ -160,9 +165,9 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo.Responses
 
         public class MagdaAddress : IMagdaAddress
         {
-            public string Country { get; }
-            public string City { get; }
-            public string ZipCode { get; }
+            public string? Country { get; }
+            public string? City { get; }
+            public string? ZipCode { get; }
             public string Street { get; }
             public DateTime? ValidFrom { get; }
             public DateTime? ValidTo { get; }
@@ -196,10 +201,10 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo.Responses
             }
         }
 
-        private static DateTime? ParseKboDate(string d)
-        {
-            return string.IsNullOrEmpty(d) ? null : DateTime.ParseExact(d, KBODateFormat, null);
-        }
+        private static DateTime? ParseKboDate(string? maybeDate)
+            => string.IsNullOrEmpty(maybeDate)
+                ? null
+                : DateTime.ParseExact(maybeDate, KBODateFormat, null);
     }
 
     public class MagdaTermination : IMagdaTermination

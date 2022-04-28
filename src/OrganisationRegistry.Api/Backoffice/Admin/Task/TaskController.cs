@@ -89,7 +89,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
             var bodiesInNeedOfFixing = context
                 .BodyDetail
                 .AsQueryable()
-                .Where(x => x.BodyNumber == null || x.BodyNumber == "")
+                .Where(x => x.BodyNumber == "")
                 .Select(x => x.Id)
                 .ToList();
 
@@ -103,7 +103,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
             var seatsInNeedOfFixing = context
                 .BodySeatList
                 .AsQueryable()
-                .Where(x => x.BodySeatNumber == null || x.BodySeatNumber == "")
+                .Where(x => x.BodySeatNumber == "")
                 .ToList();
 
             _logger.LogInformation("Fixing {NumberOfBodySeats} body seats", seatsInNeedOfFixing.Count);
