@@ -11,6 +11,7 @@
     public class OrganisationRegistryContractResolver : DefaultContractResolver
     {
         public bool SetStringDefaultValueToEmptyString { get; set; }
+        public bool RemoveEmptyArrays { get; set; }
 
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
@@ -23,7 +24,7 @@
 
             property = HandleDefaultString(property, propertyType, SetStringDefaultValueToEmptyString);
 
-            property = HandleEmptyArray(property, propertyType, propertyName);
+            property = HandleEmptyArray(property, propertyType, propertyName, RemoveEmptyArrays);
 
             return property;
         }
@@ -34,9 +35,13 @@
         /// <param name="property"></param>
         /// <param name="propertyType"></param>
         /// <param name="propertyName"></param>
+        /// <param name="removeEmptyArrays"></param>
         /// <returns></returns>
-        private static JsonProperty HandleEmptyArray(JsonProperty property, Type propertyType, string propertyName)
+        private static JsonProperty HandleEmptyArray(JsonProperty property, Type propertyType, string propertyName, bool removeEmptyArrays)
         {
+            if (!removeEmptyArrays)
+                return property;
+
             if (propertyType == typeof(string))
                 return property;
 
