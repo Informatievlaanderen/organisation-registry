@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrganisationRegistry.SqlServer.Infrastructure;
 
@@ -11,9 +12,10 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 namespace OrganisationRegistry.SqlServer.Migrations
 {
     [DbContext(typeof(OrganisationRegistryContext))]
-    partial class OrganisationRegistryContextModelSnapshot : ModelSnapshot
+    [Migration("20220428120714_AlterTable_BodyDetail_Set_BodyNumber_NotNull")]
+    partial class AlterTable_BodyDetail_Set_BodyNumber_NotNull
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -369,7 +371,6 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("BodySeatNumber")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
@@ -493,7 +494,6 @@ namespace OrganisationRegistry.SqlServer.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("BodySeatNumber")
-                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 

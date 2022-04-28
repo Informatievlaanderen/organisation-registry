@@ -18,7 +18,7 @@ namespace OrganisationRegistry.SqlServer.Body
     {
         public Guid Id { get; set; }
 
-        public string? BodyNumber { get; set; }
+        public string BodyNumber { get; set; } = null!;
 
         public string Name { get; set; } = null!;
         public string? ShortName { get; set; }
@@ -46,7 +46,8 @@ namespace OrganisationRegistry.SqlServer.Body
                 .IsClustered(false);
 
             b.Property(p => p.BodyNumber)
-                .HasMaxLength(BodyListConfiguration.BodyNumberLength);
+                .HasMaxLength(BodyListConfiguration.BodyNumberLength)
+                .IsRequired();
 
             b.Property(p => p.Name)
                 .HasMaxLength(BodyListConfiguration.NameLength)
