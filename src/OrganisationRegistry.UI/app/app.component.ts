@@ -60,7 +60,7 @@ export class App implements OnInit, OnDestroy {
         }
         const matomo = (<any>window)._paq;
         if (matomo) {
-          matomo.push(['setCustomUrl', '/' + (<any>window).location.hash.substr(1)]);
+          matomo.push(['setCustomUrl', (<any>window).location.hash.substr(1)]);
           matomo.push(['setDocumentTitle', data.title]);
           matomo.push(['trackPageView']);
         }
