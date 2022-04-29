@@ -1,3 +1,15 @@
+# [1.172.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.171.1...v1.172.0) (2022-04-29)
+
+
+### Bug Fixes
+
+* or-948 solve regression with sorting and paging ([8c4f28b](https://github.com/informatievlaanderen/organisation-registry/commit/8c4f28b99e3f837275e265d5ca0aff26f0407018))
+
+
+### Features
+
+* or-983 send page changes to analytics ([c0c27c2](https://github.com/informatievlaanderen/organisation-registry/commit/c0c27c2b761e8db078b373ea2ba381d226c7aa75))
+
 ## [1.171.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.171.0...v1.171.1) (2022-04-28)
 
 # [1.171.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.170.0...v1.171.0) (2022-04-28)
