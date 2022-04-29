@@ -56,7 +56,14 @@ export class OrganisationSearchComponent implements OnInit, OnDestroy {
     this.subscriptions.push(organisations
       .finally(() => this.isLoading = false)
       .subscribe(
-        newOrganisations => this.organisations = newOrganisations,
+        newOrganisations => this.organisations = new PagedResult<OrganisationDocument>(
+          newOrganisations.data,
+          newOrganisations.page,
+          newOrganisations.pageSize,
+          newOrganisations.totalItems,
+          newOrganisations.totalPages,
+          (event === undefined) ? "ovoNumber" : event.sortBy,
+          newOrganisations.sortOrder),
         error => this.alertService.setAlert(
           new AlertBuilder()
             .error(error)
