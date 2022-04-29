@@ -1,3 +1,10 @@
+## [1.172.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.172.0...v1.172.1) (2022-04-29)
+
+
+### Bug Fixes
+
+* or-983 remove double slash in analytics ([1715233](https://github.com/informatievlaanderen/organisation-registry/commit/17152335d557eda2da8b462361ed0962e911fed5))
+
 # [1.172.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.171.1...v1.172.0) (2022-04-29)
 
 
