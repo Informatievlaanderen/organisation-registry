@@ -52,11 +52,17 @@ export class App implements OnInit, OnDestroy {
       })
       .filter(route => route.outlet === 'primary')
       .mergeMap(route => route.data)
-      .subscribe(data => {
+      .subscribe((data: any) => {
         if (data['title']) {
           this.titleService.setTitle('Wegwijs - ' + data['title']);
         } else {
           this.titleService.setTitle('Wegwijs');
+        }
+        const matomo = (<any>window)._paq;
+        if (matomo) {
+          matomo.push(['setCustomUrl', '/' + (<any>window).location.hash.substr(1)]);
+          matomo.push(['setDocumentTitle', data.title]);
+          matomo.push(['trackPageView']);
         }
       }));
   }
