@@ -1,3 +1,11 @@
+# [1.174.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.173.0...v1.174.0) (2022-05-02)
+
+
+### Features
+
+* or-894 allow removal of keytypes in frontend ([0c8e2ce](https://github.com/informatievlaanderen/organisation-registry/commit/0c8e2ce5ee26e4a52223e718808b4888c225b07e))
+* or-894 prevent duplicate events ([b922a36](https://github.com/informatievlaanderen/organisation-registry/commit/b922a364ef5f2de8590d058cbcf991639712bddf))
+
 # [1.173.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.172.1...v1.173.0) (2022-05-02)
 
 
