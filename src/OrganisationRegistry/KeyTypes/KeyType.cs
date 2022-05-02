@@ -6,27 +6,33 @@ namespace OrganisationRegistry.KeyTypes
     public class KeyType : AggregateRoot
     {
         public KeyTypeName Name { get; private set; } = null!;
-        public bool IsDeleted { get; private set; }
+        public bool IsRemoved { get; private set; }
 
-        private KeyType() { }
+        private KeyType()
+        {
+        }
 
         public KeyType(KeyTypeId id, KeyTypeName name)
         {
-            ApplyChange(new KeyTypeCreated(
-                id,
-                name));
+            ApplyChange(
+                new KeyTypeCreated(
+                    id,
+                    name));
         }
 
         public void Update(KeyTypeName name)
         {
-            ApplyChange(new KeyTypeUpdated(
-                Id,
-                name,
-                Name));
+            ApplyChange(
+                new KeyTypeUpdated(
+                    Id,
+                    name,
+                    Name));
         }
 
         public void Remove()
         {
+            if (IsRemoved) return;
+
             ApplyChange(new KeyTypeRemoved(Id));
         }
 
@@ -34,7 +40,7 @@ namespace OrganisationRegistry.KeyTypes
         {
             Id = @event.KeyTypeId;
             Name = new KeyTypeName(@event.Name);
-            IsDeleted = false;
+            IsRemoved = false;
         }
 
         private void Apply(KeyTypeUpdated @event)
@@ -44,7 +50,7 @@ namespace OrganisationRegistry.KeyTypes
 
         private void Apply(KeyTypeRemoved @event)
         {
-            IsDeleted = true;
+            IsRemoved = true;
         }
     }
 }
