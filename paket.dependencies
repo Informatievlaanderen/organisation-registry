@@ -80,7 +80,7 @@ nuget App.Metrics.AspNetCore.Tracking 4.2.0
 nuget App.Metrics.Reporting.Console 4.2.0
 
 // BASE REGISTRIES STUFF
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 6.0.3
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 6.0.4
 
 nuget Be.Vlaanderen.Basisregisters.Testing.Infrastructure.Events 3.0.0 content: true, copy_content_to_output_dir: always, copy_local: true
 
