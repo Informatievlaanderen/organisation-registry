@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrganisationRegistry.SqlServer.Infrastructure;
 
@@ -11,9 +12,10 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 namespace OrganisationRegistry.SqlServer.Migrations
 {
     [DbContext(typeof(OrganisationRegistryContext))]
-    partial class OrganisationRegistryContextModelSnapshot : ModelSnapshot
+    [Migration("20220502130825_AlterTable_OrganisationKeyList_AddColumn_ScheduledForRemoval")]
+    partial class AlterTable_OrganisationKeyList_AddColumn_ScheduledForRemoval
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

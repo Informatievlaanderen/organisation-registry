@@ -10,6 +10,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Authorization;
     using SqlServer.Infrastructure;
     using SqlServer.Organisation;

@@ -13,5 +13,6 @@ namespace OrganisationRegistry.Infrastructure.Configuration
 
         public HostedServiceConfigurationSection? SyncFromKboService { get; set; }
         public HostedServiceConfigurationSection? ScheduledCommandsService { get; set; }
+        public HostedServiceConfigurationSection? SyncRemovedItemsService { get; set; }
     }
 }

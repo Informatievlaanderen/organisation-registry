@@ -1,4 +1,4 @@
-namespace OrganisationRegistry
+namespace OrganisationRegistry.Infrastructure
 {
     using System;
     using System.Linq;

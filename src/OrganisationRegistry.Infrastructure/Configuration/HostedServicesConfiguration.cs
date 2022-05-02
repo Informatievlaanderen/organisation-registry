@@ -11,8 +11,13 @@ namespace OrganisationRegistry.Infrastructure.Configuration
             ScheduledCommandsService = new HostedServiceConfiguration(
                 configuration?.ScheduledCommandsService?.DelayInSeconds ?? 3600,
                 configuration?.ScheduledCommandsService?.Enabled ?? true);
+
+            SyncRemovedItemsService = new HostedServiceConfiguration(
+                configuration?.SyncRemovedItemsService?.DelayInSeconds ?? 3600,
+                configuration?.SyncRemovedItemsService?.Enabled ?? true);
         }
         public HostedServiceConfiguration SyncFromKboService { get; }
         public HostedServiceConfiguration ScheduledCommandsService { get; }
+        public HostedServiceConfiguration SyncRemovedItemsService { get; }
     }
 }

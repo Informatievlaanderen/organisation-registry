@@ -8,6 +8,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationSubTheme.Quer
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
+    using OrganisationRegistry.Infrastructure;
     using SqlServer.Infrastructure;
     using SqlServer.RegulationSubTheme;
 

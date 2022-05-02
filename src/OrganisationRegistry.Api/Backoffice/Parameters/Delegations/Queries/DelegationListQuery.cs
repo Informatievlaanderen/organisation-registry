@@ -8,6 +8,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Delegations.Queries
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Authorization;
     using SqlServer.Delegations;
     using SqlServer.Infrastructure;
