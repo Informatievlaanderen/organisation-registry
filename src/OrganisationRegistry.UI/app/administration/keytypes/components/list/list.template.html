@@ -19,31 +19,42 @@
   <div class="u-table-overflow">
     <table id="addressTable" class="data-table">
       <thead>
-        <tr class="data-table__header">
-          <th class="data-table__header-title">
-            <a class="data-table__header-title--sortable"
-               [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('name')}"
-               (click)="sortBy('name')">
-              Naam
-              <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
-                 [ngClass]="{'vi-u-180deg': isSortedByDescending('name')}"></i>
-              </a>
-          </th>
-        </tr>
+      <tr class="data-table__header">
+        <th class="data-table__header-title">
+          <a class="data-table__header-title--sortable"
+             [ngClass]="{'data-table__header-title--sortable-active': isSortedBy('name')}"
+             (click)="sortBy('name')">
+            Naam
+            <i class="data-table__header-title__sort-icon vi vi-u-link-after vi-long-arrow"
+               [ngClass]="{'vi-u-180deg': isSortedByDescending('name')}"></i>
+          </a>
+        </th>
+        <th class="data-table__header-title"></th>
+      </tr>
       </thead>
       <tbody>
-        <template [ngIf]="isBusy">
-          <tr><td colspan="1">Bezig met laden...</td></tr>
-        </template>
+      <template [ngIf]="isBusy">
+        <tr>
+          <td colspan="1">Bezig met laden...</td>
+        </tr>
+      </template>
 
-        <template [ngIf]="!isBusy">
-          <tr *ngIf="!hasData(data)">
-            <td colspan="1">Geen data beschikbaar...</td>
-          </tr>
-          <tr *ngFor="let key of data">
-            <td class="data-table__body-title"><a [routerLink]="['./', key.id]" title="{{key.name}}">{{key.name}}</a></td>
-          </tr>
-        </template>
+      <template [ngIf]="!isBusy">
+        <tr *ngIf="!hasData(data)">
+          <td colspan="1">Geen data beschikbaar...</td>
+        </tr>
+        <tr *ngFor="let key of data" [ngClass]="{'data-table__body-history':key.isRemoved}">
+          <td class="data-table__body-title"><a [routerLink]="['./', key.id]" title="{{key.name}}">{{key.name}}</a>
+          </td>
+          <td class="data-table__body-title">
+            <a *ngIf="!key.isRemoved"
+               aria-label="Verwijderen"
+               class="vi vi-u-badge vi-u-badge--grey vi-u-badge--small vi-trash"
+               title="Verwijderen"
+               (click)="remove(key)"></a>
+          </td>
+        </tr>
+      </template>
       </tbody>
     </table>
   </div>

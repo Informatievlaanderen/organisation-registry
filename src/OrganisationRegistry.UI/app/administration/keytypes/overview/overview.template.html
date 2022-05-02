@@ -12,7 +12,8 @@
         <ww-key-type-list
           [items]="keyTypes"
           [isBusy]="isLoading"
-          (changePage)="changePage($event)">
+          (changePage)="changePage($event)"
+          (removeKeyTypeClicked)="removeKeyType($event)">
         </ww-key-type-list>
     </div>
 </div>
