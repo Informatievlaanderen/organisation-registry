@@ -113,4 +113,15 @@ export class KeyTypeService implements ICrudService<KeyType> {
   private toKeyTypes(res: Response): PagedResult<KeyTypeListItem> {
     return new PagedResultFactory<KeyTypeListItem>().create(res.headers, res.json());
   }
+
+  delete(keyType: KeyType) {
+    const url = `${this.keyTypesUrl}/${keyType.id}`;
+
+    let headers = new HeadersBuilder()
+      .json()
+      .build();
+
+    return this.http
+      .delete(url, { headers: headers });
+  }
 }

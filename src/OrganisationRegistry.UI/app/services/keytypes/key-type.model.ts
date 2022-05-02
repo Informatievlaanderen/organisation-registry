@@ -1,8 +1,10 @@
-import { ICrudItem } from 'core/crud';
+import {ICrudItem} from 'core/crud';
 
 export class KeyType implements ICrudItem<KeyType> {
   constructor(
     public id: string = '',
-    public name: string = ''
-  ) { }
+    public name: string = '',
+    public isRemoved: boolean = false
+  ) {
+  }
 }

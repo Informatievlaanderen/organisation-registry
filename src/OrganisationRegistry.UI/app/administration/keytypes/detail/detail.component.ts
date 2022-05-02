@@ -37,7 +37,8 @@ export class KeyTypeDetailComponent implements OnInit, OnDestroy {
   ) {
     this.form = formBuilder.group({
       id: [ '', required ],
-      name: [ '', required ]
+      name: [ '', required ],
+      isRemoved:[false]
     });
   }
 

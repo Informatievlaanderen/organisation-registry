@@ -10,12 +10,14 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Queries
     using SqlServer.Infrastructure;
     using SqlServer.KeyType;
 
-    public class KeyTypeListQuery: Query<KeyTypeListItem, KeyTypeListQuery.KeyTypeListItemFilter, KeyTypeListItemResult>
+    public class
+        KeyTypeListQuery : Query<KeyTypeListItem, KeyTypeListQuery.KeyTypeListItemFilter, KeyTypeListItemResult>
     {
         private readonly OrganisationRegistryContext _context;
         private readonly Func<Guid, bool> _isAuthorizedForKeyType;
 
-        protected override ISorting Sorting => new KeyTypeListSorting();
+        protected override ISorting Sorting
+            => new KeyTypeListSorting();
 
         public KeyTypeListQuery(OrganisationRegistryContext context, Func<Guid, bool> isAuthorizedForKeyType)
         {
@@ -39,10 +41,11 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Queries
             return keyTypes;
         }
 
-        protected override Expression<Func<KeyTypeListItem, KeyTypeListItemResult>> Transformation =>
-            x => new KeyTypeListItemResult(
+        protected override Expression<Func<KeyTypeListItem, KeyTypeListItemResult>> Transformation
+            => x => new KeyTypeListItemResult(
                 x.Id,
                 x.Name,
+                x.IsRemoved,
                 _isAuthorizedForKeyType);
 
         public class KeyTypeListItemFilter
@@ -68,15 +71,17 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Queries
 
     public class KeyTypeListItemResult
     {
-        public KeyTypeListItemResult(Guid id, string name, Func<Guid,bool> isAuthorizedForKeyType)
+        public KeyTypeListItemResult(Guid id, string name, bool isRemoved, Func<Guid, bool> isAuthorizedForKeyType)
         {
             Id = id;
             Name = name;
+            IsRemoved = isRemoved;
             UserPermitted = isAuthorizedForKeyType(id);
         }
 
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public bool IsRemoved { get; set; }
         public bool UserPermitted { get; set; }
     }
 }
