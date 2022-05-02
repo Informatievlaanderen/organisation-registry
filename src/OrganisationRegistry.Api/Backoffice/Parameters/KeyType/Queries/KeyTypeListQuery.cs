@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using Infrastructure.Search;
 using Infrastructure.Search.Filtering;
 using Infrastructure.Search.Sorting;
+using OrganisationRegistry.Infrastructure;
 using SqlServer.Infrastructure;
 using SqlServer.KeyType;
 
@@ -37,7 +38,10 @@ public class KeyTypeListQuery :
         var keyTypes = _context.KeyTypeList.AsQueryable();
 
         if (filtering.Filter is not { } filter)
-            return keyTypes;
+            return keyTypes.Where(x => !x.IsRemoved);
+
+        if (!filter.ShowAll)
+            keyTypes = keyTypes.Where(x => !x.IsRemoved);
 
         if (filter.Name is { } name && name.IsNotEmptyOrWhiteSpace())
             keyTypes = keyTypes.Where(x => x.Name.Contains(name));
@@ -53,6 +57,8 @@ public class KeyTypeListQuery :
         public Guid Id { get; set; }
 
         public string? Name { get; set; }
+
+        public bool ShowAll { get; set; } = false;
 
         public List<Guid> ExcludeIds { get; } = new();
     }

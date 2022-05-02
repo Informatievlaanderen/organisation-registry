@@ -8,6 +8,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFramework.Queries
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
+    using OrganisationRegistry.Infrastructure;
     using SqlServer.FormalFramework;
     using SqlServer.Infrastructure;
 

@@ -14,7 +14,7 @@ namespace OrganisationRegistry.Organisation.State
         public Period OperationalValidity { get; set; }
         public bool ShowOnVlaamseOverheidSites { get; set; }
         public bool IsActive { get; set; }
-        public List<OrganisationKey> OrganisationKeys { get; }
+        public List<OrganisationKey> OrganisationKeys { get; set; }
         public List<OrganisationContact> OrganisationContacts { get; }
         public List<OrganisationLabel> OrganisationLabels { get; }
         public List<OrganisationOrganisationClassification> OrganisationOrganisationClassifications { get; }

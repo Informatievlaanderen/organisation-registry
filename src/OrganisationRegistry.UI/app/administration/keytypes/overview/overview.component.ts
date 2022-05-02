@@ -51,6 +51,8 @@ export class KeyTypeOverviewComponent implements OnInit, OnDestroy {
 
   private loadKeyTypes(event?: PagedEvent) {
     this.isLoading = true;
+    this.filter.showAll = true;
+
     let keyTypes = (event === undefined)
       ? this.keyTypeService.getKeyTypes(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.keyTypeService.getKeyTypes(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);

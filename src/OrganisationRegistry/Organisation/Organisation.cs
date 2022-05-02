@@ -24,6 +24,7 @@ namespace OrganisationRegistry.Organisation
     using System.Linq;
     using Commands;
     using Exceptions;
+    using Infrastructure;
     using Infrastructure.Authorization;
     using OrganisationTermination;
     using RegulationSubTheme;
@@ -559,7 +560,6 @@ namespace OrganisationRegistry.Organisation
                 .Where(organisationKey => organisationKey.OrganisationKeyId != organisationKeyId)
                 .Any(organisationKey => organisationKey.Validity.OverlapsWith(validity)))
                 throw new KeyAlreadyCoupledToInThisPeriod();
-
 
             ApplyChange(new OrganisationKeyUpdated(
                 Id,
@@ -1806,6 +1806,13 @@ namespace OrganisationRegistry.Organisation
             ApplyChange(new OrganisationReleasedFromVlimpersManagement(Id));
         }
 
+
+        public void RemoveOrganisationKey(OrganisationKeyId organisationKeyId)
+        {
+            if (State.OrganisationKeys.Any(key => key.OrganisationKeyId != organisationKeyId))
+                ApplyChange(new OrganisationKeyRemoved(Id, organisationKeyId));
+        }
+
         private void CheckIfCurrentParentChanged(
             OrganisationParent organisationParent,
             DateTime today)
@@ -2645,6 +2652,13 @@ namespace OrganisationRegistry.Organisation
         private void Apply(OrganisationReleasedFromVlimpersManagement @event)
         {
             State.UnderVlimpersManagement = false;
+        }
+
+        private void Apply(OrganisationKeyRemoved @event)
+        {
+            State.OrganisationKeys = State.OrganisationKeys
+                .Except(key => key.OrganisationKeyId == @event.OrganisationKeyId)
+                .ToList();
         }
 
         private void Apply(OrganisationTerminatedV2 @event)

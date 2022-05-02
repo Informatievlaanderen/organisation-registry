@@ -44,6 +44,7 @@ export class OrganisationKeysUpdateOrganisationKeyComponent implements OnInit, O
       keyValue: ['', required],
       validFrom: [''],
       validTo: [''],
+      scheduledForRemoval: [false]
     });
   }
 

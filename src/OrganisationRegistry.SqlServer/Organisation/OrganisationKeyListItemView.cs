@@ -1,4 +1,5 @@
-﻿namespace OrganisationRegistry.SqlServer.Organisation
+﻿// ReSharper disable ClassNeverInstantiated.Global
+namespace OrganisationRegistry.SqlServer.Organisation
 {
     using System;
     using System.Data.Common;
@@ -20,12 +21,14 @@
         public Guid OrganisationKeyId { get; set; }
         public Guid OrganisationId { get; set; }
         public Guid KeyTypeId { get; set; }
-        public string KeyTypeName { get; set; }
-        public string KeyValue { get; set; }
+        public string KeyTypeName { get; set; } = null!;
+        public string KeyValue { get; set; } = null!;
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
+        public bool ScheduledForRemoval { get; set; }
     }
 
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class OrganisationKeyListConfiguration : EntityMappingConfiguration<OrganisationKeyListItem>
     {
         public const int KeyValueLength = 500;
@@ -46,6 +49,8 @@
             b.Property(p => p.ValidFrom);
             b.Property(p => p.ValidTo);
 
+            b.Property(p => p.ScheduledForRemoval);
+
             b.HasIndex(x => x.KeyTypeName).IsClustered();
             b.HasIndex(x => x.KeyValue);
             b.HasIndex(x => x.ValidFrom);
@@ -53,12 +58,15 @@
         }
     }
 
+    // ReSharper disable once ClassNeverInstantiated.Global
     public class OrganisationKeyListView :
         Projection<OrganisationKeyListView>,
         IEventHandler<OrganisationKeyAdded>,
         IEventHandler<OrganisationKeyUpdated>,
         IEventHandler<KeyTypeUpdated>,
-        IEventHandler<OrganisationTerminatedV2>
+        IEventHandler<OrganisationTerminatedV2>,
+        IEventHandler<KeyTypeRemoved>,
+        IEventHandler<OrganisationKeyRemoved>
     {
         protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
         public override string Schema => WellknownSchemas.BackofficeSchema;
@@ -74,23 +82,19 @@
             ILogger<OrganisationKeyListView> logger,
             IEventStore eventStore,
             IContextFactory contextFactory) : base(logger, contextFactory)
-        {
-            _eventStore = eventStore;
-        }
+            => _eventStore = eventStore;
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KeyTypeUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationKeys = context.OrganisationKeyList.Where(x => x.KeyTypeId == message.Body.KeyTypeId);
-                if (!organisationKeys.Any())
-                    return;
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationKeys = context.OrganisationKeyList.Where(x => x.KeyTypeId == message.Body.KeyTypeId);
+            if (!organisationKeys.Any())
+                return;
 
-                foreach (var organisationKey in organisationKeys)
-                    organisationKey.KeyTypeName = message.Body.Name;
+            foreach (var organisationKey in organisationKeys)
+                organisationKey.KeyTypeName = message.Body.Name;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationKeyAdded> message)
@@ -106,34 +110,52 @@
                 ValidTo = message.Body.ValidTo
             };
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.OrganisationKeyList.AddAsync(organisationKeyListItem);
-                await context.SaveChangesAsync();
-            }
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            await context.OrganisationKeyList.AddAsync(organisationKeyListItem);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationKeyUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var key = context.OrganisationKeyList.SingleOrDefault(item => item.OrganisationKeyId == message.Body.OrganisationKeyId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var key = await context.OrganisationKeyList.SingleAsync(item => item.OrganisationKeyId == message.Body.OrganisationKeyId);
 
-                key.OrganisationKeyId = message.Body.OrganisationKeyId;
-                key.OrganisationId = message.Body.OrganisationId;
-                key.KeyTypeId = message.Body.KeyTypeId;
-                key.KeyValue = message.Body.Value;
-                key.KeyTypeName = message.Body.KeyTypeName;
-                key.ValidFrom = message.Body.ValidFrom;
-                key.ValidTo = message.Body.ValidTo;
+            key.OrganisationKeyId = message.Body.OrganisationKeyId;
+            key.OrganisationId = message.Body.OrganisationId;
+            key.KeyTypeId = message.Body.KeyTypeId;
+            key.KeyValue = message.Body.Value;
+            key.KeyTypeName = message.Body.KeyTypeName;
+            key.ValidFrom = message.Body.ValidFrom;
+            key.ValidTo = message.Body.ValidTo;
 
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+            => await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KeyTypeRemoved> message)
         {
-            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationKeysToBeRemoved =
+                context.OrganisationKeyList.Where(item => item.KeyTypeId == message.Body.KeyTypeId);
+
+            foreach (var organisationKey in organisationKeysToBeRemoved)
+            {
+                organisationKey.ScheduledForRemoval = true;
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationKeyRemoved> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var key = await context.OrganisationKeyList.SingleAsync(item => item.OrganisationKeyId == message.Body.OrganisationKeyId);
+
+            context.OrganisationKeyList.Remove(key);
+
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
@@ -143,7 +165,7 @@
 
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
             var keys = context.OrganisationKeyList.Where(item =>
-                message.Body.FieldsToTerminate.Keys.Keys.Contains(item.OrganisationKeyId));
+                message.Body.FieldsToTerminate.Keys.ContainsKey(item.OrganisationKeyId));
 
             foreach (var key in keys)
                 key.ValidTo = message.Body.FieldsToTerminate.Keys[key.OrganisationKeyId];

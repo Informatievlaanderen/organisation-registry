@@ -9,6 +9,7 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Queries
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
+    using OrganisationRegistry.Infrastructure;
     using SqlServer.Body;
     using SqlServer.Infrastructure;
 
