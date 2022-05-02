@@ -2,7 +2,7 @@
 version 7.0.2
 framework: net6.0
 source https://api.nuget.org/v3/index.json
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 6.0.3 //"
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 6.0.4 //"
 
 #load "packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/build-generic.fsx"
 
@@ -22,6 +22,7 @@ let dockerRepository = "organisation-registry"
 let assemblyVersionNumber = (sprintf "2.%s")
 let nugetVersionNumber = (sprintf "%s")
 
+let buildSolution = buildSolution assemblyVersionNumber
 let buildSource = build assemblyVersionNumber
 let buildTest = buildTest assemblyVersionNumber
 let setVersions = (setSolutionVersions assemblyVersionNumber product copyright company)
@@ -43,22 +44,26 @@ Target.create "Restore_Solution" (fun _ -> restore "OrganisationRegistry")
 
 Target.create "Build_Solution" (fun _ ->
   setVersions "SolutionInfo.cs"
-  buildSource "OrganisationRegistry.Api"
-  buildSource "OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump"
-  buildSource "OrganisationRegistry.ElasticSearch.Projections"
-  buildSource "OrganisationRegistry.KboMutations"
-  buildSource "OrganisationRegistry.Projections.Delegations"
-  buildSource "OrganisationRegistry.Projections.Reporting"
-  buildSource "OrganisationRegistry.UI"
-  buildSource "OrganisationRegistry.VlaanderenBeNotifier"
-  buildSource "OrganisationRegistry.Rebuilder"
-  buildTest "OrganisationRegistry.Api.IntegrationTests"
-  buildTest "OrganisationRegistry.ElasticSearch.Tests"
-  buildTest "OrganisationRegistry.KboMutations.UnitTests"
-  buildTest "OrganisationRegistry.SqlServer.IntegrationTests"
-  buildTest "OrganisationRegistry.UnitTests"
-  buildTest "OrganisationRegistry.VlaanderenBeNotifier.UnitTests"
-)
+  buildSolution "OrganisationRegistry")
+
+// Target.create "Build_Solution" (fun _ ->
+//   setVersions "SolutionInfo.cs"
+//   buildSource "OrganisationRegistry.Api"
+//   buildSource "OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump"
+//   buildSource "OrganisationRegistry.ElasticSearch.Projections"
+//   buildSource "OrganisationRegistry.KboMutations"
+//   buildSource "OrganisationRegistry.Projections.Delegations"
+//   buildSource "OrganisationRegistry.Projections.Reporting"
+//   buildSource "OrganisationRegistry.UI"
+//   buildSource "OrganisationRegistry.VlaanderenBeNotifier"
+//   buildSource "OrganisationRegistry.Rebuilder"
+//   buildTest "OrganisationRegistry.Api.IntegrationTests"
+//   buildTest "OrganisationRegistry.ElasticSearch.Tests"
+//   buildTest "OrganisationRegistry.KboMutations.UnitTests"
+//   buildTest "OrganisationRegistry.SqlServer.IntegrationTests"
+//   buildTest "OrganisationRegistry.UnitTests"
+//   buildTest "OrganisationRegistry.VlaanderenBeNotifier.UnitTests"
+// )
 
 Target.create "Site_Build" (fun _ ->
   Npm.exec "run build" id
