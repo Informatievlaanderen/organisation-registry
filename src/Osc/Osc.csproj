@@ -13,12 +13,16 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <NoWarn>8618,1591</NoWarn>
+    <NoWarn>8618,1591,1570,1573,1572,1587</NoWarn>
   </PropertyGroup>
-
+  
   <PropertyGroup>
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <WarningLevel>0</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenSearch.Net\OpenSearch.Net.csproj" />
