@@ -10,7 +10,8 @@
     public class KeyTypeCommandHandlers :
         BaseCommandHandler<KeyTypeCommandHandlers>,
         ICommandHandler<CreateKeyType>,
-        ICommandHandler<UpdateKeyType>
+        ICommandHandler<UpdateKeyType>,
+        ICommandHandler<RemoveKeyType>
     {
         private readonly IUniqueNameValidator<KeyType> _uniqueNameValidator;
 
@@ -39,6 +40,13 @@
 
             var keyType = Session.Get<KeyType>(message.KeyTypeId);
             keyType.Update(message.Name);
+            await Session.Commit(message.User);
+        }
+
+        public async Task Handle(RemoveKeyType message)
+        {
+            var keyType = Session.Get<KeyType>(message.KeyTypeId);
+            keyType.Remove();
             await Session.Commit(message.User);
         }
     }
