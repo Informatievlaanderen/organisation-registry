@@ -1,3 +1,11 @@
+# [1.173.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.172.1...v1.173.0) (2022-05-02)
+
+
+### Features
+
+* or-894 allow removal of keytype in API ([58d7694](https://github.com/informatievlaanderen/organisation-registry/commit/58d7694b9dfa613e204a320c2aa0be2ea29a73fe))
+* or-894 remove open search warnings ([387b1e8](https://github.com/informatievlaanderen/organisation-registry/commit/387b1e8d5b55b1e47990cbdc798e751f7849b673))
+
 ## [1.172.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.172.0...v1.172.1) (2022-04-29)
 
 
