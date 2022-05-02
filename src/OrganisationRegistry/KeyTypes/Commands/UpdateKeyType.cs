@@ -2,7 +2,8 @@ namespace OrganisationRegistry.KeyTypes.Commands
 {
     public class UpdateKeyType : BaseCommand<KeyTypeId>
     {
-        public KeyTypeId KeyTypeId => Id;
+        public KeyTypeId KeyTypeId
+            => Id;
 
         public KeyTypeName Name { get; }
 

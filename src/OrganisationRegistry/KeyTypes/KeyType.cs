@@ -5,7 +5,8 @@ namespace OrganisationRegistry.KeyTypes
 
     public class KeyType : AggregateRoot
     {
-        public KeyTypeName Name { get; private set; }
+        public KeyTypeName Name { get; private set; } = null!;
+        public bool IsDeleted { get; private set; }
 
         private KeyType() { }
 
@@ -24,15 +25,26 @@ namespace OrganisationRegistry.KeyTypes
                 Name));
         }
 
+        public void Remove()
+        {
+            ApplyChange(new KeyTypeRemoved(Id));
+        }
+
         private void Apply(KeyTypeCreated @event)
         {
             Id = @event.KeyTypeId;
             Name = new KeyTypeName(@event.Name);
+            IsDeleted = false;
         }
 
         private void Apply(KeyTypeUpdated @event)
         {
             Name = new KeyTypeName(@event.Name);
+        }
+
+        private void Apply(KeyTypeRemoved @event)
+        {
+            IsDeleted = true;
         }
     }
 }

@@ -20,7 +20,7 @@ namespace OrganisationRegistry.Infrastructure.Domain
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _trackedAggregates = new Dictionary<Guid, AggregateDescriptor>();
 
-            logger.LogTrace("Creating Session.");
+            logger.LogTrace("Creating Session");
         }
 
         public void Add<T>(T aggregate) where T : AggregateRoot

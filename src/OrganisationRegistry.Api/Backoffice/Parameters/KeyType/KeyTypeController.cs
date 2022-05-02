@@ -116,5 +116,18 @@
 
             return OkWithLocationHeader(nameof(Get), new { id = internalMessage.KeyTypeId });
         }
+
+        [HttpDelete("{id}")]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        {
+            var internalMessage = new RemoveKeyTypeRequest(id);
+
+            await CommandSender.Send(RemoveKeyTypeRequestMapping.Map(internalMessage));
+
+            return NoContent();
+        }
     }
 }

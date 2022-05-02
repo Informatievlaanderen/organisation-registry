@@ -16,7 +16,8 @@
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
+        public bool IsRemoved { get; set; }
     }
 
     public class KeyTypeListConfiguration : EntityMappingConfiguration<KeyTypeListItem>
@@ -40,7 +41,8 @@
     public class KeyTypeListView :
         Projection<KeyTypeListView>,
         IEventHandler<KeyTypeCreated>,
-        IEventHandler<KeyTypeUpdated>
+        IEventHandler<KeyTypeUpdated>,
+        IEventHandler<KeyTypeRemoved>
     {
         protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
         public override string Schema => WellknownSchemas.BackofficeSchema;
@@ -66,31 +68,40 @@
             {
                 Id = message.Body.KeyTypeId,
                 Name = message.Body.Name,
+                IsRemoved = false,
             };
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.KeyTypeList.AddAsync(keyType);
-                await context.SaveChangesAsync();
-            }
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+
+            await context.KeyTypeList.AddAsync(keyType);
+            await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KeyTypeUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var keyType = context.KeyTypeList.SingleOrDefault(x => x.Id == message.Body.KeyTypeId);
-                if (keyType == null)
-                    return; // TODO: Error?
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
 
-                keyType.Name = message.Body.Name;
-                await context.SaveChangesAsync();
-            }
+            var keyType = context.KeyTypeList.Single(x => x.Id == message.Body.KeyTypeId);
+
+            keyType.Name = message.Body.Name;
+
+            await context.SaveChangesAsync();
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
             await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KeyTypeRemoved> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+
+            var keyType = context.KeyTypeList.Single(x => x.Id == message.Body.KeyTypeId);
+
+            keyType.IsRemoved = true;
+
+            await context.SaveChangesAsync();
         }
     }
 }
