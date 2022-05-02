@@ -1,3 +1,10 @@
+# [1.175.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.174.0...v1.175.0) (2022-05-02)
+
+
+### Features
+
+* or-894 remove organisationkeys hostedservice ([021c3a0](https://github.com/informatievlaanderen/organisation-registry/commit/021c3a0e3a887e393a5aeffd96961491e29558fc))
+
 # [1.174.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.173.0...v1.174.0) (2022-05-02)
 
 
