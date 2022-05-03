@@ -1,3 +1,11 @@
+## [1.175.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.175.0...v1.175.1) (2022-05-03)
+
+
+### Bug Fixes
+
+* bump buildpipeline and use build solution again ([14f610e](https://github.com/informatievlaanderen/organisation-registry/commit/14f610eaa09fea66773182d94587f18235459d64))
+* upgrade build pipeline ([008e074](https://github.com/informatievlaanderen/organisation-registry/commit/008e0747653da47af53393478b6f0db7db2d5dd4))
+
 # [1.175.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.174.0...v1.175.0) (2022-05-02)
 
 
