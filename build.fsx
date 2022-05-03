@@ -2,7 +2,7 @@
 version 7.0.2
 framework: net6.0
 source https://api.nuget.org/v3/index.json
-nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 6.0.4 //"
+nuget Be.Vlaanderen.Basisregisters.Build.Pipeline 6.0.5 //"
 
 #load "packages/Be.Vlaanderen.Basisregisters.Build.Pipeline/Content/build-generic.fsx"
 
@@ -46,25 +46,6 @@ Target.create "Build_Solution" (fun _ ->
   setVersions "SolutionInfo.cs"
   buildSolution "OrganisationRegistry")
 
-// Target.create "Build_Solution" (fun _ ->
-//   setVersions "SolutionInfo.cs"
-//   buildSource "OrganisationRegistry.Api"
-//   buildSource "OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump"
-//   buildSource "OrganisationRegistry.ElasticSearch.Projections"
-//   buildSource "OrganisationRegistry.KboMutations"
-//   buildSource "OrganisationRegistry.Projections.Delegations"
-//   buildSource "OrganisationRegistry.Projections.Reporting"
-//   buildSource "OrganisationRegistry.UI"
-//   buildSource "OrganisationRegistry.VlaanderenBeNotifier"
-//   buildSource "OrganisationRegistry.Rebuilder"
-//   buildTest "OrganisationRegistry.Api.IntegrationTests"
-//   buildTest "OrganisationRegistry.ElasticSearch.Tests"
-//   buildTest "OrganisationRegistry.KboMutations.UnitTests"
-//   buildTest "OrganisationRegistry.SqlServer.IntegrationTests"
-//   buildTest "OrganisationRegistry.UnitTests"
-//   buildTest "OrganisationRegistry.VlaanderenBeNotifier.UnitTests"
-// )
-
 Target.create "Site_Build" (fun _ ->
   Npm.exec "run build" id
 
@@ -78,16 +59,7 @@ Target.create "Site_Build" (fun _ ->
   Shell.copyFile dist (source @@ "init.sh")
 )
 
-Target.create "Test_Solution" (fun _ ->
-    [
-        "test" @@ "OrganisationRegistry.Api.IntegrationTests"
-        "test" @@ "OrganisationRegistry.ElasticSearch.Tests"
-        "test" @@ "OrganisationRegistry.KboMutations.UnitTests"
-        "test" @@ "OrganisationRegistry.SqlServer.IntegrationTests"
-        "test" @@ "OrganisationRegistry.UnitTests"
-        "test" @@ "OrganisationRegistry.VlaanderenBeNotifier.UnitTests"
-    ] |> List.iter testWithDotNet
-)
+Target.create "Test_Solution" (fun _ -> testSolution "OrganisationRegistry")
 
 Target.create "Publish_Solution" (fun _ ->
   [
