@@ -2,16 +2,15 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
 {
     using System;
     using System.Collections.Generic;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
-    using KeyTypes;
     using OrganisationRegistry.Infrastructure.Events;
-    using KeyTypes.Events;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Configuration;
+    using OrganisationRegistry.KeyTypes;
+    using OrganisationRegistry.KeyTypes.Events;
     using Tests.Shared;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;

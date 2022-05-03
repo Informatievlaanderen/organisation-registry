@@ -1809,8 +1809,9 @@ namespace OrganisationRegistry.Organisation
 
         public void RemoveOrganisationKey(OrganisationKeyId organisationKeyId)
         {
-            if (State.OrganisationKeys.Any(key => key.OrganisationKeyId != organisationKeyId))
-                ApplyChange(new OrganisationKeyRemoved(Id, organisationKeyId));
+            if (!State.OrganisationKeys.Any(key => key.OrganisationKeyId == organisationKeyId))
+                return;
+            ApplyChange(new OrganisationKeyRemoved(Id, organisationKeyId));
         }
 
         private void CheckIfCurrentParentChanged(

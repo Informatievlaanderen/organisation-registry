@@ -4,7 +4,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using System.Collections.Generic;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
-    using KeyTypes.Events;
+    using OrganisationRegistry.KeyTypes.Events;
     using LabelType.Events;
     using LocationType.Events;
     using Microsoft.Extensions.Logging;
