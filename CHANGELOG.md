@@ -1,3 +1,10 @@
+# [1.176.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.175.1...v1.176.0) (2022-05-03)
+
+
+### Features
+
+* or-894 implement elastic search projections ([7054e0d](https://github.com/informatievlaanderen/organisation-registry/commit/7054e0de335f119a6b9c3afbfd7bf4ea86fac652))
+
 ## [1.175.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.175.0...v1.175.1) (2022-05-03)
 
 
