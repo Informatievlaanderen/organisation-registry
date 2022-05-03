@@ -5,7 +5,7 @@
     using System.Linq;
     using AutoFixture;
     using AutoFixture.Kernel;
-    using KeyTypes;
+    using OrganisationRegistry.KeyTypes;
     using OrganisationRegistry.Organisation;
 
     public static class FixtureExtensions

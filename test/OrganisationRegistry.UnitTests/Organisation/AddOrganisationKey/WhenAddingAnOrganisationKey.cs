@@ -5,9 +5,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationKey
     using System.Linq;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
-    using KeyTypes;
+    using OrganisationRegistry.KeyTypes;
     using OrganisationRegistry.Infrastructure.Events;
-    using KeyTypes.Events;
+    using OrganisationRegistry.KeyTypes.Events;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;

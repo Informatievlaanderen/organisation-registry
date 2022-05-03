@@ -5,7 +5,7 @@ namespace OrganisationRegistry.UnitTests.OrganisationTermination
     using System.Linq;
     using AutoFixture;
     using FluentAssertions;
-    using KeyTypes;
+    using OrganisationRegistry.KeyTypes;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Exceptions;
     using OrganisationRegistry.Organisation.OrganisationTermination;
