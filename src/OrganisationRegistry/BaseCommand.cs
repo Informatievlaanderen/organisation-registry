@@ -25,4 +25,6 @@ namespace OrganisationRegistry
     {
         public new T Id { get; set; } = null!;
     }
+
+    //public record CommandEnvelope<TCommand>(TCommand Command, IUser User) : ICommandEnvelope<TCommand>;
 }

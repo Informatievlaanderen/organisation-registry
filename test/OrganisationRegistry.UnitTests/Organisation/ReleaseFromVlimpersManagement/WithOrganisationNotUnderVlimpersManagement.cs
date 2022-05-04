@@ -19,7 +19,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.ReleaseFromVlimpersManagem
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WithOrganisationNotUnderVlimpersManagement: Specification<Organisation, OrganisationCommandHandlers, ReleaseFromVlimpersManagement>
+    public class WithOrganisationNotUnderVlimpersManagement: OldSpecification<Organisation, OrganisationCommandHandlers, ReleaseFromVlimpersManagement>
     {
         private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
 

@@ -16,7 +16,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainBuilding
     using OrganisationRegistry.Organisation.Events;
     using Xunit.Abstractions;
 
-    public class WhenMainBuildingIsStillActive : Specification<Organisation, OrganisationCommandHandlers, UpdateMainBuilding>
+    public class WhenMainBuildingIsStillActive : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateMainBuilding>
     {
         private OrganisationId _organisationId;
         private Guid _buildingId;

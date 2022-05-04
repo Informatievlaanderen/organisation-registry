@@ -19,7 +19,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationFormalFrameworkWithCircularDependenciesButInAnotherFormalFramework : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationFormalFramework>
+    public class WhenUpdatingAnOrganisationFormalFrameworkWithCircularDependenciesButInAnotherFormalFramework : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationFormalFramework>
     {
         private static readonly DateTimeProviderStub DateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
         private readonly SequentialOvoNumberGenerator _ovoNumberGenerator = new SequentialOvoNumberGenerator();

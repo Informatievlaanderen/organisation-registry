@@ -19,7 +19,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationKey
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingAnOrganisationKey : Specification<Organisation, OrganisationCommandHandlers, AddOrganisationKey>
+    public class WhenAddingAnOrganisationKey : OldSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationKey>
     {
         private Guid _organisationId;
         private Guid _keyId;

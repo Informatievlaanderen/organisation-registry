@@ -19,7 +19,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationLocation : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationLocation>
+    public class WhenUpdatingAnOrganisationLocation : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationLocation>
     {
         private Guid _organisationId;
         private Guid _locationId;

@@ -19,7 +19,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLabel
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingAnOrganisationLabel : Specification<Organisation, OrganisationCommandHandlers, AddOrganisationLabel>
+    public class WhenAddingAnOrganisationLabel : OldSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationLabel>
     {
         private Guid _organisationId;
         private Guid _labelId;

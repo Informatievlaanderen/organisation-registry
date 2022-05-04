@@ -18,7 +18,7 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
 
     public abstract class Specification<TAggregate, THandler, TCommand>
         where TAggregate: AggregateRoot
-        where THandler : class, ICommandHandler<TCommand>
+        where THandler : class, ICommandEnvelopeHandler<TCommand, CommandEnvelope<TCommand>>
         where TCommand : ICommand
     {
         private readonly ITestOutputHelper _helper;
@@ -64,8 +64,8 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
         {
             var handler = BuildHandler();
             var command = When();
-            command.User ??= new UserBuilder().Build();
-            await handler.Handle(command);
+
+            await handler.Handle(new CommandEnvelope<TCommand>(command, new UserBuilder().Build()));
         }
 
         protected IEnumerable<IEvent> NumberTheEvents(IEnumerable<IEvent> toList)

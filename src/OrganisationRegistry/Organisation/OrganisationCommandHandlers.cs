@@ -34,7 +34,6 @@ using RegulationTheme;
 
 public class OrganisationCommandHandlers :
     BaseCommandHandler<OrganisationCommandHandlers>,
-    ICommandHandler<CreateOrganisation>,
     ICommandHandler<UpdateOrganisationInfo>,
     ICommandHandler<UpdateOrganisationInfoNotLimitedToVlimpers>,
     ICommandHandler<UpdateOrganisationInfoLimitedToVlimpers>,

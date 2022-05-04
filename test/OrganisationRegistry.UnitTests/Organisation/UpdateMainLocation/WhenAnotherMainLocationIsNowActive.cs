@@ -19,7 +19,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainLocation
     using Xunit.Abstractions;
 
     public class WhenAnotherMainLocationIsNowActive :
-        Specification<Organisation, OrganisationCommandHandlers, UpdateMainLocation>
+        OldSpecification<Organisation, OrganisationCommandHandlers, UpdateMainLocation>
     {
         private Guid _organisationId;
         private Guid _locationAId;

@@ -6,7 +6,7 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
     using OrganisationRegistry.Infrastructure.Domain;
     using Xunit.Abstractions;
 
-    public abstract class ExceptionSpecification<TAggregate, THandler, TCommand> : Specification<TAggregate, THandler, TCommand>
+    public abstract class ExceptionSpecification<TAggregate, THandler, TCommand> : OldSpecification<TAggregate, THandler, TCommand>
         where TAggregate : AggregateRoot
         where THandler : class, ICommandHandler<TCommand>
         where TCommand : ICommand

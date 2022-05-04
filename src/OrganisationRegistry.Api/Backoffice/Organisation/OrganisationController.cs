@@ -83,7 +83,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
                 return BadRequest(ModelState);
 
             var authInfo = await HttpContext.GetAuthenticateInfoAsync();
-            if (authInfo.Principal == null || !authInfo.Principal.IsInRole(Roles.Developer))
+            if (authInfo?.Principal == null || !authInfo.Principal.IsInRole(Roles.Developer))
                 message.OvoNumber = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(message.KboNumber))

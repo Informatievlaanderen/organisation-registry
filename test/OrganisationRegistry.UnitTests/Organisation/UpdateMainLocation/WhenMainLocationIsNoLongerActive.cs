@@ -18,7 +18,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainLocation
     using Tests.Shared;
     using Xunit.Abstractions;
 
-    public class WhenMainLocationIsNoLongerActive : Specification<Organisation, OrganisationCommandHandlers, UpdateMainLocation>
+    public class WhenMainLocationIsNoLongerActive : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateMainLocation>
     {
         private Guid _organisationId;
         private Guid _locationId;

@@ -14,7 +14,7 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyBalancedParticipat
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WithNoParticipation : Specification<Body, BodyCommandHandlers, UpdateBodyBalancedParticipation>
+    public class WithNoParticipation : OldSpecification<Body, BodyCommandHandlers, UpdateBodyBalancedParticipation>
     {
         private Guid _bodyId;
 

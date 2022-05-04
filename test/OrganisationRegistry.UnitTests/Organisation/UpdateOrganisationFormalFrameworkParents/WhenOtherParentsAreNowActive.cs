@@ -18,7 +18,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenOtherParentsAreNowActive: Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationFormalFrameworkParents>
+    public class WhenOtherParentsAreNowActive: OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationFormalFrameworkParents>
     {
         private SequentialOvoNumberGenerator _sequentialOvoNumberGenerator;
         private DateTimeProviderStub _dateTimeProvider;

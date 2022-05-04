@@ -27,7 +27,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using Xunit.Abstractions;
     using Purpose = OrganisationRegistry.Organisation.Events.Purpose;
 
-    public class CreateOrganisationFromKboWithoutAddressAndLegalFormTests: Specification<Organisation, KboOrganisationCommandHandlers, CreateOrganisationFromKbo>
+    public class CreateOrganisationFromKboWithoutAddressAndLegalFormTests: OldSpecification<Organisation, KboOrganisationCommandHandlers, CreateOrganisationFromKbo>
     {
         private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
 

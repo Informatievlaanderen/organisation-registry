@@ -18,7 +18,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainBuilding
     using Tests.Shared;
     using Xunit.Abstractions;
 
-    public class WhenMainBuildingIsNoLongerActive : Specification<Organisation, OrganisationCommandHandlers, UpdateMainBuilding>
+    public class WhenMainBuildingIsNoLongerActive : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateMainBuilding>
     {
         private OrganisationId _organisationId;
         private Guid _buildingId;

@@ -18,7 +18,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationParentValidityToTheFuture : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationParent>
+    public class WhenUpdatingAnOrganisationParentValidityToTheFuture : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationParent>
     {
         private Guid _organisationId;
         private Guid _organisationParentId;

@@ -19,7 +19,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenValidityBecomesInvalidAndIsMainLocationChangesToFalseBugfix : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationLocation>
+    public class WhenValidityBecomesInvalidAndIsMainLocationChangesToFalseBugfix : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationLocation>
     {
         private Guid _organisationId;
         private Guid _locationId;

@@ -17,7 +17,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.Coup
     using Xunit;
     using Xunit.Abstractions;
 
-    public class ForceTerminateOrganisation: Specification<Organisation, OrganisationCommandHandlers, TerminateOrganisation>
+    public class ForceTerminateOrganisation: OldSpecification<Organisation, OrganisationCommandHandlers, TerminateOrganisation>
     {
         private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
 
