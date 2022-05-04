@@ -1,3 +1,10 @@
+## [1.176.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.176.0...v1.176.1) (2022-05-04)
+
+
+### Bug Fixes
+
+* or-894 invert condition for key removal ([340f08c](https://github.com/informatievlaanderen/organisation-registry/commit/340f08cd185107737ba893e6501a6a200a57332d))
+
 # [1.176.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.175.1...v1.176.0) (2022-05-03)
 
 
