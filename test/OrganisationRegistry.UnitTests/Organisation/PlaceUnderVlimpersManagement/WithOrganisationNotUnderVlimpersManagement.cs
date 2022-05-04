@@ -18,7 +18,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WithOrganisationNotUnderVlimpersManagement: Specification<Organisation, OrganisationCommandHandlers, PlaceUnderVlimpersManagement>
+    public class WithOrganisationNotUnderVlimpersManagement: OldSpecification<Organisation, OrganisationCommandHandlers, PlaceUnderVlimpersManagement>
     {
         private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
 

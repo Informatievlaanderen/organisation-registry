@@ -19,7 +19,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfoLimitedToVlimpers>
+    public class WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfoLimitedToVlimpers>
     {
         private OrganisationCreatedBuilder _organisationCreatedBuilder;
 

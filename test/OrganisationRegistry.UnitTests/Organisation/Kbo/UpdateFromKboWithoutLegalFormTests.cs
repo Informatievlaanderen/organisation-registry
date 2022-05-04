@@ -22,7 +22,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using Xunit;
     using Xunit.Abstractions;
 
-    public class UpdateFromKboWithoutLegalFormTests: Specification<Organisation, KboOrganisationCommandHandlers, SyncOrganisationWithKbo>
+    public class UpdateFromKboWithoutLegalFormTests: OldSpecification<Organisation, KboOrganisationCommandHandlers, SyncOrganisationWithKbo>
     {
         private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
 

@@ -18,7 +18,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenChangingAnOrganisationParent_DoesNotThrowParentClearedAndAssigned : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationParent>
+    public class WhenChangingAnOrganisationParent_DoesNotThrowParentClearedAndAssigned : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationParent>
     {
         private OrganisationId _organisationAId;
         private OrganisationId _organisationBId;

@@ -21,7 +21,9 @@
 
         private static void RegisterHandlers(IApplicationBuilder app)
         {
-            var registrar = app.ApplicationServices.GetService<BusRegistrar>();
+            var registrar = app.ApplicationServices.GetService<BusRegistrar>()!;
+
+            registrar.RegisterCommandEnvelopeHandlers(typeof(BaseCommand));
 
             registrar.RegisterCommandHandlersFromAssembly(typeof(BaseCommand));
 
@@ -35,9 +37,10 @@
                 .GetTypeInfo()
                 .Assembly
                 .GetTypes()
-                .Where(x => x
-                    .GetInterfaces()
-                    .Any(y => y.GetTypeInfo().IsGenericType && y.GetGenericTypeDefinition() == typeof(IEventHandler<>)));
+                .Where(
+                    x => x
+                        .GetInterfaces()
+                        .Any(y => y.GetTypeInfo().IsGenericType && y.GetGenericTypeDefinition() == typeof(IEventHandler<>)));
 
             foreach (var eventHandler in eventHandlers)
                 app.ApplicationServices.GetService(eventHandler);

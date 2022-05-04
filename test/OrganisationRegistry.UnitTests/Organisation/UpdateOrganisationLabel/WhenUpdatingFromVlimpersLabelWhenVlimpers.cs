@@ -20,7 +20,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLabel
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingFromVlimpersLabelWhenVlimpers : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationLabel>
+    public class WhenUpdatingFromVlimpersLabelWhenVlimpers : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationLabel>
     {
         private Guid _organisationId;
         private Guid _vlimpersLabelTypeId;

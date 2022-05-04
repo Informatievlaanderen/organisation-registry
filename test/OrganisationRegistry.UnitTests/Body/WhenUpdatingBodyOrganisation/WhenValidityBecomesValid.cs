@@ -16,7 +16,7 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenValidityBecomesValid : Specification<Body, BodyCommandHandlers, UpdateBodyOrganisation>
+    public class WhenValidityBecomesValid : OldSpecification<Body, BodyCommandHandlers, UpdateBodyOrganisation>
     {
         private Guid _bodyId;
         private Guid _bodyOrganisationId;

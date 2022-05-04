@@ -19,7 +19,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingAMainOrganisationLocation : Specification<Organisation, OrganisationCommandHandlers, AddOrganisationLocation>
+    public class WhenAddingAMainOrganisationLocation : OldSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationLocation>
     {
         private Guid _organisationId;
         private Guid _locationId;

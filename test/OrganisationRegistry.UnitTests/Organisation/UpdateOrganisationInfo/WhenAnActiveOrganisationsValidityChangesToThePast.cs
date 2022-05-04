@@ -19,7 +19,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAnActiveOrganisationsValidityChangesToThePast : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfo>
+    public class WhenAnActiveOrganisationsValidityChangesToThePast : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfo>
     {
         private OrganisationCreatedBuilder _organisationCreatedBuilder;
         private DateTime _yesterday;

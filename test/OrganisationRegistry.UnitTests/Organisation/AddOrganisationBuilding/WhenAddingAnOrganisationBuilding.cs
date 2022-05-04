@@ -20,7 +20,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingAMainOrganisationBuilding : Specification<Organisation, OrganisationCommandHandlers, AddOrganisationBuilding>
+    public class WhenAddingAMainOrganisationBuilding : OldSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationBuilding>
     {
         private Guid _organisationId;
         private Guid _buildingId;

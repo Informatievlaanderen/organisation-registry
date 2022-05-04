@@ -17,7 +17,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingAVlimpersOrganisationParentAndUserIsVlimpers : Specification<Organisation, OrganisationCommandHandlers, AddOrganisationParent>
+    public class WhenAddingAVlimpersOrganisationParentAndUserIsVlimpers : OldSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationParent>
     {
         private Guid _organisationId;
         private Guid _organisationOrganisationParentId;

@@ -1,7 +1,6 @@
 ﻿namespace OrganisationRegistry.Api.HostedServices
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -16,7 +15,6 @@
     public class SyncRemovedItemsService : BackgroundService
     {
         private readonly IContextFactory _contextFactory;
-        private readonly IDateTimeProvider _dateTimeProvider;
         private readonly ICommandSender _commandSender;
         private readonly ILogger<SyncRemovedItemsService> _logger;
         private readonly HostedServiceConfiguration _configuration;
@@ -24,13 +22,11 @@
 
         public SyncRemovedItemsService(
             IContextFactory contextFactory,
-            IDateTimeProvider dateTimeProvider,
             ICommandSender commandSender,
             IOrganisationRegistryConfiguration configuration,
             ILogger<SyncRemovedItemsService> logger) : base(logger)
         {
             _contextFactory = contextFactory;
-            _dateTimeProvider = dateTimeProvider;
             _commandSender = commandSender;
             _configuration = configuration.HostedServices.SyncRemovedItemsService;
             _logger = logger;

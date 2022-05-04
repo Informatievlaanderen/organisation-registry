@@ -21,7 +21,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationKey : Specification<Organisation, OrganisationCommandHandlers, UpdateOrganisationKey>
+    public class WhenUpdatingAnOrganisationKey : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationKey>
     {
         private Guid _organisationId;
         private Guid _keyId;

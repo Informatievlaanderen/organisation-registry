@@ -16,6 +16,10 @@
             builder.RegisterAssemblyTypes(typeof(BaseCommand).GetTypeInfo().Assembly)
                 .AsClosedTypesOf(typeof(ICommandHandler<>))
                 .InstancePerLifetimeScope();
+
+            builder.RegisterAssemblyTypes(typeof(BaseCommand).GetTypeInfo().Assembly)
+                .AsClosedTypesOf(typeof(ICommandEnvelopeHandler<>))
+                .InstancePerLifetimeScope();
         }
     }
 }

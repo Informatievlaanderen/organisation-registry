@@ -17,7 +17,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
     using Xunit;
     using Xunit.Abstractions;
 
-    public class TerminateOrganisationThatBecomesInvalid: Specification<Organisation, OrganisationCommandHandlers, TerminateOrganisation>
+    public class TerminateOrganisationThatBecomesInvalid: OldSpecification<Organisation, OrganisationCommandHandlers, TerminateOrganisation>
     {
         private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
 
