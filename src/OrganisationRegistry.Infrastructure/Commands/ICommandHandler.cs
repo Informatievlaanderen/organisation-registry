@@ -54,7 +54,7 @@
             var serviceProvider = _requestScopedServiceProvider();
             var maybeCommandEnvelopeHandler = serviceProvider.GetService(typeof(ICommandEnvelopeHandler<TCommand>));
             if (maybeCommandEnvelopeHandler is ICommandEnvelopeHandler<TCommand> commandEnvelopeHandler)
-                commandEnvelopeHandler.Handle(theCommandEnvelope);
+                return commandEnvelopeHandler.Handle(theCommandEnvelope);
 
             return Task.CompletedTask;
         }

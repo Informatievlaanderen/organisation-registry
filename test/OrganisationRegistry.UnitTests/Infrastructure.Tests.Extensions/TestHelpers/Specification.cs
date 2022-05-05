@@ -18,7 +18,7 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
 
     public abstract class Specification<TAggregate, THandler, TCommand>
         where TAggregate: AggregateRoot
-        where THandler : class, ICommandEnvelopeHandler<TCommand, CommandEnvelope<TCommand>>
+        where THandler : class, ICommandEnvelopeHandler<TCommand>
         where TCommand : ICommand
     {
         private readonly ITestOutputHelper _helper;

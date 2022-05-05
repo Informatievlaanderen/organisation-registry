@@ -73,7 +73,7 @@ namespace OrganisationRegistry.Infrastructure.Bus
         {
             if (_commandEnvelopeRoutes.SingleOrDefault(x => x.CanHandle<T>()) is { } envelopeHandler)
             {
-                var envelope = new CommandEnvelope<ICommand>(command, await _securityService.GetRequiredUser(ClaimsPrincipal.Current));
+                var envelope = new CommandEnvelope<T>(command, await _securityService.GetRequiredUser(ClaimsPrincipal.Current));
 
                 await envelopeHandler.Handle(envelope);
 
