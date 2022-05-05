@@ -19,7 +19,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
     using Xunit;
     using Xunit.Abstractions;
 
-    public class AsDaughterOfVlimpersOrganisation: Specification<Organisation, OrganisationCommandHandlers, CreateOrganisation>
+    public class AsDaughterOfVlimpersOrganisation: Specification<Organisation, CreateOrganisationCommandHandler, CreateOrganisation>
     {
         private OrganisationCreatedBuilder _organisationCreatedBuilder;
 
@@ -57,17 +57,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
             };
         }
 
-        protected override OrganisationCommandHandlers BuildHandler()
-        {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+        protected override CreateOrganisationCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<CreateOrganisationCommandHandler>>().Object,
                 Session,
                 new SequentialOvoNumberGenerator(),
                 new UniqueOvoNumberValidatorStub(false),
-                new DateTimeProviderStub(DateTime.Today),
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
-        }
+                new DateTimeProviderStub(DateTime.Today));
 
         protected override int ExpectedNumberOfEvents => 5;
 

@@ -17,7 +17,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WithAnInactiveValidity: Specification<Organisation, OrganisationCommandHandlers, CreateOrganisation>
+    public class WithAnInactiveValidity: Specification<Organisation, CreateOrganisationCommandHandler, CreateOrganisation>
     {
         private DateTimeProviderStub _dateTimeProviderStub;
         private DateTime _yesterday;
@@ -53,17 +53,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
             };
         }
 
-        protected override OrganisationCommandHandlers BuildHandler()
-        {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+        protected override CreateOrganisationCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<CreateOrganisationCommandHandler>>().Object,
                 Session,
                 new SequentialOvoNumberGenerator(),
                 new UniqueOvoNumberValidatorStub(false),
-                _dateTimeProviderStub,
-                new OrganisationRegistryConfigurationStub(),
-                Mock.Of<ISecurityService>());
-        }
+                _dateTimeProviderStub);
 
         protected override int ExpectedNumberOfEvents => 1;
 
