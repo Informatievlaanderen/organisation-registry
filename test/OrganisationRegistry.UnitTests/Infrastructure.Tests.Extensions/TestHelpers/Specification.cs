@@ -27,6 +27,7 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
         protected abstract IEnumerable<IEvent> Given();
         protected abstract TCommand When();
         protected abstract THandler BuildHandler();
+        protected abstract IUser User { get; }
 
         protected abstract int ExpectedNumberOfEvents { get; }
 
@@ -65,7 +66,7 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
             var handler = BuildHandler();
             var command = When();
 
-            await handler.Handle(new CommandEnvelope<TCommand>(command, new UserBuilder().Build()));
+            await handler.Handle(new CommandEnvelope<TCommand>(command, User));
         }
 
         protected IEnumerable<IEvent> NumberTheEvents(IEnumerable<IEvent> toList)
