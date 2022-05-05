@@ -39,12 +39,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
                 new ValidFrom(),
                 new ValidTo(),
                 new ValidFrom(),
-                new ValidTo())
-            {
-                User = new UserBuilder()
-                    .AddRoles(Role.AlgemeenBeheerder)
-                    .Build()
-            };
+                new ValidTo());
         }
 
         protected override CreateOrganisationCommandHandler BuildHandler()
@@ -55,6 +50,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
                 new UniqueOvoNumberValidatorStub(false),
                 new DateTimeProviderStub(DateTime.Today));
 
+
+        protected override IUser User
+            => new UserBuilder().AddRoles(Role.AlgemeenBeheerder).Build();
         protected override int ExpectedNumberOfEvents => 2;
 
         [Fact]
