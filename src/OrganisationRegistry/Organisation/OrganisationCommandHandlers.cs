@@ -29,7 +29,6 @@ namespace OrganisationRegistry.Organisation
     using OrganisationTermination;
     using RegulationSubTheme;
     using RegulationTheme;
-    using UpdateNotLimitedToVlimpers;
     using IOrganisationRegistryConfiguration = Infrastructure.Configuration.IOrganisationRegistryConfiguration;
 
     public class OrganisationCommandHandlers :
@@ -37,7 +36,7 @@ namespace OrganisationRegistry.Organisation
         // ICommandHandler<CreateOrganisation>,
         // ICommandHandler<UpdateOrganisationInfo>,
         // ICommandHandler<UpdateOrganisationInfoNotLimitedToVlimpers>,
-        ICommandHandler<UpdateOrganisationInfoLimitedToVlimpers>,
+        // ICommandHandler<UpdateOrganisationInfoLimitedToVlimpers>,
         ICommandHandler<AddOrganisationKey>,
         ICommandHandler<UpdateOrganisationKey>,
         ICommandHandler<AddOrganisationRegulation>,

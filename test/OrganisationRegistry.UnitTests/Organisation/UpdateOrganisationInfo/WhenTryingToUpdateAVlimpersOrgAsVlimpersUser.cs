@@ -2,43 +2,40 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
 {
     using System;
     using System.Collections.Generic;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
-    using Purpose;
     using Tests.Shared;
     using Tests.Shared.TestDataBuilders;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenTryingToUpdateAVlimpersOrgAsVlimpersUser : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfoLimitedToVlimpers>
+    public class WhenTryingToUpdateAVlimpersOrgAsVlimpersUser : Specification<UpdateOrganisationInfoLimitedToVlimpersCommandHandler, UpdateOrganisationInfoLimitedToVlimpers>
     {
-        private OrganisationCreatedBuilder _organisationCreatedBuilder;
+        private readonly OrganisationCreatedBuilder _organisationCreatedBuilder = new(new SequentialOvoNumberGenerator());
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        public WhenTryingToUpdateAVlimpersOrgAsVlimpersUser(ITestOutputHelper helper) : base(helper)
         {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
-                Session,
-                new SequentialOvoNumberGenerator(),
-                new UniqueOvoNumberValidatorStub(false),
-                new DateTimeProviderStub(DateTime.Today), Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
         }
 
-        protected override IEnumerable<IEvent> Given()
-        {
-            _organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
+        protected override UpdateOrganisationInfoLimitedToVlimpersCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<UpdateOrganisationInfoLimitedToVlimpersCommandHandler>>().Object,
+                Session,
+                new DateTimeProviderStub(DateTime.Today));
 
-            return new List<IEvent>
+        protected override IUser User
+            => new UserBuilder()
+                .AddRoles(Role.VlimpersBeheerder)
+                .Build();
+
+        protected override IEnumerable<IEvent> Given()
+            => new List<IEvent>
             {
                 _organisationCreatedBuilder
                     .WithValidity(null, null)
@@ -46,15 +43,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                 new OrganisationBecameActive(_organisationCreatedBuilder.Id),
                 new OrganisationPlacedUnderVlimpersManagement(_organisationCreatedBuilder.Id)
             };
-        }
 
         protected override UpdateOrganisationInfoLimitedToVlimpers When()
-        {
-            var user = new UserBuilder()
-                .AddRoles(Role.VlimpersBeheerder)
-                .Build();
-
-            return new UpdateOrganisationInfoLimitedToVlimpers(
+            => new(
                 _organisationCreatedBuilder.Id,
                 "Test",
                 Article.None,
@@ -62,13 +53,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                 new ValidFrom(),
                 new ValidTo(),
                 new ValidFrom(),
-                new ValidTo())
-            {
-                User = user
-            };
-        }
+                new ValidTo());
 
-        protected override int ExpectedNumberOfEvents => 4;
+        protected override int ExpectedNumberOfEvents
+            => 4;
 
         [Fact]
         public void UpdatesOrganisationName()
@@ -97,7 +85,5 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
             var organisationCreated = PublishedEvents[3].UnwrapBody<OrganisationOperationalValidityUpdated>();
             organisationCreated.Should().NotBeNull();
         }
-
-        public WhenTryingToUpdateAVlimpersOrgAsVlimpersUser(ITestOutputHelper helper) : base(helper) { }
     }
 }

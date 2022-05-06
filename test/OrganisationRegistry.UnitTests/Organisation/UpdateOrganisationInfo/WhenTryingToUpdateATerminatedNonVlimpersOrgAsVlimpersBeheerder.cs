@@ -3,42 +3,42 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
     using System;
     using System.Collections.Generic;
     using AutoFixture;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
     using Tests.Shared;
     using Tests.Shared.TestDataBuilders;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser : OldExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfoLimitedToVlimpers>
+    public class WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser : ExceptionSpecification<UpdateOrganisationInfoLimitedToVlimpersCommandHandler, UpdateOrganisationInfoLimitedToVlimpers>
     {
-        private OrganisationCreatedBuilder _organisationCreatedBuilder;
+        private readonly OrganisationCreatedBuilder _organisationCreatedBuilder = new(new SequentialOvoNumberGenerator());
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        public WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser(ITestOutputHelper helper) : base(helper)
         {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
-                Session,
-                new SequentialOvoNumberGenerator(),
-                new UniqueOvoNumberValidatorStub(false),
-                new DateTimeProviderStub(DateTime.Today), Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
         }
+
+        protected override UpdateOrganisationInfoLimitedToVlimpersCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<UpdateOrganisationInfoLimitedToVlimpersCommandHandler>>().Object,
+                Session,
+                new DateTimeProviderStub(DateTime.Today));
+
+        protected override IUser User
+            => new UserBuilder()
+                .AddRoles(Role.VlimpersBeheerder)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
             var fixture = new Fixture();
-            _organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
 
             return new List<IEvent>
             {
@@ -46,11 +46,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                     .WithValidity(null, null)
                     .Build(),
                 new OrganisationBecameActive(_organisationCreatedBuilder.Id),
-                new OrganisationTerminatedV2(_organisationCreatedBuilder.Id,
+                new OrganisationTerminatedV2(
+                    _organisationCreatedBuilder.Id,
                     fixture.Create<string>(),
                     fixture.Create<string>(),
                     fixture.Create<DateTime>(),
-                    new FieldsToTerminateV2(null,
+                    new FieldsToTerminateV2(
+                        null,
                         new Dictionary<Guid, DateTime>(),
                         new Dictionary<Guid, DateTime>(),
                         new Dictionary<Guid, DateTime>(),
@@ -69,20 +71,15 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                         new KeyValuePair<Guid, DateTime>?(),
                         new KeyValuePair<Guid, DateTime>?(),
                         new KeyValuePair<Guid, DateTime>?()
-                        ),
+                    ),
                     fixture.Create<bool>(),
                     fixture.Create<DateTime?>()
-                    ),
+                ),
             };
         }
 
         protected override UpdateOrganisationInfoLimitedToVlimpers When()
-        {
-            var user = new UserBuilder()
-                .AddRoles(Role.VlimpersBeheerder)
-                .Build();
-
-            return new UpdateOrganisationInfoLimitedToVlimpers(
+            => new(
                 _organisationCreatedBuilder.Id,
                 "Test",
                 Article.None,
@@ -90,20 +87,15 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                 new ValidFrom(),
                 new ValidTo(),
                 new ValidFrom(),
-                new ValidTo())
-            {
-                User = user
-            };
-        }
+                new ValidTo());
 
-        protected override int ExpectedNumberOfEvents => 0;
+        protected override int ExpectedNumberOfEvents
+            => 0;
 
         [Fact]
         public void UpdatesOrganisationName()
         {
             Exception.Should().BeOfType<InsufficientRights>();
         }
-
-        public WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser(ITestOutputHelper helper) : base(helper) { }
     }
 }

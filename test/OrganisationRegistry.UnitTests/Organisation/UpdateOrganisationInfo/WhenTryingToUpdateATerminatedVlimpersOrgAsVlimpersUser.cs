@@ -3,41 +3,40 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
     using System;
     using System.Collections.Generic;
     using AutoFixture;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
     using Tests.Shared;
     using Tests.Shared.TestDataBuilders;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfoLimitedToVlimpers>
+    public class WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser : Specification<UpdateOrganisationInfoLimitedToVlimpersCommandHandler, UpdateOrganisationInfoLimitedToVlimpers>
     {
-        private OrganisationCreatedBuilder _organisationCreatedBuilder;
+        private readonly OrganisationCreatedBuilder _organisationCreatedBuilder = new(new SequentialOvoNumberGenerator());
 
-        protected override OrganisationCommandHandlers BuildHandler()
-        {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+        public WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser(ITestOutputHelper helper) : base(helper) { }
+
+        protected override UpdateOrganisationInfoLimitedToVlimpersCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<UpdateOrganisationInfoLimitedToVlimpersCommandHandler>>().Object,
                 Session,
-                new SequentialOvoNumberGenerator(),
-                new UniqueOvoNumberValidatorStub(false),
-                new DateTimeProviderStub(DateTime.Today), Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
-        }
+                new DateTimeProviderStub(DateTime.Today));
+
+        protected override IUser User
+            => new UserBuilder()
+                .AddRoles(Role.VlimpersBeheerder)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
             var fixture = new Fixture();
-            _organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
+
 
             return new List<IEvent>
             {
@@ -77,12 +76,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
         }
 
         protected override UpdateOrganisationInfoLimitedToVlimpers When()
-        {
-            var user = new UserBuilder()
-                .AddRoles(Role.VlimpersBeheerder)
-                .Build();
-
-            return new UpdateOrganisationInfoLimitedToVlimpers(
+            => new(
                 _organisationCreatedBuilder.Id,
                 "Test",
                 Article.None,
@@ -90,11 +84,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                 new ValidFrom(),
                 new ValidTo(),
                 new ValidFrom(),
-                new ValidTo())
-            {
-                User = user
-            };
-        }
+                new ValidTo());
 
         protected override int ExpectedNumberOfEvents => 4;
 
@@ -125,7 +115,5 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
             var organisationCreated = PublishedEvents[3].UnwrapBody<OrganisationOperationalValidityUpdated>();
             organisationCreated.Should().NotBeNull();
         }
-
-        public WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser(ITestOutputHelper helper) : base(helper) { }
     }
 }

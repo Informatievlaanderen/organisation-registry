@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Organisation.Commands
+namespace OrganisationRegistry.Organisation
 {
     public class UpdateOrganisationInfoLimitedToVlimpers : BaseCommand<OrganisationId>
     {
