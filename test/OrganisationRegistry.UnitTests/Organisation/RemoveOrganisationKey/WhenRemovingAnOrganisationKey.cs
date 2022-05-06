@@ -18,7 +18,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.RemoveOrganisationKey
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenRemovingAnOrganisationKey : Specification<Organisation, OrganisationCommandHandlers, RemoveOrganisationKey>
+    public class WhenRemovingAnOrganisationKey : OldSpecification<Organisation, OrganisationCommandHandlers, RemoveOrganisationKey>
     {
         private Guid _organisationId;
         private Guid _organisationKeyId;
