@@ -6,7 +6,6 @@
     using FluentValidation;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-    using OrganisationRegistry.Organisation.UpdateNotLimitedToVlimpers;
     using Purpose;
 
     public class UpdateOrganisationInfoNotLimitedToVlimpersInternalRequest

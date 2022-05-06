@@ -8,8 +8,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfoNotL
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Events;
+    using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Events;
-    using OrganisationRegistry.Organisation.UpdateNotLimitedToVlimpers;
     using Purpose;
     using Purpose.Events;
     using Tests.Shared;

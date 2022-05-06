@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Organisation.UpdateNotLimitedToVlimpers
+namespace OrganisationRegistry.Organisation
 {
     using System.Collections.Generic;
     using Purpose;
