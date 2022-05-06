@@ -14,6 +14,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationKey
     using Tests.Shared;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using Tests.Shared.Stubs;
     using Xunit;

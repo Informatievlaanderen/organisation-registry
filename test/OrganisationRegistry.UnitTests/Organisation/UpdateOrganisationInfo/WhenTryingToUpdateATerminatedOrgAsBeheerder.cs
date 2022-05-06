@@ -3,13 +3,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
     using System;
     using System.Collections.Generic;
     using AutoFixture;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
     using Purpose;
     using Tests.Shared;
     using Tests.Shared.TestDataBuilders;
@@ -18,28 +16,31 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
+    using OrganisationRegistry.Organisation.Update;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenTryingToUpdateATerminatedOrgAsBeheerder : ExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfo>
+    public class WhenTryingToUpdateATerminatedOrgAsBeheerder : ExceptionSpecification<UpdateOrganisationCommandHandler, UpdateOrganisationInfo>
     {
-        private OrganisationCreatedBuilder _organisationCreatedBuilder;
+        private readonly OrganisationCreatedBuilder _organisationCreatedBuilder = new(new SequentialOvoNumberGenerator());
 
-        protected override OrganisationCommandHandlers BuildHandler()
-        {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+        public WhenTryingToUpdateATerminatedOrgAsBeheerder(ITestOutputHelper helper) : base(helper) { }
+
+        protected override UpdateOrganisationCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<UpdateOrganisationCommandHandler>>().Object,
                 Session,
-                new SequentialOvoNumberGenerator(),
-                new UniqueOvoNumberValidatorStub(false),
-                new DateTimeProviderStub(DateTime.Today), Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
-        }
+                new DateTimeProviderStub(DateTime.Today));
+
+        protected override IUser User
+            => new UserBuilder()
+                .AddRoles(Role.DecentraalBeheerder)
+                .AddOrganisations(_organisationCreatedBuilder.OvoNumber)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
             var fixture = new Fixture();
-            _organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
 
             return new List<IEvent>
             {
@@ -78,13 +79,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
         }
 
         protected override UpdateOrganisationInfo When()
-        {
-            var user = new UserBuilder()
-                .AddRoles(Role.DecentraalBeheerder)
-                .AddOrganisations(_organisationCreatedBuilder.OvoNumber)
-                .Build();
-
-            return new UpdateOrganisationInfo(
+            => new(
                 _organisationCreatedBuilder.Id,
                 "Test",
                 Article.None,
@@ -95,11 +90,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                 new ValidFrom(),
                 new ValidTo(),
                 new ValidFrom(),
-                new ValidTo())
-            {
-                User = user
-            };
-        }
+                new ValidTo());
 
         protected override int ExpectedNumberOfEvents => 0;
 
@@ -108,7 +99,5 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
         {
             Exception.Should().BeOfType<OrganisationAlreadyTerminated>();
         }
-
-        public WhenTryingToUpdateATerminatedOrgAsBeheerder(ITestOutputHelper helper) : base(helper) { }
     }
 }

@@ -13,13 +13,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Tests.Shared.TestDataBuilders;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingAParentWithOverlappingValidity: ExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationParent>
+    public class WhenAddingAParentWithOverlappingValidity: OldExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationParent>
     {
         private DateTime _validTo;
         private DateTime _validFrom;

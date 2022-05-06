@@ -17,6 +17,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
     using Tests.Shared;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using Xunit;
     using Xunit.Abstractions;

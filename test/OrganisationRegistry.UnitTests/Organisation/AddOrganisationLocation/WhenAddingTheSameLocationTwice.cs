@@ -13,13 +13,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
     using Tests.Shared;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingTheSameLocationTwice: ExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationLocation>
+    public class WhenAddingTheSameLocationTwice: OldExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationLocation>
     {
         private Guid _organisationId;
         private Guid _locationId;

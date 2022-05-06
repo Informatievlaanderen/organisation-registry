@@ -16,11 +16,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Configuration;
+
     using OrganisationRegistry.Organisation.Exceptions;
     using Tests.Shared;
     using Xunit.Abstractions;
 
-    public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : ExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationBuilding>
+    public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : OldExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationBuilding>
     {
         private OrganisationId _organisationId;
         private BuildingId _buildingAId;

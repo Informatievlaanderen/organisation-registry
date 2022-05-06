@@ -18,7 +18,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFr
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationFormalFrameworkWithCircularDependencies : ExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationFormalFramework>
+    public class WhenUpdatingAnOrganisationFormalFrameworkWithCircularDependencies : OldExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationFormalFramework>
     {
         private static readonly DateTimeProviderStub DateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
         private readonly SequentialOvoNumberGenerator _ovoNumberGenerator = new SequentialOvoNumberGenerator();

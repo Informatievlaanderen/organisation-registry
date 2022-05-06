@@ -11,8 +11,6 @@
 
     public interface ICommandEnvelopeHandler
     {
-        public bool CanHandle<T>();
-
     }
 
     public interface ICommandEnvelopeHandler<TCommand>: ICommandEnvelopeHandler
@@ -44,19 +42,25 @@
         }
 
         public bool CanHandle<T>()
-            => typeof(T) == typeof(TCommand);
+            => typeof(T) == typeof(TCommand) && MaybeGetCommandEnvelopeHandler() != null;
+
 
         public Task Handle(ICommandEnvelope commandEnvelope)
         {
             if (commandEnvelope is not ICommandEnvelope<TCommand> theCommandEnvelope)
                 return Task.CompletedTask;
 
-            var serviceProvider = _requestScopedServiceProvider();
-            var maybeCommandEnvelopeHandler = serviceProvider.GetService(typeof(ICommandEnvelopeHandler<TCommand>));
-            if (maybeCommandEnvelopeHandler is ICommandEnvelopeHandler<TCommand> commandEnvelopeHandler)
+            if (MaybeGetCommandEnvelopeHandler() is { } commandEnvelopeHandler)
                 return commandEnvelopeHandler.Handle(theCommandEnvelope);
 
             return Task.CompletedTask;
+        }
+
+        private ICommandEnvelopeHandler<TCommand>? MaybeGetCommandEnvelopeHandler()
+        {
+            var serviceProvider = _requestScopedServiceProvider();
+            var maybeCommandEnvelopeHandler = serviceProvider.GetService(typeof(ICommandEnvelopeHandler<TCommand>));
+            return (ICommandEnvelopeHandler<TCommand>?)maybeCommandEnvelopeHandler;
         }
     }
 }

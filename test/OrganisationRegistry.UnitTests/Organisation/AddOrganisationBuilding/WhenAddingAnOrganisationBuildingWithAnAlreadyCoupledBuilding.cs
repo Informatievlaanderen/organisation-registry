@@ -15,12 +15,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingTheSameBuildingTwice: ExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationBuilding>
+    public class WhenAddingTheSameBuildingTwice: OldExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationBuilding>
     {
         private Guid _organisationId;
         private Guid _buildingId;

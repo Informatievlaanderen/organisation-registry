@@ -14,12 +14,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
     using Tests.Shared;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationKeyToAnAlreadyCoupledKey : ExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationKey>
+    public class WhenUpdatingAnOrganisationKeyToAnAlreadyCoupledKey : OldExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationKey>
     {
         private OrganisationKeyAdded _organisationKeyAdded;
         private OrganisationKeyAdded _anotherOrganisationKeyAdded;

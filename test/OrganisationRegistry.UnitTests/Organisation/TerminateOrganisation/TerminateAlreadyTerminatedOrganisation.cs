@@ -11,6 +11,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using OrganisationRegistry.Organisation.OrganisationTermination;
@@ -21,7 +22,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation
     using Xunit;
     using Xunit.Abstractions;
 
-    public class TerminateAlreadyTerminatedOrganisation: ExceptionSpecification<Organisation, OrganisationCommandHandlers, TerminateOrganisation>
+    public class TerminateAlreadyTerminatedOrganisation: OldExceptionSpecification<Organisation, OrganisationCommandHandlers, TerminateOrganisation>
     {
         private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
 

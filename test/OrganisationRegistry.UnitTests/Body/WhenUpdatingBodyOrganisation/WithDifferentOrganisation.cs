@@ -11,6 +11,7 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyOrganisation
     using OrganisationRegistry.Body.Events;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
+
     using OrganisationRegistry.Organisation.Events;
     using Tests.Shared;
     using Xunit;

@@ -1,8 +1,7 @@
-﻿namespace OrganisationRegistry.Organisation.Commands
+﻿namespace OrganisationRegistry.Organisation
 {
     using System.Collections.Generic;
     using Purpose;
-
 
     public class UpdateOrganisationInfo : BaseCommand<OrganisationId>
     {

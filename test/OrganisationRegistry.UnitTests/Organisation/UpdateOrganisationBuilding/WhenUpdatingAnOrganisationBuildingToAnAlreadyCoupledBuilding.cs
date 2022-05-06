@@ -15,12 +15,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : ExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationBuilding>
+    public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : OldExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationBuilding>
     {
         private OrganisationBuildingAdded _organisationBuildingAdded;
         private OrganisationBuildingAdded _anotherOrganisationBuildingAdded;
