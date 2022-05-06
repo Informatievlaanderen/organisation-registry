@@ -13,12 +13,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAVlimpersOrganisationAsParentForANonVlimpersOrganisation : ExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationParent>
+    public class WhenUpdatingAVlimpersOrganisationAsParentForANonVlimpersOrganisation : OldExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationParent>
     {
         private Guid _organisationId;
         private Guid _organisationOrganisationParentId;

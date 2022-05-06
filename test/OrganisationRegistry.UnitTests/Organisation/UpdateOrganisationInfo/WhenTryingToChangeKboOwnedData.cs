@@ -2,13 +2,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
 {
     using System;
     using System.Collections.Generic;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
     using Purpose;
     using Tests.Shared;
     using Tests.Shared.TestDataBuilders;
@@ -17,28 +15,29 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
+    using OrganisationRegistry.Organisation.Update;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenTryingToChangeKboOwnedData : ExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfo>
+    public class WhenTryingToChangeKboOwnedData : ExceptionSpecification<UpdateOrganisationCommandHandler, UpdateOrganisationInfo>
     {
-        private OrganisationCreatedBuilder _organisationCreatedBuilder;
+        private readonly OrganisationCreatedBuilder _organisationCreatedBuilder = new(new SequentialOvoNumberGenerator());
         private DateTime _yesterday;
 
-        protected override OrganisationCommandHandlers BuildHandler()
-        {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+        public WhenTryingToChangeKboOwnedData(ITestOutputHelper helper) : base(helper) { }
+        protected override UpdateOrganisationCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<UpdateOrganisationCommandHandler>>().Object,
                 Session,
-                new SequentialOvoNumberGenerator(),
-                new UniqueOvoNumberValidatorStub(false),
-                new DateTimeProviderStub(DateTime.Today), Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
-        }
+                new DateTimeProviderStub(DateTime.Today));
+
+        protected override IUser User
+            => new UserBuilder()
+                .AddRoles(Role.AlgemeenBeheerder)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
-            _organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
             _yesterday = DateTime.Today.AddDays(-1);
 
             return new List<IEvent>
@@ -57,8 +56,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
         }
 
         protected override UpdateOrganisationInfo When()
-        {
-            return new UpdateOrganisationInfo(
+            => new(
                 _organisationCreatedBuilder.Id,
                 "Test",
                 Article.None,
@@ -69,13 +67,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                 new ValidFrom(_yesterday),
                 new ValidTo(_yesterday),
                 new ValidFrom(),
-                new ValidTo())
-            {
-                User = new UserBuilder()
-                    .AddRoles(Role.AlgemeenBeheerder)
-                    .Build()
-            };
-        }
+                new ValidTo());
 
         protected override int ExpectedNumberOfEvents => 0;
 
@@ -84,7 +76,5 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
         {
             Exception.Should().BeOfType<CannotChangeDataOwnedByKbo>();
         }
-
-        public WhenTryingToChangeKboOwnedData(ITestOutputHelper helper) : base(helper) { }
     }
 }

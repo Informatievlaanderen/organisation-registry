@@ -10,19 +10,15 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Domain;
-    using OrganisationRegistry.Infrastructure.Domain.Exception;
     using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Infrastructure.Snapshots;
     using Xunit;
     using Xunit.Abstractions;
 
-    public abstract class Specification<TAggregate, THandler, TCommand>
-        where TAggregate: AggregateRoot
+    public abstract class Specification<THandler, TCommand>
         where THandler : class, ICommandEnvelopeHandler<TCommand>
         where TCommand : ICommand
     {
         private readonly ITestOutputHelper _helper;
-        protected TAggregate Aggregate { get; set; }
         protected ISession Session { get; set; }
         protected abstract IEnumerable<IEvent> Given();
         protected abstract TCommand When();
@@ -31,7 +27,6 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
 
         protected abstract int ExpectedNumberOfEvents { get; }
 
-        protected Snapshot Snapshot { get; set; }
         protected IList<IEvent> EventDescriptors { get; set; }
         protected List<IEnvelope> PublishedEvents { get; set; }
 
@@ -40,23 +35,12 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
             _helper = helper;
             var eventpublisher = new SpecEventPublisher();
             var eventstorage = new SpecEventStorage(eventpublisher, NumberTheEvents(Given()).ToList());
-            var snapshotstorage = new SpecSnapShotStorage(Snapshot);
 
-            var snapshotStrategy = new DefaultSnapshotStrategy();
-            var repository = new SnapshotRepository(snapshotstorage, snapshotStrategy, new Repository(new Mock<ILogger<Repository>>().Object, eventstorage), eventstorage);
+            var repository = new Repository(new Mock<ILogger<Repository>>().Object, eventstorage);
             Session = new Session(new Mock<ILogger<Session>>().Object, repository);
-
-            try
-            {
-                //Aggregate = Session.Get<TAggregate>(Guid.Empty);
-            }
-            catch (AggregateNotFoundException)
-            {
-            }
 
             HandleEvents().GetAwaiter().GetResult();
 
-            Snapshot = snapshotstorage.Snapshot;
             PublishedEvents = eventpublisher.PublishedEvents;
             EventDescriptors = eventstorage.Events;
         }

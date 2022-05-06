@@ -13,13 +13,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
     using Tests.Shared;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenMakingAnOrganisationLocationAMainLocationWhenThereAlreadyIsOne : ExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationLocation>
+    public class WhenMakingAnOrganisationLocationAMainLocationWhenThereAlreadyIsOne : OldExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationLocation>
     {
         private Guid _organisationId;
         private Guid _organisationLocationId;

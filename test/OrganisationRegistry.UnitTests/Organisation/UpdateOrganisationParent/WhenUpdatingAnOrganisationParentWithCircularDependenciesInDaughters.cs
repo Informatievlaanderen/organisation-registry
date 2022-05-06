@@ -18,7 +18,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationParentWithCircularDependenciesInDaughters : ExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationParent>
+    public class WhenUpdatingAnOrganisationParentWithCircularDependenciesInDaughters : OldExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationParent>
     {
         private DateTimeProviderStub _dateTimeProviderStub;
         private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();

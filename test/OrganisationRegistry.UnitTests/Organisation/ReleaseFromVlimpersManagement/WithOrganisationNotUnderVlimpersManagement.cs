@@ -12,6 +12,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.ReleaseFromVlimpersManagem
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using TerminateOrganisation;
     using Tests.Shared;

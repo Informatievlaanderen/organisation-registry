@@ -18,6 +18,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using Tests.Shared;
     using Tests.Shared.Stubs;

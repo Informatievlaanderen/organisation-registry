@@ -11,28 +11,28 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
     using Tests.Shared;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
-    using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WithAnInactiveValidity: Specification<Organisation, CreateOrganisationCommandHandler, CreateOrganisation>
+    public class WithAnInactiveValidity : Specification<CreateOrganisationCommandHandler, CreateOrganisation>
     {
-        private DateTimeProviderStub _dateTimeProviderStub;
+        private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Today);
         private DateTime _yesterday;
+
+        public WithAnInactiveValidity(ITestOutputHelper helper) : base(helper)
+        {
+        }
 
         protected override IEnumerable<IEvent> Given()
         {
-            _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today);
             _yesterday = _dateTimeProviderStub.Now.AddDays(-1);
 
             return new List<IEvent>();
         }
 
         protected override CreateOrganisation When()
-        {
-            return new CreateOrganisation(
+            => new(
                 new OrganisationId(Guid.NewGuid()),
                 "Test",
                 "OVO0001234",
@@ -46,7 +46,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
                 new ValidTo(_yesterday),
                 new ValidFrom(),
                 new ValidTo());
-        }
 
         protected override CreateOrganisationCommandHandler BuildHandler()
             => new(
@@ -60,7 +59,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
         protected override IUser User
             => new UserBuilder().AddRoles(Role.AlgemeenBeheerder).Build();
 
-        protected override int ExpectedNumberOfEvents => 1;
+        protected override int ExpectedNumberOfEvents
+            => 1;
 
         [Fact]
         public void CreatesAnOrganisation()
@@ -68,7 +68,5 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
             var organisationCreated = PublishedEvents[0].UnwrapBody<OrganisationCreated>();
             organisationCreated.Should().NotBeNull();
         }
-
-        public WithAnInactiveValidity(ITestOutputHelper helper) : base(helper) { }
     }
 }

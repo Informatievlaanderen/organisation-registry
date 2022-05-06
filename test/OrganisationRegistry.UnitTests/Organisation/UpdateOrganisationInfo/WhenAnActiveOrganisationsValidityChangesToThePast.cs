@@ -16,24 +16,25 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.Update;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAnActiveOrganisationsValidityChangesToThePast : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfo>
+    public class WhenAnActiveOrganisationsValidityChangesToThePast : Specification<UpdateOrganisationCommandHandler, UpdateOrganisationInfo>
     {
         private OrganisationCreatedBuilder _organisationCreatedBuilder;
         private DateTime _yesterday;
 
-        protected override OrganisationCommandHandlers BuildHandler()
-        {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+        protected override UpdateOrganisationCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<UpdateOrganisationCommandHandler>>().Object,
                 Session,
-                new SequentialOvoNumberGenerator(),
-                new UniqueOvoNumberValidatorStub(false),
-                new DateTimeProviderStub(DateTime.Today), Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
-        }
+                new DateTimeProviderStub(DateTime.Today));
+
+        protected override IUser User
+            => new UserBuilder()
+            .AddRoles(Role.AlgemeenBeheerder)
+            .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -50,12 +51,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
         }
 
         protected override UpdateOrganisationInfo When()
-        {
-            var user = new UserBuilder()
-                .AddRoles(Role.AlgemeenBeheerder)
-                .Build();
-
-            return new UpdateOrganisationInfo(
+            => new(
                 _organisationCreatedBuilder.Id,
                 "Test",
                 Article.None,
@@ -66,11 +62,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                 new ValidFrom(_yesterday),
                 new ValidTo(_yesterday),
                 new ValidFrom(),
-                new ValidTo())
-            {
-                User = user
-            };
-        }
+                new ValidTo());
 
         protected override int ExpectedNumberOfEvents => 6;
 

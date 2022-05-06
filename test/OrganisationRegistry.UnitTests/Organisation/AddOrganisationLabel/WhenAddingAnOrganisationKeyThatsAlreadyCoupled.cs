@@ -14,13 +14,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLabel
     using Tests.Shared;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingAnOrganisationLabelThatsAlreadyCoupled : ExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationLabel>
+    public class WhenAddingAnOrganisationLabelThatsAlreadyCoupled : OldExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationLabel>
     {
         private Guid _organisationId;
         private Guid _labelId;

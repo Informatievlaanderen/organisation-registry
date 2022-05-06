@@ -18,6 +18,7 @@ namespace OrganisationRegistry
             set => Id = value;
         }
 
+        [Obsolete("todo: replace command with envelope")]
         public IUser? User { get; set; } // todo: this should not be nullable, should be redesigned
     }
 
@@ -25,6 +26,4 @@ namespace OrganisationRegistry
     {
         public new T Id { get; set; } = null!;
     }
-
-    //public record CommandEnvelope<TCommand>(TCommand Command, IUser User) : ICommandEnvelope<TCommand>;
 }

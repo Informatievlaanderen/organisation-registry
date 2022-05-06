@@ -1,30 +1,27 @@
-namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers
+﻿namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers;
+
+using System;
+using System.Threading.Tasks;
+using OrganisationRegistry.Infrastructure.Commands;
+using Xunit.Abstractions;
+
+public abstract class ExceptionSpecification<THandler, TCommand> : Specification<THandler, TCommand>
+    where THandler : class, ICommandEnvelopeHandler<TCommand>
+    where TCommand : ICommand
 {
-    using System;
-    using System.Threading.Tasks;
-    using OrganisationRegistry.Infrastructure.Commands;
-    using OrganisationRegistry.Infrastructure.Domain;
-    using Xunit.Abstractions;
+    protected Exception? Exception { get; private set; }
 
-    public abstract class ExceptionSpecification<TAggregate, THandler, TCommand> : OldSpecification<TAggregate, THandler, TCommand>
-        where TAggregate : AggregateRoot
-        where THandler : class, ICommandHandler<TCommand>
-        where TCommand : ICommand
+    protected override async Task HandleEvents()
     {
-        protected Exception Exception { get; set; }
-
-        protected override async Task HandleEvents()
+        try
         {
-            try
-            {
-                await base.HandleEvents();
-            }
-            catch (Exception ex)
-            {
-                Exception = ex;
-            }
+            await base.HandleEvents();
         }
-
-        protected ExceptionSpecification(ITestOutputHelper helper) : base(helper) { }
+        catch (Exception ex)
+        {
+            Exception = ex;
+        }
     }
+
+    protected ExceptionSpecification(ITestOutputHelper helper) : base(helper) { }
 }

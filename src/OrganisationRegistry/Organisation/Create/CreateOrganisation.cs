@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Organisation.Commands
+﻿namespace OrganisationRegistry.Organisation
 {
     using System.Collections.Generic;
     using Purpose;
@@ -11,7 +11,7 @@
         public string OvoNumber { get; }
         public string ShortName { get; }
         public Article Article { get; }
-        public OrganisationId ParentOrganisationId { get; }
+        public OrganisationId? ParentOrganisationId { get; }
         public string Description { get; }
         public List<PurposeId> Purposes { get; }
         public bool ShowOnVlaamseOverheidSites { get; }
@@ -26,9 +26,9 @@
             string ovoNumber,
             string shortName,
             Article article,
-            OrganisationId parentOrganisationId,
+            OrganisationId? parentOrganisationId,
             string description,
-            List<PurposeId> purposes,
+            List<PurposeId>? purposes,
             bool showOnVlaamseOverheidSites,
             ValidFrom validFrom, ValidTo validTo,
             ValidFrom operationalValidFrom, ValidTo operationalValidTo)

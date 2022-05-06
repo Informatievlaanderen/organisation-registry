@@ -22,7 +22,7 @@ namespace OrganisationRegistry.Handling
         }
 
         public static Handler For(IUser user, ISession session)
-            => new Handler(user, session);
+            => new(user, session);
 
         public Handler WithPolicy(ISecurityPolicy policy)
         {

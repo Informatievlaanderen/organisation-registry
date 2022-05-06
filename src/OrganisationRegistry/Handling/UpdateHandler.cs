@@ -4,6 +4,7 @@ namespace OrganisationRegistry.Handling
     using System.Threading.Tasks;
     using Authorization;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
+    using Infrastructure.Authorization;
     using Infrastructure.Domain;
 
     /// <summary>
@@ -13,23 +14,32 @@ namespace OrganisationRegistry.Handling
     public class UpdateHandler<T> where T : AggregateRoot
     {
         private readonly T _aggregateRoot;
-        private readonly BaseCommand _command;
+        private readonly IUser _user;
         private readonly ISession _session;
         private ISecurityPolicy? _policy;
 
-        private UpdateHandler(BaseCommand command, ISession session, T aggregateRoot)
+        private UpdateHandler(ISession session, T aggregateRoot, IUser user)
         {
-            _command = command;
             _session = session;
             _aggregateRoot = aggregateRoot;
+            _user = user;
         }
 
+        [Obsolete("todo: replace with alternative constructor that requires an IUser")]
         public static UpdateHandler<T> For<TCommand>(BaseCommand<TCommand> command, ISession session)
             where TCommand : GuidValueObject<TCommand>
         {
             var commandId = command.Id;
             var aggregate = session.Get<T>(commandId);
-            return new UpdateHandler<T>(command, session, aggregate);
+            return new UpdateHandler<T>(session, aggregate, command.User);
+        }
+
+        public static UpdateHandler<T> For<TCommand>(BaseCommand<TCommand> command, IUser user, ISession session)
+            where TCommand : GuidValueObject<TCommand>
+        {
+            var commandId = command.Id;
+            var aggregate = session.Get<T>(commandId);
+            return new UpdateHandler<T>(session, aggregate, user);
         }
 
         public UpdateHandler<T> WithPolicy(Func<T, ISecurityPolicy> policy)
@@ -40,28 +50,24 @@ namespace OrganisationRegistry.Handling
 
         public async Task Handle(Func<ISession, Task> handle)
         {
-            var user = _command.User;
-
-            var result = _policy?.Check(user);
+            var result = _policy?.Check(_user);
 
             if (result?.Exception is { } exception)
                 throw exception;
 
             await handle(_session);
-            await _session.Commit(user);
+            await _session.Commit(_user);
         }
 
         public async Task Handle(Action<ISession> handle)
         {
-            var user = _command.User;
-
-            var result = _policy?.Check(user);
+            var result = _policy?.Check(_user);
 
             if (result?.Exception is { } exception)
                 throw exception;
 
             handle(_session);
-            await _session.Commit(user);
+            await _session.Commit(_user);
         }
     }
 }

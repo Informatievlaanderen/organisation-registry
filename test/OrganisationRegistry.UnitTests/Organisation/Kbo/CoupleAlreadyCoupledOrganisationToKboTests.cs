@@ -18,6 +18,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Tests.Shared;
@@ -26,7 +27,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using Xunit.Abstractions;
     using Purpose = OrganisationRegistry.Organisation.Events.Purpose;
 
-    public class CoupleAlreadyCoupledOrganisationToKboTests: ExceptionSpecification<Organisation, KboOrganisationCommandHandlers, CoupleOrganisationToKbo>
+    public class CoupleAlreadyCoupledOrganisationToKboTests: OldExceptionSpecification<Organisation, KboOrganisationCommandHandlers, CoupleOrganisationToKbo>
     {
         private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
 

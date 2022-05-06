@@ -15,12 +15,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationKey
     using Tests.Shared;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingAnOrganisationKeyThatsAlreadyCoupled : ExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationKey>
+    public class WhenAddingAnOrganisationKeyThatsAlreadyCoupled : OldExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationKey>
     {
         private Guid _organisationId;
         private Guid _keyId;

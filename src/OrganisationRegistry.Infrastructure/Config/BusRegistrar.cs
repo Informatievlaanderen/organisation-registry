@@ -39,12 +39,19 @@ namespace OrganisationRegistry.Infrastructure.Config
         {
             var commandTypes = GetAllTypesImplementingOpenGenericType(commandType, commandType.Assembly).Distinct().ToList();
 
-            foreach (var type in commandTypes.Where(x=>x.Name == "CreateOrganisation"))
+            foreach (var type in commandTypes)
             {
-                var commandEnvelopeHandlerWrapper = Activator.CreateInstance(typeof(CommandEnvelopeHandlerWrapper<>).MakeGenericType(type), _requestScopedServiceProvider);
+                try
+                {
+                    var commandEnvelopeHandlerWrapper = Activator.CreateInstance(typeof(CommandEnvelopeHandlerWrapper<>).MakeGenericType(type), _requestScopedServiceProvider);
 
-                if (commandEnvelopeHandlerWrapper is ICommandEnvelopeHandlerWrapper commandEnvelopeHandler)
-                    _bus.RegisterCommandEnvelopeHandler(commandEnvelopeHandler);
+                    if (commandEnvelopeHandlerWrapper is ICommandEnvelopeHandlerWrapper commandEnvelopeHandler)
+                        _bus.RegisterCommandEnvelopeHandler(commandEnvelopeHandler);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine($"Cannot create instance of EnvelopeHandler for command '{type.FullName}'");
+                }
             }
         }
 

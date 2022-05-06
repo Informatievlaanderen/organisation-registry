@@ -11,6 +11,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.Coup
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Tests.Shared;
@@ -18,7 +19,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.Coup
     using Xunit;
     using Xunit.Abstractions;
 
-    public class ForceTerminateOrganisationAlreadyTerminatedInKbo: ExceptionSpecification<Organisation, OrganisationCommandHandlers, TerminateOrganisation>
+    public class ForceTerminateOrganisationAlreadyTerminatedInKbo: OldExceptionSpecification<Organisation, OrganisationCommandHandlers, TerminateOrganisation>
     {
         private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
 

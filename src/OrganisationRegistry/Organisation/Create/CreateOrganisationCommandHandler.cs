@@ -2,7 +2,6 @@
 
 using System.Linq;
 using System.Threading.Tasks;
-using Commands;
 using Exceptions;
 using Handling;
 using Infrastructure.Authorization;
@@ -31,9 +30,6 @@ public class CreateOrganisationCommandHandler :
         _uniqueOvoNumberValidator = uniqueOvoNumberValidator;
         _dateTimeProvider = dateTimeProvider;
     }
-
-    public bool CanHandle<T>()
-        => typeof(T).FullName == typeof(CreateOrganisation).FullName;
 
     public Task Handle(ICommandEnvelope<CreateOrganisation> envelope)
         => envelope.Command.ParentOrganisationId is not { } ? CreateTopLevelOrganisation(envelope.User, envelope.Command) : CreateDaughter(envelope.User, envelope.Command);

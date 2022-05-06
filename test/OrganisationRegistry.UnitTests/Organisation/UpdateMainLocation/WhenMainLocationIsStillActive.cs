@@ -13,6 +13,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainLocation
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+
     using OrganisationRegistry.Organisation.Events;
     using Xunit.Abstractions;
 

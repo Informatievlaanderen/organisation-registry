@@ -2,41 +2,37 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
 {
     using System;
     using System.Collections.Generic;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
     using Purpose;
     using Tests.Shared;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
     using Tests.Shared.TestDataBuilders;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class AsDaughterOfVlimpersOrganisation: Specification<Organisation, CreateOrganisationCommandHandler, CreateOrganisation>
+    public class AsDaughterOfVlimpersOrganisation : Specification<CreateOrganisationCommandHandler, CreateOrganisation>
     {
-        private OrganisationCreatedBuilder _organisationCreatedBuilder;
+        private readonly OrganisationCreatedBuilder _organisationCreatedBuilder = new(new SequentialOvoNumberGenerator());
+
+        public AsDaughterOfVlimpersOrganisation(ITestOutputHelper helper) : base(helper)
+        {
+        }
 
         protected override IEnumerable<IEvent> Given()
-        {
-            _organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
-
-            return new List<IEvent>
+            => new List<IEvent>
             {
                 _organisationCreatedBuilder.Build(),
                 new OrganisationPlacedUnderVlimpersManagement(_organisationCreatedBuilder.Id)
             };
-        }
 
         protected override CreateOrganisation When()
-        {
-            return new CreateOrganisation(
+            => new(
                 new OrganisationId(Guid.NewGuid()),
                 "Test",
                 "OVO0001234",
@@ -50,7 +46,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
                 new ValidTo(),
                 new ValidFrom(),
                 new ValidTo());
-        }
 
         protected override CreateOrganisationCommandHandler BuildHandler()
             => new(
@@ -63,7 +58,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
         protected override IUser User
             => new UserBuilder().AddRoles(Role.VlimpersBeheerder).Build();
 
-        protected override int ExpectedNumberOfEvents => 5;
+        protected override int ExpectedNumberOfEvents
+            => 5;
 
         [Fact]
         public void CreatesAnOrganisation()
@@ -75,11 +71,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation
         [Fact]
         public void TheOrganisationIsPlacedUnderVlimpersManagement()
         {
-            var organisationBecameActive = PublishedEvents[4].UnwrapBody<OrganisationPlacedUnderVlimpersManagement>();;
+            var organisationBecameActive = PublishedEvents[4].UnwrapBody<OrganisationPlacedUnderVlimpersManagement>();
+            ;
             organisationBecameActive.Should().NotBeNull();
         }
-
-
-        public AsDaughterOfVlimpersOrganisation(ITestOutputHelper helper) : base(helper) { }
     }
 }
