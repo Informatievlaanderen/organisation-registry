@@ -37,7 +37,7 @@ namespace OrganisationRegistry.Organisation
         // ICommandHandler<UpdateOrganisationInfo>,
         // ICommandHandler<UpdateOrganisationInfoNotLimitedToVlimpers>,
         // ICommandHandler<UpdateOrganisationInfoLimitedToVlimpers>,
-        ICommandHandler<AddOrganisationKey>,
+        // ICommandHandler<AddOrganisationKey>,
         ICommandHandler<UpdateOrganisationKey>,
         ICommandHandler<AddOrganisationRegulation>,
         ICommandHandler<UpdateOrganisationRegulation>,
