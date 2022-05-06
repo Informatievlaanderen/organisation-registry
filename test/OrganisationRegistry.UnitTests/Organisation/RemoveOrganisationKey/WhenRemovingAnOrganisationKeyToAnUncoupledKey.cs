@@ -14,7 +14,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.RemoveOrganisationKey
     using OrganisationRegistry.Organisation.Events;
     using Xunit.Abstractions;
 
-    public class WhenRemovingAnOrganisationKeyToAnUncoupledKey : Specification<Organisation, OrganisationCommandHandlers, RemoveOrganisationKey>
+    public class WhenRemovingAnOrganisationKeyToAnUncoupledKey : OldSpecification<Organisation, OrganisationCommandHandlers, RemoveOrganisationKey>
     {
         private Guid _organisationId;
         private Guid _organisationKeyId;

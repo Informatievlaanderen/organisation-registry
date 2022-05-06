@@ -3,10 +3,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
-    using OrganisationRegistry.KeyTypes;
     using OrganisationRegistry.Infrastructure.Events;
     using Microsoft.Extensions.Logging;
     using Moq;
@@ -14,39 +12,42 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.KeyTypes;
     using OrganisationRegistry.KeyTypes.Events;
-    using Tests.Shared;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
-
     using OrganisationRegistry.Organisation.Events;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationKey : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationKey>
+    public class WhenUpdatingAnOrganisationKey : Specification<UpdateOrganisationKeyCommandHandler, UpdateOrganisationKey>
     {
         private Guid _organisationId;
         private Guid _keyId;
         private Guid _organisationKeyId;
-        private string _value;
+        private const string Value = "13135/123lk.,m";
         private DateTime _validTo;
         private DateTime _validFrom;
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        public WhenUpdatingAnOrganisationKey(ITestOutputHelper helper) : base(helper)
+        {
+        }
+
+        protected override UpdateOrganisationKeyCommandHandler BuildHandler()
         {
             var securityServiceMock = new Mock<ISecurityService>();
             securityServiceMock
                 .Setup(service => service.CanUseKeyType(It.IsAny<IUser>(), It.IsAny<Guid>()))
                 .Returns(true);
 
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+            return new UpdateOrganisationKeyCommandHandler(
+                new Mock<ILogger<UpdateOrganisationKeyCommandHandler>>().Object,
                 Session,
-                new SequentialOvoNumberGenerator(),
-                null,
-                new DateTimeProvider(),
                 Mock.Of<IOrganisationRegistryConfiguration>(),
                 securityServiceMock.Object);
         }
+
+        protected override IUser User
+            => new UserBuilder()
+                .AddRoles(Role.AlgemeenBeheerder)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -54,7 +55,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
 
             _keyId = Guid.NewGuid();
             _organisationKeyId = Guid.NewGuid();
-            _value = "13135/123lk.,m";
+
             _validFrom = DateTime.Now.AddDays(1);
             _validTo = DateTime.Now.AddDays(2);
 
@@ -62,28 +63,21 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
             {
                 new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
                 new KeyTypeCreated(_keyId, "Sleutel A"),
-                new OrganisationKeyAdded(_organisationId, _organisationKeyId, _keyId, "Sleutel A", _value, _validFrom, _validTo)
+                new OrganisationKeyAdded(_organisationId, _organisationKeyId, _keyId, "Sleutel A", Value, _validFrom, _validTo)
             };
         }
 
         protected override UpdateOrganisationKey When()
-        {
-            return new UpdateOrganisationKey(
+            => new (
                 _organisationKeyId,
                 new OrganisationId(_organisationId),
                 new KeyTypeId(_keyId),
-                _value,
+                Value,
                 new ValidFrom(_validFrom),
-                new ValidTo(_validTo))
-            {
-                User = new UserBuilder()
-                    .AddRoles(Role.AlgemeenBeheerder)
-                    .Build()
-            };
+                new ValidTo(_validTo));
 
-        }
-
-        protected override int ExpectedNumberOfEvents => 1;
+        protected override int ExpectedNumberOfEvents
+            => 1;
 
         [Fact]
         public void AnOrganisationKeyUpdatedEventIsPublished()
@@ -97,11 +91,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
             var organisationKeyAdded = PublishedEvents.First().UnwrapBody<OrganisationKeyUpdated>();
             organisationKeyAdded.OrganisationId.Should().Be(_organisationId);
             organisationKeyAdded.KeyTypeId.Should().Be(_keyId);
-            organisationKeyAdded.Value.Should().Be(_value);
+            organisationKeyAdded.Value.Should().Be(Value);
             organisationKeyAdded.ValidFrom.Should().Be(_validFrom);
             organisationKeyAdded.ValidTo.Should().Be(_validTo);
         }
-
-        public WhenUpdatingAnOrganisationKey(ITestOutputHelper helper) : base(helper) { }
     }
 }

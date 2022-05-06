@@ -11,24 +11,25 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.KeyTypes;
     using OrganisationRegistry.KeyTypes.Events;
-    using Tests.Shared;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
-
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationKeyToAnAlreadyCoupledKey : OldExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationKey>
+    public class WhenUpdatingAnOrganisationKeyToAnAlreadyCoupledKey : ExceptionSpecification<UpdateOrganisationKeyCommandHandler, UpdateOrganisationKey>
     {
-        private OrganisationKeyAdded _organisationKeyAdded;
-        private OrganisationKeyAdded _anotherOrganisationKeyAdded;
+        private OrganisationKeyAdded? _organisationKeyAdded;
+        private OrganisationKeyAdded? _anotherOrganisationKeyAdded;
         private Guid _organisationId;
         private Guid _keyAId;
         private Guid _keyBId;
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        public WhenUpdatingAnOrganisationKeyToAnAlreadyCoupledKey(ITestOutputHelper helper) : base(helper)
+        {
+        }
+
+        protected override UpdateOrganisationKeyCommandHandler BuildHandler()
         {
             var securityServiceMock = new Mock<ISecurityService>();
             securityServiceMock.Setup(service =>
@@ -37,15 +38,17 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
                         It.IsAny<Guid>()))
                 .Returns(true);
 
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+            return new UpdateOrganisationKeyCommandHandler(
+                new Mock<ILogger<UpdateOrganisationKeyCommandHandler>>().Object,
                 Session,
-                new SequentialOvoNumberGenerator(),
-                null,
-                new DateTimeProvider(),
                 Mock.Of<IOrganisationRegistryConfiguration>(),
                 securityServiceMock.Object);
         }
+
+        protected override IUser User
+            => new UserBuilder()
+                .AddRoles(Role.AlgemeenBeheerder)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -67,18 +70,16 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
 
         protected override UpdateOrganisationKey When()
         {
+            if (_organisationKeyAdded is not { } || _anotherOrganisationKeyAdded is not { })
+                throw new NullReferenceException("You screwed up test setup !");
+
             return new UpdateOrganisationKey(
                 _anotherOrganisationKeyAdded.OrganisationKeyId,
                 new OrganisationId(_organisationId),
                 new KeyTypeId(_organisationKeyAdded.KeyTypeId),
                 "987987654",
                 new ValidFrom(null),
-                new ValidTo(null))
-            {
-                User = new UserBuilder()
-                    .AddRoles(Role.AlgemeenBeheerder)
-                    .Build()
-            };
+                new ValidTo(null));
         }
 
         protected override int ExpectedNumberOfEvents => 0;
@@ -87,9 +88,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey
         public void ThrowsAnException()
         {
             Exception.Should().BeOfType<KeyAlreadyCoupledToInThisPeriod>();
-            Exception.Message.Should().Be("Deze sleutel is in deze periode reeds gekoppeld aan de organisatie.");
+            Exception?.Message.Should().Be("Deze sleutel is in deze periode reeds gekoppeld aan de organisatie.");
         }
-
-        public WhenUpdatingAnOrganisationKeyToAnAlreadyCoupledKey(ITestOutputHelper helper) : base(helper) { }
     }
 }

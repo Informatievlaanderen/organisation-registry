@@ -15,7 +15,7 @@ namespace OrganisationRegistry.UnitTests.KeyTypes.RemoveKeyType
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenRemovingAKeyType : Specification<KeyType, KeyTypeCommandHandlers, RemoveKeyType>
+    public class WhenRemovingAKeyType : OldSpecification<KeyType, KeyTypeCommandHandlers, RemoveKeyType>
     {
         private Guid _keyTypeId;
         private string _keyTypeName;
