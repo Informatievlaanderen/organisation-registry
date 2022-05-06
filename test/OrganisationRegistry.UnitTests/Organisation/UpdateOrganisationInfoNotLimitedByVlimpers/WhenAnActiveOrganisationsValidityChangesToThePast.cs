@@ -2,17 +2,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfoNotL
 {
     using System;
     using System.Collections.Generic;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.UpdateNotLimitedToVlimpers;
     using Purpose;
     using Purpose.Events;
     using Tests.Shared;
@@ -20,28 +17,25 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfoNotL
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAnActiveOrganisationsValidityChangesToThePast : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationInfoNotLimitedToVlimpers>
+    public class WhenAnActiveOrganisationsValidityChangesToThePast : Specification<UpdateOrganisationNotLimitedToVlimpersCommandHandler, UpdateOrganisationInfoNotLimitedToVlimpers>
     {
-        private OrganisationCreatedBuilder _organisationCreatedBuilder;
-        private DateTime _yesterday;
+        private readonly OrganisationCreatedBuilder _organisationCreatedBuilder = new(new SequentialOvoNumberGenerator());
         private Guid _purposeId;
 
-        protected override OrganisationCommandHandlers BuildHandler()
-        {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
-                Session,
-                new SequentialOvoNumberGenerator(),
-                new UniqueOvoNumberValidatorStub(false),
-                new DateTimeProviderStub(DateTime.Today), Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
-        }
+        public WhenAnActiveOrganisationsValidityChangesToThePast(ITestOutputHelper helper) : base(helper) { }
+
+        protected override UpdateOrganisationNotLimitedToVlimpersCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<UpdateOrganisationNotLimitedToVlimpersCommandHandler>>().Object,
+                Session);
+
+        protected override IUser User
+            => new UserBuilder()
+                .AddRoles(Role.AlgemeenBeheerder)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
-            _organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
-            _yesterday = DateTime.Today.AddDays(-1);
-
             _purposeId = Guid.NewGuid();
             return new List<IEvent>
             {
@@ -54,20 +48,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfoNotL
         }
 
         protected override UpdateOrganisationInfoNotLimitedToVlimpers When()
-        {
-            var user = new UserBuilder()
-                .AddRoles(Role.AlgemeenBeheerder)
-                .Build();
-
-            return new UpdateOrganisationInfoNotLimitedToVlimpers(
+            => new(
                 _organisationCreatedBuilder.Id,
                 "omschrijving",
                 new List<PurposeId> {new PurposeId(_purposeId)},
-                true)
-            {
-                User = user
-            };
-        }
+                true);
 
         protected override int ExpectedNumberOfEvents => 3;
 
@@ -92,7 +77,5 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfoNotL
             var organisationCreated = PublishedEvents[2].UnwrapBody<OrganisationShowOnVlaamseOverheidSitesUpdated>();
             organisationCreated.Should().NotBeNull();
         }
-
-        public WhenAnActiveOrganisationsValidityChangesToThePast(ITestOutputHelper helper) : base(helper) { }
     }
 }
