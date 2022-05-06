@@ -40,7 +40,7 @@ public class OrganisationCommandHandlers :
     // ICommandHandler<UpdateOrganisationInfoLimitedToVlimpers>,
     // ICommandHandler<AddOrganisationKey>,
     // ICommandHandler<UpdateOrganisationKey>,
-    // ICommandHandler<AddOrganisationRegulation>,
+        // ICommandHandler<AddOrganisationRegulation>,
     ICommandHandler<UpdateOrganisationRegulation>,
     ICommandHandler<AddOrganisationBuilding>,
     ICommandHandler<UpdateOrganisationBuilding>,
