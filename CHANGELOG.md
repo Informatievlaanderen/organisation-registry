@@ -1,3 +1,23 @@
+# [1.177.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.176.1...v1.177.0) (2022-05-09)
+
+
+### Bug Fixes
+
+* or-992 correctly add user to unittests setup ([b085448](https://github.com/informatievlaanderen/organisation-registry/commit/b085448ed9141eab2bc8bf759ba36f834e320f76))
+
+
+### Features
+
+* or-1027 refactor AddOrganisationKey ([91cca65](https://github.com/informatievlaanderen/organisation-registry/commit/91cca65bd473441c4a068255d7aa49d556e4cf59))
+* or-1027 refactor AddOrganisationRegulation ([306a3d1](https://github.com/informatievlaanderen/organisation-registry/commit/306a3d135c3516ac7d016cb4fb4c93eaabe6eb3b))
+* or-1027 refactor UpdateOrganisationInfoLimitedToVlimpers ([0aea897](https://github.com/informatievlaanderen/organisation-registry/commit/0aea8973a237b9adeca622ffc9f67ffb93d5fb69))
+* or-1027 refactor UpdateOrganisationKey ([70e7a44](https://github.com/informatievlaanderen/organisation-registry/commit/70e7a4470a84f6d29dfdeda3f37ce59ff9898ad7))
+* or-1027 refactor UpdateOrganisationNotLimitedToVlimpersCommandHandler ([c6af5b3](https://github.com/informatievlaanderen/organisation-registry/commit/c6af5b31407c2e650bf103c8bc561335c8154adb))
+* or-1027 review comments ([d84f242](https://github.com/informatievlaanderen/organisation-registry/commit/d84f242735f771114ca292e55dc6084ed4a19734))
+* or-992 createorganisation converted to envelopecommand ([ae8ae73](https://github.com/informatievlaanderen/organisation-registry/commit/ae8ae735e69892a6fdd08b19fddae72e67e15fae))
+* or-992 refactor commands/users with envelope ([0d1292b](https://github.com/informatievlaanderen/organisation-registry/commit/0d1292b8a41ba92f99dbbd6fcd6fbbae87696586))
+* or-992 refactor users UpdateOrganisation ([52a29bd](https://github.com/informatievlaanderen/organisation-registry/commit/52a29bd64b85ca6da7fb050b004573954d0b3b68))
+
 ## [1.176.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.176.0...v1.176.1) (2022-05-04)
 
 
