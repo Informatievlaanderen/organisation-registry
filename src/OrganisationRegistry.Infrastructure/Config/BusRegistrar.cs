@@ -41,17 +41,10 @@ namespace OrganisationRegistry.Infrastructure.Config
 
             foreach (var type in commandTypes)
             {
-                try
-                {
-                    var commandEnvelopeHandlerWrapper = Activator.CreateInstance(typeof(CommandEnvelopeHandlerWrapper<>).MakeGenericType(type), _requestScopedServiceProvider);
+                var commandEnvelopeHandlerWrapper = Activator.CreateInstance(typeof(CommandEnvelopeHandlerWrapper<>).MakeGenericType(type), _requestScopedServiceProvider);
 
-                    if (commandEnvelopeHandlerWrapper is ICommandEnvelopeHandlerWrapper commandEnvelopeHandler)
-                        _bus.RegisterCommandEnvelopeHandler(commandEnvelopeHandler);
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine($"Cannot create instance of EnvelopeHandler for command '{type.FullName}'");
-                }
+                if (commandEnvelopeHandlerWrapper is ICommandEnvelopeHandlerWrapper commandEnvelopeHandler)
+                    _bus.RegisterCommandEnvelopeHandler(commandEnvelopeHandler);
             }
         }
 

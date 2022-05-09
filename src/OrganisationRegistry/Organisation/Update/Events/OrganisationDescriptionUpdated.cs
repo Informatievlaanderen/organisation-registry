@@ -4,7 +4,8 @@ using System;
 
 public class OrganisationDescriptionUpdated : BaseEvent<OrganisationDescriptionUpdated>
 {
-    public Guid OrganisationId => Id;
+    public Guid OrganisationId
+        => Id;
 
     public string Description { get; }
 

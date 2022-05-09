@@ -4,7 +4,9 @@ using System;
 
 public class OrganisationOperationalValidityUpdated : BaseEvent<OrganisationOperationalValidityUpdated>
 {
-    public Guid OrganisationId => Id;
+    public Guid OrganisationId
+        => Id;
+
     public DateTime? OperationalValidFrom { get; }
     public DateTime? OperationalValidTo { get; }
 

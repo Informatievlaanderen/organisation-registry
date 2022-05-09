@@ -5,7 +5,8 @@ using System.Collections.Generic;
 
 public class OrganisationPurposesUpdated : BaseEvent<OrganisationPurposesUpdated>
 {
-    public Guid OrganisationId => Id;
+    public Guid OrganisationId
+        => Id;
 
     public List<Purpose> Purposes { get; }
 
