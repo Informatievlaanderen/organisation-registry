@@ -4,7 +4,9 @@ using System;
 
 public class OrganisationShowOnVlaamseOverheidSitesUpdated : BaseEvent<OrganisationShowOnVlaamseOverheidSitesUpdated>
 {
-    public Guid OrganisationId => Id;
+    public Guid OrganisationId
+        => Id;
+
     public bool ShowOnVlaamseOverheidSites { get; }
 
 

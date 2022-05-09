@@ -4,7 +4,8 @@ using System;
 
 public class OrganisationShortNameUpdated : BaseEvent<OrganisationShortNameUpdated>
 {
-    public Guid OrganisationId => Id;
+    public Guid OrganisationId
+        => Id;
 
     public string ShortName { get; }
 

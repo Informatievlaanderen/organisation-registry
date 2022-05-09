@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Commands;
 using Handling;
 using Handling.Authorization;
-using Infrastructure.Authorization;
 using Microsoft.Extensions.Logging;
 using OrganisationRegistry.Infrastructure.Commands;
 using Infrastructure.Domain;
@@ -16,37 +15,35 @@ public class AddOrganisationRegulationCommandHandler :
     BaseCommandHandler<AddOrganisationRegulationCommandHandler>,
     ICommandEnvelopeHandler<AddOrganisationRegulation>
 {
-    public AddOrganisationRegulationCommandHandler(ILogger<AddOrganisationRegulationCommandHandler> logger, ISession session) : base(logger, session)
+    public AddOrganisationRegulationCommandHandler(
+        ILogger<AddOrganisationRegulationCommandHandler> logger,
+        ISession session) : base(logger, session)
     {
     }
 
     public Task Handle(ICommandEnvelope<AddOrganisationRegulation> envelope)
-        => Handle(envelope.Command, envelope.User);
-
-    public Task Handle(AddOrganisationRegulation message, IUser user) =>
-        UpdateHandler<Organisation>.For(message, user, Session)
+        => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
             .WithPolicy(_ => new RegulationPolicy())
-            .Handle(session =>
-            {
-                var organisation = session.Get<Organisation>(message.OrganisationId);
-                organisation.ThrowIfTerminated(user);
+            .Handle(
+                session =>
+                {
+                    var organisation = session.Get<Organisation>(envelope.Command.OrganisationId);
+                    organisation.ThrowIfTerminated(envelope.User);
 
-                var regulationTheme = message.RegulationThemeId != Guid.Empty ?
-                    session.Get<RegulationTheme>(message.RegulationThemeId) : null;
+                    var regulationTheme = envelope.Command.RegulationThemeId != Guid.Empty ? session.Get<RegulationTheme>(envelope.Command.RegulationThemeId) : null;
 
-                var regulationSubTheme = message.RegulationSubThemeId != Guid.Empty ?
-                    session.Get<RegulationSubTheme>(message.RegulationSubThemeId) : null;
+                    var regulationSubTheme = envelope.Command.RegulationSubThemeId != Guid.Empty ? session.Get<RegulationSubTheme>(envelope.Command.RegulationSubThemeId) : null;
 
-                organisation.AddRegulation(
-                    message.OrganisationRegulationId,
-                    regulationTheme,
-                    regulationSubTheme,
-                    message.Name,
-                    message.Url,
-                    new WorkRulesUrl(message.WorkRulesUrl),
-                    message.Date,
-                    message.Description,
-                    message.DescriptionRendered,
-                    new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-            });
+                    organisation.AddRegulation(
+                        envelope.Command.OrganisationRegulationId,
+                        regulationTheme,
+                        regulationSubTheme,
+                        envelope.Command.Name,
+                        envelope.Command.Url,
+                        new WorkRulesUrl(envelope.Command.WorkRulesUrl),
+                        envelope.Command.Date,
+                        envelope.Command.Description,
+                        envelope.Command.DescriptionRendered,
+                        new Period(new ValidFrom(envelope.Command.ValidFrom), new ValidTo(envelope.Command.ValidTo)));
+                });
 }
