@@ -7,7 +7,6 @@ namespace OrganisationRegistry.SqlServer.Person
     using Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
-
     using System.Linq;
     using System.Threading.Tasks;
     using Capacity;
@@ -24,10 +23,10 @@ namespace OrganisationRegistry.SqlServer.Person
         public Guid OrganisationCapacityId { get; set; }
 
         public Guid OrganisationId { get; set; }
-        public string OrganisationName { get; set; }
+        public string OrganisationName { get; set; } = null!;
 
         public Guid CapacityId { get; set; }
-        public string CapacityName { get; set; }
+        public string CapacityName { get; set; } = null!;
 
         public Guid? PersonId { get; set; }
 
@@ -72,6 +71,7 @@ namespace OrganisationRegistry.SqlServer.Person
         Projection<PersonCapacityListView>,
         IEventHandler<OrganisationCapacityAdded>,
         IEventHandler<OrganisationCapacityUpdated>,
+        IEventHandler<OrganisationCapacityRemoved>,
         IEventHandler<CapacityUpdated>,
         IEventHandler<FunctionUpdated>,
         IEventHandler<OrganisationInfoUpdated>,
@@ -81,8 +81,11 @@ namespace OrganisationRegistry.SqlServer.Person
         IEventHandler<OrganisationTerminated>,
         IEventHandler<OrganisationTerminatedV2>
     {
-        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-        public override string Schema => WellknownSchemas.BackofficeSchema;
+        protected override string[] ProjectionTableNames
+            => Enum.GetNames(typeof(ProjectionTables));
+
+        public override string Schema
+            => WellknownSchemas.BackofficeSchema;
 
         public enum ProjectionTables
         {
@@ -191,21 +194,12 @@ namespace OrganisationRegistry.SqlServer.Person
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
-        {
-            if (message.Body.PersonId.HasValue)
-            {
-                await AddOrUpdatePersonCapacity(dbConnection, dbTransaction, message);
-            }
-            else
-            {
-                await RemovePersonCapacity(dbConnection, dbTransaction, message);
-            }
-        }
+            => await (message.Body.PersonId.HasValue
+                ? AddOrUpdatePersonCapacity(dbConnection, dbTransaction, message)
+                : RemovePersonCapacity(dbConnection, dbTransaction, message.Body.OrganisationCapacityId));
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
-        {
-            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
-        }
+            => await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
 
         private async Task AddOrUpdatePersonCapacity(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
         {
@@ -232,23 +226,24 @@ namespace OrganisationRegistry.SqlServer.Person
             await context.SaveChangesAsync();
         }
 
-        private async Task RemovePersonCapacity(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
+        private async Task RemovePersonCapacity(DbConnection dbConnection, DbTransaction dbTransaction, Guid organisationCapacityId)
         {
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var personCapacityListItem = context.PersonCapacityList.SingleOrDefault(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
+            var maybePersonCapacity = await context.PersonCapacityList.SingleOrDefaultAsync(item => item.OrganisationCapacityId == organisationCapacityId);
 
-            if (personCapacityListItem == null)
+            if (maybePersonCapacity is not { } personCapacity)
                 return;
 
-            context.PersonCapacityList.Remove(personCapacityListItem);
+            context.PersonCapacityList.Remove(personCapacity);
             await context.SaveChangesAsync();
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var capacityListItems = context.PersonCapacityList.Where(item =>
-                message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
+            var capacityListItems = context.PersonCapacityList.Where(
+                item =>
+                    message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
 
             foreach (var capacityListItem in capacityListItems)
                 capacityListItem.ValidTo = message.Body.FieldsToTerminate.Capacities[capacityListItem.OrganisationCapacityId];
@@ -259,13 +254,17 @@ namespace OrganisationRegistry.SqlServer.Person
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var capacityListItems = context.PersonCapacityList.Where(item =>
-                message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
+            var capacityListItems = context.PersonCapacityList.Where(
+                item =>
+                    message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
 
             foreach (var capacityListItem in capacityListItems)
                 capacityListItem.ValidTo = message.Body.FieldsToTerminate.Capacities[capacityListItem.OrganisationCapacityId];
 
             await context.SaveChangesAsync();
         }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityRemoved> message)
+            => await RemovePersonCapacity(dbConnection, dbTransaction, message.Body.OrganisationCapacityId);
     }
 }

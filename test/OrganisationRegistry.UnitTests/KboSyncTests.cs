@@ -1,10 +1,8 @@
 namespace OrganisationRegistry.UnitTests
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
     using System.Threading.Tasks;
     using Api.Backoffice.Admin.Task;
     using FluentAssertions;
@@ -99,7 +97,7 @@ namespace OrganisationRegistry.UnitTests
                 kboSyncQueueItem.Id);
 
             commandSender
-                .Setup(sender => sender.Send(It.IsAny<SyncOrganisationWithKbo>()))
+                .Setup(sender => sender.Send(It.IsAny<SyncOrganisationWithKbo>(), null))
                 .Throws(aggregateNotFoundException);
 
             await _context.SaveChangesAsync();

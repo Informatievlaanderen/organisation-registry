@@ -12,7 +12,8 @@
         <ww-capacity-list
           [items]="capacities"
           [isBusy]="isLoading"
-          (changePage)="changePage($event)">
+          (changePage)="changePage($event)"
+          (removeCapacityClicked)="removeCapacity($event)">
         </ww-capacity-list>
     </div>
 </div>

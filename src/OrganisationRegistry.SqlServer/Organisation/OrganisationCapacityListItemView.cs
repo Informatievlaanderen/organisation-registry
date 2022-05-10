@@ -45,6 +45,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
         public bool IsActive { get; set; }
+        public bool ScheduledForRemoval { get; set; }
     }
 
     public class OrganisationCapacityListConfiguration : EntityMappingConfiguration<OrganisationCapacityListItem>
@@ -88,7 +89,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
         Projection<OrganisationCapacityListView>,
         IEventHandler<OrganisationCapacityAdded>,
         IEventHandler<OrganisationCapacityUpdated>,
+        IEventHandler<OrganisationCapacityRemoved>,
         IEventHandler<CapacityUpdated>,
+        IEventHandler<CapacityRemoved>,
         IEventHandler<FunctionUpdated>,
         IEventHandler<PersonUpdated>,
         IEventHandler<LocationUpdated>,
@@ -97,8 +100,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<OrganisationCapacityBecameActive>,
         IEventHandler<OrganisationCapacityBecameInactive>
     {
-        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-        public override string Schema => WellknownSchemas.BackofficeSchema;
+        protected override string[] ProjectionTableNames
+            => Enum.GetNames(typeof(ProjectionTables));
+
+        public override string Schema
+            => WellknownSchemas.BackofficeSchema;
 
         public enum ProjectionTables
         {
@@ -124,6 +130,18 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
             foreach (var organisationCapacity in organisationCapacities)
                 organisationCapacity.CapacityName = message.Body.Name;
+
+            await context.SaveChangesAsync();
+        }
+
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<CapacityRemoved> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var organisationCapacitiesToBeRemoved =
+                context.OrganisationCapacityList.Where(item => item.CapacityId == message.Body.CapacityId);
+
+            foreach (var organisationCapacity in organisationCapacitiesToBeRemoved)
+                organisationCapacity.ScheduledForRemoval = true;
 
             await context.SaveChangesAsync();
         }
@@ -213,11 +231,25 @@ namespace OrganisationRegistry.SqlServer.Organisation
             await context.SaveChangesAsync();
         }
 
+        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityRemoved> message)
+        {
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            var maybeCapacity = await context.OrganisationCapacityList.SingleOrDefaultAsync(item => item.OrganisationCapacityId == message.Body.OrganisationCapacityId);
+
+            if (maybeCapacity is not { } capacity)
+                return;
+
+            context.OrganisationCapacityList.Remove(capacity);
+
+            await context.SaveChangesAsync();
+        }
+
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var capacities = context.OrganisationCapacityList.Where(item =>
-                message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
+            var capacities = context.OrganisationCapacityList.Where(
+                item =>
+                    message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
 
             foreach (var capacity in capacities)
                 capacity.ValidTo = message.Body.FieldsToTerminate.Capacities[capacity.OrganisationCapacityId];
@@ -228,8 +260,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var capacities = context.OrganisationCapacityList.Where(item =>
-                message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
+            var capacities = context.OrganisationCapacityList.Where(
+                item =>
+                    message.Body.FieldsToTerminate.Capacities.Keys.Contains(item.OrganisationCapacityId));
 
             foreach (var capacity in capacities)
                 capacity.ValidTo = message.Body.FieldsToTerminate.Capacities[capacity.OrganisationCapacityId];
@@ -237,7 +270,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
             await context.SaveChangesAsync();
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction,
+        public async Task Handle(
+            DbConnection dbConnection,
+            DbTransaction dbTransaction,
             IEnvelope<OrganisationCapacityBecameActive> message)
         {
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);

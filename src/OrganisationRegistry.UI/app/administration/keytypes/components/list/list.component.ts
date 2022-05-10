@@ -1,4 +1,4 @@
-import {Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
+import {Component, Output, EventEmitter} from '@angular/core';
 
 import {BaseListComponent} from 'shared/components/list';
 

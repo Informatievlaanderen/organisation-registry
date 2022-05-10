@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 
 import { BaseListComponent } from 'shared/components/list';
 
@@ -12,4 +12,11 @@ import { Capacity } from 'services/capacities';
   outputs: ['changePage']
 })
 export class CapacityListComponent extends BaseListComponent<Capacity> {
+
+  @Output()
+  removeCapacityClicked: EventEmitter<Capacity> = new EventEmitter<Capacity>();
+
+  remove(id: Capacity) {
+    this.removeCapacityClicked.emit(id);
+  }
 }

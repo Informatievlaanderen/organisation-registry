@@ -6,6 +6,6 @@ namespace OrganisationRegistry.Organisation
 
     public class OrganisationKeyId : GuidValueObject<OrganisationKeyId>
     {
-        public OrganisationKeyId([JsonProperty("id")] Guid organisationId) : base(organisationId) { }
+        public OrganisationKeyId([JsonProperty("id")] Guid organisationKeyId) : base(organisationKeyId) { }
     }
 }

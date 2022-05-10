@@ -69,11 +69,12 @@ namespace OrganisationRegistry.Infrastructure.Bus
             handlers.Add(async x => await handler((T)x));
         }
 
-        public async Task Send<T>(T command) where T : ICommand
+        public async Task Send<T>(T command, IUser? user = null) where T : ICommand
         {
             if (_commandEnvelopeRoutes.SingleOrDefault(x => x.CanHandle<T>()) is { } envelopeHandler)
             {
-                var envelope = new CommandEnvelope<T>(command, await _securityService.GetRequiredUser(ClaimsPrincipal.Current));
+                user ??= await _securityService.GetRequiredUser(ClaimsPrincipal.Current);
+                var envelope = new CommandEnvelope<T>(command, user);
 
                 await envelopeHandler.Handle(envelope);
 

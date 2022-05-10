@@ -13,6 +13,7 @@ import {
   CapacityListItem,
   Capacity
 } from './';
+import {KeyType} from "../keytypes";
 
 @Injectable()
 export class CapacityService implements ICrudService<Capacity> {
@@ -112,5 +113,16 @@ export class CapacityService implements ICrudService<Capacity> {
 
   private toCapacities(res: Response): PagedResult<CapacityListItem> {
     return new PagedResultFactory<CapacityListItem>().create(res.headers, res.json());
+  }
+
+  delete(capacity: Capacity) {
+    const url = `${this.capacitiesUrl}/${capacity.id}`;
+
+    let headers = new HeadersBuilder()
+      .json()
+      .build();
+
+    return this.http
+      .delete(url, { headers: headers });
   }
 }

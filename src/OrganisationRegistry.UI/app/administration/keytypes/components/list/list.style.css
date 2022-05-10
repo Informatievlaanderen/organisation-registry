@@ -2,10 +2,6 @@ a.data-table__header-title--sortable {
   cursor: pointer;
 }
 
-a.data-table__header-title--sortable {
-  cursor: pointer;
-}
-
 th.data-table__last-header {
   width: 40px;
   display: inline-block;
@@ -19,4 +15,8 @@ td span.data-table__cell--disabled {
 tr.data-table__body-history {
   background-color: #f3f3f3;
   font-style: italic;
+}
+
+a.vi-trash {
+  cursor: pointer;
 }

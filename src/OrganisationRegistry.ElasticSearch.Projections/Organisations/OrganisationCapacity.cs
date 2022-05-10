@@ -22,6 +22,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         IElasticEventHandler<OrganisationCapacityAdded>,
         IElasticEventHandler<OrganisationCapacityUpdated>,
         IElasticEventHandler<CapacityUpdated>,
+        IElasticEventHandler<OrganisationCapacityRemoved>,
         IElasticEventHandler<FunctionUpdated>,
         IElasticEventHandler<PersonUpdated>,
         IElasticEventHandler<OrganisationTerminated>,
@@ -37,56 +38,61 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<CapacityUpdated> message)
-        {
-            return new ElasticMassChange
+            => await new ElasticMassChange
             (
-                elastic => elastic.TryAsync(() => elastic
-                    .MassUpdateOrganisationAsync(
-                        x => x.Capacities.Single().CapacityId, message.Body.CapacityId,
-                        "capacities", "capacityId",
-                        "capacityName", message.Body.Name,
-                        message.Number,
-                        message.Timestamp))
-            );
-        }
+                elastic => elastic.TryAsync(
+                    () => elastic
+                        .MassUpdateOrganisationAsync(
+                            x => x.Capacities.Single().CapacityId,
+                            message.Body.CapacityId,
+                            "capacities",
+                            "capacityId",
+                            "capacityName",
+                            message.Body.Name,
+                            message.Number,
+                            message.Timestamp))
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
-        {
-            return new ElasticMassChange
+            => await new ElasticMassChange
             (
-                elastic => elastic.TryAsync(() => elastic
-                    .MassUpdateOrganisationAsync(
-                        x => x.Capacities.Single().FunctionId, message.Body.FunctionId,
-                        "capacities", "functionId",
-                        "functionName", message.Body.Name,
-                        message.Number,
-                        message.Timestamp))
-            );
-        }
+                elastic => elastic.TryAsync(
+                    () => elastic
+                        .MassUpdateOrganisationAsync(
+                            x => x.Capacities.Single().FunctionId,
+                            message.Body.FunctionId,
+                            "capacities",
+                            "functionId",
+                            "functionName",
+                            message.Body.Name,
+                            message.Number,
+                            message.Timestamp))
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
-        {
-            return new ElasticMassChange
+            => await new ElasticMassChange
             (
-                elastic => elastic.TryAsync(() => elastic
-                    .MassUpdateOrganisationAsync(
-                        x => x.Capacities.Single().PersonId, message.Body.PersonId,
-                        "capacities", "personId",
-                        "personName", $"{message.Body.Name} {message.Body.FirstName}",
-                        message.Number,
-                        message.Timestamp))
-            );
-        }
+                elastic => elastic.TryAsync(
+                    () => elastic
+                        .MassUpdateOrganisationAsync(
+                            x => x.Capacities.Single().PersonId,
+                            message.Body.PersonId,
+                            "capacities",
+                            "personId",
+                            "personName",
+                            $"{message.Body.Name} {message.Body.FirstName}",
+                            message.Number,
+                            message.Timestamp))
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityAdded> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>
-            (
-                message.Body.OrganisationId, async document =>
+            => await new ElasticPerDocumentChange<OrganisationDocument>(
+                message.Body.OrganisationId,
+                async document =>
                 {
                     await using var organisationRegistryContext = _contextFactory.Create();
                     var contactTypeNames = await organisationRegistryContext.ContactTypeCache
-                        .Select(x => new {x.Id, x.Name})
+                        .Select(x => new { x.Id, x.Name })
                         .ToDictionaryAsync(x => x.Id, x => x.Name);
 
                     document.ChangeId = message.Number;
@@ -109,18 +115,16 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
-        }
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityUpdated> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>
-            (
-                message.Body.OrganisationId, async document =>
+            => await new ElasticPerDocumentChange<OrganisationDocument>(
+                message.Body.OrganisationId,
+                async document =>
                 {
                     await using var organisationRegistryContext = _contextFactory.Create();
                     var contactTypeNames = await organisationRegistryContext.ContactTypeCache
-                        .Select(x => new {x.Id, x.Name})
+                        .Select(x => new { x.Id, x.Name })
                         .ToDictionaryAsync(x => x.Id, x => x.Name);
 
                     document.ChangeId = message.Number;
@@ -140,14 +144,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.Contacts.Select(x => new Contact(x.Key, contactTypeNames[x.Key], x.Value)).ToList(),
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
-        }
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>
-            (
-                message.Body.OrganisationId, async document =>
+            => await new ElasticPerDocumentChange<OrganisationDocument>(
+                message.Body.OrganisationId,
+                async document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -162,14 +164,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         organisationCapacity.Validity.End = value;
                     }
                 }
-            );
-        }
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>
-            (
-                message.Body.OrganisationId, async document =>
+            => await new ElasticPerDocumentChange<OrganisationDocument>(
+                message.Body.OrganisationId,
+                async document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -184,7 +184,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         organisationCapacity.Validity.End = value;
                     }
                 }
-            );
-        }
+            ).ToAsyncResult();
+
+        public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCapacityRemoved> message)
+            => await new ElasticPerDocumentChange<OrganisationDocument>(
+                message.Body.OrganisationId,
+                document =>
+                {
+                    document.ChangeId = message.Number;
+                    document.ChangeTime = message.Timestamp;
+
+                    document.Capacities.RemoveExistingListItems(x => x.OrganisationCapacityId == message.Body.OrganisationCapacityId);
+                }
+            ).ToAsyncResult();
     }
 }

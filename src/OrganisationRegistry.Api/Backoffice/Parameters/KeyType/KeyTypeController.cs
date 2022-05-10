@@ -117,6 +117,11 @@
             return OkWithLocationHeader(nameof(Get), new { id = internalMessage.KeyTypeId });
         }
 
+        /// <summary>
+        /// Remove a key type
+        /// </summary>
+        /// <response code="204">If the key type is successfully removed.</response>
+        /// <response code="400">If the key type information does not pass validation.</response>
         [HttpDelete("{id}")]
         [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

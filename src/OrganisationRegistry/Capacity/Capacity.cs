@@ -5,7 +5,8 @@
 
     public class Capacity : AggregateRoot
     {
-        public string Name { get; private set; }
+        public string Name { get; private set; } = null!;
+        public bool IsRemoved { get; private set; }
 
         private Capacity() { }
 
@@ -20,6 +21,13 @@
             ApplyChange(@event);
         }
 
+        public void Remove()
+        {
+            if (IsRemoved) return;
+
+            ApplyChange(new CapacityRemoved(Id));
+        }
+
         private void Apply(CapacityCreated @event)
         {
             Id = @event.CapacityId;
@@ -29,6 +37,11 @@
         private void Apply(CapacityUpdated @event)
         {
             Name = @event.Name;
+        }
+
+        private void Apply(CapacityRemoved @event)
+        {
+            IsRemoved = true;
         }
     }
 }
