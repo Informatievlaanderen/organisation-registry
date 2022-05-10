@@ -40,7 +40,8 @@ public class OrganisationCommandHandlers :
     // ICommandHandler<UpdateOrganisationInfoLimitedToVlimpers>,
     // ICommandHandler<AddOrganisationKey>,
     // ICommandHandler<UpdateOrganisationKey>,
-        // ICommandHandler<AddOrganisationRegulation>,
+    // ICommandHandler<RemoveOrganisationKey>,
+    // ICommandHandler<AddOrganisationRegulation>,
     ICommandHandler<UpdateOrganisationRegulation>,
     ICommandHandler<AddOrganisationBuilding>,
     ICommandHandler<UpdateOrganisationBuilding>,
@@ -73,8 +74,7 @@ public class OrganisationCommandHandlers :
     ICommandHandler<UpdateOrganisationOpeningHour>,
     ICommandHandler<TerminateOrganisation>,
     ICommandHandler<PlaceUnderVlimpersManagement>,
-    ICommandHandler<ReleaseFromVlimpersManagement>,
-    ICommandHandler<RemoveOrganisationKey>
+    ICommandHandler<ReleaseFromVlimpersManagement>
 {
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
@@ -247,26 +247,26 @@ public class OrganisationCommandHandlers :
                         new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
                 });
 
-    public Task Handle(AddOrganisationKey message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .WithKeyPolicy(_organisationRegistryConfiguration, message)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-
-                    var keyType = session.Get<KeyType>(message.KeyTypeId);
-
-                    if (keyType.IsRemoved)
-                        throw new CannotUseRemovedParameter("Informatiesysteem", keyType.Name);
-
-                    organisation.AddKey(
-                        message.OrganisationKeyId,
-                        keyType,
-                        message.KeyValue,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                        keyTypeId => _securityService.CanUseKeyType(message.User, keyTypeId));
-                });
+    // public Task Handle(AddOrganisationKey message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .WithKeyPolicy(_organisationRegistryConfiguration, message)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //
+    //                 var keyType = session.Get<KeyType>(message.KeyTypeId);
+    //
+    //                 if (keyType.IsRemoved)
+    //                     throw new CannotUseRemovedParameter("Informatiesysteem", keyType.Name);
+    //
+    //                 organisation.AddKey(
+    //                     message.OrganisationKeyId,
+    //                     keyType,
+    //                     message.KeyValue,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+    //                     keyTypeId => _securityService.CanUseKeyType(message.User, keyTypeId));
+    //             });
 
     public Task Handle(AddOrganisationLabel message)
         => UpdateHandler<Organisation>.For(message, Session)
@@ -374,35 +374,35 @@ public class OrganisationCommandHandlers :
                         _dateTimeProvider);
                 });
 
-    public Task Handle(AddOrganisationRegulation message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .WithPolicy(_ => new RegulationPolicy())
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var regulationTheme = message.RegulationThemeId != Guid.Empty
-                        ? session.Get<RegulationTheme>(message.RegulationThemeId)
-                        : null;
-
-                    var regulationSubTheme = message.RegulationSubThemeId != Guid.Empty
-                        ? session.Get<RegulationSubTheme>(message.RegulationSubThemeId)
-                        : null;
-
-                    organisation.AddRegulation(
-                        message.OrganisationRegulationId,
-                        regulationTheme,
-                        regulationSubTheme,
-                        message.Name,
-                        message.Url,
-                        new WorkRulesUrl(message.WorkRulesUrl),
-                        message.Date,
-                        message.Description,
-                        message.DescriptionRendered,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-                });
+    // public Task Handle(AddOrganisationRegulation message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .WithPolicy(_ => new RegulationPolicy())
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var regulationTheme = message.RegulationThemeId != Guid.Empty
+    //                     ? session.Get<RegulationTheme>(message.RegulationThemeId)
+    //                     : null;
+    //
+    //                 var regulationSubTheme = message.RegulationSubThemeId != Guid.Empty
+    //                     ? session.Get<RegulationSubTheme>(message.RegulationSubThemeId)
+    //                     : null;
+    //
+    //                 organisation.AddRegulation(
+    //                     message.OrganisationRegulationId,
+    //                     regulationTheme,
+    //                     regulationSubTheme,
+    //                     message.Name,
+    //                     message.Url,
+    //                     new WorkRulesUrl(message.WorkRulesUrl),
+    //                     message.Date,
+    //                     message.Description,
+    //                     message.DescriptionRendered,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+    //             });
 
     public Task Handle(AddOrganisationRelation message)
         => UpdateHandler<Organisation>.For(message, Session)
@@ -421,9 +421,9 @@ public class OrganisationCommandHandlers :
                         relatedOrganisation,
                         new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
                 });
-
-    public Task Handle(CreateOrganisation message)
-        => message.ParentOrganisationId == null ? CreateTopLevelOrganisation(message) : CreateDaughter(message);
+    //
+    // public Task Handle(CreateOrganisation message)
+    //     => message.ParentOrganisationId == null ? CreateTopLevelOrganisation(message) : CreateDaughter(message);
 
     public Task Handle(PlaceUnderVlimpersManagement message)
         => UpdateHandler<Organisation>.For(message, Session)
@@ -447,16 +447,16 @@ public class OrganisationCommandHandlers :
                     organisation.ReleaseFromVlimpersManagement();
                 });
 
-    public Task Handle(RemoveOrganisationKey message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .RequiresOneOfRole(Role.AutomatedTask)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-
-                    organisation.RemoveOrganisationKey(message.OrganisationKeyId);
-                });
+    // public Task Handle(RemoveOrganisationKey message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .RequiresOneOfRole(Role.AutomatedTask)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //
+    //                 organisation.RemoveOrganisationKey(message.OrganisationKeyId);
+    //             });
 
     public Task Handle(TerminateOrganisation message)
         => UpdateHandler<Organisation>.For(message, Session)
@@ -679,93 +679,93 @@ public class OrganisationCommandHandlers :
                         new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
                 });
 
-    public Task Handle(UpdateOrganisationInfo message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .RequiresBeheerderForOrganisationButNotUnderVlimpersManagement()
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
+    // public Task Handle(UpdateOrganisationInfo message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .RequiresBeheerderForOrganisationButNotUnderVlimpersManagement()
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var purposes = message
+    //                     .Purposes
+    //                     .Select(purposeId => session.Get<Purpose>(purposeId))
+    //                     .ToList();
+    //
+    //                 organisation.UpdateInfo(
+    //                     message.Name,
+    //                     message.Article,
+    //                     message.Description,
+    //                     message.ShortName,
+    //                     purposes,
+    //                     message.ShowOnVlaamseOverheidSites,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+    //                     new Period(
+    //                         new ValidFrom(message.OperationalValidFrom),
+    //                         new ValidTo(message.OperationalValidTo)),
+    //                     _dateTimeProvider);
+    //             });
 
-                    var purposes = message
-                        .Purposes
-                        .Select(purposeId => session.Get<Purpose>(purposeId))
-                        .ToList();
+    // public Task Handle(UpdateOrganisationInfoLimitedToVlimpers message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .WithVlimpersOnlyPolicy()
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 organisation.UpdateVlimpersOrganisationInfo(
+    //                     message.Article,
+    //                     message.Name,
+    //                     message.ShortName,
+    //                     new Period(
+    //                         message.ValidFrom,
+    //                         message.ValidTo),
+    //                     new Period(
+    //                         message.OperationalValidFrom,
+    //                         message.OperationalValidTo),
+    //                     _dateTimeProvider);
+    //             });
 
-                    organisation.UpdateInfo(
-                        message.Name,
-                        message.Article,
-                        message.Description,
-                        message.ShortName,
-                        purposes,
-                        message.ShowOnVlaamseOverheidSites,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                        new Period(
-                            new ValidFrom(message.OperationalValidFrom),
-                            new ValidTo(message.OperationalValidTo)),
-                        _dateTimeProvider);
-                });
+    // public Task Handle(UpdateOrganisationInfoNotLimitedToVlimpers message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .RequiresBeheerderForOrganisationRegardlessOfVlimpers()
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var purposes = message
+    //                     .Purposes
+    //                     .Select(purposeId => session.Get<Purpose>(purposeId))
+    //                     .ToList();
+    //
+    //                 organisation.UpdateInfoNotLimitedByVlimpers(
+    //                     message.Description,
+    //                     purposes,
+    //                     message.ShowOnVlaamseOverheidSites);
+    //             });
 
-    public Task Handle(UpdateOrganisationInfoLimitedToVlimpers message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .WithVlimpersOnlyPolicy()
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    organisation.UpdateVlimpersOrganisationInfo(
-                        message.Article,
-                        message.Name,
-                        message.ShortName,
-                        new Period(
-                            message.ValidFrom,
-                            message.ValidTo),
-                        new Period(
-                            message.OperationalValidFrom,
-                            message.OperationalValidTo),
-                        _dateTimeProvider);
-                });
-
-    public Task Handle(UpdateOrganisationInfoNotLimitedToVlimpers message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .RequiresBeheerderForOrganisationRegardlessOfVlimpers()
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var purposes = message
-                        .Purposes
-                        .Select(purposeId => session.Get<Purpose>(purposeId))
-                        .ToList();
-
-                    organisation.UpdateInfoNotLimitedByVlimpers(
-                        message.Description,
-                        purposes,
-                        message.ShowOnVlaamseOverheidSites);
-                });
-
-    public Task Handle(UpdateOrganisationKey message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .WithKeyPolicy(_organisationRegistryConfiguration, message)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-
-                    var keyType = session.Get<KeyType>(message.KeyTypeId);
-
-                    organisation.UpdateKey(
-                        message.OrganisationKeyId,
-                        keyType,
-                        message.Value,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                        keyTypeId => _securityService.CanUseKeyType(message.User, keyTypeId));
-                });
+    // public Task Handle(UpdateOrganisationKey message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .WithKeyPolicy(_organisationRegistryConfiguration, message)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //
+    //                 var keyType = session.Get<KeyType>(message.KeyTypeId);
+    //
+    //                 organisation.UpdateKey(
+    //                     message.OrganisationKeyId,
+    //                     keyType,
+    //                     message.Value,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+    //                     keyTypeId => _securityService.CanUseKeyType(message.User, keyTypeId));
+    //             });
 
     public Task Handle(UpdateOrganisationLabel message)
         => UpdateHandler<Organisation>.For(message, Session)
@@ -931,91 +931,91 @@ public class OrganisationCommandHandlers :
                     organisation.UpdateRelationshipValidities(message.Date);
                 });
 
-    private Task CreateDaughter(CreateOrganisation message)
-    {
-        return Handler.For(message.User, Session)
-            .WithVlimpersPolicy(Session.Get<Organisation>(message.ParentOrganisationId))
-            .Handle(
-                session =>
-                {
-                    var parentOrganisation =
-                        message.ParentOrganisationId != null
-                            ? session.Get<Organisation>(message.ParentOrganisationId)
-                            : null;
+    // private Task CreateDaughter(CreateOrganisation message)
+    // {
+    //     return Handler.For(message.User, Session)
+    //         .WithVlimpersPolicy(Session.Get<Organisation>(message.ParentOrganisationId))
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var parentOrganisation =
+    //                     message.ParentOrganisationId != null
+    //                         ? session.Get<Organisation>(message.ParentOrganisationId)
+    //                         : null;
+    //
+    //                 parentOrganisation?.ThrowIfUnauthorizedForVlimpers(message.User);
+    //
+    //                 if (_uniqueOvoNumberValidator.IsOvoNumberTaken(message.OvoNumber))
+    //                     throw new OvoNumberNotUnique();
+    //
+    //                 var ovoNumber = string.IsNullOrWhiteSpace(message.OvoNumber)
+    //                     ? _ovoNumberGenerator.GenerateNumber()
+    //                     : message.OvoNumber;
+    //
+    //                 var purposes = message
+    //                     .Purposes
+    //                     .Select(purposeId => session.Get<Purpose>(purposeId))
+    //                     .ToList();
+    //
+    //                 var organisation = Organisation.Create(
+    //                     message.OrganisationId,
+    //                     message.Name,
+    //                     ovoNumber,
+    //                     message.ShortName,
+    //                     message.Article,
+    //                     parentOrganisation,
+    //                     message.Description,
+    //                     purposes,
+    //                     message.ShowOnVlaamseOverheidSites,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+    //                     new Period(
+    //                         new ValidFrom(message.OperationalValidFrom),
+    //                         new ValidTo(message.OperationalValidTo)),
+    //                     _dateTimeProvider);
+    //
+    //                 session.Add(organisation);
+    //             });
+    // }
 
-                    parentOrganisation?.ThrowIfUnauthorizedForVlimpers(message.User);
 
-                    if (_uniqueOvoNumberValidator.IsOvoNumberTaken(message.OvoNumber))
-                        throw new OvoNumberNotUnique();
-
-                    var ovoNumber = string.IsNullOrWhiteSpace(message.OvoNumber)
-                        ? _ovoNumberGenerator.GenerateNumber()
-                        : message.OvoNumber;
-
-                    var purposes = message
-                        .Purposes
-                        .Select(purposeId => session.Get<Purpose>(purposeId))
-                        .ToList();
-
-                    var organisation = Organisation.Create(
-                        message.OrganisationId,
-                        message.Name,
-                        ovoNumber,
-                        message.ShortName,
-                        message.Article,
-                        parentOrganisation,
-                        message.Description,
-                        purposes,
-                        message.ShowOnVlaamseOverheidSites,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                        new Period(
-                            new ValidFrom(message.OperationalValidFrom),
-                            new ValidTo(message.OperationalValidTo)),
-                        _dateTimeProvider);
-
-                    session.Add(organisation);
-                });
-    }
-
-
-    private Task CreateTopLevelOrganisation(CreateOrganisation message)
-    {
-        return Handler.For(message.User, Session)
-            .RequiresAdmin()
-            .Handle(
-                session =>
-                {
-                    if (_uniqueOvoNumberValidator.IsOvoNumberTaken(message.OvoNumber))
-                        throw new OvoNumberNotUnique();
-
-                    var ovoNumber = string.IsNullOrWhiteSpace(message.OvoNumber)
-                        ? _ovoNumberGenerator.GenerateNumber()
-                        : message.OvoNumber;
-
-                    var purposes = message
-                        .Purposes
-                        .Select(purposeId => session.Get<Purpose>(purposeId))
-                        .ToList();
-
-                    var organisation = Organisation.Create(
-                        message.OrganisationId,
-                        message.Name,
-                        ovoNumber,
-                        message.ShortName,
-                        message.Article,
-                        null,
-                        message.Description,
-                        purposes,
-                        message.ShowOnVlaamseOverheidSites,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                        new Period(
-                            new ValidFrom(message.OperationalValidFrom),
-                            new ValidTo(message.OperationalValidTo)),
-                        _dateTimeProvider);
-
-                    session.Add(organisation);
-                });
-    }
+    // private Task CreateTopLevelOrganisation(CreateOrganisation message)
+    // {
+    //     return Handler.For(message.User, Session)
+    //         .RequiresAdmin()
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 if (_uniqueOvoNumberValidator.IsOvoNumberTaken(message.OvoNumber))
+    //                     throw new OvoNumberNotUnique();
+    //
+    //                 var ovoNumber = string.IsNullOrWhiteSpace(message.OvoNumber)
+    //                     ? _ovoNumberGenerator.GenerateNumber()
+    //                     : message.OvoNumber;
+    //
+    //                 var purposes = message
+    //                     .Purposes
+    //                     .Select(purposeId => session.Get<Purpose>(purposeId))
+    //                     .ToList();
+    //
+    //                 var organisation = Organisation.Create(
+    //                     message.OrganisationId,
+    //                     message.Name,
+    //                     ovoNumber,
+    //                     message.ShortName,
+    //                     message.Article,
+    //                     null,
+    //                     message.Description,
+    //                     purposes,
+    //                     message.ShowOnVlaamseOverheidSites,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+    //                     new Period(
+    //                         new ValidFrom(message.OperationalValidFrom),
+    //                         new ValidTo(message.OperationalValidTo)),
+    //                     _dateTimeProvider);
+    //
+    //                 session.Add(organisation);
+    //             });
+    // }
 
 
     private void ThrowIfCircularRelationshipDetected(

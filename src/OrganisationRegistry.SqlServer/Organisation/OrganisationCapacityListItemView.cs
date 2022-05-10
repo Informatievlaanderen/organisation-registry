@@ -23,7 +23,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using OrganisationRegistry.Person.Events;
     using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
 
-    public class OrganisationCapacityListItem
+    public class OrganisationCapacityListItem : IRemovable
     {
         public Guid OrganisationCapacityId { get; set; }
         public Guid OrganisationId { get; set; }

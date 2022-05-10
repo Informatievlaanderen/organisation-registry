@@ -8,9 +8,11 @@
     using Organisation;
     using Organisation.Commands;
     using OrganisationRegistry.Infrastructure;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
     using SqlServer;
+    using SqlServer.Organisation;
 
     public class SyncRemovedItemsService : BackgroundService
     {
@@ -42,37 +44,46 @@
                     continue;
                 }
 
-                await using var context = _contextFactory.Create();
-
-                var organisationKeys = context.OrganisationKeyList.Where(item => item.ScheduledForRemoval);
-                foreach (var organisationKey in organisationKeys)
-                {
-                    var removeOrganisationKey = new RemoveOrganisationKey(
-                        new OrganisationId(organisationKey.OrganisationId),
-                        new OrganisationKeyId(organisationKey.OrganisationKeyId))
-                    {
-                        User = WellknownUsers.SyncRemovedItemsService
-                    };
-
-                    await _commandSender.Send(removeOrganisationKey);
-                }
-
-                var organisationCapacities = context.OrganisationCapacityList.Where(item => item.ScheduledForRemoval);
-                foreach (var organisationCapacity in organisationCapacities)
-                {
-                    var removeOrganisationCapacity = new RemoveOrganisationCapacity(
-                        new OrganisationId(organisationCapacity.OrganisationId),
-                        new OrganisationCapacityId(organisationCapacity.OrganisationCapacityId)
-                        );
-
-                    await _commandSender.Send(removeOrganisationCapacity, WellknownUsers.SyncRemovedItemsService);
-                }
+                await RemoveOrganisationItems(_commandSender, _contextFactory);
 
                 await DelaySeconds(_configuration.DelayInSeconds, cancellationToken);
             }
         }
 
-        private static Task DelaySeconds(int intervalSeconds, CancellationToken cancellationToken) =>
-            Task.Delay(TimeSpan.FromSeconds(intervalSeconds), cancellationToken);
+        private static async Task RemoveOrganisationItems(ICommandSender commandSender, IContextFactory contextFactory)
+        {
+            await using var context = contextFactory.Create();
+
+            await RemoveOrganisationItems(
+                commandSender.Send,
+                context.OrganisationKeyList,
+                item => new RemoveOrganisationKey(
+                    new OrganisationId(item.OrganisationId),
+                    new OrganisationKeyId(item.OrganisationKeyId)
+                ));
+            await RemoveOrganisationItems(
+                commandSender.Send,
+                context.OrganisationCapacityList,
+                item => new RemoveOrganisationCapacity(
+                    new OrganisationId(item.OrganisationId),
+                    new OrganisationCapacityId(item.OrganisationCapacityId)
+                ));
+        }
+
+        private static async Task RemoveOrganisationItems<TItem, TCommand>(Func<TCommand, IUser?, Task> sendCommand, IQueryable<TItem> list, Func<TItem, TCommand> createCommand)
+            where TItem : IRemovable
+            where TCommand : ICommand
+        {
+            var organisationItems = list.Where(item => item.ScheduledForRemoval);
+            foreach (var organisationItem in organisationItems)
+            {
+                var removeOrganisationItem = createCommand(organisationItem);
+
+                await sendCommand(removeOrganisationItem, WellknownUsers.SyncRemovedItemsService);
+            }
+        }
+
+        private static Task DelaySeconds(int intervalSeconds, CancellationToken cancellationToken)
+            => Task.Delay(TimeSpan.FromSeconds(intervalSeconds), cancellationToken);
     }
 }
