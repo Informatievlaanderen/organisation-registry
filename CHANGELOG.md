@@ -1,3 +1,10 @@
+# [1.178.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.177.0...v1.178.0) (2022-05-10)
+
+
+### Features
+
+* or-931 remove capacities ([6834af8](https://github.com/informatievlaanderen/organisation-registry/commit/6834af88b09e7872c9655073f656271d09b1b13a))
+
 # [1.177.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.176.1...v1.177.0) (2022-05-09)
 
 
