@@ -40,8 +40,17 @@
           <tr *ngIf="!hasData(data)">
             <td colspan="1">Geen data beschikbaar...</td>
           </tr>
-          <tr *ngFor="let capacity of data">
-            <td class="data-table__body-title"><a [routerLink]="['./', capacity.id]" title="{{capacity.name}}">{{capacity.name}}</a></td>
+          <tr *ngFor="let capacity of data" [ngClass]="{'data-table__body-history':capacity.isRemoved}">
+            <td class="data-table__body-title">
+              <a [routerLink]="['./', capacity.id]" title="{{capacity.name}}">{{capacity.name}}</a>
+            </td>
+            <td class="data-table__body-title">
+              <a *ngIf="!capacity.isRemoved"
+                 aria-label="Verwijderen"
+                 class="vi vi-u-badge vi-u-badge--grey vi-u-badge--small vi-trash"
+                 title="Verwijderen"
+                 (click)="remove(capacity)"></a>
+            </td>
           </tr>
         </template>
       </tbody>

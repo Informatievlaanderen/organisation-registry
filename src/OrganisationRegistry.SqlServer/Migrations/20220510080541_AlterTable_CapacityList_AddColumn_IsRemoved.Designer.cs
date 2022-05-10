@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrganisationRegistry.SqlServer.Infrastructure;
 
@@ -11,9 +12,10 @@ using OrganisationRegistry.SqlServer.Infrastructure;
 namespace OrganisationRegistry.SqlServer.Migrations
 {
     [DbContext(typeof(OrganisationRegistryContext))]
-    partial class OrganisationRegistryContextModelSnapshot : ModelSnapshot
+    [Migration("20220510080541_AlterTable_CapacityList_AddColumn_IsRemoved")]
+    partial class AlterTable_CapacityList_AddColumn_IsRemoved
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1707,9 +1709,6 @@ namespace OrganisationRegistry.SqlServer.Migrations
                     b.Property<string>("PersonName")
                         .HasMaxLength(401)
                         .HasColumnType("nvarchar(401)");
-
-                    b.Property<bool>("ScheduledForRemoval")
-                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("ValidFrom")
                         .HasColumnType("datetime2");

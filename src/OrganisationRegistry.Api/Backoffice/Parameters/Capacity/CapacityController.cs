@@ -14,7 +14,6 @@
     using Queries;
     using Requests;
     using Security;
-    using SqlServer.Capacity;
     using SqlServer.Infrastructure;
 
     [ApiVersion("1.0")]
@@ -31,7 +30,7 @@
         [HttpGet]
         public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
         {
-            var filtering = Request.ExtractFilteringRequest<CapacityListItem>();
+            var filtering = Request.ExtractFilteringRequest<CapacityListQuery.CapacityListFilter>();
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
@@ -93,6 +92,24 @@
             await CommandSender.Send(UpdateCapacityRequestMapping.Map(internalMessage));
 
             return OkWithLocationHeader(nameof(Get), new { id = internalMessage.CapacityId });
+        }
+
+        /// <summary>
+        /// Remove a capacity
+        /// </summary>
+        /// <response code="204">If the capacity is successfully removed.</response>
+        /// <response code="400">If the capacity information does not pass validation.</response>
+        [HttpDelete("{id}")]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        {
+            var internalMessage = new RemoveCapacityRequest(id);
+
+            await CommandSender.Send(RemoveCapacityRequestMapping.Map(internalMessage));
+
+            return NoContent();
         }
     }
 }

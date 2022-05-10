@@ -141,9 +141,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 context.OrganisationKeyList.Where(item => item.KeyTypeId == message.Body.KeyTypeId);
 
             foreach (var organisationKey in organisationKeysToBeRemoved)
-            {
                 organisationKey.ScheduledForRemoval = true;
-            }
 
             await context.SaveChangesAsync();
         }

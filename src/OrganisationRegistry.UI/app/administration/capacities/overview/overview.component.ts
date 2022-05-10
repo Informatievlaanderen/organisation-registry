@@ -50,6 +50,8 @@ export class CapacityOverviewComponent implements OnInit, OnDestroy {
 
   private loadCapacities(event?: PagedEvent) {
     this.isLoading = true;
+    this.filter.showAll = true;
+
     let capacities = (event === undefined)
       ? this.capacityService.getCapacities(this.filter, this.currentSortBy, this.currentSortOrder)
       : this.capacityService.getCapacities(this.filter, event.sortBy, event.sortOrder, event.page, event.pageSize);
@@ -63,5 +65,31 @@ export class CapacityOverviewComponent implements OnInit, OnDestroy {
             AlertType.Error,
             'Hoedanigheden kunnen niet geladen worden!',
             'Er is een fout opgetreden bij het ophalen van de gegevens. Probeer het later opnieuw.'))));
+  }
+
+  removeCapacity(capacity: Capacity) {
+    if (!confirm("Bent u zeker? Deze actie kan niet ongedaan gemaakt worden."))
+      return;
+
+    this.isLoading = true;
+
+    this.subscriptions.push(
+      this.capacityService.delete(capacity).subscribe(() => {
+        this.alertService.setAlert(
+          new Alert(
+            AlertType.Success,
+            'Hoedanigheid verwijderd!',
+            'Hoedanigheid werd succesvol verwijderd.'
+          ));
+        this.loadCapacities()
+      }, error => {
+        this.alertService.setAlert(
+          new Alert(
+            AlertType.Error,
+            'Hoedanigheid kon niet verwijderd worden!',
+            'Er is een fout opgetreden bij het verwijderen van de gegevens. Probeer het later opnieuw.'
+          ));
+        this.isLoading = false;
+      }));
   }
 }

@@ -1814,6 +1814,13 @@ namespace OrganisationRegistry.Organisation
             ApplyChange(new OrganisationKeyRemoved(Id, organisationKeyId));
         }
 
+        public void RemoveOrganisationCapacity(OrganisationCapacityId organisationCapacityId)
+        {
+            if (!State.OrganisationCapacities.Any(key => key.OrganisationCapacityId == organisationCapacityId))
+                return;
+            ApplyChange(new OrganisationCapacityRemoved(Id, organisationCapacityId));
+        }
+
         private void CheckIfCurrentParentChanged(
             OrganisationParent organisationParent,
             DateTime today)
@@ -2659,6 +2666,13 @@ namespace OrganisationRegistry.Organisation
         {
             State.OrganisationKeys = State.OrganisationKeys
                 .Except(key => key.OrganisationKeyId == @event.OrganisationKeyId)
+                .ToList();
+        }
+
+        private void Apply(OrganisationCapacityRemoved @event)
+        {
+            State.OrganisationCapacities = State.OrganisationCapacities
+                .Except(key => key.OrganisationCapacityId == @event.OrganisationCapacityId)
                 .ToList();
         }
 

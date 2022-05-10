@@ -57,6 +57,17 @@
                     await _commandSender.Send(removeOrganisationKey);
                 }
 
+                var organisationCapacities = context.OrganisationCapacityList.Where(item => item.ScheduledForRemoval);
+                foreach (var organisationCapacity in organisationCapacities)
+                {
+                    var removeOrganisationCapacity = new RemoveOrganisationCapacity(
+                        new OrganisationId(organisationCapacity.OrganisationId),
+                        new OrganisationCapacityId(organisationCapacity.OrganisationCapacityId)
+                        );
+
+                    await _commandSender.Send(removeOrganisationCapacity, WellknownUsers.SyncRemovedItemsService);
+                }
+
                 await DelaySeconds(_configuration.DelayInSeconds, cancellationToken);
             }
         }

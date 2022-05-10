@@ -20,7 +20,7 @@ namespace OrganisationRegistry.Organisation.State
         public List<OrganisationOrganisationClassification> OrganisationOrganisationClassifications { get; }
         public List<OrganisationFunction> OrganisationFunctionTypes { get; }
         public List<OrganisationRelation> OrganisationRelations { get; }
-        public List<OrganisationCapacity> OrganisationCapacities { get; }
+        public List<OrganisationCapacity> OrganisationCapacities { get; set; }
         public List<OrganisationParent> OrganisationParents { get; }
         public List<OrganisationFormalFramework> OrganisationFormalFrameworks { get; }
         public List<OrganisationBankAccount> OrganisationBankAccounts { get; }
@@ -40,6 +40,7 @@ namespace OrganisationRegistry.Organisation.State
             Description = string.Empty;
             Validity = new Period();
             OperationalValidity = new Period();
+            Article = Article.None;
 
             OrganisationKeys = new List<OrganisationKey>();
             OrganisationContacts = new List<OrganisationContact>();
