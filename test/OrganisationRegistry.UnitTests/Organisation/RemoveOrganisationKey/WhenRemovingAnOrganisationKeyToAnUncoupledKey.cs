@@ -7,19 +7,17 @@ namespace OrganisationRegistry.UnitTests.Organisation.RemoveOrganisationKey
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
-    using Tests.Shared;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
     using Xunit.Abstractions;
 
-    public class WhenRemovingAnOrganisationKeyToAnUncoupledKey : OldSpecification<Organisation, OrganisationCommandHandlers, RemoveOrganisationKey>
+    public class WhenRemovingAnOrganisationKeyToAnUncoupledKey : Specification<RemoveOrganisationKeyCommandHandler, RemoveOrganisationKey>
     {
         private Guid _organisationId;
         private Guid _organisationKeyId;
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        protected override RemoveOrganisationKeyCommandHandler BuildHandler()
         {
             var securityServiceMock = new Mock<ISecurityService>();
             securityServiceMock.Setup(service =>
@@ -28,15 +26,15 @@ namespace OrganisationRegistry.UnitTests.Organisation.RemoveOrganisationKey
                         It.IsAny<Guid>()))
                 .Returns(true);
 
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
-                Session,
-                new SequentialOvoNumberGenerator(),
-                null!,
-                new DateTimeProvider(),
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                securityServiceMock.Object);
+            return new RemoveOrganisationKeyCommandHandler(
+                new Mock<ILogger<RemoveOrganisationKeyCommandHandler>>().Object,
+                Session);
         }
+
+        protected override IUser User
+            => new UserBuilder()
+                .AddRoles(Role.AlgemeenBeheerder)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -53,12 +51,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.RemoveOrganisationKey
             => new(
                 new OrganisationId(_organisationId),
                 new OrganisationKeyId(_organisationKeyId)
-            )
-            {
-                User = new UserBuilder()
-                    .AddRoles(Role.AlgemeenBeheerder)
-                    .Build()
-            };
+            );
 
         protected override int ExpectedNumberOfEvents => 0;
 

@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+
 namespace OrganisationRegistry.SqlServer.Organisation
 {
     using System;
@@ -8,7 +9,6 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using Infrastructure;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation.Events;
-
     using System.Linq;
     using System.Threading.Tasks;
     using KeyType;
@@ -16,7 +16,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure;
 
-    public class OrganisationKeyListItem
+    public class OrganisationKeyListItem : IRemovable
     {
         public Guid OrganisationKeyId { get; set; }
         public Guid OrganisationId { get; set; }
@@ -68,8 +68,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
         IEventHandler<KeyTypeRemoved>,
         IEventHandler<OrganisationKeyRemoved>
     {
-        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-        public override string Schema => WellknownSchemas.BackofficeSchema;
+        protected override string[] ProjectionTableNames
+            => Enum.GetNames(typeof(ProjectionTables));
+
+        public override string Schema
+            => WellknownSchemas.BackofficeSchema;
 
         public enum ProjectionTables
         {
@@ -162,8 +165,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 return;
 
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var keys = context.OrganisationKeyList.Where(item =>
-                message.Body.FieldsToTerminate.Keys.ContainsKey(item.OrganisationKeyId));
+            var keys = context.OrganisationKeyList.Where(
+                item =>
+                    message.Body.FieldsToTerminate.Keys.ContainsKey(item.OrganisationKeyId));
 
             foreach (var key in keys)
                 key.ValidTo = message.Body.FieldsToTerminate.Keys[key.OrganisationKeyId];
