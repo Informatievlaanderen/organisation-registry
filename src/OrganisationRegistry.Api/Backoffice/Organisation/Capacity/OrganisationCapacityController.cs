@@ -16,6 +16,7 @@
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
     using Responses;
+    using Security;
     using SqlServer.Infrastructure;
 
     [ApiVersion("1.0")]
@@ -115,6 +116,24 @@
             await CommandSender.Send(UpdateOrganisationCapacityRequestMapping.Map(internalMessage));
 
             return Ok();
+        }
+
+        /// <summary>
+        /// Remove an organisation capacity
+        /// </summary>
+        /// <response code="204">If the organisation capacity is successfully removed.</response>
+        /// <response code="400">If the organisation capacity id does not pass validation.</response>
+        [HttpDelete("{organisationId:guid}/{organisationCapacityId:guid}")]
+        [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Delete([FromRoute] Guid organisationId, [FromRoute] Guid organisationCapacityId)
+        {
+            var internalMessage = new RemoveOrganisationCapacityRequest(organisationId, organisationCapacityId);
+
+            await CommandSender.Send(RemoveOrganisationCapacityRequestMapping.Map(internalMessage));
+
+            return NoContent();
         }
     }
 }
