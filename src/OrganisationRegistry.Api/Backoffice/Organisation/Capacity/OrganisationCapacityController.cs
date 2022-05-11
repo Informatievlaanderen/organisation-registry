@@ -123,7 +123,7 @@
         /// </summary>
         /// <response code="204">If the organisation capacity is successfully removed.</response>
         /// <response code="400">If the organisation capacity id does not pass validation.</response>
-        [HttpDelete("{organisationId:guid}/{organisationCapacityId:guid}")]
+        [HttpDelete("{organisationCapacityId:guid}")]
         [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

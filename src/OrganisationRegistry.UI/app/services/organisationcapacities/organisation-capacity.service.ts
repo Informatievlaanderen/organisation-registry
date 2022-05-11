@@ -13,7 +13,6 @@ import { OrganisationCapacity } from './organisation-capacity.model';
 import { OrganisationCapacityFilter } from './organisation-capacity-filter.model';
 
 import { CreateOrganisationCapacityRequest, UpdateOrganisationCapacityRequest } from './';
-import {Capacity} from "../capacities";
 
 @Injectable()
 export class OrganisationCapacityService {
