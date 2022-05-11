@@ -16,3 +16,7 @@ tr.data-table__body-history {
   background-color: #f3f3f3;
   font-style: italic;
 }
+
+a.vi-trash {
+  cursor: pointer;
+}
