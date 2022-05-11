@@ -3,7 +3,6 @@
     using System;
     using FluentValidation;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using SqlServer.Organisation;
 
     public class UpdateOrganisationInfoLimitedToVlimpersInternalRequest

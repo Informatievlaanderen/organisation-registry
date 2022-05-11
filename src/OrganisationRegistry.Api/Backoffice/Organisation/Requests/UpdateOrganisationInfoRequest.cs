@@ -5,7 +5,6 @@
     using System.Linq;
     using FluentValidation;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using Purpose;
     using SqlServer.Organisation;
 

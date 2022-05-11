@@ -1,47 +1,29 @@
-﻿namespace OrganisationRegistry.Api.Edit.Organisation.Requests
+﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Key
 {
     using System;
     using FluentValidation;
     using KeyTypes;
     using OrganisationRegistry.Organisation;
     using SqlServer.Organisation;
-    using Swashbuckle.AspNetCore.Annotations;
 
     public class UpdateOrganisationKeyInternalRequest
     {
         public Guid OrganisationId { get; set; }
-        public Guid OrganisationKeyId { get; set; }
         public UpdateOrganisationKeyRequest Body { get; }
 
-        public UpdateOrganisationKeyInternalRequest(Guid organisationId,
-            Guid organisationKeyId,
-            UpdateOrganisationKeyRequest message)
+        public UpdateOrganisationKeyInternalRequest(Guid organisationId, UpdateOrganisationKeyRequest message)
         {
             OrganisationId = organisationId;
             Body = message;
-            OrganisationKeyId = organisationKeyId;
         }
     }
 
     public class UpdateOrganisationKeyRequest
     {
-        /// <summary>
-        /// Id van het sleuteltype.
-        /// </summary>
+        public Guid OrganisationKeyId { get; set; }
         public Guid KeyTypeId { get; set; }
-        /// <summary>
-        /// Waarde van de sleutel.
-        /// </summary>
         public string KeyValue { get; set; }
-        /// <summary>
-        /// Geldig vanaf.
-        /// </summary>
-        [SwaggerSchema(Format = "date")]
         public DateTime? ValidFrom { get; set; }
-        /// <summary>
-        /// Geldig tot.
-        /// </summary>
-        [SwaggerSchema(Format = "date")]
         public DateTime? ValidTo { get; set; }
     }
 
@@ -81,7 +63,7 @@
         public static UpdateOrganisationKey Map(UpdateOrganisationKeyInternalRequest message)
         {
             return new UpdateOrganisationKey(
-                new OrganisationKeyId(message.OrganisationKeyId),
+                message.Body.OrganisationKeyId,
                 new OrganisationId(message.OrganisationId),
                 new KeyTypeId(message.Body.KeyTypeId),
                 message.Body.KeyValue,

@@ -69,7 +69,7 @@
             await CommandSender.Send(addOrganisationKey);
 
             return CreatedWithLocation(
-                nameof(Backoffice.Organisation.OrganisationKeyController.Get),
+                nameof(Backoffice.Organisation.Key.OrganisationKeyController.Get),
                     new { id = message.OrganisationKeyId });
         }
 

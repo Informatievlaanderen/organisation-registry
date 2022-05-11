@@ -4,7 +4,6 @@
     using FluentValidation;
     using KeyTypes;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using SqlServer.Organisation;
     using Swashbuckle.AspNetCore.Annotations;
 
