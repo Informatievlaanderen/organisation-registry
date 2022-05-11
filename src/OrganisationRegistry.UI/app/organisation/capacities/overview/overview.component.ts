@@ -4,7 +4,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 
 import { OidcService } from 'core/auth';
-import { AlertBuilder, AlertService } from 'core/alert';
+import {Alert, AlertBuilder, AlertService, AlertType} from 'core/alert';
 import { BaseAlertMessages } from 'core/alertmessages';
 import { PagedResult, PagedEvent, SortOrder } from 'core/pagination';
 import { SearchEvent } from 'core/search';
@@ -12,9 +12,9 @@ import { SearchEvent } from 'core/search';
 import {
   OrganisationCapacityListItem,
   OrganisationCapacityService,
-  OrganisationCapacityFilter
+  OrganisationCapacityFilter, OrganisationCapacity
 } from 'services/organisationcapacities';
-import { OrganisationInfoService } from 'services';
+import {Capacity, OrganisationInfoService} from 'services';
 
 @Component({
   templateUrl: 'overview.template.html',
@@ -84,5 +84,31 @@ export class OrganisationCapacitiesOverviewComponent implements OnInit, OnDestro
             .withTitle(this.alertMessages.loadError.title)
             .withMessage(this.alertMessages.loadError.message)
             .build())));
+  }
+
+  removeCapacity(capacity: OrganisationCapacityListItem) {
+    if (!confirm("Bent u zeker? Deze actie kan niet ongedaan gemaakt worden."))
+      return;
+
+    this.isLoading = true;
+
+    this.subscriptions.push(
+      this.organisationCapacityService.delete(this.organisationId, capacity).subscribe(() => {
+        this.alertService.setAlert(
+          new Alert(
+            AlertType.Success,
+            'Hoedanigheid verwijderd!',
+            'Hoedanigheid werd succesvol verwijderd.'
+          ));
+        this.loadCapacities()
+      }, error => {
+        this.alertService.setAlert(
+          new Alert(
+            AlertType.Error,
+            'Hoedanigheid kon niet verwijderd worden!',
+            'Er is een fout opgetreden bij het verwijderen van de gegevens. Probeer het later opnieuw.'
+          ));
+        this.isLoading = false;
+      }));
   }
 }

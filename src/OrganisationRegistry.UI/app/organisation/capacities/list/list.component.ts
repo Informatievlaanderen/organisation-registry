@@ -13,4 +13,11 @@ import { OrganisationCapacityListItem } from 'services/organisationcapacities';
 })
 export class OrganisationCapacitiesListComponent extends BaseListComponent<OrganisationCapacityListItem> {
   @Input('canEdit') canEdit: Observable<boolean>;
+
+  @Output()
+  removeCapacityClicked: EventEmitter<OrganisationCapacityListItem> = new EventEmitter<OrganisationCapacityListItem>();
+
+  remove(item: OrganisationCapacityListItem) {
+    this.removeCapacityClicked.emit(item);
+  }
 }
