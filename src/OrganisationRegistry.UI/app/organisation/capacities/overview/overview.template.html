@@ -15,6 +15,7 @@
       [items]="organisationCapacities"
       [isBusy]="isLoading"
       (changePage)="changePage($event)"
-      [canEdit]="store.canAddAndUpdateCapacitiesChanged$">
+      [canEdit]="store.canAddAndUpdateCapacitiesChanged$"
+      (removeCapacityClicked)="removeCapacity($event)">
     </ww-organisation-capacity-list>
 </div>

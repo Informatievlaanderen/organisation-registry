@@ -1,19 +1,19 @@
 import { Response } from '@angular/http';
 import { Injectable } from '@angular/core';
-import { Headers, Http } from '@angular/http';
+import { Http } from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
 
 import { ConfigurationService } from 'core/configuration';
 import { HeadersBuilder } from 'core/http';
 import { PagedResult, PagedResultFactory, SortOrder } from 'core/pagination';
-import { ICrudService } from 'core/crud';
 
 import { OrganisationCapacityListItem } from './organisation-capacity-list-item.model';
 import { OrganisationCapacity } from './organisation-capacity.model';
 import { OrganisationCapacityFilter } from './organisation-capacity-filter.model';
 
 import { CreateOrganisationCapacityRequest, UpdateOrganisationCapacityRequest } from './';
+import {Capacity} from "../capacities";
 
 @Injectable()
 export class OrganisationCapacityService {
@@ -91,5 +91,16 @@ export class OrganisationCapacityService {
 
   private toOrganisationCapacities(res: Response): PagedResult<OrganisationCapacityListItem> {
     return new PagedResultFactory<OrganisationCapacityListItem>().create(res.headers, res.json());
+  }
+
+  delete(organisationId, capacity: OrganisationCapacityListItem) {
+    const url = `${this.getOrganisationCapacitiesUrl(organisationId)}/${capacity.organisationCapacityId}`;
+
+    let headers = new HeadersBuilder()
+      .json()
+      .build();
+
+    return this.http
+      .delete(url, { headers: headers });
   }
 }
