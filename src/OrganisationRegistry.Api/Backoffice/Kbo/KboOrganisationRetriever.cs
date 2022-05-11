@@ -4,12 +4,11 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using global::Magda.RegistreerInschrijving;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Organisation;
     using Responses;
-    using GeefOnderneming = global::Magda.GeefOnderneming;
-    using RegistreerInschrijving = global::Magda.RegistreerInschrijving;
 
     public class KboOrganisationRetriever : IKboOrganisationRetriever
     {
@@ -45,12 +44,12 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
 
             LogExceptions(registerInscriptionReply);
             var errors = registerInscriptionReply.Uitzonderingen?
-                .Where(type => type.Type == RegistreerInschrijving.UitzonderingTypeType.FOUT)
-                .ToList() ?? new List<RegistreerInschrijving.UitzonderingType>();
+                .Where(type => type.Type == UitzonderingTypeType.FOUT)
+                .ToList() ?? new List<UitzonderingType>();
 
             if (errors.Any())
                 throw new Exception(
-                    $"Er is een fout opgetreden tijdens het inschrijven bij magda:\n" +
+                    "Er is een fout opgetreden tijdens het inschrijven bij magda:\n" +
                     $"{string.Join('\n', errors.Select(type => type.Diagnose))}");
 
             var giveOrganisation = await _geefOndernemingQuery.Execute(user, kboNumberDotLess);
@@ -71,38 +70,38 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
                 new MagdaOrganisationResponse(giveOrganisationReply.Inhoud?.Onderneming, _dateTimeProvider));
         }
 
-        private void LogExceptions(RegistreerInschrijving.AntwoordType reply)
+        private void LogExceptions(AntwoordType reply)
         {
             reply.Uitzonderingen?
-                .Where(type => type.Type == RegistreerInschrijving.UitzonderingTypeType.INFORMATIE)
+                .Where(type => type.Type == UitzonderingTypeType.INFORMATIE)
                 .ToList()
                 .ForEach(type => _logger.LogInformation($"{type.Diagnose}"));
 
             reply.Uitzonderingen?
-                .Where(type => type.Type == RegistreerInschrijving.UitzonderingTypeType.WAARSCHUWING)
+                .Where(type => type.Type == UitzonderingTypeType.WAARSCHUWING)
                 .ToList()
                 .ForEach(type => _logger.LogWarning($"{type.Diagnose}"));
 
             reply.Uitzonderingen?
-                .Where(type => type.Type == RegistreerInschrijving.UitzonderingTypeType.FOUT)
+                .Where(type => type.Type == UitzonderingTypeType.FOUT)
                 .ToList()
                 .ForEach(type => _logger.LogError($"{type.Diagnose}"));
         }
 
-        private void LogExceptions(GeefOnderneming.AntwoordType reply)
+        private void LogExceptions(global::Magda.GeefOnderneming.AntwoordType reply)
         {
             reply.Uitzonderingen?
-                .Where(type => type.Type == GeefOnderneming.UitzonderingTypeType.INFORMATIE)
+                .Where(type => type.Type == global::Magda.GeefOnderneming.UitzonderingTypeType.INFORMATIE)
                 .ToList()
                 .ForEach(type => _logger.LogInformation($"{type.Diagnose}"));
 
             reply.Uitzonderingen?
-                .Where(type => type.Type == GeefOnderneming.UitzonderingTypeType.WAARSCHUWING)
+                .Where(type => type.Type == global::Magda.GeefOnderneming.UitzonderingTypeType.WAARSCHUWING)
                 .ToList()
                 .ForEach(type => _logger.LogWarning($"{type.Diagnose}"));
 
             reply.Uitzonderingen?
-                .Where(type => type.Type == GeefOnderneming.UitzonderingTypeType.FOUT)
+                .Where(type => type.Type == global::Magda.GeefOnderneming.UitzonderingTypeType.FOUT)
                 .ToList()
                 .ForEach(type => _logger.LogError($"{type.Diagnose}"));
         }

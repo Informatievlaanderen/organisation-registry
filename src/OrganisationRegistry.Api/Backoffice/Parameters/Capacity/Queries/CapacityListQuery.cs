@@ -2,11 +2,9 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Capacity.Queries
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
     using Infrastructure.Search;
     using Infrastructure.Search.Filtering;
     using Infrastructure.Search.Sorting;
-    using Organisation.Queries;
     using OrganisationRegistry.Infrastructure;
     using SqlServer.Capacity;
     using SqlServer.Infrastructure;

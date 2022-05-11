@@ -1,53 +1,35 @@
-﻿namespace OrganisationRegistry.Api.Edit.Organisation.Requests
+﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Key
 {
     using System;
     using FluentValidation;
     using KeyTypes;
     using OrganisationRegistry.Organisation;
     using SqlServer.Organisation;
-    using Swashbuckle.AspNetCore.Annotations;
 
-    public class UpdateOrganisationKeyInternalRequest
+    public class AddOrganisationKeyInternalRequest
     {
         public Guid OrganisationId { get; set; }
-        public Guid OrganisationKeyId { get; set; }
-        public UpdateOrganisationKeyRequest Body { get; }
+        public AddOrganisationKeyRequest Body { get; }
 
-        public UpdateOrganisationKeyInternalRequest(Guid organisationId,
-            Guid organisationKeyId,
-            UpdateOrganisationKeyRequest message)
+        public AddOrganisationKeyInternalRequest(Guid organisationId, AddOrganisationKeyRequest message)
         {
             OrganisationId = organisationId;
             Body = message;
-            OrganisationKeyId = organisationKeyId;
         }
     }
 
-    public class UpdateOrganisationKeyRequest
+    public class AddOrganisationKeyRequest
     {
-        /// <summary>
-        /// Id van het sleuteltype.
-        /// </summary>
+        public Guid OrganisationKeyId { get; set; }
         public Guid KeyTypeId { get; set; }
-        /// <summary>
-        /// Waarde van de sleutel.
-        /// </summary>
         public string KeyValue { get; set; }
-        /// <summary>
-        /// Geldig vanaf.
-        /// </summary>
-        [SwaggerSchema(Format = "date")]
         public DateTime? ValidFrom { get; set; }
-        /// <summary>
-        /// Geldig tot.
-        /// </summary>
-        [SwaggerSchema(Format = "date")]
         public DateTime? ValidTo { get; set; }
     }
 
-    public class UpdateOrganisationKeyInternalRequestValidator : AbstractValidator<UpdateOrganisationKeyInternalRequest>
+    public class AddOrganisationKeyInternalRequestValidator : AbstractValidator<AddOrganisationKeyInternalRequest>
     {
-        public UpdateOrganisationKeyInternalRequestValidator()
+        public AddOrganisationKeyInternalRequestValidator()
         {
             RuleFor(x => x.OrganisationId)
                 .NotEmpty()
@@ -76,12 +58,12 @@
         }
     }
 
-    public static class UpdateOrganisationKeyRequestMapping
+    public static class AddOrganisationKeyRequestMapping
     {
-        public static UpdateOrganisationKey Map(UpdateOrganisationKeyInternalRequest message)
+        public static AddOrganisationKey Map(AddOrganisationKeyInternalRequest message)
         {
-            return new UpdateOrganisationKey(
-                new OrganisationKeyId(message.OrganisationKeyId),
+            return new AddOrganisationKey(
+                message.Body.OrganisationKeyId,
                 new OrganisationId(message.OrganisationId),
                 new KeyTypeId(message.Body.KeyTypeId),
                 message.Body.KeyValue,
