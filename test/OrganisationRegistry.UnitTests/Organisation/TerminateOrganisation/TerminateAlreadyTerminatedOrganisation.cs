@@ -13,7 +13,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
-    using OrganisationRegistry.Organisation.OrganisationTermination;
     using OrganisationRegistry.Organisation.State;
     using Tests.Shared.Stubs;
     using Tests.Shared.TestDataBuilders;

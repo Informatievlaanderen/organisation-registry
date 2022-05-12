@@ -1,10 +1,8 @@
-﻿namespace OrganisationRegistry.Organisation.Contacts;
+﻿namespace OrganisationRegistry.Organisation;
 
 using System.Threading.Tasks;
-using Commands;
 using ContactType;
 using Handling;
-using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;

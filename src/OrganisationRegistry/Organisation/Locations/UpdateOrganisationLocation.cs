@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Organisation.Commands
+namespace OrganisationRegistry.Organisation
 {
     using System;
     using Location;
@@ -11,7 +11,7 @@ namespace OrganisationRegistry.Organisation.Commands
         public Guid OrganisationLocationId { get; }
         public LocationId LocationId { get; }
         public bool IsMainLocation { get; }
-        public LocationTypeId LocationTypeId { get; }
+        public LocationTypeId? LocationTypeId { get; }
         public ValidFrom ValidFrom { get; }
         public ValidTo ValidTo { get; }
         public Source Source { get; }

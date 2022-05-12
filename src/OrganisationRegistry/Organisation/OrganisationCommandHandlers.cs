@@ -26,7 +26,6 @@ using OrganisationClassification;
 using OrganisationClassificationType;
 using OrganisationRegistry.Exceptions;
 using OrganisationRelationType;
-using OrganisationTermination;
 using Person;
 using Purpose;
 using RegulationSubTheme;
@@ -42,12 +41,12 @@ public class OrganisationCommandHandlers :
     // ICommandHandler<UpdateOrganisationKey>,
     // ICommandHandler<RemoveOrganisationKey>,
     // ICommandHandler<AddOrganisationRegulation>,
-      //ICommandHandler<UpdateOrganisationRegulation>,
-    //ICommandHandler<AddOrganisationBuilding>,
-    //ICommandHandler<UpdateOrganisationBuilding>,
-    //ICommandHandler<AddOrganisationLocation>,
-    //ICommandHandler<UpdateOrganisationLocation>,
-    //ICommandHandler<AddOrganisationContact>,
+    // ICommandHandler<UpdateOrganisationRegulation>,
+    // ICommandHandler<AddOrganisationBuilding>,
+    // ICommandHandler<UpdateOrganisationBuilding>,
+    // ICommandHandler<AddOrganisationLocation>,
+    // ICommandHandler<UpdateOrganisationLocation>,
+    // ICommandHandler<AddOrganisationContact>,
     ICommandHandler<UpdateOrganisationContact>,
     ICommandHandler<AddOrganisationLabel>,
     ICommandHandler<UpdateOrganisationLabel>,
@@ -64,9 +63,9 @@ public class OrganisationCommandHandlers :
     ICommandHandler<AddOrganisationBankAccount>,
     ICommandHandler<UpdateOrganisationBankAccount>,
     ICommandHandler<UpdateMainBuilding>,
-    ICommandHandler<UpdateMainLocation>,
-    ICommandHandler<UpdateOrganisationFormalFrameworkParents>,
-    ICommandHandler<UpdateCurrentOrganisationParent>
+    ICommandHandler<UpdateMainLocation>
+    // ICommandHandler<UpdateOrganisationFormalFrameworkParents>
+    // ICommandHandler<UpdateCurrentOrganisationParent>
     // ICommandHandler<UpdateRelationshipValidities>
     // ICommandHandler<AddOrganisationRelation>
     // ICommandHandler<UpdateOrganisationRelation>
@@ -120,23 +119,23 @@ public class OrganisationCommandHandlers :
                         validity);
                 });
 
-    public Task Handle(AddOrganisationBuilding message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var building = session.Get<Building>(message.BuildingId);
-
-                    organisation.AddBuilding(
-                        message.OrganisationBuildingId,
-                        building,
-                        message.IsMainBuilding,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                        _dateTimeProvider);
-                });
+    // public Task Handle(AddOrganisationBuilding message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var building = session.Get<Building>(message.BuildingId);
+    //
+    //                 organisation.AddBuilding(
+    //                     message.OrganisationBuildingId,
+    //                     building,
+    //                     message.IsMainBuilding,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+    //                     _dateTimeProvider);
+    //             });
 
     public Task Handle(AddOrganisationCapacity message)
         => UpdateHandler<Organisation>.For(message, Session)
@@ -170,22 +169,22 @@ public class OrganisationCommandHandlers :
                         _dateTimeProvider);
                 });
 
-    public Task Handle(AddOrganisationContact message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var contactType = session.Get<ContactType>(message.ContactTypeId);
-
-                    organisation.AddContact(
-                        message.OrganisationContactId,
-                        contactType,
-                        message.ContactValue,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-                });
+    // public Task Handle(AddOrganisationContact message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var contactType = session.Get<ContactType>(message.ContactTypeId);
+    //
+    //                 organisation.AddContact(
+    //                     message.OrganisationContactId,
+    //                     contactType,
+    //                     message.ContactValue,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+    //             });
 
     public Task Handle(AddOrganisationFormalFramework message)
         => UpdateHandler<Organisation>.For(message, Session)
@@ -289,31 +288,31 @@ public class OrganisationCommandHandlers :
                         labelTypeId => _securityService.CanUseLabelType(message.User, labelTypeId));
                 });
 
-    public Task Handle(AddOrganisationLocation message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .RequiresBeheerderForOrganisationRegardlessOfVlimpers()
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var location = session.Get<Location>(message.LocationId);
-                    var locationType = message.LocationTypeId != null
-                        ? session.Get<LocationType>(message.LocationTypeId)
-                        : null;
-
-                    KboV2Guards.ThrowIfRegisteredOffice(_organisationRegistryConfiguration, locationType);
-
-                    organisation.AddLocation(
-                        message.OrganisationLocationId,
-                        location,
-                        message.IsMainLocation,
-                        locationType,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                        Source.Wegwijs,
-                        _dateTimeProvider);
-                });
+    // public Task Handle(AddOrganisationLocation message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .RequiresBeheerderForOrganisationRegardlessOfVlimpers()
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var location = session.Get<Location>(message.LocationId);
+    //                 var locationType = message.LocationTypeId != null
+    //                     ? session.Get<LocationType>(message.LocationTypeId)
+    //                     : null;
+    //
+    //                 KboV2Guards.ThrowIfRegisteredOffice(_organisationRegistryConfiguration, locationType);
+    //
+    //                 organisation.AddLocation(
+    //                     message.OrganisationLocationId,
+    //                     location,
+    //                     message.IsMainLocation,
+    //                     locationType,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+    //                     Source.Wegwijs,
+    //                     _dateTimeProvider);
+    //             });
 
     // public Task Handle(AddOrganisationOpeningHour message)
     //     => UpdateHandler<Organisation>.For(message, Session)
@@ -482,16 +481,16 @@ public class OrganisationCommandHandlers :
     //                     message.ForceKboTermination);
     //             });
 
-    public Task Handle(UpdateCurrentOrganisationParent message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    organisation.UpdateCurrentOrganisationParent(_dateTimeProvider.Today);
-                });
+    // public Task Handle(UpdateCurrentOrganisationParent message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 organisation.UpdateCurrentOrganisationParent(_dateTimeProvider.Today);
+    //             });
 
     public Task Handle(UpdateMainBuilding message)
         => UpdateHandler<Organisation>.For(message, Session)
@@ -537,23 +536,23 @@ public class OrganisationCommandHandlers :
                         validity);
                 });
 
-    public Task Handle(UpdateOrganisationBuilding message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var building = session.Get<Building>(message.BuildingId);
-
-                    organisation.UpdateBuilding(
-                        message.OrganisationBuildingId,
-                        building,
-                        message.IsMainBuilding,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                        _dateTimeProvider);
-                });
+    // public Task Handle(UpdateOrganisationBuilding message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var building = session.Get<Building>(message.BuildingId);
+    //
+    //                 organisation.UpdateBuilding(
+    //                     message.OrganisationBuildingId,
+    //                     building,
+    //                     message.IsMainBuilding,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+    //                     _dateTimeProvider);
+    //             });
 
     public Task Handle(UpdateOrganisationCapacity message)
         => UpdateHandler<Organisation>.For(message, Session)
@@ -640,18 +639,18 @@ public class OrganisationCommandHandlers :
                         _dateTimeProvider);
                 });
 
-    public Task Handle(UpdateOrganisationFormalFrameworkParents message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    organisation.UpdateOrganisationFormalFrameworkParent(
-                        _dateTimeProvider.Today,
-                        message.FormalFrameworkId);
-                });
+    // public Task Handle(UpdateOrganisationFormalFrameworkParents message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 organisation.UpdateOrganisationFormalFrameworkParent(
+    //                     _dateTimeProvider.Today,
+    //                     message.FormalFrameworkId);
+    //             });
 
     public Task Handle(UpdateOrganisationFunction message)
         => UpdateHandler<Organisation>.For(message, Session)
@@ -787,29 +786,29 @@ public class OrganisationCommandHandlers :
                         new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
                 });
 
-    public Task Handle(UpdateOrganisationLocation message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .RequiresBeheerderForOrganisationRegardlessOfVlimpers()
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var location = session.Get<Location>(message.LocationId);
-                    var locationType = message.LocationTypeId != null
-                        ? session.Get<LocationType>(message.LocationTypeId)
-                        : null;
-
-                    organisation.UpdateLocation(
-                        message.OrganisationLocationId,
-                        location,
-                        message.IsMainLocation,
-                        locationType,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                        message.Source,
-                        _dateTimeProvider);
-                });
+    // public Task Handle(UpdateOrganisationLocation message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .RequiresBeheerderForOrganisationRegardlessOfVlimpers()
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var location = session.Get<Location>(message.LocationId);
+    //                 var locationType = message.LocationTypeId != null
+    //                     ? session.Get<LocationType>(message.LocationTypeId)
+    //                     : null;
+    //
+    //                 organisation.UpdateLocation(
+    //                     message.OrganisationLocationId,
+    //                     location,
+    //                     message.IsMainLocation,
+    //                     locationType,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+    //                     message.Source,
+    //                     _dateTimeProvider);
+    //             });
 
     // public Task Handle(UpdateOrganisationOpeningHour message)
     //     => UpdateHandler<Organisation>.For(message, Session)
@@ -872,35 +871,35 @@ public class OrganisationCommandHandlers :
                         _dateTimeProvider);
                 });
 
-    public Task Handle(UpdateOrganisationRegulation message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .WithPolicy(_ => new RegulationPolicy())
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var regulationTheme = message.RegulationThemeId != Guid.Empty
-                        ? session.Get<RegulationTheme>(message.RegulationThemeId)
-                        : null;
-
-                    var regulationSubTheme = message.RegulationSubThemeId != Guid.Empty
-                        ? session.Get<RegulationSubTheme>(message.RegulationSubThemeId)
-                        : null;
-
-                    organisation.UpdateRegulation(
-                        message.OrganisationRegulationId,
-                        regulationTheme,
-                        regulationSubTheme,
-                        message.Name,
-                        message.Link,
-                        new WorkRulesUrl(message.WorkRulesUrl),
-                        message.Date,
-                        message.Description,
-                        message.DescriptionRendered,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-                });
+    // public Task Handle(UpdateOrganisationRegulation message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .WithPolicy(_ => new RegulationPolicy())
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var regulationTheme = message.RegulationThemeId != Guid.Empty
+    //                     ? session.Get<RegulationTheme>(message.RegulationThemeId)
+    //                     : null;
+    //
+    //                 var regulationSubTheme = message.RegulationSubThemeId != Guid.Empty
+    //                     ? session.Get<RegulationSubTheme>(message.RegulationSubThemeId)
+    //                     : null;
+    //
+    //                 organisation.UpdateRegulation(
+    //                     message.OrganisationRegulationId,
+    //                     regulationTheme,
+    //                     regulationSubTheme,
+    //                     message.Name,
+    //                     message.Link,
+    //                     new WorkRulesUrl(message.WorkRulesUrl),
+    //                     message.Date,
+    //                     message.Description,
+    //                     message.DescriptionRendered,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+    //             });
 
     // public Task Handle(UpdateOrganisationRelation message)
     //     => UpdateHandler<Organisation>.For(message, Session)
@@ -920,16 +919,16 @@ public class OrganisationCommandHandlers :
     //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
     //             });
 
-    public Task Handle(UpdateRelationshipValidities message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    organisation.UpdateRelationshipValidities(message.Date);
-                });
+    // public Task Handle(UpdateRelationshipValidities message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 organisation.UpdateRelationshipValidities(message.Date);
+    //             });
 
     // private Task CreateDaughter(CreateOrganisation message)
     // {

@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Organisation.Commands
+﻿namespace OrganisationRegistry.Organisation
 {
     public class UpdateCurrentOrganisationParent : BaseCommand<OrganisationId>
     {
@@ -10,11 +10,9 @@
         }
 
         protected bool Equals(UpdateCurrentOrganisationParent other)
-        {
-            return OrganisationId.Equals(other.OrganisationId);
-        }
+            => OrganisationId.Equals(other.OrganisationId);
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -23,8 +21,6 @@
         }
 
         public override int GetHashCode()
-        {
-            return OrganisationId.GetHashCode();
-        }
+            => OrganisationId.GetHashCode();
     }
 }

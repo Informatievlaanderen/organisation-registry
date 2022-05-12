@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using AutoFixture;
     using AutoFixture.Kernel;
-    using Organisation.OrganisationTermination;
+    using Organisation;
 
     public class OrganisationTerminationSummaryBuilder
     {

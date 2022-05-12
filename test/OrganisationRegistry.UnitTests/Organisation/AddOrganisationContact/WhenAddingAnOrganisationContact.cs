@@ -13,7 +13,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationContact
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-    using OrganisationRegistry.Organisation.Contacts;
     using OrganisationRegistry.Organisation.Events;
     using Xunit;
     using Xunit.Abstractions;

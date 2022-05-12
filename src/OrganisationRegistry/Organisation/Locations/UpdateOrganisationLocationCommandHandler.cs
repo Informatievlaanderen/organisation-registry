@@ -1,9 +1,7 @@
-﻿namespace OrganisationRegistry.Organisation.Locations;
+﻿namespace OrganisationRegistry.Organisation;
 
 using System.Threading.Tasks;
-using Commands;
 using Handling;
-using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Location;
@@ -31,9 +29,7 @@ public class UpdateOrganisationLocationCommandHandler:
                     organisation.ThrowIfTerminated(envelope.User);
 
                     var location = session.Get<Location>(envelope.Command.LocationId);
-                    var locationType = envelope.Command.LocationTypeId != null
-                        ? session.Get<LocationType>(envelope.Command.LocationTypeId)
-                        : null;
+                    var locationType = GetLocationType(session, envelope.Command.LocationTypeId);
 
                     organisation.UpdateLocation(
                         envelope.Command.OrganisationLocationId,
@@ -44,4 +40,9 @@ public class UpdateOrganisationLocationCommandHandler:
                         envelope.Command.Source,
                         _dateTimeProvider);
                 });
+
+    private static LocationType? GetLocationType(ISession session, LocationTypeId? maybeLocationTypeId)
+        => maybeLocationTypeId is { } locationTypeId
+            ? session.Get<LocationType>(locationTypeId)
+            : null;
 }
