@@ -1,7 +1,6 @@
 ﻿namespace OrganisationRegistry.Organisation;
 
 using System.Threading.Tasks;
-using Commands;
 using Handling;
 using Infrastructure.Authorization;
 using Infrastructure.Commands;

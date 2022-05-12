@@ -26,7 +26,6 @@ namespace OrganisationRegistry.Organisation
     using Exceptions;
     using Infrastructure;
     using Infrastructure.Authorization;
-    using OrganisationTermination;
     using RegulationSubTheme;
     using State;
     using IOrganisationRegistryConfiguration = Infrastructure.Configuration.IOrganisationRegistryConfiguration;

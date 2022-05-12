@@ -12,7 +12,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.Coup
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
-    using OrganisationRegistry.Organisation.OrganisationTermination;
     using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;

@@ -1,9 +1,8 @@
-﻿namespace OrganisationRegistry.Organisation.OrganisationTermination;
+﻿namespace OrganisationRegistry.Organisation;
 
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Commands;
 using Handling;
 using Infrastructure.Commands;
 using Infrastructure.Configuration;

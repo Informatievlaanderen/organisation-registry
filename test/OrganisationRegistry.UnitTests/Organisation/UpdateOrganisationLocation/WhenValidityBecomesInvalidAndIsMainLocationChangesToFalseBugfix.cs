@@ -15,7 +15,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
-    using OrganisationRegistry.Organisation.Locations;
     using Xunit;
     using Xunit.Abstractions;
 

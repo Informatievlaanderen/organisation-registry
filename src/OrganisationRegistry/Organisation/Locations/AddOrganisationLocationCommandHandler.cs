@@ -1,9 +1,7 @@
-﻿namespace OrganisationRegistry.Organisation.Locations;
+﻿namespace OrganisationRegistry.Organisation;
 
 using System.Threading.Tasks;
-using Commands;
 using Handling;
-using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Configuration;
 using Infrastructure.Domain;
@@ -34,9 +32,7 @@ public class AddOrganisationLocationCommandHandler:
                     organisation.ThrowIfTerminated(envelope.User);
 
                     var location = session.Get<Location>(envelope.Command.LocationId);
-                    var locationType = envelope.Command.LocationTypeId != null
-                        ? session.Get<LocationType>(envelope.Command.LocationTypeId)
-                        : null;
+                    var locationType = GetLocationType(session, envelope.Command.LocationTypeId);
 
                     KboV2Guards.ThrowIfRegisteredOffice(_organisationRegistryConfiguration, locationType);
 
@@ -49,4 +45,9 @@ public class AddOrganisationLocationCommandHandler:
                         Source.Wegwijs,
                         _dateTimeProvider);
                 });
+
+    private static LocationType? GetLocationType(ISession session, LocationTypeId? maybeLocationTypeId)
+        => maybeLocationTypeId is { } locationTypeId
+            ? session.Get<LocationType>(locationTypeId)
+            : null;
 }

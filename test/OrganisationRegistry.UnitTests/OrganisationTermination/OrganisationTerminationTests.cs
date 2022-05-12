@@ -8,7 +8,6 @@ namespace OrganisationRegistry.UnitTests.OrganisationTermination
     using OrganisationRegistry.KeyTypes;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Exceptions;
-    using OrganisationRegistry.Organisation.OrganisationTermination;
     using OrganisationRegistry.Organisation.State;
     using Tests.Shared.TestDataBuilders;
     using Xunit;

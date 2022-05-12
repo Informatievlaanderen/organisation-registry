@@ -1,7 +1,7 @@
 namespace OrganisationRegistry.Organisation;
 
 using System;
-using OrganisationRegistry.OrganisationRelationType;
+using OrganisationRelationType;
 
 public class UpdateOrganisationRelation : BaseCommand<OrganisationId>
 {
