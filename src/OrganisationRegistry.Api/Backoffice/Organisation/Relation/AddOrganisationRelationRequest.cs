@@ -3,7 +3,6 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Relation
     using System;
     using FluentValidation;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRelationType;
 
     public class AddOrganisationRelationInternalRequest

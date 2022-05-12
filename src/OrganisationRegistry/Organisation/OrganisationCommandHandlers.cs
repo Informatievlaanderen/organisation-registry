@@ -67,9 +67,9 @@ public class OrganisationCommandHandlers :
     ICommandHandler<UpdateMainLocation>,
     ICommandHandler<UpdateOrganisationFormalFrameworkParents>,
     ICommandHandler<UpdateCurrentOrganisationParent>,
-    ICommandHandler<UpdateRelationshipValidities>,
-    ICommandHandler<AddOrganisationRelation>,
-    ICommandHandler<UpdateOrganisationRelation>
+    ICommandHandler<UpdateRelationshipValidities>
+    // ICommandHandler<AddOrganisationRelation>
+    // ICommandHandler<UpdateOrganisationRelation>
     // ICommandHandler<AddOrganisationOpeningHour>
     // ICommandHandler<UpdateOrganisationOpeningHour>
     // ICommandHandler<TerminateOrganisation>
@@ -404,23 +404,23 @@ public class OrganisationCommandHandlers :
     //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
     //             });
 
-    public Task Handle(AddOrganisationRelation message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var relatedOrganisation = session.Get<Organisation>(message.RelatedOrganisationId);
-                    var relation = session.Get<OrganisationRelationType>(message.RelationTypeId);
-
-                    organisation.AddRelation(
-                        message.OrganisationRelationId,
-                        relation,
-                        relatedOrganisation,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-                });
+    // public Task Handle(AddOrganisationRelation message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var relatedOrganisation = session.Get<Organisation>(message.RelatedOrganisationId);
+    //                 var relation = session.Get<OrganisationRelationType>(message.RelationTypeId);
+    //
+    //                 organisation.AddRelation(
+    //                     message.OrganisationRelationId,
+    //                     relation,
+    //                     relatedOrganisation,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+    //             });
     //
     // public Task Handle(CreateOrganisation message)
     //     => message.ParentOrganisationId == null ? CreateTopLevelOrganisation(message) : CreateDaughter(message);
@@ -902,23 +902,23 @@ public class OrganisationCommandHandlers :
                         new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
                 });
 
-    public Task Handle(UpdateOrganisationRelation message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var relatedOrganisation = session.Get<Organisation>(message.RelatedOrganisationId);
-                    var relation = session.Get<OrganisationRelationType>(message.RelationTypeId);
-
-                    organisation.UpdateRelation(
-                        message.OrganisationRelationId,
-                        relation,
-                        relatedOrganisation,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-                });
+    // public Task Handle(UpdateOrganisationRelation message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var relatedOrganisation = session.Get<Organisation>(message.RelatedOrganisationId);
+    //                 var relation = session.Get<OrganisationRelationType>(message.RelationTypeId);
+    //
+    //                 organisation.UpdateRelation(
+    //                     message.OrganisationRelationId,
+    //                     relation,
+    //                     relatedOrganisation,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+    //             });
 
     public Task Handle(UpdateRelationshipValidities message)
         => UpdateHandler<Organisation>.For(message, Session)
