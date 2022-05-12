@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Api.Backoffice.Person.Queries
+namespace OrganisationRegistry.Api.Backoffice.Person.List
 {
     using System;
     using System.Collections.Generic;
@@ -6,12 +6,12 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Queries
     using System.Linq;
     using System.Linq.Expressions;
     using Infrastructure;
-    using Infrastructure.Search;
-    using Infrastructure.Search.Filtering;
-    using Infrastructure.Search.Sorting;
+    using OrganisationRegistry.Api.Infrastructure.Search;
+    using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
+    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
     using OrganisationRegistry.Infrastructure;
-    using SqlServer.Infrastructure;
-    using SqlServer.Person;
+    using OrganisationRegistry.SqlServer.Infrastructure;
+    using OrganisationRegistry.SqlServer.Person;
 
     public class PersonListQueryResult
     {

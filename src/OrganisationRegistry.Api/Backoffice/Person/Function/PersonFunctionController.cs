@@ -1,17 +1,16 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Person
+﻿namespace OrganisationRegistry.Api.Backoffice.Person.Function
 {
     using System;
     using System.Threading.Tasks;
-    using Infrastructure;
-    using Infrastructure.Search.Filtering;
-    using Infrastructure.Search.Pagination;
-    using Infrastructure.Search.Sorting;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
+    using Infrastructure;
+    using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
+    using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
+    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
     using OrganisationRegistry.Infrastructure.Commands;
-    using Queries;
-    using SqlServer.Infrastructure;
-    using SqlServer.Person;
+    using OrganisationRegistry.SqlServer.Infrastructure;
+    using OrganisationRegistry.SqlServer.Person;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]

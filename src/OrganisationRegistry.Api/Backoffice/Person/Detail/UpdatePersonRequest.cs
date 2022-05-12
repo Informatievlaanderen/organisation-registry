@@ -1,10 +1,10 @@
-namespace OrganisationRegistry.Api.Backoffice.Person.Requests
+namespace OrganisationRegistry.Api.Backoffice.Person.Detail
 {
     using System;
     using FluentValidation;
     using OrganisationRegistry.Person;
     using OrganisationRegistry.Person.Commands;
-    using SqlServer.Person;
+    using OrganisationRegistry.SqlServer.Person;
 
     public class UpdatePersonInternalRequest
     {
