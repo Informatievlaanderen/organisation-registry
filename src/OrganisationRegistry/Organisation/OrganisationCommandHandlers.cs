@@ -31,7 +31,6 @@ using Person;
 using Purpose;
 using RegulationSubTheme;
 using RegulationTheme;
-using Vlimpers;
 
 public class OrganisationCommandHandlers :
     BaseCommandHandler<OrganisationCommandHandlers>,
@@ -73,8 +72,8 @@ public class OrganisationCommandHandlers :
     ICommandHandler<UpdateOrganisationRelation>,
     ICommandHandler<AddOrganisationOpeningHour>,
     ICommandHandler<UpdateOrganisationOpeningHour>,
-    ICommandHandler<TerminateOrganisation>,
-    ICommandHandler<PlaceUnderVlimpersManagement>
+    ICommandHandler<TerminateOrganisation>
+    // ICommandHandler<PlaceUnderVlimpersManagement>
     // ICommandHandler<ReleaseFromVlimpersManagement>
 {
     private readonly IDateTimeProvider _dateTimeProvider;
@@ -426,16 +425,16 @@ public class OrganisationCommandHandlers :
     // public Task Handle(CreateOrganisation message)
     //     => message.ParentOrganisationId == null ? CreateTopLevelOrganisation(message) : CreateDaughter(message);
 
-    public Task Handle(PlaceUnderVlimpersManagement message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .RequiresAdmin()
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-
-                    organisation.PlaceUnderVlimpersManagement();
-                });
+    // public Task Handle(PlaceUnderVlimpersManagement message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .RequiresAdmin()
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //
+    //                 organisation.PlaceUnderVlimpersManagement();
+    //             });
 
     // public Task Handle(ReleaseFromVlimpersManagement message)
     //     => UpdateHandler<Organisation>.For(message, Session)

@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Organisation.Vlimpers;
+﻿namespace OrganisationRegistry.Organisation;
 
 using System.Threading.Tasks;
 using Handling;
