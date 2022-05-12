@@ -5,14 +5,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
     using System.Linq;
     using Building;
     using Building.Events;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
-    using Tests.Shared;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
@@ -20,9 +17,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
     using Xunit;
     using Xunit.Abstractions;
 
-    public class
-        WhenAddingAMainOrganisationBuilding : Specification<AddOrganisationBuildingCommandHandler,
-            AddOrganisationBuilding>
+    public class WhenAddingAMainOrganisationBuilding
+        : Specification<AddOrganisationBuildingCommandHandler, AddOrganisationBuilding>
     {
         private Guid _organisationId;
         private Guid _buildingId;
@@ -31,6 +27,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
         private DateTime _validTo;
         private DateTime _validFrom;
         private DateTimeProviderStub _dateTimeProviderStub;
+
+        public WhenAddingAMainOrganisationBuilding(ITestOutputHelper helper) : base(helper)
+        {
+            _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
+        }
 
         protected override IUser User
             => new UserBuilder().Build();
@@ -75,15 +76,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
         }
 
         protected override AddOrganisationBuilding When()
-        {
-            return new AddOrganisationBuilding(
+            => new(
                 _organisationBuildingId,
                 new OrganisationId(_organisationId),
                 new BuildingId(_buildingId),
                 _isMainBuilding,
                 new ValidFrom(_validFrom),
                 new ValidTo(_validTo));
-        }
 
         protected override int ExpectedNumberOfEvents
             => 2;
@@ -105,10 +104,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
             var organisationBuildingAdded = PublishedEvents[1].UnwrapBody<MainBuildingAssignedToOrganisation>();
             organisationBuildingAdded.OrganisationId.Should().Be(_organisationId);
             organisationBuildingAdded.MainBuildingId.Should().Be(_buildingId);
-        }
-
-        public WhenAddingAMainOrganisationBuilding(ITestOutputHelper helper) : base(helper)
-        {
         }
     }
 }

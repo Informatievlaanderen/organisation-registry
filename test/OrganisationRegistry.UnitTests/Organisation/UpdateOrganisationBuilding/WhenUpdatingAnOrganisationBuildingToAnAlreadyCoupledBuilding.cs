@@ -4,14 +4,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
     using System.Collections.Generic;
     using Building;
     using Building.Events;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
-    using Tests.Shared;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
@@ -29,13 +26,15 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         private Guid _buildingAId;
         private Guid _buildingBId;
 
-        protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
+        public WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding(ITestOutputHelper helper) : base(helper)
         {
-            return new UpdateOrganisationBuildingCommandHandler(
+        }
+
+        protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
+            => new(
                 new Mock<ILogger<UpdateOrganisationBuildingCommandHandler>>().Object,
                 Session,
                 new DateTimeProvider());
-        }
 
         protected override IUser User
             => new UserBuilder().Build();
@@ -84,15 +83,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         }
 
         protected override UpdateOrganisationBuilding When()
-        {
-            return new UpdateOrganisationBuilding(
+            => new(
                 _anotherOrganisationBuildingAdded.OrganisationBuildingId,
                 new OrganisationId(_organisationId),
                 new BuildingId(_organisationBuildingAdded.BuildingId),
                 false,
                 new ValidFrom(),
                 new ValidTo());
-        }
 
         protected override int ExpectedNumberOfEvents
             => 0;
@@ -101,11 +98,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         public void ThrowsAnException()
         {
             Exception.Should().BeOfType<BuildingAlreadyCoupledToInThisPeriod>();
-            Exception.Message.Should().Be("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.");
+            Exception?.Message.Should().Be("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.");
         }
 
-        public WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding(ITestOutputHelper helper) : base(helper)
-        {
-        }
+
     }
 }

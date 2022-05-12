@@ -7,6 +7,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
     using Location;
     using OrganisationRegistry.Infrastructure.Events;
     using Location.Events;
+    using LocationType;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
@@ -30,20 +31,23 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
         private bool _isMainLocation;
         private DateTime _validTo;
         private DateTime _validFrom;
-        private string _ovoNumber;
+        private string _ovoNumber = "OVO000012345";
+
+        public WhenAddingTheSameLocationTwice(ITestOutputHelper helper) : base(helper)
+        {
+        }
 
         protected override AddOrganisationLocationCommandHandler BuildHandler()
-        {
-            return new AddOrganisationLocationCommandHandler(
+            => new(
                 new Mock<ILogger<AddOrganisationLocationCommandHandler>>().Object,
                 Session,
                 new DateTimeProvider(),
                 new OrganisationRegistryConfigurationStub()
             );
-        }
 
         protected override IUser User
             => new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build();
+
         protected override IEnumerable<IEvent> Given()
         {
             _organisationId = Guid.NewGuid();
@@ -53,7 +57,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
             _validFrom = DateTime.Now.AddDays(1);
             _validTo = DateTime.Now.AddDays(2);
 
-            _ovoNumber = "OVO000012345";
             return new List<IEvent>
             {
                 new OrganisationCreated(
@@ -84,15 +87,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
                     "Gebouw A",
                     _isMainLocation,
                     null,
-                    null,
+                    "Location Type A",
                     _validFrom,
                     _validTo)
             };
         }
 
         protected override AddOrganisationLocation When()
-        {
-            return new AddOrganisationLocation(
+            => new(
                 Guid.NewGuid(),
                 new OrganisationId(_organisationId),
                 new LocationId(_locationId),
@@ -100,7 +102,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
                 null,
                 new ValidFrom(_validFrom),
                 new ValidTo(_validTo));
-        }
 
         protected override int ExpectedNumberOfEvents
             => 0;
@@ -109,11 +110,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
         public void ThrowsAnException()
         {
             Exception.Should().BeOfType<LocationAlreadyCoupledToInThisPeriod>();
-            Exception.Message.Should().Be("Deze locatie is in deze periode reeds gekoppeld aan de organisatie.");
-        }
-
-        public WhenAddingTheSameLocationTwice(ITestOutputHelper helper) : base(helper)
-        {
+            Exception?.Message.Should().Be("Deze locatie is in deze periode reeds gekoppeld aan de organisatie.");
         }
     }
 }

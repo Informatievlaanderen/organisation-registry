@@ -17,9 +17,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
     using Xunit;
     using Xunit.Abstractions;
 
-    public class
-        WhenAddingTheSameBuildingTwice : ExceptionSpecification<AddOrganisationBuildingCommandHandler,
-            AddOrganisationBuilding>
+    public class WhenAddingTheSameBuildingTwice
+        : ExceptionSpecification<AddOrganisationBuildingCommandHandler, AddOrganisationBuilding>
     {
         private Guid _organisationId;
         private Guid _buildingId;
@@ -27,6 +26,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
         private bool _isMainBuilding;
         private DateTime _validTo;
         private DateTime _validFrom;
+
+        public WhenAddingTheSameBuildingTwice(ITestOutputHelper helper) : base(helper)
+        {
+        }
 
         protected override AddOrganisationBuildingCommandHandler BuildHandler()
             => new(
@@ -91,11 +94,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
         public void ThrowsAnException()
         {
             Exception.Should().BeOfType<BuildingAlreadyCoupledToInThisPeriod>();
-            Exception.Message.Should().Be("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.");
-        }
-
-        public WhenAddingTheSameBuildingTwice(ITestOutputHelper helper) : base(helper)
-        {
+            Exception?.Message.Should().Be("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.");
         }
     }
 }

@@ -26,14 +26,16 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         private DateTime? _validTo;
         private DateTime _validFrom;
 
-        protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
+        public WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix(ITestOutputHelper helper) : base(helper)
         {
-            return new UpdateOrganisationBuildingCommandHandler(
+        }
+
+        protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
+            => new(
                 new Mock<ILogger<UpdateOrganisationBuildingCommandHandler>>().Object,
                 Session,
                 new DateTimeProviderStub(new DateTime(2017, 01, 19))
             );
-        }
 
         protected override IUser User
             => new UserBuilder().Build();
@@ -120,10 +122,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
             var mainBuildingClearedFromOrganisation = @event.UnwrapBody<MainBuildingClearedFromOrganisation>();
             mainBuildingClearedFromOrganisation.OrganisationId.Should().Be(_organisationId);
             mainBuildingClearedFromOrganisation.MainBuildingId.Should().Be(_buildingId);
-        }
-
-        public WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix(ITestOutputHelper helper) : base(helper)
-        {
         }
     }
 }

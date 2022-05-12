@@ -5,14 +5,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
     using System.Linq;
     using Building;
     using Building.Events;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
-    using Tests.Shared;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
@@ -31,6 +28,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         private DateTime _validTo;
         private DateTime _validFrom;
         private readonly DateTimeProviderStub _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
+
+        public WhenUpdatingAMainOrganisationBuildingToRegularBuilding(ITestOutputHelper helper) : base(helper)
+        {
+        }
 
         protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
             => new(
@@ -80,15 +81,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         }
 
         protected override UpdateOrganisationBuilding When()
-        {
-            return new UpdateOrganisationBuilding(
+            => new(
                 _organisationBuildingId,
                 new OrganisationId(_organisationId),
                 new BuildingId(_buildingId),
                 _isMainBuilding,
                 new ValidFrom(_validFrom),
                 new ValidTo(_validTo));
-        }
 
         protected override int ExpectedNumberOfEvents
             => 2;
@@ -115,8 +114,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
             mainBuildingAssignedToOrganisation.MainBuildingId.Should().Be(_buildingId);
         }
 
-        public WhenUpdatingAMainOrganisationBuildingToRegularBuilding(ITestOutputHelper helper) : base(helper)
-        {
-        }
+
     }
 }
