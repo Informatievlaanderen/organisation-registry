@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Organisation.Commands
+namespace OrganisationRegistry.Organisation
 {
     using System;
 
@@ -15,21 +15,17 @@ namespace OrganisationRegistry.Organisation.Commands
         }
 
         protected bool Equals(UpdateRelationshipValidities other)
-        {
-            return OrganisationId.Equals(other.OrganisationId);
-        }
+            => OrganisationId.Equals(other.OrganisationId);
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((UpdateRelationshipValidities) obj);
         }
 
         public override int GetHashCode()
-        {
-            return OrganisationId.GetHashCode();
-        }
+            => OrganisationId.GetHashCode();
     }
 }
