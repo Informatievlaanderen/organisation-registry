@@ -1,12 +1,12 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Requests
+﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Detail
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using FluentValidation;
     using OrganisationRegistry.Organisation;
-    using Purpose;
-    using SqlServer.Organisation;
+    using OrganisationRegistry.Purpose;
+    using OrganisationRegistry.SqlServer.Organisation;
 
     public class UpdateOrganisationInfoInternalRequest
     {

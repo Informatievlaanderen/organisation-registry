@@ -15,7 +15,6 @@
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
-    using Responses;
     using Security;
     using SqlServer.Infrastructure;
 

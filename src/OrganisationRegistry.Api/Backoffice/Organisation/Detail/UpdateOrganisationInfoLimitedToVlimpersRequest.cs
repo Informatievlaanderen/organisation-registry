@@ -1,9 +1,9 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Requests
+﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Detail
 {
     using System;
     using FluentValidation;
     using OrganisationRegistry.Organisation;
-    using SqlServer.Organisation;
+    using OrganisationRegistry.SqlServer.Organisation;
 
     public class UpdateOrganisationInfoLimitedToVlimpersInternalRequest
     {

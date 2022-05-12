@@ -13,8 +13,6 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Kbo
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-    using Queries;
-    using Responses;
     using Security;
     using SqlServer.Infrastructure;
 

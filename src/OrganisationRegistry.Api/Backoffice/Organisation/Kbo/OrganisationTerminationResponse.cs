@@ -1,7 +1,7 @@
-namespace OrganisationRegistry.Api.Backoffice.Organisation.Responses
+namespace OrganisationRegistry.Api.Backoffice.Organisation.Kbo
 {
     using System;
-    using SqlServer.Organisation;
+    using OrganisationRegistry.SqlServer.Organisation;
 
     public class OrganisationTerminationResponse
     {

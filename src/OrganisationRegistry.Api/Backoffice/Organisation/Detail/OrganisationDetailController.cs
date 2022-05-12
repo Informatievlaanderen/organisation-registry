@@ -1,11 +1,8 @@
-namespace OrganisationRegistry.Api.Backoffice.Organisation
+namespace OrganisationRegistry.Api.Backoffice.Organisation.Detail
 {
     using System;
     using System.Threading.Tasks;
     using Infrastructure;
-    using Infrastructure.Search.Filtering;
-    using Infrastructure.Search.Pagination;
-    using Infrastructure.Search.Sorting;
     using Infrastructure.Security;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
@@ -14,42 +11,16 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-    using Queries;
-    using Requests;
-    using Responses;
     using Security;
     using SqlServer.Infrastructure;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
     [OrganisationRegistryRoute("organisations")]
-    public class OrganisationController : OrganisationRegistryController
+    public class OrganisationDetailController : OrganisationRegistryController
     {
-        public OrganisationController(ICommandSender commandSender) : base(commandSender)
+        public OrganisationDetailController(ICommandSender commandSender) : base(commandSender)
         {
-        }
-
-        /// <summary>Get a list of available organisations.</summary>
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Get(
-            [FromServices] OrganisationRegistryContext context,
-            [FromServices] ISecurityService securityService)
-        {
-            var filtering = Request.ExtractFilteringRequest<OrganisationListItemFilter>();
-            var sorting = Request.ExtractSortingRequest();
-            var pagination = Request.ExtractPaginationRequest();
-
-            var securityInformation = await securityService.GetSecurityInformation(User);
-
-            var pagedOrganisations =
-                new OrganisationListQuery(context, securityInformation)
-                    .Fetch(filtering, sorting, pagination);
-
-            Response.AddPaginationResponse(pagedOrganisations.PaginationInfo);
-            Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
-
-            return Ok(await pagedOrganisations.Items.ToListAsync());
         }
 
         /// <summary>Get an organisation.</summary>
