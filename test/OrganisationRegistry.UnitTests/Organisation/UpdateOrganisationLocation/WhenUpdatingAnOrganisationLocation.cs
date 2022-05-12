@@ -14,13 +14,15 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
     using Tests.Shared;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.Locations;
     using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationLocation : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationLocation>
+    public class
+        WhenUpdatingAnOrganisationLocation : Specification<UpdateOrganisationLocationCommandHandler,
+            UpdateOrganisationLocation>
     {
         private Guid _organisationId;
         private Guid _locationId;
@@ -30,17 +32,17 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
         private DateTime _validFrom;
         private string _ovoNumber;
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        protected override UpdateOrganisationLocationCommandHandler BuildHandler()
         {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+            return new UpdateOrganisationLocationCommandHandler(
+                new Mock<ILogger<UpdateOrganisationLocationCommandHandler>>().Object,
                 Session,
-                new SequentialOvoNumberGenerator(),
-                null,
-                new DateTimeProvider(),
-                new OrganisationRegistryConfigurationStub(),
-                Mock.Of<ISecurityService>());
+                new DateTimeProvider()
+            );
         }
+
+        protected override IUser User
+            => new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build();
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -55,9 +57,37 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
             _ovoNumber = "OVO000012345";
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", _ovoNumber, "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
-                new LocationCreated(_locationId, "12345", "Albert 1 laan 32, 1000 Brussel", "Albert 1 laan 32", "1000", "Brussel", "Belgie"),
-                new OrganisationLocationAdded(_organisationId, _organisationLocationId, _locationId, "Gebouw A", _isMainLocation, null, null, _validFrom, _validTo)
+                new OrganisationCreated(
+                    _organisationId,
+                    "Kind en Gezin",
+                    _ovoNumber,
+                    "K&G",
+                    Article.None,
+                    "Kindjes en gezinnetjes",
+                    new List<Purpose>(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null),
+                new LocationCreated(
+                    _locationId,
+                    "12345",
+                    "Albert 1 laan 32, 1000 Brussel",
+                    "Albert 1 laan 32",
+                    "1000",
+                    "Brussel",
+                    "Belgie"),
+                new OrganisationLocationAdded(
+                    _organisationId,
+                    _organisationLocationId,
+                    _locationId,
+                    "Gebouw A",
+                    _isMainLocation,
+                    null,
+                    null,
+                    _validFrom,
+                    _validTo)
             };
         }
 
@@ -74,10 +104,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
                 Source.Wegwijs)
             {
                 User = new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build()
-            };;
+            };
+            ;
         }
 
-        protected override int ExpectedNumberOfEvents => 1;
+        protected override int ExpectedNumberOfEvents
+            => 1;
 
         [Fact]
         public void UpdatesTheOrganisationLocation()
@@ -92,6 +124,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
             organisationLocationAdded.ValidTo.Should().Be(_validTo);
         }
 
-        public WhenUpdatingAnOrganisationLocation(ITestOutputHelper helper) : base(helper) { }
+        public WhenUpdatingAnOrganisationLocation(ITestOutputHelper helper) : base(helper)
+        {
+        }
     }
 }

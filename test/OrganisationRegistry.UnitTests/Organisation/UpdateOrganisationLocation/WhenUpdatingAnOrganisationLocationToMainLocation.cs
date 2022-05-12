@@ -16,11 +16,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
     using OrganisationRegistry.Organisation.Commands;
 
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.Locations;
     using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationLocationToMainLocation : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationLocation>
+    public class WhenUpdatingAnOrganisationLocationToMainLocation : Specification<UpdateOrganisationLocationCommandHandler, UpdateOrganisationLocation>
     {
         private Guid _organisationId;
         private Guid _locationId;
@@ -31,17 +32,17 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
         private readonly DateTimeProviderStub _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
         private string _ovoNumber;
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        protected override UpdateOrganisationLocationCommandHandler BuildHandler()
         {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+            return new UpdateOrganisationLocationCommandHandler(
+                new Mock<ILogger<UpdateOrganisationLocationCommandHandler>>().Object,
                 Session,
-                new SequentialOvoNumberGenerator(),
-                null,
-                _dateTimeProviderStub,
-                new OrganisationRegistryConfigurationStub(),
-                Mock.Of<ISecurityService>());
+                _dateTimeProviderStub
+            );
         }
+
+        protected override IUser User
+            => new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build();
 
         protected override IEnumerable<IEvent> Given()
         {

@@ -5,27 +5,24 @@ using Commands;
 using Handling;
 using Infrastructure.Authorization;
 using Infrastructure.Commands;
-using Infrastructure.Configuration;
 using Infrastructure.Domain;
 using Location;
 using LocationType;
 using Microsoft.Extensions.Logging;
 
-public class AddOrganisationLocationCommandHandler:
-    BaseCommandHandler<AddOrganisationLocationCommandHandler>,
-    ICommandEnvelopeHandler<AddOrganisationLocation>
+public class UpdateOrganisationLocationCommandHandler:
+    BaseCommandHandler<UpdateOrganisationLocationCommandHandler>,
+    ICommandEnvelopeHandler<UpdateOrganisationLocation>
 {
-
     private readonly IDateTimeProvider _dateTimeProvider;
-    private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
-    public AddOrganisationLocationCommandHandler(ILogger<AddOrganisationLocationCommandHandler> logger, ISession session, IDateTimeProvider dateTimeProvider, IOrganisationRegistryConfiguration organisationRegistryConfiguration) : base(logger, session)
+
+    public UpdateOrganisationLocationCommandHandler(ILogger<UpdateOrganisationLocationCommandHandler> logger, ISession session, IDateTimeProvider dateTimeProvider) : base(logger, session)
     {
         _dateTimeProvider = dateTimeProvider;
-        _organisationRegistryConfiguration = organisationRegistryConfiguration;
     }
 
-    public Task Handle(ICommandEnvelope<AddOrganisationLocation> envelope)
-        => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
+    public Task Handle(ICommandEnvelope<UpdateOrganisationLocation> envelope)
+        => UpdateHandler<Organisation>.For(envelope.Command,envelope.User ,Session)
             .RequiresBeheerderForOrganisationRegardlessOfVlimpers()
             .Handle(
                 session =>
@@ -38,15 +35,13 @@ public class AddOrganisationLocationCommandHandler:
                         ? session.Get<LocationType>(envelope.Command.LocationTypeId)
                         : null;
 
-                    KboV2Guards.ThrowIfRegisteredOffice(_organisationRegistryConfiguration, locationType);
-
-                    organisation.AddLocation(
+                    organisation.UpdateLocation(
                         envelope.Command.OrganisationLocationId,
                         location,
                         envelope.Command.IsMainLocation,
                         locationType,
                         new Period(new ValidFrom(envelope.Command.ValidFrom), new ValidTo(envelope.Command.ValidTo)),
-                        Source.Wegwijs,
+                        envelope.Command.Source,
                         _dateTimeProvider);
                 });
 }
