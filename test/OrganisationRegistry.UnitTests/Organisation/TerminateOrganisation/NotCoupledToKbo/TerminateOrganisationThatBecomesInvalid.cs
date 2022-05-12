@@ -11,36 +11,42 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-
     using OrganisationRegistry.Organisation.Events;
-    using Tests.Shared;
+    using OrganisationRegistry.Organisation.OrganisationTermination;
     using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class TerminateOrganisationThatBecomesInvalid: OldSpecification<Organisation, OrganisationCommandHandlers, TerminateOrganisation>
+    public class TerminateOrganisationThatBecomesInvalid : Specification<TerminateOrganisationCommandHandler, TerminateOrganisation>
     {
-        private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
+        private readonly OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub = new()
+        {
+            Kbo = new KboConfigurationStub
+            {
+                KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
+                KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
+                KboV2FormalNameLabelTypeId = Guid.NewGuid(),
+            }
+        };
 
-        private OrganisationId _organisationId;
-        private DateTimeProviderStub _dateTimeProviderStub;
+        private readonly OrganisationId _organisationId = new(Guid.NewGuid());
+        private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Today);
         private DateTime _dateOfTermination;
+
+        public TerminateOrganisationThatBecomesInvalid(ITestOutputHelper helper) : base(helper)
+        {
+        }
+
+        protected override IUser User
+            => new UserBuilder()
+                .AddRoles(Role.AlgemeenBeheerder)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
             var fixture = new Fixture();
-            _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today);
-            _organisationRegistryConfigurationStub = new OrganisationRegistryConfigurationStub
-            {
-                Kbo = new KboConfigurationStub
-                {
-                    KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
-                    KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
-                    KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-                }
-            };
+
             _dateOfTermination = _dateTimeProviderStub.Today.AddDays(fixture.Create<int>() * -1);
-            _organisationId = new OrganisationId(Guid.NewGuid());
 
             var organisationOrganisationParentId = fixture.Create<Guid>();
             var parentOrganisationId = fixture.Create<Guid>();
@@ -52,14 +58,22 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
                     _organisationId,
                     "organisation X",
                     "OVO001234",
-                    "org", Article.None, "", new List<Purpose>(), false, new ValidFrom(), new ValidTo(), new ValidFrom(), new ValidTo()),
+                    "org",
+                    Article.None,
+                    "",
+                    new List<Purpose>(),
+                    false,
+                    new ValidFrom(),
+                    new ValidTo(),
+                    new ValidFrom(),
+                    new ValidTo()),
                 new OrganisationLabelAdded(
                     _organisationId,
                     fixture.Create<Guid>(),
                     fixture.Create<Guid>(),
                     fixture.Create<string>(),
                     fixture.Create<string>(),
-                    _dateOfTermination.AddDays(fixture.Create<int>()*-1),
+                    _dateOfTermination.AddDays(fixture.Create<int>() * -1),
                     _dateOfTermination.AddDays(fixture.Create<int>())),
                 new OrganisationLabelAdded(
                     _organisationId,
@@ -67,7 +81,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
                     fixture.Create<Guid>(),
                     fixture.Create<string>(),
                     fixture.Create<string>(),
-                    _dateOfTermination.AddDays(fixture.Create<int>()*-1),
+                    _dateOfTermination.AddDays(fixture.Create<int>() * -1),
                     _dateOfTermination.AddDays(fixture.Create<int>())),
                 new OrganisationBecameActive(_organisationId),
                 new OrganisationParentAdded(
@@ -99,28 +113,17 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
         }
 
         protected override TerminateOrganisation When()
-        {
-            return new TerminateOrganisation(
-                _organisationId,
-                _dateOfTermination,
-                false)
-                .WithUserRole(Role.AlgemeenBeheerder);
-        }
+            => new(_organisationId, _dateOfTermination, false);
 
-        protected override OrganisationCommandHandlers BuildHandler()
-        {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+        protected override TerminateOrganisationCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<TerminateOrganisationCommandHandler>>().Object,
                 Session,
-                new SequentialOvoNumberGenerator(),
-                new UniqueOvoNumberValidatorStub(false),
                 _dateTimeProviderStub,
-                _organisationRegistryConfigurationStub,
-                Mock.Of<ISecurityService>());
-        }
+                _organisationRegistryConfigurationStub);
 
-
-        protected override int ExpectedNumberOfEvents => 3;
+        protected override int ExpectedNumberOfEvents
+            => 3;
 
         [Fact]
         public void TerminatesTheOrganisation()
@@ -128,7 +131,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
             var organisationTerminated = PublishedEvents[0].UnwrapBody<OrganisationTerminatedV2>();
             organisationTerminated.Should().NotBeNull();
 
-            organisationTerminated.OrganisationId.Should().Be((Guid) _organisationId);
+            organisationTerminated.OrganisationId.Should().Be((Guid)_organisationId);
             organisationTerminated.FieldsToTerminate.OrganisationValidity.Should().Be(_dateOfTermination);
             organisationTerminated.OvoNumber.Should().Be("OVO001234");
             organisationTerminated.FieldsToTerminate.Buildings.Should().BeEmpty();
@@ -157,7 +160,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
             var organisationBecameInactive = PublishedEvents[1].UnwrapBody<OrganisationBecameInactive>();
             organisationBecameInactive.Should().NotBeNull();
 
-            organisationBecameInactive.OrganisationId.Should().Be((Guid) _organisationId);
+            organisationBecameInactive.OrganisationId.Should().Be((Guid)_organisationId);
         }
 
         [Fact]
@@ -166,9 +169,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.NotC
             var frameworkClearedFromOrganisation = PublishedEvents[2].UnwrapBody<FormalFrameworkClearedFromOrganisation>();
             frameworkClearedFromOrganisation.Should().NotBeNull();
 
-            frameworkClearedFromOrganisation.OrganisationId.Should().Be((Guid) _organisationId);
+            frameworkClearedFromOrganisation.OrganisationId.Should().Be((Guid)_organisationId);
         }
-
-        public TerminateOrganisationThatBecomesInvalid(ITestOutputHelper helper) : base(helper) { }
     }
 }

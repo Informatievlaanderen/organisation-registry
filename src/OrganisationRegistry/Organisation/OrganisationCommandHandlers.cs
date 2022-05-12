@@ -71,8 +71,8 @@ public class OrganisationCommandHandlers :
     ICommandHandler<AddOrganisationRelation>,
     ICommandHandler<UpdateOrganisationRelation>,
     ICommandHandler<AddOrganisationOpeningHour>,
-    ICommandHandler<UpdateOrganisationOpeningHour>,
-    ICommandHandler<TerminateOrganisation>
+    ICommandHandler<UpdateOrganisationOpeningHour>
+    // ICommandHandler<TerminateOrganisation>
     // ICommandHandler<PlaceUnderVlimpersManagement>
     // ICommandHandler<ReleaseFromVlimpersManagement>
 {
@@ -458,29 +458,29 @@ public class OrganisationCommandHandlers :
     //                 organisation.RemoveOrganisationKey(message.OrganisationKeyId);
     //             });
 
-    public Task Handle(TerminateOrganisation message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .WithVlimpersOnlyPolicy()
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-
-                    var fieldsToTerminateConfig = new OrganisationTerminationCalculator.FieldsToTerminateConfig(
-                        _organisationRegistryConfiguration.Kbo.FormalFrameworkIdsToTerminateEndOfNextYear
-                            ?.FirstOrDefault() ?? Guid.Empty,
-                        _organisationRegistryConfiguration.Kbo.OrganisationCapacityIdsToTerminateEndOfNextYear
-                            ?.FirstOrDefault() ?? Guid.Empty,
-                        _organisationRegistryConfiguration.Kbo.OrganisationClassificationTypeIdsToTerminateEndOfNextYear
-                            ?.FirstOrDefault() ?? Guid.Empty,
-                        _organisationRegistryConfiguration.VlimpersKeyTypeId);
-
-                    organisation.TerminateOrganisation(
-                        message.DateOfTermination,
-                        fieldsToTerminateConfig,
-                        _dateTimeProvider,
-                        message.ForceKboTermination);
-                });
+    // public Task Handle(TerminateOrganisation message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .WithVlimpersOnlyPolicy()
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //
+    //                 var fieldsToTerminateConfig = new OrganisationTerminationCalculator.FieldsToTerminateConfig(
+    //                     _organisationRegistryConfiguration.Kbo.FormalFrameworkIdsToTerminateEndOfNextYear
+    //                         ?.FirstOrDefault() ?? Guid.Empty,
+    //                     _organisationRegistryConfiguration.Kbo.OrganisationCapacityIdsToTerminateEndOfNextYear
+    //                         ?.FirstOrDefault() ?? Guid.Empty,
+    //                     _organisationRegistryConfiguration.Kbo.OrganisationClassificationTypeIdsToTerminateEndOfNextYear
+    //                         ?.FirstOrDefault() ?? Guid.Empty,
+    //                     _organisationRegistryConfiguration.VlimpersKeyTypeId);
+    //
+    //                 organisation.TerminateOrganisation(
+    //                     message.DateOfTermination,
+    //                     fieldsToTerminateConfig,
+    //                     _dateTimeProvider,
+    //                     message.ForceKboTermination);
+    //             });
 
     public Task Handle(UpdateCurrentOrganisationParent message)
         => UpdateHandler<Organisation>.For(message, Session)
