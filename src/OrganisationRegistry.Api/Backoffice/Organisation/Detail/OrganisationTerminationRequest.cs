@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Api.Backoffice.Organisation.Requests
+namespace OrganisationRegistry.Api.Backoffice.Organisation.Detail
 {
     using System;
 

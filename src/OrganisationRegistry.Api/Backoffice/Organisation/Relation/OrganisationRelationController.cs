@@ -12,7 +12,6 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Relation
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
-    using Responses;
     using SqlServer.Infrastructure;
 
     [ApiVersion("1.0")]

@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Api.Backoffice.Organisation.Queries
+namespace OrganisationRegistry.Api.Backoffice.Organisation.Kbo
 {
     using System;
     using System.Collections.Generic;

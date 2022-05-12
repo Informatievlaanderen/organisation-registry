@@ -1,9 +1,9 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Responses
+﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Detail
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using SqlServer.Organisation;
+    using OrganisationRegistry.SqlServer.Organisation;
 
     public class OrganisationResponse
     {

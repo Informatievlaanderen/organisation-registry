@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Api.Backoffice.Organisation.Requests
+namespace OrganisationRegistry.Api.Backoffice.Organisation.Detail
 {
     using System;
     using System.Collections.Generic;
@@ -7,9 +7,9 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Requests
     using FluentValidation;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-    using Purpose;
-    using SqlServer.Location;
-    using SqlServer.Organisation;
+    using OrganisationRegistry.Purpose;
+    using OrganisationRegistry.SqlServer.Location;
+    using OrganisationRegistry.SqlServer.Organisation;
 
     public class CreateOrganisationRequest
     {

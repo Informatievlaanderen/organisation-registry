@@ -1,9 +1,9 @@
-namespace OrganisationRegistry.Api.Backoffice.Organisation.Responses
+namespace OrganisationRegistry.Api.Backoffice.Organisation.Capacity
 {
     using System;
     using System.Collections.Generic;
     using Newtonsoft.Json;
-    using SqlServer.Organisation;
+    using OrganisationRegistry.SqlServer.Organisation;
 
     public class OrganisationCapacityResponse
     {
