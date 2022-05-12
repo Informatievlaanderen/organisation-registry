@@ -1,3 +1,10 @@
+# [1.180.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.179.2...v1.180.0) (2022-05-12)
+
+
+### Features
+
+* or-1032 migrate ElasticSearch.Projections to aws service ([038227f](https://github.com/informatievlaanderen/organisation-registry/commit/038227f2a22c1a97d1d7cb0e025b5c076f937b2d))
+
 ## [1.179.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.179.1...v1.179.2) (2022-05-12)
 
 ## [1.179.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.179.0...v1.179.1) (2022-05-12)
