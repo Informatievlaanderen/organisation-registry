@@ -9,6 +9,7 @@ namespace OrganisationRegistry.Api.Backoffice.Vlimpers
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
+    using OrganisationRegistry.Organisation.Vlimpers;
     using Security;
 
     [ApiVersion("1.0")]

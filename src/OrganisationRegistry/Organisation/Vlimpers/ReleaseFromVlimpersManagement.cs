@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Organisation.Commands
+namespace OrganisationRegistry.Organisation.Vlimpers
 {
     public class ReleaseFromVlimpersManagement : BaseCommand<OrganisationId>
     {
