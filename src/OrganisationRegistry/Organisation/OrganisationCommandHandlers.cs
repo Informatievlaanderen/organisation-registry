@@ -47,7 +47,7 @@ public class OrganisationCommandHandlers :
     //ICommandHandler<UpdateOrganisationBuilding>,
     //ICommandHandler<AddOrganisationLocation>,
     //ICommandHandler<UpdateOrganisationLocation>,
-    ICommandHandler<AddOrganisationContact>,
+    //ICommandHandler<AddOrganisationContact>,
     ICommandHandler<UpdateOrganisationContact>,
     ICommandHandler<AddOrganisationLabel>,
     ICommandHandler<UpdateOrganisationLabel>,
