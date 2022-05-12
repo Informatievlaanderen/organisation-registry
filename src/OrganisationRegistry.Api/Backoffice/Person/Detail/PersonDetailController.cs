@@ -1,46 +1,25 @@
-namespace OrganisationRegistry.Api.Backoffice.Person
+namespace OrganisationRegistry.Api.Backoffice.Person.Detail
 {
     using System;
     using System.Threading.Tasks;
-    using Infrastructure;
-    using Infrastructure.Search.Filtering;
-    using Infrastructure.Search.Pagination;
-    using Infrastructure.Search.Sorting;
-    using Infrastructure.Security;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using OrganisationRegistry.Infrastructure.Commands;
-    using Queries;
-    using Requests;
+    using Infrastructure;
+    using OrganisationRegistry.Api.Infrastructure.Security;
     using Security;
-    using SqlServer.Infrastructure;
-    using SqlServer.Person;
+    using OrganisationRegistry.Infrastructure.Commands;
+    using OrganisationRegistry.SqlServer.Infrastructure;
+    using OrganisationRegistry.SqlServer.Person;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
     [OrganisationRegistryRoute("people")]
-    public class PersonController : OrganisationRegistryController
+    public class PersonDetailController : OrganisationRegistryController
     {
-        public PersonController(ICommandSender commandSender)
+        public PersonDetailController(ICommandSender commandSender)
             : base(commandSender)
         {
-        }
-
-        /// <summary>Get a list of available people.</summary>
-        [HttpGet]
-        public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
-        {
-            var filtering = Request.ExtractFilteringRequest<PersonListItemFilter>();
-            var sorting = Request.ExtractSortingRequest();
-            var pagination = Request.ExtractPaginationRequest();
-
-            var pagedPersons = new PersonListQuery(context).Fetch(filtering, sorting, pagination);
-
-            Response.AddPaginationResponse(pagedPersons.PaginationInfo);
-            Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
-
-            return Ok(await pagedPersons.Items.ToListAsync());
         }
 
         /// <summary>Get a person.</summary>

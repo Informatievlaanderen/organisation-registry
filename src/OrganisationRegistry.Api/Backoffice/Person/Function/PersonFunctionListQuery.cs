@@ -1,14 +1,14 @@
-namespace OrganisationRegistry.Api.Backoffice.Person.Queries
+namespace OrganisationRegistry.Api.Backoffice.Person.Function
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Linq.Expressions;
-    using Infrastructure.Search;
-    using Infrastructure.Search.Filtering;
-    using Infrastructure.Search.Sorting;
-    using SqlServer.Infrastructure;
-    using SqlServer.Person;
+    using OrganisationRegistry.Api.Infrastructure.Search;
+    using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
+    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
+    using OrganisationRegistry.SqlServer.Infrastructure;
+    using OrganisationRegistry.SqlServer.Person;
 
     public class PersonFunctionListQueryResult
     {
