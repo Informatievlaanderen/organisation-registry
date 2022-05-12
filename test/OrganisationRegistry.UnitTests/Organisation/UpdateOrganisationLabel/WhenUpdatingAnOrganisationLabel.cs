@@ -11,40 +11,36 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLabel
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using Tests.Shared;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
-
     using OrganisationRegistry.Organisation.Events;
     using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationLabel : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationLabel>
+    public class
+        WhenUpdatingAnOrganisationLabel : Specification<UpdateOrganisationLabelCommandHandler, UpdateOrganisationLabel>
     {
         private Guid _organisationId;
         private Guid _labelTypeId;
         private Guid _organisationLabelId;
-        private string _value;
+        private string _value = "13135/123lk.,m";
         private DateTime _validTo;
         private DateTime _validFrom;
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        public WhenUpdatingAnOrganisationLabel(ITestOutputHelper helper) : base(helper)
         {
-            var securityServiceMock = new Mock<ISecurityService>();
-            securityServiceMock
-                .Setup(service => service.CanUseLabelType(It.IsAny<IUser>(), It.IsAny<Guid>()))
-                .Returns(true);
-
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
-                Session,
-                new SequentialOvoNumberGenerator(),
-                null,
-                new DateTimeProvider(),
-                new OrganisationRegistryConfigurationStub(),
-                securityServiceMock.Object);
         }
+
+        protected override UpdateOrganisationLabelCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<UpdateOrganisationLabelCommandHandler>>().Object,
+                Session,
+                new OrganisationRegistryConfigurationStub());
+
+        protected override IUser User
+            => new UserBuilder()
+                .AddRoles(Role.AlgemeenBeheerder)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -52,35 +48,47 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLabel
 
             _labelTypeId = Guid.NewGuid();
             _organisationLabelId = Guid.NewGuid();
-            _value = "13135/123lk.,m";
             _validFrom = DateTime.Now.AddDays(1);
             _validTo = DateTime.Now.AddDays(2);
 
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(
+                    _organisationId,
+                    "Kind en Gezin",
+                    "OVO000012345",
+                    "K&G",
+                    Article.None,
+                    "Kindjes en gezinnetjes",
+                    new List<Purpose>(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null),
                 new LabelTypeCreated(_labelTypeId, "Label A"),
-                new OrganisationLabelAdded(_organisationId, _organisationLabelId, _labelTypeId, "Label A", _value, _validFrom, _validTo)
+                new OrganisationLabelAdded(
+                    _organisationId,
+                    _organisationLabelId,
+                    _labelTypeId,
+                    "Label A",
+                    _value,
+                    _validFrom,
+                    _validTo)
             };
         }
 
         protected override UpdateOrganisationLabel When()
-        {
-            return new UpdateOrganisationLabel(
+            => new(
                 _organisationLabelId,
                 new OrganisationId(_organisationId),
                 new LabelTypeId(_labelTypeId),
                 _value,
                 new ValidFrom(_validFrom),
-                new ValidTo(_validTo))
-            {
-                User = new UserBuilder()
-                    .AddRoles(Role.AlgemeenBeheerder)
-                    .Build()
-            };
-        }
+                new ValidTo(_validTo));
 
-        protected override int ExpectedNumberOfEvents => 1;
+        protected override int ExpectedNumberOfEvents
+            => 1;
 
         [Fact]
         public void AnOrganisationLabelUpdatedEventIsPublished()
@@ -98,7 +106,5 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLabel
             organisationLabelAdded.ValidFrom.Should().Be(_validFrom);
             organisationLabelAdded.ValidTo.Should().Be(_validTo);
         }
-
-        public WhenUpdatingAnOrganisationLabel(ITestOutputHelper helper) : base(helper) { }
     }
 }
