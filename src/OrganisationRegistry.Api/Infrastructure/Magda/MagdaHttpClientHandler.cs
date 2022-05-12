@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Api.Backoffice.Kbo
+namespace OrganisationRegistry.Api.Infrastructure.Magda
 {
     using System.Net.Http;
     using System.Security.Authentication;

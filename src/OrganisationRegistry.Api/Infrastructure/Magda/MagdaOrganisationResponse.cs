@@ -1,11 +1,11 @@
-namespace OrganisationRegistry.Api.Backoffice.Kbo.Responses
+namespace OrganisationRegistry.Api.Infrastructure.Magda
 {
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using global::Magda.GeefOnderneming;
-    using OrganisationRegistry.Organisation;
+    using Organisation;
 
     public class MagdaOrganisationResponse : IMagdaOrganisationResponse
     {

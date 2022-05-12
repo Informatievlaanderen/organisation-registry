@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Api.Backoffice.Kbo
+namespace OrganisationRegistry.Api.Infrastructure.Magda
 {
     using System;
     using System.IO;
@@ -12,15 +12,15 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
     using System.Xml.Serialization;
     using Autofac.Features.OwnedInstances;
     using global::Magda.RegistreerInschrijving;
-    using Magda;
-    using Magda.Common;
-    using Magda.Helpers;
-    using Magda.Requests;
-    using Magda.Responses;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using SqlServer.Infrastructure;
-    using SqlServer.Magda;
+    using OrganisationRegistry.Magda;
+    using OrganisationRegistry.Magda.Common;
+    using OrganisationRegistry.Magda.Helpers;
+    using OrganisationRegistry.Magda.Requests;
+    using OrganisationRegistry.Magda.Responses;
+    using OrganisationRegistry.SqlServer.Infrastructure;
+    using OrganisationRegistry.SqlServer.Magda;
 
     public interface IRegistreerInschrijvingCommand
     {

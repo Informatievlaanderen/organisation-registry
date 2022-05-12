@@ -2,6 +2,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
 {
     using System.Threading.Tasks;
     using Infrastructure;
+    using Infrastructure.Magda;
     using Infrastructure.Security;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
