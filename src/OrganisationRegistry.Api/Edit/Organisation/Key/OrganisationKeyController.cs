@@ -1,20 +1,19 @@
-﻿namespace OrganisationRegistry.Api.Edit.Organisation
+﻿namespace OrganisationRegistry.Api.Edit.Organisation.Key
 {
     using System;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Exceptions;
-    using Infrastructure;
-    using Infrastructure.Security;
-    using Infrastructure.Swagger;
-    using Infrastructure.Swagger.Examples;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.FeatureManagement.Mvc;
+    using Infrastructure;
+    using OrganisationRegistry.Api.Infrastructure.Security;
+    using Infrastructure.Swagger;
+    using Infrastructure.Swagger.Examples;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
-    using Requests;
     using Swashbuckle.AspNetCore.Filters;
     using ProblemDetails = Be.Vlaanderen.Basisregisters.BasicApiProblem.ProblemDetails;
 

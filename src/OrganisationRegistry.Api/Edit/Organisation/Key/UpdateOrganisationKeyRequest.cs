@@ -1,10 +1,10 @@
-﻿namespace OrganisationRegistry.Api.Edit.Organisation.Requests
+﻿namespace OrganisationRegistry.Api.Edit.Organisation.Key
 {
     using System;
     using FluentValidation;
     using KeyTypes;
     using OrganisationRegistry.Organisation;
-    using SqlServer.Organisation;
+    using OrganisationRegistry.SqlServer.Organisation;
     using Swashbuckle.AspNetCore.Annotations;
 
     public class UpdateOrganisationKeyInternalRequest
