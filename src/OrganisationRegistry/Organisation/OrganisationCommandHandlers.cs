@@ -70,8 +70,8 @@ public class OrganisationCommandHandlers :
     ICommandHandler<UpdateRelationshipValidities>,
     ICommandHandler<AddOrganisationRelation>,
     ICommandHandler<UpdateOrganisationRelation>,
-    ICommandHandler<AddOrganisationOpeningHour>,
-    ICommandHandler<UpdateOrganisationOpeningHour>
+    ICommandHandler<AddOrganisationOpeningHour>
+    // ICommandHandler<UpdateOrganisationOpeningHour>
     // ICommandHandler<TerminateOrganisation>
     // ICommandHandler<PlaceUnderVlimpersManagement>
     // ICommandHandler<ReleaseFromVlimpersManagement>
@@ -811,21 +811,21 @@ public class OrganisationCommandHandlers :
                         _dateTimeProvider);
                 });
 
-    public Task Handle(UpdateOrganisationOpeningHour message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    organisation.UpdateOpeningHour(
-                        message.OrganisationOpeningHourId,
-                        message.Opens,
-                        message.Closes,
-                        message.DayOfWeek,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-                });
+    // public Task Handle(UpdateOrganisationOpeningHour message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 organisation.UpdateOpeningHour(
+    //                     message.OrganisationOpeningHourId,
+    //                     message.Opens,
+    //                     message.Closes,
+    //                     message.DayOfWeek,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+    //             });
 
     public Task Handle(UpdateOrganisationOrganisationClassification message)
         => UpdateHandler<Organisation>.For(message, Session)

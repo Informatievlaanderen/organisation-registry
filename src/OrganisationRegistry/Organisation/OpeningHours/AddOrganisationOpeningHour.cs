@@ -1,8 +1,8 @@
-namespace OrganisationRegistry.Organisation.Commands
+namespace OrganisationRegistry.Organisation
 {
     using System;
 
-    public class UpdateOrganisationOpeningHour : BaseCommand<OrganisationId>
+    public class AddOrganisationOpeningHour : BaseCommand<OrganisationId>
     {
         public OrganisationId OrganisationId => Id;
 
@@ -13,7 +13,7 @@ namespace OrganisationRegistry.Organisation.Commands
         public DateTime? ValidFrom { get; }
         public DateTime? ValidTo { get; }
 
-        public UpdateOrganisationOpeningHour(
+        public AddOrganisationOpeningHour(
             Guid organisationOpeningHourId,
             OrganisationId organisationId,
             TimeSpan opens,
