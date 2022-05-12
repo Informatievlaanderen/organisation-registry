@@ -66,8 +66,8 @@ public class OrganisationCommandHandlers :
     ICommandHandler<UpdateMainBuilding>,
     ICommandHandler<UpdateMainLocation>,
     ICommandHandler<UpdateOrganisationFormalFrameworkParents>,
-    ICommandHandler<UpdateCurrentOrganisationParent>,
-    ICommandHandler<UpdateRelationshipValidities>
+    ICommandHandler<UpdateCurrentOrganisationParent>
+    // ICommandHandler<UpdateRelationshipValidities>
     // ICommandHandler<AddOrganisationRelation>
     // ICommandHandler<UpdateOrganisationRelation>
     // ICommandHandler<AddOrganisationOpeningHour>
