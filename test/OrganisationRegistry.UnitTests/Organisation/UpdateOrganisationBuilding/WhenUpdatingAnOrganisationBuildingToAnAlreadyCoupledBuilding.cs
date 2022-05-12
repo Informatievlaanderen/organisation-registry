@@ -15,13 +15,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : OldExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationBuilding>
+    public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : ExceptionSpecification<
+        UpdateOrganisationBuildingCommandHandler, UpdateOrganisationBuilding>
     {
         private OrganisationBuildingAdded _organisationBuildingAdded;
         private OrganisationBuildingAdded _anotherOrganisationBuildingAdded;
@@ -29,29 +29,54 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         private Guid _buildingAId;
         private Guid _buildingBId;
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
         {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+            return new UpdateOrganisationBuildingCommandHandler(
+                new Mock<ILogger<UpdateOrganisationBuildingCommandHandler>>().Object,
                 Session,
-                new SequentialOvoNumberGenerator(),
-                null,
-                new DateTimeProvider(),
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
+                new DateTimeProvider());
         }
+
+        protected override IUser User
+            => new UserBuilder().Build();
 
         protected override IEnumerable<IEvent> Given()
         {
             _organisationId = Guid.NewGuid();
             _buildingAId = Guid.NewGuid();
             _buildingBId = Guid.NewGuid();
-            _organisationBuildingAdded = new OrganisationBuildingAdded(_organisationId, Guid.NewGuid(), _buildingAId, "Gebouw A", false, null, null);
-            _anotherOrganisationBuildingAdded = new OrganisationBuildingAdded(_organisationId, Guid.NewGuid(), _buildingBId, "Gebouw A", false, null, null);
+            _organisationBuildingAdded = new OrganisationBuildingAdded(
+                _organisationId,
+                Guid.NewGuid(),
+                _buildingAId,
+                "Gebouw A",
+                false,
+                null,
+                null);
+            _anotherOrganisationBuildingAdded = new OrganisationBuildingAdded(
+                _organisationId,
+                Guid.NewGuid(),
+                _buildingBId,
+                "Gebouw A",
+                false,
+                null,
+                null);
 
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(
+                    _organisationId,
+                    "Kind en Gezin",
+                    "OVO000012345",
+                    "K&G",
+                    Article.None,
+                    "Kindjes en gezinnetjes",
+                    new List<Purpose>(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null),
                 new BuildingCreated(_buildingAId, "Gebouw A", 12345),
                 _organisationBuildingAdded,
                 _anotherOrganisationBuildingAdded
@@ -69,7 +94,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
                 new ValidTo());
         }
 
-        protected override int ExpectedNumberOfEvents => 0;
+        protected override int ExpectedNumberOfEvents
+            => 0;
 
         [Fact]
         public void ThrowsAnException()
@@ -78,6 +104,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
             Exception.Message.Should().Be("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.");
         }
 
-        public WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding(ITestOutputHelper helper) : base(helper) { }
+        public WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding(ITestOutputHelper helper) : base(helper)
+        {
+        }
     }
 }

@@ -7,21 +7,18 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Building.Events;
-    using Configuration;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
-    using Tests.Shared;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-
     using OrganisationRegistry.Organisation.Events;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationBuilding>
+    public class WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix : Specification<
+        UpdateOrganisationBuildingCommandHandler, UpdateOrganisationBuilding>
     {
         private Guid _organisationId;
         private Guid _buildingId;
@@ -29,19 +26,17 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         private DateTime? _validTo;
         private DateTime _validFrom;
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
         {
-            var dateTimeProvider = new DateTimeProviderStub(new DateTime(2017, 01, 19));
-
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+            return new UpdateOrganisationBuildingCommandHandler(
+                new Mock<ILogger<UpdateOrganisationBuildingCommandHandler>>().Object,
                 Session,
-                new SequentialOvoNumberGenerator(),
-                null,
-                dateTimeProvider,
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
+                new DateTimeProviderStub(new DateTime(2017, 01, 19))
+            );
         }
+
+        protected override IUser User
+            => new UserBuilder().Build();
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -54,9 +49,28 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
 
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(
+                    _organisationId,
+                    "Kind en Gezin",
+                    "OVO000012345",
+                    "K&G",
+                    Article.None,
+                    "Kindjes en gezinnetjes",
+                    new List<Purpose>(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null),
                 new BuildingCreated(_buildingId, "Gebouw A", 12345),
-                new OrganisationBuildingAdded(_organisationId, _organisationBuildingId, _buildingId, "Gebouw A", true, _validFrom, _validTo),
+                new OrganisationBuildingAdded(
+                    _organisationId,
+                    _organisationBuildingId,
+                    _buildingId,
+                    "Gebouw A",
+                    true,
+                    _validFrom,
+                    _validTo),
                 new MainBuildingAssignedToOrganisation(_organisationId, _buildingId, _organisationBuildingId)
             };
         }
@@ -68,15 +82,20 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
                 new OrganisationId(_organisationId),
                 new BuildingId(_buildingId),
                 false,
-                new ValidFrom(new DateTime(1980,
-                    10,
-                    17)),
-                new ValidTo(new DateTime(2016,
-                    06,
-                    16)));
+                new ValidFrom(
+                    new DateTime(
+                        1980,
+                        10,
+                        17)),
+                new ValidTo(
+                    new DateTime(
+                        2016,
+                        06,
+                        16)));
         }
 
-        protected override int ExpectedNumberOfEvents => 2;
+        protected override int ExpectedNumberOfEvents
+            => 2;
 
         [Fact]
         public void UpdatesTheOrganisationBuilding()
@@ -103,6 +122,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
             mainBuildingClearedFromOrganisation.MainBuildingId.Should().Be(_buildingId);
         }
 
-        public WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix(ITestOutputHelper helper) : base(helper) { }
+        public WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix(ITestOutputHelper helper) : base(helper)
+        {
+        }
     }
 }
