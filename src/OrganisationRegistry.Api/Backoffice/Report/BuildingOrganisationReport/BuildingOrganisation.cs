@@ -1,18 +1,18 @@
-namespace OrganisationRegistry.Api.Backoffice.Report.Responses
+namespace OrganisationRegistry.Api.Backoffice.Report.BuildingOrganisationReport
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
     using System.Threading.Tasks;
-    using ElasticSearch.Organisations;
     using Infrastructure;
-    using Infrastructure.Search.Sorting;
+    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
+    using ElasticSearch.Organisations;
     using OrganisationRegistry.Infrastructure.Configuration;
     using Osc;
     using SortOrder = Infrastructure.Search.Sorting.SortOrder;
 
-    public class FormalFrameworkOrganisationVademecum
+    public class BuildingOrganisation
     {
         [ExcludeFromCsv]
         public Guid? ParentOrganisationId { get; set; }
@@ -35,15 +35,21 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         [DisplayName("Data.Vlaanderen link")]
         public Uri DataVlaanderenOrganisationUri { get; set; }
 
-        [DisplayName("Vademecum sleutel")]
-        public string VademecumKey { get; set; }
+        [DisplayName("Juridische vorm")]
+        public string LegalForm { get; set; }
+
+        [DisplayName("Beleidsdomein")]
+        public string PolicyDomain { get; set; }
+
+        [DisplayName("Bevoegde minister")]
+        public string ResponsibleMinister { get; set; }
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="document"></param>
         /// <param name="params"></param>
-        public FormalFrameworkOrganisationVademecum(
+        public BuildingOrganisation(
             OrganisationDocument document,
             ApiConfigurationSection @params)
         {
@@ -64,24 +70,30 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
 
             DataVlaanderenOrganisationUri = new Uri(string.Format(@params.DataVlaanderenOrganisationUri, document.OvoNumber));
 
-            VademecumKey = document.Keys
-                ?.FirstOrDefault(x => x.KeyTypeId == @params.VademecumKeyTypeId && (x.Validity == null ||
-                                      (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
-                                      (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))
-                ?.Value;
+            LegalForm = document.OrganisationClassifications
+                ?.FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.LegalFormClassificationTypeId)
+                ?.OrganisationClassificationName;
+
+            PolicyDomain = document.OrganisationClassifications
+                ?.FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.PolicyDomainClassificationTypeId)
+                ?.OrganisationClassificationName;
+
+            ResponsibleMinister = document.OrganisationClassifications
+                ?.FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.ResponsibleMinisterClassificationTypeId)
+                ?.OrganisationClassificationName;
         }
 
         /// <summary>
         /// Scroll through all <see cref="OrganisationDocument"/> with a matching (and active) <see cref="FormalFramework"/>, and return entire dataset
         /// </summary>
         /// <param name="client"></param>
-        /// <param name="formalFrameworkId"></param>
+        /// <param name="buildingId"></param>
         /// <param name="scrollSize"></param>
         /// <param name="scrollTimeout"></param>
         /// <returns></returns>
         public static async Task<IList<OrganisationDocument>> Search(
             IOpenSearchClient client,
-            Guid formalFrameworkId,
+            Guid buildingId,
             int scrollSize,
             string scrollTimeout)
         {
@@ -92,8 +104,8 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
                 .Size(scrollSize)
                 .Query(q => q
                     .Match(match => match
-                        .Field(f => f.FormalFrameworks.Single().FormalFrameworkId)
-                        .Query(formalFrameworkId.ToString())))
+                        .Field(f => f.Buildings.Single().BuildingId)
+                        .Query(buildingId.ToString())))
                 .Scroll(scrollTimeout));
 
             if (scroll.IsValid)
@@ -111,37 +123,37 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         }
 
         /// <summary>
-        /// Map each <see cref="OrganisationDocument"/> to a <see cref="FormalFrameworkOrganisation"/>
+        /// Map each <see cref="OrganisationDocument"/> to a <see cref="BuildingOrganisation"/>
         /// </summary>
         /// <param name="documents"></param>
-        /// <param name="formalFrameworkId"></param>
+        /// <param name="buildingId"></param>
         /// <param name="params"></param>
         /// <returns></returns>
-        public static IEnumerable<FormalFrameworkOrganisationVademecum> Map(
+        public static IEnumerable<BuildingOrganisation> Map(
             IEnumerable<OrganisationDocument> documents,
-            Guid formalFrameworkId,
+            Guid buildingId,
             ApiConfigurationSection @params)
         {
-            var formalFrameworkOrganisations = new List<FormalFrameworkOrganisationVademecum>();
+            var buildingOrganisations = new List<BuildingOrganisation>();
 
             foreach (var document in documents)
             {
-                var formalFrameworks = document
-                    .FormalFrameworks?
+                var buildings = document
+                    .Buildings?
                     .Where(x =>
-                        x.FormalFrameworkId == formalFrameworkId &&
+                        x.BuildingId == buildingId &&
                         (x.Validity == null ||
                          (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
                          (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))
                     .ToList();
 
-                if (formalFrameworks == null || !formalFrameworks.Any())
+                if (buildings == null || !buildings.Any())
                     continue;
 
-                formalFrameworkOrganisations.Add(new FormalFrameworkOrganisationVademecum(document, @params));
+                buildingOrganisations.Add(new BuildingOrganisation(document, @params));
             }
 
-            return formalFrameworkOrganisations;
+            return buildingOrganisations;
         }
 
         /// <summary>
@@ -150,8 +162,8 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         /// <param name="results"></param>
         /// <param name="sortingHeader"></param>
         /// <returns></returns>
-        public static IOrderedEnumerable<FormalFrameworkOrganisationVademecum> Sort(
-            IEnumerable<FormalFrameworkOrganisationVademecum> results,
+        public static IOrderedEnumerable<BuildingOrganisation> Sort(
+            IEnumerable<BuildingOrganisation> results,
             SortingHeader sortingHeader)
         {
             if (!sortingHeader.ShouldSort)
@@ -159,10 +171,18 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
 
             switch (sortingHeader.SortBy.ToLowerInvariant())
             {
-                case "vademecumkey":
+                case "legalform":
                     return sortingHeader.SortOrder == SortOrder.Ascending
-                        ? results.OrderBy(x => x.VademecumKey)
-                        : results.OrderByDescending(x => x.VademecumKey);
+                        ? results.OrderBy(x => x.LegalForm)
+                        : results.OrderByDescending(x => x.LegalForm);
+                case "policydomain":
+                    return sortingHeader.SortOrder == SortOrder.Ascending
+                        ? results.OrderBy(x => x.PolicyDomain)
+                        : results.OrderByDescending(x => x.PolicyDomain);
+                case "responsibleminister":
+                    return sortingHeader.SortOrder == SortOrder.Ascending
+                        ? results.OrderBy(x => x.ResponsibleMinister)
+                        : results.OrderByDescending(x => x.ResponsibleMinister);
                 case "organisationname":
                     return sortingHeader.SortOrder == SortOrder.Ascending
                         ? results.OrderBy(x => x.OrganisationName)

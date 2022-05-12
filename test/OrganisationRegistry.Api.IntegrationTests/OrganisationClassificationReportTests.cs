@@ -3,7 +3,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Backoffice.Report.Responses;
+    using Backoffice.Report.OrganisationClassificationReport;
     using FluentAssertions;
     using Microsoft.EntityFrameworkCore;
     using OrganisationRegistry.Infrastructure.Configuration;

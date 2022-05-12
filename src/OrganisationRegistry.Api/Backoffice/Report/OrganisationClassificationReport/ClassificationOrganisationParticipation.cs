@@ -1,16 +1,17 @@
-namespace OrganisationRegistry.Api.Backoffice.Report.Responses
+namespace OrganisationRegistry.Api.Backoffice.Report.OrganisationClassificationReport
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
-    using Infrastructure;
-    using Infrastructure.Search.Sorting;
     using Microsoft.EntityFrameworkCore;
+    using Infrastructure;
+    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Person;
-    using SqlServer.Infrastructure;
+    using OrganisationRegistry.SqlServer.Infrastructure;
     using SqlServer.Reporting;
+    using Participation;
 
     public class ClassificationOrganisationParticipation
     {

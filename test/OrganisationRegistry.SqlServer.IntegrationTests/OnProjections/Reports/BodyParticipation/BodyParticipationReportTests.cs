@@ -3,7 +3,8 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Api.Backoffice.Report.Responses;
+    using Api.Backoffice.Report.BodyParticipationReport;
+    using Api.Backoffice.Report.Participation;
     using Api.Infrastructure.Search.Filtering;
     using Api.Infrastructure.Search.Sorting;
     using FluentAssertions;

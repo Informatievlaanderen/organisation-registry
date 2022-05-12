@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Api.Backoffice.Report.Responses
+namespace OrganisationRegistry.Api.Backoffice.Report.Participation
 {
     public enum BodyParticipationCompliance
     {

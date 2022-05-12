@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Api.Backoffice.Report.Responses
+namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkParticipationReport
 {
     using System;
     using System.Collections.Generic;
@@ -6,13 +6,14 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
     using System.Linq;
     using System.Threading.Tasks;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
-    using Infrastructure;
-    using Infrastructure.Search.Sorting;
     using Microsoft.EntityFrameworkCore;
+    using Infrastructure;
+    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Person;
-    using SqlServer.Infrastructure;
+    using OrganisationRegistry.SqlServer.Infrastructure;
     using SqlServer.Reporting;
+    using Participation;
 
     public class ParticipationSummary
     {

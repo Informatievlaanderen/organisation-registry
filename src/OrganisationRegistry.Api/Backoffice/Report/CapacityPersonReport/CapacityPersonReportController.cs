@@ -1,59 +1,60 @@
-namespace OrganisationRegistry.Api.Backoffice.Report
+namespace OrganisationRegistry.Api.Backoffice.Report.CapacityPersonReport
 {
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using ElasticSearch.Client;
-    using Infrastructure;
-    using Infrastructure.Search.Pagination;
-    using Infrastructure.Search.Sorting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Infrastructure;
+    using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
+    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
+    using Search;
+    using ElasticSearch.Client;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
-    using Responses;
-    using Search;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
     [OrganisationRegistryRoute("reports")]
-    public class BuildingOrganisationReportController : OrganisationRegistryController
+    public class CapacityPersonReportController: OrganisationRegistryController
     {
         private const string ScrollTimeout = "30s";
         private const int ScrollSize = 500;
 
+        private readonly ILogger<SearchController> _log;
         private readonly ApiConfigurationSection _config;
 
-        public BuildingOrganisationReportController(
+        public CapacityPersonReportController(
             ICommandSender commandSender,
             IOptions<ApiConfigurationSection> config,
             ILogger<SearchController> log) : base(commandSender)
         {
+            _log = log;
             _config = config.Value;
         }
 
         /// <summary>
-        /// Get all organisations for a formal framework.
+        /// Get all persons for a capacity.
         /// </summary>
         /// <param name="elastic"></param>
-        /// <param name="id">A formal framework GUID identifier</param>
+        /// <param name="id">A capacity GUID identifier</param>
         /// <returns></returns>
-        [HttpGet("buildingorganisations/{id}")]
+        [HttpGet("capacitypersons/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetBuildingOrganisations(
+        public async Task<IActionResult> GetCapacityPersons(
             [FromServices] Elastic elastic,
             [FromRoute] Guid id)
         {
             var sorting = Request.ExtractSortingRequest();
 
             var orderedResults =
-                BuildingOrganisation.Sort(
-                        BuildingOrganisation.Map(
-                            await BuildingOrganisation.Search(
+                CapacityPerson.Sort(
+                        CapacityPerson.Map(
+                            await CapacityPerson.Search(
                                 elastic.ReadClient,
                                 id,
                                 ScrollSize,
@@ -77,7 +78,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report
                     pagination.RequestedPage,
                     pagination.ItemsPerPage,
                     orderedResults.Count,
-                    (int) Math.Ceiling((double) orderedResults.Count / pagination.ItemsPerPage)));
+                    (int)Math.Ceiling((double)orderedResults.Count / pagination.ItemsPerPage)));
 
             return Ok(
                 orderedResults

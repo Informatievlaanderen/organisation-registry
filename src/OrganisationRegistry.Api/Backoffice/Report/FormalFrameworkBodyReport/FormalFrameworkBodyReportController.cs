@@ -1,61 +1,56 @@
-namespace OrganisationRegistry.Api.Backoffice.Report
+namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkBodyReport
 {
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using ElasticSearch.Client;
-    using Infrastructure;
-    using Infrastructure.Search.Pagination;
-    using Infrastructure.Search.Sorting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Infrastructure;
+    using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
+    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
+    using ElasticSearch.Client;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
-    using Responses;
-    using Search;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
     [OrganisationRegistryRoute("reports")]
-    public class CapacityPersonReportController: OrganisationRegistryController
+    public class FormalFrameworkBodyReportController : OrganisationRegistryController
     {
+        private readonly ApiConfigurationSection _config;
+
         private const string ScrollTimeout = "30s";
         private const int ScrollSize = 500;
 
-        private readonly ILogger<SearchController> _log;
-        private readonly ApiConfigurationSection _config;
-
-        public CapacityPersonReportController(
+        public FormalFrameworkBodyReportController(
             ICommandSender commandSender,
-            IOptions<ApiConfigurationSection> config,
-            ILogger<SearchController> log) : base(commandSender)
+            IOptions<ApiConfigurationSection> config)
+            : base(commandSender)
         {
-            _log = log;
             _config = config.Value;
         }
 
         /// <summary>
-        /// Get all persons for a capacity.
+        /// Get all bodies for a formal framework.
         /// </summary>
         /// <param name="elastic"></param>
-        /// <param name="id">A capacity GUID identifier</param>
+        /// <param name="id">A formal framework GUID identifier</param>
         /// <returns></returns>
-        [HttpGet("capacitypersons/{id}")]
+        [HttpGet("formalframeworkbodies/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetCapacityPersons(
+        public async Task<IActionResult> GetFormalFrameworkBodies(
             [FromServices] Elastic elastic,
             [FromRoute] Guid id)
         {
             var sorting = Request.ExtractSortingRequest();
 
             var orderedResults =
-                CapacityPerson.Sort(
-                        CapacityPerson.Map(
-                            await CapacityPerson.Search(
+                FormalFrameworkBody.Sort(
+                        FormalFrameworkBody.Map(
+                            await FormalFrameworkBody.Search(
                                 elastic.ReadClient,
                                 id,
                                 ScrollSize,

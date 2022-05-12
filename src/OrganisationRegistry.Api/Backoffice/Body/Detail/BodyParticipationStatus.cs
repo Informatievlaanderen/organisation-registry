@@ -4,9 +4,9 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Detail
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.EntityFrameworkCore;
-    using Report.Responses;
     using OrganisationRegistry.Person;
     using OrganisationRegistry.SqlServer.Infrastructure;
+    using Report.BodyParticipationReport;
     using SqlServer.Reporting;
 
     public static class BodyParticipationStatus

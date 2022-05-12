@@ -1,18 +1,18 @@
-namespace OrganisationRegistry.Api.Backoffice.Report.Responses
+namespace OrganisationRegistry.Api.Backoffice.Report.OrganisationClassificationReport
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
     using System.Threading.Tasks;
-    using ElasticSearch.Organisations;
     using Infrastructure;
-    using Infrastructure.Search.Sorting;
+    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
+    using ElasticSearch.Organisations;
     using OrganisationRegistry.Infrastructure.Configuration;
     using Osc;
     using SortOrder = Infrastructure.Search.Sorting.SortOrder;
 
-    public class BuildingOrganisation
+    public class ClassificationOrganisation
     {
         [ExcludeFromCsv]
         public Guid? ParentOrganisationId { get; set; }
@@ -29,27 +29,20 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         [DisplayName("Korte naam")]
         public string OrganisationShortName { get; set; }
 
-        [DisplayName("OVO-nummer")]
-        public string OrganisationOvoNumber { get; set; }
+        [DisplayName("Franse naam")]
+        public string OrganisationNameFrench { get; set; }
 
-        [DisplayName("Data.Vlaanderen link")]
-        public Uri DataVlaanderenOrganisationUri { get; set; }
+        [DisplayName("Engelse naam")]
+        public string OrganisationNameEnglish { get; set; }
 
-        [DisplayName("Juridische vorm")]
-        public string LegalForm { get; set; }
-
-        [DisplayName("Beleidsdomein")]
-        public string PolicyDomain { get; set; }
-
-        [DisplayName("Bevoegde minister")]
-        public string ResponsibleMinister { get; set; }
+        [DisplayName("Duitse naam")]
+        public string OrganisationNameGerman { get; set; }
 
         /// <summary>
-        ///
         /// </summary>
         /// <param name="document"></param>
         /// <param name="params"></param>
-        public BuildingOrganisation(
+        public ClassificationOrganisation(
             OrganisationDocument document,
             ApiConfigurationSection @params)
         {
@@ -66,34 +59,31 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
             OrganisationId = document.Id;
             OrganisationName = document.Name;
             OrganisationShortName = document.ShortName;
-            OrganisationOvoNumber = document.OvoNumber;
 
-            DataVlaanderenOrganisationUri = new Uri(string.Format(@params.DataVlaanderenOrganisationUri, document.OvoNumber));
+            OrganisationNameFrench = document.Labels
+                ?.FirstOrDefault(x => x.LabelTypeId == @params.FrenchLabelTypeId)
+                ?.Value;
 
-            LegalForm = document.OrganisationClassifications
-                ?.FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.LegalFormClassificationTypeId)
-                ?.OrganisationClassificationName;
+            OrganisationNameEnglish = document.Labels
+                ?.FirstOrDefault(x => x.LabelTypeId == @params.EnglishLabelTypeId)
+                ?.Value;
 
-            PolicyDomain = document.OrganisationClassifications
-                ?.FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.PolicyDomainClassificationTypeId)
-                ?.OrganisationClassificationName;
-
-            ResponsibleMinister = document.OrganisationClassifications
-                ?.FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.ResponsibleMinisterClassificationTypeId)
-                ?.OrganisationClassificationName;
+            OrganisationNameGerman = document.Labels
+                ?.FirstOrDefault(x => x.LabelTypeId == @params.GermanLabelTypeId)
+                ?.Value;
         }
 
         /// <summary>
-        /// Scroll through all <see cref="OrganisationDocument"/> with a matching (and active) <see cref="FormalFramework"/>, and return entire dataset
+        /// Scroll through all <see cref="OrganisationDocument"/> with a matching (and active) <see cref="OrganisationClassification"/>, and return entire dataset
         /// </summary>
         /// <param name="client"></param>
-        /// <param name="buildingId"></param>
+        /// <param name="organisationClassificationId"></param>
         /// <param name="scrollSize"></param>
         /// <param name="scrollTimeout"></param>
         /// <returns></returns>
         public static async Task<IList<OrganisationDocument>> Search(
             IOpenSearchClient client,
-            Guid buildingId,
+            Guid organisationClassificationId,
             int scrollSize,
             string scrollTimeout)
         {
@@ -104,8 +94,8 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
                 .Size(scrollSize)
                 .Query(q => q
                     .Match(match => match
-                        .Field(f => f.Buildings.Single().BuildingId)
-                        .Query(buildingId.ToString())))
+                        .Field(f => f.OrganisationClassifications.Single().OrganisationClassificationId)
+                        .Query(organisationClassificationId.ToString())))
                 .Scroll(scrollTimeout));
 
             if (scroll.IsValid)
@@ -123,47 +113,46 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         }
 
         /// <summary>
-        /// Map each <see cref="OrganisationDocument"/> to a <see cref="BuildingOrganisation"/>
+        /// Map each <see cref="OrganisationDocument"/> to a <see cref="ClassificationOrganisation"/>
         /// </summary>
         /// <param name="documents"></param>
-        /// <param name="buildingId"></param>
+        /// <param name="organisationClassificationId"></param>
         /// <param name="params"></param>
         /// <returns></returns>
-        public static IEnumerable<BuildingOrganisation> Map(
+        public static IEnumerable<ClassificationOrganisation> Map(
             IEnumerable<OrganisationDocument> documents,
-            Guid buildingId,
+            Guid organisationClassificationId,
             ApiConfigurationSection @params)
         {
-            var buildingOrganisations = new List<BuildingOrganisation>();
+            var classificationOrganisations = new List<ClassificationOrganisation>();
 
             foreach (var document in documents)
             {
-                var buildings = document
-                    .Buildings?
+                var classifications = document
+                    .OrganisationClassifications?
                     .Where(x =>
-                        x.BuildingId == buildingId &&
+                        x.OrganisationClassificationId == organisationClassificationId &&
                         (x.Validity == null ||
                          (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
                          (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))
                     .ToList();
 
-                if (buildings == null || !buildings.Any())
+                if (classifications == null || !classifications.Any())
                     continue;
 
-                buildingOrganisations.Add(new BuildingOrganisation(document, @params));
+                classificationOrganisations.Add(new ClassificationOrganisation(document, @params));
             }
 
-            return buildingOrganisations;
+            return classificationOrganisations;
         }
 
         /// <summary>
-        ///
         /// </summary>
         /// <param name="results"></param>
         /// <param name="sortingHeader"></param>
         /// <returns></returns>
-        public static IOrderedEnumerable<BuildingOrganisation> Sort(
-            IEnumerable<BuildingOrganisation> results,
+        public static IOrderedEnumerable<ClassificationOrganisation> Sort(
+            IEnumerable<ClassificationOrganisation> results,
             SortingHeader sortingHeader)
         {
             if (!sortingHeader.ShouldSort)
@@ -171,18 +160,18 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
 
             switch (sortingHeader.SortBy.ToLowerInvariant())
             {
-                case "legalform":
+                case "organisationnamefrench":
                     return sortingHeader.SortOrder == SortOrder.Ascending
-                        ? results.OrderBy(x => x.LegalForm)
-                        : results.OrderByDescending(x => x.LegalForm);
-                case "policydomain":
+                        ? results.OrderBy(x => x.OrganisationNameFrench)
+                        : results.OrderByDescending(x => x.OrganisationNameFrench);
+                case "organisationnameenglish":
                     return sortingHeader.SortOrder == SortOrder.Ascending
-                        ? results.OrderBy(x => x.PolicyDomain)
-                        : results.OrderByDescending(x => x.PolicyDomain);
-                case "responsibleminister":
+                        ? results.OrderBy(x => x.OrganisationNameEnglish)
+                        : results.OrderByDescending(x => x.OrganisationNameEnglish);
+                case "organisationnamegerman":
                     return sortingHeader.SortOrder == SortOrder.Ascending
-                        ? results.OrderBy(x => x.ResponsibleMinister)
-                        : results.OrderByDescending(x => x.ResponsibleMinister);
+                        ? results.OrderBy(x => x.OrganisationNameGerman)
+                        : results.OrderByDescending(x => x.OrganisationNameGerman);
                 case "organisationname":
                     return sortingHeader.SortOrder == SortOrder.Ascending
                         ? results.OrderBy(x => x.OrganisationName)

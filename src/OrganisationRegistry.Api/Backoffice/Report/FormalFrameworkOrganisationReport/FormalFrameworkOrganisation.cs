@@ -1,11 +1,11 @@
-namespace OrganisationRegistry.Api.Backoffice.Report.Responses
+namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkOrganisationReport
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
     using ElasticSearch.Organisations;
-    using Infrastructure.Search.Sorting;
     using OrganisationRegistry.Infrastructure.Configuration;
     using Osc;
     using SortOrder = Infrastructure.Search.Sorting.SortOrder;

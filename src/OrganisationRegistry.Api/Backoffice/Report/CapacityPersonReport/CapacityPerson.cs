@@ -1,13 +1,13 @@
-namespace OrganisationRegistry.Api.Backoffice.Report.Responses
+namespace OrganisationRegistry.Api.Backoffice.Report.CapacityPersonReport
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
     using System.Threading.Tasks;
-    using ElasticSearch.Organisations;
     using Infrastructure;
-    using Infrastructure.Search.Sorting;
+    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
+    using ElasticSearch.Organisations;
     using OrganisationRegistry.Infrastructure.Configuration;
     using Osc;
     using SortOrder = Infrastructure.Search.Sorting.SortOrder;
