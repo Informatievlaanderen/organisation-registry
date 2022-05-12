@@ -1,3 +1,10 @@
+## [1.179.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.179.0...v1.179.1) (2022-05-12)
+
+
+### Bug Fixes
+
+* or-931 add showAll to report ([298cdcb](https://github.com/informatievlaanderen/organisation-registry/commit/298cdcb2e5d8d644321862af69f683a235b2b40d))
+
 # [1.179.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.178.2...v1.179.0) (2022-05-12)
 
 
