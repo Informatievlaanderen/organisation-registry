@@ -16,12 +16,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-
     using OrganisationRegistry.Organisation.Events;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAMainOrganisationBuildingToRegularBuilding : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationBuilding>
+    public class
+        WhenUpdatingAMainOrganisationBuildingToRegularBuilding : Specification<UpdateOrganisationBuildingCommandHandler,
+            UpdateOrganisationBuilding>
     {
         private Guid _organisationId;
         private Guid _buildingId;
@@ -31,17 +32,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         private DateTime _validFrom;
         private readonly DateTimeProviderStub _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
 
-        protected override OrganisationCommandHandlers BuildHandler()
-        {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+        protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<UpdateOrganisationBuildingCommandHandler>>().Object,
                 Session,
-                new SequentialOvoNumberGenerator(),
-                null,
-                _dateTimeProviderStub,
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
-        }
+                _dateTimeProviderStub);
+
+        protected override IUser User
+            => new UserBuilder().Build();
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -55,9 +53,28 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
 
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(
+                    _organisationId,
+                    "Kind en Gezin",
+                    "OVO000012345",
+                    "K&G",
+                    Article.None,
+                    "Kindjes en gezinnetjes",
+                    new List<Purpose>(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null),
                 new BuildingCreated(_buildingId, "Gebouw A", 12345),
-                new OrganisationBuildingAdded(_organisationId, _organisationBuildingId, _buildingId, "Gebouw A", true, _validFrom, _validTo),
+                new OrganisationBuildingAdded(
+                    _organisationId,
+                    _organisationBuildingId,
+                    _buildingId,
+                    "Gebouw A",
+                    true,
+                    _validFrom,
+                    _validTo),
                 new MainBuildingAssignedToOrganisation(_organisationId, _buildingId, _organisationBuildingId)
             };
         }
@@ -73,7 +90,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
                 new ValidTo(_validTo));
         }
 
-        protected override int ExpectedNumberOfEvents => 2;
+        protected override int ExpectedNumberOfEvents
+            => 2;
 
         [Fact]
         public void UpdatesTheOrganisationBuilding()
@@ -91,11 +109,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         [Fact]
         public void ClearsTheMainBuilding()
         {
-            var mainBuildingAssignedToOrganisation = PublishedEvents[1].UnwrapBody<MainBuildingClearedFromOrganisation>();
+            var mainBuildingAssignedToOrganisation =
+                PublishedEvents[1].UnwrapBody<MainBuildingClearedFromOrganisation>();
             mainBuildingAssignedToOrganisation.OrganisationId.Should().Be(_organisationId);
             mainBuildingAssignedToOrganisation.MainBuildingId.Should().Be(_buildingId);
         }
 
-        public WhenUpdatingAMainOrganisationBuildingToRegularBuilding(ITestOutputHelper helper) : base(helper) { }
+        public WhenUpdatingAMainOrganisationBuildingToRegularBuilding(ITestOutputHelper helper) : base(helper)
+        {
+        }
     }
 }
