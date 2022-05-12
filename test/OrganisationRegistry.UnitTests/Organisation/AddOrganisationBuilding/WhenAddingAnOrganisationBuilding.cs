@@ -16,12 +16,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-
     using OrganisationRegistry.Organisation.Events;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingAMainOrganisationBuilding : OldSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationBuilding>
+    public class
+        WhenAddingAMainOrganisationBuilding : Specification<AddOrganisationBuildingCommandHandler,
+            AddOrganisationBuilding>
     {
         private Guid _organisationId;
         private Guid _buildingId;
@@ -31,17 +32,17 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
         private DateTime _validFrom;
         private DateTimeProviderStub _dateTimeProviderStub;
 
-        protected override OrganisationCommandHandlers BuildHandler()
-        {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+        protected override IUser User
+            => new UserBuilder().Build();
+
+
+        protected override AddOrganisationBuildingCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<AddOrganisationBuildingCommandHandler>>().Object,
                 Session,
-                new SequentialOvoNumberGenerator(),
-                null,
-                _dateTimeProviderStub,
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
-        }
+                _dateTimeProviderStub
+            );
+
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -56,7 +57,19 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
 
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(
+                    _organisationId,
+                    "Kind en Gezin",
+                    "OVO000012345",
+                    "K&G",
+                    Article.None,
+                    "Kindjes en gezinnetjes",
+                    new List<Purpose>(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null),
                 new BuildingCreated(_buildingId, "Gebouw A", 1234)
             };
         }
@@ -72,7 +85,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
                 new ValidTo(_validTo));
         }
 
-        protected override int ExpectedNumberOfEvents => 2;
+        protected override int ExpectedNumberOfEvents
+            => 2;
 
         [Fact]
         public void AddsAnOrganisationBuilding()
@@ -93,6 +107,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
             organisationBuildingAdded.MainBuildingId.Should().Be(_buildingId);
         }
 
-        public WhenAddingAMainOrganisationBuilding(ITestOutputHelper helper) : base(helper) { }
+        public WhenAddingAMainOrganisationBuilding(ITestOutputHelper helper) : base(helper)
+        {
+        }
     }
 }

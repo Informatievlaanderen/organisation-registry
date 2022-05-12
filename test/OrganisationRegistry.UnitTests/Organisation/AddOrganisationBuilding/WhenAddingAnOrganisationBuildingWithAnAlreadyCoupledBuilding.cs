@@ -4,24 +4,22 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
     using System.Collections.Generic;
     using Building;
     using Building.Events;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
-    using Tests.Shared;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingTheSameBuildingTwice: OldExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationBuilding>
+    public class
+        WhenAddingTheSameBuildingTwice : ExceptionSpecification<AddOrganisationBuildingCommandHandler,
+            AddOrganisationBuilding>
     {
         private Guid _organisationId;
         private Guid _buildingId;
@@ -30,17 +28,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
         private DateTime _validTo;
         private DateTime _validFrom;
 
-        protected override OrganisationCommandHandlers BuildHandler()
-        {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+        protected override AddOrganisationBuildingCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<AddOrganisationBuildingCommandHandler>>().Object,
                 Session,
-                new SequentialOvoNumberGenerator(),
-                null,
-                new DateTimeProvider(),
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
-        }
+                new DateTimeProvider());
+
+        protected override IUser User
+            => new UserBuilder().Build();
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -53,10 +48,28 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
 
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(
+                    _organisationId,
+                    "Kind en Gezin",
+                    "OVO000012345",
+                    "K&G",
+                    Article.None,
+                    "Kindjes en gezinnetjes",
+                    new List<Purpose>(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null),
                 new BuildingCreated(_buildingId, "Gebouw A", 1234),
-                new OrganisationBuildingAdded(_organisationId, _organisationBuildingId, _buildingId, "Gebouw A",
-                    _isMainBuilding, _validFrom, _validTo)
+                new OrganisationBuildingAdded(
+                    _organisationId,
+                    _organisationBuildingId,
+                    _buildingId,
+                    "Gebouw A",
+                    _isMainBuilding,
+                    _validFrom,
+                    _validTo)
             };
         }
 
@@ -71,7 +84,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
                 new ValidTo(_validTo));
         }
 
-        protected override int ExpectedNumberOfEvents => 0;
+        protected override int ExpectedNumberOfEvents
+            => 0;
 
         [Fact]
         public void ThrowsAnException()
@@ -80,6 +94,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
             Exception.Message.Should().Be("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.");
         }
 
-        public WhenAddingTheSameBuildingTwice(ITestOutputHelper helper) : base(helper) { }
+        public WhenAddingTheSameBuildingTwice(ITestOutputHelper helper) : base(helper)
+        {
+        }
     }
 }

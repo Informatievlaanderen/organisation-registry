@@ -4,7 +4,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
     using System.Collections.Generic;
     using Building;
     using Building.Events;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using OrganisationRegistry.Infrastructure.Events;
@@ -15,13 +14,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
-
     using OrganisationRegistry.Organisation.Exceptions;
-    using Tests.Shared;
     using Xunit.Abstractions;
 
-    public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : OldExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationBuilding>
+    public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : ExceptionSpecification<
+        AddOrganisationBuildingCommandHandler, AddOrganisationBuilding>
     {
         private OrganisationId _organisationId;
         private BuildingId _buildingAId;
@@ -31,17 +28,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
         private DateTime _validFrom;
         private BuildingId _buildingBId;
 
-        protected override OrganisationCommandHandlers BuildHandler()
-        {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
+        protected override AddOrganisationBuildingCommandHandler BuildHandler()
+            => new (
+                new Mock<ILogger<AddOrganisationBuildingCommandHandler>>().Object,
                 Session,
-                new SequentialOvoNumberGenerator(),
-                null,
-                new DateTimeProvider(),
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
-        }
+                new DateTimeProvider());
+
+        protected override IUser User
+            => new UserBuilder().Build();
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -55,10 +49,29 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
 
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(
+                    _organisationId,
+                    "Kind en Gezin",
+                    "OVO000012345",
+                    "K&G",
+                    Article.None,
+                    "Kindjes en gezinnetjes",
+                    new List<Purpose>(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null),
                 new BuildingCreated(_buildingAId, "Gebouw A", 1234),
                 new BuildingCreated(_buildingBId, "Gebouw A", 1234),
-                new OrganisationBuildingAdded(_organisationId, _organisationBuildingId, _buildingAId, "Gebouw A", _isMainBuilding, _validFrom, _validTo)
+                new OrganisationBuildingAdded(
+                    _organisationId,
+                    _organisationBuildingId,
+                    _buildingAId,
+                    "Gebouw A",
+                    _isMainBuilding,
+                    _validFrom,
+                    _validTo)
             };
         }
 
@@ -73,7 +86,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
                 new ValidTo(_validTo));
         }
 
-        protected override int ExpectedNumberOfEvents => 0;
+        protected override int ExpectedNumberOfEvents
+            => 0;
 
         [Fact]
         public void ThrowsAnException()
@@ -82,6 +96,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
             Exception.Message.Should().Be("Deze organisatie heeft reeds een hoofdgebouw binnen deze periode.");
         }
 
-        public WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne(ITestOutputHelper helper) : base(helper) { }
+        public WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne(ITestOutputHelper helper) : base(helper)
+        {
+        }
     }
 }
