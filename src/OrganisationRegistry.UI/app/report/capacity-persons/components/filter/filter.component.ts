@@ -1,59 +1,60 @@
-﻿import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+﻿import {Component, EventEmitter, Input, Output, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
-import { atLeastOne } from 'core/validation';
-import { SearchEvent } from 'core/search';
+import {atLeastOne} from 'core/validation';
+import {SearchEvent} from 'core/search';
 
-import { CapacityFilter } from 'services/capacities';
+import {CapacityFilter} from 'services/capacities';
 
 @Component({
-    selector: 'ww-report-capacity-filter',
-    templateUrl: 'filter.template.html',
-    styleUrls: ['filter.style.css']
+  selector: 'ww-report-capacity-filter',
+  templateUrl: 'filter.template.html',
+  styleUrls: ['filter.style.css']
 })
 export class CapacityFilterComponent implements OnInit {
-    @Output() filter: EventEmitter<SearchEvent<CapacityFilter>> = new EventEmitter<SearchEvent<CapacityFilter>>();
+  @Output() filter: EventEmitter<SearchEvent<CapacityFilter>> = new EventEmitter<SearchEvent<CapacityFilter>>();
 
-    public form: FormGroup;
-    public filterActive: boolean = false;
+  public form: FormGroup;
+  public filterActive: boolean = false;
 
-    get isFormValid() {
-        return this.form.enabled && this.form.valid;
+  get isFormValid() {
+    return this.form.enabled && this.form.valid;
+  }
+
+  constructor(formBuilder: FormBuilder) {
+    this.form = formBuilder.group({
+      name: ['', Validators.nullValidator],
+      showAll: [false]
+    });
+    this.form.setValidators(
+      atLeastOne(
+        this.form.get('name')
+      ));
+  }
+
+  @Input('isBusy')
+  set name(isBusy: boolean) {
+    if (isBusy) {
+      this.form.disable();
+    } else {
+      this.form.enable();
     }
+  }
 
-    constructor(formBuilder: FormBuilder) {
-        this.form = formBuilder.group({
-            name: ['', Validators.nullValidator]
-        });
-        this.form.setValidators(
-            atLeastOne(
-                this.form.get('name')
-            ));
-    }
+  ngOnInit() {
+    this.form.setValue(new CapacityFilter());
+  }
 
-    @Input('isBusy')
-    set name(isBusy: boolean) {
-        if (isBusy) {
-            this.form.disable();
-        } else {
-            this.form.enable();
-        }
-    }
+  resetForm() {
+    this.filterActive = false;
+    this.form.reset({
+      name: ''
+    });
+    this.filter.emit(new SearchEvent<CapacityFilter>(this.form.value));
+  }
 
-    ngOnInit() {
-        this.form.setValue(new CapacityFilter());
-    }
-
-    resetForm() {
-        this.filterActive = false;
-        this.form.reset({
-            name: ''
-        });
-        this.filter.emit(new SearchEvent<CapacityFilter>(this.form.value));
-    }
-
-    filterForm(value: CapacityFilter) {
-        this.filterActive = true;
-        this.filter.emit(new SearchEvent<CapacityFilter>(value));
-    }
+  filterForm(value: CapacityFilter) {
+    this.filterActive = true;
+    this.filter.emit(new SearchEvent<CapacityFilter>(value));
+  }
 }
