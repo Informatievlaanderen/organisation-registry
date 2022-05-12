@@ -2,7 +2,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
 {
     using System;
     using System.Collections.Generic;
-    using Backoffice.Report.Responses;
+    using Backoffice.Report.FormalFrameworkOrganisationReport;
     using ElasticSearch.Common;
     using ElasticSearch.Organisations;
     using FluentAssertions;

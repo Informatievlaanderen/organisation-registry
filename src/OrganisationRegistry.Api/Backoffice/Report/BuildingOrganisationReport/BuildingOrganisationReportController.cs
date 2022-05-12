@@ -1,57 +1,58 @@
-namespace OrganisationRegistry.Api.Backoffice.Report
+namespace OrganisationRegistry.Api.Backoffice.Report.BuildingOrganisationReport
 {
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using ElasticSearch.Client;
-    using Infrastructure;
-    using Infrastructure.Search.Pagination;
-    using Infrastructure.Search.Sorting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Infrastructure;
+    using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
+    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
+    using Search;
+    using ElasticSearch.Client;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
-    using Responses;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]
     [OrganisationRegistryRoute("reports")]
-    public class FormalFrameworkBodyReportController : OrganisationRegistryController
+    public class BuildingOrganisationReportController : OrganisationRegistryController
     {
-        private readonly ApiConfigurationSection _config;
-
         private const string ScrollTimeout = "30s";
         private const int ScrollSize = 500;
 
-        public FormalFrameworkBodyReportController(
+        private readonly ApiConfigurationSection _config;
+
+        public BuildingOrganisationReportController(
             ICommandSender commandSender,
-            IOptions<ApiConfigurationSection> config)
-            : base(commandSender)
+            IOptions<ApiConfigurationSection> config,
+            ILogger<SearchController> log) : base(commandSender)
         {
             _config = config.Value;
         }
 
         /// <summary>
-        /// Get all bodies for a formal framework.
+        /// Get all organisations for a formal framework.
         /// </summary>
         /// <param name="elastic"></param>
         /// <param name="id">A formal framework GUID identifier</param>
         /// <returns></returns>
-        [HttpGet("formalframeworkbodies/{id}")]
+        [HttpGet("buildingorganisations/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetFormalFrameworkBodies(
+        public async Task<IActionResult> GetBuildingOrganisations(
             [FromServices] Elastic elastic,
             [FromRoute] Guid id)
         {
             var sorting = Request.ExtractSortingRequest();
 
             var orderedResults =
-                FormalFrameworkBody.Sort(
-                        FormalFrameworkBody.Map(
-                            await FormalFrameworkBody.Search(
+                BuildingOrganisation.Sort(
+                        BuildingOrganisation.Map(
+                            await BuildingOrganisation.Search(
                                 elastic.ReadClient,
                                 id,
                                 ScrollSize,
@@ -75,7 +76,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report
                     pagination.RequestedPage,
                     pagination.ItemsPerPage,
                     orderedResults.Count,
-                    (int)Math.Ceiling((double)orderedResults.Count / pagination.ItemsPerPage)));
+                    (int) Math.Ceiling((double) orderedResults.Count / pagination.ItemsPerPage)));
 
             return Ok(
                 orderedResults

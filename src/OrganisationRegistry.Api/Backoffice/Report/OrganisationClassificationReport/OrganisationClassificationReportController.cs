@@ -1,24 +1,23 @@
-namespace OrganisationRegistry.Api.Backoffice.Report
+namespace OrganisationRegistry.Api.Backoffice.Report.OrganisationClassificationReport
 {
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using ElasticSearch.Client;
-    using Infrastructure;
-    using Infrastructure.Search.Filtering;
-    using Infrastructure.Search.Pagination;
-    using Infrastructure.Search.Sorting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassification.Queries;
+    using Infrastructure;
+    using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
+    using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
+    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
+    using Search;
+    using ElasticSearch.Client;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
-    using Parameters.OrganisationClassification.Queries;
-    using Responses;
-    using Search;
-    using SqlServer.Infrastructure;
+    using OrganisationRegistry.SqlServer.Infrastructure;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]

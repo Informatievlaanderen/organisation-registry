@@ -1,18 +1,17 @@
-namespace OrganisationRegistry.Api.Backoffice.Report
+namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkParticipationReport
 {
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using Infrastructure;
-    using Infrastructure.Search.Pagination;
-    using Infrastructure.Search.Sorting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
+    using Infrastructure;
+    using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
+    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
-    using Responses;
-    using SqlServer.Infrastructure;
+    using OrganisationRegistry.SqlServer.Infrastructure;
 
     [ApiVersion("1.0")]
     [AdvertiseApiVersions("1.0")]

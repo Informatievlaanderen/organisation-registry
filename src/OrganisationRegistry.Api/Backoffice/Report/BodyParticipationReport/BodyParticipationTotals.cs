@@ -1,7 +1,8 @@
-namespace OrganisationRegistry.Api.Backoffice.Report.Responses
+namespace OrganisationRegistry.Api.Backoffice.Report.BodyParticipationReport
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Participation;
 
     public class BodyParticipationTotals
     {

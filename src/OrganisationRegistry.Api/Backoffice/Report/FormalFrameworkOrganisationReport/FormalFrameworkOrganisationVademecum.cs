@@ -1,18 +1,18 @@
-namespace OrganisationRegistry.Api.Backoffice.Report.Responses
+namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkOrganisationReport
 {
     using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.Linq;
     using System.Threading.Tasks;
-    using ElasticSearch.Organisations;
     using Infrastructure;
-    using Infrastructure.Search.Sorting;
+    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
+    using ElasticSearch.Organisations;
     using OrganisationRegistry.Infrastructure.Configuration;
     using Osc;
     using SortOrder = Infrastructure.Search.Sorting.SortOrder;
 
-    public class ClassificationOrganisation
+    public class FormalFrameworkOrganisationVademecum
     {
         [ExcludeFromCsv]
         public Guid? ParentOrganisationId { get; set; }
@@ -29,20 +29,21 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         [DisplayName("Korte naam")]
         public string OrganisationShortName { get; set; }
 
-        [DisplayName("Franse naam")]
-        public string OrganisationNameFrench { get; set; }
+        [DisplayName("OVO-nummer")]
+        public string OrganisationOvoNumber { get; set; }
 
-        [DisplayName("Engelse naam")]
-        public string OrganisationNameEnglish { get; set; }
+        [DisplayName("Data.Vlaanderen link")]
+        public Uri DataVlaanderenOrganisationUri { get; set; }
 
-        [DisplayName("Duitse naam")]
-        public string OrganisationNameGerman { get; set; }
+        [DisplayName("Vademecum sleutel")]
+        public string VademecumKey { get; set; }
 
         /// <summary>
+        ///
         /// </summary>
         /// <param name="document"></param>
         /// <param name="params"></param>
-        public ClassificationOrganisation(
+        public FormalFrameworkOrganisationVademecum(
             OrganisationDocument document,
             ApiConfigurationSection @params)
         {
@@ -59,31 +60,28 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
             OrganisationId = document.Id;
             OrganisationName = document.Name;
             OrganisationShortName = document.ShortName;
+            OrganisationOvoNumber = document.OvoNumber;
 
-            OrganisationNameFrench = document.Labels
-                ?.FirstOrDefault(x => x.LabelTypeId == @params.FrenchLabelTypeId)
-                ?.Value;
+            DataVlaanderenOrganisationUri = new Uri(string.Format(@params.DataVlaanderenOrganisationUri, document.OvoNumber));
 
-            OrganisationNameEnglish = document.Labels
-                ?.FirstOrDefault(x => x.LabelTypeId == @params.EnglishLabelTypeId)
-                ?.Value;
-
-            OrganisationNameGerman = document.Labels
-                ?.FirstOrDefault(x => x.LabelTypeId == @params.GermanLabelTypeId)
+            VademecumKey = document.Keys
+                ?.FirstOrDefault(x => x.KeyTypeId == @params.VademecumKeyTypeId && (x.Validity == null ||
+                                      (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
+                                      (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))
                 ?.Value;
         }
 
         /// <summary>
-        /// Scroll through all <see cref="OrganisationDocument"/> with a matching (and active) <see cref="OrganisationClassification"/>, and return entire dataset
+        /// Scroll through all <see cref="OrganisationDocument"/> with a matching (and active) <see cref="FormalFramework"/>, and return entire dataset
         /// </summary>
         /// <param name="client"></param>
-        /// <param name="organisationClassificationId"></param>
+        /// <param name="formalFrameworkId"></param>
         /// <param name="scrollSize"></param>
         /// <param name="scrollTimeout"></param>
         /// <returns></returns>
         public static async Task<IList<OrganisationDocument>> Search(
             IOpenSearchClient client,
-            Guid organisationClassificationId,
+            Guid formalFrameworkId,
             int scrollSize,
             string scrollTimeout)
         {
@@ -94,8 +92,8 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
                 .Size(scrollSize)
                 .Query(q => q
                     .Match(match => match
-                        .Field(f => f.OrganisationClassifications.Single().OrganisationClassificationId)
-                        .Query(organisationClassificationId.ToString())))
+                        .Field(f => f.FormalFrameworks.Single().FormalFrameworkId)
+                        .Query(formalFrameworkId.ToString())))
                 .Scroll(scrollTimeout));
 
             if (scroll.IsValid)
@@ -113,46 +111,47 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
         }
 
         /// <summary>
-        /// Map each <see cref="OrganisationDocument"/> to a <see cref="ClassificationOrganisation"/>
+        /// Map each <see cref="OrganisationDocument"/> to a <see cref="FormalFrameworkOrganisation"/>
         /// </summary>
         /// <param name="documents"></param>
-        /// <param name="organisationClassificationId"></param>
+        /// <param name="formalFrameworkId"></param>
         /// <param name="params"></param>
         /// <returns></returns>
-        public static IEnumerable<ClassificationOrganisation> Map(
+        public static IEnumerable<FormalFrameworkOrganisationVademecum> Map(
             IEnumerable<OrganisationDocument> documents,
-            Guid organisationClassificationId,
+            Guid formalFrameworkId,
             ApiConfigurationSection @params)
         {
-            var classificationOrganisations = new List<ClassificationOrganisation>();
+            var formalFrameworkOrganisations = new List<FormalFrameworkOrganisationVademecum>();
 
             foreach (var document in documents)
             {
-                var classifications = document
-                    .OrganisationClassifications?
+                var formalFrameworks = document
+                    .FormalFrameworks?
                     .Where(x =>
-                        x.OrganisationClassificationId == organisationClassificationId &&
+                        x.FormalFrameworkId == formalFrameworkId &&
                         (x.Validity == null ||
                          (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
                          (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))
                     .ToList();
 
-                if (classifications == null || !classifications.Any())
+                if (formalFrameworks == null || !formalFrameworks.Any())
                     continue;
 
-                classificationOrganisations.Add(new ClassificationOrganisation(document, @params));
+                formalFrameworkOrganisations.Add(new FormalFrameworkOrganisationVademecum(document, @params));
             }
 
-            return classificationOrganisations;
+            return formalFrameworkOrganisations;
         }
 
         /// <summary>
+        ///
         /// </summary>
         /// <param name="results"></param>
         /// <param name="sortingHeader"></param>
         /// <returns></returns>
-        public static IOrderedEnumerable<ClassificationOrganisation> Sort(
-            IEnumerable<ClassificationOrganisation> results,
+        public static IOrderedEnumerable<FormalFrameworkOrganisationVademecum> Sort(
+            IEnumerable<FormalFrameworkOrganisationVademecum> results,
             SortingHeader sortingHeader)
         {
             if (!sortingHeader.ShouldSort)
@@ -160,18 +159,10 @@ namespace OrganisationRegistry.Api.Backoffice.Report.Responses
 
             switch (sortingHeader.SortBy.ToLowerInvariant())
             {
-                case "organisationnamefrench":
+                case "vademecumkey":
                     return sortingHeader.SortOrder == SortOrder.Ascending
-                        ? results.OrderBy(x => x.OrganisationNameFrench)
-                        : results.OrderByDescending(x => x.OrganisationNameFrench);
-                case "organisationnameenglish":
-                    return sortingHeader.SortOrder == SortOrder.Ascending
-                        ? results.OrderBy(x => x.OrganisationNameEnglish)
-                        : results.OrderByDescending(x => x.OrganisationNameEnglish);
-                case "organisationnamegerman":
-                    return sortingHeader.SortOrder == SortOrder.Ascending
-                        ? results.OrderBy(x => x.OrganisationNameGerman)
-                        : results.OrderByDescending(x => x.OrganisationNameGerman);
+                        ? results.OrderBy(x => x.VademecumKey)
+                        : results.OrderByDescending(x => x.VademecumKey);
                 case "organisationname":
                     return sortingHeader.SortOrder == SortOrder.Ascending
                         ? results.OrderBy(x => x.OrganisationName)

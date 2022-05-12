@@ -1,7 +1,7 @@
-namespace OrganisationRegistry.Api.Backoffice.Report
+namespace OrganisationRegistry.Api.Backoffice.Report.FunctionTypeParticipationReport
 {
-    using Infrastructure;
     using Microsoft.AspNetCore.Mvc;
+    using Infrastructure;
     using OrganisationRegistry.Infrastructure.Commands;
 
     [ApiVersion("1.0")]

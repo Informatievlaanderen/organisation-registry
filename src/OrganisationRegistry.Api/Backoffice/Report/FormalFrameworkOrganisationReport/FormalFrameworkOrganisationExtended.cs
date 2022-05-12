@@ -1,10 +1,10 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Report.Responses
+﻿namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkOrganisationReport
 {
     using System;
     using System.ComponentModel;
     using System.Linq;
-    using ElasticSearch.Organisations;
     using Infrastructure;
+    using ElasticSearch.Organisations;
     using OrganisationRegistry.Infrastructure.Configuration;
 
     public class FormalFrameworkOrganisationExtended : FormalFrameworkOrganisationBase
