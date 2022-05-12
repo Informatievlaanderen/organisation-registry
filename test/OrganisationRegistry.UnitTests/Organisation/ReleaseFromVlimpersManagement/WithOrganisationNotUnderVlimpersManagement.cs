@@ -12,7 +12,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.ReleaseFromVlimpersManagem
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Events;
-    using OrganisationRegistry.Organisation.Vlimpers;
     using TerminateOrganisation;
     using Xunit;
     using Xunit.Abstractions;
@@ -57,9 +56,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.ReleaseFromVlimpersManagem
         }
 
         protected override ReleaseFromVlimpersManagement When()
-            => new ReleaseFromVlimpersManagement(
-                    _organisationId)
-                .WithUserRole(Role.AlgemeenBeheerder);
+            => new(_organisationId);
 
         protected override ReleaseFromVlimpersManagementCommandHandler BuildHandler()
             => new(
