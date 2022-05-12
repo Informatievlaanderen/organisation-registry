@@ -5,14 +5,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
     using System.Linq;
     using Building;
     using Building.Events;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
-    using Tests.Shared;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
@@ -30,22 +27,24 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         private bool _isMainBuilding;
         private DateTime _validTo;
         private DateTime _validFrom;
-        private DateTimeProviderStub _dateTimeProvider;
+        private DateTimeProviderStub _dateTimeProvider = new DateTimeProviderStub(DateTime.Today);
+
+
+        public WhenUpdatingAnActiveMainOrganisationBuildingToAnInactiveOne(ITestOutputHelper helper) : base(helper)
+        {
+        }
 
         protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
-        {
-            return new UpdateOrganisationBuildingCommandHandler(
+            => new(
                 new Mock<ILogger<UpdateOrganisationBuildingCommandHandler>>().Object,
                 Session,
                 _dateTimeProvider);
-        }
 
         protected override IUser User
             => new UserBuilder().Build();
 
         protected override IEnumerable<IEvent> Given()
         {
-            _dateTimeProvider = new DateTimeProviderStub(DateTime.Today);
             _organisationId = Guid.NewGuid();
 
             _buildingId = Guid.NewGuid();
@@ -117,10 +116,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
             var organisationBuildingUpdated = PublishedEvents[1].UnwrapBody<MainBuildingClearedFromOrganisation>();
             organisationBuildingUpdated.OrganisationId.Should().Be(_organisationId);
             organisationBuildingUpdated.MainBuildingId.Should().Be(_buildingId);
-        }
-
-        public WhenUpdatingAnActiveMainOrganisationBuildingToAnInactiveOne(ITestOutputHelper helper) : base(helper)
-        {
         }
     }
 }

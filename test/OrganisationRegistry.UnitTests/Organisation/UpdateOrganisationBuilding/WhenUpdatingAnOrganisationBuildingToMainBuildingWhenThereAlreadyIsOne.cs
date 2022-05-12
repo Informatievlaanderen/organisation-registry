@@ -30,13 +30,16 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         private Guid _buildingBId;
         private Guid _buildingAId;
 
-        protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
+        public WhenMakingAnOrganisationBuildingAMainBuildingWhenThereAlreadyIsOne(ITestOutputHelper helper) : base(
+            helper)
         {
-            return new UpdateOrganisationBuildingCommandHandler(
+        }
+
+        protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
+            => new(
                 new Mock<ILogger<UpdateOrganisationBuildingCommandHandler>>().Object,
                 Session,
                 new DateTimeProvider());
-        }
 
         protected override IUser User
             => new UserBuilder().Build();
@@ -105,12 +108,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         public void ThrowsAnException()
         {
             Exception.Should().BeOfType<OrganisationAlreadyHasAMainBuildingInThisPeriod>();
-            Exception.Message.Should().Be("Deze organisatie heeft reeds een hoofdgebouw binnen deze periode.");
-        }
-
-        public WhenMakingAnOrganisationBuildingAMainBuildingWhenThereAlreadyIsOne(ITestOutputHelper helper) : base(
-            helper)
-        {
+            Exception?.Message.Should().Be("Deze organisatie heeft reeds een hoofdgebouw binnen deze periode.");
         }
     }
 }

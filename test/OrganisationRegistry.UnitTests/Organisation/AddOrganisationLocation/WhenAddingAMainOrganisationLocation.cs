@@ -8,10 +8,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
     using Location;
     using OrganisationRegistry.Infrastructure.Events;
     using Location.Events;
+    using LocationType;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using Tests.Shared;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
@@ -30,25 +30,25 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
         private bool _isMainLocation;
         private DateTime _validTo;
         private DateTime _validFrom;
-        private DateTimeProviderStub _dateTimeProviderStub;
-        private string _ovoNumber;
+        private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);
+        private readonly string _ovoNumber = "OVO000012345";
+
+        public WhenAddingAMainOrganisationLocation(ITestOutputHelper helper) : base(helper)
+        {
+        }
 
         protected override AddOrganisationLocationCommandHandler BuildHandler()
-        {
-            return new AddOrganisationLocationCommandHandler(
+            => new(
                 new Mock<ILogger<AddOrganisationLocationCommandHandler>>().Object,
                 Session,
                 _dateTimeProviderStub,
                 new OrganisationRegistryConfigurationStub());
-        }
 
         protected override IUser User
             => new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build();
 
         protected override IEnumerable<IEvent> Given()
         {
-            _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
-
             _locationId = Guid.NewGuid();
             _organisationLocationId = Guid.NewGuid();
             _isMainLocation = true;
@@ -56,7 +56,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
             _validTo = _dateTimeProviderStub.Today.AddDays(2);
 
             _organisationId = Guid.NewGuid();
-            _ovoNumber = "OVO000012345";
             return new List<IEvent>
             {
                 new OrganisationCreated(
@@ -84,8 +83,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
         }
 
         protected override AddOrganisationLocation When()
-        {
-            return new AddOrganisationLocation(
+            => new(
                 _organisationLocationId,
                 new OrganisationId(_organisationId),
                 new LocationId(_locationId),
@@ -93,7 +91,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
                 null,
                 new ValidFrom(_validFrom),
                 new ValidTo(_validTo));
-        }
 
         protected override int ExpectedNumberOfEvents
             => 2;
@@ -115,10 +112,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation
             var organisationLocationAdded = PublishedEvents[1].UnwrapBody<MainLocationAssignedToOrganisation>();
             organisationLocationAdded.OrganisationId.Should().Be(_organisationId);
             organisationLocationAdded.MainLocationId.Should().Be(_locationId);
-        }
-
-        public WhenAddingAMainOrganisationLocation(ITestOutputHelper helper) : base(helper)
-        {
         }
     }
 }

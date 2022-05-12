@@ -5,14 +5,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
     using System.Linq;
     using Building;
     using Building.Events;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
-    using Tests.Shared;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
@@ -31,14 +28,16 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         private DateTime _validTo;
         private DateTime _validFrom;
 
-        protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
+        public WhenUpdatingAnOrganisationBuilding(ITestOutputHelper helper) : base(helper)
         {
-            return new UpdateOrganisationBuildingCommandHandler(
+        }
+
+        protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
+            => new(
                 new Mock<ILogger<UpdateOrganisationBuildingCommandHandler>>().Object,
                 Session,
                 new DateTimeProvider()
             );
-        }
 
         protected override IUser User
             => new UserBuilder().Build();
@@ -81,15 +80,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
         }
 
         protected override UpdateOrganisationBuilding When()
-        {
-            return new UpdateOrganisationBuilding(
+            => new(
                 _organisationBuildingId,
                 new OrganisationId(_organisationId),
                 new BuildingId(_buildingId),
                 _isMainBuilding,
                 new ValidFrom(_validFrom),
                 new ValidTo(_validTo));
-        }
 
         protected override int ExpectedNumberOfEvents
             => 1;
@@ -105,10 +102,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
             organisationBuildingAdded.IsMainBuilding.Should().Be(_isMainBuilding);
             organisationBuildingAdded.ValidFrom.Should().Be(_validFrom);
             organisationBuildingAdded.ValidTo.Should().Be(_validTo);
-        }
-
-        public WhenUpdatingAnOrganisationBuilding(ITestOutputHelper helper) : base(helper)
-        {
         }
     }
 }

@@ -20,16 +20,20 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
     public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : ExceptionSpecification<
         AddOrganisationBuildingCommandHandler, AddOrganisationBuilding>
     {
-        private OrganisationId _organisationId;
-        private BuildingId _buildingAId;
-        private Guid _organisationBuildingId;
-        private bool _isMainBuilding;
-        private DateTime _validTo;
-        private DateTime _validFrom;
-        private BuildingId _buildingBId;
+        private readonly OrganisationId _organisationId = new(Guid.NewGuid());
+        private readonly BuildingId _buildingAId = new(Guid.NewGuid());
+        private readonly Guid _organisationBuildingId = Guid.NewGuid();
+        private readonly bool _isMainBuilding = true;
+        private readonly DateTime _validTo = DateTime.Now.AddDays(2);
+        private readonly DateTime _validFrom = DateTime.Now.AddDays(1);
+        private readonly BuildingId _buildingBId = new(Guid.NewGuid());
+
+        public WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne(ITestOutputHelper helper) : base(helper)
+        {
+        }
 
         protected override AddOrganisationBuildingCommandHandler BuildHandler()
-            => new (
+            => new(
                 new Mock<ILogger<AddOrganisationBuildingCommandHandler>>().Object,
                 Session,
                 new DateTimeProvider());
@@ -38,16 +42,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
             => new UserBuilder().Build();
 
         protected override IEnumerable<IEvent> Given()
-        {
-            _organisationId = new OrganisationId(Guid.NewGuid());
-            _buildingAId = new BuildingId(Guid.NewGuid());
-            _buildingBId = new BuildingId(Guid.NewGuid());
-            _organisationBuildingId = Guid.NewGuid();
-            _isMainBuilding = true;
-            _validFrom = DateTime.Now.AddDays(1);
-            _validTo = DateTime.Now.AddDays(2);
-
-            return new List<IEvent>
+            => new List<IEvent>
             {
                 new OrganisationCreated(
                     _organisationId,
@@ -73,18 +68,15 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
                     _validFrom,
                     _validTo)
             };
-        }
 
         protected override AddOrganisationBuilding When()
-        {
-            return new AddOrganisationBuilding(
+            => new(
                 Guid.NewGuid(),
                 _organisationId,
                 _buildingBId,
                 _isMainBuilding,
                 new ValidFrom(_validFrom),
                 new ValidTo(_validTo));
-        }
 
         protected override int ExpectedNumberOfEvents
             => 0;
@@ -93,11 +85,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding
         public void ThrowsAnException()
         {
             Exception.Should().BeOfType<OrganisationAlreadyHasAMainBuildingInThisPeriod>();
-            Exception.Message.Should().Be("Deze organisatie heeft reeds een hoofdgebouw binnen deze periode.");
-        }
-
-        public WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne(ITestOutputHelper helper) : base(helper)
-        {
+            Exception?.Message.Should().Be("Deze organisatie heeft reeds een hoofdgebouw binnen deze periode.");
         }
     }
 }

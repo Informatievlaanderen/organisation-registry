@@ -21,7 +21,7 @@ namespace OrganisationRegistry.Organisation.Commands
             OrganisationId organisationId,
             LocationId locationId,
             bool isMainLocation,
-            LocationTypeId locationTypeId,
+            LocationTypeId? locationTypeId,
             ValidFrom validFrom,
             ValidTo validTo,
             Source source)

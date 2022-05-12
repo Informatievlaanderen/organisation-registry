@@ -24,10 +24,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationContact
         private Guid _organisationId;
         private Guid _contactTypeId;
         private Guid _organisationContactId;
-        private bool _isMainContact;
         private DateTime _validTo;
         private DateTime _validFrom;
-        private string _contactValue;
+        private string _contactValue = "info@email.com";
+
+        public WhenAddingAnOrganisationContact(ITestOutputHelper helper) : base(helper)
+        {
+        }
 
         protected override IUser User
             => new UserBuilder().Build();
@@ -46,11 +49,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationContact
 
             _contactTypeId = Guid.NewGuid();
             _organisationContactId = Guid.NewGuid();
-            _isMainContact = true;
             _validFrom = dateTimeProviderStub.Today;
             _validTo = dateTimeProviderStub.Today.AddDays(2);
             _organisationId = Guid.NewGuid();
-            _contactValue = "info@email.com";
 
             return new List<IEvent>
             {
@@ -72,15 +73,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationContact
         }
 
         protected override AddOrganisationContact When()
-        {
-            return new AddOrganisationContact(
+            => new(
                 _organisationContactId,
                 new OrganisationId(_organisationId),
                 new ContactTypeId(_contactTypeId),
                 _contactValue,
                 new ValidFrom(_validFrom),
                 new ValidTo(_validTo));
-        }
 
         protected override int ExpectedNumberOfEvents
             => 1;
@@ -96,10 +95,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationContact
             organisationContactAdded.OrganisationContactId.Should().Be(_organisationContactId);
             organisationContactAdded.ValidFrom.Should().Be(_validFrom);
             organisationContactAdded.ValidTo.Should().Be(_validTo);
-        }
-
-        public WhenAddingAnOrganisationContact(ITestOutputHelper helper) : base(helper)
-        {
         }
     }
 }

@@ -8,20 +8,20 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
     using Location;
     using OrganisationRegistry.Infrastructure.Events;
     using Location.Events;
+    using LocationType;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using Tests.Shared;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Locations;
-    using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationLocationToMainLocation : Specification<UpdateOrganisationLocationCommandHandler, UpdateOrganisationLocation>
+    public class
+        WhenUpdatingAnOrganisationLocationToMainLocation : Specification<UpdateOrganisationLocationCommandHandler,
+            UpdateOrganisationLocation>
     {
         private Guid _organisationId;
         private Guid _locationId;
@@ -30,16 +30,18 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
         private DateTime _validTo;
         private DateTime _validFrom;
         private readonly DateTimeProviderStub _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
-        private string _ovoNumber;
+        private string _ovoNumber = "OVO000012345";
+
+        public WhenUpdatingAnOrganisationLocationToMainLocation(ITestOutputHelper helper) : base(helper)
+        {
+        }
 
         protected override UpdateOrganisationLocationCommandHandler BuildHandler()
-        {
-            return new UpdateOrganisationLocationCommandHandler(
+            => new(
                 new Mock<ILogger<UpdateOrganisationLocationCommandHandler>>().Object,
                 Session,
                 _dateTimeProviderStub
             );
-        }
 
         protected override IUser User
             => new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build();
@@ -54,18 +56,44 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
             _validFrom = _dateTimeProviderStub.Today.AddDays(0);
             _validTo = _dateTimeProviderStub.Today.AddDays(2);
 
-            _ovoNumber = "OVO000012345";
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", _ovoNumber, "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
-                new LocationCreated(_locationId, "12345", "Albert 1 laan 32, 1000 Brussel", "Albert 1 laan 32", "1000", "Brussel", "Belgie"),
-                new OrganisationLocationAdded(_organisationId, _organisationLocationId, _locationId, "Gebouw A", false, null, null, _validFrom, _validTo)
+                new OrganisationCreated(
+                    _organisationId,
+                    "Kind en Gezin",
+                    _ovoNumber,
+                    "K&G",
+                    Article.None,
+                    "Kindjes en gezinnetjes",
+                    new List<Purpose>(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null),
+                new LocationCreated(
+                    _locationId,
+                    "12345",
+                    "Albert 1 laan 32, 1000 Brussel",
+                    "Albert 1 laan 32",
+                    "1000",
+                    "Brussel",
+                    "Belgie"),
+                new OrganisationLocationAdded(
+                    _organisationId,
+                    _organisationLocationId,
+                    _locationId,
+                    "Gebouw A",
+                    false,
+                    null,
+                    "Location Type A",
+                    _validFrom,
+                    _validTo)
             };
         }
 
         protected override UpdateOrganisationLocation When()
-        {
-            return new UpdateOrganisationLocation(
+            => new(
                 _organisationLocationId,
                 new OrganisationId(_organisationId),
                 new LocationId(_locationId),
@@ -73,13 +101,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
                 null,
                 new ValidFrom(_validFrom),
                 new ValidTo(_validTo),
-                Source.Wegwijs)
-            {
-                User = new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build()
-            };;
-        }
+                Source.Wegwijs);
 
-        protected override int ExpectedNumberOfEvents => 2;
+        protected override int ExpectedNumberOfEvents
+            => 2;
 
         [Fact]
         public void UpdatesTheOrganisationLocation()
@@ -97,12 +122,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
         [Fact]
         public void AssignsTheMainLocation()
         {
-            var mainLocationAssignedToOrganisation = PublishedEvents[1].UnwrapBody<MainLocationAssignedToOrganisation>();
+            var mainLocationAssignedToOrganisation =
+                PublishedEvents[1].UnwrapBody<MainLocationAssignedToOrganisation>();
             mainLocationAssignedToOrganisation.OrganisationLocationId.Should().Be(_organisationLocationId);
             mainLocationAssignedToOrganisation.OrganisationId.Should().Be(_organisationId);
             mainLocationAssignedToOrganisation.MainLocationId.Should().Be(_locationId);
         }
-
-        public WhenUpdatingAnOrganisationLocationToMainLocation(ITestOutputHelper helper) : base(helper) { }
     }
 }
