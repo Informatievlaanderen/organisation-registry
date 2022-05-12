@@ -996,12 +996,8 @@ namespace OrganisationRegistry.Organisation
         public void AddLabel(Guid organisationLabelId,
             LabelType labelType,
             string labelValue,
-            Period validity,
-            Func<Guid, bool> canUseLabelType)
+            Period validity)
         {
-            if (!canUseLabelType(labelType.Id))
-                throw new UserIsNotAuthorizedForKeyType();
-
             if (State.OrganisationLabels
                 .Where(organisationLabel => organisationLabel.LabelTypeId == labelType.Id)
                 .Where(organisationLabel => organisationLabel.OrganisationLabelId != organisationLabelId)

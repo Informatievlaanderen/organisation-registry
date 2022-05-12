@@ -41,15 +41,15 @@ public class OrganisationCommandHandlers :
     // ICommandHandler<UpdateOrganisationKey>,
     // ICommandHandler<RemoveOrganisationKey>,
     // ICommandHandler<AddOrganisationRegulation>,
-    // ICommandHandler<UpdateOrganisationRegulation>,
-    // ICommandHandler<AddOrganisationBuilding>,
-    // ICommandHandler<UpdateOrganisationBuilding>,
-    // ICommandHandler<AddOrganisationLocation>,
-    // ICommandHandler<UpdateOrganisationLocation>,
-    // ICommandHandler<AddOrganisationContact>,
-    ICommandHandler<UpdateOrganisationContact>,
-    ICommandHandler<AddOrganisationLabel>,
-    ICommandHandler<UpdateOrganisationLabel>,
+      //ICommandHandler<UpdateOrganisationRegulation>,
+    //ICommandHandler<AddOrganisationBuilding>,
+    //ICommandHandler<UpdateOrganisationBuilding>,
+    //ICommandHandler<AddOrganisationLocation>,
+    //ICommandHandler<UpdateOrganisationLocation>,
+    //ICommandHandler<AddOrganisationContact>,
+    //ICommandHandler<UpdateOrganisationContact>,
+    //ICommandHandler<AddOrganisationLabel>,
+    //ICommandHandler<UpdateOrganisationLabel>,
     ICommandHandler<AddOrganisationOrganisationClassification>,
     ICommandHandler<UpdateOrganisationOrganisationClassification>,
     ICommandHandler<AddOrganisationFunction>,
@@ -267,26 +267,26 @@ public class OrganisationCommandHandlers :
     //                     keyTypeId => _securityService.CanUseKeyType(message.User, keyTypeId));
     //             });
 
-    public Task Handle(AddOrganisationLabel message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .WithLabelPolicy(_organisationRegistryConfiguration, message)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var labelType = session.Get<LabelType>(message.LabelTypeId);
-
-                    KboV2Guards.ThrowIfFormalName(_organisationRegistryConfiguration, labelType);
-
-                    organisation.AddLabel(
-                        message.OrganisationLabelId,
-                        labelType,
-                        message.LabelValue,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                        labelTypeId => _securityService.CanUseLabelType(message.User, labelTypeId));
-                });
+    // public Task Handle(AddOrganisationLabel message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .WithLabelPolicy(_organisationRegistryConfiguration, message)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var labelType = session.Get<LabelType>(message.LabelTypeId);
+    //
+    //                 KboV2Guards.ThrowIfFormalName(_organisationRegistryConfiguration, labelType);
+    //
+    //                 organisation.AddLabel(
+    //                     message.OrganisationLabelId,
+    //                     labelType,
+    //                     message.LabelValue,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+    //                     labelTypeId => _securityService.CanUseLabelType(message.User, labelTypeId));
+    //             });
 
     // public Task Handle(AddOrganisationLocation message)
     //     => UpdateHandler<Organisation>.For(message, Session)
@@ -588,22 +588,22 @@ public class OrganisationCommandHandlers :
                         _dateTimeProvider);
                 });
 
-    public Task Handle(UpdateOrganisationContact message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var contactType = session.Get<ContactType>(message.ContactTypeId);
-
-                    organisation.UpdateContact(
-                        message.OrganisationContactId,
-                        contactType,
-                        message.Value,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-                });
+    // public Task Handle(UpdateOrganisationContact message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var contactType = session.Get<ContactType>(message.ContactTypeId);
+    //
+    //                 organisation.UpdateContact(
+    //                     message.OrganisationContactId,
+    //                     contactType,
+    //                     message.Value,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+    //             });
 
     public Task Handle(UpdateOrganisationFormalFramework message)
         => UpdateHandler<Organisation>.For(message, Session)
@@ -766,25 +766,25 @@ public class OrganisationCommandHandlers :
     //                     keyTypeId => _securityService.CanUseKeyType(message.User, keyTypeId));
     //             });
 
-    public Task Handle(UpdateOrganisationLabel message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .WithLabelPolicy(_organisationRegistryConfiguration, message)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var labelType = session.Get<LabelType>(message.LabelTypeId);
-
-                    KboV2Guards.ThrowIfFormalName(_organisationRegistryConfiguration, labelType);
-
-                    organisation.UpdateLabel(
-                        message.OrganisationLabelId,
-                        labelType,
-                        message.Value,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-                });
+    // public Task Handle(UpdateOrganisationLabel message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .WithLabelPolicy(_organisationRegistryConfiguration, message)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var labelType = session.Get<LabelType>(message.LabelTypeId);
+    //
+    //                 KboV2Guards.ThrowIfFormalName(_organisationRegistryConfiguration, labelType);
+    //
+    //                 organisation.UpdateLabel(
+    //                     message.OrganisationLabelId,
+    //                     labelType,
+    //                     message.Value,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+    //             });
 
     // public Task Handle(UpdateOrganisationLocation message)
     //     => UpdateHandler<Organisation>.For(message, Session)

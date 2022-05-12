@@ -1,23 +1,23 @@
-﻿namespace OrganisationRegistry.Organisation.Commands
+﻿namespace OrganisationRegistry.Organisation
 {
     using System;
     using LabelType;
 
-    public class AddOrganisationLabel : BaseCommand<OrganisationId>
+    public class UpdateOrganisationLabel : BaseCommand<OrganisationId>
     {
         public OrganisationId OrganisationId => Id;
 
         public Guid OrganisationLabelId { get; }
         public LabelTypeId LabelTypeId { get; }
-        public string LabelValue { get; }
+        public string Value { get; }
         public ValidFrom ValidFrom { get; }
         public ValidTo ValidTo { get; }
 
-        public AddOrganisationLabel(
+        public UpdateOrganisationLabel(
             Guid organisationLabelId,
             OrganisationId organisationId,
             LabelTypeId labelTypeId,
-            string labelValue,
+            string value,
             ValidFrom validFrom,
             ValidTo validTo)
         {
@@ -25,7 +25,7 @@
 
             OrganisationLabelId = organisationLabelId;
             LabelTypeId = labelTypeId;
-            LabelValue = labelValue;
+            Value = value;
             ValidFrom = validFrom;
             ValidTo = validTo;
         }
