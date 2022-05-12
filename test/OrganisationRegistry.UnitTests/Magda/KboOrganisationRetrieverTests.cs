@@ -3,6 +3,7 @@ namespace OrganisationRegistry.UnitTests.Magda
     using System;
     using System.Threading.Tasks;
     using Api.Backoffice.Kbo;
+    using Api.Infrastructure.Magda;
     using FluentAssertions;
     using global::Magda.RegistreerInschrijving;
     using Microsoft.Extensions.Logging;

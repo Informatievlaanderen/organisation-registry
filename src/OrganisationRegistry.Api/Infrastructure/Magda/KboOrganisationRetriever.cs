@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Api.Backoffice.Kbo
+namespace OrganisationRegistry.Api.Infrastructure.Magda
 {
     using System;
     using System.Collections.Generic;
@@ -7,8 +7,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
     using global::Magda.RegistreerInschrijving;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Organisation;
-    using Responses;
+    using Organisation;
 
     public class KboOrganisationRetriever : IKboOrganisationRetriever
     {

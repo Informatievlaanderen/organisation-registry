@@ -1,9 +1,9 @@
-namespace OrganisationRegistry.Api.Backoffice.Kbo
+namespace OrganisationRegistry.Api.Infrastructure.Magda
 {
     using System;
     using System.Linq;
     using OrganisationRegistry.Infrastructure.Configuration;
-    using OrganisationRegistry.Organisation;
+    using Organisation;
     using SqlServer;
 
     public class KboOrganisationClassificationRetriever : IKboOrganisationClassificationRetriever

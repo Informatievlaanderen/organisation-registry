@@ -7,7 +7,6 @@ namespace OrganisationRegistry.Api.Infrastructure
     using Api.Security;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
-    using Backoffice.Kbo;
     using Be.Vlaanderen.Basisregisters.Api;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Autofac;
     using Configuration;
@@ -31,6 +30,7 @@ namespace OrganisationRegistry.Api.Infrastructure
     using OrganisationRegistry.Infrastructure.Authorization.Cache;
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Infrastructure.Json;
+    using OrganisationRegistry.Magda;
     using Search;
     using Security;
     using SqlServer.Configuration;
