@@ -11,7 +11,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using App.Metrics.Scheduling;
     using Autofac.Features.OwnedInstances;
     using Autofac.Util;
-    using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
     using Be.Vlaanderen.Basisregisters.DataDog.Tracing.Sql.EntityFrameworkCore;
     using Body;
     using Cache;
@@ -27,7 +26,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using NodaTime;
-    using OrganisationRegistry.Configuration;
     using Serilog;
     using OrganisationRegistry.Configuration.Database;
     using OrganisationRegistry.Configuration.Database.Configuration;
@@ -324,10 +322,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections
 
             try
             {
-                await DistributedLock<Program>.RunAsync(async () => { await host.RunAsync().ConfigureAwait(false); },
-                        DistributedLockOptions.LoadFromConfiguration(configuration),
-                        logger)
-                    .ConfigureAwait(false);
+                await host.RunAsync().ConfigureAwait(false);
             }
             catch (Exception e)
             {

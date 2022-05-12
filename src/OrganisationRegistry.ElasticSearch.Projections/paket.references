@@ -14,8 +14,6 @@ Microsoft.Extensions.Logging
 
 Autofac.Extensions.DependencyInjection
 
-Be.Vlaanderen.Basisregisters.Aws.DistributedMutex
-
 Newtonsoft.Json
 
 Serilog
