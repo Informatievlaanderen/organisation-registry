@@ -1,3 +1,16 @@
+# [1.179.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.178.2...v1.179.0) (2022-05-12)
+
+
+### Bug Fixes
+
+* or-1016 delete action now works ([c54491a](https://github.com/informatievlaanderen/organisation-registry/commit/c54491ac5d8dd7957b423eb6acbc4429d7e07941))
+
+
+### Features
+
+* or-1016 remove organisation capacity backend ([752db16](https://github.com/informatievlaanderen/organisation-registry/commit/752db1670377e7f623867511e219e242bd1d9a7c))
+* or-1016 remove organisation capacity fronted ([7314355](https://github.com/informatievlaanderen/organisation-registry/commit/73143554cd04d9cb6da4300b356aceb59c3ce322))
+
 ## [1.178.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.178.1...v1.178.2) (2022-05-11)
 
 ## [1.178.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.178.0...v1.178.1) (2022-05-11)
