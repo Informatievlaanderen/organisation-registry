@@ -29,7 +29,8 @@
   "exclude": [
     "node_modules",
     "dist",
-    "packages"
+    "packages",
+    "src/OrganisationRegistry.Vue"
   ],
   "awesomeTypescriptLoaderOptions": {
     "forkChecker": true,

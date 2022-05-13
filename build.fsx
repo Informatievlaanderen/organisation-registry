@@ -57,6 +57,17 @@ Target.create "Site_Build" (fun _ ->
   Shell.copyFile dist (source @@ "default.conf")
   Shell.copyFile dist (source @@ "config.js")
   Shell.copyFile dist (source @@ "init.sh")
+
+  Npm.install (fun o -> { o with WorkingDirectory = "src" @@ "OrganisationRegistry.Vue" })
+
+  Npm.exec "run build"  (fun o -> { o with WorkingDirectory = "src" @@ "OrganisationRegistry.Vue" })
+
+  let vueDist = ("src" @@ "OrganisationRegistry.Vue" @@ "dist")
+
+  Shell.mkdir (dist @@ "wwwroot" @@ "vue")
+  Shell.copyDir (dist @@ "wwwroot" @@ "vue") (vueDist) (fun _ -> true)
+
+  ()
 )
 
 Target.create "Test_Solution" (fun _ -> testSolution "OrganisationRegistry")
@@ -137,8 +148,7 @@ Target.create "Push" ignore
   ==> "Build_Solution"
   ==> "Build"
 
-"Build"
-  ==> "Site_Build"
+"Site_Build"
   ==> "Test_Solution"
   ==> "Test"
 
