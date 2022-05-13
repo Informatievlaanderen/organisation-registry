@@ -10,15 +10,15 @@ using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
 using Person;
 
-public class AddOrganisationFunctionCommandHandler
-:BaseCommandHandler<AddOrganisationFunctionCommandHandler>
-,ICommandEnvelopeHandler<AddOrganisationFunction>
+public class UpdateOrganisationFunctionCommandHandler
+:BaseCommandHandler<UpdateOrganisationFunctionCommandHandler>
+,ICommandEnvelopeHandler<UpdateOrganisationFunction>
 {
-    public AddOrganisationFunctionCommandHandler(ILogger<AddOrganisationFunctionCommandHandler> logger, ISession session) : base(logger, session)
+    public UpdateOrganisationFunctionCommandHandler(ILogger<UpdateOrganisationFunctionCommandHandler> logger, ISession session) : base(logger, session)
     {
     }
 
-    public Task Handle(ICommandEnvelope<AddOrganisationFunction> envelope)
+    public Task Handle(ICommandEnvelope<UpdateOrganisationFunction> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command,envelope.User, Session)
             .Handle(
                 session =>
@@ -36,7 +36,7 @@ public class AddOrganisationFunctionCommandHandler
                             return new Contact(contactType, contact.Value);
                         }).ToList();
 
-                    organisation.AddFunction(
+                    organisation.UpdateFunction(
                         envelope.Command.OrganisationFunctionId,
                         function,
                         person,

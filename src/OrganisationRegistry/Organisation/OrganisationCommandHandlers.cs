@@ -32,38 +32,38 @@ using RegulationSubTheme;
 using RegulationTheme;
 
 public class OrganisationCommandHandlers :
-    BaseCommandHandler<OrganisationCommandHandlers>,
-    // ICommandHandler<CreateOrganisation>,
-    // ICommandHandler<UpdateOrganisationInfo>,
-    // ICommandHandler<UpdateOrganisationInfoNotLimitedToVlimpers>,
-    // ICommandHandler<UpdateOrganisationInfoLimitedToVlimpers>,
-    // ICommandHandler<AddOrganisationKey>,
-    // ICommandHandler<UpdateOrganisationKey>,
-    // ICommandHandler<RemoveOrganisationKey>,
-    // ICommandHandler<AddOrganisationRegulation>,
-      //ICommandHandler<UpdateOrganisationRegulation>,
-    //ICommandHandler<AddOrganisationBuilding>,
-    //ICommandHandler<UpdateOrganisationBuilding>,
-    //ICommandHandler<AddOrganisationLocation>,
-    //ICommandHandler<UpdateOrganisationLocation>,
-    //ICommandHandler<AddOrganisationContact>,
-    //ICommandHandler<UpdateOrganisationContact>,
-    //ICommandHandler<AddOrganisationLabel>,
-    //ICommandHandler<UpdateOrganisationLabel>,
-    //ICommandHandler<AddOrganisationOrganisationClassification>,
-    //ICommandHandler<UpdateOrganisationOrganisationClassification>,
-    //ICommandHandler<AddOrganisationFunction>,
-    ICommandHandler<UpdateOrganisationFunction>,
-    ICommandHandler<AddOrganisationCapacity>,
-    ICommandHandler<UpdateOrganisationCapacity>,
-    ICommandHandler<AddOrganisationParent>,
-    ICommandHandler<UpdateOrganisationParent>,
-    ICommandHandler<AddOrganisationFormalFramework>,
-    ICommandHandler<UpdateOrganisationFormalFramework>,
-    ICommandHandler<AddOrganisationBankAccount>,
-    ICommandHandler<UpdateOrganisationBankAccount>,
-    ICommandHandler<UpdateMainBuilding>,
-    ICommandHandler<UpdateMainLocation>
+        BaseCommandHandler<OrganisationCommandHandlers>,
+        // ICommandHandler<CreateOrganisation>,
+        // ICommandHandler<UpdateOrganisationInfo>,
+        // ICommandHandler<UpdateOrganisationInfoNotLimitedToVlimpers>,
+        // ICommandHandler<UpdateOrganisationInfoLimitedToVlimpers>,
+        // ICommandHandler<AddOrganisationKey>,
+        // ICommandHandler<UpdateOrganisationKey>,
+        // ICommandHandler<RemoveOrganisationKey>,
+        // ICommandHandler<AddOrganisationRegulation>,
+        //ICommandHandler<UpdateOrganisationRegulation>,
+        //ICommandHandler<AddOrganisationBuilding>,
+        //ICommandHandler<UpdateOrganisationBuilding>,
+        //ICommandHandler<AddOrganisationLocation>,
+        //ICommandHandler<UpdateOrganisationLocation>,
+        //ICommandHandler<AddOrganisationContact>,
+        //ICommandHandler<UpdateOrganisationContact>,
+        //ICommandHandler<AddOrganisationLabel>,
+        //ICommandHandler<UpdateOrganisationLabel>,
+        //ICommandHandler<AddOrganisationOrganisationClassification>,
+        //ICommandHandler<UpdateOrganisationOrganisationClassification>,
+        //ICommandHandler<AddOrganisationFunction>,
+        //ICommandHandler<UpdateOrganisationFunction>,
+        ICommandHandler<AddOrganisationCapacity>,
+        ICommandHandler<UpdateOrganisationCapacity>,
+        ICommandHandler<AddOrganisationParent>,
+        ICommandHandler<UpdateOrganisationParent>,
+        ICommandHandler<AddOrganisationFormalFramework>,
+        ICommandHandler<UpdateOrganisationFormalFramework>,
+        ICommandHandler<AddOrganisationBankAccount>,
+        ICommandHandler<UpdateOrganisationBankAccount>,
+        ICommandHandler<UpdateMainBuilding>,
+        ICommandHandler<UpdateMainLocation>
     // ICommandHandler<UpdateOrganisationFormalFrameworkParents>
     // ICommandHandler<UpdateCurrentOrganisationParent>
     // ICommandHandler<UpdateRelationshipValidities>
@@ -220,31 +220,31 @@ public class OrganisationCommandHandlers :
                         _dateTimeProvider);
                 });
 
-    public Task Handle(AddOrganisationFunction message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var person = session.Get<Person>(message.PersonId);
-                    var function = session.Get<FunctionType>(message.FunctionTypeId);
-
-                    var contacts = message.Contacts.Select(
-                        contact =>
-                        {
-                            var contactType = session.Get<ContactType>(contact.Key);
-                            return new Contact(contactType, contact.Value);
-                        }).ToList();
-
-                    organisation.AddFunction(
-                        message.OrganisationFunctionId,
-                        function,
-                        person,
-                        contacts,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-                });
+    // public Task Handle(AddOrganisationFunction message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var person = session.Get<Person>(message.PersonId);
+    //                 var function = session.Get<FunctionType>(message.FunctionTypeId);
+    //
+    //                 var contacts = message.Contacts.Select(
+    //                     contact =>
+    //                     {
+    //                         var contactType = session.Get<ContactType>(contact.Key);
+    //                         return new Contact(contactType, contact.Value);
+    //                     }).ToList();
+    //
+    //                 organisation.AddFunction(
+    //                     message.OrganisationFunctionId,
+    //                     function,
+    //                     person,
+    //                     contacts,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+    //             });
 
     // public Task Handle(AddOrganisationKey message)
     //     => UpdateHandler<Organisation>.For(message, Session)
@@ -652,31 +652,31 @@ public class OrganisationCommandHandlers :
     //                     message.FormalFrameworkId);
     //             });
 
-    public Task Handle(UpdateOrganisationFunction message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var person = session.Get<Person>(message.PersonId);
-                    var function = session.Get<FunctionType>(message.FunctionTypeId);
-
-                    var contacts = message.Contacts.Select(
-                        contact =>
-                        {
-                            var contactType = session.Get<ContactType>(contact.Key);
-                            return new Contact(contactType, contact.Value);
-                        }).ToList();
-
-                    organisation.UpdateFunction(
-                        message.OrganisationFunctionId,
-                        function,
-                        person,
-                        contacts,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-                });
+    // public Task Handle(UpdateOrganisationFunction message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var person = session.Get<Person>(message.PersonId);
+    //                 var function = session.Get<FunctionType>(message.FunctionTypeId);
+    //
+    //                 var contacts = message.Contacts.Select(
+    //                     contact =>
+    //                     {
+    //                         var contactType = session.Get<ContactType>(contact.Key);
+    //                         return new Contact(contactType, contact.Value);
+    //                     }).ToList();
+    //
+    //                 organisation.UpdateFunction(
+    //                     message.OrganisationFunctionId,
+    //                     function,
+    //                     person,
+    //                     contacts,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+    //             });
 
     // public Task Handle(UpdateOrganisationInfo message)
     //     => UpdateHandler<Organisation>.For(message, Session)
