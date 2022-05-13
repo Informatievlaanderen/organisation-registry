@@ -2,12 +2,9 @@ namespace OrganisationRegistry.Body
 {
     using System.Linq;
     using System.Threading.Tasks;
-    using BodyClassification;
-    using BodyClassificationType;
     using Commands;
     using ContactType;
     using Exceptions;
-    using FormalFramework;
     using Function;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -23,8 +20,8 @@ namespace OrganisationRegistry.Body
         ICommandHandler<UpdateBodyInfo>,
         ICommandHandler<UpdateBodyValidity>,
         ICommandHandler<UpdateBodyBalancedParticipation>,
-        ICommandHandler<AddBodyFormalFramework>,
-        ICommandHandler<UpdateBodyFormalFramework>,
+        // ICommandHandler<AddBodyFormalFramework>,
+        // ICommandHandler<UpdateBodyFormalFramework>,
         ICommandHandler<AddBodyOrganisation>,
         ICommandHandler<UpdateBodyOrganisation>,
         ICommandHandler<UpdateCurrentBodyOrganisation>,
@@ -149,31 +146,31 @@ namespace OrganisationRegistry.Body
             await Session.Commit(message.User);
         }
 
-        public async Task Handle(AddBodyFormalFramework message)
-        {
-            var formalFramework = Session.Get<FormalFramework>(message.FormalFrameworkId);
-            var body = Session.Get<Body>(message.BodyId);
+        // public async Task Handle(AddBodyFormalFramework message)
+        // {
+        //     var formalFramework = Session.Get<FormalFramework>(message.FormalFrameworkId);
+        //     var body = Session.Get<Body>(message.BodyId);
+        //
+        //     body.AddFormalFramework(
+        //         message.BodyFormalFrameworkId,
+        //         formalFramework,
+        //         message.Validity);
+        //
+        //     await Session.Commit(message.User);
+        // }
 
-            body.AddFormalFramework(
-                message.BodyFormalFrameworkId,
-                formalFramework,
-                message.Validity);
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateBodyFormalFramework message)
-        {
-            var formalFramework = Session.Get<FormalFramework>(message.FormalFrameworkId);
-            var body = Session.Get<Body>(message.BodyId);
-
-            body.UpdateFormalFramework(
-                message.BodyFormalFrameworkId,
-                formalFramework,
-                message.Validity);
-
-            await Session.Commit(message.User);
-        }
+        // public async Task Handle(UpdateBodyFormalFramework message)
+        // {
+        //     var formalFramework = Session.Get<FormalFramework>(message.FormalFrameworkId);
+        //     var body = Session.Get<Body>(message.BodyId);
+        //
+        //     body.UpdateFormalFramework(
+        //         message.BodyFormalFrameworkId,
+        //         formalFramework,
+        //         message.Validity);
+        //
+        //     await Session.Commit(message.User);
+        // }
 
         public async Task Handle(AddBodyOrganisation message)
         {
