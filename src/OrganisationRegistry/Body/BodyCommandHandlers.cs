@@ -45,9 +45,9 @@ namespace OrganisationRegistry.Body
         ICommandHandler<UpdateCurrentPersonAssignedToBodyMandate>,
         ICommandHandler<RemoveDelegationAssignment>,
         ICommandHandler<AddBodyContact>,
-        ICommandHandler<UpdateBodyContact>,
-        ICommandHandler<AddBodyBodyClassification>,
-        ICommandHandler<UpdateBodyBodyClassification>
+        ICommandHandler<UpdateBodyContact>
+        // ICommandHandler<AddBodyBodyClassification>
+        // ICommandHandler<UpdateBodyBodyClassification>
     {
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IBodyNumberGenerator _bodyNumberGenerator;
@@ -496,34 +496,34 @@ namespace OrganisationRegistry.Body
             await Session.Commit(message.User);
         }
 
-        public async Task Handle(AddBodyBodyClassification message)
-        {
-            var bodyClassification = Session.Get<BodyClassification>(message.BodyClassificationId);
-            var bodyClassificationType = Session.Get<BodyClassificationType>(message.BodyClassificationTypeId);
-            var body = Session.Get<Body>(message.BodyId);
+        // public async Task Handle(AddBodyBodyClassification message)
+        // {
+        //     var bodyClassification = Session.Get<BodyClassification>(message.BodyClassificationId);
+        //     var bodyClassificationType = Session.Get<BodyClassificationType>(message.BodyClassificationTypeId);
+        //     var body = Session.Get<Body>(message.BodyId);
+        //
+        //     body.AddBodyClassification(
+        //         message.BodyBodyClassificationId,
+        //         bodyClassificationType,
+        //         bodyClassification,
+        //         new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+        //
+        //     await Session.Commit(message.User);
+        // }
 
-            body.AddBodyClassification(
-                message.BodyBodyClassificationId,
-                bodyClassificationType,
-                bodyClassification,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateBodyBodyClassification message)
-        {
-            var bodyClassification = Session.Get<BodyClassification>(message.BodyClassificationId);
-            var bodyClassificationType = Session.Get<BodyClassificationType>(message.BodyClassificationTypeId);
-            var body = Session.Get<Body>(message.BodyId);
-
-            body.UpdateBodyClassification(
-                message.BodyBodyClassificationId,
-                bodyClassificationType,
-                bodyClassification,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
-            await Session.Commit(message.User);
-        }
+        // public async Task Handle(UpdateBodyBodyClassification message)
+        // {
+        //     var bodyClassification = Session.Get<BodyClassification>(message.BodyClassificationId);
+        //     var bodyClassificationType = Session.Get<BodyClassificationType>(message.BodyClassificationTypeId);
+        //     var body = Session.Get<Body>(message.BodyId);
+        //
+        //     body.UpdateBodyClassification(
+        //         message.BodyBodyClassificationId,
+        //         bodyClassificationType,
+        //         bodyClassification,
+        //         new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+        //
+        //     await Session.Commit(message.User);
+        // }
     }
 }

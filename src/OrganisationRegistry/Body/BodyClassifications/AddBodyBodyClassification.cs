@@ -1,10 +1,10 @@
-namespace OrganisationRegistry.Body.Commands
+namespace OrganisationRegistry.Body
 {
+    using System;
     using BodyClassification;
     using BodyClassificationType;
-    using System;
 
-    public class UpdateBodyBodyClassification : BaseCommand<BodyId>
+    public class AddBodyBodyClassification : BaseCommand<BodyId>
     {
         public BodyId BodyId => Id;
 
@@ -14,7 +14,7 @@ namespace OrganisationRegistry.Body.Commands
         public ValidFrom ValidFrom { get; }
         public ValidTo ValidTo { get; }
 
-        public UpdateBodyBodyClassification(
+        public AddBodyBodyClassification(
             Guid bodyBodyClassificationId,
             BodyId bodyId,
             BodyClassificationTypeId bodyClassificationTypeId,
