@@ -1,33 +1,32 @@
-namespace OrganisationRegistry.Body
+namespace OrganisationRegistry.Body;
+
+using System;
+
+public class BodyBodyClassification
 {
-    using System;
+    public Guid BodyId { get; } // todo: remove bodyId from this (but not from event, possibly not from command)
+    public Guid BodyBodyClassificationId { get; }
+    public Guid BodyClassificationTypeId { get; }
+    public string BodyClassificationTypeName { get; }
+    public Guid BodyClassificationId { get; }
+    public string BodyClassificationName { get; }
+    public Period Validity { get; }
 
-    public class BodyBodyClassification
+    public BodyBodyClassification(
+        Guid bodyBodyClassificationId,
+        Guid bodyId,
+        Guid bodyClassificationTypeId,
+        string bodyClassificationTypeName,
+        Guid bodyClassificationId,
+        string bodyClassificationName,
+        Period validity)
     {
-        public Guid BodyId { get; } // todo: remove bodyId from this (but not from event, possibly not from command)
-        public Guid BodyBodyClassificationId { get; }
-        public Guid BodyClassificationTypeId { get; }
-        public string BodyClassificationTypeName { get; }
-        public Guid BodyClassificationId { get; }
-        public string BodyClassificationName { get; }
-        public Period Validity { get; }
-
-        public BodyBodyClassification(
-            Guid bodyBodyClassificationId,
-            Guid bodyId,
-            Guid bodyClassificationTypeId,
-            string bodyClassificationTypeName,
-            Guid bodyClassificationId,
-            string bodyClassificationName,
-            Period validity)
-        {
-            BodyId = bodyId;
-            BodyBodyClassificationId = bodyBodyClassificationId;
-            BodyClassificationTypeId = bodyClassificationTypeId;
-            BodyClassificationId = bodyClassificationId;
-            Validity = validity;
-            BodyClassificationTypeName = bodyClassificationTypeName;
-            BodyClassificationName = bodyClassificationName;
-        }
+        BodyId = bodyId;
+        BodyBodyClassificationId = bodyBodyClassificationId;
+        BodyClassificationTypeId = bodyClassificationTypeId;
+        BodyClassificationId = bodyClassificationId;
+        Validity = validity;
+        BodyClassificationTypeName = bodyClassificationTypeName;
+        BodyClassificationName = bodyClassificationName;
     }
 }
