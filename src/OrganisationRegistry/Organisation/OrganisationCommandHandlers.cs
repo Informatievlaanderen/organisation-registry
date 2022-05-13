@@ -50,7 +50,7 @@ public class OrganisationCommandHandlers :
     //ICommandHandler<UpdateOrganisationContact>,
     //ICommandHandler<AddOrganisationLabel>,
     //ICommandHandler<UpdateOrganisationLabel>,
-    ICommandHandler<AddOrganisationOrganisationClassification>,
+    //ICommandHandler<AddOrganisationOrganisationClassification>,
     ICommandHandler<UpdateOrganisationOrganisationClassification>,
     ICommandHandler<AddOrganisationFunction>,
     ICommandHandler<UpdateOrganisationFunction>,
@@ -330,27 +330,27 @@ public class OrganisationCommandHandlers :
     //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
     //             });
 
-    public Task Handle(AddOrganisationOrganisationClassification message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .WithOrganisationClassificationTypePolicy(_organisationRegistryConfiguration, message)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var organisationClassification =
-                        session.Get<OrganisationClassification>(message.OrganisationClassificationId);
-                    var organisationClassificationType =
-                        session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
-
-                    organisation.AddOrganisationClassification(
-                        _organisationRegistryConfiguration,
-                        message.OrganisationOrganisationClassificationId,
-                        organisationClassificationType,
-                        organisationClassification,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-                });
+    // public Task Handle(AddOrganisationOrganisationClassification message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .WithOrganisationClassificationTypePolicy(_organisationRegistryConfiguration, message)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var organisationClassification =
+    //                     session.Get<OrganisationClassification>(message.OrganisationClassificationId);
+    //                 var organisationClassificationType =
+    //                     session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
+    //
+    //                 organisation.AddOrganisationClassification(
+    //                     _organisationRegistryConfiguration,
+    //                     message.OrganisationOrganisationClassificationId,
+    //                     organisationClassificationType,
+    //                     organisationClassification,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+    //             });
 
     public Task Handle(AddOrganisationParent message)
         => UpdateHandler<Organisation>.For(message, Session)
