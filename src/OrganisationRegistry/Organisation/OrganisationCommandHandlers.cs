@@ -52,7 +52,7 @@ public class OrganisationCommandHandlers :
     //ICommandHandler<UpdateOrganisationLabel>,
     //ICommandHandler<AddOrganisationOrganisationClassification>,
     //ICommandHandler<UpdateOrganisationOrganisationClassification>,
-    ICommandHandler<AddOrganisationFunction>,
+    //ICommandHandler<AddOrganisationFunction>,
     ICommandHandler<UpdateOrganisationFunction>,
     ICommandHandler<AddOrganisationCapacity>,
     ICommandHandler<UpdateOrganisationCapacity>,
