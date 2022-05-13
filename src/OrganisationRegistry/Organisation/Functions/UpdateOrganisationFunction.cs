@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Organisation.Commands
+﻿namespace OrganisationRegistry.Organisation
 {
     using System;
     using System.Collections.Generic;
