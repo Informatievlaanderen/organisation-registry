@@ -1,3 +1,15 @@
+# [1.181.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.180.2...v1.181.0) (2022-05-13)
+
+
+### Bug Fixes
+
+* site build dependency ([0f00e8b](https://github.com/informatievlaanderen/organisation-registry/commit/0f00e8be688d544cbaa5f680983be2fe57c8e113))
+
+
+### Features
+
+* add vue sub-site ([acd7fd5](https://github.com/informatievlaanderen/organisation-registry/commit/acd7fd59f5b41f42043e9d379518439f424345b7))
+
 ## [1.180.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.180.1...v1.180.2) (2022-05-12)
 
 ## [1.180.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.180.0...v1.180.1) (2022-05-12)
