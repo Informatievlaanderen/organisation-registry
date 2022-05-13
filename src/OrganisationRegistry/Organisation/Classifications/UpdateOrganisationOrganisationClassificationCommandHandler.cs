@@ -9,22 +9,19 @@ using Microsoft.Extensions.Logging;
 using OrganisationClassification;
 using OrganisationClassificationType;
 
-public class AddOrganisationOrganisationClassificationCommandHandler
-    : BaseCommandHandler<AddOrganisationOrganisationClassificationCommandHandler>
-        , ICommandEnvelopeHandler<AddOrganisationOrganisationClassification>
+public class UpdateOrganisationOrganisationClassificationCommandHandler
+    :BaseCommandHandler<UpdateOrganisationOrganisationClassificationCommandHandler>
+,ICommandEnvelopeHandler<UpdateOrganisationOrganisationClassification>
 {
     private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
 
-    public AddOrganisationOrganisationClassificationCommandHandler(
-        ILogger<AddOrganisationOrganisationClassificationCommandHandler> logger,
-        ISession session,
-        IOrganisationRegistryConfiguration organisationRegistryConfiguration) : base(logger, session)
+    public UpdateOrganisationOrganisationClassificationCommandHandler(ILogger<UpdateOrganisationOrganisationClassificationCommandHandler> logger, ISession session, IOrganisationRegistryConfiguration organisationRegistryConfiguration) : base(logger, session)
     {
         _organisationRegistryConfiguration = organisationRegistryConfiguration;
     }
 
-    public Task Handle(ICommandEnvelope<AddOrganisationOrganisationClassification> envelope)
-        => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
+    public Task Handle(ICommandEnvelope<UpdateOrganisationOrganisationClassification> envelope)
+        => UpdateHandler<Organisation>.For(envelope.Command,envelope.User, Session)
             .WithOrganisationClassificationTypePolicy(_organisationRegistryConfiguration, envelope.Command)
             .Handle(
                 session =>
@@ -37,8 +34,9 @@ public class AddOrganisationOrganisationClassificationCommandHandler
                     var organisationClassificationType =
                         session.Get<OrganisationClassificationType>(envelope.Command.OrganisationClassificationTypeId);
 
-                    organisation.AddOrganisationClassification(
-                        _organisationRegistryConfiguration,
+                    KboV2Guards.ThrowIfLegalForm(_organisationRegistryConfiguration, organisationClassificationType);
+
+                    organisation.UpdateOrganisationClassification(
                         envelope.Command.OrganisationOrganisationClassificationId,
                         organisationClassificationType,
                         organisationClassification,

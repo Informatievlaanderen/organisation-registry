@@ -51,7 +51,7 @@ public class OrganisationCommandHandlers :
     //ICommandHandler<AddOrganisationLabel>,
     //ICommandHandler<UpdateOrganisationLabel>,
     //ICommandHandler<AddOrganisationOrganisationClassification>,
-    ICommandHandler<UpdateOrganisationOrganisationClassification>,
+    //ICommandHandler<UpdateOrganisationOrganisationClassification>,
     ICommandHandler<AddOrganisationFunction>,
     ICommandHandler<UpdateOrganisationFunction>,
     ICommandHandler<AddOrganisationCapacity>,
@@ -826,28 +826,28 @@ public class OrganisationCommandHandlers :
     //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
     //             });
 
-    public Task Handle(UpdateOrganisationOrganisationClassification message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .WithOrganisationClassificationTypePolicy(_organisationRegistryConfiguration, message)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var organisationClassification =
-                        session.Get<OrganisationClassification>(message.OrganisationClassificationId);
-                    var organisationClassificationType =
-                        session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
-
-                    KboV2Guards.ThrowIfLegalForm(_organisationRegistryConfiguration, organisationClassificationType);
-
-                    organisation.UpdateOrganisationClassification(
-                        message.OrganisationOrganisationClassificationId,
-                        organisationClassificationType,
-                        organisationClassification,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-                });
+    // public Task Handle(UpdateOrganisationOrganisationClassification message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .WithOrganisationClassificationTypePolicy(_organisationRegistryConfiguration, message)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var organisationClassification =
+    //                     session.Get<OrganisationClassification>(message.OrganisationClassificationId);
+    //                 var organisationClassificationType =
+    //                     session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
+    //
+    //                 KboV2Guards.ThrowIfLegalForm(_organisationRegistryConfiguration, organisationClassificationType);
+    //
+    //                 organisation.UpdateOrganisationClassification(
+    //                     message.OrganisationOrganisationClassificationId,
+    //                     organisationClassificationType,
+    //                     organisationClassification,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+    //             });
 
     public Task Handle(UpdateOrganisationParent message)
         => UpdateHandler<Organisation>.For(message, Session)
