@@ -43,9 +43,9 @@ namespace OrganisationRegistry.Body
         ICommandHandler<AddDelegationAssignment>,
         ICommandHandler<UpdateDelegationAssignment>,
         ICommandHandler<UpdateCurrentPersonAssignedToBodyMandate>,
-        ICommandHandler<RemoveDelegationAssignment>,
-        ICommandHandler<AddBodyContact>,
-        ICommandHandler<UpdateBodyContact>
+        ICommandHandler<RemoveDelegationAssignment>
+        // ICommandHandler<AddBodyContact>,
+        // ICommandHandler<UpdateBodyContact>
         // ICommandHandler<AddBodyBodyClassification>
         // ICommandHandler<UpdateBodyBodyClassification>
     {
@@ -468,33 +468,33 @@ namespace OrganisationRegistry.Body
             await Session.Commit(message.User);
         }
 
-        public async Task Handle(AddBodyContact message)
-        {
-            var contactType = Session.Get<ContactType>(message.ContactTypeId);
-            var body = Session.Get<Body>(message.BodyId);
+        // public async Task Handle(AddBodyContact message)
+        // {
+        //     var contactType = Session.Get<ContactType>(message.ContactTypeId);
+        //     var body = Session.Get<Body>(message.BodyId);
+        //
+        //     body.AddContact(
+        //         message.BodyContactId,
+        //         contactType,
+        //         message.ContactValue,
+        //         new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+        //
+        //     await Session.Commit(message.User);
+        // }
 
-            body.AddContact(
-                message.BodyContactId,
-                contactType,
-                message.ContactValue,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
-            await Session.Commit(message.User);
-        }
-
-        public async Task Handle(UpdateBodyContact message)
-        {
-            var contactType = Session.Get<ContactType>(message.ContactTypeId);
-            var body = Session.Get<Body>(message.BodyId);
-
-            body.UpdateContact(
-                message.BodyContactId,
-                contactType,
-                message.Value,
-                new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
-
-            await Session.Commit(message.User);
-        }
+        // public async Task Handle(UpdateBodyContact message)
+        // {
+        //     var contactType = Session.Get<ContactType>(message.ContactTypeId);
+        //     var body = Session.Get<Body>(message.BodyId);
+        //
+        //     body.UpdateContact(
+        //         message.BodyContactId,
+        //         contactType,
+        //         message.Value,
+        //         new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+        //
+        //     await Session.Commit(message.User);
+        // }
 
         // public async Task Handle(AddBodyBodyClassification message)
         // {
