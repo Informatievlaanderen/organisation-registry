@@ -15,8 +15,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
     using Xunit;
     using Xunit.Abstractions;
 
-    public class
-        WhenAddingAnOrganisationParent : Specification<AddOrganisationParentCommandHandler, AddOrganisationParent>
+    public class WhenAddingAnOrganisationParent
+        : Specification<AddOrganisationParentCommandHandler, AddOrganisationParent>
     {
         private Guid _organisationOrganisationParentId;
         private DateTime _validTo;

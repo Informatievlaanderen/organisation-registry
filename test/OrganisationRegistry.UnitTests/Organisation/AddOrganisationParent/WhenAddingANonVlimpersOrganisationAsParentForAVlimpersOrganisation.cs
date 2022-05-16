@@ -14,8 +14,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation : ExceptionSpecification<
-        AddOrganisationParentCommandHandler, AddOrganisationParent>
+    public class WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation
+        : ExceptionSpecification<AddOrganisationParentCommandHandler, AddOrganisationParent>
     {
         private readonly Guid _organisationId = Guid.NewGuid();
         private readonly Guid _organisationOrganisationParentId = Guid.NewGuid();

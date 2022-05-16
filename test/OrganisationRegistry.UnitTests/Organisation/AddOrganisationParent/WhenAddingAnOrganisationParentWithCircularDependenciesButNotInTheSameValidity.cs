@@ -18,8 +18,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingAnOrganisationParentWithCircularDependenciesButNotInTheSameValidity : ExceptionSpecification<
-        AddOrganisationParentCommandHandler, AddOrganisationParent>
+    public class WhenAddingAnOrganisationParentWithCircularDependenciesButNotInTheSameValidity
+        : ExceptionSpecification<AddOrganisationParentCommandHandler, AddOrganisationParent>
     {
         private DateTimeProviderStub _dateTimeProviderStub = new(new DateTime(2016, 6, 1));
 

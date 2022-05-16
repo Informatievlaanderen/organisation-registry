@@ -6,7 +6,6 @@ using Capacity;
 using ContactType;
 using Function;
 using Handling;
-using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Configuration;
 using Infrastructure.Domain;
@@ -28,25 +27,22 @@ public class UpdateOrganisationCapacityCommandHandler
     }
 
     public Task Handle(ICommandEnvelope<UpdateOrganisationCapacity> envelope)
-        => Handle(envelope.Command, envelope.User);
-
-    public Task Handle(UpdateOrganisationCapacity message, IUser envelopeUser)
-        => UpdateHandler<Organisation>.For(message,envelopeUser, Session)
-            .WithCapacityPolicy(_organisationRegistryConfiguration, message)
+        => UpdateHandler<Organisation>.For(envelope.Command,envelope.User, Session)
+            .WithCapacityPolicy(_organisationRegistryConfiguration, envelope.Command)
             .Handle(
                 session =>
                 {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(envelopeUser);
+                    var organisation = session.Get<Organisation>(envelope.Command.OrganisationId);
+                    organisation.ThrowIfTerminated(envelope.User);
 
-                    var capacity = session.Get<Capacity>(message.CapacityId);
-                    var person = message.PersonId is { } ? session.Get<Person>(message.PersonId) : null;
-                    var function = message.FunctionTypeId is { }
-                        ? session.Get<FunctionType>(message.FunctionTypeId)
+                    var capacity = session.Get<Capacity>(envelope.Command.CapacityId);
+                    var person = envelope.Command.PersonId is { } ? session.Get<Person>(envelope.Command.PersonId) : null;
+                    var function = envelope.Command.FunctionTypeId is { }
+                        ? session.Get<FunctionType>(envelope.Command.FunctionTypeId)
                         : null;
-                    var location = message.LocationId is { } ? session.Get<Location>(message.LocationId) : null;
+                    var location = envelope.Command.LocationId is { } ? session.Get<Location>(envelope.Command.LocationId) : null;
 
-                    var contacts = message.Contacts.Select(
+                    var contacts = envelope.Command.Contacts.Select(
                         contact =>
                         {
                             var contactType = session.Get<ContactType>(contact.Key);
@@ -54,13 +50,13 @@ public class UpdateOrganisationCapacityCommandHandler
                         }).ToList();
 
                     organisation.UpdateCapacity(
-                        message.OrganisationCapacityId,
+                        envelope.Command.OrganisationCapacityId,
                         capacity,
                         person,
                         function,
                         location,
                         contacts,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+                        new Period(new ValidFrom(envelope.Command.ValidFrom), new ValidTo(envelope.Command.ValidTo)),
                         _dateTimeProvider);
                 });
 }

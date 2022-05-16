@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Exceptions;
 using Handling;
-using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -25,24 +24,21 @@ public class AddOrganisationParentCommandHandler
     }
 
     public Task Handle(ICommandEnvelope<AddOrganisationParent> envelope)
-        => Handle(envelope.Command, envelope.User);
-
-    public Task Handle(AddOrganisationParent message, IUser envelopeUser)
-        => UpdateHandler<Organisation>.For(message, envelopeUser, Session)
+        => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
             .WithVlimpersPolicy()
             .Handle(
                 session =>
                 {
-                    var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(envelopeUser);
+                    var parentOrganisation = session.Get<Organisation>(envelope.Command.ParentOrganisationId);
+                    var organisation = session.Get<Organisation>(envelope.Command.OrganisationId);
+                    organisation.ThrowIfTerminated(envelope.User);
 
-                    var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
+                    var validity = new Period(new ValidFrom(envelope.Command.ValidFrom), new ValidTo(envelope.Command.ValidTo));
 
                     ThrowIfCircularRelationshipDetected(organisation, validity, parentOrganisation);
 
                     organisation.AddParent(
-                        message.OrganisationOrganisationParentId,
+                        envelope.Command.OrganisationOrganisationParentId,
                         parentOrganisation,
                         validity,
                         _dateTimeProvider);

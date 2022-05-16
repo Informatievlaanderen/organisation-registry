@@ -11,18 +11,21 @@ using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
 
 public class UpdateOrganisationParentCommandHandler
-    :BaseCommandHandler<UpdateOrganisationParentCommandHandler>
-,ICommandEnvelopeHandler<UpdateOrganisationParent>
+    : BaseCommandHandler<UpdateOrganisationParentCommandHandler>
+        , ICommandEnvelopeHandler<UpdateOrganisationParent>
 {
     private readonly IDateTimeProvider _dateTimeProvider;
 
-    public UpdateOrganisationParentCommandHandler(ILogger<UpdateOrganisationParentCommandHandler> logger, ISession session, IDateTimeProvider dateTimeProvider) : base(logger, session)
+    public UpdateOrganisationParentCommandHandler(
+        ILogger<UpdateOrganisationParentCommandHandler> logger,
+        ISession session,
+        IDateTimeProvider dateTimeProvider) : base(logger, session)
     {
         _dateTimeProvider = dateTimeProvider;
     }
 
     public Task Handle(ICommandEnvelope<UpdateOrganisationParent> envelope)
-        => UpdateHandler<Organisation>.For(envelope.Command, envelope.User,Session)
+        => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
             .WithVlimpersPolicy()
             .Handle(
                 session =>
@@ -31,7 +34,9 @@ public class UpdateOrganisationParentCommandHandler
                     var organisation = session.Get<Organisation>(envelope.Command.OrganisationId);
                     organisation.ThrowIfTerminated(envelope.User);
 
-                    var validity = new Period(new ValidFrom(envelope.Command.ValidFrom), new ValidTo(envelope.Command.ValidTo));
+                    var validity = new Period(
+                        new ValidFrom(envelope.Command.ValidFrom),
+                        new ValidTo(envelope.Command.ValidTo));
 
                     if (ParentTreeHasOrganisationInIt(organisation, validity, parentOrganisation))
                         throw new CircularRelationshipDetected();
