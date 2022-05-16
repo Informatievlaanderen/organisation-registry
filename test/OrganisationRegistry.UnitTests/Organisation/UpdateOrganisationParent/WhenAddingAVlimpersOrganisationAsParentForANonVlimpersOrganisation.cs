@@ -14,8 +14,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAVlimpersOrganisationAsParentForANonVlimpersOrganisation : ExceptionSpecification<
-        UpdateOrganisationParentCommandHandler, UpdateOrganisationParent>
+    public class WhenUpdatingAVlimpersOrganisationAsParentForANonVlimpersOrganisation
+        : ExceptionSpecification<UpdateOrganisationParentCommandHandler, UpdateOrganisationParent>
     {
         private Guid _organisationId;
         private Guid _organisationOrganisationParentId;

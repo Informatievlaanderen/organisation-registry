@@ -17,8 +17,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
     using Xunit.Abstractions;
 
     public class
-        WhenAddingAParentWithOverlappingValidity : ExceptionSpecification<AddOrganisationParentCommandHandler,
-            AddOrganisationParent>
+        WhenAddingAParentWithOverlappingValidity
+        : ExceptionSpecification<AddOrganisationParentCommandHandler, AddOrganisationParent>
     {
         private DateTime _validTo;
         private DateTime _validFrom;
