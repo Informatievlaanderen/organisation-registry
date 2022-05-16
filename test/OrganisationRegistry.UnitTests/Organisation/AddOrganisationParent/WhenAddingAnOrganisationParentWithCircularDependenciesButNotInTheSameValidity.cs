@@ -18,30 +18,37 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingAnOrganisationParentWithCircularDependenciesButNotInTheSameValidity : OldExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationParent>
+    public class WhenAddingAnOrganisationParentWithCircularDependenciesButNotInTheSameValidity : ExceptionSpecification<
+        AddOrganisationParentCommandHandler, AddOrganisationParent>
     {
-        private DateTimeProviderStub _dateTimeProviderStub;
-        private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
+        private DateTimeProviderStub _dateTimeProviderStub = new(new DateTime(2016, 6, 1));
+
+        private readonly SequentialOvoNumberGenerator
+            _sequentialOvoNumberGenerator = new();
+
         private OrganisationCreatedBuilder _organisationACreated;
         private OrganisationCreatedBuilder _organisationBCreated;
         private OrganisationParentAddedBuilder _organisationABecameDaughterOfOrganisationBFor2016;
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        public WhenAddingAnOrganisationParentWithCircularDependenciesButNotInTheSameValidity(ITestOutputHelper helper) :
+            base(helper)
         {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
-                Session,
-                _sequentialOvoNumberGenerator,
-                null,
-                _dateTimeProviderStub,
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
         }
+
+        protected override AddOrganisationParentCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<AddOrganisationParentCommandHandler>>().Object,
+                Session,
+                _dateTimeProviderStub);
+
+        protected override IUser User
+            => new UserBuilder()
+                .AddOrganisations(_organisationACreated.OvoNumber)
+                .AddRoles(Role.DecentraalBeheerder)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
-            _dateTimeProviderStub = new DateTimeProviderStub(new DateTime(2016, 6, 1));
-
             _organisationACreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
             _organisationBCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
             _organisationABecameDaughterOfOrganisationBFor2016 =
@@ -57,21 +64,15 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
         }
 
         protected override AddOrganisationParent When()
-        {
-            return new AddOrganisationParent(
+            => new AddOrganisationParent(
                 Guid.NewGuid(),
                 _organisationABecameDaughterOfOrganisationBFor2016.OrganisationId,
                 _organisationABecameDaughterOfOrganisationBFor2016.ParentOrganisationId,
-                new ValidFrom(new DateTime(2017, 1, 1)), new ValidTo(new DateTime(2017, 12, 31)))
-            {
-                User = new UserBuilder()
-                    .AddOrganisations(_organisationACreated.OvoNumber)
-                    .AddRoles(Role.DecentraalBeheerder)
-                    .Build()
-            };
-        }
+                new ValidFrom(new DateTime(2017, 1, 1)),
+                new ValidTo(new DateTime(2017, 12, 31)));
 
-        protected override int ExpectedNumberOfEvents => 1;
+        protected override int ExpectedNumberOfEvents
+            => 1;
 
         [Fact]
         public void DoesNotThrowAnException()
@@ -89,7 +90,5 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
             organisationParentAdded.ValidFrom.Should().Be(new DateTime(2017, 1, 1));
             organisationParentAdded.ValidTo.Should().Be(new DateTime(2017, 12, 31));
         }
-
-        public WhenAddingAnOrganisationParentWithCircularDependenciesButNotInTheSameValidity(ITestOutputHelper helper) : base(helper) { }
     }
 }

@@ -55,8 +55,8 @@ public class OrganisationCommandHandlers :
         //ICommandHandler<AddOrganisationFunction>,
         //ICommandHandler<UpdateOrganisationFunction>,
         //ICommandHandler<AddOrganisationCapacity>,
-        ICommandHandler<UpdateOrganisationCapacity>,
-        ICommandHandler<AddOrganisationParent>,
+        //ICommandHandler<UpdateOrganisationCapacity>,
+        //ICommandHandler<AddOrganisationParent>,
         ICommandHandler<UpdateOrganisationParent>,
         ICommandHandler<AddOrganisationFormalFramework>,
         ICommandHandler<UpdateOrganisationFormalFramework>,
@@ -352,26 +352,26 @@ public class OrganisationCommandHandlers :
     //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
     //             });
 
-    public Task Handle(AddOrganisationParent message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .WithVlimpersPolicy()
-            .Handle(
-                session =>
-                {
-                    var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
-
-                    ThrowIfCircularRelationshipDetected(organisation, validity, parentOrganisation);
-
-                    organisation.AddParent(
-                        message.OrganisationOrganisationParentId,
-                        parentOrganisation,
-                        validity,
-                        _dateTimeProvider);
-                });
+    // public Task Handle(AddOrganisationParent message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .WithVlimpersPolicy()
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
+    //
+    //                 ThrowIfCircularRelationshipDetected(organisation, validity, parentOrganisation);
+    //
+    //                 organisation.AddParent(
+    //                     message.OrganisationOrganisationParentId,
+    //                     parentOrganisation,
+    //                     validity,
+    //                     _dateTimeProvider);
+    //             });
 
     // public Task Handle(AddOrganisationRegulation message)
     //     => UpdateHandler<Organisation>.For(message, Session)
@@ -554,39 +554,39 @@ public class OrganisationCommandHandlers :
     //                     _dateTimeProvider);
     //             });
 
-    public Task Handle(UpdateOrganisationCapacity message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .WithCapacityPolicy(_organisationRegistryConfiguration, message)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var capacity = session.Get<Capacity>(message.CapacityId);
-                    var person = message.PersonId is { } ? session.Get<Person>(message.PersonId) : null;
-                    var function = message.FunctionTypeId is { }
-                        ? session.Get<FunctionType>(message.FunctionTypeId)
-                        : null;
-                    var location = message.LocationId is { } ? session.Get<Location>(message.LocationId) : null;
-
-                    var contacts = message.Contacts.Select(
-                        contact =>
-                        {
-                            var contactType = session.Get<ContactType>(contact.Key);
-                            return new Contact(contactType, contact.Value);
-                        }).ToList();
-
-                    organisation.UpdateCapacity(
-                        message.OrganisationCapacityId,
-                        capacity,
-                        person,
-                        function,
-                        location,
-                        contacts,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                        _dateTimeProvider);
-                });
+    // public Task Handle(UpdateOrganisationCapacity message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .WithCapacityPolicy(_organisationRegistryConfiguration, message)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var capacity = session.Get<Capacity>(message.CapacityId);
+    //                 var person = message.PersonId is { } ? session.Get<Person>(message.PersonId) : null;
+    //                 var function = message.FunctionTypeId is { }
+    //                     ? session.Get<FunctionType>(message.FunctionTypeId)
+    //                     : null;
+    //                 var location = message.LocationId is { } ? session.Get<Location>(message.LocationId) : null;
+    //
+    //                 var contacts = message.Contacts.Select(
+    //                     contact =>
+    //                     {
+    //                         var contactType = session.Get<ContactType>(contact.Key);
+    //                         return new Contact(contactType, contact.Value);
+    //                     }).ToList();
+    //
+    //                 organisation.UpdateCapacity(
+    //                     message.OrganisationCapacityId,
+    //                     capacity,
+    //                     person,
+    //                     function,
+    //                     location,
+    //                     contacts,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+    //                     _dateTimeProvider);
+    //             });
 
     // public Task Handle(UpdateOrganisationContact message)
     //     => UpdateHandler<Organisation>.For(message, Session)

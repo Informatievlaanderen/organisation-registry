@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using Capacity;
 using ContactType;
 using Function;
-using Person;
 using Location;
+using Person;
 
-public class AddOrganisationCapacity : BaseCommand<OrganisationId>
+public class UpdateOrganisationCapacity : BaseCommand<OrganisationId>
 {
     public OrganisationId OrganisationId
         => Id;
@@ -16,18 +16,18 @@ public class AddOrganisationCapacity : BaseCommand<OrganisationId>
     public Guid OrganisationCapacityId { get; }
     public CapacityId CapacityId { get; }
     public PersonId? PersonId { get; }
-    public FunctionTypeId? FunctionId { get; }
+    public FunctionTypeId? FunctionTypeId { get; }
     public LocationId? LocationId { get; }
     public Dictionary<ContactTypeId, string> Contacts { get; }
     public ValidFrom ValidFrom { get; }
     public ValidTo ValidTo { get; }
 
-    public AddOrganisationCapacity(
+    public UpdateOrganisationCapacity(
         Guid organisationCapacityId,
         OrganisationId organisationId,
         CapacityId capacityId,
         PersonId? personId,
-        FunctionTypeId? functionId,
+        FunctionTypeId? functionTypeId,
         LocationId? locationId,
         Dictionary<ContactTypeId, string>? contacts,
         ValidFrom validFrom,
@@ -38,7 +38,7 @@ public class AddOrganisationCapacity : BaseCommand<OrganisationId>
         OrganisationCapacityId = organisationCapacityId;
         CapacityId = capacityId;
         PersonId = personId;
-        FunctionId = functionId;
+        FunctionTypeId = functionTypeId;
         LocationId = locationId;
         Contacts = contacts ?? new Dictionary<ContactTypeId, string>();
         ValidFrom = validFrom;

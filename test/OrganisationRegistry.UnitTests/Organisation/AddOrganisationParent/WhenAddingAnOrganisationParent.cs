@@ -2,49 +2,51 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
 {
     using System;
     using System.Collections.Generic;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
     using Tests.Shared;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
-
     using OrganisationRegistry.Organisation.Events;
     using Tests.Shared.TestDataBuilders;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingAnOrganisationParent : OldSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationParent>
+    public class
+        WhenAddingAnOrganisationParent : Specification<AddOrganisationParentCommandHandler, AddOrganisationParent>
     {
         private Guid _organisationOrganisationParentId;
         private DateTime _validTo;
         private DateTime _validFrom;
-        private DateTimeProviderStub _dateTimeProviderStub;
-        private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
+        private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);
+
+        private readonly SequentialOvoNumberGenerator
+            _sequentialOvoNumberGenerator = new();
+
         private OrganisationCreated _childCreated;
         private OrganisationCreated _parentCreated;
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        public WhenAddingAnOrganisationParent(ITestOutputHelper helper) : base(helper)
         {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
-                Session,
-                _sequentialOvoNumberGenerator,
-                null,
-                _dateTimeProviderStub,
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
         }
+
+        protected override AddOrganisationParentCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<AddOrganisationParentCommandHandler>>().Object,
+                Session,
+                _dateTimeProviderStub);
+
+        protected override IUser User
+            => new UserBuilder()
+                .AddOrganisations(_childCreated.OvoNumber)
+                .AddRoles(Role.DecentraalBeheerder)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
-            _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
-
             _organisationOrganisationParentId = Guid.NewGuid();
             _validFrom = _dateTimeProviderStub.Today;
             _validTo = _dateTimeProviderStub.Today.AddDays(2);
@@ -59,22 +61,15 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
         }
 
         protected override AddOrganisationParent When()
-        {
-            return new AddOrganisationParent(
+            => new(
                 _organisationOrganisationParentId,
                 new OrganisationId(_childCreated.OrganisationId),
                 new OrganisationId(_parentCreated.OrganisationId),
                 new ValidFrom(_validFrom),
-                new ValidTo(_validTo))
-            {
-                User = new UserBuilder()
-                    .AddOrganisations(_childCreated.OvoNumber)
-                    .AddRoles(Role.DecentraalBeheerder)
-                    .Build()
-            };
-        }
+                new ValidTo(_validTo));
 
-        protected override int ExpectedNumberOfEvents => 2;
+        protected override int ExpectedNumberOfEvents
+            => 2;
 
         [Fact]
         public void AddsAnOrganisationParent()
@@ -96,6 +91,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
             parentAssignedToOrganisation.ParentOrganisationId.Should().Be(_parentCreated.OrganisationId);
         }
 
-        public WhenAddingAnOrganisationParent(ITestOutputHelper helper) : base(helper) { }
+
     }
 }

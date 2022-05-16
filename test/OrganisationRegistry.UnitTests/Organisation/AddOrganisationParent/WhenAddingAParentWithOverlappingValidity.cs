@@ -2,49 +2,52 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
 {
     using System;
     using System.Collections.Generic;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
     using Tests.Shared;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
-
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Tests.Shared.TestDataBuilders;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingAParentWithOverlappingValidity: OldExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationParent>
+    public class
+        WhenAddingAParentWithOverlappingValidity : ExceptionSpecification<AddOrganisationParentCommandHandler,
+            AddOrganisationParent>
     {
         private DateTime _validTo;
         private DateTime _validFrom;
-        private DateTimeProviderStub _dateTimeProviderStub;
+        private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);
         private OrganisationCreated _childCreated;
         private OrganisationCreated _parentCreated;
-        private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        private readonly SequentialOvoNumberGenerator
+            _sequentialOvoNumberGenerator = new();
+
+        public WhenAddingAParentWithOverlappingValidity(ITestOutputHelper helper) : base(helper)
         {
-            return new OrganisationCommandHandlers(new Mock<ILogger<OrganisationCommandHandlers>>().Object,
-                Session,
-
-                _sequentialOvoNumberGenerator,
-                null,
-                new DateTimeProvider(),
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
         }
+
+        protected override AddOrganisationParentCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<AddOrganisationParentCommandHandler>>().Object,
+                Session,
+                new DateTimeProvider()
+            );
+
+        protected override IUser User
+            => new UserBuilder()
+                .AddOrganisations(_childCreated.OvoNumber)
+                .AddRoles(Role.DecentraalBeheerder)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
-            _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
-
             _validFrom = _dateTimeProviderStub.Today;
             _validTo = _dateTimeProviderStub.Today.AddDays(2);
 
@@ -54,36 +57,35 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
             {
                 _childCreated,
                 _parentCreated,
-                new OrganisationParentAdded(_childCreated.OrganisationId, Guid.NewGuid(),
-                    _parentCreated.OrganisationId, "Ouder en Gezin", null, null)
+                new OrganisationParentAdded(
+                    _childCreated.OrganisationId,
+                    Guid.NewGuid(),
+                    _parentCreated.OrganisationId,
+                    "Ouder en Gezin",
+                    null,
+                    null)
             };
         }
 
         protected override AddOrganisationParent When()
-        {
-            return new AddOrganisationParent(
+            => new(
                 Guid.NewGuid(),
                 new OrganisationId(_childCreated.OrganisationId),
                 new OrganisationId(_parentCreated.OrganisationId),
                 new ValidFrom(_validFrom),
-                new ValidTo(_validTo))
-            {
-                User = new UserBuilder()
-                    .AddOrganisations(_childCreated.OvoNumber)
-                    .AddRoles(Role.DecentraalBeheerder)
-                    .Build()
-            };
-        }
+                new ValidTo(_validTo));
 
-        protected override int ExpectedNumberOfEvents => 0;
+        protected override int ExpectedNumberOfEvents
+            => 0;
 
         [Fact]
         public void ThrowsAnException()
         {
             Exception.Should().BeOfType<OrganisationAlreadyCoupledToParentInThisPeriod>();
-            Exception.Message.Should().Be("Deze organisatie is in deze periode reeds gekoppeld aan een moeder entiteit.");
+            Exception?.Message.Should()
+                .Be("Deze organisatie is in deze periode reeds gekoppeld aan een moeder entiteit.");
         }
 
-        public WhenAddingAParentWithOverlappingValidity(ITestOutputHelper helper) : base(helper) { }
+
     }
 }
