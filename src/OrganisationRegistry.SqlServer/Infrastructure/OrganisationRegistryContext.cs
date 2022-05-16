@@ -17,6 +17,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
     using FormalFramework;
     using FormalFrameworkCategory;
     using FunctionType;
+    using Import.Organisations;
     using KboSyncQueue;
     using KeyType;
     using LabelType;
@@ -161,6 +162,10 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         //Kbo Sync Queue
         public DbSet<KboSyncQueueItem> KboSyncQueue { get; set; }
+
+        // Import
+
+        public DbSet<ImportOrganisationsStatusListItem> ImportOrganisationsStatusList { get; set; }
 
         // This needs to be DbContextOptions<T> for Autofac!
         public OrganisationRegistryContext(DbContextOptions<OrganisationRegistryContext> options)

@@ -84,7 +84,7 @@ namespace OrganisationRegistry.Api.IntegrationTests
 
             HttpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            Import.Piavo.Program.Import(
+            OrganisationRegistry.Import.Piavo.Program.Import(
                 ApiEndpoint,
                 Jwt);
         }

@@ -4,7 +4,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using FluentAssertions;
-    using Import.Piavo.Models;
+    using OrganisationRegistry.Import.Piavo.Models;
     using Newtonsoft.Json;
     using Xunit;
 
