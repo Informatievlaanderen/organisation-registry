@@ -3,7 +3,6 @@
 using System.Threading.Tasks;
 using BodyClassification;
 using BodyClassificationType;
-using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
@@ -16,21 +15,18 @@ public class AddBodyBodyClassificationCommandHandler
     {
     }
 
-    public Task Handle(ICommandEnvelope<AddBodyBodyClassification> envelope)
-        => Handle(envelope.Command, envelope.User);
-
-    private async Task Handle(AddBodyBodyClassification message, IUser user)
+    public async Task Handle(ICommandEnvelope<AddBodyBodyClassification> envelope)
     {
-        var bodyClassification = Session.Get<BodyClassification>(message.BodyClassificationId);
-        var bodyClassificationType = Session.Get<BodyClassificationType>(message.BodyClassificationTypeId);
-        var body = Session.Get<Body>(message.BodyId);
+        var bodyClassification = Session.Get<BodyClassification>(envelope.Command.BodyClassificationId);
+        var bodyClassificationType = Session.Get<BodyClassificationType>(envelope.Command.BodyClassificationTypeId);
+        var body = Session.Get<Body>(envelope.Command.BodyId);
 
         body.AddBodyClassification(
-            message.BodyBodyClassificationId,
+            envelope.Command.BodyBodyClassificationId,
             bodyClassificationType,
             bodyClassification,
-            new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
+            new Period(new ValidFrom(envelope.Command.ValidFrom), new ValidTo(envelope.Command.ValidTo)));
 
-        await Session.Commit(user);
+        await Session.Commit(envelope.User);
     }
 }

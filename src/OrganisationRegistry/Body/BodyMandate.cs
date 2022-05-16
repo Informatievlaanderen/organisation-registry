@@ -10,7 +10,7 @@ namespace OrganisationRegistry.Body
         public BodyMandateId BodyMandateId { get; }
         public Period Validity { get; }
         public List<Assignment> Assignments { get; private set; }
-        public Assignment CurrentAssignment { get; private set; }
+        public Assignment? CurrentAssignment { get; private set; }
 
         protected BodyMandate(BodyMandateId bodyMandateId, Period validity)
         {
@@ -19,9 +19,14 @@ namespace OrganisationRegistry.Body
             Assignments = new List<Assignment>();
         }
 
-        public override bool Equals(object obj) => obj is BodyMandate && Equals((BodyMandate) obj);
-        public bool Equals(BodyMandate other) => BodyMandateId == other.BodyMandateId;
-        public override int GetHashCode() => BodyMandateId.GetHashCode();
+        public override bool Equals(object? obj)
+            => obj is BodyMandate mandate && Equals(mandate);
+
+        public bool Equals(BodyMandate? other)
+            => other is { } bodyMandate && BodyMandateId == bodyMandate.BodyMandateId;
+
+        public override int GetHashCode()
+            => BodyMandateId.GetHashCode();
 
         public abstract void AssignPerson(DelegationAssignmentId delegationAssignmentId, PersonId personId, string personFullName, Dictionary<Guid, string> contacts, Period period);
 
