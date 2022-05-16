@@ -14,5 +14,12 @@
     <Folder Include="ImportFiles\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="BulkImport\TestImportFile.csv" />
+    <EmbeddedResource Include="BulkImport\TestImportFile.csv" />
+    <None Remove="BulkImport\ExpectedStatusResult.json" />
+    <EmbeddedResource Include="BulkImport\ExpectedStatusResult.json" />
+  </ItemGroup>
+
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

@@ -1,0 +1,10 @@
+﻿{
+  "imports": [
+    {
+      "id": "{id}",
+      "fileName": "upload.csv",
+      "status": "Processing",
+      "uploadedAt": ""
+    }
+  ]
+}

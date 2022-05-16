@@ -8,5 +8,6 @@ namespace OrganisationRegistry.Infrastructure
         public const string ElasticSearchProjectionsSchema = "ElasticSearchProjections";
         public const string MagdaSchema = "Magda";
         public const string VlaanderenBeNotifierSchema = "VlaanderenBeNotifier";
+        public const string ImportSchema = "Import";
     }
 }
