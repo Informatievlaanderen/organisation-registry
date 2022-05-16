@@ -57,7 +57,7 @@ public class OrganisationCommandHandlers :
         //ICommandHandler<AddOrganisationCapacity>,
         //ICommandHandler<UpdateOrganisationCapacity>,
         //ICommandHandler<AddOrganisationParent>,
-        ICommandHandler<UpdateOrganisationParent>,
+        //ICommandHandler<UpdateOrganisationParent>,
         ICommandHandler<AddOrganisationFormalFramework>,
         ICommandHandler<UpdateOrganisationFormalFramework>,
         ICommandHandler<AddOrganisationBankAccount>,
@@ -849,27 +849,27 @@ public class OrganisationCommandHandlers :
     //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
     //             });
 
-    public Task Handle(UpdateOrganisationParent message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .WithVlimpersPolicy()
-            .Handle(
-                session =>
-                {
-                    var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
-
-                    if (ParentTreeHasOrganisationInIt(organisation, validity, parentOrganisation))
-                        throw new CircularRelationshipDetected();
-
-                    organisation.UpdateParent(
-                        message.OrganisationOrganisationParentId,
-                        parentOrganisation,
-                        validity,
-                        _dateTimeProvider);
-                });
+    // public Task Handle(UpdateOrganisationParent message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .WithVlimpersPolicy()
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
+    //
+    //                 if (ParentTreeHasOrganisationInIt(organisation, validity, parentOrganisation))
+    //                     throw new CircularRelationshipDetected();
+    //
+    //                 organisation.UpdateParent(
+    //                     message.OrganisationOrganisationParentId,
+    //                     parentOrganisation,
+    //                     validity,
+    //                     _dateTimeProvider);
+    //             });
 
     // public Task Handle(UpdateOrganisationRegulation message)
     //     => UpdateHandler<Organisation>.For(message, Session)
