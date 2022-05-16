@@ -54,7 +54,7 @@ public class OrganisationCommandHandlers :
         //ICommandHandler<UpdateOrganisationOrganisationClassification>,
         //ICommandHandler<AddOrganisationFunction>,
         //ICommandHandler<UpdateOrganisationFunction>,
-        ICommandHandler<AddOrganisationCapacity>,
+        //ICommandHandler<AddOrganisationCapacity>,
         ICommandHandler<UpdateOrganisationCapacity>,
         ICommandHandler<AddOrganisationParent>,
         ICommandHandler<UpdateOrganisationParent>,
@@ -137,37 +137,37 @@ public class OrganisationCommandHandlers :
     //                     _dateTimeProvider);
     //             });
 
-    public Task Handle(AddOrganisationCapacity message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .WithCapacityPolicy(_organisationRegistryConfiguration, message)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var capacity = session.Get<Capacity>(message.CapacityId);
-                    var person = message.PersonId is { } ? session.Get<Person>(message.PersonId) : null;
-                    var function = message.FunctionId is { } ? session.Get<FunctionType>(message.FunctionId) : null;
-                    var location = message.LocationId is { } ? session.Get<Location>(message.LocationId) : null;
-
-                    var contacts = message.Contacts.Select(
-                        contact =>
-                        {
-                            var contactType = session.Get<ContactType>(contact.Key);
-                            return new Contact(contactType, contact.Value);
-                        }).ToList();
-
-                    organisation.AddCapacity(
-                        message.OrganisationCapacityId,
-                        capacity,
-                        person,
-                        function,
-                        location,
-                        contacts,
-                        new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
-                        _dateTimeProvider);
-                });
+    // public Task Handle(AddOrganisationCapacity message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .WithCapacityPolicy(_organisationRegistryConfiguration, message)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var capacity = session.Get<Capacity>(message.CapacityId);
+    //                 var person = message.PersonId is { } ? session.Get<Person>(message.PersonId) : null;
+    //                 var function = message.FunctionId is { } ? session.Get<FunctionType>(message.FunctionId) : null;
+    //                 var location = message.LocationId is { } ? session.Get<Location>(message.LocationId) : null;
+    //
+    //                 var contacts = message.Contacts.Select(
+    //                     contact =>
+    //                     {
+    //                         var contactType = session.Get<ContactType>(contact.Key);
+    //                         return new Contact(contactType, contact.Value);
+    //                     }).ToList();
+    //
+    //                 organisation.AddCapacity(
+    //                     message.OrganisationCapacityId,
+    //                     capacity,
+    //                     person,
+    //                     function,
+    //                     location,
+    //                     contacts,
+    //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)),
+    //                     _dateTimeProvider);
+    //             });
 
     // public Task Handle(AddOrganisationContact message)
     //     => UpdateHandler<Organisation>.For(message, Session)
