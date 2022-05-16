@@ -1,3 +1,12 @@
+## [1.182.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.182.0...v1.182.1) (2022-05-16)
+
+
+### Bug Fixes
+
+* make vue2 work under subfolder ([1c02c7d](https://github.com/informatievlaanderen/organisation-registry/commit/1c02c7d2f5833246f6fee6d296d4faf1d3311406))
+* or-1033 remove duplicate controller method ([e941f1d](https://github.com/informatievlaanderen/organisation-registry/commit/e941f1d0a281939901e5977fa3c463e93f6e2ff3))
+* or-979 replace generic CanHandle with reflection ([7d2f384](https://github.com/informatievlaanderen/organisation-registry/commit/7d2f3841899953397ae824f59d3a96cb17b645a8))
+
 # [1.182.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.181.1...v1.182.0) (2022-05-16)
 
 
