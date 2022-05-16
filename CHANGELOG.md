@@ -1,3 +1,10 @@
+# [1.182.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.181.1...v1.182.0) (2022-05-16)
+
+
+### Features
+
+* add vue2 version of user interface with vlaanderen style ([c96c0af](https://github.com/informatievlaanderen/organisation-registry/commit/c96c0afdf2dd447d9a2a9456c3913bc2ddcd0650))
+
 ## [1.181.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.181.0...v1.181.1) (2022-05-13)
 
 # [1.181.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.180.2...v1.181.0) (2022-05-13)
