@@ -18,10 +18,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationParentWithCircularDependenciesInDaughters : OldExceptionSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationParent>
+    public class WhenUpdatingAnOrganisationParentWithCircularDependenciesInDaughters : ExceptionSpecification<
+        UpdateOrganisationParentCommandHandler, UpdateOrganisationParent>
     {
         private DateTimeProviderStub _dateTimeProviderStub;
-        private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
+
+        private readonly SequentialOvoNumberGenerator
+            _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
+
         private OrganisationCreatedBuilder _organisationACreated;
         private OrganisationCreatedBuilder _organisationBCreated;
         private OrganisationCreatedBuilder _organisationCCreated;
@@ -29,17 +33,22 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
         private OrganisationParentAddedBuilder _organisationBBecameDaughterOfOrganisationCFor2017;
         private OrganisationParentAddedBuilder _organisationCBecameDaughterOfOrganisationAFor2018;
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        public WhenUpdatingAnOrganisationParentWithCircularDependenciesInDaughters(ITestOutputHelper helper) : base(
+            helper)
         {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
-                Session,
-                _sequentialOvoNumberGenerator,
-                null,
-                _dateTimeProviderStub,
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
         }
+
+        protected override UpdateOrganisationParentCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<UpdateOrganisationParentCommandHandler>>().Object,
+                Session,
+                _dateTimeProviderStub);
+
+        protected override IUser User
+            => new UserBuilder()
+                .AddOrganisations(_organisationACreated.OvoNumber)
+                .AddRoles(Role.DecentraalBeheerder)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -51,14 +60,15 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
 
             _organisationABecameDaughterOfOrganisationBFor2016 =
                 new OrganisationParentAddedBuilder(_organisationACreated.Id, _organisationBCreated.Id)
-                    .WithValidity(new DateTime(2016,1,1), new DateTime(2016, 12, 31));
+                    .WithValidity(new DateTime(2016, 1, 1), new DateTime(2016, 12, 31));
 
             _organisationBBecameDaughterOfOrganisationCFor2017 =
                 new OrganisationParentAddedBuilder(_organisationBCreated.Id, _organisationCCreated.Id)
                     .WithValidity(new DateTime(2017, 1, 1), new DateTime(2017, 12, 31));
 
             _organisationCBecameDaughterOfOrganisationAFor2018 =
-                new OrganisationParentAddedBuilder(_organisationACreated.Id,
+                new OrganisationParentAddedBuilder(
+                        _organisationACreated.Id,
                         _organisationBCreated.Id)
                     .WithValidity(new DateTime(2018, 1, 1), new DateTime(2018, 12, 31));
 
@@ -73,28 +83,20 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
         }
 
         protected override UpdateOrganisationParent When()
-        {
-            return new UpdateOrganisationParent(
+            => new(
                 _organisationCBecameDaughterOfOrganisationAFor2018.OrganisationOrganisationParentId,
                 _organisationCBecameDaughterOfOrganisationAFor2018.OrganisationId,
                 _organisationCBecameDaughterOfOrganisationAFor2018.ParentOrganisationId,
-                new ValidFrom(new DateTime(2016, 1, 1)), new ValidTo(new DateTime(2016, 12, 31)))
-            {
-                User = new UserBuilder()
-                    .AddOrganisations(_organisationACreated.OvoNumber)
-                    .AddRoles(Role.DecentraalBeheerder)
-                    .Build()
-            };;
-        }
+                new ValidFrom(new DateTime(2016, 1, 1)),
+                new ValidTo(new DateTime(2016, 12, 31)));
 
-        protected override int ExpectedNumberOfEvents => 0;
+        protected override int ExpectedNumberOfEvents
+            => 0;
 
         [Fact]
         public void ThrowsADomainException()
         {
             Exception.Should().BeOfType<OrganisationAlreadyCoupledToParentInThisPeriod>();
         }
-
-        public WhenUpdatingAnOrganisationParentWithCircularDependenciesInDaughters(ITestOutputHelper helper) : base(helper) { }
     }
 }

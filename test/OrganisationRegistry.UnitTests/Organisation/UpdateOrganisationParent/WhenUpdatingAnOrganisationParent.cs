@@ -3,81 +3,106 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
-    using Tests.Shared;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
-
     using OrganisationRegistry.Organisation.Events;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenUpdatingAnOrganisationParent : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateOrganisationParent>
+    public class
+        WhenUpdatingAnOrganisationParent : Specification<UpdateOrganisationParentCommandHandler,
+            UpdateOrganisationParent>
     {
         private OrganisationId _organisationId;
         private OrganisationId _organisationParentId;
         private Guid _organisationOrganisationParentId;
         private DateTime _validTo;
         private DateTime _validFrom;
-        private DateTimeProviderStub _dateTimeProviderStub;
-        private string _ovoNumber;
+        private readonly DateTimeProviderStub _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
+        private const string OvoNumber = "OVO000012345";
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        public WhenUpdatingAnOrganisationParent(ITestOutputHelper helper) : base(helper)
         {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
-                Session,
-                new SequentialOvoNumberGenerator(),
-                null,
-                new DateTimeProvider(),
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
         }
+
+        protected override UpdateOrganisationParentCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<UpdateOrganisationParentCommandHandler>>().Object,
+                Session,
+                new DateTimeProvider()
+            );
+
+        protected override IUser User
+            => new UserBuilder()
+                .AddOrganisations(OvoNumber)
+                .AddRoles(Role.DecentraalBeheerder)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
-            _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
-
             _organisationOrganisationParentId = Guid.NewGuid();
             _validFrom = _dateTimeProviderStub.Today;
             _validTo = _dateTimeProviderStub.Today.AddDays(2);
             _organisationId = new OrganisationId(Guid.NewGuid());
             _organisationParentId = new OrganisationId(Guid.NewGuid());
-            _ovoNumber = "OVO000012345";
 
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", _ovoNumber, "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
-                new OrganisationCreated(_organisationParentId, "Ouder en Gezin", "OVO000012346", "O&G", Article.None, "Moeder", new List<Purpose>(), false, null, null, null, null),
-                new OrganisationParentAdded(_organisationId, _organisationOrganisationParentId, _organisationParentId, "Ouder en Gezin", null, null),
-                new ParentAssignedToOrganisation(_organisationId, _organisationParentId, _organisationOrganisationParentId)
+                new OrganisationCreated(
+                    _organisationId,
+                    "Kind en Gezin",
+                    OvoNumber,
+                    "K&G",
+                    Article.None,
+                    "Kindjes en gezinnetjes",
+                    new List<Purpose>(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null),
+                new OrganisationCreated(
+                    _organisationParentId,
+                    "Ouder en Gezin",
+                    "OVO000012346",
+                    "O&G",
+                    Article.None,
+                    "Moeder",
+                    new List<Purpose>(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null),
+                new OrganisationParentAdded(
+                    _organisationId,
+                    _organisationOrganisationParentId,
+                    _organisationParentId,
+                    "Ouder en Gezin",
+                    null,
+                    null),
+                new ParentAssignedToOrganisation(
+                    _organisationId,
+                    _organisationParentId,
+                    _organisationOrganisationParentId)
             };
         }
 
         protected override UpdateOrganisationParent When()
-        {
-            return new UpdateOrganisationParent(
+            => new(
                 _organisationOrganisationParentId,
                 _organisationId,
                 _organisationParentId,
                 new ValidFrom(_validFrom),
-                new ValidTo(_validTo))
-            {
-                User = new UserBuilder()
-                    .AddOrganisations(_ovoNumber)
-                    .AddRoles(Role.DecentraalBeheerder)
-                    .Build()
-            };;
-        }
+                new ValidTo(_validTo));
 
-        protected override int ExpectedNumberOfEvents => 1;
+        protected override int ExpectedNumberOfEvents
+            => 1;
 
         [Fact]
         public void UpdatesTheOrganisationParent()
@@ -91,6 +116,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent
             organisationParentUpdated.ValidTo.Should().Be(_validTo);
         }
 
-        public WhenUpdatingAnOrganisationParent(ITestOutputHelper helper) : base(helper) { }
+
     }
 }
