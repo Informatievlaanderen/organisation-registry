@@ -3,14 +3,10 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Detail
     using System;
     using System.Linq;
     using System.Threading.Tasks;
-    using List;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Infrastructure;
-    using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
-    using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
-    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
     using OrganisationRegistry.Api.Infrastructure.Security;
     using Security;
     using OrganisationRegistry.Infrastructure.Authorization;
@@ -25,24 +21,6 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Detail
         public BodyDetailController(ICommandSender commandSender)
             : base(commandSender)
         {
-        }
-
-        /// <summary>Get a list of available bodies.</summary>
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Get([FromServices] OrganisationRegistryContext context)
-        {
-            var filtering = Request.ExtractFilteringRequest<BodyListItemFilter>();
-            var sorting = Request.ExtractSortingRequest();
-            var pagination = Request.ExtractPaginationRequest();
-
-            var pagedBodies =
-                new BodyListQuery(context).Fetch(filtering, sorting, pagination);
-
-            Response.AddPaginationResponse(pagedBodies.PaginationInfo);
-            Response.AddSortingResponse(sorting.SortBy, sorting.SortOrder);
-
-            return Ok(await pagedBodies.Items.ToListAsync());
         }
 
         /// <summary>Get a body.</summary>
