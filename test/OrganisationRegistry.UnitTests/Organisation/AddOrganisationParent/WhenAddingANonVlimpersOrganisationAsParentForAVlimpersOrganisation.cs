@@ -2,85 +2,97 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent
 {
     using System;
     using System.Collections.Generic;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
-    using Tests.Shared;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
-
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Exceptions;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation : OldExceptionSpecification<Organisation, OrganisationCommandHandlers, AddOrganisationParent>
+    public class WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation : ExceptionSpecification<
+        AddOrganisationParentCommandHandler, AddOrganisationParent>
     {
-        private Guid _organisationId;
-        private Guid _organisationOrganisationParentId;
+        private readonly Guid _organisationId = Guid.NewGuid();
+        private readonly Guid _organisationOrganisationParentId = Guid.NewGuid();
         private DateTime _validTo;
         private DateTime _validFrom;
-        private DateTimeProviderStub _dateTimeProviderStub;
-        private Guid _organisationParentId;
+        private readonly DateTimeProviderStub _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
+        private readonly Guid _organisationParentId = Guid.NewGuid();
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        public WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation(ITestOutputHelper helper) : base(
+            helper)
         {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
-                Session,
-                new SequentialOvoNumberGenerator(),
-                null,
-                _dateTimeProviderStub,
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
         }
+
+        protected override AddOrganisationParentCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<AddOrganisationParentCommandHandler>>().Object,
+                Session,
+                _dateTimeProviderStub
+            );
+
+        protected override IUser User
+            => new UserBuilder()
+                .AddRoles(Role.VlimpersBeheerder)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
-            _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
-
-            _organisationOrganisationParentId = Guid.NewGuid();
             _validFrom = _dateTimeProviderStub.Today;
             _validTo = _dateTimeProviderStub.Today.AddDays(2);
-            _organisationId = Guid.NewGuid();
-            _organisationParentId = Guid.NewGuid();
 
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
-                new OrganisationCreated(_organisationParentId, "Ouder en Gezin", "OVO000012346", "O&G", Article.None, "Moeder", new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(
+                    _organisationId,
+                    "Kind en Gezin",
+                    "OVO000012345",
+                    "K&G",
+                    Article.None,
+                    "Kindjes en gezinnetjes",
+                    new List<Purpose>(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null),
+                new OrganisationCreated(
+                    _organisationParentId,
+                    "Ouder en Gezin",
+                    "OVO000012346",
+                    "O&G",
+                    Article.None,
+                    "Moeder",
+                    new List<Purpose>(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null),
                 new OrganisationPlacedUnderVlimpersManagement(_organisationId)
             };
         }
 
         protected override AddOrganisationParent When()
-        {
-            return new AddOrganisationParent(
+            => new(
                 _organisationOrganisationParentId,
                 new OrganisationId(_organisationId),
                 new OrganisationId(_organisationParentId),
                 new ValidFrom(_validFrom),
-                new ValidTo(_validTo))
-            {
-                User = new UserBuilder()
-                    .AddRoles(Role.VlimpersBeheerder)
-                    .Build()
-            };
-        }
+                new ValidTo(_validTo));
 
-        protected override int ExpectedNumberOfEvents => 0;
+        protected override int ExpectedNumberOfEvents
+            => 0;
 
         [Fact]
         public void AddsAnOrganisationParent()
         {
             Exception.Should().BeOfType<VlimpersAndNonVlimpersOrganisationCannotBeInParentalRelationship>();
         }
-
-        public WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation(ITestOutputHelper helper) : base(helper) { }
     }
 }
