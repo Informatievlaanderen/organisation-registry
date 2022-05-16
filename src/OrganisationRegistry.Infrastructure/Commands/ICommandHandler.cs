@@ -13,7 +13,7 @@
     {
     }
 
-    public interface ICommandEnvelopeHandler<TCommand>: ICommandEnvelopeHandler
+    public interface ICommandEnvelopeHandler<in TCommand>: ICommandEnvelopeHandler
         where TCommand : ICommand
     {
         Task Handle(ICommandEnvelope<TCommand> envelope);
@@ -21,7 +21,7 @@
 
     public interface ICommandEnvelopeHandlerWrapper
     {
-        public bool CanHandle<T>();
+        public bool CanHandle(Type type);
 
         public Task Handle(ICommandEnvelope command);
     }
@@ -41,10 +41,9 @@
             _requestScopedServiceProvider = requestScopedServiceProvider;
         }
 
-        public bool CanHandle<T>()
-            => typeof(T) == typeof(TCommand) && MaybeGetCommandEnvelopeHandler() != null;
-
-
+        public bool CanHandle(Type type)
+            => type == typeof(TCommand) && MaybeGetCommandEnvelopeHandler() != null;
+        
         public Task Handle(ICommandEnvelope commandEnvelope)
         {
             if (commandEnvelope is not ICommandEnvelope<TCommand> theCommandEnvelope)

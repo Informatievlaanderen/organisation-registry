@@ -71,7 +71,7 @@ namespace OrganisationRegistry.Infrastructure.Bus
 
         public async Task Send<T>(T command, IUser? user = null) where T : ICommand
         {
-            if (_commandEnvelopeRoutes.SingleOrDefault(x => x.CanHandle<T>()) is { } envelopeHandler)
+            if (_commandEnvelopeRoutes.SingleOrDefault(x => x.CanHandle(command.GetType())) is { } envelopeHandler)
             {
                 user ??= await _securityService.GetRequiredUser(ClaimsPrincipal.Current);
                 var envelope = new CommandEnvelope<T>(command, user);
