@@ -30,7 +30,8 @@
     "node_modules",
     "dist",
     "packages",
-    "src/OrganisationRegistry.Vue"
+    "src/OrganisationRegistry.Vue",
+    "src/OrganisationRegistry.Vue2"
   ],
   "awesomeTypescriptLoaderOptions": {
     "forkChecker": true,
