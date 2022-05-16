@@ -16,8 +16,8 @@ namespace OrganisationRegistry.Body
 
     public class BodyCommandHandlers :
         BaseCommandHandler<BodyCommandHandlers>,
-        ICommandHandler<RegisterBody>,
-        ICommandHandler<UpdateBodyInfo>,
+        // ICommandHandler<RegisterBody>,
+        // ICommandHandler<UpdateBodyInfo>,
         ICommandHandler<UpdateBodyValidity>,
         ICommandHandler<UpdateBodyBalancedParticipation>,
         // ICommandHandler<AddBodyFormalFramework>,
@@ -65,63 +65,63 @@ namespace OrganisationRegistry.Body
             _bodySeatNumberGenerator = bodySeatNumberGenerator;
         }
 
-        public async Task Handle(RegisterBody message)
-        {
-            var bodyNumber = GetBodyNumber(message);
+        // public async Task Handle(RegisterBody message)
+        // {
+        //     var bodyNumber = GetBodyNumber(message);
+        //
+        //     var organisation =
+        //         message.OrganisationId is { } organisationId
+        //             ? Session.Get<Organisation>(organisationId)
+        //             : null;
+        //
+        //     var activeLifecyclePhaseType =
+        //         message.ActiveLifecyclePhaseTypeId is { } activeLifecyclePhaseTypeId
+        //             ? Session.Get<LifecyclePhaseType>(activeLifecyclePhaseTypeId)
+        //             : null;
+        //
+        //     var inActiveLifecyclePhaseType =
+        //         message.InactiveLifecyclePhaseTypeId is { } inactiveLifecyclePhaseTypeId
+        //             ? Session.Get<LifecyclePhaseType>(inactiveLifecyclePhaseTypeId)
+        //             : null;
+        //
+        //     var body = new Body(
+        //         message.BodyId,
+        //         message.Name,
+        //         bodyNumber,
+        //         message.ShortName,
+        //         organisation,
+        //         message.Description,
+        //         message.Validity,
+        //         message.FormalValidity,
+        //         activeLifecyclePhaseType,
+        //         inActiveLifecyclePhaseType);
+        //
+        //     Session.Add(body);
+        //     await Session.Commit(message.User);
+        // }
 
-            var organisation =
-                message.OrganisationId is { } organisationId
-                    ? Session.Get<Organisation>(organisationId)
-                    : null;
+        // private string GetBodyNumber(RegisterBody message)
+        // {
+        //     if (message.BodyNumber is not { } bodyNumber)
+        //         return _bodyNumberGenerator.GenerateNumber();
+        //
+        //     if (_uniqueBodyNumberValidator.IsBodyNumberTaken(bodyNumber))
+        //         throw new BodyNumberNotUnique();
+        //
+        //     return message.BodyNumber;
+        // }
 
-            var activeLifecyclePhaseType =
-                message.ActiveLifecyclePhaseTypeId is { } activeLifecyclePhaseTypeId
-                    ? Session.Get<LifecyclePhaseType>(activeLifecyclePhaseTypeId)
-                    : null;
-
-            var inActiveLifecyclePhaseType =
-                message.InactiveLifecyclePhaseTypeId is { } inactiveLifecyclePhaseTypeId
-                    ? Session.Get<LifecyclePhaseType>(inactiveLifecyclePhaseTypeId)
-                    : null;
-
-            var body = new Body(
-                message.BodyId,
-                message.Name,
-                bodyNumber,
-                message.ShortName,
-                organisation,
-                message.Description,
-                message.Validity,
-                message.FormalValidity,
-                activeLifecyclePhaseType,
-                inActiveLifecyclePhaseType);
-
-            Session.Add(body);
-            await Session.Commit(message.User);
-        }
-
-        private string GetBodyNumber(RegisterBody message)
-        {
-            if (message.BodyNumber is not { } bodyNumber)
-                return _bodyNumberGenerator.GenerateNumber();
-
-            if (_uniqueBodyNumberValidator.IsBodyNumberTaken(bodyNumber))
-                throw new BodyNumberNotUnique();
-
-            return message.BodyNumber;
-        }
-
-        public async Task Handle(UpdateBodyInfo message)
-        {
-            var body = Session.Get<Body>(message.BodyId);
-
-            body.UpdateInfo(
-                message.Name,
-                message.ShortName,
-                message.Description);
-
-            await Session.Commit(message.User);
-        }
+        // public async Task Handle(UpdateBodyInfo message)
+        // {
+        //     var body = Session.Get<Body>(message.BodyId);
+        //
+        //     body.UpdateInfo(
+        //         message.Name,
+        //         message.ShortName,
+        //         message.Description);
+        //
+        //     await Session.Commit(message.User);
+        // }
 
         public async Task Handle(UpdateBodyValidity message)
         {
