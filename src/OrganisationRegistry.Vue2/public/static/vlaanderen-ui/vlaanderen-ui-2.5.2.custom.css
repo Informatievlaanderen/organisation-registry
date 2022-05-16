@@ -1,0 +1,16 @@
+.cta-title {
+}
+
+.cta-title .cta-title__title {
+  margin-bottom: 0;
+}
+
+.cta-title h3 {
+  margin-bottom: 1rem;
+}
+
+.form__group {
+  background-color: #FFF;
+  /* padding: 0rem 1.5rem; */ /* ==> in wegwijs, padding is like this. */
+  padding: 0;
+}

@@ -58,11 +58,11 @@ Target.create "Site_Build" (fun _ ->
   Shell.copyFile dist (source @@ "config.js")
   Shell.copyFile dist (source @@ "init.sh")
 
-  Npm.install (fun o -> { o with WorkingDirectory = "src" @@ "OrganisationRegistry.Vue" })
+  Npm.install (fun o -> { o with WorkingDirectory = "src" @@ "OrganisationRegistry.Vue2" })
 
-  Npm.exec "run build"  (fun o -> { o with WorkingDirectory = "src" @@ "OrganisationRegistry.Vue" })
+  Npm.exec "run build"  (fun o -> { o with WorkingDirectory = "src" @@ "OrganisationRegistry.Vue2" })
 
-  let vueDist = ("src" @@ "OrganisationRegistry.Vue" @@ "dist")
+  let vueDist = ("src" @@ "OrganisationRegistry.Vue2" @@ "dist")
 
   Shell.mkdir (dist @@ "wwwroot" @@ "vue")
   Shell.copyDir (dist @@ "wwwroot" @@ "vue") (vueDist) (fun _ -> true)
