@@ -44,7 +44,7 @@ namespace OrganisationRegistry.Api.Infrastructure
         private readonly IConfiguration _configuration;
         private readonly ILoggerFactory _loggerFactory;
 
-        private IContainer _applicationContainer;
+        private IContainer? _applicationContainer;
 
         public Startup(
             IConfiguration configuration,
@@ -77,6 +77,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                 .AddHostedService<ScheduledCommandsService>()
                 .AddHostedService<SyncFromKboService>()
                 .AddHostedService<SyncRemovedItemsService>()
+                .AddHostedService<ProcessImportedFilesService>()
                 .AddAuthentication(
                     options =>
                     {
@@ -258,7 +259,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                     {
                         Common =
                         {
-                            ApplicationContainer = _applicationContainer,
+                            ApplicationContainer = _applicationContainer!, // if _applicationContainer is null here, something is off
                             ServiceProvider = serviceProvider,
                             HostingEnvironment = env,
                             ApplicationLifetime = appLifetime,

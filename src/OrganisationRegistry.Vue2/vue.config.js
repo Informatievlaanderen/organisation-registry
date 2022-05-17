@@ -3,5 +3,5 @@ module.exports = defineConfig({
   transpileDependencies: true,
 });
 module.exports = {
-  publicPath: '/v2/'
-}
+  publicPath: "/v2/",
+};
