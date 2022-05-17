@@ -10,10 +10,6 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "core-js": "^3.8.3",
-    "register-service-worker": "^1.7.2",
-    "vue": "^2.6.14",
-    "vue-router": "^3.5.1",
     "@govflanders/vl-ui-accordion": "^13.0.7",
     "@govflanders/vl-ui-action-group": "^13.0.7",
     "@govflanders/vl-ui-agenda-item": "^13.0.7",
@@ -114,7 +110,15 @@
     "@govflanders/vl-ui-util": "^13.0.7",
     "@govflanders/vl-ui-video-player": "^13.0.7",
     "@govflanders/vl-ui-vue-components": "^14.0.7",
-    "@govflanders/vl-ui-wizard": "^13.0.7"
+    "@govflanders/vl-ui-wizard": "^13.0.7",
+    "@vue/composition-api": "^1.6.1",
+    "core-js": "^3.8.3",
+    "jwt-decode": "^3.1.2",
+    "oidc-client": "^1.11.5",
+    "pinia": "^2.0.14",
+    "register-service-worker": "^1.7.2",
+    "vue": "^2.6.14",
+    "vue-router": "^3.5.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
@@ -137,8 +141,8 @@
     "jest": "^27.0.5",
     "prettier": "^2.4.1",
     "sass": "^1.32.7",
-    "sass-loader": "^12.0.0",
     "sass-lint": "^1.13.1",
+    "sass-loader": "^12.0.0",
     "vue-template-compiler": "^2.6.14"
   }
 }

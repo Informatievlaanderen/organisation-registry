@@ -12,7 +12,8 @@
 import DvFunctionalHeaderAction from "../functional-header/FunctionalHeaderAction";
 import DvFunctionalHeaderActions from "../functional-header/FunctionalHeaderActions";
 
-// import { mapGetters } from "vuex";
+import { mapStores } from "pinia";
+import { useUserStore } from "@/stores/user";
 
 export default {
   name: "user-info",
@@ -25,6 +26,10 @@ export default {
     //   isLoggedIn: "isLoggedIn",
     //   userDescription: "userDescription",
     // }),
+    ...mapStores(useUserStore),
+    userDescription() {
+      return `${this.userStore.firstName} ${this.userStore.name}`;
+    },
   },
   methods: {
     loginClicked() {
@@ -33,6 +38,9 @@ export default {
     logoutClicked() {
       this.$store.dispatch("user/logOut");
     },
+  },
+  beforeMount() {
+    this.isLoggedIn = this.userStore.isLoggedIn;
   },
   props: {
     modHasActions: {
