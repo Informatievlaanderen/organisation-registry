@@ -10,10 +10,10 @@
           slot="title"
           class="functional-header__title"
           :to="{ name: 'upload-organisations' }"
-          >{{ title }}</router-link
+          >{{ title }}
+        </router-link>
         >
-        ></dv-functional-header-content
-      >
+      </dv-functional-header-content>
       <dv-functional-header-sub>
         <dv-grid>
           <dv-column
@@ -55,8 +55,8 @@
             :title="alert.title"
             :type="alert.type"
             :visible="alert.visible"
-            >{{ alert.content }}</dv-alert
-          >
+            >{{ alert.content }}
+          </dv-alert>
           <router-view></router-view>
         </dv-layout>
       </dv-region>
@@ -118,7 +118,9 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
+@import "./scss/theme.scss";
+
 a:before,
 a:hover:before {
   text-decoration: none;

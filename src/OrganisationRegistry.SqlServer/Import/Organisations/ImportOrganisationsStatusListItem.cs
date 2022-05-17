@@ -9,11 +9,11 @@ using OrganisationRegistry.Infrastructure;
 public class ImportOrganisationsStatusListItem
 {
     public Guid Id { get; set; }
-    public string UserId { get; set; }
-    public string UserName { get; set; }
-    public string FileName { get; set; }
-    public string FileContent { get; set; }
-    public string Status { get; set; }
+    public string UserId { get; set; } = null!;
+    public string UserName { get; set; } = null!;
+    public string FileName { get; set; } = null!;
+    public string FileContent { get; set; } = null!;
+    public string Status { get; set; } = null!;
     public DateTimeOffset UploadedAt { get; set; }
     public DateTimeOffset? LastProcessedAt { get; set; }
     public string? ProcessInfo { get; set; }
@@ -23,6 +23,7 @@ public static class ImportProcessStatus
 {
     public const string Processing = "Processing";
     public const string Processed = "Processed";
+    public const string Failed = "Failed";
 }
 
 public class ImportStatusListItemConfiguration : EntityMappingConfiguration<ImportOrganisationsStatusListItem>
