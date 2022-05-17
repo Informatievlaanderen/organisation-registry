@@ -4,6 +4,11 @@ import "./registerServiceWorker";
 import router from "./router";
 import "./components";
 
+import { createPinia, PiniaVuePlugin } from "pinia";
+
+Vue.use(PiniaVuePlugin);
+const pinia = createPinia();
+
 Vue.config.productionTip = false;
 
 window.organisatieRegisterApiEndpoint =
@@ -13,4 +18,5 @@ window.organisatieRegisterApiEndpoint =
 new Vue({
   router,
   render: (h) => h(App),
+  pinia,
 }).$mount("#app");

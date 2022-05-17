@@ -88,6 +88,10 @@ import DvFooter from "./components/partials/footer/Footer";
 
 import DvAlert from "./components/partials/alert/Alert";
 
+import { mapStores } from "pinia";
+import { loadUser } from "@/api/security";
+import { useUserStore } from "@/stores/user";
+
 export default {
   name: "App",
   components: {
@@ -106,8 +110,12 @@ export default {
     DvFooter,
     DvAlert,
   },
-  computed: {},
-  mounted() {},
+  computed: {
+    ...mapStores(useUserStore),
+  },
+  beforeMount() {
+    loadUser(this.userStore);
+  },
   data() {
     return {
       isLoggedIn: false,
