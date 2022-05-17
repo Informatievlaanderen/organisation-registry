@@ -9,6 +9,7 @@ using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.FeatureManagement.Mvc;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using Security;
@@ -19,6 +20,7 @@ using SqlServer.Infrastructure;
 [AdvertiseApiVersions("1.0")]
 [OrganisationRegistryRoute("import/organisations")]
 [OrganisationRegistryAuthorize(Roles = Roles.AlgemeenBeheerder)]
+[FeatureGate(FeatureFlags.ImportApi)]
 public class ImportOrganisationsController : OrganisationRegistryController
 {
     public ImportOrganisationsController(ICommandSender commandSender) : base(commandSender)
