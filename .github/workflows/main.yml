@@ -139,6 +139,7 @@ jobs:
       shell: bash
       run: npx semantic-release
       env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         BUILD_DOCKER_REGISTRY: ${{ secrets.VBR_BUILD_DOCKER_REGISTRY }}
         GITHUB_TOKEN: ${{ secrets.VBR_ACTIONS_TOKEN }}
         GIT_COMMIT: ${{ github.sha }}
