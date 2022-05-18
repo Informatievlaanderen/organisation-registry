@@ -10,16 +10,15 @@ export function composeApiUri(route) {
 /**
  * Handles the incoming response based on its http status code.
  * @param {Response} response - the incoming response
- * @returns {null|Promise<any>} - <p>Returns null when the http status code is not a success code with a response.</p>
+ * @returns {Promise<any | null>} - <p>Returns null when the http status code is not a success code with a response.</p>
  *                                <p>Returns Promise of JSON body when the http status code is a success code with a response (200, 202).</p>
  */
-
 export async function handleHttpResponse(response) {
   switch (response.status) {
     case 200:
     case 202:
       return await response.json();
     default:
-      return null;
+      return new Promise(() => null);
   }
 }

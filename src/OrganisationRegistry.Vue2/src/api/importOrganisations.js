@@ -14,10 +14,27 @@ export async function postImportOrganisations(file) {
     },
     body: data,
   };
-  return await fetch(
+  const response = await fetch(
     composeApiUri(`import/organisations`),
     requestOptions
-  ).then((response) => handleHttpResponse(response));
+  );
+
+  return await handleHttpResponse(response);
 }
 
-export function getImportStatus() {}
+export async function getImportStatus() {
+  const token = getToken();
+
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await fetch(
+    composeApiUri(`import/organisations`),
+    requestOptions
+  );
+
+  return await handleHttpResponse(response);
+}

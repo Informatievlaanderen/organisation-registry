@@ -80,16 +80,17 @@ public class ImportOrganisationsController : OrganisationRegistryController
             .Where(import => import.UserId == user.UserId)
             .OrderByDescending(import => import.UploadedAt)
             .Take(100)
-            .Select(
-                import => new ImportOganisationStatusResponseItem
-                {
-                    Id = import.Id,
-                    Status = import.Status,
-                    FileName = import.FileName,
-                    UploadedAt = import.UploadedAt
-                })
             .ToListAsync();
 
-        return Ok(new ImportOrganisationStatusResponse { Imports = imports });
+        var response = new ImportOrganisationStatusResponse(
+            imports.Select(
+                import => new ImportOganisationStatusResponseItem(
+                    import.Id,
+                    import.Status,
+                    import.FileName,
+                    import.UploadedAt.ToString("yyyy-MM-dd hh:mm:ss")
+                )));
+
+        return Ok(response);
     }
 }
