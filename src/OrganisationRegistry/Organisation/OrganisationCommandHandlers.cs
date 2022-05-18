@@ -58,7 +58,7 @@ public class OrganisationCommandHandlers :
         //ICommandHandler<UpdateOrganisationCapacity>,
         //ICommandHandler<AddOrganisationParent>,
         //ICommandHandler<UpdateOrganisationParent>,
-        ICommandHandler<AddOrganisationFormalFramework>,
+        //ICommandHandler<AddOrganisationFormalFramework>,
         ICommandHandler<UpdateOrganisationFormalFramework>,
         ICommandHandler<AddOrganisationBankAccount>,
         ICommandHandler<UpdateOrganisationBankAccount>,
@@ -186,39 +186,39 @@ public class OrganisationCommandHandlers :
     //                     new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo)));
     //             });
 
-    public Task Handle(AddOrganisationFormalFramework message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .WithPolicy(
-                organisation => new FormalFrameworkPolicy(
-                    () => organisation.State.OvoNumber,
-                    message.FormalFrameworkId,
-                    _organisationRegistryConfiguration))
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var formalFramework = session.Get<FormalFramework>(message.FormalFrameworkId);
-                    var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
-
-                    var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
-
-                    if (FormalFrameworkTreeHasOrganisationInIt(
-                            organisation,
-                            formalFramework,
-                            validity,
-                            parentOrganisation,
-                            new List<Organisation>()))
-                        throw new CircularRelationInFormalFramework();
-
-                    organisation.AddFormalFramework(
-                        message.OrganisationFormalFrameworkId,
-                        formalFramework,
-                        parentOrganisation,
-                        validity,
-                        _dateTimeProvider);
-                });
+    // public Task Handle(AddOrganisationFormalFramework message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .WithPolicy(
+    //             organisation => new FormalFrameworkPolicy(
+    //                 () => organisation.State.OvoNumber,
+    //                 message.FormalFrameworkId,
+    //                 _organisationRegistryConfiguration))
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var formalFramework = session.Get<FormalFramework>(message.FormalFrameworkId);
+    //                 var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
+    //
+    //                 var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
+    //
+    //                 if (FormalFrameworkTreeHasOrganisationInIt(
+    //                         organisation,
+    //                         formalFramework,
+    //                         validity,
+    //                         parentOrganisation,
+    //                         new List<Organisation>()))
+    //                     throw new CircularRelationInFormalFramework();
+    //
+    //                 organisation.AddFormalFramework(
+    //                     message.OrganisationFormalFrameworkId,
+    //                     formalFramework,
+    //                     parentOrganisation,
+    //                     validity,
+    //                     _dateTimeProvider);
+    //             });
 
     // public Task Handle(AddOrganisationFunction message)
     //     => UpdateHandler<Organisation>.For(message, Session)
