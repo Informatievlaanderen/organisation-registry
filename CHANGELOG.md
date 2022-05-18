@@ -1,3 +1,18 @@
+# [1.184.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.183.0...v1.184.0) (2022-05-18)
+
+
+### Bug Fixes
+
+* pass NPM_TOKEN to semantic release step ([053b6a9](https://github.com/informatievlaanderen/organisation-registry/commit/053b6a9a4bbef45862b83e4594bc91a38113f90c))
+
+
+### Features
+
+* or-1013 add feature gate for import api ([cd6bd8f](https://github.com/informatievlaanderen/organisation-registry/commit/cd6bd8fe07747ddb876bba93dc3a121362a3d939))
+* or-1013 added apiUri to vue ([3b84e12](https://github.com/informatievlaanderen/organisation-registry/commit/3b84e125fdcf2737ac9fd1de695dfcb2b51de4c7))
+* or-1013 file upload ui ([171728f](https://github.com/informatievlaanderen/organisation-registry/commit/171728f1a08b1e23d0286be35d004805804b99ea))
+* or-1013 implement statuslist ([bb51538](https://github.com/informatievlaanderen/organisation-registry/commit/bb5153841ae888b3e97097478e1b1e8c5931c71c))
+
 # [1.183.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.182.1...v1.183.0) (2022-05-16)
 
 
