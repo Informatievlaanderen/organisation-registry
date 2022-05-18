@@ -22,9 +22,7 @@ export default {
   },
   methods: {
     select() {
-      console.log("attempting selection of file");
       if (this.file) {
-        console.log("file selected");
         this.$emit("file-selected", this.file);
       }
     },

@@ -4,7 +4,7 @@
  * @returns {string} - The API uri
  */
 export function composeApiUri(route) {
-  return `https://api.organisatie.dev-vlaanderen.local:9003/v1/${route}`;
+  return `${window.organisatieRegisterApiEndpoint}/v1/${route}`;
 }
 
 /**
