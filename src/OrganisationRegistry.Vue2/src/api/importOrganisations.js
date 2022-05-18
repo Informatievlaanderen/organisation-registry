@@ -1,5 +1,5 @@
 ﻿import { composeApiUri, handleHttpResponse } from "@/api/httpHelpers";
-import { getToken } from "@/api/security";
+import { getToken } from "@/api/localStorage";
 
 export async function postImportOrganisations(file) {
   const data = new FormData();

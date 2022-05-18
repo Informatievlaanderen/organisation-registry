@@ -1,12 +1,8 @@
 <template>
-  <router-link
-    tag="li"
-    class="tab"
-    active-class="tab--active"
-    :exact="exact"
-    :to="to"
-  >
-    <a link :id="id || null" class="tab__link">{{ title }}</a>
+  <router-link class="tab" active-class="tab--active" :exact="exact" :to="to">
+    <li>
+      <a link :id="id || null" class="tab__link">{{ title }}</a>
+    </li>
   </router-link>
 </template>
 

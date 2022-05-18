@@ -1,4 +1,8 @@
 import { defineStore } from "pinia";
+import jwtDecode from "jwt-decode";
+import { getToken, getVerifier, setToken } from "@/api/localStorage";
+import { exchangeCode, getSecurityInfo } from "@/api/security";
+import OidcClient from "@/api/oidc";
 
 export const useUserStore = defineStore("user", {
   state: () => {
@@ -10,6 +14,19 @@ export const useUserStore = defineStore("user", {
     };
   },
   actions: {
+    async initializeOidcClient() {
+      const securityInfo = await getSecurityInfo();
+      this.oidcClient = new OidcClient(securityInfo);
+    },
+    loadUserFromToken() {
+      const token = getToken();
+      if (token) {
+        const decoded = jwtDecode(token);
+        this.setUser(decoded);
+      } else {
+        this.clearUser();
+      }
+    },
     setUser(user) {
       this.isLoggedIn = true;
       this.name = user.family_name;
@@ -17,6 +34,19 @@ export const useUserStore = defineStore("user", {
     },
     clearUser() {
       this.$reset();
+    },
+    async exchangeCode(code) {
+      if (!this.oidcClient) await this.initializeOidcClient();
+
+      const verifier = getVerifier();
+      const redirectUri = this.oidcClient.client.settings.redirect_uri;
+      const response = await exchangeCode(code, verifier, redirectUri);
+      const token = await response.text();
+
+      setToken(token);
+
+      this.loadUserFromToken();
+      await this.router.push({ path: "/" });
     },
   },
 });

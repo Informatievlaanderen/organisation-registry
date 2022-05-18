@@ -49,6 +49,7 @@ namespace OrganisationRegistry.Api.Security
             [FromServices] ISecurityService securityService,
             string code,
             string verifier,
+            string? redirectUri,
             CancellationToken cancellationToken)
         {
             using var httpClient = httpClientFactory.CreateClient();
@@ -61,7 +62,7 @@ namespace OrganisationRegistry.Api.Security
                 {
                     ClientId = _openIdConnectConfiguration.ClientId,
                     ClientSecret = _openIdConnectConfiguration.ClientSecret,
-                    RedirectUri = _openIdConnectConfiguration.AuthorizationRedirectUri,
+                    RedirectUri = redirectUri ?? _openIdConnectConfiguration.AuthorizationRedirectUri,
                     Address = tokenEndpointAddress,
                     Code = code,
                     CodeVerifier = verifier
