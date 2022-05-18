@@ -32,38 +32,38 @@ using RegulationSubTheme;
 using RegulationTheme;
 
 public class OrganisationCommandHandlers :
-        BaseCommandHandler<OrganisationCommandHandlers>,
-        // ICommandHandler<CreateOrganisation>,
-        // ICommandHandler<UpdateOrganisationInfo>,
-        // ICommandHandler<UpdateOrganisationInfoNotLimitedToVlimpers>,
-        // ICommandHandler<UpdateOrganisationInfoLimitedToVlimpers>,
-        // ICommandHandler<AddOrganisationKey>,
-        // ICommandHandler<UpdateOrganisationKey>,
-        // ICommandHandler<RemoveOrganisationKey>,
-        // ICommandHandler<AddOrganisationRegulation>,
-        //ICommandHandler<UpdateOrganisationRegulation>,
-        //ICommandHandler<AddOrganisationBuilding>,
-        //ICommandHandler<UpdateOrganisationBuilding>,
-        //ICommandHandler<AddOrganisationLocation>,
-        //ICommandHandler<UpdateOrganisationLocation>,
-        //ICommandHandler<AddOrganisationContact>,
-        //ICommandHandler<UpdateOrganisationContact>,
-        //ICommandHandler<AddOrganisationLabel>,
-        //ICommandHandler<UpdateOrganisationLabel>,
-        //ICommandHandler<AddOrganisationOrganisationClassification>,
-        //ICommandHandler<UpdateOrganisationOrganisationClassification>,
-        //ICommandHandler<AddOrganisationFunction>,
-        //ICommandHandler<UpdateOrganisationFunction>,
-        //ICommandHandler<AddOrganisationCapacity>,
-        //ICommandHandler<UpdateOrganisationCapacity>,
-        //ICommandHandler<AddOrganisationParent>,
-        //ICommandHandler<UpdateOrganisationParent>,
-        //ICommandHandler<AddOrganisationFormalFramework>,
-        // ICommandHandler<UpdateOrganisationFormalFramework>,
-        // ICommandHandler<AddOrganisationBankAccount>,
-        // ICommandHandler<UpdateOrganisationBankAccount>,
-        // ICommandHandler<UpdateMainBuilding>,
-        ICommandHandler<UpdateMainLocation>
+        BaseCommandHandler<OrganisationCommandHandlers>//,
+    // ICommandHandler<CreateOrganisation>,
+    // ICommandHandler<UpdateOrganisationInfo>,
+    // ICommandHandler<UpdateOrganisationInfoNotLimitedToVlimpers>,
+    // ICommandHandler<UpdateOrganisationInfoLimitedToVlimpers>,
+    // ICommandHandler<AddOrganisationKey>,
+    // ICommandHandler<UpdateOrganisationKey>,
+    // ICommandHandler<RemoveOrganisationKey>,
+    // ICommandHandler<AddOrganisationRegulation>,
+    //ICommandHandler<UpdateOrganisationRegulation>,
+    //ICommandHandler<AddOrganisationBuilding>,
+    //ICommandHandler<UpdateOrganisationBuilding>,
+    //ICommandHandler<AddOrganisationLocation>,
+    //ICommandHandler<UpdateOrganisationLocation>,
+    //ICommandHandler<AddOrganisationContact>,
+    //ICommandHandler<UpdateOrganisationContact>,
+    //ICommandHandler<AddOrganisationLabel>,
+    //ICommandHandler<UpdateOrganisationLabel>,
+    //ICommandHandler<AddOrganisationOrganisationClassification>,
+    //ICommandHandler<UpdateOrganisationOrganisationClassification>,
+    //ICommandHandler<AddOrganisationFunction>,
+    //ICommandHandler<UpdateOrganisationFunction>,
+    //ICommandHandler<AddOrganisationCapacity>,
+    //ICommandHandler<UpdateOrganisationCapacity>,
+    //ICommandHandler<AddOrganisationParent>,
+    //ICommandHandler<UpdateOrganisationParent>,
+    //ICommandHandler<AddOrganisationFormalFramework>,
+    // ICommandHandler<UpdateOrganisationFormalFramework>,
+    // ICommandHandler<AddOrganisationBankAccount>,
+    // ICommandHandler<UpdateOrganisationBankAccount>,
+    // ICommandHandler<UpdateMainBuilding>,
+    // ICommandHandler<UpdateMainLocation>
     // ICommandHandler<UpdateOrganisationFormalFrameworkParents>
     // ICommandHandler<UpdateCurrentOrganisationParent>
     // ICommandHandler<UpdateRelationshipValidities>
@@ -503,16 +503,16 @@ public class OrganisationCommandHandlers :
     //                 organisation.UpdateMainBuilding(_dateTimeProvider.Today);
     //             });
 
-    public Task Handle(UpdateMainLocation message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    organisation.UpdateMainLocation(_dateTimeProvider.Today);
-                });
+    // public Task Handle(UpdateMainLocation message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 organisation.UpdateMainLocation(_dateTimeProvider.Today);
+    //             });
 
     // public Task Handle(UpdateOrganisationBankAccount message)
     //     => UpdateHandler<Organisation>.For(message, Session)
