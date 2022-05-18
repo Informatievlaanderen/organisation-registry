@@ -90,8 +90,6 @@ import DvAlert from "./components/partials/alert/Alert";
 
 import { mapStores } from "pinia";
 import { useUserStore } from "@/stores/user";
-import { getSecurityInfo } from "@/api/security";
-import OidcClient from "@/api/oidc";
 
 export default {
   name: "App",
@@ -117,13 +115,6 @@ export default {
   async beforeMount() {
     await this.userStore.initializeOidcClient();
     this.userStore.loadUserFromToken();
-  },
-  provide() {
-    return {
-      oidcClient: getSecurityInfo().then((securityInfo) => {
-        return new OidcClient(securityInfo);
-      }),
-    };
   },
   data() {
     return {
