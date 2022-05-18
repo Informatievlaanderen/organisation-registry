@@ -27,25 +27,22 @@ public class UpdateOrganisationFormalFrameworkCommandHandler
     }
 
     public Task Handle(ICommandEnvelope<UpdateOrganisationFormalFramework> envelope)
-        => Handle(envelope.Command, envelope.User);
-
-    public Task Handle(UpdateOrganisationFormalFramework message, IUser envelopeUser)
-        => UpdateHandler<Organisation>.For(message,envelopeUser, Session)
+        => UpdateHandler<Organisation>.For(envelope.Command,envelope.User, Session)
             .WithPolicy(
                 organisation => new FormalFrameworkPolicy(
                     () => organisation.State.OvoNumber,
-                    message.FormalFrameworkId,
+                    envelope.Command.FormalFrameworkId,
                     _organisationRegistryConfiguration))
             .Handle(
                 session =>
                 {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(envelopeUser);
+                    var organisation = session.Get<Organisation>(envelope.Command.OrganisationId);
+                    organisation.ThrowIfTerminated(envelope.User);
 
-                    var formalFramework = session.Get<FormalFramework>(message.FormalFrameworkId);
-                    var parentOrganisation = session.Get<Organisation>(message.ParentOrganisationId);
+                    var formalFramework = session.Get<FormalFramework>(envelope.Command.FormalFrameworkId);
+                    var parentOrganisation = session.Get<Organisation>(envelope.Command.ParentOrganisationId);
 
-                    var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
+                    var validity = new Period(new ValidFrom(envelope.Command.ValidFrom), new ValidTo(envelope.Command.ValidTo));
 
                     if (FormalFrameworkTreeHasOrganisationInIt(
                             organisation,
@@ -56,7 +53,7 @@ public class UpdateOrganisationFormalFrameworkCommandHandler
                         throw new CircularRelationInFormalFramework();
 
                     organisation.UpdateFormalFramework(
-                        message.OrganisationFormalFrameworkId,
+                        envelope.Command.OrganisationFormalFrameworkId,
                         formalFramework,
                         parentOrganisation,
                         validity,

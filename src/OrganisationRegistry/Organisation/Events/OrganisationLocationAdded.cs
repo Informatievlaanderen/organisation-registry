@@ -11,7 +11,7 @@ namespace OrganisationRegistry.Organisation.Events
         public string LocationFormattedAddress { get; }
         public bool IsMainLocation { get; }
         public Guid? LocationTypeId { get; set; }
-        public string LocationTypeName { get; set; }
+        public string? LocationTypeName { get; set; }
         public DateTime? ValidFrom { get; }
         public DateTime? ValidTo { get; }
 
@@ -22,7 +22,7 @@ namespace OrganisationRegistry.Organisation.Events
             string locationFormattedAddress,
             bool isMainLocation,
             Guid? locationTypeId,
-            string locationTypeName,
+            string? locationTypeName,
             DateTime? validFrom,
             DateTime? validTo)
         {

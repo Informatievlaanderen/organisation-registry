@@ -6,20 +6,22 @@ using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
 
-public class UpdateMainBuildingCommandHandler : BaseCommandHandler<UpdateMainBuildingCommandHandler>,
-    ICommandEnvelopeHandler<UpdateMainBuilding>
+public class UpdateMainLocationCommandHandler : BaseCommandHandler<UpdateMainLocationCommandHandler>,
+    ICommandEnvelopeHandler<UpdateMainLocation>
 {
     private readonly IDateTimeProvider _dateTimeProvider;
 
-    public UpdateMainBuildingCommandHandler(
-        ILogger<UpdateMainBuildingCommandHandler> logger,
+    public UpdateMainLocationCommandHandler(
+        ILogger<UpdateMainLocationCommandHandler> logger,
         ISession session,
-        IDateTimeProvider dateTimeProvider) : base(logger, session)
+        IDateTimeProvider dateTimeProvider) : base(
+        logger,
+        session)
     {
         _dateTimeProvider = dateTimeProvider;
     }
 
-    public Task Handle(ICommandEnvelope<UpdateMainBuilding> envelope)
+    public Task Handle(ICommandEnvelope<UpdateMainLocation> envelope)
         => UpdateHandler<Organisation>.For(envelope.Command, envelope.User, Session)
             .Handle(
                 session =>
@@ -27,6 +29,6 @@ public class UpdateMainBuildingCommandHandler : BaseCommandHandler<UpdateMainBui
                     var organisation = session.Get<Organisation>(envelope.Command.OrganisationId);
                     organisation.ThrowIfTerminated(envelope.User);
 
-                    organisation.UpdateMainBuilding(_dateTimeProvider.Today);
+                    organisation.UpdateMainLocation(_dateTimeProvider.Today);
                 });
 }

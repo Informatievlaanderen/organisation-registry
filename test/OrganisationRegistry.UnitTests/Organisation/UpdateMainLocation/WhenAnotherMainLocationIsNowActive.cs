@@ -15,32 +15,30 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainLocation
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Configuration;
-
     using Tests.Shared;
     using Xunit.Abstractions;
 
     public class WhenAnotherMainLocationIsNowActive :
-        OldSpecification<Organisation, OrganisationCommandHandlers, UpdateMainLocation>
+        Specification<UpdateMainLocationCommandHandler, UpdateMainLocation>
     {
         private Guid _organisationId;
         private Guid _locationAId;
         private Guid _locationBId;
         private Guid _organisationLocationAId;
-        private DateTimeProviderStub _dateTimeProviderStub;
+        private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        public WhenAnotherMainLocationIsNowActive(ITestOutputHelper helper) : base(helper)
         {
-            _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
-
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
-                Session,
-                new SequentialOvoNumberGenerator(),
-                null,
-                _dateTimeProviderStub,
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
         }
+
+        protected override UpdateMainLocationCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<UpdateMainLocationCommandHandler>>().Object,
+                Session,
+                _dateTimeProviderStub);
+
+        protected override IUser User
+            => new UserBuilder().Build();
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -51,12 +49,56 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainLocation
             _organisationLocationAId = Guid.NewGuid();
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
-                new LocationCreated(_locationAId, "12345", "Albert 1 laan 32, 1000 Brussel", "Albert 1 laan 32", "1000", "Brussel", "Belgie"),
-                new LocationCreated(_locationBId, "12345", "Boudewijn 1 laan 32, 1000 Brussel", "Boudewijn 1 laan 32", "1000", "Brussel", "Belgie"),
-                new OrganisationLocationAdded(_organisationId, _organisationLocationAId, _locationAId, "Gebouw A", true, null, null, DateTime.Today, DateTime.Today),
+                new OrganisationCreated(
+                    _organisationId,
+                    "Kind en Gezin",
+                    "OVO000012345",
+                    "K&G",
+                    Article.None,
+                    "Kindjes en gezinnetjes",
+                    new List<Purpose>(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null),
+                new LocationCreated(
+                    _locationAId,
+                    "12345",
+                    "Albert 1 laan 32, 1000 Brussel",
+                    "Albert 1 laan 32",
+                    "1000",
+                    "Brussel",
+                    "Belgie"),
+                new LocationCreated(
+                    _locationBId,
+                    "12345",
+                    "Boudewijn 1 laan 32, 1000 Brussel",
+                    "Boudewijn 1 laan 32",
+                    "1000",
+                    "Brussel",
+                    "Belgie"),
+                new OrganisationLocationAdded(
+                    _organisationId,
+                    _organisationLocationAId,
+                    _locationAId,
+                    "Gebouw A",
+                    true,
+                    null,
+                    null,
+                    DateTime.Today,
+                    DateTime.Today),
                 new MainLocationAssignedToOrganisation(_organisationId, _locationAId, _organisationLocationAId),
-                new OrganisationLocationAdded(_organisationId, Guid.NewGuid(), _locationBId, "Gebouw B", true, null, null, DateTime.Today.AddDays(1), DateTime.Today.AddDays(1))
+                new OrganisationLocationAdded(
+                    _organisationId,
+                    Guid.NewGuid(),
+                    _locationBId,
+                    "Gebouw B",
+                    true,
+                    null,
+                    null,
+                    DateTime.Today.AddDays(1),
+                    DateTime.Today.AddDays(1))
             };
         }
 
@@ -67,7 +109,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainLocation
             return new UpdateMainLocation(new OrganisationId(_organisationId));
         }
 
-        protected override int ExpectedNumberOfEvents => 2;
+        protected override int ExpectedNumberOfEvents
+            => 2;
 
         [Fact]
         public void ClearsTheMainLocation()
@@ -78,11 +121,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainLocation
         [Fact]
         public void AssignsTheNewLocation()
         {
-            var mainLocationAssignedToOrganisation = PublishedEvents[1].UnwrapBody<MainLocationAssignedToOrganisation>();
+            var mainLocationAssignedToOrganisation =
+                PublishedEvents[1].UnwrapBody<MainLocationAssignedToOrganisation>();
             mainLocationAssignedToOrganisation.Should().NotBeNull();
             mainLocationAssignedToOrganisation.MainLocationId.Should().Be(_locationBId);
         }
-
-        public WhenAnotherMainLocationIsNowActive(ITestOutputHelper helper) : base(helper) { }
     }
 }
