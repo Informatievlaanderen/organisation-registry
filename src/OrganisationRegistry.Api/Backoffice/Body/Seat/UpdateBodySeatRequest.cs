@@ -3,7 +3,6 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Seat
     using System;
     using FluentValidation;
     using OrganisationRegistry.Body;
-    using OrganisationRegistry.Body.Commands;
     using SeatType;
     using OrganisationRegistry.SqlServer.Body;
 

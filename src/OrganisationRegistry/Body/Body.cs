@@ -19,10 +19,10 @@ using SeatType;
 
 public class Body : AggregateRoot
 {
-    private string _name;
-    private string _bodyNumber;
-    private string _shortName;
-    private string _description;
+    private string _name = string.Empty;
+    private string? _bodyNumber;
+    private string? _shortName;
+    private string? _description;
     private bool _isLifecycleValid;
 
     private bool? _balancedParticipationObligatory;
@@ -36,7 +36,7 @@ public class Body : AggregateRoot
     private readonly BodySeats _bodySeats;
 
     private readonly List<BodyOrganisation> _bodyOrganisations;
-    private BodyOrganisation _currentBodyOrganisation;
+    private BodyOrganisation? _currentBodyOrganisation;
     private readonly List<BodyContact> _bodyContacts;
     private readonly List<BodyBodyClassification> _bodyBodyClassifications;
 

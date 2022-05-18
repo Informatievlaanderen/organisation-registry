@@ -7,7 +7,6 @@
     using AutoFixture;
     using FluentAssertions;
     using OrganisationRegistry.Body;
-    using OrganisationRegistry.Body.Commands;
     using OrganisationRegistry.Infrastructure.Commands;
     using SqlServer.Body.ScheduledActions.PeopleAssignedToBodyMandates;
     using Xunit;

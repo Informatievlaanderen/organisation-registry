@@ -3,7 +3,6 @@ namespace OrganisationRegistry.Api.Backoffice.Body.Contact
     using System;
     using FluentValidation;
     using OrganisationRegistry.Body;
-    using OrganisationRegistry.Body.Commands;
     using ContactType;
     using OrganisationRegistry.SqlServer.Body;
 

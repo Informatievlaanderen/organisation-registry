@@ -4,7 +4,6 @@
     using FluentValidation;
     using LifecyclePhaseType;
     using OrganisationRegistry.Body;
-    using OrganisationRegistry.Body.Commands;
 
     public class AddBodyLifecyclePhaseInternalRequest
     {
