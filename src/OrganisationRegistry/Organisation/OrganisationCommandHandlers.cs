@@ -60,7 +60,7 @@ public class OrganisationCommandHandlers :
         //ICommandHandler<UpdateOrganisationParent>,
         //ICommandHandler<AddOrganisationFormalFramework>,
         // ICommandHandler<UpdateOrganisationFormalFramework>,
-        ICommandHandler<AddOrganisationBankAccount>,
+        // ICommandHandler<AddOrganisationBankAccount>,
         ICommandHandler<UpdateOrganisationBankAccount>,
         ICommandHandler<UpdateMainBuilding>,
         ICommandHandler<UpdateMainLocation>
