@@ -151,14 +151,6 @@ jobs:
         GIT_COMMITTER_EMAIL: ${{ secrets.VBR_GIT_EMAIL }}
         IGNORE_ES_TESTS: FALSE
 
-    - name: Build and analyze
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      shell: bash
-      run: |
-        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-
     - name: Set Release Version
       id: set-version
       run: |
@@ -174,6 +166,15 @@ jobs:
         echo 'BEGIN VERSION'
         echo ${{ steps.set-version.outputs.version }}
         echo 'END VERSION'
+        
+    - name: Build and analyze
+      if: env.RELEASE_VERSION != 'none'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      shell: bash
+      run: |
+        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
     - name: Configure AWS credentials (Staging)
       if: env.RELEASE_VERSION != 'none'
