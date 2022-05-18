@@ -38,7 +38,11 @@ public static class Config
             AllowedGrantTypes = GrantTypes.Code,
 
             // where to redirect to after login
-            RedirectUris = { "https://organisatie.dev-vlaanderen.local/#/oic" },
+            RedirectUris =
+            {
+                "https://organisatie.dev-vlaanderen.local/#/oic",
+                "https://organisatie.dev-vlaanderen.local/oic"
+            },
 
             // where to redirect to after logout
             PostLogoutRedirectUris = { "https://organisatie.dev-vlaanderen.local" },

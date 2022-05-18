@@ -5,10 +5,16 @@ import router from "./router";
 import "./components";
 
 import { createPinia, PiniaVuePlugin } from "pinia";
+import { markRaw } from "@vue/composition-api/dist/vue-composition-api";
 
 Vue.use(PiniaVuePlugin);
 const pinia = createPinia();
 
+function RouterPlugin() {
+  return { router: markRaw(router) };
+}
+
+pinia.use(RouterPlugin);
 Vue.config.productionTip = false;
 
 window.organisatieRegisterApiEndpoint =

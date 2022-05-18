@@ -1,23 +1,22 @@
-﻿import jwtDecode from "jwt-decode";
+import { composeApiUri, handleHttpResponse } from "@/api/httpHelpers";
 
-export function getToken() {
-  return window.localStorage.token;
+export async function getSecurityInfo() {
+  const requestOptions = {
+    method: "GET",
+  };
+  const response = await fetch(composeApiUri(`security/info`), requestOptions);
+
+  return await handleHttpResponse(response);
 }
 
-export function setToken(value) {
-  window.localStorage.token = value;
-}
-
-export function removeItem(item) {
-  window.localStorage.removeItem(item);
-}
-
-export function loadUser(store) {
-  const token = getToken();
-  if (token) {
-    const decoded = jwtDecode(token);
-    store.setUser(decoded);
-  } else {
-    store.clearUser();
-  }
+export async function exchangeCode(code, verifier, redirectUri) {
+  const requestOptions = {
+    method: "GET",
+  };
+  return await fetch(
+    composeApiUri(
+      `security/exchange?code=${code}&verifier=${verifier}&redirectUri=${redirectUri}`
+    ),
+    requestOptions
+  );
 }

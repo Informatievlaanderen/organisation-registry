@@ -14,33 +14,32 @@ import DvFunctionalHeaderActions from "../functional-header/FunctionalHeaderActi
 
 import { mapStores } from "pinia";
 import { useUserStore } from "@/stores/user";
-
 export default {
   name: "user-info",
+  inject: ["oidcClient"],
   components: {
     DvFunctionalHeaderAction,
     DvFunctionalHeaderActions,
   },
   computed: {
-    // ...mapGetters("user", {
-    //   isLoggedIn: "isLoggedIn",
-    //   userDescription: "userDescription",
-    // }),
     ...mapStores(useUserStore),
     userDescription() {
       return `${this.userStore.firstName} ${this.userStore.name}`;
     },
+    isLoggedIn() {
+      return this.userStore.isLoggedIn;
+    },
   },
   methods: {
-    loginClicked() {
-      this.$store.dispatch("user/logIn");
+    async loginClicked() {
+      this.client.signIn();
     },
-    logoutClicked() {
-      this.$store.dispatch("user/logOut");
+    async logoutClicked() {
+      this.client.signOut();
     },
   },
-  beforeMount() {
-    this.isLoggedIn = this.userStore.isLoggedIn;
+  async mounted() {
+    this.client = await this.oidcClient;
   },
   props: {
     modHasActions: {
@@ -50,7 +49,6 @@ export default {
   },
   data() {
     return {
-      isLoggedIn: false,
       classes: {
         "functional-header": true,
         "functional-header--has-actions": this.modHasActions,

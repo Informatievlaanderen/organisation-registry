@@ -30,7 +30,7 @@
               <dv-tab
                 title="Organisaties opladen"
                 exact
-                :to="{ name: 'all-services' }"
+                :to="{ name: 'upload-organisations' }"
               />
               <dv-tab
                 title="Parameters"
@@ -89,8 +89,9 @@ import DvFooter from "./components/partials/footer/Footer";
 import DvAlert from "./components/partials/alert/Alert";
 
 import { mapStores } from "pinia";
-import { loadUser } from "@/api/security";
 import { useUserStore } from "@/stores/user";
+import { getSecurityInfo } from "@/api/security";
+import OidcClient from "@/api/oidc";
 
 export default {
   name: "App",
@@ -113,8 +114,16 @@ export default {
   computed: {
     ...mapStores(useUserStore),
   },
-  beforeMount() {
-    loadUser(this.userStore);
+  async beforeMount() {
+    await this.userStore.initializeOidcClient();
+    this.userStore.loadUserFromToken();
+  },
+  provide() {
+    return {
+      oidcClient: getSecurityInfo().then((securityInfo) => {
+        return new OidcClient(securityInfo);
+      }),
+    };
   },
   data() {
     return {
