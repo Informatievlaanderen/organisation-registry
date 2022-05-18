@@ -3,60 +3,74 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainBuilding
     using System;
     using System.Collections.Generic;
     using Building.Events;
-    using Configuration;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
-    using Tests.Shared;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
-
     using OrganisationRegistry.Organisation.Events;
     using Xunit.Abstractions;
 
-    public class WhenMainBuildingIsStillActive : OldSpecification<Organisation, OrganisationCommandHandlers, UpdateMainBuilding>
+    public class WhenMainBuildingIsStillActive : Specification<UpdateMainBuildingCommandHandler, UpdateMainBuilding>
     {
-        private OrganisationId _organisationId;
+        private Guid _organisationId;
         private Guid _buildingId;
         private Guid _organisationBuildingId;
 
-        protected override OrganisationCommandHandlers BuildHandler()
+        public WhenMainBuildingIsStillActive(ITestOutputHelper helper) : base(helper)
         {
-            return new OrganisationCommandHandlers(
-                new Mock<ILogger<OrganisationCommandHandlers>>().Object,
-                Session,
-                new SequentialOvoNumberGenerator(),
-                null,
-                new DateTimeProvider(),
-                Mock.Of<IOrganisationRegistryConfiguration>(),
-                Mock.Of<ISecurityService>());
         }
+
+        protected override UpdateMainBuildingCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<UpdateMainBuildingCommandHandler>>().Object,
+                Session,
+                new DateTimeProvider());
+
+        protected override IUser User
+            => new UserBuilder().Build();
 
         protected override IEnumerable<IEvent> Given()
         {
-            _organisationId = new OrganisationId(Guid.NewGuid());
+            _organisationId = Guid.NewGuid();
             _buildingId = Guid.NewGuid();
             _organisationBuildingId = Guid.NewGuid();
 
             return new List<IEvent>
             {
-                new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
+                new OrganisationCreated(
+                    _organisationId,
+                    "Kind en Gezin",
+                    "OVO000012345",
+                    "K&G",
+                    Article.None,
+                    "Kindjes en gezinnetjes",
+                    new List<Purpose>(),
+                    false,
+                    null,
+                    null,
+                    null,
+                    null),
                 new BuildingCreated(_buildingId, "Gebouw A", 12345),
-                new OrganisationBuildingAdded(_organisationId, _organisationBuildingId, _buildingId, "Gebouw A", true, DateTime.Today, DateTime.Today),
+                new OrganisationBuildingAdded(
+                    _organisationId,
+                    _organisationBuildingId,
+                    _buildingId,
+                    "Gebouw A",
+                    true,
+                    DateTime.Today,
+                    DateTime.Today),
                 new MainBuildingAssignedToOrganisation(_organisationId, _buildingId, _organisationBuildingId)
             };
         }
 
         protected override UpdateMainBuilding When()
         {
-            return new UpdateMainBuilding(_organisationId);
+            return new UpdateMainBuilding(new OrganisationId(_organisationId));
         }
 
-        protected override int ExpectedNumberOfEvents => 0;
-
-        public WhenMainBuildingIsStillActive(ITestOutputHelper helper) : base(helper) { }
+        protected override int ExpectedNumberOfEvents
+            => 0;
     }
 }

@@ -62,7 +62,7 @@ public class OrganisationCommandHandlers :
         // ICommandHandler<UpdateOrganisationFormalFramework>,
         // ICommandHandler<AddOrganisationBankAccount>,
         // ICommandHandler<UpdateOrganisationBankAccount>,
-        ICommandHandler<UpdateMainBuilding>,
+        // ICommandHandler<UpdateMainBuilding>,
         ICommandHandler<UpdateMainLocation>
     // ICommandHandler<UpdateOrganisationFormalFrameworkParents>
     // ICommandHandler<UpdateCurrentOrganisationParent>
@@ -492,16 +492,16 @@ public class OrganisationCommandHandlers :
     //                 organisation.UpdateCurrentOrganisationParent(_dateTimeProvider.Today);
     //             });
 
-    public Task Handle(UpdateMainBuilding message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    organisation.UpdateMainBuilding(_dateTimeProvider.Today);
-                });
+    // public Task Handle(UpdateMainBuilding message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 organisation.UpdateMainBuilding(_dateTimeProvider.Today);
+    //             });
 
     public Task Handle(UpdateMainLocation message)
         => UpdateHandler<Organisation>.For(message, Session)
