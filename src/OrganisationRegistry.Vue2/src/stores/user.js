@@ -35,6 +35,12 @@ export const useUserStore = defineStore("user", {
     clearUser() {
       this.$reset();
     },
+    signIn() {
+      this.oidcClient.signIn();
+    },
+    signOut() {
+      this.oidcClient.signOut();
+    },
     async exchangeCode(code) {
       if (!this.oidcClient) await this.initializeOidcClient();
 

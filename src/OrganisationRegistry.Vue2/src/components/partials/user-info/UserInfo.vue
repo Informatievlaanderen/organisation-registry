@@ -16,7 +16,6 @@ import { mapStores } from "pinia";
 import { useUserStore } from "@/stores/user";
 export default {
   name: "user-info",
-  inject: ["oidcClient"],
   components: {
     DvFunctionalHeaderAction,
     DvFunctionalHeaderActions,
@@ -32,15 +31,13 @@ export default {
   },
   methods: {
     async loginClicked() {
-      this.client.signIn();
+      this.userStore.signIn();
     },
     async logoutClicked() {
-      this.client.signOut();
+      this.userStore.signOut();
     },
   },
-  async mounted() {
-    this.client = await this.oidcClient;
-  },
+  async mounted() {},
   props: {
     modHasActions: {
       default: false,
