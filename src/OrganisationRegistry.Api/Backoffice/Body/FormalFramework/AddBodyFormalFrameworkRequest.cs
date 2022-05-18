@@ -3,7 +3,6 @@
     using System;
     using FluentValidation;
     using OrganisationRegistry.Body;
-    using OrganisationRegistry.Body.Commands;
     using OrganisationRegistry.FormalFramework;
 
     public class AddBodyFormalFrameworkInternalRequest

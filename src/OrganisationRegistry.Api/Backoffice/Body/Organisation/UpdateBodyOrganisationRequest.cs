@@ -4,7 +4,6 @@
     using FluentValidation;
     using Microsoft.AspNetCore.Http;
     using OrganisationRegistry.Body;
-    using OrganisationRegistry.Body.Commands;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Organisation;
 

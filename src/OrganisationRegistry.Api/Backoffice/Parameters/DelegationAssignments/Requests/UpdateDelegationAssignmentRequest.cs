@@ -5,7 +5,6 @@
     using System.Linq;
     using FluentValidation;
     using OrganisationRegistry.Body;
-    using OrganisationRegistry.Body.Commands;
     using OrganisationRegistry.ContactType;
     using OrganisationRegistry.Person;
 

@@ -3,7 +3,6 @@ namespace OrganisationRegistry.Api.Backoffice.Body.BodyClassification
     using System;
     using FluentValidation;
     using OrganisationRegistry.Body;
-    using OrganisationRegistry.Body.Commands;
     using OrganisationRegistry.BodyClassification;
     using BodyClassificationType;
 

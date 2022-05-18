@@ -3,7 +3,6 @@
     using System;
     using FluentValidation;
     using OrganisationRegistry.Body;
-    using OrganisationRegistry.Body.Commands;
 
     public class RemoveDelegationAssignmentInternalRequest
     {

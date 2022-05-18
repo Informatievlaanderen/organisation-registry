@@ -7,27 +7,26 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyBalancedParticipat
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Body;
-    using OrganisationRegistry.Body.Commands;
     using OrganisationRegistry.Body.Events;
+    using OrganisationRegistry.Body.Participation;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Events;
-    using Tests.Shared;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WithParticipation : OldSpecification<Body, BodyCommandHandlers, UpdateBodyBalancedParticipation>
+    public class WithParticipation : Specification<UpdateBodyBalancedParticipationCommandHandler, UpdateBodyBalancedParticipation>
     {
         private Guid _bodyId;
 
-        protected override BodyCommandHandlers BuildHandler()
-        {
-            return new BodyCommandHandlers(
-                new Mock<ILogger<BodyCommandHandlers>>().Object,
-                Session,
-                Mock.Of<IDateTimeProvider>(),
-                new SequentialBodyNumberGenerator(),
-                Mock.Of<IUniqueBodyNumberValidator>(),
-                Mock.Of<IBodySeatNumberGenerator>());
-        }
+        public WithParticipation(ITestOutputHelper helper) : base(helper) { }
+
+        protected override IUser User
+            => new UserBuilder().Build();
+
+        protected override UpdateBodyBalancedParticipationCommandHandler BuildHandler()
+            => new(
+                new Mock<ILogger<UpdateBodyBalancedParticipationCommandHandler>>().Object,
+                Session);
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -40,13 +39,11 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyBalancedParticipat
         }
 
         protected override UpdateBodyBalancedParticipation When()
-        {
-            return new UpdateBodyBalancedParticipation(
+            => new(
                 new BodyId(_bodyId),
                 true,
                 "remark",
                 "exception");
-        }
 
         protected override int ExpectedNumberOfEvents => 1;
 
@@ -64,7 +61,5 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyBalancedParticipat
             bodyBalancedParticipationChanged.PreviousBalancedParticipationExtraRemark.Should().BeNull();
             bodyBalancedParticipationChanged.PreviousBalancedParticipationExceptionMeasure.Should().BeNull();
         }
-
-        public WithParticipation(ITestOutputHelper helper) : base(helper) { }
     }
 }

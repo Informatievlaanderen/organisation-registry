@@ -11,7 +11,6 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Body;
-    using OrganisationRegistry.Body.Commands;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
     using Requests;
