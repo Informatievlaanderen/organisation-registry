@@ -61,7 +61,7 @@ public class OrganisationCommandHandlers :
         //ICommandHandler<AddOrganisationFormalFramework>,
         // ICommandHandler<UpdateOrganisationFormalFramework>,
         // ICommandHandler<AddOrganisationBankAccount>,
-        ICommandHandler<UpdateOrganisationBankAccount>,
+        // ICommandHandler<UpdateOrganisationBankAccount>,
         ICommandHandler<UpdateMainBuilding>,
         ICommandHandler<UpdateMainLocation>
     // ICommandHandler<UpdateOrganisationFormalFrameworkParents>
@@ -97,27 +97,27 @@ public class OrganisationCommandHandlers :
         _securityService = securityService;
     }
 
-    public Task Handle(AddOrganisationBankAccount message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var bankAccountNumber = BankAccountNumber.CreateWithExpectedValidity(
-                        message.BankAccountNumber,
-                        message.IsIban);
-                    var bankAccountBic = BankAccountBic.CreateWithExpectedValidity(message.Bic, message.IsBic);
-
-                    var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
-
-                    organisation.AddBankAccount(
-                        message.OrganisationBankAccountId,
-                        bankAccountNumber,
-                        bankAccountBic,
-                        validity);
-                });
+    // public Task Handle(AddOrganisationBankAccount message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var bankAccountNumber = BankAccountNumber.CreateWithExpectedValidity(
+    //                     message.BankAccountNumber,
+    //                     message.IsIban);
+    //                 var bankAccountBic = BankAccountBic.CreateWithExpectedValidity(message.Bic, message.IsBic);
+    //
+    //                 var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
+    //
+    //                 organisation.AddBankAccount(
+    //                     message.OrganisationBankAccountId,
+    //                     bankAccountNumber,
+    //                     bankAccountBic,
+    //                     validity);
+    //             });
 
     // public Task Handle(AddOrganisationBuilding message)
     //     => UpdateHandler<Organisation>.For(message, Session)
@@ -514,27 +514,27 @@ public class OrganisationCommandHandlers :
                     organisation.UpdateMainLocation(_dateTimeProvider.Today);
                 });
 
-    public Task Handle(UpdateOrganisationBankAccount message)
-        => UpdateHandler<Organisation>.For(message, Session)
-            .Handle(
-                session =>
-                {
-                    var organisation = session.Get<Organisation>(message.OrganisationId);
-                    organisation.ThrowIfTerminated(message.User);
-
-                    var bankAccountNumber = BankAccountNumber.CreateWithExpectedValidity(
-                        message.BankAccountNumber,
-                        message.IsIban);
-                    var bankAccountBic = BankAccountBic.CreateWithExpectedValidity(message.Bic, message.IsBic);
-
-                    var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
-
-                    organisation.UpdateBankAccount(
-                        message.OrganisationBankAccountId,
-                        bankAccountNumber,
-                        bankAccountBic,
-                        validity);
-                });
+    // public Task Handle(UpdateOrganisationBankAccount message)
+    //     => UpdateHandler<Organisation>.For(message, Session)
+    //         .Handle(
+    //             session =>
+    //             {
+    //                 var organisation = session.Get<Organisation>(message.OrganisationId);
+    //                 organisation.ThrowIfTerminated(message.User);
+    //
+    //                 var bankAccountNumber = BankAccountNumber.CreateWithExpectedValidity(
+    //                     message.BankAccountNumber,
+    //                     message.IsIban);
+    //                 var bankAccountBic = BankAccountBic.CreateWithExpectedValidity(message.Bic, message.IsBic);
+    //
+    //                 var validity = new Period(new ValidFrom(message.ValidFrom), new ValidTo(message.ValidTo));
+    //
+    //                 organisation.UpdateBankAccount(
+    //                     message.OrganisationBankAccountId,
+    //                     bankAccountNumber,
+    //                     bankAccountBic,
+    //                     validity);
+    //             });
 
     // public Task Handle(UpdateOrganisationBuilding message)
     //     => UpdateHandler<Organisation>.For(message, Session)
