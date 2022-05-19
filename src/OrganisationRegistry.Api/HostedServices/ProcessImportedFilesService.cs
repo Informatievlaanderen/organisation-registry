@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SqlServer;
 using SqlServer.Import.Organisations;
@@ -39,9 +40,10 @@ public class ProcessImportedFilesService: BackgroundService
         var context = contextFactory.Create();
 
         // 1) ophalen van oudste importfile in status 'Processing'
-        var maybeImportFile = context.ImportOrganisationsStatusList
+        var maybeImportFile = await context.ImportOrganisationsStatusList
             .Where(listItem => listItem.Status == ImportProcessStatus.Processing)
-            .MinBy(listItem => listItem.UploadedAt);
+            .OrderBy(listItem => listItem.UploadedAt)
+            .FirstOrDefaultAsync(cancellationToken);
 
         if (maybeImportFile is not { } importFile)
             return;
