@@ -1,3 +1,10 @@
+# [1.187.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.186.0...v1.187.0) (2022-05-19)
+
+
+### Features
+
+* or-1013 allow download of uploaded file ([8ecaaf2](https://github.com/informatievlaanderen/organisation-registry/commit/8ecaaf2dc6b8ba3f6cbf5d2e072c588c10615e71))
+
 # [1.186.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.185.1...v1.186.0) (2022-05-19)
 
 
