@@ -10,7 +10,7 @@ export default {
   loginSuccess: {
     title: "Login succes",
     content: "U bent succesvol ingelogd.",
-    type: alertTypes.error,
+    type: alertTypes.success,
   },
 
   connectionError: {

@@ -25,14 +25,22 @@ import { useUserStore } from "@/stores/user";
 
   Vue.use(pinia);
 
+  const userStore = useUserStore();
+
   const app = new Vue({
     router,
     render: (h) => h(App),
     pinia,
   });
 
-  const userStore = useUserStore();
   await userStore.initializeOidcClient();
+  router.beforeEach(async (to, from, next) => {
+    if (!userStore.isLoggedIn && to.meta.requiresAuth) {
+      console.log("unauthorized", userStore.isLoggedIn, to.meta.requiresAuth);
+      next({ name: "unauthorized" });
+    }
+    next();
+  });
 
   app.$mount("#app");
 })();
