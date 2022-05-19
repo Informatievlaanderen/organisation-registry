@@ -23,6 +23,8 @@ import { useUserStore } from "@/stores/user";
     window.organisatieRegisterApiEndpoint ||
     "https://api.organisatie.dev-vlaanderen.local:9003";
 
+  Vue.use(pinia);
+
   const app = new Vue({
     router,
     render: (h) => h(App),
