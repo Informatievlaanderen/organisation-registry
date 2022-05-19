@@ -28,7 +28,7 @@ public class ProcessImportedFilesService: BackgroundService
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            // await ProcessNextFile(_contextFactory, _dateTimeProvider, _logger, cancellationToken);
+            await ProcessNextFile(_contextFactory, _dateTimeProvider, _logger, cancellationToken);
             await Task.Delay(15000, cancellationToken); // todo: move to config
         }
     }
