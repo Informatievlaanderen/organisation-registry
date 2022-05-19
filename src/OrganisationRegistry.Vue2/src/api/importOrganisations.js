@@ -14,12 +14,16 @@ export async function postImportOrganisations(file, onSuccess, onError) {
     },
     body: data,
   };
-  const response = await fetch(
-    composeApiUri(`import/organisations`),
-    requestOptions
-  );
+  try {
+    const response = await fetch(
+      composeApiUri(`import/organisations`),
+      requestOptions
+    );
 
-  return await handleHttpResponse(response, onSuccess, onError);
+    return await handleHttpResponse(response, onSuccess, onError);
+  } catch (e) {
+    console.error("A network error occurred", e);
+  }
 }
 
 export async function getImportStatus() {
@@ -31,12 +35,17 @@ export async function getImportStatus() {
       Authorization: `Bearer ${token}`,
     },
   };
-  const response = await fetch(
-    composeApiUri(`import/organisations`),
-    requestOptions
-  );
 
-  return await handleHttpResponse(response);
+  try {
+    const response = await fetch(
+      composeApiUri(`import/organisations`),
+      requestOptions
+    );
+
+    return await handleHttpResponse(response);
+  } catch (e) {
+    console.error("A network error occurred", e);
+  }
 }
 
 export async function getImportFile(id) {
@@ -48,16 +57,21 @@ export async function getImportFile(id) {
       Authorization: `Bearer ${token}`,
     },
   };
-  const response = await fetch(
-    composeApiUri(`import/organisations/${id}/content`),
-    requestOptions
-  );
 
-  switch (response.status) {
-    case 200:
-    case 202:
-      return await response.blob();
-    default:
-      return new Promise(() => null);
+  try {
+    const response = await fetch(
+      composeApiUri(`import/organisations/${id}/content`),
+      requestOptions
+    );
+
+    switch (response.status) {
+      case 200:
+      case 202:
+        return await response.blob();
+      default:
+        return new Promise(() => null);
+    }
+  } catch (e) {
+    console.error("A network error occurred", e);
   }
 }
