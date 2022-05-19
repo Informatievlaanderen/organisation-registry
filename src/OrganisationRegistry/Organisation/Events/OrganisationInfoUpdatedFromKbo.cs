@@ -11,16 +11,16 @@ namespace OrganisationRegistry.Organisation.Events
         public string Name { get; }
         public string PreviousName { get; }
 
-        public string ShortName { get; }
-        public string PreviousShortName { get; }
+        public string? ShortName { get; }
+        public string? PreviousShortName { get; }
 
         public OrganisationInfoUpdatedFromKbo(
             Guid organisationId,
             string ovoNumber,
             string name,
-            string shortName,
+            string? shortName,
             string previousName,
-            string previousShortName)
+            string? previousShortName)
         {
             Id = organisationId;
 

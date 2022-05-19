@@ -25,7 +25,7 @@ namespace OrganisationRegistry.Organisation
         ICommandHandler<CreateOrganisationFromKbo>,
         ICommandHandler<CoupleOrganisationToKbo>,
         ICommandHandler<CancelCouplingWithKbo>,
-        ICommandHandler<SyncOrganisationWithKbo>,
+        // ICommandHandler<SyncOrganisationWithKbo>,
         ICommandHandler<SyncOrganisationTerminationWithKbo>
     {
         private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
@@ -168,10 +168,10 @@ namespace OrganisationRegistry.Organisation
             await Session.Commit(message.User);
         }
 
-        public async Task Handle(SyncOrganisationWithKbo message)
-        {
-            await SyncWithKbo(message.OrganisationId, message.User, message.KboSyncItemId);
-        }
+        // public async Task Handle(SyncOrganisationWithKbo message)
+        // {
+        //     await SyncWithKbo(message.OrganisationId, message.User, message.KboSyncItemId);
+        // }
 
         private async Task SyncWithKbo(OrganisationId organisationId, IUser user, Guid? kboSyncItemId)
         {
