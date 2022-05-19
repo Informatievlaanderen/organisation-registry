@@ -84,7 +84,7 @@ public class ImportOrganisationsController : OrganisationRegistryController
 
         var response = new ImportOrganisationStatusResponse(
             imports.Select(
-                import => new ImportOganisationStatusResponseItem(
+                import => new ImportOrganisationStatusResponseItem(
                     import.Id,
                     import.Status,
                     import.FileName,
