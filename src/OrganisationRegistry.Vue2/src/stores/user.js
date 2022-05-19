@@ -3,6 +3,8 @@ import jwtDecode from "jwt-decode";
 import { getToken, getVerifier, setToken } from "@/api/localStorage";
 import { exchangeCode, getSecurityInfo } from "@/api/security";
 import OidcClient from "@/api/oidc";
+import { useAlertStore } from "@/stores/alert";
+import alerts from "@/alerts/alerts";
 
 export const useUserStore = defineStore("user", {
   state: () => {
@@ -42,6 +44,8 @@ export const useUserStore = defineStore("user", {
       this.oidcClient.signOut();
     },
     async exchangeCode(code) {
+      const alertStore = useAlertStore();
+
       const verifier = getVerifier();
       const redirectUri = this.oidcClient.client.settings.redirect_uri;
       const response = await exchangeCode(code, verifier, redirectUri);
@@ -51,6 +55,9 @@ export const useUserStore = defineStore("user", {
 
       this.loadUserFromToken();
       await this.router.push({ path: "/" });
+
+      alertStore.setAlert(alerts.loginSuccess);
+      setTimeout(() => alertStore.clearAlert(), 5000);
     },
   },
 });
