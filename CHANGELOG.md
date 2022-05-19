@@ -1,3 +1,10 @@
+## [1.185.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.185.0...v1.185.1) (2022-05-19)
+
+
+### Bug Fixes
+
+* or-1013 fix or api uri param name ([84939c1](https://github.com/informatievlaanderen/organisation-registry/commit/84939c1bf4e56693519a25c88e72027d7b160bd3))
+
 # [1.185.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.184.1...v1.185.0) (2022-05-19)
 
 
