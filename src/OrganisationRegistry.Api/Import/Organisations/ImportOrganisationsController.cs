@@ -3,9 +3,11 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Infrastructure;
 using Infrastructure.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -69,7 +71,7 @@ public class ImportOrganisationsController : OrganisationRegistryController
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetImportStatus(
+    public async Task<IActionResult> GetImportStatuses(
         [FromServices] ISecurityService securityService,
         [FromServices] OrganisationRegistryContext context
     )
@@ -92,5 +94,20 @@ public class ImportOrganisationsController : OrganisationRegistryController
                 )));
 
         return Ok(response);
+    }
+
+    [HttpGet("{id:guid}/content")]
+    public async Task<IActionResult> GetImportStatus(
+        [FromServices] OrganisationRegistryContext context,
+        [FromRoute] Guid id
+    )
+    {
+        var maybeImport = await context.ImportOrganisationsStatusList
+            .FindAsync(id);
+
+        if (maybeImport is not { } import)
+            return NotFound();
+
+        return File(Encoding.UTF8.GetBytes(import.FileContent), "text/csv");
     }
 }
