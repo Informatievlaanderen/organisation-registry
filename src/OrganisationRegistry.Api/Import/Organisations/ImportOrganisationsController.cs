@@ -88,7 +88,7 @@ public class ImportOrganisationsController : OrganisationRegistryController
                     import.Id,
                     import.Status,
                     import.FileName,
-                    import.UploadedAt.ToString("yyyy-MM-dd hh:mm:ss")
+                    import.UploadedAt
                 )));
 
         return Ok(response);

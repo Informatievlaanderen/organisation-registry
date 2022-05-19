@@ -17,7 +17,13 @@
           <td>{{ importStatus.fileName }}</td>
           <td>{{ importStatus.status }}</td>
           <td>Resultaat</td>
-          <td>{{ importStatus.uploadedAt }}</td>
+          <td
+            :title="
+              moment(importStatus.uploadedAt).format('yyyy-MM-DD hh:mm:ss')
+            "
+          >
+            <span>{{ moment(importStatus.uploadedAt).fromNow() }}</span>
+          </td>
         </tr>
       </tbody>
       <tfoot>
