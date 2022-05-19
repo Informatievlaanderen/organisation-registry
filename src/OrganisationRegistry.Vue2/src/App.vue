@@ -32,16 +32,6 @@
                 exact
                 :to="{ name: 'upload-organisations' }"
               />
-              <dv-tab
-                title="Parameters"
-                :to="{ name: 'administration' }"
-                v-if="isLoggedIn"
-              />
-              <dv-tab
-                title="Systeem"
-                :to="{ name: 'system' }"
-                v-if="isLoggedIn"
-              />
             </dv-tabs>
           </dv-column>
         </dv-grid>
@@ -51,12 +41,20 @@
     <dv-main>
       <dv-region>
         <dv-layout mod-is-wide>
-          <dv-alert
-            :title="alert.title"
-            :type="alert.type"
-            :visible="alert.visible"
-            >{{ alert.content }}
-          </dv-alert>
+          <transition name="fade">
+            <vl-alert
+              :icon="alert.type"
+              :title="alert.title"
+              v-if="alert.visible"
+              closable
+              @close="clearAlert"
+              role="alertdialog"
+            >
+              <p>
+                {{ alert.content }}
+              </p>
+            </vl-alert>
+          </transition>
           <router-view></router-view>
         </dv-layout>
       </dv-region>
@@ -86,10 +84,9 @@ import DvLayout from "./components/frame/layout/Layout";
 
 import DvFooter from "./components/partials/footer/Footer";
 
-import DvAlert from "./components/partials/alert/Alert";
-
-import { mapStores } from "pinia";
+import { mapActions, mapState, mapStores } from "pinia";
 import { useUserStore } from "@/stores/user";
+import { useAlertStore } from "@/stores/alert";
 
 export default {
   name: "App",
@@ -107,18 +104,22 @@ export default {
     DvRegion,
     DvLayout,
     DvFooter,
-    DvAlert,
   },
   computed: {
     ...mapStores(useUserStore),
+    ...mapState(useAlertStore, ["alert"]),
   },
-  async beforeMount() {
+  methods: {
+    ...mapActions(useAlertStore, ["setAlert", "clearAlert"]),
+  },
+  async mounted() {
     this.userStore.loadUserFromToken();
+    if (this.$route.meta.requiresAuth && !this.userStore.isLoggedIn) {
+      await this.$router.push({ name: "unauthorized" });
+    }
   },
   data() {
     return {
-      isLoggedIn: false,
-      alert: {},
       title: "ORGANISATIE REGISTER V2",
     };
   },
@@ -136,5 +137,15 @@ a:hover:before {
 .properties--disabled {
   color: #cbd2da;
   font-weight: lighter;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-active {
+  opacity: 0;
 }
 </style>
