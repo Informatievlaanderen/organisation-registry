@@ -1,117 +1,119 @@
-namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFramework
+namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFramework;
+
+using System;
+using System.Collections.Generic;
+using FluentAssertions;
+using FormalFramework;
+using Infrastructure.Tests.Extensions.TestHelpers;
+using Microsoft.Extensions.Logging;
+using Moq;
+using OrganisationRegistry.Infrastructure.Authorization;
+using Tests.Shared;
+using Tests.Shared.TestDataBuilders;
+using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.Organisation;
+using OrganisationRegistry.Organisation.Events;
+using Tests.Shared.Stubs;
+using Xunit;
+using Xunit.Abstractions;
+
+public class WhenUpdatingAnOrganisationFormalFrameworkValidityToToday : Specification<
+    UpdateOrganisationFormalFrameworkCommandHandler, UpdateOrganisationFormalFramework>
 {
-    using System;
-    using System.Collections.Generic;
-    using FluentAssertions;
-    using FormalFramework;
-    using Infrastructure.Tests.Extensions.TestHelpers;
-    using Microsoft.Extensions.Logging;
-    using Moq;
-    using OrganisationRegistry.Infrastructure.Authorization;
-    using Tests.Shared;
-    using Tests.Shared.TestDataBuilders;
-    using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Events;
-    using Tests.Shared.Stubs;
-    using Xunit;
-    using Xunit.Abstractions;
+    private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);
+    private readonly SequentialOvoNumberGenerator _ovoNumberGenerator = new();
 
-    public class WhenUpdatingAnOrganisationFormalFrameworkValidityToToday : Specification<
-        UpdateOrganisationFormalFrameworkCommandHandler, UpdateOrganisationFormalFramework>
+    private Guid _organisationFormalFrameworkId;
+    private Guid _formalFrameworkBId;
+    private Guid _childOrganisationId;
+    private Guid _parentOrganisationBId;
+
+    private DateTime Tomorrow
+        => _dateTimeProviderStub.Today.AddDays(1);
+
+    public WhenUpdatingAnOrganisationFormalFrameworkValidityToToday(ITestOutputHelper helper) : base(helper)
     {
-        private static readonly DateTimeProviderStub DateTimeProviderStub = new(DateTime.Now);
-        private readonly SequentialOvoNumberGenerator _ovoNumberGenerator = new();
+    }
 
-        private OrganisationCreatedBuilder _childOrganisationCreated;
-        private OrganisationCreatedBuilder _parentOrganisationACreated;
-        private OrganisationCreatedBuilder _parentOrganisationBCreated;
-        private FormalFrameworkCreatedBuilder _formalFrameworkACreated;
-        private FormalFrameworkCreatedBuilder _formalFrameworkBCreated;
-        private FormalFrameworkCategoryCreatedBuilder _formalFrameworkCategoryCreatedBuilder;
-        private OrganisationFormalFrameworkAddedBuilder _childBecameDaughterOfParent;
-        private readonly DateTime? _tomorrow = DateTimeProviderStub.Today.AddDays(1);
+    protected override UpdateOrganisationFormalFrameworkCommandHandler BuildHandler()
+        => new(
+            new Mock<ILogger<UpdateOrganisationFormalFrameworkCommandHandler>>().Object,
+            Session,
+            new DateTimeProvider(),
+            new OrganisationRegistryConfigurationStub());
 
-        public WhenUpdatingAnOrganisationFormalFrameworkValidityToToday(ITestOutputHelper helper) : base(helper)
+    protected override IUser User
+        => new UserBuilder()
+            .AddRoles(Role.AlgemeenBeheerder)
+            .Build();
+
+    protected override IEnumerable<IEvent> Given()
+    {
+        var childOrganisationCreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
+        var parentOrganisationACreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
+        var parentOrganisationBCreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
+        var formalFrameworkCategoryCreatedBuilder = new FormalFrameworkCategoryCreatedBuilder();
+        var formalFrameworkACreated = new FormalFrameworkCreatedBuilder(
+            formalFrameworkCategoryCreatedBuilder.Id,
+            formalFrameworkCategoryCreatedBuilder.Name);
+        var formalFrameworkBCreated = new FormalFrameworkCreatedBuilder(
+            formalFrameworkCategoryCreatedBuilder.Id,
+            formalFrameworkCategoryCreatedBuilder.Name);
+        var childBecameDaughterOfParent =
+            new OrganisationFormalFrameworkAddedBuilder(
+                childOrganisationCreated.Id,
+                formalFrameworkACreated.Id,
+                parentOrganisationACreated.Id);
+
+        _organisationFormalFrameworkId = childBecameDaughterOfParent.OrganisationFormalFrameworkId;
+        _formalFrameworkBId = formalFrameworkBCreated.Id;
+        _childOrganisationId = childOrganisationCreated.Id;
+        _parentOrganisationBId = parentOrganisationBCreated.Id;
+
+        return new List<IEvent>
         {
-        }
+            childOrganisationCreated.Build(),
+            parentOrganisationACreated.Build(),
+            parentOrganisationBCreated.Build(),
+            formalFrameworkCategoryCreatedBuilder.Build(),
+            formalFrameworkACreated.Build(),
+            formalFrameworkBCreated.Build(),
+            childBecameDaughterOfParent.Build()
+        };
+    }
 
-        protected override UpdateOrganisationFormalFrameworkCommandHandler BuildHandler()
-            => new(
-                new Mock<ILogger<UpdateOrganisationFormalFrameworkCommandHandler>>().Object,
-                Session,
-                new DateTimeProvider(),
-                new OrganisationRegistryConfigurationStub());
+    protected override UpdateOrganisationFormalFramework When()
+        => new(
+            _organisationFormalFrameworkId,
+            new FormalFrameworkId(_formalFrameworkBId),
+            new OrganisationId(_childOrganisationId),
+            new OrganisationId(_parentOrganisationBId),
+            new ValidFrom(_dateTimeProviderStub.Today),
+            new ValidTo(_dateTimeProviderStub.Today));
 
-        protected override IUser User
-            => new UserBuilder()
-                .AddRoles(Role.AlgemeenBeheerder)
-                .Build();
+    protected override int ExpectedNumberOfEvents
+        => 2;
 
-        protected override IEnumerable<IEvent> Given()
-        {
-            _childOrganisationCreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
-            _parentOrganisationACreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
-            _parentOrganisationBCreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
-            _formalFrameworkCategoryCreatedBuilder = new FormalFrameworkCategoryCreatedBuilder();
-            _formalFrameworkACreated = new FormalFrameworkCreatedBuilder(
-                _formalFrameworkCategoryCreatedBuilder.Id,
-                _formalFrameworkCategoryCreatedBuilder.Name);
-            _formalFrameworkBCreated = new FormalFrameworkCreatedBuilder(
-                _formalFrameworkCategoryCreatedBuilder.Id,
-                _formalFrameworkCategoryCreatedBuilder.Name);
-            _childBecameDaughterOfParent =
-                new OrganisationFormalFrameworkAddedBuilder(
-                        _childOrganisationCreated.Id,
-                        _formalFrameworkACreated.Id,
-                        _parentOrganisationACreated.Id)
-                    .WithValidity(_tomorrow, _tomorrow);
+    [Fact]
+    public void UpdatesTheOrganisationFormalFramework()
+    {
+        PublishedEvents[0].Should().BeOfType<Envelope<OrganisationFormalFrameworkUpdated>>();
 
-            return new List<IEvent>
-            {
-                _childOrganisationCreated.Build(),
-                _parentOrganisationACreated.Build(),
-                _parentOrganisationBCreated.Build(),
-                _formalFrameworkCategoryCreatedBuilder.Build(),
-                _formalFrameworkACreated.Build(),
-                _formalFrameworkBCreated.Build(),
-                _childBecameDaughterOfParent.Build()
-            };
-        }
+        var organisationFormalFrameworkUpdated =
+            PublishedEvents[0].UnwrapBody<OrganisationFormalFrameworkUpdated>();
+        organisationFormalFrameworkUpdated.OrganisationId.Should().Be(_childOrganisationId);
+        organisationFormalFrameworkUpdated.ParentOrganisationId.Should().Be(_parentOrganisationBId);
+        organisationFormalFrameworkUpdated.ValidFrom.Should().Be(_dateTimeProviderStub.Today);
+        organisationFormalFrameworkUpdated.ValidTo.Should().Be(_dateTimeProviderStub.Today);
+    }
 
-        protected override UpdateOrganisationFormalFramework When()
-            => new(
-                _childBecameDaughterOfParent.OrganisationFormalFrameworkId,
-                new FormalFrameworkId(_formalFrameworkBCreated.Id),
-                _childOrganisationCreated.Id,
-                _parentOrganisationBCreated.Id,
-                new ValidFrom(DateTimeProviderStub.Today),
-                new ValidTo(DateTimeProviderStub.Today));
-
-        protected override int ExpectedNumberOfEvents
-            => 2;
-
-        [Fact]
-        public void UpdatesTheOrganisationFormalFramework()
-        {
-            PublishedEvents[0].Should().BeOfType<Envelope<OrganisationFormalFrameworkUpdated>>();
-
-            var organisationFormalFrameworkUpdated =
-                PublishedEvents[0].UnwrapBody<OrganisationFormalFrameworkUpdated>();
-            organisationFormalFrameworkUpdated.OrganisationId.Should().Be((Guid)_childOrganisationCreated.Id);
-            organisationFormalFrameworkUpdated.ParentOrganisationId.Should().Be((Guid)_parentOrganisationBCreated.Id);
-            organisationFormalFrameworkUpdated.ValidFrom.Should().Be(DateTimeProviderStub.Today);
-            organisationFormalFrameworkUpdated.ValidTo.Should().Be(DateTimeProviderStub.Today);
-        }
-
-        [Fact]
-        public void AssignsAParent()
-        {
-            var frameworkAssignedToOrganisation =
-                PublishedEvents[1].UnwrapBody<FormalFrameworkAssignedToOrganisation>();
-            frameworkAssignedToOrganisation.OrganisationId.Should().Be((Guid)_childOrganisationCreated.Id);
-            frameworkAssignedToOrganisation.ParentOrganisationId.Should().Be((Guid)_parentOrganisationBCreated.Id);
-            frameworkAssignedToOrganisation.FormalFrameworkId.Should().Be((Guid)_formalFrameworkBCreated.Id);
-        }
+    [Fact]
+    public void AssignsAParent()
+    {
+        var frameworkAssignedToOrganisation =
+            PublishedEvents[1].UnwrapBody<FormalFrameworkAssignedToOrganisation>();
+        frameworkAssignedToOrganisation.OrganisationId.Should().Be(_childOrganisationId);
+        frameworkAssignedToOrganisation.ParentOrganisationId.Should().Be(_parentOrganisationBId);
+        frameworkAssignedToOrganisation.FormalFrameworkId.Should().Be(_formalFrameworkBId);
     }
 }

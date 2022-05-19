@@ -2,28 +2,31 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
 {
     using System;
     using System.Collections.Generic;
-    using Configuration;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Configuration;
     using Purpose;
     using Tests.Shared;
     using Tests.Shared.TestDataBuilders;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
     using OrganisationRegistry.Organisation.Update;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WhenAnActiveOrganisationsValidityChangesToThePast : Specification<UpdateOrganisationCommandHandler, UpdateOrganisationInfo>
+    public class
+        WhenAnActiveOrganisationsValidityChangesToThePast : Specification<UpdateOrganisationCommandHandler,
+            UpdateOrganisationInfo>
     {
-        private OrganisationCreatedBuilder _organisationCreatedBuilder;
-        private DateTime _yesterday;
+        private readonly DateTime _yesterday = DateTime.Today.AddDays(-1);
+        private Guid _organisationId;
+
+        public WhenAnActiveOrganisationsValidityChangesToThePast(ITestOutputHelper helper) : base(helper)
+        {
+        }
 
         protected override UpdateOrganisationCommandHandler BuildHandler()
             => new(
@@ -33,26 +36,27 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
 
         protected override IUser User
             => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
+                .AddRoles(Role.AlgemeenBeheerder)
+                .Build();
 
         protected override IEnumerable<IEvent> Given()
         {
-            _organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
-            _yesterday = DateTime.Today.AddDays(-1);
+            var organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
+
+            _organisationId = organisationCreatedBuilder.Id;
 
             return new List<IEvent>
             {
-                _organisationCreatedBuilder
+                organisationCreatedBuilder
                     .WithValidity(null, null)
                     .Build(),
-                new OrganisationBecameActive(_organisationCreatedBuilder.Id)
+                new OrganisationBecameActive(organisationCreatedBuilder.Id)
             };
         }
 
         protected override UpdateOrganisationInfo When()
             => new(
-                _organisationCreatedBuilder.Id,
+                new OrganisationId(_organisationId),
                 "Test",
                 Article.None,
                 "testing",
@@ -64,7 +68,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
                 new ValidFrom(),
                 new ValidTo());
 
-        protected override int ExpectedNumberOfEvents => 6;
+        protected override int ExpectedNumberOfEvents
+            => 6;
 
         [Fact]
         public void UpdatesOrganisationName()
@@ -107,7 +112,5 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
             var organisationBecameInactive = PublishedEvents[5].UnwrapBody<OrganisationBecameInactive>();
             organisationBecameInactive.Should().NotBeNull();
         }
-
-        public WhenAnActiveOrganisationsValidityChangesToThePast(ITestOutputHelper helper) : base(helper) { }
     }
 }

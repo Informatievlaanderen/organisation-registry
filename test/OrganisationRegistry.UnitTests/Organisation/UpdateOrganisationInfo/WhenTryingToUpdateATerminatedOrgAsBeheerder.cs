@@ -1,103 +1,113 @@
-namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
+namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo;
+
+using System;
+using System.Collections.Generic;
+using AutoFixture;
+using FluentAssertions;
+using Infrastructure.Tests.Extensions.TestHelpers;
+using Microsoft.Extensions.Logging;
+using Moq;
+using OrganisationRegistry.Infrastructure.Authorization;
+using Purpose;
+using Tests.Shared;
+using Tests.Shared.TestDataBuilders;
+using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.Organisation;
+using OrganisationRegistry.Organisation.Events;
+using OrganisationRegistry.Organisation.Exceptions;
+using OrganisationRegistry.Organisation.Update;
+using Xunit;
+using Xunit.Abstractions;
+
+public class
+    WhenTryingToUpdateATerminatedOrgAsBeheerder : ExceptionSpecification<UpdateOrganisationCommandHandler,
+        UpdateOrganisationInfo>
 {
-    using System;
-    using System.Collections.Generic;
-    using AutoFixture;
-    using FluentAssertions;
-    using Infrastructure.Tests.Extensions.TestHelpers;
-    using Microsoft.Extensions.Logging;
-    using Moq;
-    using OrganisationRegistry.Infrastructure.Authorization;
-    using Purpose;
-    using Tests.Shared;
-    using Tests.Shared.TestDataBuilders;
-    using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
-    using OrganisationRegistry.Organisation.Events;
-    using OrganisationRegistry.Organisation.Exceptions;
-    using OrganisationRegistry.Organisation.Update;
-    using Xunit;
-    using Xunit.Abstractions;
+    private string _ovoNumber = null!;
+    private Guid _organisationId;
 
-    public class WhenTryingToUpdateATerminatedOrgAsBeheerder : ExceptionSpecification<UpdateOrganisationCommandHandler, UpdateOrganisationInfo>
+    public WhenTryingToUpdateATerminatedOrgAsBeheerder(ITestOutputHelper helper) : base(helper)
     {
-        private readonly OrganisationCreatedBuilder _organisationCreatedBuilder = new(new SequentialOvoNumberGenerator());
+    }
 
-        public WhenTryingToUpdateATerminatedOrgAsBeheerder(ITestOutputHelper helper) : base(helper) { }
+    protected override UpdateOrganisationCommandHandler BuildHandler()
+        => new(
+            new Mock<ILogger<UpdateOrganisationCommandHandler>>().Object,
+            Session,
+            new DateTimeProviderStub(DateTime.Today));
 
-        protected override UpdateOrganisationCommandHandler BuildHandler()
-            => new(
-                new Mock<ILogger<UpdateOrganisationCommandHandler>>().Object,
-                Session,
-                new DateTimeProviderStub(DateTime.Today));
+    protected override IUser User
+        => new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(_ovoNumber)
+            .Build();
 
-        protected override IUser User
-            => new UserBuilder()
-                .AddRoles(Role.DecentraalBeheerder)
-                .AddOrganisations(_organisationCreatedBuilder.OvoNumber)
-                .Build();
+    protected override IEnumerable<IEvent> Given()
+    {
+        var fixture = new Fixture();
+        var organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
 
-        protected override IEnumerable<IEvent> Given()
+        _ovoNumber = organisationCreatedBuilder.OvoNumber;
+        _organisationId = organisationCreatedBuilder.Id;
+
+        return new List<IEvent>
         {
-            var fixture = new Fixture();
+            organisationCreatedBuilder
+                .WithValidity(null, null)
+                .Build(),
+            new OrganisationBecameActive(organisationCreatedBuilder.Id),
+            new OrganisationTerminatedV2(
+                organisationCreatedBuilder.Id,
+                fixture.Create<string>(),
+                fixture.Create<string>(),
+                fixture.Create<DateTime>(),
+                new FieldsToTerminateV2(
+                    null,
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>(),
+                    new Dictionary<Guid, DateTime>()),
+                new KboFieldsToTerminateV2(
+                    new Dictionary<Guid, DateTime>(),
+                    new KeyValuePair<Guid, DateTime>?(),
+                    new KeyValuePair<Guid, DateTime>?(),
+                    new KeyValuePair<Guid, DateTime>?()
+                ),
+                fixture.Create<bool>(),
+                fixture.Create<DateTime?>()
+            ),
+        };
+    }
 
-            return new List<IEvent>
-            {
-                _organisationCreatedBuilder
-                    .WithValidity(null, null)
-                    .Build(),
-                new OrganisationBecameActive(_organisationCreatedBuilder.Id),
-                new OrganisationTerminatedV2(_organisationCreatedBuilder.Id,
-                    fixture.Create<string>(),
-                    fixture.Create<string>(),
-                    fixture.Create<DateTime>(),
-                    new FieldsToTerminateV2(null,
-                        new Dictionary<Guid, DateTime>(),
-                        new Dictionary<Guid, DateTime>(),
-                        new Dictionary<Guid, DateTime>(),
-                        new Dictionary<Guid, DateTime>(),
-                        new Dictionary<Guid, DateTime>(),
-                        new Dictionary<Guid, DateTime>(),
-                        new Dictionary<Guid, DateTime>(),
-                        new Dictionary<Guid, DateTime>(),
-                        new Dictionary<Guid, DateTime>(),
-                        new Dictionary<Guid, DateTime>(),
-                        new Dictionary<Guid, DateTime>(),
-                        new Dictionary<Guid, DateTime>(),
-                        new Dictionary<Guid, DateTime>()),
-                    new KboFieldsToTerminateV2(
-                        new Dictionary<Guid, DateTime>(),
-                        new KeyValuePair<Guid, DateTime>?(),
-                        new KeyValuePair<Guid, DateTime>?(),
-                        new KeyValuePair<Guid, DateTime>?()
-                        ),
-                    fixture.Create<bool>(),
-                    fixture.Create<DateTime?>()
-                    ),
-            };
-        }
+    protected override UpdateOrganisationInfo When()
+        => new(
+            new OrganisationId(_organisationId),
+            "Test",
+            Article.None,
+            "testing",
+            "shortname",
+            new List<PurposeId>(),
+            true,
+            new ValidFrom(),
+            new ValidTo(),
+            new ValidFrom(),
+            new ValidTo());
 
-        protected override UpdateOrganisationInfo When()
-            => new(
-                _organisationCreatedBuilder.Id,
-                "Test",
-                Article.None,
-                "testing",
-                "shortname",
-                new List<PurposeId>(),
-                true,
-                new ValidFrom(),
-                new ValidTo(),
-                new ValidFrom(),
-                new ValidTo());
+    protected override int ExpectedNumberOfEvents
+        => 0;
 
-        protected override int ExpectedNumberOfEvents => 0;
-
-        [Fact]
-        public void ThrowsOrganisationTerminatedException()
-        {
-            Exception.Should().BeOfType<OrganisationAlreadyTerminated>();
-        }
+    [Fact]
+    public void ThrowsOrganisationTerminatedException()
+    {
+        Exception.Should().BeOfType<OrganisationAlreadyTerminated>();
     }
 }
