@@ -19,8 +19,8 @@ import { useUserStore } from "@/stores/user";
   pinia.use(RouterPlugin);
   Vue.config.productionTip = false;
 
-  window.organisatieRegisterApiEndpoint =
-    window.organisatieRegisterApiEndpoint ||
+  window.organisationRegistryApiEndpoint =
+    window.organisationRegistryApiEndpoint ||
     "https://api.organisatie.dev-vlaanderen.local:9003";
 
   Vue.use(pinia);
