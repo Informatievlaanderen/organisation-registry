@@ -4,7 +4,7 @@
  * @returns {string} - The API uri
  */
 export function composeApiUri(route) {
-  return `${window.organisatieRegisterApiEndpoint}/v1/${route}`;
+  return `${window.organisationRegistryApiEndpoint}/v1/${route}`;
 }
 
 /**
