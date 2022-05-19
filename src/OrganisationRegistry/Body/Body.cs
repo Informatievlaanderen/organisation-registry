@@ -19,8 +19,8 @@ using SeatType;
 
 public class Body : AggregateRoot
 {
-    private string _name = string.Empty;
-    private string? _bodyNumber;
+    private string _name;
+    private string _bodyNumber;
     private string? _shortName;
     private string? _description;
     private bool _isLifecycleValid;
@@ -40,7 +40,14 @@ public class Body : AggregateRoot
     private readonly List<BodyContact> _bodyContacts;
     private readonly List<BodyBodyClassification> _bodyBodyClassifications;
 
-    public Body()
+    /// <summary>
+    /// for deserialisation
+    /// </summary>
+    public Body() : this(string.Empty, string.Empty)
+    {
+    }
+
+    private Body(string name, string bodyNumber)
     {
         _bodyOrganisations = new List<BodyOrganisation>();
         _bodyContacts = new List<BodyContact>();
@@ -49,6 +56,8 @@ public class Body : AggregateRoot
         _bodySeats = new BodySeats();
         _bodyBodyClassifications = new List<BodyBodyClassification>();
         _formalValidity = new Period();
+        _name = name;
+        _bodyNumber = bodyNumber;
     }
 
     public Body(
@@ -60,8 +69,8 @@ public class Body : AggregateRoot
         string? description,
         Period validity,
         Period formalValidity,
-        LifecyclePhaseType? activeLifecyclePhaseType,
-        LifecyclePhaseType? inactiveLifecyclePhaseType) : this()
+        LifecyclePhaseType? maybeActiveLifecyclePhaseType,
+        LifecyclePhaseType? maybeInactiveLifecyclePhaseType) : this(name, bodyNumber)
     {
         ApplyChange(new BodyRegistered(
             id,
@@ -72,8 +81,14 @@ public class Body : AggregateRoot
             formalValidity.Start,
             formalValidity.End));
 
+        if (maybeActiveLifecyclePhaseType is not { } activeLifecyclePhaseType)
+            throw new IncorrectActiveLifecyclePhaseTypeDefinedInConfiguration();
+
         if (IsNotTheDefaultActiveLifecyclePhaseType(activeLifecyclePhaseType))
             throw new IncorrectActiveLifecyclePhaseTypeDefinedInConfiguration();
+
+        if (maybeInactiveLifecyclePhaseType is not { } inactiveLifecyclePhaseType)
+            throw new IncorrectInactiveLifecyclePhaseTypeDefinedInConfiguration();
 
         if (IsNotTheDefaultInactiveLifecyclePhaseType(inactiveLifecyclePhaseType))
             throw new IncorrectInactiveLifecyclePhaseTypeDefinedInConfiguration();
@@ -96,7 +111,7 @@ public class Body : AggregateRoot
                 inactiveLifecyclePhaseType.Id,
                 inactiveLifecyclePhaseType.Name,
                 inactiveLifecyclePhaseType.LifecyclePhaseTypeIsRepresentativeFor,
-                validity.End.DateTime.Value.AddDays(1),
+                validity.End.DateTime!.Value.AddDays(1),
                 null));
         }
         else
@@ -135,19 +150,13 @@ public class Body : AggregateRoot
             Id));
     }
 
-    private static bool IsNotTheDefaultActiveLifecyclePhaseType(LifecyclePhaseType? activeLifecyclePhaseType)
-    {
-        return activeLifecyclePhaseType == null ||
-               activeLifecyclePhaseType.Status != LifecyclePhaseTypeStatus.Default ||
-               activeLifecyclePhaseType.LifecyclePhaseTypeIsRepresentativeFor != LifecyclePhaseTypeIsRepresentativeFor.ActivePhase;
-    }
+    private static bool IsNotTheDefaultActiveLifecyclePhaseType(LifecyclePhaseType activeLifecyclePhaseType)
+        => activeLifecyclePhaseType.Status != LifecyclePhaseTypeStatus.Default ||
+           activeLifecyclePhaseType.LifecyclePhaseTypeIsRepresentativeFor != LifecyclePhaseTypeIsRepresentativeFor.ActivePhase;
 
-    private static bool IsNotTheDefaultInactiveLifecyclePhaseType(LifecyclePhaseType? inactiveLifecyclePhaseType)
-    {
-        return inactiveLifecyclePhaseType == null ||
-               inactiveLifecyclePhaseType.Status != LifecyclePhaseTypeStatus.Default ||
-               inactiveLifecyclePhaseType.LifecyclePhaseTypeIsRepresentativeFor != LifecyclePhaseTypeIsRepresentativeFor.InactivePhase;
-    }
+    private static bool IsNotTheDefaultInactiveLifecyclePhaseType(LifecyclePhaseType inactiveLifecyclePhaseType)
+        => inactiveLifecyclePhaseType.Status != LifecyclePhaseTypeStatus.Default ||
+           inactiveLifecyclePhaseType.LifecyclePhaseTypeIsRepresentativeFor != LifecyclePhaseTypeIsRepresentativeFor.InactivePhase;
 
     public void AssignBodyNumber(string bodyNumber)
     {
@@ -189,9 +198,7 @@ public class Body : AggregateRoot
             _description));
     }
 
-    public void UpdateFormalValidity(
-        Period formalValidity,
-        IDateTimeProvider dateTimeProvider)  // TODO: Can we remove 'dateTimeProvider' if it is not used?
+    public void UpdateFormalValidity(Period formalValidity)
     {
         ApplyChange(new BodyFormalValidityChanged(
             Id,
@@ -784,8 +791,7 @@ public class Body : AggregateRoot
     public void RemovePersonAssignmentFromDelegation(
         BodySeatId bodySeatId,
         BodyMandateId bodyMandateId,
-        DelegationAssignmentId delegationAssignmentId,
-        DateTime today) // TODO: Can we remove 'today' if it is not used?
+        DelegationAssignmentId delegationAssignmentId)
     {
         var bodySeat = _bodySeats.Single(seat => seat.BodySeatId == bodySeatId);
         var bodyMandate = bodySeat.BodyMandates.Single(mandate => mandate.BodyMandateId == bodyMandateId);
@@ -804,7 +810,7 @@ public class Body : AggregateRoot
             assignmentToDelete.Validity.Start,
             assignmentToDelete.Validity.End));
 
-        if (bodyMandate.CurrentAssignment?.Id == delegationAssignmentId)
+        if (bodyMandate.CurrentAssignment is { } currentAssignment && currentAssignment.Id == delegationAssignmentId)
             ApplyChange(new AssignedPersonClearedFromBodyMandate(
                 Id,
                 bodySeatId,
@@ -946,7 +952,7 @@ public class Body : AggregateRoot
     private void CheckIfCurrentPersonAssignedToDelegationChanged(
         BodySeatId bodySeatId,
         BodyMandateId bodyMandateId,
-        Assignment currentAssignment,
+        Assignment? currentAssignment,
         Assignment assignment,
         DateTime today)
     {
@@ -985,12 +991,11 @@ public class Body : AggregateRoot
         }
         else if (Equals(currentAssignment?.Id, assignment.Id) && !assignment.Validity.OverlapsWith(today))
         {
-            if (currentAssignment != null)
-                ApplyChange(new AssignedPersonClearedFromBodyMandate(
-                    Id,
-                    bodySeatId,
-                    bodyMandateId,
-                    currentAssignment.Id));
+            ApplyChange(new AssignedPersonClearedFromBodyMandate(
+                Id,
+                bodySeatId,
+                bodyMandateId,
+                currentAssignment.Id));
         }
     }
 
@@ -1028,7 +1033,7 @@ public class Body : AggregateRoot
         return sortedLifecyclePhases
             .Skip(1)
             .Zip(sortedLifecyclePhases, (current, previous) => new { EndDate = previous.Validity.End, StartDate = current.Validity.Start })
-            .Any(x => x.EndDate.DateTime.Value.AddDays(1) != x.StartDate.DateTime);
+            .Any(x => x.EndDate.DateTime == null || x.EndDate.DateTime.Value.AddDays(1) != x.StartDate.DateTime);
     }
 
     private void Apply(BodyRegistered @event)

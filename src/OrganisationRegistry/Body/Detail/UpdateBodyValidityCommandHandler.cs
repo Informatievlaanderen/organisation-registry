@@ -23,9 +23,7 @@ public class UpdateBodyValidityCommandHandler
     {
         var body = Session.Get<Body>(envelope.Command.BodyId);
 
-        body.UpdateFormalValidity(
-            envelope.Command.FormalValidity,
-            _dateTimeProvider);
+        body.UpdateFormalValidity(envelope.Command.FormalValidity);
 
         await Session.Commit(envelope.User);
     }

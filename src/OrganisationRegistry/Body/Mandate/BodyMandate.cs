@@ -67,7 +67,7 @@ public abstract class BodyMandate : IEquatable<BodyMandate>
         CurrentAssignment = Assignments.Single(assignment => assignment.Id == delegationAssignmentId);
     }
 
-    public void SetCurrentAssignment(Assignment assignment)
+    public void SetCurrentAssignment(Assignment? assignment)
     {
         CurrentAssignment = assignment;
     }
