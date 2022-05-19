@@ -1,3 +1,16 @@
+# [1.186.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.185.1...v1.186.0) (2022-05-19)
+
+
+### Bug Fixes
+
+* or-979 fix unittests ([e5e29ef](https://github.com/informatievlaanderen/organisation-registry/commit/e5e29efbb369299ff6e8bbbf96e9cb54c7ce697b))
+
+
+### Features
+
+* or-1013 clear uploaded file; ui improvements ([2079c35](https://github.com/informatievlaanderen/organisation-registry/commit/2079c355529e235271cf3df2b6569f80c6e368b4))
+* or-1013 show relative time in import status list ([62b2f95](https://github.com/informatievlaanderen/organisation-registry/commit/62b2f95136d58331b74ed045372995002aafec35))
+
 ## [1.185.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.185.0...v1.185.1) (2022-05-19)
 
 
