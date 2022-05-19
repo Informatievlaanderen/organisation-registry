@@ -6,17 +6,13 @@ using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;
 
 public class RemoveDelegationAssignmentCommandHandler
-:BaseCommandHandler<RemoveDelegationAssignmentCommandHandler>,
-    ICommandEnvelopeHandler<RemoveDelegationAssignment>
+    : BaseCommandHandler<RemoveDelegationAssignmentCommandHandler>,
+        ICommandEnvelopeHandler<RemoveDelegationAssignment>
 {
-    private readonly IDateTimeProvider _dateTimeProvider;
-
     public RemoveDelegationAssignmentCommandHandler(
         ILogger<RemoveDelegationAssignmentCommandHandler> logger,
-        ISession session,
-        IDateTimeProvider dateTimeProvider) : base(logger, session)
+        ISession session) : base(logger, session)
     {
-        _dateTimeProvider = dateTimeProvider;
     }
 
     public async Task Handle(ICommandEnvelope<RemoveDelegationAssignment> envelope)
@@ -26,8 +22,7 @@ public class RemoveDelegationAssignmentCommandHandler
         body.RemovePersonAssignmentFromDelegation(
             envelope.Command.BodySeatId,
             envelope.Command.BodyMandateId,
-            envelope.Command.DelegationAssignmentId,
-            _dateTimeProvider.Today);
+            envelope.Command.DelegationAssignmentId);
 
         await Session.Commit(envelope.User);
     }

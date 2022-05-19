@@ -8,8 +8,8 @@
 
         public string Name { get; }
         public string BodyNumber { get; }
-        public string ShortName { get; }
-        public string Description { get; }
+        public string? ShortName { get; }
+        public string? Description { get; }
         public DateTime? FormalValidFrom { get; }
         public DateTime? FormalValidTo { get; }
 
@@ -17,8 +17,8 @@
             Guid bodyId,
             string name,
             string bodyNumber,
-            string shortName,
-            string description,
+            string? shortName,
+            string? description,
             DateTime? formalValidFrom,
             DateTime? formalValidTo)
         {
