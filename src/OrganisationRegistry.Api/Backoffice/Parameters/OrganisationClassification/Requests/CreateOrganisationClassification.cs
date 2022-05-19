@@ -11,7 +11,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         public int Order { get; set; }
 
@@ -51,7 +51,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
     public static class CreateOrganisationClassificationRequestMapping
     {
         public static CreateOrganisationClassification Map(CreateOrganisationClassificationRequest message)
-            => new CreateOrganisationClassification(
+            => new(
                 new OrganisationClassificationId(message.Id),
                 new OrganisationClassificationName(message.Name),
                 message.Order,

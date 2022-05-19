@@ -20,7 +20,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType.Requests
 
     public class UpdateLabelTypeRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class UpdateLabelTypeRequestValidator : AbstractValidator<UpdateLabelTypeInternalRequest>
@@ -44,7 +44,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType.Requests
     public static class UpdateLabelTypeRequestMapping
     {
         public static UpdateLabelType Map(UpdateLabelTypeInternalRequest message)
-            => new UpdateLabelType(
+            => new(
                 new LabelTypeId(message.LabelTypeId),
                 new LabelTypeName(message.Body.Name));
     }

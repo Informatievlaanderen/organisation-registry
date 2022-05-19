@@ -4,7 +4,6 @@
     using FluentValidation;
     using OrganisationRegistry.FormalFramework;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
 
     public class AddOrganisationFormalFrameworkInternalRequest
     {
@@ -59,14 +58,12 @@
     public static class AddOrganisationFormalFrameworkRequestMapping
     {
         public static AddOrganisationFormalFramework Map(AddOrganisationFormalFrameworkInternalRequest message)
-        {
-            return new AddOrganisationFormalFramework(
+            => new(
                 message.Body.OrganisationFormalFrameworkId,
                 new FormalFrameworkId(message.Body.FormalFrameworkId),
                 new OrganisationId(message.OrganisationId),
                 new OrganisationId(message.Body.ParentOrganisationId),
                 new ValidFrom(message.Body.ValidFrom),
                 new ValidTo(message.Body.ValidTo));
-        }
     }
 }

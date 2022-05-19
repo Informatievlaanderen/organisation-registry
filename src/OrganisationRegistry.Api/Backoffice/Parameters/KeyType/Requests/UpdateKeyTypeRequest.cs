@@ -20,7 +20,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Requests
 
     public class UpdateKeyTypeRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class UpdateKeyTypeRequestValidator : AbstractValidator<UpdateKeyTypeInternalRequest>
@@ -44,7 +44,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Requests
     public static class UpdateKeyTypeRequestMapping
     {
         public static UpdateKeyType Map(UpdateKeyTypeInternalRequest message)
-            => new UpdateKeyType(
+            => new(
                 new KeyTypeId(message.KeyTypeId),
                 new KeyTypeName(message.Body.Name));
     }

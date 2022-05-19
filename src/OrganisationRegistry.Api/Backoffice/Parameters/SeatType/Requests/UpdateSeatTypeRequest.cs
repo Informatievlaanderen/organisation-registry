@@ -20,7 +20,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.SeatType.Requests
 
     public class UpdateSeatTypeRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         public int? Order { get; set; }
 
@@ -48,7 +48,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.SeatType.Requests
     public static class UpdateSeatTypeRequestMapping
     {
         public static UpdateSeatType Map(UpdateSeatTypeInternalRequest message)
-            => new UpdateSeatType(
+            => new(
                 new SeatTypeId(message.SeatTypeId),
                 new SeatTypeName(message.Body.Name),
                 message.Body.Order,

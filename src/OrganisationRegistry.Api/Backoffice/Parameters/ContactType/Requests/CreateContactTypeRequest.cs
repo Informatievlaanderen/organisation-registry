@@ -10,7 +10,7 @@
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class CreateContactTypeRequestValidator : AbstractValidator<CreateContactTypeRequest>
@@ -34,10 +34,8 @@
     public static class CreateContactTypeRequestMapping
     {
         public static CreateContactType Map(CreateContactTypeRequest message)
-        {
-            return new CreateContactType(
+            => new(
                 new ContactTypeId(message.Id),
                 message.Name);
-        }
     }
 }

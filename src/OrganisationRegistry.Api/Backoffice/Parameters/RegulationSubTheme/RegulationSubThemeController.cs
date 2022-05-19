@@ -10,9 +10,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationSubTheme
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Options;
     using OrganisationRegistry.Infrastructure.Commands;
-    using OrganisationRegistry.Infrastructure.Configuration;
     using Queries;
     using Requests;
     using Security;
@@ -23,14 +21,9 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationSubTheme
     [OrganisationRegistryRoute("regulationsubthemes")]
     public class RegulationSubThemeController : OrganisationRegistryController
     {
-        private readonly ApiConfigurationSection _config;
-
-        public RegulationSubThemeController(
-            ICommandSender commandSender,
-            IOptions<ApiConfigurationSection> config)
+        public RegulationSubThemeController(ICommandSender commandSender)
             : base(commandSender)
         {
-            _config = config.Value;
         }
 
         /// <summary>Get a list of available regulation sub-themes.</summary>

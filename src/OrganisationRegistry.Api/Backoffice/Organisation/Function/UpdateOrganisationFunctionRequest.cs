@@ -7,7 +7,6 @@
     using FluentValidation;
     using OrganisationRegistry.Function;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Person;
 
     public class UpdateOrganisationFunctionInternalRequest
@@ -27,7 +26,7 @@
         public Guid OrganisationFunctionId { get; set; }
         public Guid FunctionId { get; set; }
         public Guid PersonId { get; set; }
-        public Dictionary<Guid, string> Contacts { get; set; }
+        public Dictionary<Guid, string>? Contacts { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }
@@ -66,15 +65,13 @@
     public static class UpdateOrganisationFunctionRequestMapping
     {
         public static UpdateOrganisationFunction Map(UpdateOrganisationFunctionInternalRequest message)
-        {
-            return new UpdateOrganisationFunction(
+            => new(
                 message.Body.OrganisationFunctionId,
                 new OrganisationId(message.OrganisationId),
                 new FunctionTypeId(message.Body.FunctionId),
                 new PersonId(message.Body.PersonId),
-                message.Body.Contacts?.ToDictionary(x => new ContactTypeId(x.Key), x => x.Value),
+                message.Body.Contacts?.ToDictionary(x => new ContactTypeId(x.Key), x => x.Value) ?? new Dictionary<ContactTypeId, string>(),
                 new ValidFrom(message.Body.ValidFrom),
                 new ValidTo(message.Body.ValidTo));
-        }
     }
 }

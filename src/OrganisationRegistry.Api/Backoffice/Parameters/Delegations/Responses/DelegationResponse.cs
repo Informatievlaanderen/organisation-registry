@@ -8,13 +8,13 @@
         public Guid Id { get; set; }
 
         public Guid BodyId { get; set; }
-        public string BodyName { get; set; }
-        public string BodyOrganisationName { get; set; }
-        public string OrganisationName { get; set; }
-        public string FunctionTypeName { get; set; }
+        public string? BodyName { get; set; }
+        public string? BodyOrganisationName { get; set; }
+        public string? OrganisationName { get; set; }
+        public string? FunctionTypeName { get; set; }
         public Guid BodySeatId { get; set; }
-        public string BodySeatNumber { get; set; }
-        public string BodySeatName { get; set; }
+        public string? BodySeatNumber { get; set; }
+        public string? BodySeatName { get; set; }
         public bool IsDelegated { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }

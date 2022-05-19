@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Exceptions;
 using Handling;
-using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Domain;
 using Microsoft.Extensions.Logging;

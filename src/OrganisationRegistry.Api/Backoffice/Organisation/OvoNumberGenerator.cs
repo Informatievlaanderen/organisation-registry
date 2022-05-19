@@ -6,7 +6,8 @@
 
     public class OvoNumberGenerator : NumberGenerator, IOvoNumberGenerator
     {
-        public OvoNumberGenerator(OrganisationRegistryContext context) : base("OVO", "Organisatie nummer", () => context.OrganisationDetail.Max(item => item.OvoNumber))
+        public OvoNumberGenerator(OrganisationRegistryContext context)
+            : base("OVO", "Organisatie nummer", () => context.OrganisationDetail.Max(item => item.OvoNumber))
         { }
     }
 }

@@ -22,10 +22,10 @@
     {
         public string CrabLocationId { get; set; }
 
-        public string Street { get; set; }
-        public string ZipCode { get; set; }
-        public string City { get; set; }
-        public string Country { get; set; }
+        public string Street { get; set; } = null!;
+        public string ZipCode { get; set; } = null!;
+        public string City { get; set; } = null!;
+        public string Country { get; set; } = null!;
     }
 
     public class UpdateLocationRequestValidator : AbstractValidator<UpdateLocationInternalRequest>
@@ -73,14 +73,12 @@
     public static class UpdateLocationRequestMapping
     {
         public static UpdateLocation Map(UpdateLocationInternalRequest message)
-        {
-            return new UpdateLocation(
+            => new(
                 new LocationId(message.LocationId),
                 message.Body.CrabLocationId,
                 message.Body.Street,
                 message.Body.ZipCode,
                 message.Body.City,
                 message.Body.Country);
-        }
     }
 }

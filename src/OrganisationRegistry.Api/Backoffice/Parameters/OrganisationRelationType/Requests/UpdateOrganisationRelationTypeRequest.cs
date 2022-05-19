@@ -20,7 +20,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationRelationTyp
 
     public class UpdateOrganisationRelationTypeRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public string InverseName { get; set; }
     }
 
@@ -49,11 +49,9 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationRelationTyp
     public static class UpdateOrganisationRelationTypeRequestMapping
     {
         public static UpdateOrganisationRelationType Map(UpdateOrganisationRelationTypeInternalRequest message)
-        {
-            return new UpdateOrganisationRelationType(
+            => new(
                 new OrganisationRelationTypeId(message.OrganisationRelationTypeId),
                 message.Body.Name,
                 message.Body.InverseName);
-        }
     }
 }

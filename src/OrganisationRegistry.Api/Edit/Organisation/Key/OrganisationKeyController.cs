@@ -64,8 +64,7 @@
                 return BadRequest(ModelState);
 
             var addOrganisationKey = AddOrganisationKeyRequestMapping.Map(internalMessage);
-            addOrganisationKey.User = WellknownUsers.Orafin;
-            await CommandSender.Send(addOrganisationKey);
+            await CommandSender.Send(addOrganisationKey, WellknownUsers.Orafin);
 
             return CreatedWithLocation(
                 nameof(Backoffice.Organisation.Key.OrganisationKeyController.Get),
@@ -103,8 +102,7 @@
                 return BadRequest(ModelState);
 
             var updateOrganisationKey = UpdateOrganisationKeyRequestMapping.Map(internalMessage);
-            updateOrganisationKey.User = WellknownUsers.Orafin;
-            await CommandSender.Send(updateOrganisationKey);
+            await CommandSender.Send(updateOrganisationKey, WellknownUsers.Orafin);
 
             return Ok();
         }

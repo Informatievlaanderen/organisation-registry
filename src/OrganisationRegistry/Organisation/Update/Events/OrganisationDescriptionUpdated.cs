@@ -7,11 +7,11 @@ public class OrganisationDescriptionUpdated : BaseEvent<OrganisationDescriptionU
     public Guid OrganisationId
         => Id;
 
-    public string Description { get; }
+    public string? Description { get; }
 
     public OrganisationDescriptionUpdated(
         Guid organisationId,
-        string description)
+        string? description)
     {
         Id = organisationId;
 

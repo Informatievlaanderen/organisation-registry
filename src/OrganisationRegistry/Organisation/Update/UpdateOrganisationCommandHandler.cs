@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Organisation.Update;
+﻿namespace OrganisationRegistry.Organisation;
 
 using System.Linq;
 using System.Threading.Tasks;

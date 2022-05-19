@@ -143,10 +143,8 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkBodyReport
     public static class IsBodyOrganisationActiveExtension
     {
         public static bool IsBodyOrganisationActive(this BodyDocument.BodyOrganisation organisation)
-        {
-            return organisation.Validity == null ||
-                   (!organisation.Validity.Start.HasValue || organisation.Validity.Start.Value <= DateTime.Now) &&
-                   (!organisation.Validity.End.HasValue || organisation.Validity.End.Value >= DateTime.Now);
-        }
+            => organisation.Validity.IsInfinit() ||
+               (!organisation.Validity.Start.HasValue || organisation.Validity.Start.Value <= DateTime.Now) &&
+               (!organisation.Validity.End.HasValue || organisation.Validity.End.Value >= DateTime.Now);
     }
 }

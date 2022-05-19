@@ -10,7 +10,7 @@
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class CreateFunctionTypeRequestValidator : AbstractValidator<CreateFunctionTypeRequest>
@@ -34,10 +34,8 @@
     public static class CreateFunctionTypeRequestMapping
     {
         public static CreateFunctionType Map(CreateFunctionTypeRequest message)
-        {
-            return new CreateFunctionType(
+            => new(
                 new FunctionTypeId(message.Id),
                 message.Name);
-        }
     }
 }

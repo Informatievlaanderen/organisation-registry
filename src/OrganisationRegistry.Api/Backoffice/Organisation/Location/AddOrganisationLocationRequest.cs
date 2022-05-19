@@ -5,7 +5,6 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Location
     using LocationType;
     using OrganisationRegistry.Location;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
 
     public class AddOrganisationLocationInternalRequest
     {

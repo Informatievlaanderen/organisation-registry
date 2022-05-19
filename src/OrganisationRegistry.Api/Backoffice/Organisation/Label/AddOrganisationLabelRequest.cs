@@ -4,7 +4,6 @@
     using FluentValidation;
     using LabelType;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using SqlServer.Organisation;
 
     public class AddOrganisationLabelInternalRequest
@@ -23,7 +22,7 @@
     {
         public Guid OrganisationLabelId { get; set; }
         public Guid LabelTypeId { get; set; }
-        public string LabelValue { get; set; }
+        public string LabelValue { get; set; } = null!;
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }

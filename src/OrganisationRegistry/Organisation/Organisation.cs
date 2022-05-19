@@ -213,8 +213,8 @@ namespace OrganisationRegistry.Organisation
 
         public void UpdateInfo(string name,
             Article article,
-            string description,
-            string shortName,
+            string? description,
+            string? shortName,
             List<Purpose> purposes,
             bool showOnVlaamseOverheidSites,
             Period validity,
@@ -265,7 +265,7 @@ namespace OrganisationRegistry.Organisation
                 ApplyChange(new OrganisationBecameActive(Id));
         }
 
-        public void UpdateInfoNotLimitedByVlimpers(string description,
+        public void UpdateInfoNotLimitedByVlimpers(string? description,
             List<Purpose> purposes,
             bool showOnVlaamseOverheidSites)
         {

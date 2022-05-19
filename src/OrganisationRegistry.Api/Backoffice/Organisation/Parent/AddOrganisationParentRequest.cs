@@ -3,7 +3,6 @@
     using System;
     using FluentValidation;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
 
     public class AddOrganisationParentInternalRequest
     {

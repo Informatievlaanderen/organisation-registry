@@ -10,7 +10,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LocationType.Requests
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class CreateLocationTypeRequestValidator : AbstractValidator<CreateLocationTypeRequest>
@@ -34,7 +34,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LocationType.Requests
     public static class CreateLocationTypeRequestMapping
     {
         public static CreateLocationType Map(CreateLocationTypeRequest message)
-            => new CreateLocationType(
+            => new(
                 new LocationTypeId(message.Id),
                 new LocationTypeName(message.Name));
     }

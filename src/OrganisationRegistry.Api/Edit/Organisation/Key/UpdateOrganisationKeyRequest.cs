@@ -29,10 +29,11 @@
         /// Id van het sleuteltype.
         /// </summary>
         public Guid KeyTypeId { get; set; }
+
         /// <summary>
         /// Waarde van de sleutel.
         /// </summary>
-        public string KeyValue { get; set; }
+        public string KeyValue { get; set; } = null!;
         /// <summary>
         /// Geldig vanaf.
         /// </summary>
@@ -79,14 +80,12 @@
     public static class UpdateOrganisationKeyRequestMapping
     {
         public static UpdateOrganisationKey Map(UpdateOrganisationKeyInternalRequest message)
-        {
-            return new UpdateOrganisationKey(
+            => new(
                 new OrganisationKeyId(message.OrganisationKeyId),
                 new OrganisationId(message.OrganisationId),
                 new KeyTypeId(message.Body.KeyTypeId),
                 message.Body.KeyValue,
                 new ValidFrom(message.Body.ValidFrom),
                 new ValidTo(message.Body.ValidTo));
-        }
     }
 }

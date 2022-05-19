@@ -20,7 +20,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Purpose.Requests
 
     public class UpdatePurposeRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class UpdatePurposeRequestValidator : AbstractValidator<UpdatePurposeInternalRequest>
@@ -44,7 +44,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Purpose.Requests
     public static class UpdatePurposeRequestMapping
     {
         public static UpdatePurpose Map(UpdatePurposeInternalRequest message)
-            => new UpdatePurpose(
+            => new(
                 new PurposeId(message.PurposeId),
                 new PurposeName(message.Body.Name));
     }

@@ -33,16 +33,12 @@
         }
 
         public bool IsValid(DateTime date)
-        {
-            return Validity.OverlapsWith(new Period(new ValidFrom(date), new ValidTo(date)));
-        }
+            => Validity.OverlapsWith(new Period(new ValidFrom(date), new ValidTo(date)));
 
         protected bool Equals(OrganisationBuilding other)
-        {
-            return OrganisationBuildingId.Equals(other.OrganisationBuildingId);
-        }
+            => OrganisationBuildingId.Equals(other.OrganisationBuildingId);
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -51,29 +47,21 @@
         }
 
         public override int GetHashCode()
-        {
-            return OrganisationBuildingId.GetHashCode();
-        }
+            => OrganisationBuildingId.GetHashCode();
 
         public OrganisationBuilding WithValidity(Period period)
-        {
-            return new OrganisationBuilding(
+            => new(
                 OrganisationBuildingId,
                 OrganisationId,
                 BuildingId,
                 BuildingName,
                 IsMainBuilding,
                 period);
-        }
 
         public OrganisationBuilding WithValidFrom(ValidFrom validFrom)
-        {
-            return WithValidity(new Period(validFrom, Validity.End));
-        }
+            => WithValidity(new Period(validFrom, Validity.End));
 
         public OrganisationBuilding WithValidTo(ValidTo validTo)
-        {
-            return WithValidity(new Period(Validity.Start, validTo));
-        }
+            => WithValidity(new Period(Validity.Start, validTo));
     }
 }

@@ -20,7 +20,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassificationType.
 
     public class UpdateBodyClassificationTypeRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class UpdateBodyClassificationTypeRequestValidator : AbstractValidator<UpdateBodyClassificationTypeInternalRequest>
@@ -44,10 +44,8 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassificationType.
     public static class UpdateBodyClassificationTypeRequestMapping
     {
         public static UpdateBodyClassificationType Map(UpdateBodyClassificationTypeInternalRequest message)
-        {
-            return new UpdateBodyClassificationType(
+            => new(
                 new BodyClassificationTypeId(message.BodyClassificationTypeId),
                 message.Body.Name);
-        }
     }
 }

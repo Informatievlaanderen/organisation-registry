@@ -58,6 +58,9 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFramework
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
+            if (filtering.Filter is not { })
+                filtering.Filter = new FormalFrameworkListItemFilter();
+
             if (!_config.Value.VademecumReport_FormalFrameworkIds.IsNullOrWhiteSpace())
                 foreach (var id in _config.Value.VademecumReport_FormalFrameworkIds.Split(new[] { ',' },
                     StringSplitOptions.RemoveEmptyEntries))

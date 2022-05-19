@@ -20,8 +20,8 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Detail
 
     public class UpdatePersonRequest
     {
-        public string FirstName { get; set; }
-        public string Name { get; set; }
+        public string FirstName { get; set; } = null!;
+        public string Name { get; set; } = null!;
         public Sex? Sex { get; set; } // TODO: We should map from non domain string to the enum
         public DateTime? DateOfBirth { get; set; }
     }

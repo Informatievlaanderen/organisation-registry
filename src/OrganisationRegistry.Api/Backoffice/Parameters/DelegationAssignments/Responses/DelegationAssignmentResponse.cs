@@ -14,9 +14,9 @@
         public Guid BodyMandateId { get; set; }
 
         public Guid PersonId { get; set; }
-        public string PersonName { get; set; }
+        public string? PersonName { get; set; }
 
-        public Dictionary<Guid, string> Contacts { get; set; }
+        public Dictionary<Guid, string>? Contacts { get; set; }
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }

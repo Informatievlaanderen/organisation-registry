@@ -44,8 +44,7 @@ public class WhenAddingAnOrganisationLabel : Specification<AddOrganisationLabelC
         return new AddOrganisationLabelCommandHandler(
             new Mock<ILogger<AddOrganisationLabelCommandHandler>>().Object,
             Session,
-            new OrganisationRegistryConfigurationStub(),
-            securityServiceMock.Object);
+            new OrganisationRegistryConfigurationStub());
     }
 
     protected override IUser User

@@ -13,7 +13,7 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Capacity
     public class PersonCapacityListQueryResult
     {
         public string CapacityName { get; }
-        public string FunctionName { get; }
+        public string? FunctionName { get; }
         public Guid OrganisationId { get; }
         public string OrganisationName { get; }
         public DateTime? ValidFrom { get; }
@@ -21,7 +21,7 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Capacity
 
         public PersonCapacityListQueryResult(
             string capacityName,
-            string functionName,
+            string? functionName,
             Guid organisationId,
             string organisationName,
             DateTime? validFrom,
@@ -75,7 +75,7 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Capacity
             };
 
             public SortingHeader DefaultSortingHeader { get; } =
-                new SortingHeader(nameof(PersonCapacityListItem.OrganisationName), SortOrder.Ascending);
+                new(nameof(PersonCapacityListItem.OrganisationName), SortOrder.Ascending);
         }
     }
 }

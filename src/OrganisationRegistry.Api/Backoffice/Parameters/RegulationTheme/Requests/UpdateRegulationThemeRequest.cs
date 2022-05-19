@@ -20,7 +20,7 @@
 
     public class UpdateRegulationThemeRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class UpdateRegulationThemeRequestValidator : AbstractValidator<UpdateRegulationThemeInternalRequest>
@@ -44,10 +44,8 @@
     public static class UpdateRegulationThemeRequestMapping
     {
         public static UpdateRegulationTheme Map(UpdateRegulationThemeInternalRequest message)
-        {
-            return new UpdateRegulationTheme(
+            => new(
                 new RegulationThemeId(message.RegulationThemeId),
                 new RegulationThemeName(message.Body.Name));
-        }
     }
 }

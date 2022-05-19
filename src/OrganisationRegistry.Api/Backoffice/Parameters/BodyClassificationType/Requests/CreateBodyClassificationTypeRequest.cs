@@ -10,7 +10,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassificationType.
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class CreateBodyClassificationTypeRequestValidator : AbstractValidator<CreateBodyClassificationTypeRequest>

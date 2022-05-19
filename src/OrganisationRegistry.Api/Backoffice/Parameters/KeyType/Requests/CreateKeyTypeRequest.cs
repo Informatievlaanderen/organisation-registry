@@ -10,7 +10,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Requests
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class CreateKeyTypeRequestValidator : AbstractValidator<CreateKeyTypeRequest>
@@ -34,7 +34,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Requests
     public static class CreateKeyTypeRequestMapping
     {
         public static CreateKeyType Map(CreateKeyTypeRequest message)
-            => new CreateKeyType(
+            => new(
                 new KeyTypeId(message.Id),
                 new KeyTypeName(message.Name));
     }

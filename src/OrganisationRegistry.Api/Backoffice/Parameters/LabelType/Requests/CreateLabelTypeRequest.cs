@@ -10,7 +10,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType.Requests
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class CreateLabelTypeRequestValidator : AbstractValidator<CreateLabelTypeRequest>
@@ -34,7 +34,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LabelType.Requests
     public static class CreateLabelTypeRequestMapping
     {
         public static CreateLabelType Map(CreateLabelTypeRequest message)
-            => new CreateLabelType(
+            => new(
                 new LabelTypeId(message.Id),
                 new LabelTypeName(message.Name));
     }

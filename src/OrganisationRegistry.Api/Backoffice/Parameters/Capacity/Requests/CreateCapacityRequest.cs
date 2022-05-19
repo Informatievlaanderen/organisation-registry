@@ -10,7 +10,7 @@
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class CreateCapacityRequestValidator : AbstractValidator<CreateCapacityRequest>
@@ -34,10 +34,8 @@
     public static class CreateCapacityRequestMapping
     {
         public static CreateCapacity Map(CreateCapacityRequest message)
-        {
-            return new CreateCapacity(
+            => new(
                 new CapacityId(message.Id),
                 message.Name);
-        }
     }
 }

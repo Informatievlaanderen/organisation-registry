@@ -63,7 +63,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
     public class OrganisationClassificationTypeListItemResult
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public bool UserPermitted { get; set; }
     }
 }

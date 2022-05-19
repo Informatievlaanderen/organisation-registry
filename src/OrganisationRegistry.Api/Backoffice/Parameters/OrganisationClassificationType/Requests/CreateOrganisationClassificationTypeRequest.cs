@@ -10,7 +10,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class CreateOrganisationClassificationTypeRequestValidator : AbstractValidator<CreateOrganisationClassificationTypeRequest>
@@ -34,7 +34,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
     public static class CreateOrganisationClassificationTypeRequestMapping
     {
         public static CreateOrganisationClassificationType Map(CreateOrganisationClassificationTypeRequest message)
-            => new CreateOrganisationClassificationType(
+            => new(
                 new OrganisationClassificationTypeId(message.Id),
                 new OrganisationClassificationTypeName(message.Name));
     }

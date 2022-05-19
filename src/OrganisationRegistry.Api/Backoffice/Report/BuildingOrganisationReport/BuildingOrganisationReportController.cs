@@ -5,12 +5,10 @@ namespace OrganisationRegistry.Api.Backoffice.Report.BuildingOrganisationReport
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Infrastructure;
     using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
     using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
-    using Search;
     using ElasticSearch.Client;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
@@ -27,8 +25,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.BuildingOrganisationReport
 
         public BuildingOrganisationReportController(
             ICommandSender commandSender,
-            IOptions<ApiConfigurationSection> config,
-            ILogger<SearchController> log) : base(commandSender)
+            IOptions<ApiConfigurationSection> config) : base(commandSender)
         {
             _config = config.Value;
         }

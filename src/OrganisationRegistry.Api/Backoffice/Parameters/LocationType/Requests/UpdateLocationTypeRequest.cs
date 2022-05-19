@@ -20,7 +20,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LocationType.Requests
 
     public class UpdateLocationTypeRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class UpdateLocationTypeRequestValidator : AbstractValidator<UpdateLocationTypeInternalRequest>
@@ -44,7 +44,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LocationType.Requests
     public static class UpdateLocationTypeRequestMapping
     {
         public static UpdateLocationType Map(UpdateLocationTypeInternalRequest message)
-            => new UpdateLocationType(
+            => new(
                 new LocationTypeId(message.LocationTypeId),
                 new LocationTypeName(message.Body.Name));
     }

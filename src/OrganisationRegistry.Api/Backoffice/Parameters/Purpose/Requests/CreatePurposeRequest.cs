@@ -10,7 +10,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Purpose.Requests
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class CreatePurposeRequestValidator : AbstractValidator<CreatePurposeRequest>
@@ -34,7 +34,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.Purpose.Requests
     public static class CreatePurposeRequestMapping
     {
         public static CreatePurpose Map(CreatePurposeRequest message)
-            => new CreatePurpose(
+            => new(
                 new PurposeId(message.Id),
                 new PurposeName(message.Name));
     }
