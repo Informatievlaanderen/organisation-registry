@@ -97,7 +97,7 @@ public class ImportOrganisationsController : OrganisationRegistryController
     }
 
     [HttpGet("{id:guid}/content")]
-    public async Task<IActionResult> GetImportStatus(
+    public async Task<IActionResult> GetImportStatusFile(
         [FromServices] OrganisationRegistryContext context,
         [FromRoute] Guid id
     )
