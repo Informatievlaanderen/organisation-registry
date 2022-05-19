@@ -2,6 +2,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using TestBases;
     using Tests.Shared;
@@ -16,7 +17,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
         private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
 
         [Fact]
-        public void WhenAssigningAFormalFramework()
+        public async Task WhenAssigningAFormalFramework()
         {
             var childOrganisationCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
             var parentOrganisationACreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
@@ -31,7 +32,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
                     formalFrameworkAddedToChild.OrganisationFormalFrameworkId, formalFrameworkACreated.Id, childOrganisationCreated.Id, parentOrganisationACreated.Id);
 
 
-            HandleEvents(
+            await HandleEvents(
                 childOrganisationCreated.Build(),
                 parentOrganisationACreated.Build(),
                 parentOrganisationBCreated.Build(),
@@ -51,15 +52,15 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
 
             var parent = organisationsForFormalFrameworkA.SingleOrDefault(item => item.Name == parentOrganisationACreated.Name);
             parent.Should().NotBeNull();
-            parent.OrganisationId.Should().Be((Guid)parentOrganisationACreated.Id);
+            parent!.OrganisationId.Should().Be((Guid)parentOrganisationACreated.Id);
 
             var child = organisationsForFormalFrameworkA.SingleOrDefault(item => item.OrganisationId == childOrganisationCreated.Id);
             child.Should().NotBeNull();
-            child.ParentOrganisationId.Should().Be(parentOrganisationACreated.Id);
+            child!.ParentOrganisationId.Should().Be(parentOrganisationACreated.Id);
         }
 
         [Fact]
-        public void WhenChangingAnActiveFormalFrameworkToAnInactiveOne()
+        public async Task WhenChangingAnActiveFormalFrameworkToAnInactiveOne()
         {
             var childOrganisationACreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
             var childOrganisationBCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
@@ -99,7 +100,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
                     parentOrganisationACreated.Id);
 
 
-            HandleEvents(
+            await HandleEvents(
                 childOrganisationACreated.Build(),
                 childOrganisationBCreated.Build(),
                 parentOrganisationACreated.Build(),

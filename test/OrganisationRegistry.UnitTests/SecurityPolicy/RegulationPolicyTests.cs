@@ -1,23 +1,14 @@
 ﻿namespace OrganisationRegistry.UnitTests.SecurityPolicy;
 
-using AutoFixture;
 using FluentAssertions;
 using Handling.Authorization;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Organisation.Exceptions;
-using Tests.Shared.Stubs;
 using Xunit;
 
 public class RegulationPolicyTests
 {
-    private readonly Fixture _fixture;
-
-    public RegulationPolicyTests()
-    {
-        _fixture = new Fixture();
-    }
-
-    public RegulationPolicy CreatePolicy()
+    private static RegulationPolicy CreatePolicy()
         => new();
 
     [Theory]

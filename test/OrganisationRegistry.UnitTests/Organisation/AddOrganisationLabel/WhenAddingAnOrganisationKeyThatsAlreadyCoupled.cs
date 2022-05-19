@@ -24,7 +24,7 @@ public class
     private Guid _organisationId;
     private Guid _labelId;
     private Guid _organisationLabelId;
-    private const string _value = "ABC-12-@#$%";
+    private const string Value = "ABC-12-@#$%";
     private DateTime _validTo;
     private DateTime _validFrom;
 
@@ -84,7 +84,7 @@ public class
                 _organisationLabelId,
                 _labelId,
                 "Label A",
-                _value,
+                Value,
                 _validFrom,
                 _validTo)
         };
@@ -95,7 +95,7 @@ public class
             Guid.NewGuid(),
             new OrganisationId(_organisationId),
             new LabelTypeId(_labelId),
-            _value,
+            Value,
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 

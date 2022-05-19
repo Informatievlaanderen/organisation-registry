@@ -2,7 +2,6 @@ namespace OrganisationRegistry.UnitTests.Magda
 {
     using System;
     using System.Threading.Tasks;
-    using Api.Backoffice.Kbo;
     using Api.Infrastructure.Magda;
     using FluentAssertions;
     using global::Magda.RegistreerInschrijving;
@@ -123,7 +122,7 @@ namespace OrganisationRegistry.UnitTests.Magda
             organisation.ShortName.Value.Should().BeNull();
             organisation.ShortName.ValidFrom.Should().BeNull();
 
-            organisation.LegalForm.Code.Should().Be("014");
+            organisation.LegalForm!.Code.Should().Be("014");
             organisation.LegalForm.ValidFrom.Should().Be(new DateTime(1998, 04, 08));
             organisation.LegalForm.ValidTo.Should().BeNull();
 
@@ -133,7 +132,7 @@ namespace OrganisationRegistry.UnitTests.Magda
             bankAccount.ValidFrom.Should().Be(new DateTime(1930, 12, 01));
             bankAccount.ValidTo.Should().BeNull();
 
-            organisation.Address.City.Should().Be("Antwerpen");
+            organisation.Address!.City.Should().Be("Antwerpen");
             organisation.Address.Country.Should().Be("België");
             organisation.Address.Street.Should().Be("Ledeganckkaai 7");
             organisation.Address.ValidFrom.Should().Be(new DateTime(2006, 12, 15));

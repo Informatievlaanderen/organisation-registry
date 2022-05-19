@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
 {
     using System.Linq;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using TestBases;
     using Tests.Shared;
@@ -11,7 +12,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
     public class BodyOrganisationListTests : ListViewTestBase
     {
         [Fact]
-        public void BodyOrganisationAdded()
+        public async Task BodyOrganisationAdded()
         {
             var sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
             var sequentialBodyNumberGenerator = new SequentialBodyNumberGenerator();
@@ -20,7 +21,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
             var organisationCreated = new OrganisationCreatedBuilder(sequentialOvoNumberGenerator);
             var bodyOrganisationAdded = new BodyOrganisationAddedBuilder(bodyRegistered.Id, organisationCreated.Id);
 
-            HandleEvents(
+            await HandleEvents(
                 organisationCreated.Build(),
                 bodyRegistered.Build(),
                 bodyOrganisationAdded.Build());
@@ -31,7 +32,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
 
             bodyOrganisationListItem.Should().NotBeNull();
 
-            bodyOrganisationListItem.OrganisationId.Should().Be(bodyOrganisationAdded.OrganisationId);
+            bodyOrganisationListItem!.OrganisationId.Should().Be(bodyOrganisationAdded.OrganisationId);
             bodyOrganisationListItem.OrganisationName.Should().Be(bodyOrganisationAdded.OrganisationName);
             bodyOrganisationListItem.BodyId.Should().Be(bodyOrganisationAdded.BodyId);
             bodyOrganisationListItem.ValidFrom.Should().Be(bodyOrganisationAdded.ValidFrom);

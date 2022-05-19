@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using TestBases;
     using OrganisationRegistry.Person.Events;
@@ -12,11 +13,11 @@
     public class PersonListViewTests : ListViewTestBase
     {
         [Fact]
-        public void PersonCreated()
+        public async Task PersonCreated()
         {
             var koenId = Guid.NewGuid();
             var davidId = Guid.NewGuid();
-            HandleEvents(
+            await HandleEvents(
                 new PersonCreated(koenId, "Koen", "Metsu", Sex.Male, DateTime.Now.AddYears(-30)),
                 new PersonCreated(davidId, "David", "Cumps", Sex.Male, DateTime.Now.AddYears(-31)));
 
@@ -25,10 +26,10 @@
         }
 
         [Fact]
-        public void PersonUpdated()
+        public async Task PersonUpdated()
         {
             var personId = Guid.NewGuid();
-            HandleEvents(
+            await HandleEvents(
                 new PersonCreated(personId, "Koen", "Metsu", Sex.Male, DateTime.Now.AddYears(-30)),
                 new PersonUpdated(personId, "Leander", "Metsu", Sex.Male, DateTime.Now.AddYears(-5), "Koen", "Metsu", Sex.Male, DateTime.Now.AddYears(-30)));
 

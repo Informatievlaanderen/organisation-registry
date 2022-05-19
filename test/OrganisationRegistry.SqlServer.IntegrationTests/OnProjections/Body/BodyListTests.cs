@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
 {
     using System.Linq;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using TestBases;
     using Tests.Shared;
@@ -12,14 +13,14 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
     public class BodyListTests : ListViewTestBase
     {
         [Fact]
-        public void BodyRegistered()
+        public async Task BodyRegistered()
         {
             var sequentialBodyNumberGenerator = new SequentialBodyNumberGenerator();
 
             var body1Registered = new BodyRegisteredBuilder(sequentialBodyNumberGenerator).Build();
             var body2Registered = new BodyRegisteredBuilder(sequentialBodyNumberGenerator).Build();
 
-            HandleEvents(
+            await HandleEvents(
                 body1Registered,
                 body2Registered);
 
@@ -28,7 +29,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
         }
 
         [Fact]
-        public void BodyAssignedToOrganisation()
+        public async Task BodyAssignedToOrganisation()
         {
             var sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
             var sequentialBodyNumberGenerator = new SequentialBodyNumberGenerator();
@@ -42,7 +43,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
                 organisationCreated.Id, organisationCreated.Name,
                 bodyOrganisationAdded.BodyOrganisationId);
 
-            HandleEvents(
+            await HandleEvents(
                 organisationCreated.Build(),
                 bodyRegistered.Build(),
                 bodyOrganisationAdded.Build(),
@@ -57,7 +58,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
 
             bodyListItem.Should().NotBeNull();
 
-            bodyListItem.Id.Should().Be(bodyRegistered.BodyId);
+            bodyListItem!.Id.Should().Be(bodyRegistered.BodyId);
             bodyListItem.Name.Should().Be(bodyRegistered.Name);
             bodyListItem.ShortName.Should().Be(bodyRegistered.ShortName);
 
@@ -71,7 +72,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Body
 
             bodyListItem.Should().NotBeNull();
 
-            bodyListItem.Id.Should().Be(bodyRegistered.BodyId);
+            bodyListItem!.Id.Should().Be(bodyRegistered.BodyId);
             bodyListItem.Name.Should().Be(bodyRegistered.Name);
             bodyListItem.ShortName.Should().Be(bodyRegistered.ShortName);
 

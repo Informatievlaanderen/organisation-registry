@@ -20,30 +20,21 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
         private readonly FilteringHeader<BodyParticipationFilter> _filtering;
         private readonly OrganisationRegistryContext _context;
         private readonly Guid _bodyId;
-        private readonly Guid _bodySeatType1Id;
-        private readonly string _bodySeatType1Name;
-        private readonly Guid _bodySeatType2Id;
-        private readonly string _bodySeatType2Name;
-        private readonly Guid _bodySeatType3Id;
-        private readonly string _bodySeatType3Name;
-        private readonly bool _bodySeatType1IsEffective;
-        private readonly bool _bodySeatType2IsEffective;
-        private readonly bool _bodySeatType3IsEffective;
 
         public BodyParticipationReportTests()
         {
             // example taken from https://organisatie.dev-vlaanderen.local/#/bodies/65404842-785b-0b2b-1b0b-bceb7b3ec4e1/participation
 
             _bodyId = Guid.NewGuid();
-            _bodySeatType1Id = Guid.NewGuid();
-            _bodySeatType1Name = "Effectief lid";
-            _bodySeatType1IsEffective = true;
-            _bodySeatType2Id = Guid.NewGuid();
-            _bodySeatType2Name = "Ondervoorzitter";
-            _bodySeatType2IsEffective = false;
-            _bodySeatType3Id = Guid.NewGuid();
-            _bodySeatType3Name = "Voorzitter";
-            _bodySeatType3IsEffective = false;
+            var bodySeatType1Id = Guid.NewGuid();
+            const string bodySeatType1Name = "Effectief lid";
+            const bool bodySeatType1IsEffective = true;
+            var bodySeatType2Id = Guid.NewGuid();
+            const string bodySeatType2Name = "Ondervoorzitter";
+            const bool bodySeatType2IsEffective = false;
+            var bodySeatType3Id = Guid.NewGuid();
+            const string bodySeatType3Name = "Voorzitter";
+            const bool bodySeatType3IsEffective = false;
 
             var dbContextOptions = new DbContextOptionsBuilder<OrganisationRegistryContext>()
                 .UseInMemoryDatabase(
@@ -72,15 +63,15 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Reports.
             };
             _context.BodySeatGenderRatioBodyList.Add(bodySeatGenderRatioBodyItem);
 
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, _bodySeatType1IsEffective, Sex.Female);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, _bodySeatType1IsEffective, Sex.Female);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, _bodySeatType1IsEffective, Sex.Female);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, _bodySeatType1IsEffective, Sex.Male);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, _bodySeatType1IsEffective, Sex.Male);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, _bodySeatType1IsEffective, Sex.Male);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType1Id, _bodySeatType1Name, _bodySeatType1IsEffective, Sex.Male);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType2Id, _bodySeatType2Name, _bodySeatType2IsEffective, Sex.Female);
-            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, _bodySeatType3Id, _bodySeatType3Name, _bodySeatType3IsEffective, Sex.Male);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, bodySeatType1Id, bodySeatType1Name, bodySeatType1IsEffective, Sex.Female);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, bodySeatType1Id, bodySeatType1Name, bodySeatType1IsEffective, Sex.Female);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, bodySeatType1Id, bodySeatType1Name, bodySeatType1IsEffective, Sex.Female);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, bodySeatType1Id, bodySeatType1Name, bodySeatType1IsEffective, Sex.Male);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, bodySeatType1Id, bodySeatType1Name, bodySeatType1IsEffective, Sex.Male);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, bodySeatType1Id, bodySeatType1Name, bodySeatType1IsEffective, Sex.Male);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, bodySeatType1Id, bodySeatType1Name, bodySeatType1IsEffective, Sex.Male);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, bodySeatType2Id, bodySeatType2Name, bodySeatType2IsEffective, Sex.Female);
+            AddPost(_context, _bodyId, bodySeatGenderRatioBodyItem, bodySeatType3Id, bodySeatType3Name, bodySeatType3IsEffective, Sex.Male);
 
             _context.SaveChanges();
 

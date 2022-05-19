@@ -2,6 +2,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using Infrastructure;
     using Organisation;
@@ -13,7 +14,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
     public class OrganisationBankAccountListViewTests : ListViewTestBase
     {
         [Fact]
-        public void BankAccountAdded()
+        public async Task BankAccountAdded()
         {
             var organisationBankAccountAdded1 = new OrganisationBankAccountAdded(Guid.NewGuid(), Guid.NewGuid(),
                 string.Empty, true,
@@ -23,7 +24,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
                 string.Empty, true,
                 string.Empty, true, DateTime.Today, DateTime.Today);
 
-            HandleEvents(
+            await HandleEvents(
                 organisationBankAccountAdded1,
                 organisationBankAccountAdded2);
 
@@ -37,8 +38,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
                     organisationBankAccountAdded1.Bic,
                     organisationBankAccountAdded1.IsBic,
                     organisationBankAccountAdded1.ValidFrom,
-                    organisationBankAccountAdded1.ValidTo,
-                    null),
+                    organisationBankAccountAdded1.ValidTo),
                 new(
                     organisationBankAccountAdded2.OrganisationBankAccountId,
                     organisationBankAccountAdded2.OrganisationId,
@@ -47,13 +47,13 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
                     organisationBankAccountAdded2.Bic,
                     organisationBankAccountAdded2.IsBic,
                     organisationBankAccountAdded2.ValidFrom,
-                    organisationBankAccountAdded2.ValidTo,
-                    null),
+                    organisationBankAccountAdded2.ValidTo
+                    ),
             });
         }
 
         [Fact]
-        public void KboBankAccountAdded()
+        public async Task KboBankAccountAdded()
         {
             var kboOrganisationBankAccountAdded1 = new KboOrganisationBankAccountAdded(Guid.NewGuid(), Guid.NewGuid(),
                 string.Empty, true,
@@ -63,7 +63,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
                 string.Empty, true,
                 string.Empty, true, DateTime.Today, DateTime.Today);
 
-            HandleEvents(
+            await HandleEvents(
                 kboOrganisationBankAccountAdded1,
                 kboOrganisationBankAccountAdded2);
 
@@ -93,7 +93,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
         }
 
         [Fact]
-        public void KboBankAccountRemoved()
+        public async Task KboBankAccountRemoved()
         {
             var kboOrganisationBankAccountAdded1 = new KboOrganisationBankAccountAdded(Guid.NewGuid(), Guid.NewGuid(),
                 string.Empty, true,
@@ -113,7 +113,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
                 kboOrganisationBankAccountAdded1.ValidFrom,
                 kboOrganisationBankAccountAdded1.ValidTo);
 
-            HandleEvents(
+            await HandleEvents(
                 kboOrganisationBankAccountAdded1,
                 kboOrganisationBankAccountAdded2,
                 kboOrganisationBankAccountRemoved);

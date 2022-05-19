@@ -16,15 +16,17 @@
         [Fact]
         public void NewVersion()
         {
-            var @event = (OrganisationOrganisationClassificationAdded) JsonConvert.DeserializeObject(newVersion, typeof(OrganisationOrganisationClassificationAdded));
-            @event.OrganisationClassificationTypeName.Should().Be("Uitvoerend niveau");
+            var @event = (OrganisationOrganisationClassificationAdded?) JsonConvert.DeserializeObject(newVersion, typeof(OrganisationOrganisationClassificationAdded));
+            @event.Should().NotBeNull();
+            @event!.OrganisationClassificationTypeName.Should().Be("Uitvoerend niveau");
         }
 
         [Fact]
         public void OldVersion()
         {
-            var @event = (OrganisationOrganisationClassificationAdded) JsonConvert.DeserializeObject(oldVersion, typeof(OrganisationOrganisationClassificationAdded));
-            @event.OrganisationClassificationTypeName.Should().Be("Juridische vorm");
+            var @event = (OrganisationOrganisationClassificationAdded?) JsonConvert.DeserializeObject(oldVersion, typeof(OrganisationOrganisationClassificationAdded));
+            @event.Should().NotBeNull();
+            @event!.OrganisationClassificationTypeName.Should().Be("Juridische vorm");
         }
     }
 }

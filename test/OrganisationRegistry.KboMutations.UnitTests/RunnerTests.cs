@@ -17,12 +17,11 @@
 
     public class RunnerTests
     {
-        private readonly IEventPublisher _publisher;
         private readonly ILogger<Runner> _logger;
 
         public RunnerTests()
         {
-            _publisher = Mock.Of<IEventPublisher>();
+            Mock.Of<IEventPublisher>();
             _logger = Mock.Of<ILogger<Runner>>();
         }
 
@@ -31,7 +30,7 @@
         {
             var togglesConfiguration = new OptionsWrapper<TogglesConfigurationSection>(new TogglesConfigurationSection { KboMutationsAvailable = false });
 
-            var kboMutationsConfiguration = new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration { });
+            var kboMutationsConfiguration = new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration());
 
             var runner =
                 new Runner(_logger,
@@ -50,7 +49,7 @@
         {
             var togglesConfiguration = new OptionsWrapper<TogglesConfigurationSection>(new TogglesConfigurationSection { KboMutationsAvailable = true });
 
-            var kboMutationsConfiguration = new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration { });
+            var kboMutationsConfiguration = new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration());
 
             var runner =
                 new Runner(_logger,
@@ -69,7 +68,7 @@
         {
             var togglesConfiguration = new OptionsWrapper<TogglesConfigurationSection>(new TogglesConfigurationSection { KboMutationsAvailable = true });
 
-            var kboMutationsConfiguration = new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration { });
+            var kboMutationsConfiguration = new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration());
 
             var kboFtpClientMock = new Mock<IKboMutationsFetcher>();
             kboFtpClientMock
@@ -97,7 +96,7 @@
         {
             var togglesConfiguration = new OptionsWrapper<TogglesConfigurationSection>(new TogglesConfigurationSection { KboMutationsAvailable = true });
 
-            var kboMutationsConfiguration = new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration { });
+            var kboMutationsConfiguration = new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration());
 
             var kboFtpClientMock = new Mock<IKboMutationsFetcher>();
             var mutationsFiles = new List<MutationsFile>
@@ -129,7 +128,7 @@
         {
             var togglesConfiguration = new OptionsWrapper<TogglesConfigurationSection>(new TogglesConfigurationSection { KboMutationsAvailable = true });
 
-            var kboMutationsConfiguration = new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration { });
+            var kboMutationsConfiguration = new OptionsWrapper<KboMutationsConfiguration>(new KboMutationsConfiguration());
 
             var kboFtpClientMock = new Mock<IKboMutationsFetcher>();
 

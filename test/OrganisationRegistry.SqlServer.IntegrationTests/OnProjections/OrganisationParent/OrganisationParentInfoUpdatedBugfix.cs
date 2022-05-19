@@ -2,6 +2,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using TestBases;
     using Tests.Shared;
@@ -15,7 +16,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
         private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
 
         [Fact]
-        public void UpdateOrganisationInfoThatIsNotTheParent_DoesNotInfluenceTheCurrentParentInTheDetail()
+        public async Task UpdateOrganisationInfoThatIsNotTheParent_DoesNotInfluenceTheCurrentParentInTheDetail()
         {
             var organisationCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
             var parentOrganisationACreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
@@ -25,7 +26,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
             var organisationOrganisationParentAId = organisationAParentAdded.OrganisationOrganisationParentId;
             var organisationOrganisationParentBId = organisationBParentAdded.OrganisationOrganisationParentId;
 
-            HandleEvents(
+            await HandleEvents(
                 organisationCreated.Build(),
                 parentOrganisationACreated.Build(),
                 parentOrganisationBCreated.Build(),
@@ -55,7 +56,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
         }
 
         [Fact]
-        public void UpdateOrganisationParent_InfluencesTheCurrentParentInTheDetail()
+        public async Task UpdateOrganisationParent_InfluencesTheCurrentParentInTheDetail()
         {
             var organisationCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
             var parentOrganisationACreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
@@ -66,7 +67,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.OnProjections.Organisa
             var organisationOrganisationParentAId = organisationAParentAdded.OrganisationOrganisationParentId;
             var organisationOrganisationParentBId = organisationBParentAdded.OrganisationOrganisationParentId;
 
-            HandleEvents(
+            await HandleEvents(
                 organisationCreated.Build(),
                 parentOrganisationACreated.Build(),
                 parentOrganisationBCreated.Build(),

@@ -7,11 +7,10 @@
     using Organisation.ScheduledActions.Parent;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using Xunit;
 
     [Collection(SqlServerTestsCollection.Name)]
-    public class Given_some_activeOrganisationParents
+    public class Given_Some_ActiveOrganisationParents
     {
         [Fact]
         public async Task Then_The_Correct_Commands_Are_Generated()

@@ -4,9 +4,6 @@ namespace OrganisationRegistry.UnitTests
     using System.Linq;
     using AutoFixture;
     using AutoFixture.Dsl;
-    using OrganisationRegistry.Security;
-    using AutoFixture;
-    using AutoFixture.Dsl;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Organisation;
 
