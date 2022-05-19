@@ -18,7 +18,12 @@ namespace OrganisationRegistry.UnitTests.KeyTypes.RemoveKeyType
     public class WhenRemovingAKeyType : OldSpecification<KeyType, KeyTypeCommandHandlers, RemoveKeyType>
     {
         private Guid _keyTypeId;
-        private string _keyTypeName;
+        private const string KeyTypeName = "Sleutel A";
+
+
+        public WhenRemovingAKeyType(ITestOutputHelper helper) : base(helper)
+        {
+        }
 
         protected override KeyTypeCommandHandlers BuildHandler()
         {
@@ -38,19 +43,18 @@ namespace OrganisationRegistry.UnitTests.KeyTypes.RemoveKeyType
         {
             _keyTypeId = Guid.NewGuid();
 
-            _keyTypeName = "Sleutel A";
 
             return new List<IEvent>
             {
                 new KeyTypeCreated(
                     _keyTypeId,
-                    _keyTypeName
+                    KeyTypeName
                 ),
             };
         }
 
         protected override RemoveKeyType When()
-            => new (
+            => new(
                 new KeyTypeId(_keyTypeId))
             {
                 User = new UserBuilder()
@@ -72,10 +76,6 @@ namespace OrganisationRegistry.UnitTests.KeyTypes.RemoveKeyType
         {
             var keyTypeRemoved = PublishedEvents.First().UnwrapBody<KeyTypeRemoved>();
             keyTypeRemoved.KeyTypeId.Should().Be(_keyTypeId);
-        }
-
-        public WhenRemovingAKeyType(ITestOutputHelper helper) : base(helper)
-        {
         }
     }
 }

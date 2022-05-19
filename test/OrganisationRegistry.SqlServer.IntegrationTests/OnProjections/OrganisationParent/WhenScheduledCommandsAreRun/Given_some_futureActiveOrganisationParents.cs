@@ -7,7 +7,6 @@
     using Organisation.ScheduledActions.Parent;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using Xunit;
 
     [Collection(SqlServerTestsCollection.Name)]

@@ -14,7 +14,7 @@ namespace OrganisationRegistry.UnitTests.Magda
             var json = await File.ReadAllTextAsync(path);
 
             var magdaResponse = JsonConvert.DeserializeObject<Envelope<GeefOndernemingResponseBody>>(json);
-            return magdaResponse;
+            return magdaResponse!;
         }
     }
 }

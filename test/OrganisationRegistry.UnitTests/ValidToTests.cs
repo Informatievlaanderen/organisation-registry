@@ -1,3 +1,4 @@
+// ReSharper disable EqualExpressionComparison
 namespace OrganisationRegistry.UnitTests
 {
     using System;

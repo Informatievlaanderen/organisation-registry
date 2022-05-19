@@ -3,8 +3,6 @@ using AutoFixture.Kernel;
 
 namespace OrganisationRegistry.ElasticSearch.Tests.Scenario.Specimen
 {
-    using System;
-
     public class ParameterNameArg<T> : ISpecimenBuilder
     {
         private readonly string _parameterName;

@@ -8,7 +8,6 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
     using System.Reflection;
     using System.Threading.Tasks;
     using Api;
-    using Api.Security;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Infrastructure;
@@ -18,7 +17,6 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
     using Microsoft.Extensions.Logging.Abstractions;
     using Moq;
     using OnProjections;
-    using OrganisationRegistry.Configuration;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Authorization.Cache;
@@ -26,19 +24,18 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
     using OrganisationRegistry.Infrastructure.Config;
     using OrganisationRegistry.Infrastructure.Configuration;
     using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Security;
     using Tests.Shared.Stubs;
 
     public abstract class ListViewTestBase
     {
-        private InProcessBus _inProcessBus;
+        private readonly InProcessBus _inProcessBus;
 
         public DbContextOptions<OrganisationRegistryContext> ContextOptions { get; }
-        protected OrganisationRegistryContext Context => new OrganisationRegistryContext(ContextOptions);
+        protected OrganisationRegistryContext Context => new(ContextOptions);
 
         protected ListViewTestBase()
         {
-            Directory.SetCurrentDirectory(Directory.GetParent(typeof(SqlServerFixture).GetTypeInfo().Assembly.Location).Parent.Parent.Parent.FullName);
+            Directory.SetCurrentDirectory(Directory.GetParent(typeof(SqlServerFixture).GetTypeInfo().Assembly.Location)!.Parent!.Parent!.Parent!.FullName);
 
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -56,7 +53,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
             var app = ConfigureServices(services, configuration, ContextOptions);
             UseOrganisationRegistryEventSourcing(app);
 
-            _inProcessBus = app.GetService<InProcessBus>();
+            _inProcessBus = app.GetService<InProcessBus>()!;
         }
 
         private static IServiceProvider ConfigureServices(IServiceCollection services,
@@ -76,18 +73,18 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests.TestBases
 
         private static void UseOrganisationRegistryEventSourcing(IServiceProvider app)
         {
-            var registrar = app.GetService<BusRegistrar>();
+            var registrar = app.GetService<BusRegistrar>()!;
 
             registrar.RegisterEventHandlers(typeof(MemoryCachesMaintainer));
             registrar.RegisterEventHandlersFromAssembly(typeof(OrganisationRegistrySqlServerAssemblyTokenClass));
         }
 
 
-        public async Task HandleEvents(params IEvent[] envelopes)
+        protected async Task HandleEvents(params IEvent[] envelopes)
         {
             foreach (var envelope in envelopes)
             {
-                _inProcessBus.Publish(Mock.Of<DbConnection>(), Mock.Of<DbTransaction>(), (dynamic)envelope.ToEnvelope());
+                await _inProcessBus.Publish(Mock.Of<DbConnection>(), Mock.Of<DbTransaction>(), (dynamic)envelope.ToEnvelope());
             }
         }
     }

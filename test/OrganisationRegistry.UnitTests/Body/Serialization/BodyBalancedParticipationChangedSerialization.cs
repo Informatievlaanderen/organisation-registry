@@ -16,7 +16,7 @@ namespace OrganisationRegistry.UnitTests.Body.Serialization
             var bodyBalancedParticipationChanged =
                 JsonConvert.DeserializeObject<BodyBalancedParticipationChanged>(@event);
 
-            bodyBalancedParticipationChanged.BalancedParticipationObligatory.Should().BeTrue();
+            bodyBalancedParticipationChanged!.BalancedParticipationObligatory.Should().BeTrue();
         }
 
         [Fact]
@@ -28,7 +28,7 @@ namespace OrganisationRegistry.UnitTests.Body.Serialization
             var bodyBalancedParticipationChanged =
                 JsonConvert.DeserializeObject<BodyBalancedParticipationChanged>(@event);
 
-            bodyBalancedParticipationChanged.BalancedParticipationObligatory.Should().BeFalse();
+            bodyBalancedParticipationChanged!.BalancedParticipationObligatory.Should().BeFalse();
         }
     }
 }

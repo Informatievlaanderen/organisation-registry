@@ -23,7 +23,7 @@ public class
     private Guid _organisationId;
     private Guid _labelTypeId;
     private Guid _organisationLabelId;
-    private const string _value = "13135/123lk.,m";
+    private const string Value = "13135/123lk.,m";
     private DateTime _validTo;
     private DateTime _validFrom;
 
@@ -72,7 +72,7 @@ public class
                 _organisationLabelId,
                 _labelTypeId,
                 "Label A",
-                _value,
+                Value,
                 _validFrom,
                 _validTo)
         };
@@ -83,7 +83,7 @@ public class
             _organisationLabelId,
             new OrganisationId(_organisationId),
             new LabelTypeId(_labelTypeId),
-            _value,
+            Value,
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
@@ -102,7 +102,7 @@ public class
         var organisationLabelAdded = PublishedEvents.First().UnwrapBody<OrganisationLabelUpdated>();
         organisationLabelAdded.OrganisationId.Should().Be(_organisationId);
         organisationLabelAdded.LabelTypeId.Should().Be(_labelTypeId);
-        organisationLabelAdded.Value.Should().Be(_value);
+        organisationLabelAdded.Value.Should().Be(Value);
         organisationLabelAdded.ValidFrom.Should().Be(_validFrom);
         organisationLabelAdded.ValidTo.Should().Be(_validTo);
     }

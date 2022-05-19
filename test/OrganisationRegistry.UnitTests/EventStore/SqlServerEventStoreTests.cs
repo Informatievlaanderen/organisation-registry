@@ -26,7 +26,7 @@ namespace OrganisationRegistry.UnitTests
 
             var dataReader = new Mock<IEventDataReader>();
             dataReader.Setup(i => i.GetEvents(It.IsAny<Guid>(), It.IsAny<int>()))
-                .Returns(eventData.ToList());
+                .Returns(eventData!.ToList());
 
             var sqlServerEventStore = new SqlServerEventStore(
                 new OptionsWrapper<InfrastructureConfigurationSection>(new InfrastructureConfigurationSection()),

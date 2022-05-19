@@ -19,12 +19,13 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
             Events = events;
         }
 
-        public async Task Save<T>(IEnumerable<IEvent> events, IUser user)
+        public Task Save<T>(IEnumerable<IEvent> events, IUser user)
         {
             var eventList = events as IList<IEvent> ?? events.ToList();
             Events.AddRange(eventList);
             foreach (var @event in eventList)
                 _publisher.Publish(null, null, (dynamic)@event.ToEnvelope());
+            return Task.CompletedTask;
         }
 
         public IEnumerable<IEvent> Get<T>(Guid aggregateId, int fromVersion)

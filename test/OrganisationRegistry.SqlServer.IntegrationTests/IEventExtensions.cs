@@ -5,7 +5,7 @@ namespace OrganisationRegistry.SqlServer.IntegrationTests
     using System.Linq;
     using OrganisationRegistry.Infrastructure.Events;
 
-    public static class IEventExtensions{
+    public static class EventExtensions{
 
         public static IEnumerable<IEvent> Numbered(this IEnumerable<IEvent> source)
         {

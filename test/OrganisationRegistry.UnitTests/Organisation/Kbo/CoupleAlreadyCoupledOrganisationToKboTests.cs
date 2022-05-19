@@ -6,14 +6,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using Infrastructure.Tests.Extensions.TestHelpers;
     using OrganisationRegistry.KeyTypes.Events;
     using LabelType.Events;
-    using Location;
     using Location.Events;
     using LocationType.Events;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using OrganisationClassification;
     using OrganisationClassification.Events;
-    using OrganisationClassificationType;
     using OrganisationClassificationType.Events;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
@@ -29,32 +26,32 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 
     public class CoupleAlreadyCoupledOrganisationToKboTests: OldExceptionSpecification<Organisation, KboOrganisationCommandHandlers, CoupleOrganisationToKbo>
     {
-        private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
+        private readonly OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub= new()
+        {
+            KboKeyTypeId = Guid.NewGuid(),
+            Kbo = new KboConfigurationStub
+            {
+                KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
+                KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
+                KboV2FormalNameLabelTypeId = Guid.NewGuid(),
+            }
+        };
 
-        private OrganisationId _organisationId;
-        private OrganisationClassificationTypeId _legalFormOrganisationClassificationTypeId;
-        private OrganisationClassificationId _organisationClassificationId;
-        private LocationId _registeredOfficeLocationId;
-        private readonly DateTime _kboOrganisationValidFromDate = new DateTime(2000, 12, 31);
-        private DateTimeProviderStub _dateTimeProviderStub;
+        private Guid _organisationId;
+        private Guid _legalFormOrganisationClassificationTypeId;
+        private Guid _organisationClassificationId;
+        private Guid _registeredOfficeLocationId;
+        private readonly DateTime _kboOrganisationValidFromDate = new(2000, 12, 31);
+        private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Today);
+
+        public CoupleAlreadyCoupledOrganisationToKboTests(ITestOutputHelper helper) : base(helper) { }
 
         protected override IEnumerable<IEvent> Given()
         {
-            _organisationRegistryConfigurationStub = new OrganisationRegistryConfigurationStub
-            {
-                KboKeyTypeId = Guid.NewGuid(),
-                Kbo = new KboConfigurationStub
-                {
-                    KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
-                    KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
-                    KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-                }
-            };
-            _organisationId = new OrganisationId(Guid.NewGuid());
-            _registeredOfficeLocationId = new LocationId(Guid.NewGuid());
-            _legalFormOrganisationClassificationTypeId = new OrganisationClassificationTypeId(_organisationRegistryConfigurationStub.Kbo.KboV2LegalFormOrganisationClassificationTypeId);
-            _organisationClassificationId = new OrganisationClassificationId(Guid.NewGuid());
-            _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today);
+            _organisationId = Guid.NewGuid();
+            _registeredOfficeLocationId = Guid.NewGuid();
+            _legalFormOrganisationClassificationTypeId = _organisationRegistryConfigurationStub.Kbo.KboV2LegalFormOrganisationClassificationTypeId;
+            _organisationClassificationId = Guid.NewGuid();
 
             return new List<IEvent>
             {
@@ -104,16 +101,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         }
 
         protected override CoupleOrganisationToKbo When()
-        {
-            return new CoupleOrganisationToKbo(
-                _organisationId,
+            => new(
+                new OrganisationId(_organisationId),
                 new KboNumber("BE0123456789"));
-        }
 
         protected override KboOrganisationCommandHandlers BuildHandler()
         {
-            _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today);
-
             return new KboOrganisationCommandHandlers(
                 new Mock<ILogger<KboOrganisationCommandHandlers>>().Object,
                 _organisationRegistryConfigurationStub,
@@ -156,7 +149,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                         }
                 }),
                 new KboOrganisationClassificationRetrieverStub("Some Legal Code", _organisationClassificationId),
-                new KboLocationRetrieverStub(address => address.Street == "Waregemsestraat" ? _registeredOfficeLocationId : (Guid?)null));
+                new KboLocationRetrieverStub(address => address.Street == "Waregemsestraat" ? _registeredOfficeLocationId : null));
         }
 
         protected override int ExpectedNumberOfEvents => 0;
@@ -167,6 +160,5 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             Exception.Should().BeOfType<OrganisationAlreadyCoupledWithKbo>();
         }
 
-        public CoupleAlreadyCoupledOrganisationToKboTests(ITestOutputHelper helper) : base(helper) { }
     }
 }

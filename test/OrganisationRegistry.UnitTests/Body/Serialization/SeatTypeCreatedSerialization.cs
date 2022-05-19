@@ -14,7 +14,7 @@ namespace OrganisationRegistry.UnitTests.Body.Serialization
                 "{'seatTypeId':'cb37bf26-0942-40b2-a698-1d4afac1d5f1','name':'Toezichthouder','order':null,'version':1,'timestamp':'2018-06-18T12:57:48Z'}";
             var seatTypeCreated = JsonConvert.DeserializeObject<SeatTypeCreated>(@event);
 
-            seatTypeCreated.IsEffective.Should().BeNull();
+            seatTypeCreated!.IsEffective.Should().BeNull();
         }
 
         [Fact]
@@ -26,7 +26,7 @@ namespace OrganisationRegistry.UnitTests.Body.Serialization
             var bodyBalancedParticipationChanged =
                 JsonConvert.DeserializeObject<SeatTypeCreated>(@event);
 
-            bodyBalancedParticipationChanged.IsEffective.Should().BeTrue();
+            bodyBalancedParticipationChanged!.IsEffective.Should().BeTrue();
         }
     }
 }

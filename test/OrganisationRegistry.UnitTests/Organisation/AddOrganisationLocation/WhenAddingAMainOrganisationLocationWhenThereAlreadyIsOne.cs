@@ -17,8 +17,8 @@ using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenAddingAMainOrganisationLocationWhenThereAlreadyIsOne : ExceptionSpecification<
-    AddOrganisationLocationCommandHandler, AddOrganisationLocation>
+public class WhenAddingAMainOrganisationLocationWhenThereAlreadyIsOne
+    : ExceptionSpecification<AddOrganisationLocationCommandHandler, AddOrganisationLocation>
 {
     private Guid _organisationId;
     private Guid _locationAId;
@@ -28,7 +28,7 @@ public class WhenAddingAMainOrganisationLocationWhenThereAlreadyIsOne : Exceptio
     private DateTime _validTo;
     private DateTime _validFrom;
 
-    private const string _ovoNumber = "OVO000012345";
+    private const string OvoNumber = "OVO000012345";
 
     public WhenAddingAMainOrganisationLocationWhenThereAlreadyIsOne(ITestOutputHelper helper) : base(helper)
     {
@@ -42,7 +42,7 @@ public class WhenAddingAMainOrganisationLocationWhenThereAlreadyIsOne : Exceptio
             new OrganisationRegistryConfigurationStub());
 
     protected override IUser User
-        => new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build();
+        => new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(OvoNumber).Build();
 
     protected override IEnumerable<IEvent> Given()
     {
@@ -60,7 +60,7 @@ public class WhenAddingAMainOrganisationLocationWhenThereAlreadyIsOne : Exceptio
             new OrganisationCreated(
                 _organisationId,
                 "Kind en Gezin",
-                _ovoNumber,
+                OvoNumber,
                 "K&G",
                 Article.None,
                 "Kindjes en gezinnetjes",
@@ -100,7 +100,7 @@ public class WhenAddingAMainOrganisationLocationWhenThereAlreadyIsOne : Exceptio
     }
 
     protected override AddOrganisationLocation When()
-        => new (
+        => new(
             Guid.NewGuid(),
             new OrganisationId(_organisationId),
             new LocationId(_locationBId),

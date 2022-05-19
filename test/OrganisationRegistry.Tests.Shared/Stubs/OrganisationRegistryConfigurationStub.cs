@@ -15,7 +15,7 @@ namespace OrganisationRegistry.Tests.Shared.Stubs
         public Guid KboKeyTypeId { get; set; }
         public Guid OrafinKeyTypeId { get; set; }
         public Guid VlimpersKeyTypeId { get; set; }
-        public string OrafinOvoCode { get; set; }
+        public string OrafinOvoCode { get; set; } = null!;
         public Guid FormalNameLabelTypeId { get; set; }
         public Guid FormalShortNameLabelTypeId { get; set; }
         public IKboConfiguration Kbo { get; init; }

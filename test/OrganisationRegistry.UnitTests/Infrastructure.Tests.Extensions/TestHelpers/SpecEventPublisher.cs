@@ -12,7 +12,11 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
         public SpecEventPublisher()
             => PublishedEvents = new List<IEnvelope>();
 
-        public async Task Publish<T>(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<T> envelope) where T : IEvent<T>
-            => PublishedEvents.Add(envelope);
+        public Task Publish<T>(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<T> envelope)
+            where T : IEvent<T>
+        {
+            PublishedEvents.Add(envelope);
+            return Task.CompletedTask;
+        }
     }
 }

@@ -22,7 +22,7 @@ public class WhenAddingAnOrganisationLabel : Specification<AddOrganisationLabelC
     private Guid _organisationId;
     private Guid _labelId;
     private Guid _organisationLabelId;
-    private const string _value = "12345ABC-@#$";
+    private const string Value = "12345ABC-@#$";
     private DateTime _validTo;
     private DateTime _validFrom;
 
@@ -84,7 +84,7 @@ public class WhenAddingAnOrganisationLabel : Specification<AddOrganisationLabelC
             _organisationLabelId,
             new OrganisationId(_organisationId),
             new LabelTypeId(_labelId),
-            _value,
+            Value,
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
@@ -103,7 +103,7 @@ public class WhenAddingAnOrganisationLabel : Specification<AddOrganisationLabelC
         var organisationLabelAdded = PublishedEvents.First().UnwrapBody<OrganisationLabelAdded>();
         organisationLabelAdded.OrganisationId.Should().Be(_organisationId);
         organisationLabelAdded.LabelTypeId.Should().Be(_labelId);
-        organisationLabelAdded.Value.Should().Be(_value);
+        organisationLabelAdded.Value.Should().Be(Value);
         organisationLabelAdded.ValidFrom.Should().Be(_validFrom);
         organisationLabelAdded.ValidTo.Should().Be(_validTo);
     }

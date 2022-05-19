@@ -42,16 +42,16 @@ namespace OrganisationRegistry.UnitTests
         }
 
         [Fact]
-        public void ProcessesSuccess()
+        public async Task ProcessesSuccess()
         {
             var commandSender = Mock.Of<ICommandSender>();
 
             var kboSyncQueueItem = AddOrganisationToSync(_context, "0123456789", DateTimeOffset.Now.AddDays(-1));
             var kboSyncQueueItem2 = AddOrganisationToSync(_context, "0998798798", DateTimeOffset.Now.AddDays(-2));
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(commandSender, _context, _user);
+            await new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(commandSender, _context, _user);
 
             _context.KboSyncQueue.AsEnumerable().Should().BeEquivalentTo(
                 new List<KboSyncQueueItem>
@@ -127,7 +127,7 @@ namespace OrganisationRegistry.UnitTests
         }
 
         [Fact]
-        public void ProcessesNotFounds()
+        public async Task ProcessesNotFounds()
         {
             var commandSender = Mock.Of<ICommandSender>();
 
@@ -146,9 +146,9 @@ namespace OrganisationRegistry.UnitTests
 
             _context.KboSyncQueue.Add(kboSyncQueueItem);
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(
+            await new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(
                 commandSender,
                 _context,
                 _user);

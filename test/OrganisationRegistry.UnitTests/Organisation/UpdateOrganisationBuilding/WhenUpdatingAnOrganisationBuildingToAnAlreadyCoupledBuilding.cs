@@ -19,11 +19,10 @@ using Xunit.Abstractions;
 public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : ExceptionSpecification<
     UpdateOrganisationBuildingCommandHandler, UpdateOrganisationBuilding>
 {
-    private OrganisationBuildingAdded _organisationBuildingAdded;
-    private OrganisationBuildingAdded _anotherOrganisationBuildingAdded;
     private Guid _organisationId;
     private Guid _buildingAId;
     private Guid _buildingBId;
+    private Guid _anotherOrganisationBuildingAddedOrganisationBuildingId;
 
     public WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding(ITestOutputHelper helper) : base(helper)
     {
@@ -43,22 +42,7 @@ public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : Exce
         _organisationId = Guid.NewGuid();
         _buildingAId = Guid.NewGuid();
         _buildingBId = Guid.NewGuid();
-        _organisationBuildingAdded = new OrganisationBuildingAdded(
-            _organisationId,
-            Guid.NewGuid(),
-            _buildingAId,
-            "Gebouw A",
-            false,
-            null,
-            null);
-        _anotherOrganisationBuildingAdded = new OrganisationBuildingAdded(
-            _organisationId,
-            Guid.NewGuid(),
-            _buildingBId,
-            "Gebouw A",
-            false,
-            null,
-            null);
+        _anotherOrganisationBuildingAddedOrganisationBuildingId = Guid.NewGuid();
 
         return new List<IEvent>
         {
@@ -76,16 +60,30 @@ public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : Exce
                 null,
                 null),
             new BuildingCreated(_buildingAId, "Gebouw A", 12345),
-            _organisationBuildingAdded,
-            _anotherOrganisationBuildingAdded
+            new OrganisationBuildingAdded(
+                _organisationId,
+                Guid.NewGuid(),
+                _buildingAId,
+                "Gebouw A",
+                false,
+                null,
+                null),
+            new OrganisationBuildingAdded(
+                _organisationId,
+                _anotherOrganisationBuildingAddedOrganisationBuildingId,
+                _buildingBId,
+                "Gebouw A",
+                false,
+                null,
+                null)
         };
     }
 
     protected override UpdateOrganisationBuilding When()
         => new(
-            _anotherOrganisationBuildingAdded.OrganisationBuildingId,
+            _anotherOrganisationBuildingAddedOrganisationBuildingId,
             new OrganisationId(_organisationId),
-            new BuildingId(_organisationBuildingAdded.BuildingId),
+            new BuildingId(_buildingAId),
             false,
             new ValidFrom(),
             new ValidTo());
@@ -99,6 +97,4 @@ public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : Exce
         Exception.Should().BeOfType<BuildingAlreadyCoupledToInThisPeriod>();
         Exception?.Message.Should().Be("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.");
     }
-
-
 }

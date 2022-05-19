@@ -4,6 +4,6 @@ namespace OrganisationRegistry.Tests.Shared.Stubs
 
     public class OrganisationManagementConfigurationStub: IOrganisationManagementConfiguration
     {
-        public string Vlimpers { get; set; }
+        public string Vlimpers { get; set; } = null!;
     }
 }

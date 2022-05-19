@@ -5,8 +5,6 @@ namespace OrganisationRegistry.UnitTests.Magda
     using System.Net.Http;
     using System.Reflection;
     using System.Threading.Tasks;
-    using Api.Backoffice.Kbo;
-    using Api.Infrastructure;
     using Api.Infrastructure.Magda;
     using Autofac.Features.OwnedInstances;
     using Autofac.Util;
@@ -93,7 +91,7 @@ namespace OrganisationRegistry.UnitTests.Magda
         {
             var magdaResponsesDir =
                 Path.Join(
-                    Directory.GetParent(Assembly.GetExecutingAssembly().Location).Parent.Parent.Parent.FullName,
+                    Directory.GetParent(Assembly.GetExecutingAssembly().Location)!.Parent!.Parent!.Parent!.FullName,
                     "MagdaResponses");
 
             var envelope = await CreateGeefOndernemingQuery()

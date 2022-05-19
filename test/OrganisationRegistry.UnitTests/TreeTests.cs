@@ -321,10 +321,11 @@
 
             // act
             var jsonTree = JsonConvert.SerializeObject(tree);
-            var newTree = (Tree<OvoNumber>)JsonConvert.DeserializeObject(jsonTree, typeof(Tree<OvoNumber>));
+            var newTree = (Tree<OvoNumber>?)JsonConvert.DeserializeObject(jsonTree, typeof(Tree<OvoNumber>));
 
             // assert
-            var treeLines = string.Join(Environment.NewLine, newTree.DrawTree().Values);
+            newTree.Should().NotBeNull();
+            var treeLines = string.Join(Environment.NewLine, newTree!.DrawTree().Values);
             var newTreeLines = string.Join(Environment.NewLine, newTree.DrawTree().Values);
             newTreeLines.Should().Be(treeLines);
         }
