@@ -47,6 +47,7 @@
               :title="alert.title"
               v-if="alert.visible"
               closable
+              :mod-error="alert.type === 'error'"
               @close="clearAlert"
               role="alertdialog"
             >
