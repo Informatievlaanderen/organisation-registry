@@ -1,3 +1,21 @@
+# [1.185.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.184.1...v1.185.0) (2022-05-19)
+
+
+### Bug Fixes
+
+* add v2 to auth redirect ([aa117f1](https://github.com/informatievlaanderen/organisation-registry/commit/aa117f11bbc7c33c5fe5305b840fd9bafb25cadb))
+* or-1013 fix ef linq query ([6a6b2b1](https://github.com/informatievlaanderen/organisation-registry/commit/6a6b2b119e82ff95cf3b301698f94947b739d4ee))
+* re-enable service ([00cc3d3](https://github.com/informatievlaanderen/organisation-registry/commit/00cc3d31fbafc1103d03663b429501228e6e95ce))
+
+
+### Features
+
+* guard routes ([60a76cc](https://github.com/informatievlaanderen/organisation-registry/commit/60a76ccbb3b920c28ee1382712747408650fc1bf))
+* or-1013 don't provide oidc client ([5b0b04b](https://github.com/informatievlaanderen/organisation-registry/commit/5b0b04b86f14d4b42138269eee602b6d4e38ad58))
+* or-1013 make user auth work ([cdd90b5](https://github.com/informatievlaanderen/organisation-registry/commit/cdd90b58dabb322d35907871d66ecb772155b5be))
+* or-1013 show user in navbar when authenticated ([abda6ce](https://github.com/informatievlaanderen/organisation-registry/commit/abda6cedd1158d0b099a822d5ba48e7459c863dc))
+* redirect to unauthorized ([5dc5528](https://github.com/informatievlaanderen/organisation-registry/commit/5dc55289e4b6294e6d6820e3bdfb315c20d43177))
+
 ## [1.184.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.184.0...v1.184.1) (2022-05-19)
 
 # [1.184.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.183.0...v1.184.0) (2022-05-18)
