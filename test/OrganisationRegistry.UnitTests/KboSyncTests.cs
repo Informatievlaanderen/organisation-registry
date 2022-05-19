@@ -97,15 +97,12 @@ namespace OrganisationRegistry.UnitTests
                 kboSyncQueueItem.Id);
 
             commandSender
-                .Setup(sender => sender.Send(It.IsAny<SyncOrganisationWithKbo>(), null))
+                .Setup(sender => sender.Send(It.IsAny<SyncOrganisationWithKbo>(), _user))
                 .Throws(aggregateNotFoundException);
 
             await _context.SaveChangesAsync();
 
-            await new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(
-                commandSender.Object,
-                _context,
-                _user);
+            await new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(commandSender.Object, _context, _user);
 
             _context.KboSyncQueue.AsEnumerable().Should().BeEquivalentTo(
                 new List<KboSyncQueueItem>

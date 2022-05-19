@@ -15,27 +15,43 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using OrganisationClassification.Events;
     using OrganisationClassificationType;
     using OrganisationClassificationType.Events;
-    using Tests.Shared;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.Kbo;
     using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class UpdateFromKboWithoutChangesTests: OldSpecification<Organisation, KboOrganisationCommandHandlers, SyncOrganisationWithKbo>
+    public class UpdateFromKboWithoutChangesTests : Specification<SyncOrganisationWithKboCommandHandler, SyncOrganisationWithKbo>
     {
-        private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
+        private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub = new()
+        {
+            KboKeyTypeId = Guid.NewGuid(),
+            Kbo = new KboConfigurationStub
+            {
+                KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
+                KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
+                KboV2FormalNameLabelTypeId = Guid.NewGuid(),
+            }
+        };
 
         private Guid _organisationId;
         private Guid _kboSyncItemId;
         private Guid _legalFormOrganisationClassificationTypeId;
         private Guid _organisationClassificationId;
         private Guid _registeredOfficeLocationId;
-        private DateTimeProviderStub _dateTimeProviderStub;
-        private KboNumber _kboNumber;
-        private readonly DateTime _today = new DateTime(2019, 9, 20);
+
+        private readonly KboNumber _kboNumber = new("BE0123456789");
+
+        public UpdateFromKboWithoutChangesTests(ITestOutputHelper helper) : base(helper)
+        {
+        }
+
+        protected override IUser User
+            => new UserBuilder().Build();
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -49,7 +65,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     KboV2FormalNameLabelTypeId = Guid.NewGuid(),
                 }
             };
-            _kboNumber = new KboNumber("BE0123456789");
             _organisationId = new OrganisationId(Guid.NewGuid());
             _registeredOfficeLocationId = new LocationId(Guid.NewGuid());
             _legalFormOrganisationClassificationTypeId = new OrganisationClassificationTypeId(_organisationRegistryConfigurationStub.Kbo.KboV2LegalFormOrganisationClassificationTypeId);
@@ -62,7 +77,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 new OrganisationClassificationTypeCreated(_legalFormOrganisationClassificationTypeId, "ClassificatieType"),
                 new OrganisationClassificationCreated(_organisationClassificationId, "Classificatie", 1, "Some Legal Code", true, _legalFormOrganisationClassificationTypeId, "ClassificatieType"),
                 new LocationTypeCreated(_organisationRegistryConfigurationStub.Kbo.KboV2RegisteredOfficeLocationTypeId, "Registered KBO Office"),
-                new LocationCreated(_registeredOfficeLocationId,
+                new LocationCreated(
+                    _registeredOfficeLocationId,
                     null,
                     "Derbylaan, 8881 Adinkerke, Belgie",
                     "Derbylaan",
@@ -82,7 +98,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     false,
                     new ValidFrom(),
                     new ValidTo(),
-                    new ValidFrom(), new ValidTo()),
+                    new ValidFrom(),
+                    new ValidTo()),
                 new KboRegisteredOfficeOrganisationLocationAdded(
                     _organisationId,
                     Guid.NewGuid(),
@@ -139,17 +156,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 _kboSyncItemId);
         }
 
-        protected override KboOrganisationCommandHandlers BuildHandler()
+        protected override SyncOrganisationWithKboCommandHandler BuildHandler()
         {
-            _dateTimeProviderStub = new DateTimeProviderStub(_today);
-            return new KboOrganisationCommandHandlers(
-                logger: new Mock<ILogger<KboOrganisationCommandHandlers>>().Object,
+            return new SyncOrganisationWithKboCommandHandler(
+                logger: new Mock<ILogger<SyncOrganisationWithKboCommandHandler>>().Object,
                 organisationRegistryConfiguration: _organisationRegistryConfigurationStub,
                 session: Session,
-                ovoNumberGenerator: new SequentialOvoNumberGenerator(),
-                uniqueOvoNumberValidator: new UniqueOvoNumberValidatorStub(false),
-                uniqueKboValidator: new UniqueKboNumberValidatorStub(false),
-                dateTimeProvider: _dateTimeProviderStub,
                 kboOrganisationRetriever: new KboOrganisationRetrieverStub(
                     new MockMagdaOrganisationResponse
                     {
@@ -192,11 +204,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                             }
                     }),
                 organisationClassificationRetriever: new KboOrganisationClassificationRetrieverStub(
-                    "Some Legal Code", _organisationClassificationId),
+                    "Some Legal Code",
+                    _organisationClassificationId),
                 locationRetriever: new KboLocationRetrieverStub(address => _registeredOfficeLocationId));
         }
 
-        protected override int ExpectedNumberOfEvents => 1;
+        protected override int ExpectedNumberOfEvents
+            => 1;
 
         [Fact]
         public void MarksAsSynced()
@@ -206,10 +220,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 
             organisationSyncedFromKbo.OrganisationId.Should().Be(_organisationId);
             organisationSyncedFromKbo.KBOSyncItemId.Should().Be(_kboSyncItemId);
-        }
-
-        public UpdateFromKboWithoutChangesTests(ITestOutputHelper helper) : base(helper)
-        {
         }
     }
 }

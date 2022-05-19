@@ -354,7 +354,7 @@ namespace OrganisationRegistry.Organisation
 
         public void UpdateInfoFromKbo(
             string kboOrganisationName,
-            string kboOrganisationShortName)
+            string? kboOrganisationShortName)
         {
             if (kboOrganisationName == State.Name &&
                 kboOrganisationShortName == State.ShortName)

@@ -15,18 +15,28 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using OrganisationClassification.Events;
     using OrganisationClassificationType;
     using OrganisationClassificationType.Events;
-    using Tests.Shared;
+    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
+    using OrganisationRegistry.Organisation.Kbo;
     using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class UpdateFromKboTests: OldSpecification<Organisation, KboOrganisationCommandHandlers, SyncOrganisationWithKbo>
+    public class UpdateFromKboTests : Specification<SyncOrganisationWithKboCommandHandler, SyncOrganisationWithKbo>
     {
-        private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
+        private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub = new()
+        {
+            KboKeyTypeId = Guid.NewGuid(),
+            Kbo = new KboConfigurationStub
+            {
+                KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
+                KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
+                KboV2FormalNameLabelTypeId = Guid.NewGuid(),
+            }
+        };
 
         private Guid _organisationId;
         private Guid _kboSyncItemId;
@@ -34,9 +44,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         private Guid _organisationClassificationId;
         private Guid _anotherOrganisationClassificationId;
         private Guid _registeredOfficeLocationToRemoveId;
-        private DateTimeProviderStub _dateTimeProviderStub;
-        private KboNumber _kboNumber;
-        private readonly DateTime _today = new DateTime(2019, 9, 20);
+        private readonly KboNumber _kboNumber = new("BE0123456789");
+
+        public UpdateFromKboTests(ITestOutputHelper helper) : base(helper)
+        {
+        }
+
+        protected override IUser User
+            => new UserBuilder().Build();
 
         protected override IEnumerable<IEvent> Given()
         {
@@ -50,7 +65,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     KboV2FormalNameLabelTypeId = Guid.NewGuid(),
                 }
             };
-            _kboNumber = new KboNumber("BE0123456789");
             _organisationId = new OrganisationId(Guid.NewGuid());
             _registeredOfficeLocationToRemoveId = new LocationId(Guid.NewGuid());
             _legalFormOrganisationClassificationTypeId = new OrganisationClassificationTypeId(_organisationRegistryConfigurationStub.Kbo.KboV2LegalFormOrganisationClassificationTypeId);
@@ -65,8 +79,9 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 new OrganisationClassificationCreated(_organisationClassificationId, "Classificatie", 1, "Some Legal Code", true, _legalFormOrganisationClassificationTypeId, "ClassificatieType"),
                 new OrganisationClassificationCreated(_anotherOrganisationClassificationId, "Classificatie", 1, "Another Legal Code", true, _legalFormOrganisationClassificationTypeId, "ClassificatieType"),
                 new LocationTypeCreated(_organisationRegistryConfigurationStub.Kbo.KboV2RegisteredOfficeLocationTypeId, "Registered KBO Office"),
-                new LocationCreated(_registeredOfficeLocationToRemoveId,
-                    null,
+                new LocationCreated(
+                    _registeredOfficeLocationToRemoveId,
+                    string.Empty,
                     "Derbylaan, 8881 Adinkerke, Belgie",
                     "Derbylaan",
                     "8881",
@@ -85,7 +100,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     false,
                     new ValidFrom(),
                     new ValidTo(),
-                    new ValidFrom(), new ValidTo()),
+                    new ValidFrom(),
+                    new ValidTo()),
                 new KboRegisteredOfficeOrganisationLocationAdded(
                     _organisationId,
                     Guid.NewGuid(),
@@ -135,24 +151,16 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         }
 
         protected override SyncOrganisationWithKbo When()
-        {
-            return new SyncOrganisationWithKbo(
+            => new(
                 new OrganisationId(_organisationId),
                 new DateTimeOffset(new DateTime(2019, 9, 9)),
                 _kboSyncItemId);
-        }
 
-        protected override KboOrganisationCommandHandlers BuildHandler()
-        {
-            _dateTimeProviderStub = new DateTimeProviderStub(_today);
-            return new KboOrganisationCommandHandlers(
-                logger: new Mock<ILogger<KboOrganisationCommandHandlers>>().Object,
+        protected override SyncOrganisationWithKboCommandHandler BuildHandler()
+            => new(
+                logger: new Mock<ILogger<SyncOrganisationWithKboCommandHandler>>().Object,
                 organisationRegistryConfiguration: _organisationRegistryConfigurationStub,
                 session: Session,
-                ovoNumberGenerator: new SequentialOvoNumberGenerator(),
-                uniqueOvoNumberValidator: new UniqueOvoNumberValidatorStub(false),
-                uniqueKboValidator: new UniqueKboNumberValidatorStub(false),
-                dateTimeProvider: _dateTimeProviderStub,
                 kboOrganisationRetriever: new KboOrganisationRetrieverStub(
                     new MockMagdaOrganisationResponse
                     {
@@ -194,11 +202,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                             }
                     }),
                 organisationClassificationRetriever: new KboOrganisationClassificationRetrieverStub(
-                    "Another Legal Code", _anotherOrganisationClassificationId),
-                locationRetriever: new KboLocationRetrieverStub(address => (Guid?) null));
-        }
+                    "Another Legal Code",
+                    _anotherOrganisationClassificationId),
+                locationRetriever: new KboLocationRetrieverStub(_ => null));
 
-        protected override int ExpectedNumberOfEvents => 11;
+        protected override int ExpectedNumberOfEvents
+            => 11;
 
         [Fact]
         public void CreatesTheMissingLocationsOnceBeforeCreatingTheOrganisation()
@@ -346,10 +355,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 
             organisationSyncedFromKbo.OrganisationId.Should().Be(_organisationId);
             organisationSyncedFromKbo.KBOSyncItemId.Should().Be(_kboSyncItemId);
-        }
-
-        public UpdateFromKboTests(ITestOutputHelper helper) : base(helper)
-        {
         }
     }
 }
