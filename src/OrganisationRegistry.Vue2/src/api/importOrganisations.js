@@ -38,3 +38,26 @@ export async function getImportStatus() {
 
   return await handleHttpResponse(response);
 }
+
+export async function getImportFile(id) {
+  const token = getToken();
+
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await fetch(
+    composeApiUri(`import/organisations/${id}/content`),
+    requestOptions
+  );
+
+  switch (response.status) {
+    case 200:
+    case 202:
+      return await response.blob();
+    default:
+      return new Promise(() => null);
+  }
+}

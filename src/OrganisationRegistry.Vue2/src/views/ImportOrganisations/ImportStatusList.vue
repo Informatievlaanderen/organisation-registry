@@ -16,7 +16,7 @@
         <tr :key="importStatus.id" v-for="importStatus in importStatuses">
           <td>{{ importStatus.fileName }}</td>
           <td>{{ importStatus.status }}</td>
-          <td>Resultaat</td>
+          <td><a @click="downloadFile(importStatus)">Resultaat</a></td>
           <td
             :title="
               moment(importStatus.uploadedAt).format('yyyy-MM-DD hh:mm:ss')
@@ -36,10 +36,21 @@
 </template>
 
 <script>
+import { getImportFile } from "@/api/importOrganisations";
+
 export default {
   name: "ImportStatusList",
   props: {
     importStatuses: Array,
+  },
+  methods: {
+    async downloadFile({ id, fileName }) {
+      const blob = await getImportFile(id);
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName;
+      link.click();
+    },
   },
 };
 </script>
