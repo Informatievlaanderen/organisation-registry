@@ -27,7 +27,7 @@ public class AssignPersonToBodySeat : BaseCommand<BodyId>
         BodySeatId = bodySeatId;
         BodyMandateId = bodyMandateId;
         PersonId = personId;
-        Contacts = contacts ?? new Dictionary<ContactTypeId, string>();
+        Contacts = contacts;
         Validity = validity;
     }
 }

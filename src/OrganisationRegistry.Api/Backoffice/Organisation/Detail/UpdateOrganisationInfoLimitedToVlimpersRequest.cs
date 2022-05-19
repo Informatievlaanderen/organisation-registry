@@ -19,8 +19,8 @@
 
     public class UpdateOrganisationInfoLimitedToVlimpersRequest
     {
-        public string Name { get; set; }
-        public string ShortName { get; set; }
+        public string Name { get; set; } = null!;
+        public string? ShortName { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
         public string? Article { get; set; }

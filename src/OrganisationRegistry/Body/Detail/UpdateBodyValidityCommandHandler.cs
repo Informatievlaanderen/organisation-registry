@@ -9,14 +9,10 @@ public class UpdateBodyValidityCommandHandler
     : BaseCommandHandler<UpdateBodyValidityCommandHandler>,
         ICommandEnvelopeHandler<UpdateBodyValidity>
 {
-    private readonly IDateTimeProvider _dateTimeProvider;
-
     public UpdateBodyValidityCommandHandler(
         ILogger<UpdateBodyValidityCommandHandler> logger,
-        ISession session,
-        IDateTimeProvider dateTimeProvider) : base(logger, session)
+        ISession session) : base(logger, session)
     {
-        _dateTimeProvider = dateTimeProvider;
     }
 
     public async Task Handle(ICommandEnvelope<UpdateBodyValidity> envelope)

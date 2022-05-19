@@ -6,7 +6,7 @@ namespace OrganisationRegistry.Organisation
 
         public string Name { get; }
         public Article Article { get; }
-        public string ShortName { get; }
+        public string? ShortName { get; }
         public ValidFrom ValidFrom { get; }
         public ValidTo ValidTo { get; }
         public ValidFrom OperationalValidFrom { get; }
@@ -15,7 +15,7 @@ namespace OrganisationRegistry.Organisation
         public UpdateOrganisationInfoLimitedToVlimpers(OrganisationId organisationId,
             string name,
             Article article,
-            string shortName,
+            string? shortName,
             ValidFrom validFrom,
             ValidTo validTo,
             ValidFrom operationalValidFrom,

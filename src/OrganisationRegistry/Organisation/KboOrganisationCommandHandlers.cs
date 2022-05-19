@@ -6,6 +6,7 @@ namespace OrganisationRegistry.Organisation
     using System.Threading.Tasks;
     using Commands;
     using Exceptions;
+    using Infrastructure;
     using Infrastructure.Authorization;
     using Infrastructure.Commands;
     using Infrastructure.Domain;
@@ -68,9 +69,7 @@ namespace OrganisationRegistry.Organisation
             if (_uniqueOvoNumberValidator.IsOvoNumberTaken(message.OvoNumber))
                 throw new OvoNumberNotUnique();
 
-            var ovoNumber = string.IsNullOrWhiteSpace(message.OvoNumber)
-                ? _ovoNumberGenerator.GenerateNumber()
-                : message.OvoNumber;
+            var ovoNumber = GetOvoNumber(message);
 
             var kboOrganisationResult =
                 _kboOrganisationRetriever.RetrieveOrganisation(message.User, message.KboNumber).GetAwaiter().GetResult();
@@ -86,13 +85,10 @@ namespace OrganisationRegistry.Organisation
             if (kboOrganisation.Termination != null)
                 throw new CannotCreateOrganisationBecauseKboOrganisationTerminated();
 
-            var parentOrganisation =
-                message.ParentOrganisationId != null
-                    ? Session.Get<Organisation>(message.ParentOrganisationId)
-                    : null;
+            var parentOrganisation = GetParentOrganisation(message);
 
             var purposes = message
-                .Purposes
+                .Purposes?
                 .Select(purposeId => Session.Get<Purpose>(purposeId))
                 .ToList();
 
@@ -120,6 +116,16 @@ namespace OrganisationRegistry.Organisation
 
             await Session.Commit(message.User);
         }
+
+        private Organisation? GetParentOrganisation(CreateOrganisationFromKbo message)
+            => message.ParentOrganisationId is { } parentOrganisationId
+                ? Session.Get<Organisation>(parentOrganisationId)
+                : null;
+
+        private string GetOvoNumber(CreateOrganisationFromKbo message)
+            => message.OvoNumber is { } ovoNumber && ovoNumber.IsNotEmptyOrWhiteSpace()
+                ? ovoNumber
+                : _ovoNumberGenerator.GenerateNumber();
 
         public async Task Handle(CoupleOrganisationToKbo message)
         {

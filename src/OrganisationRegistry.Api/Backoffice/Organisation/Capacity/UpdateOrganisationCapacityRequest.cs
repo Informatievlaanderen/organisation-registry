@@ -9,7 +9,6 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Capacity
     using OrganisationRegistry.Function;
     using OrganisationRegistry.Location;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Person;
 
     public class UpdateOrganisationCapacityInternalRequest
@@ -31,7 +30,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Capacity
         public Guid? PersonId { get; set; }
         public Guid? FunctionId { get; set; }
         public Guid? LocationId { get; set; }
-        public Dictionary<Guid, string> Contacts { get; set; }
+        public Dictionary<Guid, string>? Contacts { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }
@@ -66,8 +65,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Capacity
     public static class UpdateOrganisationCapacityRequestMapping
     {
         public static UpdateOrganisationCapacity Map(UpdateOrganisationCapacityInternalRequest message)
-        {
-            return new UpdateOrganisationCapacity(
+            => new(
                 message.Body.OrganisationCapacityId,
                 new OrganisationId(message.OrganisationId),
                 new CapacityId(message.Body.CapacityId),
@@ -77,6 +75,5 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Capacity
                 message.Body.Contacts?.ToDictionary(x => new ContactTypeId(x.Key), x => x.Value),
                 new ValidFrom(message.Body.ValidFrom),
                 new ValidTo(message.Body.ValidTo));
-        }
     }
 }

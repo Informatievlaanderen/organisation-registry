@@ -3,11 +3,10 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Detail
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Claims;
     using FluentValidation;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
-    using OrganisationRegistry.Purpose;
+    using Purpose;
     using OrganisationRegistry.SqlServer.Location;
     using OrganisationRegistry.SqlServer.Organisation;
 
@@ -15,57 +14,57 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Detail
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
-        public string OvoNumber { get; set; }
+        public string? OvoNumber { get; set; }
 
-        public string ShortName { get; set; }
+        public string? ShortName { get; set; }
 
         public string? Article { get; set; }
         public Guid? ParentOrganisationId { get; set; }
 
-        public List<Guid> PurposeIds { get; set; }
+        public List<Guid>? PurposeIds { get; set; }
 
         public bool ShowOnVlaamseOverheidSites { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         public DateTime? ValidFrom { get; set; }
 
         public DateTime? ValidTo { get; set; }
 
-        public string KboNumber { get; set; }
+        public string? KboNumber { get; set; }
 
-        public List<BankAccount> BankAccounts { get; set; }
+        public List<BankAccount>? BankAccounts { get; set; }
 
-        public List<LegalForm> LegalForms { get; set; }
+        public List<LegalForm>? LegalForms { get; set; }
 
-        public List<Address> Addresses { get; set; }
+        public List<Address>? Addresses { get; set; }
         public DateTime? OperationalValidFrom { get; set; }
         public DateTime? OperationalValidTo { get; set; }
     }
 
     public class BankAccount
     {
-        public string Iban { get; set; }
-        public string Bic { get; set; }
+        public string Iban { get; set; } = null!;
+        public string Bic { get; set; } = null!;
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }
 
     public class LegalForm
     {
-        public string Code { get; set; }
+        public string Code { get; set; } = null!;
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }
 
     public class Address
     {
-        public string Country { get; set; }
-        public string City { get; set; }
-        public string ZipCode { get; set; }
-        public string Street { get; set; }
+        public string Country { get; set; } = null!;
+        public string City { get; set; } = null!;
+        public string ZipCode { get; set; } = null!;
+        public string Street { get; set; } = null!;
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }
@@ -140,48 +139,47 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Detail
         {
             RuleFor(x => x.Street)
                 .NotEmpty()
-                .WithMessage("KBO Address: Street is required.");
+                .WithMessage("Street is required.");
 
             RuleFor(x => x.Street)
                 .Length(0, LocationListConfiguration.StreetLength)
-                .WithMessage($"KBO Address: Street cannot be longer than {LocationListConfiguration.StreetLength}.");
+                .WithMessage($"Street cannot be longer than {LocationListConfiguration.StreetLength}.");
 
             RuleFor(x => x.ZipCode)
                 .NotEmpty()
-                .WithMessage("KBO Address: Zip Code is required.");
+                .WithMessage("Zip Code is required.");
 
             RuleFor(x => x.ZipCode)
                 .Length(0, LocationListConfiguration.ZipCodeLength)
-                .WithMessage($"KBO Address: Zip Code cannot be longer than {LocationListConfiguration.ZipCodeLength}.");
+                .WithMessage($"Zip Code cannot be longer than {LocationListConfiguration.ZipCodeLength}.");
 
             RuleFor(x => x.City)
                 .NotEmpty()
-                .WithMessage("KBO Address: City is required.");
+                .WithMessage("City is required.");
 
             RuleFor(x => x.City)
                 .Length(0, LocationListConfiguration.CityLength)
-                .WithMessage($"KBO Address: City cannot be longer than {LocationListConfiguration.CityLength}.");
+                .WithMessage($"City cannot be longer than {LocationListConfiguration.CityLength}.");
 
             RuleFor(x => x.Country)
                 .NotEmpty()
-                .WithMessage("KBO Address: Country is required.");
+                .WithMessage("Country is required.");
 
             RuleFor(x => x.Country)
                 .Length(0, LocationListConfiguration.CountryLength)
-                .WithMessage($"KBO Address: Country cannot be longer than {LocationListConfiguration.CountryLength}.");
+                .WithMessage($"Country cannot be longer than {LocationListConfiguration.CountryLength}.");
 
             RuleFor(x => x.ValidTo)
                 .GreaterThanOrEqualTo(x => x.ValidFrom)
                 .When(x => x.ValidFrom.HasValue)
-                .WithMessage("KBO Address: Valid To must be greater than or equal to Valid From.");
+                .WithMessage("Valid To must be greater than or equal to Valid From.");
         }
     }
 
     public static class CreateOrganisationRequestMapping
     {
         public static CreateOrganisation Map(CreateOrganisationRequest message)
-        {
-            return new CreateOrganisation(
+            => new(
                 new OrganisationId(message.Id),
                 message.Name,
                 message.OvoNumber,
@@ -195,13 +193,9 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Detail
                 new ValidTo(message.ValidTo),
                 new ValidFrom(message.OperationalValidFrom),
                 new ValidTo(message.OperationalValidTo));
-        }
 
-        public static CreateOrganisationFromKbo MapToCreateKboOrganisation(
-            CreateOrganisationRequest message,
-            ClaimsPrincipal user)
-        {
-            return new CreateOrganisationFromKbo(
+        public static CreateOrganisationFromKbo MapToCreateKboOrganisation(CreateOrganisationRequest message, string kboNumber)
+            => new(
                 new OrganisationId(message.Id),
                 message.Name,
                 message.OvoNumber,
@@ -213,9 +207,8 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Detail
                 message.ShowOnVlaamseOverheidSites,
                 new ValidFrom(message.ValidFrom),
                 new ValidTo(message.ValidTo),
-                new KboNumber(message.KboNumber),
+                new KboNumber(kboNumber),
                 new ValidFrom(message.OperationalValidFrom),
                 new ValidTo(message.OperationalValidTo));
-        }
     }
 }

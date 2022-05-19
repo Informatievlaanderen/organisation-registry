@@ -139,7 +139,7 @@ namespace OrganisationRegistry.Organisation
             CreateOrganisationFromKbo message,
             IMagdaOrganisationResponse kboOrganisation,
             string ovoNumber,
-            Organisation parentOrganisation,
+            Organisation? parentOrganisation,
             List<Purpose> purposes,
             IDateTimeProvider dateTimeProvider)
         {
@@ -164,10 +164,10 @@ namespace OrganisationRegistry.Organisation
             KboNumber kboNumber,
             string name,
             string ovoNumber,
-            string shortName,
+            string? shortName,
             Article article,
             Organisation? parentOrganisation,
-            string description,
+            string? description,
             IEnumerable<Purpose> purposes,
             bool showOnVlaamseOverheidSites,
             Period validity,
@@ -285,7 +285,7 @@ namespace OrganisationRegistry.Organisation
         public void UpdateVlimpersOrganisationInfo(
             Article article,
             string name,
-            string shortName,
+            string? shortName,
             Period validity,
             Period operationalValidity,
             IDateTimeProvider dateTimeProvider)

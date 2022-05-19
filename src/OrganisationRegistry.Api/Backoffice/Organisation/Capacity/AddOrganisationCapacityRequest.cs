@@ -9,7 +9,6 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Capacity
     using OrganisationRegistry.Function;
     using OrganisationRegistry.Location;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Person;
 
     public class AddOrganisationCapacityInternalRequest
@@ -31,7 +30,7 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Capacity
         public Guid? PersonId { get; set; }
         public Guid? FunctionId { get; set; }
         public Guid? LocationId { get; set; }
-        public Dictionary<Guid, string> Contacts { get; set; }
+        public Dictionary<Guid, string>? Contacts { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }

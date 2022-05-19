@@ -4,7 +4,6 @@
     using ContactType;
     using FluentValidation;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using SqlServer.Organisation;
 
     public class AddOrganisationContactInternalRequest
@@ -23,7 +22,7 @@
     {
         public Guid OrganisationContactId { get; set; }
         public Guid ContactTypeId { get; set; }
-        public string ContactValue { get; set; }
+        public string ContactValue { get; set; } = null!;
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }
@@ -62,14 +61,12 @@
     public static class AddOrganisationContactRequestMapping
     {
         public static AddOrganisationContact Map(AddOrganisationContactInternalRequest message)
-        {
-            return new AddOrganisationContact(
+            => new(
                 message.Body.OrganisationContactId,
                 new OrganisationId(message.OrganisationId),
                 new ContactTypeId(message.Body.ContactTypeId),
                 message.Body.ContactValue,
                 new ValidFrom(message.Body.ValidFrom),
                 new ValidTo(message.Body.ValidTo));
-        }
     }
 }

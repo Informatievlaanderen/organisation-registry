@@ -46,12 +46,12 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
             var dotFormat = kboNumber.ToDotFormat();
             var digitsOnly = kboNumber.ToDigitsOnly();
 
-            using (var organisationRegistryContext = contextFactory().Value)
+            await using (var organisationRegistryContext = contextFactory().Value)
             {
                 if (await organisationRegistryContext
-                    .OrganisationDetail
-                    .AsQueryable()
-                    .AnyAsync(x => x.KboNumber.Equals(dotFormat) || x.KboNumber.Equals(digitsOnly)))
+                        .OrganisationDetail
+                        .AsQueryable()
+                        .AnyAsync(x => x.KboNumber != null && (x.KboNumber.Equals(dotFormat) || x.KboNumber.Equals(digitsOnly))))
                 {
                     ModelState.AddModelError(
                         key: "Duplicate",
@@ -67,7 +67,7 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
             {
                 kboOrganisationResult.ErrorMessages
                     .ToList()
-                    .ForEach(x => _logger.LogWarning(x));
+                    .ForEach(x => _logger.LogWarning("{Message}", x));
 
                 return NotFound();
             }

@@ -8,12 +8,12 @@ namespace OrganisationRegistry.Organisation.Commands
         public OrganisationId OrganisationId => Id;
 
         public string Name { get; }
-        public string OvoNumber { get; }
-        public string ShortName { get; }
+        public string? OvoNumber { get; }
+        public string? ShortName { get; }
         public Article Article { get; }
-        public OrganisationId ParentOrganisationId { get; }
-        public string Description { get; }
-        public List<PurposeId> Purposes { get; }
+        public OrganisationId? ParentOrganisationId { get; }
+        public string? Description { get; }
+        public List<PurposeId>? Purposes { get; }
         public bool ShowOnVlaamseOverheidSites { get; }
         public ValidFrom ValidFrom { get; }
         public ValidFrom OperationalValidFrom { get; }
@@ -30,12 +30,12 @@ namespace OrganisationRegistry.Organisation.Commands
         public CreateOrganisationFromKbo(
             OrganisationId organisationId,
             string name,
-            string ovoNumber,
-            string shortName,
+            string? ovoNumber,
+            string? shortName,
             Article article,
-            OrganisationId parentOrganisationId,
-            string description,
-            List<PurposeId> purposes,
+            OrganisationId? parentOrganisationId,
+            string? description,
+            List<PurposeId>? purposes,
             bool showOnVlaamseOverheidSites,
             ValidFrom validFrom,
             ValidTo validTo,

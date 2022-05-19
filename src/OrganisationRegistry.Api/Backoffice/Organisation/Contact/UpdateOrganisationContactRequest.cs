@@ -23,7 +23,7 @@
     {
         public Guid OrganisationContactId { get; set; }
         public Guid ContactTypeId { get; set; }
-        public string ContactValue { get; set; }
+        public string ContactValue { get; set; } = null!;
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }
@@ -62,14 +62,12 @@
     public static class UpdateOrganisationContactRequestMapping
     {
         public static UpdateOrganisationContact Map(UpdateOrganisationContactInternalRequest message)
-        {
-            return new UpdateOrganisationContact(
+            => new(
                 message.Body.OrganisationContactId,
                 new OrganisationId(message.OrganisationId),
                 new ContactTypeId(message.Body.ContactTypeId),
                 message.Body.ContactValue,
                 new ValidFrom(message.Body.ValidFrom),
                 new ValidTo(message.Body.ValidTo));
-        }
     }
 }
