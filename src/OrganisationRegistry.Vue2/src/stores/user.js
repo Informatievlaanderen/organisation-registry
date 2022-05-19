@@ -42,8 +42,6 @@ export const useUserStore = defineStore("user", {
       this.oidcClient.signOut();
     },
     async exchangeCode(code) {
-      if (!this.oidcClient) await this.initializeOidcClient();
-
       const verifier = getVerifier();
       const redirectUri = this.oidcClient.client.settings.redirect_uri;
       const response = await exchangeCode(code, verifier, redirectUri);

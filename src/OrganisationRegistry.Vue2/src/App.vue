@@ -113,7 +113,6 @@ export default {
     ...mapStores(useUserStore),
   },
   async beforeMount() {
-    await this.userStore.initializeOidcClient();
     this.userStore.loadUserFromToken();
   },
   data() {
