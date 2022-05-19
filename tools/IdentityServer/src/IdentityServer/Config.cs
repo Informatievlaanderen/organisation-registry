@@ -41,7 +41,7 @@ public static class Config
             RedirectUris =
             {
                 "https://organisatie.dev-vlaanderen.local/#/oic",
-                "https://organisatie.dev-vlaanderen.local/oic"
+                "https://organisatie.dev-vlaanderen.local/v2/oic"
             },
 
             // where to redirect to after logout
