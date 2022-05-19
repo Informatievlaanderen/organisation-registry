@@ -15,7 +15,7 @@ class OidcClient {
       signing_keys: ["RS256"],
 
       client_id: data.clientId, // 'dcdf573f-b430-4d34-b2f1-218af8506ba4',
-      redirect_uri: data.redirectUri.replace("/#/", "/"), // 'https://dienstverlening.staging-basisregisters.vlaanderen/oic',
+      redirect_uri: data.redirectUri.replace("/#/", "/v2/"), // 'https://dienstverlening.staging-basisregisters.vlaanderen/oic',
       post_logout_redirect_uri: data.postLogoutRedirectUri, // 'https://dienstverlening.staging-basisregisters.vlaanderen',
       response_type: "code",
       scope: "openid profile vo iv_wegwijs",
