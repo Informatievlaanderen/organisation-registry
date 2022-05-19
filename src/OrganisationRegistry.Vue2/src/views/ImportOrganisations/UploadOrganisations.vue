@@ -6,9 +6,10 @@
       name="bulkimportfile"
       allowed-file-types="text/csv"
       url="/"
+      ref="uploadControl"
       @upload-file-added="fileAdded"
     />
-    <vl-button @click="select">Process</vl-button>
+    <vl-button @click="uploadFile">Opladen</vl-button>
   </div>
 </template>
 
@@ -21,9 +22,12 @@ export default {
     };
   },
   methods: {
-    select() {
+    clearUploads() {
+      this.$refs.uploadControl.removeFiles();
+    },
+    uploadFile() {
       if (this.file) {
-        this.$emit("file-selected", this.file);
+        this.$emit("file-selected", this.file, this.clearUploads);
       }
     },
     fileAdded(e) {
