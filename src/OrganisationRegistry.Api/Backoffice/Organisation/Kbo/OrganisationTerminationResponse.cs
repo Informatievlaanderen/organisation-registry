@@ -5,40 +5,46 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.Kbo
 
     public class OrganisationTerminationResponse
     {
-        public string Reason { get; private set; }
+        public string Reason { get; }
 
-        public string Code { get; private set;}
+        public string Code { get; }
 
-        public DateTime? Date { get; private set;}
+        public DateTime? Date { get; }
 
-        public Guid OrganisationId { get; private set;}
+        public Guid OrganisationId { get; }
 
-        public TerminationStatus Status { get; private set; }
+        public TerminationStatus Status { get; }
 
-        private OrganisationTerminationResponse() { }
+        private OrganisationTerminationResponse(
+            Guid organisationId,
+            DateTime? date,
+            string code,
+            string reason,
+            TerminationStatus status)
+        {
+            OrganisationId = organisationId;
+            Date = date;
+            Code = code;
+            Reason = reason;
+            Status = status;
+        }
 
         public static OrganisationTerminationResponse FromListItem(OrganisationTerminationListItem organisationTermination)
-        {
-            return new OrganisationTerminationResponse
-            {
-                OrganisationId = organisationTermination.Id,
-                Date = organisationTermination.Date,
-                Code = organisationTermination.Code,
-                Reason = organisationTermination.Reason,
-                Status = organisationTermination.Status,
-            };
-        }
+            => new(
+                organisationTermination.Id,
+                organisationTermination.Date,
+                organisationTermination.Code,
+                organisationTermination.Reason,
+                organisationTermination.Status
+            );
 
         public static OrganisationTerminationResponse NotFound(Guid id)
-        {
-            return new OrganisationTerminationResponse
-            {
-                OrganisationId = id,
-                Date = null,
-                Code = string.Empty,
-                Reason = string.Empty,
-                Status = TerminationStatus.None,
-            };
-        }
+            => new(
+                id,
+                null,
+                string.Empty,
+                string.Empty,
+                TerminationStatus.None
+            );
     }
 }

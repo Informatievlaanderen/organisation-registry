@@ -20,7 +20,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
 
     public class UpdateOrganisationClassificationTypeRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class UpdateOrganisationClassificationTypeRequestValidator : AbstractValidator<UpdateOrganisationClassificationTypeInternalRequest>
@@ -44,7 +44,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
     public static class UpdateOrganisationClassificationTypeRequestMapping
     {
         public static UpdateOrganisationClassificationType Map(UpdateOrganisationClassificationTypeInternalRequest message)
-            => new UpdateOrganisationClassificationType(
+            => new(
                 new OrganisationClassificationTypeId(message.OrganisationClassificationTypeId),
                 new OrganisationClassificationTypeName(message.Body.Name));
     }

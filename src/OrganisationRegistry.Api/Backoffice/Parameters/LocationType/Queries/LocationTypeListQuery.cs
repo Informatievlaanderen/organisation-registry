@@ -53,8 +53,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LocationType.Queries
                 nameof(LocationTypeListItem.Name)
             };
 
-            public SortingHeader DefaultSortingHeader { get; } =
-                new SortingHeader(nameof(LocationTypeListItem.Name), SortOrder.Ascending);
+            public SortingHeader DefaultSortingHeader { get; } = new(nameof(LocationTypeListItem.Name), SortOrder.Ascending);
         }
     }
 
@@ -62,7 +61,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.LocationType.Queries
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         public bool UserPermitted { get; set; }
     }

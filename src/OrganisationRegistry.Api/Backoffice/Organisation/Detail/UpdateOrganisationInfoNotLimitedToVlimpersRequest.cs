@@ -5,7 +5,7 @@
     using System.Linq;
     using FluentValidation;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Purpose;
+    using Purpose;
 
     public class UpdateOrganisationInfoNotLimitedToVlimpersInternalRequest
     {
@@ -21,8 +21,8 @@
 
     public class UpdateOrganisationInfoNotLimitedToVlimpersRequest
     {
-        public string Description { get; set; }
-        public List<Guid> PurposeIds { get; set; }
+        public string? Description { get; set; }
+        public List<Guid>? PurposeIds { get; set; }
         public bool ShowOnVlaamseOverheidSites { get; set; }
     }
 
@@ -39,12 +39,10 @@
     public static class UpdateOrganisationInfoNotLimitedToVlimpersRequestMapping
     {
         public static UpdateOrganisationInfoNotLimitedToVlimpers Map(UpdateOrganisationInfoNotLimitedToVlimpersInternalRequest message)
-        {
-            return new UpdateOrganisationInfoNotLimitedToVlimpers(
+            => new(
                 new OrganisationId(message.OrganisationId),
                 message.Body.Description,
-                message.Body.PurposeIds?.Select(x => new PurposeId(x)).ToList(),
+                message.Body.PurposeIds?.Select(x => new PurposeId(x)).ToList() ?? new List<PurposeId>(),
                 message.Body.ShowOnVlaamseOverheidSites);
-        }
     }
 }

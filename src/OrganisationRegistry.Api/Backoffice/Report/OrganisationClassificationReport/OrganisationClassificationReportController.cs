@@ -6,14 +6,12 @@ namespace OrganisationRegistry.Api.Backoffice.Report.OrganisationClassificationR
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassification.Queries;
     using Infrastructure;
     using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
     using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
     using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
-    using Search;
     using ElasticSearch.Client;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
@@ -27,15 +25,12 @@ namespace OrganisationRegistry.Api.Backoffice.Report.OrganisationClassificationR
         private const string ScrollTimeout = "30s";
         private const int ScrollSize = 500;
 
-        private readonly ILogger<SearchController> _log;
         private readonly ApiConfigurationSection _config;
 
         public OrganisationClassificationReportController(
             ICommandSender commandSender,
-            IOptions<ApiConfigurationSection> config,
-            ILogger<SearchController> log) : base(commandSender)
+            IOptions<ApiConfigurationSection> config) : base(commandSender)
         {
-            _log = log;
             _config = config.Value;
         }
 
@@ -107,6 +102,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report.OrganisationClassificationR
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
 
+            if (filtering.Filter is not { })
+                filtering.Filter = new OrganisationClassificationListItemFilter();
+
             //  Set classificationtype GUID for "Beleidsdomein"
             filtering.Filter.OrganisationClassificationTypeId = _config.PolicyDomainClassificationTypeId;
             filtering.Filter.OrganisationClassificationTypeName = string.Empty;
@@ -134,6 +132,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report.OrganisationClassificationR
             var filtering = Request.ExtractFilteringRequest<OrganisationClassificationListItemFilter>();
             var sorting = Request.ExtractSortingRequest();
             var pagination = Request.ExtractPaginationRequest();
+
+            if (filtering.Filter is not { })
+                filtering.Filter = new OrganisationClassificationListItemFilter();
 
             //  Set classificationtype GUID for "Beleidsdomein"
             filtering.Filter.OrganisationClassificationTypeId = _config.ResponsibleMinisterClassificationTypeId;
@@ -181,7 +182,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.OrganisationClassificationR
             var possiblePagination = Request.ExtractPaginationRequest();
 
             if (possiblePagination is NoPaginationRequest)
-                return Ok(participations);
+                return await OkAsync(participations);
 
             var pagination = possiblePagination as PaginationRequest ?? new PaginationRequest(1, 10);
 
@@ -192,7 +193,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.OrganisationClassificationR
                     participations.Count,
                     (int)Math.Ceiling((double)participations.Count / pagination.ItemsPerPage)));
 
-            return Ok(
+            return await OkAsync(
                 participations
                     .Skip((pagination.RequestedPage - 1) * pagination.ItemsPerPage)
                     .Take(pagination.ItemsPerPage)

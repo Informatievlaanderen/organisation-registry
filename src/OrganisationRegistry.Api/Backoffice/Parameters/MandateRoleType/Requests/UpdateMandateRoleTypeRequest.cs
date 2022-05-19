@@ -20,7 +20,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.MandateRoleType.Request
 
     public class UpdateMandateRoleTypeRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class UpdateMandateRoleTypeRequestValidator : AbstractValidator<UpdateMandateRoleTypeInternalRequest>
@@ -44,7 +44,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.MandateRoleType.Request
     public static class UpdateMandateRoleTypeRequestMapping
     {
         public static UpdateMandateRoleType Map(UpdateMandateRoleTypeInternalRequest message)
-            => new UpdateMandateRoleType(
+            => new(
                 new MandateRoleTypeId(message.MandateRoleTypeId),
                 new MandateRoleTypeName(message.Body.Name));
     }

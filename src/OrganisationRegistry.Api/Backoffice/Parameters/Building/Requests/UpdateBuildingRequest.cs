@@ -20,7 +20,7 @@
 
     public class UpdateBuildingRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public int? VimId { get; set; }
     }
 

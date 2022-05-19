@@ -21,8 +21,8 @@
 
     public class UpdateFormalFrameworkRequest
     {
-        public string Name { get; set; }
-        public string Code { get; set; }
+        public string Name { get; set; } = null!;
+        public string Code { get; set; } = null!;
         public Guid FormalFrameworkCategoryId { get; set; }
     }
 
@@ -59,12 +59,10 @@
     public static class UpdateFormalFrameworkRequestMapping
     {
         public static UpdateFormalFramework Map(UpdateFormalFrameworkInternalRequest message)
-        {
-            return new UpdateFormalFramework(
+            => new(
                 new FormalFrameworkId(message.FormalFrameworkId),
                 message.Body.Name,
                 message.Body.Code,
                 new FormalFrameworkCategoryId(message.Body.FormalFrameworkCategoryId));
-        }
     }
 }

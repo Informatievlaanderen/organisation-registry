@@ -10,7 +10,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.MandateRoleType.Request
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class CreateMandateRoleTypeRequestValidator : AbstractValidator<CreateMandateRoleTypeRequest>
@@ -34,7 +34,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.MandateRoleType.Request
     public static class CreateMandateRoleTypeRequestMapping
     {
         public static CreateMandateRoleType Map(CreateMandateRoleTypeRequest message)
-            => new CreateMandateRoleType(
+            => new(
                 new MandateRoleTypeId(message.Id),
                 new MandateRoleTypeName(message.Name));
     }

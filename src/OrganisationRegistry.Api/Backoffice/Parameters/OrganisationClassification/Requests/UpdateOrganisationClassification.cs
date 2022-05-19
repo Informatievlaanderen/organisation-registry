@@ -21,7 +21,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
 
     public class UpdateOrganisationClassificationRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public int Order { get; set; }
         public string ExternalKey { get; set; }
         public bool Active { get; set; }
@@ -57,7 +57,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
     public static class UpdateOrganisationClassificationRequestMapping
     {
         public static UpdateOrganisationClassification Map(UpdateOrganisationClassificationInternalRequest message)
-            => new UpdateOrganisationClassification(
+            => new(
                 new OrganisationClassificationId(message.OrganisationClassificationId),
                 new OrganisationClassificationName(message.Body.Name),
                 message.Body.Order,

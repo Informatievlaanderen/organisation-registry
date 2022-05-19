@@ -20,7 +20,7 @@
 
     public class UpdateLifecyclePhaseTypeRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         public bool RepresentsActivePhase { get; set; }
 
@@ -48,12 +48,10 @@
     public static class UpdateLifecyclePhaseTypeRequestMapping
     {
         public static UpdateLifecyclePhaseType Map(UpdateLifecyclePhaseTypeInternalRequest message)
-        {
-            return new UpdateLifecyclePhaseType(
+            => new(
                 new LifecyclePhaseTypeId(message.LifecyclePhaseTypeId),
                 new LifecyclePhaseTypeName(message.Body.Name),
                 message.Body.RepresentsActivePhase ? LifecyclePhaseTypeIsRepresentativeFor.ActivePhase : LifecyclePhaseTypeIsRepresentativeFor.InactivePhase,
                 message.Body.IsDefaultPhase ? LifecyclePhaseTypeStatus.Default : LifecyclePhaseTypeStatus.NonDefault);
-        }
     }
 }

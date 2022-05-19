@@ -21,7 +21,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassification.Requ
 
     public class UpdateBodyClassificationRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public int Order { get; set; }
         public bool Active { get; set; }
         public Guid BodyClassificationTypeId { get; set; }

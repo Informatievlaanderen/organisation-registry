@@ -10,7 +10,7 @@
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class CreateFormalFrameworkCategoryRequestValidator : AbstractValidator<CreateFormalFrameworkCategoryRequest>
@@ -34,10 +34,8 @@
     public static class CreateFormalFrameworkCategoryRequestMapping
     {
         public static CreateFormalFrameworkCategory Map(CreateFormalFrameworkCategoryRequest message)
-        {
-            return new CreateFormalFrameworkCategory(
+            => new(
                 new FormalFrameworkCategoryId(message.Id),
                 message.Name);
-        }
     }
 }

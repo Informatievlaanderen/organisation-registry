@@ -26,7 +26,7 @@
         public Guid BodyId { get; set; }
         public Guid BodySeatId { get; set; }
         public Guid PersonId { get; set; }
-        public Dictionary<Guid, string> Contacts { get; set; }
+        public Dictionary<Guid, string>? Contacts { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }
@@ -65,17 +65,15 @@
     public static class AddDelegationAssignmentRequestMapping
     {
         public static AddDelegationAssignment Map(AddDelegationAssignmentInternalRequest message)
-        {
-            return new AddDelegationAssignment(
+            => new(
                 new BodyMandateId(message.BodyMandateId),
                 new BodyId(message.Body.BodyId),
                 new BodySeatId(message.Body.BodySeatId),
                 new DelegationAssignmentId(message.Body.DelegationAssignmentId),
                 new PersonId(message.Body.PersonId),
-                message.Body.Contacts?.ToDictionary(x => new ContactTypeId(x.Key), x => x.Value),
+                message.Body.Contacts?.ToDictionary(x => new ContactTypeId(x.Key), x => x.Value) ?? new Dictionary<ContactTypeId, string>(),
                 new Period(
                     new ValidFrom(message.Body.ValidFrom),
                     new ValidTo(message.Body.ValidTo)));
-        }
     }
 }

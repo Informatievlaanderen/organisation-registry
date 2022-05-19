@@ -20,7 +20,7 @@
 
     public class UpdateContactTypeRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class UpdateContactTypeRequestValidator : AbstractValidator<UpdateContactTypeInternalRequest>
@@ -44,10 +44,8 @@
     public static class UpdateContactTypeRequestMapping
     {
         public static UpdateContactType Map(UpdateContactTypeInternalRequest message)
-        {
-            return new UpdateContactType(
+            => new(
                 new ContactTypeId(message.ContactTypeId),
                 message.Body.Name);
-        }
     }
 }

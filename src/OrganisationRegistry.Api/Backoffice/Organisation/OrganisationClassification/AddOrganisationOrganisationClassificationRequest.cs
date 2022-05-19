@@ -4,7 +4,6 @@
     using FluentValidation;
     using OrganisationClassificationType;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.OrganisationClassification;
 
     public class AddOrganisationOrganisationClassificationInternalRequest

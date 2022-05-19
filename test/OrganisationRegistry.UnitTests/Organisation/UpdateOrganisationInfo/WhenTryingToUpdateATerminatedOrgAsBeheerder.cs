@@ -15,7 +15,6 @@ using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using OrganisationRegistry.Organisation.Exceptions;
-using OrganisationRegistry.Organisation.Update;
 using Xunit;
 using Xunit.Abstractions;
 

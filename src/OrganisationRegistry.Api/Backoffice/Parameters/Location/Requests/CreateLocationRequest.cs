@@ -12,10 +12,10 @@
 
         public string CrabLocationId { get; set; }
 
-        public string Street { get; set; }
-        public string ZipCode { get; set; }
-        public string City { get; set; }
-        public string Country { get; set; }
+        public string Street { get; set; } = null!;
+        public string ZipCode { get; set; } = null!;
+        public string City { get; set; } = null!;
+        public string Country { get; set; } = null!;
     }
 
     public class CreateLocationRequestValidator : AbstractValidator<CreateLocationRequest>
@@ -63,14 +63,12 @@
     public static class CreateLocationRequestMapping
     {
         public static CreateLocation Map(CreateLocationRequest message)
-        {
-            return new CreateLocation(
+            => new(
                 new LocationId(message.Id),
                 message.CrabLocationId,
                 message.Street,
                 message.ZipCode,
                 message.City,
                 message.Country);
-        }
     }
 }

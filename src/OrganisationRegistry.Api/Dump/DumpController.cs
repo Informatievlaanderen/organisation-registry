@@ -42,9 +42,9 @@ namespace OrganisationRegistry.Api.Dump
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetOrganisations([FromServices] Elastic elastic)
         {
-            var format = _actionContextAccessor.ActionContext.GetValueFromHeader("format")
-                ?? _actionContextAccessor.ActionContext.GetValueFromRouteData("format")
-                ?? _actionContextAccessor.ActionContext.GetValueFromQueryString("format");
+            var format = _actionContextAccessor.ActionContext?.GetValueFromHeader("format")
+                ?? _actionContextAccessor.ActionContext?.GetValueFromRouteData("format")
+                ?? _actionContextAccessor.ActionContext?.GetValueFromQueryString("format");
 
             var dump = await OrganisationDump.Search(
                 elastic.ReadClient,
@@ -55,8 +55,8 @@ namespace OrganisationRegistry.Api.Dump
             jsonSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             jsonSerializerSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
 
-            var resolver = (OrganisationRegistryContractResolver)jsonSerializerSettings.ContractResolver;
-            resolver.SetStringDefaultValueToEmptyString = true;
+            var resolver = (OrganisationRegistryContractResolver?)jsonSerializerSettings.ContractResolver;
+            resolver!.SetStringDefaultValueToEmptyString = true;
 
             string result, contentType;
             if (format == "xml")
@@ -65,7 +65,7 @@ namespace OrganisationRegistry.Api.Dump
                 var json = JsonConvert.SerializeObject(dump, jsonSerializerSettings);
 
                 var xml = JsonConvert.DeserializeXmlNode($"{{\"Organisation\":{json}}}", "Organisations");
-                XmlNode docNode = xml.CreateXmlDeclaration("1.0", "UTF-8", "yes");
+                XmlNode docNode = xml!.CreateXmlDeclaration("1.0", "UTF-8", "yes");
                 xml.InsertBefore(docNode, xml.DocumentElement);
 
                 result = xml.OuterXml.Replace("T00:00:00", string.Empty);
@@ -86,14 +86,12 @@ namespace OrganisationRegistry.Api.Dump
     public class PascalCaseNamingStrategy : NamingStrategy
     {
         protected override string ResolvePropertyName(string name)
-        {
-            return string.IsNullOrWhiteSpace(name) ? name : name.Insert(0, name[0].ToString().ToUpper()).Remove(1, 1);
-        }
+            => string.IsNullOrWhiteSpace(name) ? name : name.Insert(0, name[0].ToString().ToUpper()).Remove(1, 1);
     }
 
     public static class HttpRequestExtensions
     {
-        public static string GetValueFromRouteData(this ActionContext context, string key)
+        public static string? GetValueFromRouteData(this ActionContext context, string key)
         {
             if (!context.RouteData.Values.TryGetValue(key, out var value)) return null;
 
@@ -102,14 +100,10 @@ namespace OrganisationRegistry.Api.Dump
             return string.IsNullOrEmpty(routeValue) ? null : routeValue;
         }
 
-        public static string GetValueFromQueryString(this ActionContext context, string key)
-        {
-            return context.HttpContext.Request.Query.TryGetValue(key, out var queryValue) ? queryValue.ToString() : null;
-        }
+        public static string? GetValueFromQueryString(this ActionContext context, string key)
+            => context.HttpContext.Request.Query.TryGetValue(key, out var queryValue) ? queryValue.ToString() : null;
 
-        public static string GetValueFromHeader(this ActionContext context, string key)
-        {
-            return context.HttpContext.Request.Headers.TryGetValue(key, out var headerValue) ? headerValue.ToString() : null;
-        }
+        public static string? GetValueFromHeader(this ActionContext context, string key)
+            => context.HttpContext.Request.Headers.TryGetValue(key, out var headerValue) ? headerValue.ToString() : null;
     }
 }

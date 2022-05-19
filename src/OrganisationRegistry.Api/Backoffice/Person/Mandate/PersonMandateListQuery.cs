@@ -13,14 +13,14 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Mandate
     public class PersonMandateListQueryResult
     {
         public Guid BodyId { get; }
-        public string BodyName { get; }
+        public string? BodyName { get; }
 
         public Guid? BodyOrganisationId { get; }
-        public string BodyOrganisationName { get; }
+        public string? BodyOrganisationName { get; }
 
         public Guid BodySeatId { get; }
-        public string BodySeatName { get; }
-        public string BodySeatNumber { get; }
+        public string? BodySeatName { get; }
+        public string? BodySeatNumber { get; }
 
         public bool PaidSeat { get; set; }
 
@@ -29,12 +29,12 @@ namespace OrganisationRegistry.Api.Backoffice.Person.Mandate
 
         public PersonMandateListQueryResult(
             Guid bodyId,
-            string bodyName,
+            string? bodyName,
             Guid? bodyOrganisationId,
-            string bodyOrganisationName,
+            string? bodyOrganisationName,
             Guid bodySeatId,
-            string bodySeatName,
-            string bodySeatNumber,
+            string? bodySeatName,
+            string? bodySeatNumber,
             bool paidSeat,
             DateTime? validFrom, DateTime? validTo)
         {

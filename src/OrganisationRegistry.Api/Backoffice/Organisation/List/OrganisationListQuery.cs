@@ -6,14 +6,14 @@ namespace OrganisationRegistry.Api.Backoffice.Organisation.List
     using System.Linq;
     using System.Linq.Expressions;
     using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
-    using OrganisationRegistry.Api.Infrastructure;
-    using OrganisationRegistry.Api.Infrastructure.Search;
-    using OrganisationRegistry.Api.Infrastructure.Search.Filtering;
-    using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
+    using Infrastructure;
+    using Infrastructure.Search;
+    using Infrastructure.Search.Filtering;
+    using Infrastructure.Search.Sorting;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.SqlServer.Infrastructure;
-    using OrganisationRegistry.SqlServer.Organisation;
+    using SqlServer.Infrastructure;
+    using SqlServer.Organisation;
 
     public class OrganisationListQueryResult
     {

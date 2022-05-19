@@ -10,7 +10,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationRelationTyp
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public string InverseName { get; set; }
     }
 
@@ -39,11 +39,9 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationRelationTyp
     public static class CreateOrganisationRelationTypeRequestMapping
     {
         public static CreateOrganisationRelationType Map(CreateOrganisationRelationTypeRequest message)
-        {
-            return new CreateOrganisationRelationType(
+            => new(
                 new OrganisationRelationTypeId(message.Id),
                 message.Name,
                 message.InverseName);
-        }
     }
 }

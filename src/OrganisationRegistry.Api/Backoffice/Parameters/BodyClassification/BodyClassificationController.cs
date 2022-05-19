@@ -10,9 +10,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassification
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Options;
     using OrganisationRegistry.Infrastructure.Commands;
-    using OrganisationRegistry.Infrastructure.Configuration;
     using Queries;
     using Requests;
     using Security;
@@ -23,14 +21,9 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.BodyClassification
     [OrganisationRegistryRoute("bodyclassifications")]
     public class BodyClassificationController : OrganisationRegistryController
     {
-        private readonly ApiConfigurationSection _config;
-
-        public BodyClassificationController(
-            ICommandSender commandSender,
-            IOptions<ApiConfigurationSection> config)
+        public BodyClassificationController(ICommandSender commandSender)
             : base(commandSender)
         {
-            _config = config.Value;
         }
 
         /// <summary>Get a list of available body classifications.</summary>

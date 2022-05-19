@@ -2,7 +2,6 @@
 
 using System.Threading.Tasks;
 using Handling;
-using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Configuration;
 using Infrastructure.Domain;
@@ -14,16 +13,13 @@ public class AddOrganisationLabelCommandHandler
         , ICommandEnvelopeHandler<AddOrganisationLabel>
 {
     private readonly IOrganisationRegistryConfiguration _organisationRegistryConfiguration;
-    private readonly ISecurityService _securityService;
 
     public AddOrganisationLabelCommandHandler(
         ILogger<AddOrganisationLabelCommandHandler> logger,
         ISession session,
-        IOrganisationRegistryConfiguration organisationRegistryConfiguration,
-        ISecurityService securityService) : base(logger, session)
+        IOrganisationRegistryConfiguration organisationRegistryConfiguration) : base(logger, session)
     {
         _organisationRegistryConfiguration = organisationRegistryConfiguration;
-        _securityService = securityService;
     }
 
     public Task Handle(ICommandEnvelope<AddOrganisationLabel> envelope)

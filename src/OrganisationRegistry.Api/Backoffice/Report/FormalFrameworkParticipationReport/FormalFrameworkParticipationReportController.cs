@@ -53,7 +53,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkParticipatio
             var possiblePagination = Request.ExtractPaginationRequest();
 
             if (possiblePagination is NoPaginationRequest)
-                return Ok(participations);
+                return await OkAsync(participations);
 
             var pagination = possiblePagination as PaginationRequest ?? new PaginationRequest(1, 10);
 
@@ -64,7 +64,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkParticipatio
                     participations.Count,
                     (int)Math.Ceiling((double)participations.Count / pagination.ItemsPerPage)));
 
-            return Ok(
+            return await OkAsync(
                 participations
                     .Skip((pagination.RequestedPage - 1) * pagination.ItemsPerPage)
                     .Take(pagination.ItemsPerPage)
@@ -101,7 +101,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkParticipatio
             var possiblePagination = Request.ExtractPaginationRequest();
 
             if (possiblePagination is NoPaginationRequest)
-                return Ok(participations);
+                return await OkAsync(participations);
 
             var pagination = possiblePagination as PaginationRequest ?? new PaginationRequest(1, 10);
 
@@ -112,7 +112,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkParticipatio
                     participations.Count,
                     (int)Math.Ceiling((double)participations.Count / pagination.ItemsPerPage)));
 
-            return Ok(
+            return await OkAsync(
                 participations
                     .Skip((pagination.RequestedPage - 1) * pagination.ItemsPerPage)
                     .Take(pagination.ItemsPerPage)

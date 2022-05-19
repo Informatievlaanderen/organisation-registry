@@ -11,7 +11,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationSubTheme.Requ
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         public Guid RegulationThemeId { get; set; }
     }
@@ -41,7 +41,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationSubTheme.Requ
     public static class CreateRegulationSubThemeRequestMapping
     {
         public static CreateRegulationSubTheme Map(CreateRegulationSubThemeRequest message)
-            => new CreateRegulationSubTheme(
+            => new(
                 new RegulationSubThemeId(message.Id),
                 new RegulationSubThemeName(message.Name),
                 new RegulationThemeId(message.RegulationThemeId));

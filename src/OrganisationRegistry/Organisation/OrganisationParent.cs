@@ -23,11 +23,9 @@
         }
 
         protected bool Equals(OrganisationParent other)
-        {
-            return OrganisationOrganisationParentId.Equals(other.OrganisationOrganisationParentId);
-        }
+            => OrganisationOrganisationParentId.Equals(other.OrganisationOrganisationParentId);
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -36,27 +34,19 @@
         }
 
         public override int GetHashCode()
-        {
-            return OrganisationOrganisationParentId.GetHashCode();
-        }
+            => OrganisationOrganisationParentId.GetHashCode();
 
         public OrganisationParent WithValidity(Period period)
-        {
-            return new OrganisationParent(
+            => new(
                 OrganisationOrganisationParentId,
                 ParentOrganisationId,
                 ParentOrganisationName,
                 period);
-        }
 
         public OrganisationParent WithValidFrom(ValidFrom validFrom)
-        {
-            return WithValidity(new Period(validFrom, Validity.End));
-        }
+            => WithValidity(new Period(validFrom, Validity.End));
 
         public OrganisationParent WithValidTo(ValidTo validTo)
-        {
-            return WithValidity(new Period(Validity.Start, validTo));
-        }
+            => WithValidity(new Period(Validity.Start, validTo));
     }
 }

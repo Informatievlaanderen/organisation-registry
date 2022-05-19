@@ -5,12 +5,10 @@ namespace OrganisationRegistry.Api.Backoffice.Report.CapacityPersonReport
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Infrastructure;
     using OrganisationRegistry.Api.Infrastructure.Search.Pagination;
     using OrganisationRegistry.Api.Infrastructure.Search.Sorting;
-    using Search;
     using ElasticSearch.Client;
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Configuration;
@@ -23,15 +21,12 @@ namespace OrganisationRegistry.Api.Backoffice.Report.CapacityPersonReport
         private const string ScrollTimeout = "30s";
         private const int ScrollSize = 500;
 
-        private readonly ILogger<SearchController> _log;
         private readonly ApiConfigurationSection _config;
 
         public CapacityPersonReportController(
             ICommandSender commandSender,
-            IOptions<ApiConfigurationSection> config,
-            ILogger<SearchController> log) : base(commandSender)
+            IOptions<ApiConfigurationSection> config) : base(commandSender)
         {
-            _log = log;
             _config = config.Value;
         }
 

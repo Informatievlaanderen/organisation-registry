@@ -10,7 +10,7 @@
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class CreateRegulationThemeRequestValidator : AbstractValidator<CreateRegulationThemeRequest>
@@ -34,10 +34,8 @@
     public static class CreateRegulationThemeRequestMapping
     {
         public static CreateRegulationTheme Map(CreateRegulationThemeRequest message)
-        {
-            return new CreateRegulationTheme(
+            => new(
                 new RegulationThemeId(message.Id),
                 new RegulationThemeName(message.Name));
-        }
     }
 }

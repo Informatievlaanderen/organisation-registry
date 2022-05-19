@@ -43,7 +43,7 @@ namespace OrganisationRegistry.Organisation
         protected bool Equals(OrganisationLocation other)
             => OrganisationLocationId.Equals(other.OrganisationLocationId);
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;

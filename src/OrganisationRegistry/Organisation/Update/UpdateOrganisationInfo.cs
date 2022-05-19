@@ -7,10 +7,10 @@
     {
         public OrganisationId OrganisationId => Id;
 
-        public string Description { get; }
+        public string? Description { get; }
         public string Name { get; }
         public Article Article { get; }
-        public string ShortName { get; }
+        public string? ShortName { get; }
         public List<PurposeId> Purposes { get; }
         public ValidFrom ValidFrom { get; }
         public ValidTo ValidTo { get; }
@@ -21,8 +21,8 @@
         public UpdateOrganisationInfo(OrganisationId organisationId,
             string name,
             Article article,
-            string description,
-            string shortName,
+            string? description,
+            string? shortName,
             List<PurposeId> purposes,
             bool showOnVlaamseOverheidSites,
             ValidFrom validFrom,

@@ -20,7 +20,7 @@
 
     public class UpdateFunctionTypeRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class UpdateFunctionTypeRequestValidator : AbstractValidator<UpdateFunctionTypeInternalRequest>
@@ -44,10 +44,8 @@
     public static class UpdateFunctionTypeRequestMapping
     {
         public static UpdateFunctionType Map(UpdateFunctionTypeInternalRequest message)
-        {
-            return new UpdateFunctionType(
+            => new(
                 new FunctionTypeId(message.FunctionId),
                 message.Body.Name);
-        }
     }
 }

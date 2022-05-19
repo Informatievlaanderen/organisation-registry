@@ -10,7 +10,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.SeatType.Requests
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         public int? Order { get; set; }
 
@@ -38,7 +38,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.SeatType.Requests
     public static class CreateSeatTypeRequestMapping
     {
         public static CreateSeatType Map(CreateSeatTypeRequest message)
-            => new CreateSeatType(
+            => new(
                 new SeatTypeId(message.Id),
                 new SeatTypeName(message.Name),
                 message.Order,

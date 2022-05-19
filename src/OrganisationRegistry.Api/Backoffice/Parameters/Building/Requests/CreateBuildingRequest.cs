@@ -10,7 +10,7 @@
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         public int? VimId { get; set; }
     }
@@ -36,11 +36,9 @@
     public static class CreateBuildingRequestMapping
     {
         public static CreateBuilding Map(CreateBuildingRequest message)
-        {
-            return new CreateBuilding(
+            => new(
                 new BuildingId(message.Id),
                 message.Name,
                 message.VimId);
-        }
     }
 }

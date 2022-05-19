@@ -29,11 +29,9 @@ namespace OrganisationRegistry.Organisation
         }
 
         protected bool Equals(OrganisationFormalFramework other)
-        {
-            return OrganisationFormalFrameworkId.Equals(other.OrganisationFormalFrameworkId);
-        }
+            => OrganisationFormalFrameworkId.Equals(other.OrganisationFormalFrameworkId);
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -42,29 +40,21 @@ namespace OrganisationRegistry.Organisation
         }
 
         public override int GetHashCode()
-        {
-            return OrganisationFormalFrameworkId.GetHashCode();
-        }
+            => OrganisationFormalFrameworkId.GetHashCode();
 
         public OrganisationFormalFramework WithValidity(Period period)
-        {
-            return new OrganisationFormalFramework(
+            => new(
                 OrganisationFormalFrameworkId,
                 FormalFrameworkId,
                 FormalFrameworkName,
                 ParentOrganisationId,
                 ParentOrganisationName,
                 period);
-        }
 
         public OrganisationFormalFramework WithValidFrom(ValidFrom validFrom)
-        {
-            return WithValidity(new Period(validFrom, Validity.End));
-        }
+            => WithValidity(new Period(validFrom, Validity.End));
 
         public OrganisationFormalFramework WithValidTo(ValidTo validTo)
-        {
-            return WithValidity(new Period(Validity.Start, validTo));
-        }
+            => WithValidity(new Period(Validity.Start, validTo));
     }
 }

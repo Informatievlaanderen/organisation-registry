@@ -5,7 +5,6 @@
     using Infrastructure;
     using Newtonsoft.Json;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using RegulationSubTheme;
     using RegulationTheme;
 

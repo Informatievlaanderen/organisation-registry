@@ -69,7 +69,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.BodyParticipationReport
                     participations.Count,
                     (int)Math.Ceiling((double)participations.Count / pagination.ItemsPerPage)));
 
-            return Ok(
+            return await OkAsync(
                 participations
                     .Skip((pagination.RequestedPage - 1) * pagination.ItemsPerPage)
                     .Take(pagination.ItemsPerPage)
@@ -102,7 +102,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.BodyParticipationReport
                         filtering,
                         dateTimeProvider.Today));
 
-            return Ok(participationTotals);
+            return await OkAsync(participationTotals);
         }
     }
 }

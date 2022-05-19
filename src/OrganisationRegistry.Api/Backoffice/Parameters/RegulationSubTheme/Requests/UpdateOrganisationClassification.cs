@@ -21,7 +21,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationSubTheme.Requ
 
     public class UpdateRegulationSubThemeRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public Guid RegulationThemeId { get; set; }
     }
 
@@ -50,7 +50,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.RegulationSubTheme.Requ
     public static class UpdateRegulationSubThemeRequestMapping
     {
         public static UpdateRegulationSubTheme Map(UpdateRegulationSubThemeInternalRequest message)
-            => new UpdateRegulationSubTheme(
+            => new(
                 new RegulationSubThemeId(message.RegulationSubThemeId),
                 new RegulationSubThemeName(message.Body.Name),
                 new RegulationThemeId(message.Body.RegulationThemeId));

@@ -20,7 +20,7 @@
 
     public class UpdateCapacityRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class UpdateCapacityRequestValidator : AbstractValidator<UpdateCapacityInternalRequest>
@@ -44,10 +44,8 @@
     public static class UpdateCapacityRequestMapping
     {
         public static UpdateCapacity Map(UpdateCapacityInternalRequest message)
-        {
-            return new UpdateCapacity(
+            => new(
                 new CapacityId(message.CapacityId),
                 message.Body.Name);
-        }
     }
 }

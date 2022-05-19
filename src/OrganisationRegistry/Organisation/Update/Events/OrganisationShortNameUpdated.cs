@@ -7,11 +7,11 @@ public class OrganisationShortNameUpdated : BaseEvent<OrganisationShortNameUpdat
     public Guid OrganisationId
         => Id;
 
-    public string ShortName { get; }
+    public string? ShortName { get; }
 
     public OrganisationShortNameUpdated(
         Guid organisationId,
-        string shortName)
+        string? shortName)
     {
         Id = organisationId;
 

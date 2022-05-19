@@ -20,7 +20,7 @@
 
     public class UpdateFormalFrameworkCategoryRequest
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class UpdateFormalFrameworkCategoryRequestValidator : AbstractValidator<UpdateFormalFrameworkCategoryInternalRequest>
@@ -44,10 +44,8 @@
     public static class UpdateFormalFrameworkCategoryRequestMapping
     {
         public static UpdateFormalFrameworkCategory Map(UpdateFormalFrameworkCategoryInternalRequest message)
-        {
-            return new UpdateFormalFrameworkCategory(
+            => new(
                 new FormalFrameworkCategoryId(message.FormalFrameworkCategoryId),
                 message.Body.Name);
-        }
     }
 }

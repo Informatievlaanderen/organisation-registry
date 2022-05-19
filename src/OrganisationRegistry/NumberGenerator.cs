@@ -6,12 +6,12 @@ namespace OrganisationRegistry
     {
         private readonly string _prefix;
         private readonly string _name;
-        private readonly Func<string> _maxNumberFunc;
+        private readonly Func<string?> _maxNumberFunc;
 
         protected NumberGenerator(
             string prefix,
             string name,
-            Func<string> maxNumberFunc)
+            Func<string?> maxNumberFunc)
         {
             _prefix = prefix;
             _name = name;
