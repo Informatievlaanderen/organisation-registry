@@ -13,12 +13,6 @@ export default {
     type: alertTypes.success,
   },
 
-  loginFailed: {
-    title: "Login niet succesvol",
-    content: "Er is een fout opgetreden tijdens het inloggen.",
-    type: alertTypes.error,
-  },
-
   connectionError: {
     title: "Er is een fout opgetreden",
     content: "De server kon niet worden bereikt.",
