@@ -8,7 +8,6 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyBalancedParticipat
     using Moq;
     using OrganisationRegistry.Body;
     using OrganisationRegistry.Body.Events;
-    using OrganisationRegistry.Body.Participation;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Events;
     using Xunit;

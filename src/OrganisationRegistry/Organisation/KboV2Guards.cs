@@ -42,9 +42,9 @@ namespace OrganisationRegistry.Organisation
                 throw new UserCannotCoupleKboLegalFormOrganisationClassification();
         }
 
-        public static void ThrowIfChanged(string previousValue, string newValue)
+        public static void ThrowIfChanged(string? maybePreviousValue, string? maybeNewValue)
         {
-            if (previousValue != newValue)
+            if (maybePreviousValue != maybeNewValue)
                 throw new CannotChangeDataOwnedByKbo();
         }
     }

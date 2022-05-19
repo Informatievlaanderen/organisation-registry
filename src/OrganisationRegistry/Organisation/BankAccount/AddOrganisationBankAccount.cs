@@ -9,7 +9,7 @@ public class AddOrganisationBankAccount : BaseCommand<OrganisationId>
     public Guid OrganisationBankAccountId { get; }
     public string BankAccountNumber { get; }
     public bool IsIban { get; }
-    public string Bic { get; }
+    public string? Bic { get; }
     public bool IsBic { get; }
     public ValidFrom ValidFrom { get; }
     public ValidTo ValidTo { get; }
@@ -19,7 +19,7 @@ public class AddOrganisationBankAccount : BaseCommand<OrganisationId>
         OrganisationId organisationId,
         string bankAccountNumber,
         bool isIban,
-        string bic,
+        string? bic,
         bool isBic,
         ValidFrom validFrom,
         ValidTo validTo)

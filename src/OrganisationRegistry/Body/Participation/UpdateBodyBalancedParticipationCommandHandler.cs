@@ -1,4 +1,4 @@
-﻿namespace OrganisationRegistry.Body.Participation;
+﻿namespace OrganisationRegistry.Body;
 
 using System.Threading.Tasks;
 using Infrastructure.Commands;

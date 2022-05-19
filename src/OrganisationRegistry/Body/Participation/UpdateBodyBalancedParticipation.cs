@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.Body.Participation;
+namespace OrganisationRegistry.Body;
 
 public class UpdateBodyBalancedParticipation : BaseCommand<BodyId>
 {

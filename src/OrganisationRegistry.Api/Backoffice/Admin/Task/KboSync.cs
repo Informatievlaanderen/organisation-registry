@@ -80,9 +80,7 @@ namespace OrganisationRegistry.Api.Backoffice.Admin.Task
                         _dateTimeProvider.Today,
                         kboSyncQueueItem.Id);
 
-                    syncOrganisationWithKbo.User = user;
-
-                    await commandSender.Send(syncOrganisationWithKbo);
+                    await commandSender.Send(syncOrganisationWithKbo, user);
 
                     kboSyncQueueItem.SyncCompletedAt = _dateTimeProvider.UtcNow;
                     kboSyncQueueItem.SyncStatus = SyncStatusSuccess;

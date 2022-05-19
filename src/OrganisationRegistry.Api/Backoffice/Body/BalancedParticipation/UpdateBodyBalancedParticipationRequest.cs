@@ -3,7 +3,6 @@ namespace OrganisationRegistry.Api.Backoffice.Body.BalancedParticipation
     using System;
     using FluentValidation;
     using OrganisationRegistry.Body;
-    using OrganisationRegistry.Body.Participation;
 
     public class UpdateBodyBalancedParticipationInternalRequest
     {

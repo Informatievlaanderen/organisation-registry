@@ -26,14 +26,14 @@ namespace OrganisationRegistry.Api.Backoffice.Management
 
             foreach (var dayOfWeek in ((DayOfWeek[])Enum.GetValues(typeof(DayOfWeek))).ToList())
             {
-                days.Add(new Day
-                {
-                    DayOfWeek = dayOfWeek,
-                    Label = Thread.CurrentThread.CurrentCulture.DateTimeFormat.GetDayName(dayOfWeek)
-                });
+                days.Add(
+                    new Day(
+                        dayOfWeek,
+                        Thread.CurrentThread.CurrentCulture.DateTimeFormat.GetDayName(dayOfWeek)
+                    ));
             }
 
-            return Ok(days);
+            return await OkAsync(days);
         }
 
         [HttpGet("hours")]
@@ -42,29 +42,15 @@ namespace OrganisationRegistry.Api.Backoffice.Management
             var hours = new List<Hour>();
 
             for (var ts = TimeSpan.Zero;
-                ts <= TimeSpan.Zero.Add(new TimeSpan(23, 30, 0));
-                ts = ts.Add(new TimeSpan(0, 30, 0)))
-                hours.Add(new Hour
-                {
-                    TimeSpan = ts,
-                    Label = $"{ts.Hours:00}:{ts.Minutes:00}"
-                });
+                 ts <= TimeSpan.Zero.Add(new TimeSpan(23, 30, 0));
+                 ts = ts.Add(new TimeSpan(0, 30, 0)))
+                hours.Add(new Hour(ts, $"{ts.Hours:00}:{ts.Minutes:00}"));
 
-            return Ok(hours);
+            return await OkAsync(hours);
         }
     }
 
-    public class Day
-    {
-        public DayOfWeek DayOfWeek { get; set; }
+    public record Day(DayOfWeek DayOfWeek, string Label);
 
-        public string Label { get; set; }
-    }
-
-    public class Hour
-    {
-        public TimeSpan TimeSpan { get; set; }
-
-        public string Label { get; set; }
-    }
+    public record Hour(TimeSpan TimeSpan, string Label);
 }

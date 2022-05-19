@@ -6,7 +6,6 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
     using Infrastructure.Security;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Commands;
@@ -18,17 +17,14 @@ namespace OrganisationRegistry.Api.Backoffice.Kbo
     [OrganisationRegistryRoute("kboraw")]
     public class KboRawController : OrganisationRegistryController
     {
-        private readonly ILogger<KboRawController> _logger;
         private readonly IRegistreerInschrijvingCommand _registerInscriptionCommand;
         private readonly IGeefOndernemingQuery _geefOndernemingQuery;
 
         public KboRawController(
-            ILogger<KboRawController> logger,
             IRegistreerInschrijvingCommand registerInscriptionCommand,
             IGeefOndernemingQuery geefOndernemingQuery,
             ICommandSender commandSender) : base(commandSender)
         {
-            _logger = logger;
             _registerInscriptionCommand = registerInscriptionCommand;
             _geefOndernemingQuery = geefOndernemingQuery;
         }

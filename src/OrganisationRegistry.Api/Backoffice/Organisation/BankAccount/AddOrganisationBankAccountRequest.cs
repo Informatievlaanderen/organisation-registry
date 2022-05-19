@@ -3,7 +3,6 @@
     using System;
     using FluentValidation;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
 
     public class AddOrganisationBankAccountInternalRequest
     {
@@ -20,9 +19,9 @@
     public class AddOrganisationBankAccountRequest
     {
         public Guid OrganisationBankAccountId { get; set; }
-        public string BankAccountNumber { get; set; }
+        public string BankAccountNumber { get; set; } = null!;
         public bool IsIban { get; set; }
-        public string Bic { get; set; }
+        public string? Bic { get; set; }
         public bool IsBic { get; set; }
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
@@ -54,8 +53,7 @@
     public static class AddOrganisationBankAccountRequestMapping
     {
         public static AddOrganisationBankAccount Map(AddOrganisationBankAccountInternalRequest message)
-        {
-            return new AddOrganisationBankAccount(
+            => new(
                 message.Body.OrganisationBankAccountId,
                 new OrganisationId(message.OrganisationId),
                 message.Body.BankAccountNumber,
@@ -64,6 +62,5 @@
                 message.Body.IsBic,
                 new ValidFrom(message.Body.ValidFrom),
                 new ValidTo(message.Body.ValidTo));
-        }
     }
 }

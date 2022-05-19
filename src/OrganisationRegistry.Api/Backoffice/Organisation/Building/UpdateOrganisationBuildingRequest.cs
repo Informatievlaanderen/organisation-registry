@@ -4,7 +4,6 @@
     using FluentValidation;
     using OrganisationRegistry.Building;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
 
     public class UpdateOrganisationBuildingInternalRequest
     {

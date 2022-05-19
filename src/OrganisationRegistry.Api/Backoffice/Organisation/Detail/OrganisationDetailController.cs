@@ -7,6 +7,7 @@ using Infrastructure.Security;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OrganisationRegistry.Infrastructure;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Commands;
 using OrganisationRegistry.Organisation;
@@ -56,12 +57,12 @@ public class OrganisationDetailController : OrganisationRegistryController
         if (authInfo?.Principal == null || !authInfo.Principal.IsInRole(Roles.Developer))
             message.OvoNumber = string.Empty;
 
-        if (!string.IsNullOrWhiteSpace(message.KboNumber))
+        if (message.KboNumber is { } kboNumber && kboNumber.IsNotEmptyOrWhiteSpace())
         {
             if (!await securityService.CanAddOrganisation(User, message.ParentOrganisationId))
                 ModelState.AddModelError("NotAllowed", "U hebt niet voldoende rechten voor deze organisatie.");
 
-            await CommandSender.Send(CreateOrganisationRequestMapping.MapToCreateKboOrganisation(message, User));
+            await CommandSender.Send(CreateOrganisationRequestMapping.MapToCreateKboOrganisation(message, kboNumber));
         }
         else
         {
