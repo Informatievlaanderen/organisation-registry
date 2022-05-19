@@ -1,7 +1,7 @@
 ﻿import { composeApiUri, handleHttpResponse } from "@/api/httpHelpers";
 import { getToken } from "@/api/localStorage";
 
-export async function postImportOrganisations(file) {
+export async function postImportOrganisations(file, onSuccess, onError) {
   const data = new FormData();
   data.append("bulkimportfile", file, file.upload.filename);
 
@@ -19,7 +19,7 @@ export async function postImportOrganisations(file) {
     requestOptions
   );
 
-  return await handleHttpResponse(response);
+  return await handleHttpResponse(response, onSuccess, onError);
 }
 
 export async function getImportStatus() {

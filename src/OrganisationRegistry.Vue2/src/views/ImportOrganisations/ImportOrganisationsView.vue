@@ -1,7 +1,9 @@
 <template>
   <div class="home">
-    <h1>Opladen Organisaties</h1>
-    <UploadOrganisations @file-selected="select" />
+    <div class="cta-title">
+      <h1 class="h2 cta-title__title">Opladen organisaties</h1>
+    </div>
+    <UploadOrganisations @file-selected="uploadFile" />
     <ImportStatusList :import-statuses="importStatuses.imports" />
   </div>
 </template>
@@ -18,8 +20,8 @@ export default {
   name: "ImportOrganisationsView",
   components: { ImportStatusList, UploadOrganisations },
   methods: {
-    async select(file) {
-      await postImportOrganisations(file);
+    async uploadFile(file, onSuccess) {
+      await postImportOrganisations(file, onSuccess);
       this.importStatuses = await getImportStatus();
     },
   },

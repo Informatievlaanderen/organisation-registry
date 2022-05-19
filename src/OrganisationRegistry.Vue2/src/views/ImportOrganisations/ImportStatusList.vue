@@ -22,7 +22,7 @@
       </tbody>
       <tfoot>
         <tr>
-          <td><vl-annotation>Table annotation</vl-annotation></td>
+          <td><vl-annotation></vl-annotation></td>
         </tr>
       </tfoot>
     </vl-data-table>
