@@ -18,7 +18,9 @@ export const useUserStore = defineStore("user", {
   actions: {
     async initializeOidcClient() {
       const securityInfo = await getSecurityInfo();
-      this.oidcClient = new OidcClient(securityInfo);
+      if (securityInfo) {
+        this.oidcClient = new OidcClient(securityInfo);
+      }
     },
     loadUserFromToken() {
       const token = getToken();
@@ -49,15 +51,22 @@ export const useUserStore = defineStore("user", {
       const verifier = getVerifier();
       const redirectUri = this.oidcClient.client.settings.redirect_uri;
       const response = await exchangeCode(code, verifier, redirectUri);
+      console.log("response", response);
       const token = await response.text();
 
-      setToken(token);
+      try {
+        jwtDecode(token);
+        setToken(token);
+        this.loadUserFromToken();
+        await this.router.push({ path: "/" });
 
-      this.loadUserFromToken();
-      await this.router.push({ path: "/" });
-
-      alertStore.setAlert(alerts.loginSuccess);
-      setTimeout(() => alertStore.clearAlert(), 5000);
+        alertStore.setAlert(alerts.loginSuccess);
+        setTimeout(() => alertStore.clearAlert(), 5000);
+      } catch (e) {
+        alertStore.setAlert(alerts.loginFailed);
+        setTimeout(() => alertStore.clearAlert(), 5000);
+        console.error(e);
+      }
     },
   },
 });
