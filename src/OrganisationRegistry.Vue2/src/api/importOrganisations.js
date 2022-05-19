@@ -1,5 +1,7 @@
 ﻿import { composeApiUri, handleHttpResponse } from "@/api/httpHelpers";
 import { getToken } from "@/api/localStorage";
+import { useAlertStore } from "@/stores/alert";
+import alerts from "@/alerts/alerts";
 
 export async function postImportOrganisations(file, onSuccess, onError) {
   const data = new FormData();
@@ -44,6 +46,8 @@ export async function getImportStatus() {
 
     return await handleHttpResponse(response);
   } catch (e) {
+    const alertStore = useAlertStore();
+    alertStore.setAlert(alerts.serverError);
     console.error("A network error occurred", e);
   }
 }

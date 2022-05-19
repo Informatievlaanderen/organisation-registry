@@ -1,5 +1,5 @@
 <template>
-  <vl-alert :icon="alert.type" :title="alert.title" role="alertdialog">
+  <vl-alert icon="warning" mod-error :title="alert.title" role="alertdialog">
     <p>
       {{ alert.content }}
     </p>
