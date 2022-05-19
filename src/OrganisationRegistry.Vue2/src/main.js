@@ -6,23 +6,31 @@ import "./components";
 
 import { createPinia, PiniaVuePlugin } from "pinia";
 import { markRaw } from "@vue/composition-api/dist/vue-composition-api";
+import { useUserStore } from "@/stores/user";
 
-Vue.use(PiniaVuePlugin);
-const pinia = createPinia();
+(async () => {
+  Vue.use(PiniaVuePlugin);
+  const pinia = createPinia();
 
-function RouterPlugin() {
-  return { router: markRaw(router) };
-}
+  function RouterPlugin() {
+    return { router: markRaw(router) };
+  }
 
-pinia.use(RouterPlugin);
-Vue.config.productionTip = false;
+  pinia.use(RouterPlugin);
+  Vue.config.productionTip = false;
 
-window.organisatieRegisterApiEndpoint =
-  window.organisatieRegisterApiEndpoint ||
-  "https://api.organisatie.dev-vlaanderen.local:9003";
+  window.organisatieRegisterApiEndpoint =
+    window.organisatieRegisterApiEndpoint ||
+    "https://api.organisatie.dev-vlaanderen.local:9003";
 
-new Vue({
-  router,
-  render: (h) => h(App),
-  pinia,
-}).$mount("#app");
+  const app = new Vue({
+    router,
+    render: (h) => h(App),
+    pinia,
+  });
+
+  const userStore = useUserStore();
+  await userStore.initializeOidcClient();
+
+  app.$mount("#app");
+})();
