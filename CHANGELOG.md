@@ -1,3 +1,10 @@
+## [1.187.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.187.1...v1.187.2) (2022-05-20)
+
+
+### Bug Fixes
+
+* or-1013 use Dutch locale for moment.js ([e34b077](https://github.com/informatievlaanderen/organisation-registry/commit/e34b0774acb16788a2a9e4e889a022f7e2cd7c34))
+
 ## [1.187.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.187.0...v1.187.1) (2022-05-20)
 
 
