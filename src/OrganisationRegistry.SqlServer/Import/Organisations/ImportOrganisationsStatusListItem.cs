@@ -21,9 +21,9 @@ public class ImportOrganisationsStatusListItem
 
 public static class ImportProcessStatus
 {
-    public const string Processing = "Processing";
-    public const string Processed = "Processed";
-    public const string Failed = "Failed";
+    public const string Processing = "Aan het verwerken";
+    public const string Processed = "Geslaagd";
+    public const string Failed = "Gefaald";
 }
 
 public class ImportStatusListItemConfiguration : EntityMappingConfiguration<ImportOrganisationsStatusListItem>
