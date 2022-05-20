@@ -41,21 +41,15 @@
     <dv-main>
       <dv-region>
         <dv-layout mod-is-wide>
-          <transition name="fade">
-            <vl-alert
-              :icon="alert.type"
-              :title="alert.title"
-              v-if="alert.visible"
-              closable
-              :mod-error="alert.type === 'error'"
-              @close="clearAlert"
-              role="alertdialog"
-            >
-              <p>
-                {{ alert.content }}
-              </p>
-            </vl-alert>
-          </transition>
+          <OrAlert
+            :visible="alert.visible"
+            :is-closable="true"
+            :type="alert.type"
+            :title="alert.title"
+            @close="clearAlert"
+          >
+            {{ alert.content }}
+          </OrAlert>
           <router-view></router-view>
         </dv-layout>
       </dv-region>
@@ -88,10 +82,12 @@ import DvFooter from "./components/partials/footer/Footer";
 import { mapActions, mapState, mapStores } from "pinia";
 import { useUserStore } from "@/stores/user";
 import { useAlertStore } from "@/stores/alert";
+import OrAlert from "@/components/partials/alert/Alert";
 
 export default {
   name: "App",
   components: {
+    OrAlert,
     DvHeader,
     DvFunctionalHeader,
     DvUserInfo,

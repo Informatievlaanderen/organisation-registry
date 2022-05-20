@@ -1,32 +1,21 @@
 <template>
   <transition name="fade">
-    <div
-      :class="{
-        alert: true,
-        'alert--error': this.type === 'error',
-        'alert--warning': this.type === 'warning',
-        'alert--success': this.type === 'success',
-        'alert--cta': this.type === 'cta',
-        'alert--closable': this.isClosable,
-      }"
+    <vl-alert
+      :icon="getIcon(type)"
+      :title="title"
       v-if="visible"
+      :closable="isClosable"
+      :mod-error="type === 'error'"
+      :mod-warning="type === 'warning'"
+      :mod-success="type === 'success'"
+      mod-small
+      @close="close"
+      role="alertdialog"
     >
-      <a
-        href=""
-        class="alert__close link--icon--close u-float-right"
-        v-if="isClosable"
-        ><span class="u-visually-hidden">Sluiten</span></a
-      >
-      <div class="alert__icon" aria-hidden="true" v-if="hasIcon"></div>
-      <div class="alert__content">
-        <div class="alert__title">{{ title }}</div>
-        <div class="alert__message">
-          <div class="typography">
-            <slot></slot>
-          </div>
-        </div>
-      </div>
-    </div>
+      <p>
+        <slot></slot>
+      </p>
+    </vl-alert>
   </transition>
 </template>
 
@@ -51,8 +40,24 @@ export default {
       type: Boolean,
     },
     visible: {
-      default: false,
+      default: true,
       type: Boolean,
+    },
+  },
+  methods: {
+    close() {
+      this.$emit("close");
+    },
+    getIcon(type) {
+      switch (type) {
+        case "warning":
+        case "error":
+          return "warning";
+        case "success":
+          return "check-circle";
+        default:
+          break;
+      }
     },
   },
   data() {
