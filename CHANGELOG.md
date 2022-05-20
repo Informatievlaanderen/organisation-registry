@@ -1,3 +1,5 @@
+## [1.189.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.189.0...v1.189.1) (2022-05-20)
+
 # [1.189.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.188.0...v1.189.0) (2022-05-20)
 
 
