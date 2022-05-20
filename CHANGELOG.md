@@ -1,3 +1,10 @@
+## [1.187.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.187.0...v1.187.1) (2022-05-20)
+
+
+### Bug Fixes
+
+* or-1013 use Dutch status names ([7464441](https://github.com/informatievlaanderen/organisation-registry/commit/7464441a4feb4f226e2dd1a779a8f6d305b25e97))
+
 # [1.187.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.186.0...v1.187.0) (2022-05-19)
 
 
