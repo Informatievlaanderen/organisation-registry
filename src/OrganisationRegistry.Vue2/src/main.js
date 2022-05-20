@@ -12,6 +12,7 @@ import moment from "moment";
 
 (async () => {
   Vue.prototype.moment = moment;
+  moment.locale("nl");
 
   Vue.use(PiniaVuePlugin);
   const pinia = createPinia();
