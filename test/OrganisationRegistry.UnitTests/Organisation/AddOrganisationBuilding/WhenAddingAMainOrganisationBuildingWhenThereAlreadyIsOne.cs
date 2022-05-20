@@ -89,7 +89,7 @@ public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : Specific
     [Fact]
     public async Task PublishesNoEvents()
     {
-        await Given()
+        await Given(Events)
             .When(AddOrganisationBuildingCommand, User)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }

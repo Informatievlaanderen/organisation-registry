@@ -5,14 +5,27 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
 
     public class FormalFrameworkCategoryCreatedBuilder
     {
-        public Guid Id { get; }
-        public string Name { get; }
+        public Guid Id { get; private set; }
+        public string Name { get;  private set;}
 
         public FormalFrameworkCategoryCreatedBuilder()
         {
             Id = Guid.NewGuid();
             Name = Id.ToString();
         }
+
+        public FormalFrameworkCategoryCreatedBuilder WithId(Guid id)
+        {
+            Id = id;
+            return this;
+        }
+
+        public FormalFrameworkCategoryCreatedBuilder WithName(string formalFramworkCategoryName)
+        {
+            Name = formalFramworkCategoryName;
+            return this;
+        }
+
 
         public FormalFrameworkCategoryCreated Build()
             => new(

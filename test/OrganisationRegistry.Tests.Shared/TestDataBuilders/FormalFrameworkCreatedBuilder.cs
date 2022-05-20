@@ -6,8 +6,8 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
 
     public class FormalFrameworkCreatedBuilder
     {
-        public FormalFrameworkId Id { get; }
-        public string Name { get; }
+        public FormalFrameworkId Id { get; private set; }
+        public string Name { get; private set; }
         public string FormalFrameworkCategoryName { get; }
         public Guid FormalFrameworkCategoryId { get; }
         public string Code { get; }
@@ -21,6 +21,12 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
             FormalFrameworkCategoryName = formalFrameworkCategoryName;
         }
 
+        public FormalFrameworkCreatedBuilder WithName(string name)
+        {
+            Name = name;
+            return this;
+        }
+
         public FormalFrameworkCreated Build()
             => new(
                 Id,
@@ -31,5 +37,11 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
 
         public static implicit operator FormalFrameworkCreated(FormalFrameworkCreatedBuilder builder)
             => builder.Build();
+
+        public FormalFrameworkCreatedBuilder WithId(FormalFrameworkId formalFrameworkId)
+        {
+            Id = formalFrameworkId;
+            return this;
+        }
     }
 }
