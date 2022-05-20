@@ -18,12 +18,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
     using OrganisationRegistry.Organisation.Events;
-    using OrganisationRegistry.Organisation.Kbo;
+    using Tests.Shared;
     using Tests.Shared.Stubs;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class UpdateFromKboWithoutLegalFormTests : OldSpecification2<SyncOrganisationWithKboCommandHandler, SyncOrganisationWithKbo>
+    public class UpdateFromKboWithoutLegalFormTests : OldSpecification2<KboOrganisationCommandHandlers, SyncOrganisationWithKbo>
     {
         private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub = new()
         {
@@ -42,9 +42,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         private Guid _organisationClassificationId;
         private Guid _anotherOrganisationClassificationId;
         private readonly KboNumber _kboNumber = new("BE0123456789");
+        private readonly DateTimeProviderStub _dateTimeProviderStub;
 
         public UpdateFromKboWithoutLegalFormTests(ITestOutputHelper helper) : base(helper)
         {
+            _dateTimeProviderStub = new DateTimeProviderStub(new DateTime(2019, 9, 20));
         }
 
         protected override IUser User
@@ -116,11 +118,15 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 new DateTimeOffset(new DateTime(2019, 9, 9)),
                 _kboSyncItemId);
 
-        protected override SyncOrganisationWithKboCommandHandler BuildHandler()
+        protected override KboOrganisationCommandHandlers BuildHandler()
             => new(
-                logger: new Mock<ILogger<SyncOrganisationWithKboCommandHandler>>().Object,
+                logger: new Mock<ILogger<KboOrganisationCommandHandlers>>().Object,
                 organisationRegistryConfiguration: _organisationRegistryConfigurationStub,
                 session: Session,
+                ovoNumberGenerator: new SequentialOvoNumberGenerator(),
+                uniqueOvoNumberValidator: new UniqueOvoNumberValidatorStub(false),
+                uniqueKboValidator: new UniqueKboNumberValidatorStub(false),
+                dateTimeProvider: _dateTimeProviderStub,
                 kboOrganisationRetriever: new KboOrganisationRetrieverStub(
                     new MockMagdaOrganisationResponse
                     {

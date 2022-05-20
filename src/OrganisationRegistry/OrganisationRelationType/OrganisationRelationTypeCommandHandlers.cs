@@ -9,8 +9,8 @@ namespace OrganisationRegistry.OrganisationRelationType
 
     public class OrganisationRelationTypeCommandHandlers :
         BaseCommandHandler<OrganisationRelationTypeCommandHandlers>,
-        ICommandHandler<CreateOrganisationRelationType>,
-        ICommandHandler<UpdateOrganisationRelationType>
+        ICommandEnvelopeHandler<CreateOrganisationRelationType>,
+        ICommandEnvelopeHandler<UpdateOrganisationRelationType>
     {
         private readonly IUniqueNameValidator<OrganisationRelationType> _uniqueNameValidator;
 
@@ -22,24 +22,24 @@ namespace OrganisationRegistry.OrganisationRelationType
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public async Task Handle(CreateOrganisationRelationType message)
+        public async Task Handle(ICommandEnvelope<CreateOrganisationRelationType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var organisationRelationType = new OrganisationRelationType(message.OrganisationRelationTypeId, message.Name, message.InverseName);
+            var organisationRelationType = new OrganisationRelationType(envelope.Command.OrganisationRelationTypeId, envelope.Command.Name, envelope.Command.InverseName);
             Session.Add(organisationRelationType);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateOrganisationRelationType message)
+        public async Task Handle(ICommandEnvelope<UpdateOrganisationRelationType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.OrganisationRelationTypeId, message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.OrganisationRelationTypeId, envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var organisationRelationType = Session.Get<OrganisationRelationType>(message.OrganisationRelationTypeId);
-            organisationRelationType.Update(message.Name, message.InverseName);
-            await Session.Commit(message.User);
+            var organisationRelationType = Session.Get<OrganisationRelationType>(envelope.Command.OrganisationRelationTypeId);
+            organisationRelationType.Update(envelope.Command.Name, envelope.Command.InverseName);
+            await Session.Commit(envelope.User);
         }
     }
 }

@@ -1,7 +1,7 @@
 namespace OrganisationRegistry.UnitTests.KeyTypes.RemoveKeyType
 {
     using System;
-    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Moq;
     using OrganisationRegistry.Infrastructure.Authorization;
@@ -11,19 +11,27 @@ namespace OrganisationRegistry.UnitTests.KeyTypes.RemoveKeyType
     using OrganisationRegistry.KeyTypes.Events;
     using OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers;
     using Xunit.Abstractions;
+    using OrganisationRegistry.Infrastructure.Domain;
+    using Xunit;
 
     public class WhenRemovingAKeyTypeToAnAlreadyRemovedKeyType
-        : OldSpecification<KeyType, KeyTypeCommandHandlers, RemoveKeyType>
+        : Specification<KeyTypeCommandHandlers, RemoveKeyType>
     {
-        private Guid _keyTypeId;
+        private readonly Guid _keyTypeId;
         private const string KeyTypeName = "Sleutel A";
 
 
         public WhenRemovingAKeyTypeToAnAlreadyRemovedKeyType(ITestOutputHelper helper) : base(helper)
         {
+            _keyTypeId = Guid.NewGuid();
         }
 
-        protected override KeyTypeCommandHandlers BuildHandler()
+        private static IUser AlgemeenBeheerderUser
+            => new UserBuilder()
+                .AddRoles(Role.AlgemeenBeheerder)
+                .Build();
+
+        protected override KeyTypeCommandHandlers BuildHandler(ISession session)
         {
             var securityServiceMock = new Mock<ISecurityService>();
             securityServiceMock
@@ -32,16 +40,13 @@ namespace OrganisationRegistry.UnitTests.KeyTypes.RemoveKeyType
 
             return new KeyTypeCommandHandlers(
                 new Mock<ILogger<KeyTypeCommandHandlers>>().Object,
-                Session,
+                session,
                 Mock.Of<IUniqueNameValidator<KeyType>>()
             );
         }
 
-        protected override IEnumerable<IEvent> Given()
-        {
-            _keyTypeId = Guid.NewGuid();
-
-            return new List<IEvent>
+        private IEvent[] Events
+            => new IEvent[]
             {
                 new KeyTypeCreated(
                     _keyTypeId,
@@ -49,18 +54,15 @@ namespace OrganisationRegistry.UnitTests.KeyTypes.RemoveKeyType
                 ),
                 new KeyTypeRemoved(_keyTypeId)
             };
-        }
 
-        protected override RemoveKeyType When()
-            => new(
-                new KeyTypeId(_keyTypeId))
-            {
-                User = new UserBuilder()
-                    .AddRoles(Role.AlgemeenBeheerder)
-                    .Build()
-            };
 
-        protected override int ExpectedNumberOfEvents
-            => 0;
+        private RemoveKeyType RemoveKeyTypeCommand
+            => new(new KeyTypeId(_keyTypeId));
+
+        [Fact]
+        public async Task PublishesTheCorrectNumberOfEvents()
+            => await Given(Events)
+                .When(RemoveKeyTypeCommand, AlgemeenBeheerderUser)
+                .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 }

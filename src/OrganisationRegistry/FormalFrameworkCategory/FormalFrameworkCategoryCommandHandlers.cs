@@ -9,8 +9,8 @@
 
     public class FormalFrameworkCategoryCommandHandlers :
         BaseCommandHandler<FormalFrameworkCategoryCommandHandlers>,
-        ICommandHandler<CreateFormalFrameworkCategory>,
-        ICommandHandler<UpdateFormalFrameworkCategory>
+        ICommandEnvelopeHandler<CreateFormalFrameworkCategory>,
+        ICommandEnvelopeHandler<UpdateFormalFrameworkCategory>
     {
         private readonly IUniqueNameValidator<FormalFrameworkCategory> _uniqueNameValidator;
 
@@ -22,24 +22,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public async Task Handle(CreateFormalFrameworkCategory message)
+        public async Task Handle(ICommandEnvelope<CreateFormalFrameworkCategory> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var formalFrameworkCategory = new FormalFrameworkCategory(message.FormalFrameworkCategoryId, message.Name);
+            var formalFrameworkCategory = new FormalFrameworkCategory(envelope.Command.FormalFrameworkCategoryId, envelope.Command.Name);
             Session.Add(formalFrameworkCategory);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateFormalFrameworkCategory message)
+        public async Task Handle(ICommandEnvelope<UpdateFormalFrameworkCategory> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.FormalFrameworkCategoryId, message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.FormalFrameworkCategoryId, envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var formalFrameworkCategory = Session.Get<FormalFrameworkCategory>(message.FormalFrameworkCategoryId);
-            formalFrameworkCategory.Update(message.Name);
-            await Session.Commit(message.User);
+            var formalFrameworkCategory = Session.Get<FormalFrameworkCategory>(envelope.Command.FormalFrameworkCategoryId);
+            formalFrameworkCategory.Update(envelope.Command.Name);
+            await Session.Commit(envelope.User);
         }
     }
 }

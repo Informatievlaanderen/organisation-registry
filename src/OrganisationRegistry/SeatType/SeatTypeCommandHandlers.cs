@@ -9,8 +9,8 @@ namespace OrganisationRegistry.SeatType
 
     public class SeatTypeCommandHandlers :
         BaseCommandHandler<SeatTypeCommandHandlers>,
-        ICommandHandler<CreateSeatType>,
-        ICommandHandler<UpdateSeatType>
+        ICommandEnvelopeHandler<CreateSeatType>,
+        ICommandEnvelopeHandler<UpdateSeatType>
     {
         private readonly IUniqueNameValidator<SeatType> _uniqueNameValidator;
 
@@ -22,24 +22,24 @@ namespace OrganisationRegistry.SeatType
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public async Task Handle(CreateSeatType message)
+        public async Task Handle(ICommandEnvelope<CreateSeatType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var seatType = new SeatType(message.SeatTypeId, message.Name, message.Order, message.IsEffective);
+            var seatType = new SeatType(envelope.Command.SeatTypeId, envelope.Command.Name, envelope.Command.Order, envelope.Command.IsEffective);
             Session.Add(seatType);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateSeatType message)
+        public async Task Handle(ICommandEnvelope<UpdateSeatType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.SeatTypeId, message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.SeatTypeId, envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var seatType = Session.Get<SeatType>(message.SeatTypeId);
-            seatType.Update(message.Name, message.Order, message.IsEffective);
-            await Session.Commit(message.User);
+            var seatType = Session.Get<SeatType>(envelope.Command.SeatTypeId);
+            seatType.Update(envelope.Command.Name, envelope.Command.Order, envelope.Command.IsEffective);
+            await Session.Commit(envelope.User);
         }
     }
 }

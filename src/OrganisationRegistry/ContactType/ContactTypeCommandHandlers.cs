@@ -9,8 +9,8 @@
 
     public class ContactTypeCommandHandlers :
         BaseCommandHandler<ContactTypeCommandHandlers>,
-        ICommandHandler<CreateContactType>,
-        ICommandHandler<UpdateContactType>
+        ICommandEnvelopeHandler<CreateContactType>,
+        ICommandEnvelopeHandler<UpdateContactType>
     {
         private readonly IUniqueNameValidator<ContactType> _uniqueNameValidator;
 
@@ -22,24 +22,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public async Task Handle(CreateContactType message)
+        public async Task Handle(ICommandEnvelope<CreateContactType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var contactType = new ContactType(message.ContactTypeId, message.Name);
+            var contactType = new ContactType(envelope.Command.ContactTypeId, envelope.Command.Name);
             Session.Add(contactType);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateContactType message)
+        public async Task Handle(ICommandEnvelope<UpdateContactType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.ContactTypeId, message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.ContactTypeId, envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var contactType = Session.Get<ContactType>(message.ContactTypeId);
-            contactType.Update(message.Name);
-            await Session.Commit(message.User);
+            var contactType = Session.Get<ContactType>(envelope.Command.ContactTypeId);
+            contactType.Update(envelope.Command.Name);
+            await Session.Commit(envelope.User);
         }
     }
 }

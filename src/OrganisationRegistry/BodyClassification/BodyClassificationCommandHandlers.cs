@@ -10,8 +10,8 @@ namespace OrganisationRegistry.BodyClassification
 
     public class BodyClassificationCommandHandlers :
         BaseCommandHandler<BodyClassificationCommandHandlers>,
-        ICommandHandler<CreateBodyClassification>,
-        ICommandHandler<UpdateBodyClassification>
+        ICommandEnvelopeHandler<CreateBodyClassification>,
+        ICommandEnvelopeHandler<UpdateBodyClassification>
     {
         private readonly IUniqueNameWithinTypeValidator<BodyClassification> _uniqueNameValidator;
 
@@ -23,27 +23,27 @@ namespace OrganisationRegistry.BodyClassification
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public async Task Handle(CreateBodyClassification message)
+        public async Task Handle(ICommandEnvelope<CreateBodyClassification> envelope)
         {
-            var bodyClassificationType = Session.Get<BodyClassificationType>(message.BodyClassificationTypeId);
+            var bodyClassificationType = Session.Get<BodyClassificationType>(envelope.Command.BodyClassificationTypeId);
 
-            if (_uniqueNameValidator.IsNameTaken(message.Name, message.BodyClassificationTypeId))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name, envelope.Command.BodyClassificationTypeId))
                 throw new NameNotUniqueWithinType();
 
-            var bodyClassification = new BodyClassification(message.BodyClassificationId, message.Name, message.Order, message.Active, bodyClassificationType);
+            var bodyClassification = new BodyClassification(envelope.Command.BodyClassificationId, envelope.Command.Name, envelope.Command.Order, envelope.Command.Active, bodyClassificationType);
             Session.Add(bodyClassification);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateBodyClassification message)
+        public async Task Handle(ICommandEnvelope<UpdateBodyClassification> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.BodyClassificationId, message.Name, message.BodyClassificationTypeId))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.BodyClassificationId, envelope.Command.Name, envelope.Command.BodyClassificationTypeId))
                 throw new NameNotUniqueWithinType();
 
-            var bodyClassificationType = Session.Get<BodyClassificationType>(message.BodyClassificationTypeId);
-            var bodyClassification = Session.Get<BodyClassification>(message.BodyClassificationId);
-            bodyClassification.Update(message.Name, message.Order, message.Active, bodyClassificationType);
-            await Session.Commit(message.User);
+            var bodyClassificationType = Session.Get<BodyClassificationType>(envelope.Command.BodyClassificationTypeId);
+            var bodyClassification = Session.Get<BodyClassification>(envelope.Command.BodyClassificationId);
+            bodyClassification.Update(envelope.Command.Name, envelope.Command.Order, envelope.Command.Active, bodyClassificationType);
+            await Session.Commit(envelope.User);
         }
     }
 }

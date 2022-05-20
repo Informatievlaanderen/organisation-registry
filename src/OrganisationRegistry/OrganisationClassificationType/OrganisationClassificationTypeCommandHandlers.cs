@@ -9,8 +9,8 @@
 
     public class OrganisationClassificationTypeCommandHandlers :
         BaseCommandHandler<OrganisationClassificationTypeCommandHandlers>,
-        ICommandHandler<CreateOrganisationClassificationType>,
-        ICommandHandler<UpdateOrganisationClassificationType>
+        ICommandEnvelopeHandler<CreateOrganisationClassificationType>,
+        ICommandEnvelopeHandler<UpdateOrganisationClassificationType>
     {
         private readonly IUniqueNameValidator<OrganisationClassificationType> _uniqueNameValidator;
 
@@ -22,24 +22,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public async Task Handle(CreateOrganisationClassificationType message)
+        public async Task Handle(ICommandEnvelope<CreateOrganisationClassificationType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var organisationClassificationType = new OrganisationClassificationType(message.OrganisationClassificationTypeId, message.Name);
+            var organisationClassificationType = new OrganisationClassificationType(envelope.Command.OrganisationClassificationTypeId, envelope.Command.Name);
             Session.Add(organisationClassificationType);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateOrganisationClassificationType message)
+        public async Task Handle(ICommandEnvelope<UpdateOrganisationClassificationType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.OrganisationClassificationTypeId, message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.OrganisationClassificationTypeId, envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
-            organisationClassificationType.Update(message.Name);
-            await Session.Commit(message.User);
+            var organisationClassificationType = Session.Get<OrganisationClassificationType>(envelope.Command.OrganisationClassificationTypeId);
+            organisationClassificationType.Update(envelope.Command.Name);
+            await Session.Commit(envelope.User);
         }
     }
 }

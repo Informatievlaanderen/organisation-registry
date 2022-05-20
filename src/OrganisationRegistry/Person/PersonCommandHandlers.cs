@@ -8,26 +8,26 @@
 
     public class PersonCommandHandlers :
         BaseCommandHandler<PersonCommandHandlers>,
-        ICommandHandler<CreatePerson>,
-        ICommandHandler<UpdatePerson>
+        ICommandEnvelopeHandler<CreatePerson>,
+        ICommandEnvelopeHandler<UpdatePerson>
     {
         public PersonCommandHandlers(
             ILogger<PersonCommandHandlers> logger,
             ISession session) : base(logger, session)
         { }
 
-        public async Task Handle(CreatePerson message)
+        public async Task Handle(ICommandEnvelope<CreatePerson> envelope)
         {
-            var person = new Person(message.PersonId, message.FirstName, message.Name, message.Sex, message.DateOfBirth);
+            var person = new Person(envelope.Command.PersonId, envelope.Command.FirstName, envelope.Command.Name, envelope.Command.Sex, envelope.Command.DateOfBirth);
             Session.Add(person);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdatePerson message)
+        public async Task Handle(ICommandEnvelope<UpdatePerson> envelope)
         {
-            var person = Session.Get<Person>(message.PersonId);
-            person.Update(message.FirstName, message.Name, message.Sex, message.DateOfBirth);
-            await Session.Commit(message.User);
+            var person = Session.Get<Person>(envelope.Command.PersonId);
+            person.Update(envelope.Command.FirstName, envelope.Command.Name, envelope.Command.Sex, envelope.Command.DateOfBirth);
+            await Session.Commit(envelope.User);
         }
     }
 }

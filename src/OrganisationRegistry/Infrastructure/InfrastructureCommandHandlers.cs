@@ -8,29 +8,29 @@
 
     public class InfrastructureCommandHandlers :
         BaseCommandHandler<InfrastructureCommandHandlers>,
-        ICommandHandler<RebuildProjection>
+        ICommandEnvelopeHandler<RebuildProjection>
     {
         public InfrastructureCommandHandlers(
             ILogger<InfrastructureCommandHandlers> logger,
             ISession session) : base(logger, session)
         { }
 
-        public async Task Handle(RebuildProjection message)
+        public async Task Handle(ICommandEnvelope<RebuildProjection> envelope)
         {
             try
             {
-                var projection = Session.Get<ProjectionRebuilder>(message.ProjectionRebuilderId);
-                projection.RebuildProjection(message.ProjectionName);
+                var projection = Session.Get<ProjectionRebuilder>(envelope.Command.ProjectionRebuilderId);
+                projection.RebuildProjection(envelope.Command.ProjectionName);
             }
             catch (AggregateNotFoundException)
             {
-                var projection = new ProjectionRebuilder(message.ProjectionRebuilderId);
+                var projection = new ProjectionRebuilder(envelope.Command.ProjectionRebuilderId);
                 Session.Add(projection);
 
-                projection.RebuildProjection(message.ProjectionName);
+                projection.RebuildProjection(envelope.Command.ProjectionName);
             }
 
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
     }
 }

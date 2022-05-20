@@ -2,12 +2,6 @@
 {
     using System;
     using System.Threading.Tasks;
-    using Messages;
-
-    public interface ICommandHandler<in T> : IHandler<T> where T : ICommand
-    {
-        Task Handle(T message);
-    }
 
     public interface ICommandEnvelopeHandler
     {
@@ -43,7 +37,7 @@
 
         public bool CanHandle(Type type)
             => type == typeof(TCommand) && MaybeGetCommandEnvelopeHandler() != null;
-        
+
         public Task Handle(ICommandEnvelope commandEnvelope)
         {
             if (commandEnvelope is not ICommandEnvelope<TCommand> theCommandEnvelope)

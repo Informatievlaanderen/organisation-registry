@@ -89,9 +89,6 @@ namespace OrganisationRegistry.Infrastructure.Bus
                     throw new InvalidOperationException("Cannot send to more than one handler.");
                 }
 
-                if (command.User == null)
-                    command.User = await _securityService.GetRequiredUser(ClaimsPrincipal.Current);
-
                 _logger.LogDebug("Sending command {@Command}", command);
                 await handlers[0](command);
 

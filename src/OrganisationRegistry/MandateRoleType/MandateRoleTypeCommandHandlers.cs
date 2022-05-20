@@ -9,8 +9,8 @@
 
     public class MandateRoleTypeCommandHandlers :
         BaseCommandHandler<MandateRoleTypeCommandHandlers>,
-        ICommandHandler<CreateMandateRoleType>,
-        ICommandHandler<UpdateMandateRoleType>
+        ICommandEnvelopeHandler<CreateMandateRoleType>,
+        ICommandEnvelopeHandler<UpdateMandateRoleType>
     {
         private readonly IUniqueNameValidator<MandateRoleType> _uniqueNameValidator;
 
@@ -22,24 +22,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public async Task Handle(CreateMandateRoleType message)
+        public async Task Handle(ICommandEnvelope<CreateMandateRoleType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var mandateRoleType = new MandateRoleType(message.MandateRoleTypeId, message.Name);
+            var mandateRoleType = new MandateRoleType(envelope.Command.MandateRoleTypeId, envelope.Command.Name);
             Session.Add(mandateRoleType);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateMandateRoleType message)
+        public async Task Handle(ICommandEnvelope<UpdateMandateRoleType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.MandateRoleTypeId, message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.MandateRoleTypeId, envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var mandateRoleType = Session.Get<MandateRoleType>(message.MandateRoleTypeId);
-            mandateRoleType.Update(message.Name);
-            await Session.Commit(message.User);
+            var mandateRoleType = Session.Get<MandateRoleType>(envelope.Command.MandateRoleTypeId);
+            mandateRoleType.Update(envelope.Command.Name);
+            await Session.Commit(envelope.User);
         }
     }
 }

@@ -25,8 +25,6 @@
 
             registrar.RegisterCommandEnvelopeHandlers(typeof(BaseCommand));
 
-            registrar.RegisterCommandHandlersFromAssembly(typeof(BaseCommand));
-
             registrar.RegisterEventHandlersFromAssembly(typeof(OrganisationRegistrySqlServerAssemblyTokenClass));
             registrar.RegisterReactionHandlersFromAssembly(typeof(OrganisationRegistrySqlServerAssemblyTokenClass));
         }

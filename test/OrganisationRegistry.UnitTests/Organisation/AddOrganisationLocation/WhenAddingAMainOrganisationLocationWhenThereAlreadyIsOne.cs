@@ -111,11 +111,9 @@ public class WhenAddingAMainOrganisationLocationWhenThereAlreadyIsOne
 
     [Fact]
     public async Task PublishesNoEvents()
-    {
-        await Given(Events)
+        => await Given(Events)
             .When(AddOrganisationLocationCommand, User)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
-    }
 
     [Fact]
     public async Task ThrowsAnException()

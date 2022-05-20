@@ -10,8 +10,8 @@ namespace OrganisationRegistry.OrganisationClassification
 
     public class OrganisationClassificationCommandHandlers :
         BaseCommandHandler<OrganisationClassificationCommandHandlers>,
-        ICommandHandler<CreateOrganisationClassification>,
-        ICommandHandler<UpdateOrganisationClassification>
+        ICommandEnvelopeHandler<CreateOrganisationClassification>,
+        ICommandEnvelopeHandler<UpdateOrganisationClassification>
     {
         private readonly IUniqueNameWithinTypeValidator<OrganisationClassification> _uniqueNameValidator;
         private readonly IUniqueExternalKeyWithinTypeValidator<OrganisationClassification> _uniqueExternalKeyValidator;
@@ -26,42 +26,42 @@ namespace OrganisationRegistry.OrganisationClassification
             _uniqueExternalKeyValidator = uniqueExternalKeyValidator;
         }
 
-        public async Task Handle(CreateOrganisationClassification message)
+        public async Task Handle(ICommandEnvelope<CreateOrganisationClassification> envelope)
         {
-            var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
+            var organisationClassificationType = Session.Get<OrganisationClassificationType>(envelope.Command.OrganisationClassificationTypeId);
 
-            if (_uniqueNameValidator.IsNameTaken(message.Name, message.OrganisationClassificationTypeId))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name, envelope.Command.OrganisationClassificationTypeId))
                 throw new NameNotUniqueWithinType();
 
-            if (_uniqueExternalKeyValidator.IsExternalKeyTaken(message.ExternalKey, message.OrganisationClassificationTypeId))
+            if (_uniqueExternalKeyValidator.IsExternalKeyTaken(envelope.Command.ExternalKey, envelope.Command.OrganisationClassificationTypeId))
                 throw new ExternalKeyNotUniqueWithinType();
 
             var organisationClassification =
                 new OrganisationClassification(
-                    message.OrganisationClassificationId,
-                    message.Name,
-                    message.Order,
-                    message.ExternalKey,
-                    message.Active,
+                    envelope.Command.OrganisationClassificationId,
+                    envelope.Command.Name,
+                    envelope.Command.Order,
+                    envelope.Command.ExternalKey,
+                    envelope.Command.Active,
                     organisationClassificationType);
 
             Session.Add(organisationClassification);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateOrganisationClassification message)
+        public async Task Handle(ICommandEnvelope<UpdateOrganisationClassification> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.OrganisationClassificationId, message.Name, message.OrganisationClassificationTypeId))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.OrganisationClassificationId, envelope.Command.Name, envelope.Command.OrganisationClassificationTypeId))
                 throw new NameNotUniqueWithinType();
 
-            if (_uniqueExternalKeyValidator.IsExternalKeyTaken(message.OrganisationClassificationId, message.ExternalKey,
-                message.OrganisationClassificationTypeId))
+            if (_uniqueExternalKeyValidator.IsExternalKeyTaken(envelope.Command.OrganisationClassificationId, envelope.Command.ExternalKey,
+                    envelope.Command.OrganisationClassificationTypeId))
                 throw new ExternalKeyNotUniqueWithinType();
 
-            var organisationClassificationType = Session.Get<OrganisationClassificationType>(message.OrganisationClassificationTypeId);
-            var organisationClassification = Session.Get<OrganisationClassification>(message.OrganisationClassificationId);
-            organisationClassification.Update(message.Name, message.Order, message.ExternalKey, message.Active, organisationClassificationType);
-            await Session.Commit(message.User);
+            var organisationClassificationType = Session.Get<OrganisationClassificationType>(envelope.Command.OrganisationClassificationTypeId);
+            var organisationClassification = Session.Get<OrganisationClassification>(envelope.Command.OrganisationClassificationId);
+            organisationClassification.Update(envelope.Command.Name, envelope.Command.Order, envelope.Command.ExternalKey, envelope.Command.Active, organisationClassificationType);
+            await Session.Commit(envelope.User);
         }
     }
 }

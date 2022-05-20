@@ -9,8 +9,8 @@
 
     public class LabelTypeCommandHandlers :
         BaseCommandHandler<LabelTypeCommandHandlers>,
-        ICommandHandler<CreateLabelType>,
-        ICommandHandler<UpdateLabelType>
+        ICommandEnvelopeHandler<CreateLabelType>,
+        ICommandEnvelopeHandler<UpdateLabelType>
     {
         private readonly IUniqueNameValidator<LabelType> _uniqueNameValidator;
 
@@ -22,24 +22,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public async Task Handle(CreateLabelType message)
+        public async Task Handle(ICommandEnvelope<CreateLabelType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var labelType = new LabelType(message.LabelTypeId, message.Name);
+            var labelType = new LabelType(envelope.Command.LabelTypeId, envelope.Command.Name);
             Session.Add(labelType);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateLabelType message)
+        public async Task Handle(ICommandEnvelope<UpdateLabelType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.LabelTypeId, message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.LabelTypeId, envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var labelType = Session.Get<LabelType>(message.LabelTypeId);
-            labelType.Update(message.Name);
-            await Session.Commit(message.User);
+            var labelType = Session.Get<LabelType>(envelope.Command.LabelTypeId);
+            labelType.Update(envelope.Command.Name);
+            await Session.Commit(envelope.User);
         }
     }
 }
