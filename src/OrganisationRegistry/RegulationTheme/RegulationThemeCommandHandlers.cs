@@ -9,8 +9,8 @@
 
     public class RegulationThemeCommandHandlers :
         BaseCommandHandler<RegulationThemeCommandHandlers>,
-        ICommandHandler<CreateRegulationTheme>,
-        ICommandHandler<UpdateRegulationTheme>
+        ICommandEnvelopeHandler<CreateRegulationTheme>,
+        ICommandEnvelopeHandler<UpdateRegulationTheme>
     {
         private readonly IUniqueNameValidator<RegulationTheme> _uniqueNameValidator;
 
@@ -22,24 +22,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public async Task Handle(CreateRegulationTheme message)
+        public async Task Handle(ICommandEnvelope<CreateRegulationTheme> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var regulationTheme = new RegulationTheme(message.RegulationThemeId, message.Name);
+            var regulationTheme = new RegulationTheme(envelope.Command.RegulationThemeId, envelope.Command.Name);
             Session.Add(regulationTheme);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateRegulationTheme message)
+        public async Task Handle(ICommandEnvelope<UpdateRegulationTheme> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.RegulationThemeId, message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.RegulationThemeId, envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var regulationTheme = Session.Get<RegulationTheme>(message.RegulationThemeId);
-            regulationTheme.Update(message.Name);
-            await Session.Commit(message.User);
+            var regulationTheme = Session.Get<RegulationTheme>(envelope.Command.RegulationThemeId);
+            regulationTheme.Update(envelope.Command.Name);
+            await Session.Commit(envelope.User);
         }
     }
 }

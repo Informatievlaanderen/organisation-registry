@@ -9,8 +9,8 @@
 
     public class LocationTypeCommandHandlers :
         BaseCommandHandler<LocationTypeCommandHandlers>,
-        ICommandHandler<CreateLocationType>,
-        ICommandHandler<UpdateLocationType>
+        ICommandEnvelopeHandler<CreateLocationType>,
+        ICommandEnvelopeHandler<UpdateLocationType>
     {
         private readonly IUniqueNameValidator<LocationType> _uniqueNameValidator;
 
@@ -22,24 +22,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public async Task Handle(CreateLocationType message)
+        public async Task Handle(ICommandEnvelope<CreateLocationType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var locationType = new LocationType(message.LocationTypeId, message.Name);
+            var locationType = new LocationType(envelope.Command.LocationTypeId, envelope.Command.Name);
             Session.Add(locationType);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateLocationType message)
+        public async Task Handle(ICommandEnvelope<UpdateLocationType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.LocationTypeId, message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.LocationTypeId, envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var locationType = Session.Get<LocationType>(message.LocationTypeId);
-            locationType.Update(message.Name);
-            await Session.Commit(message.User);
+            var locationType = Session.Get<LocationType>(envelope.Command.LocationTypeId);
+            locationType.Update(envelope.Command.Name);
+            await Session.Commit(envelope.User);
         }
     }
 }

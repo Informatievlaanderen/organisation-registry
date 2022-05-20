@@ -9,8 +9,8 @@
 
     public class PurposeCommandHandlers :
         BaseCommandHandler<PurposeCommandHandlers>,
-        ICommandHandler<CreatePurpose>,
-        ICommandHandler<UpdatePurpose>
+        ICommandEnvelopeHandler<CreatePurpose>,
+        ICommandEnvelopeHandler<UpdatePurpose>
     {
         private readonly IUniqueNameValidator<Purpose> _uniqueNameValidator;
 
@@ -22,24 +22,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public async Task Handle(CreatePurpose message)
+        public async Task Handle(ICommandEnvelope<CreatePurpose> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var purpose = new Purpose(message.PurposeId, message.Name);
+            var purpose = new Purpose(envelope.Command.PurposeId, envelope.Command.Name);
             Session.Add(purpose);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdatePurpose message)
+        public async Task Handle(ICommandEnvelope<UpdatePurpose> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.PurposeId, message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.PurposeId, envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var purpose = Session.Get<Purpose>(message.PurposeId);
-            purpose.Update(message.Name);
-            await Session.Commit(message.User);
+            var purpose = Session.Get<Purpose>(envelope.Command.PurposeId);
+            purpose.Update(envelope.Command.Name);
+            await Session.Commit(envelope.User);
         }
     }
 }

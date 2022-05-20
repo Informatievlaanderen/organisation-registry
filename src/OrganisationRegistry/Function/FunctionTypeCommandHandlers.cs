@@ -9,8 +9,8 @@
 
     public class FunctionTypeCommandHandlers :
         BaseCommandHandler<FunctionTypeCommandHandlers>,
-        ICommandHandler<CreateFunctionType>,
-        ICommandHandler<UpdateFunctionType>
+        ICommandEnvelopeHandler<CreateFunctionType>,
+        ICommandEnvelopeHandler<UpdateFunctionType>
     {
         private readonly IUniqueNameValidator<FunctionType> _uniqueNameValidator;
 
@@ -22,26 +22,26 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public async Task Handle(CreateFunctionType message)
+        public async Task Handle(ICommandEnvelope<CreateFunctionType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var functionType = new FunctionType(message.FunctionTypeId, message.Name);
+            var functionType = new FunctionType(envelope.Command.FunctionTypeId, envelope.Command.Name);
 
             Session.Add(functionType);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateFunctionType message)
+        public async Task Handle(ICommandEnvelope<UpdateFunctionType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.FunctionTypeId, message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.FunctionTypeId, envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var functionType = Session.Get<FunctionType>(message.FunctionTypeId);
+            var functionType = Session.Get<FunctionType>(envelope.Command.FunctionTypeId);
 
-            functionType.Update(message.Name);
-            await Session.Commit(message.User);
+            functionType.Update(envelope.Command.Name);
+            await Session.Commit(envelope.User);
         }
     }
 }

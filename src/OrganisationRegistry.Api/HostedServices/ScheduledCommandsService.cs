@@ -60,8 +60,7 @@
 
                     try
                     {
-                        command.User = WellknownUsers.ScheduledCommandsService;
-                        await _commandSender.Send(command);
+                        await _commandSender.Send(command, WellknownUsers.ScheduledCommandsService);
                         _logger.LogInformation("command {@Command} sent successfully", command);
                     }
                     catch (Exception e)

@@ -9,8 +9,8 @@
 
     public class LocationCommandHandlers :
         BaseCommandHandler<LocationCommandHandlers>,
-        ICommandHandler<CreateLocation>,
-        ICommandHandler<UpdateLocation>
+        ICommandEnvelopeHandler<CreateLocation>,
+        ICommandEnvelopeHandler<UpdateLocation>
     {
         private readonly IUniqueNameValidator<Location> _uniqueNameValidator;
 
@@ -22,24 +22,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public async Task Handle(CreateLocation message)
+        public async Task Handle(ICommandEnvelope<CreateLocation> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.Address.FullAddress))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Address.FullAddress))
                 throw new NameNotUnique();
 
-            var location = new Location(message.LocationId, message.CrabLocationId, message.Address);
+            var location = new Location(envelope.Command.LocationId, envelope.Command.CrabLocationId, envelope.Command.Address);
             Session.Add(location);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateLocation message)
+        public async Task Handle(ICommandEnvelope<UpdateLocation> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.LocationId, message.Address.FullAddress))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.LocationId, envelope.Command.Address.FullAddress))
                 throw new NameNotUnique();
 
-            var location = Session.Get<Location>(message.LocationId);
-            location.Update(message.CrabLocationId, message.Address);
-            await Session.Commit(message.User);
+            var location = Session.Get<Location>(envelope.Command.LocationId);
+            location.Update(envelope.Command.CrabLocationId, envelope.Command.Address);
+            await Session.Commit(envelope.User);
         }
     }
 }

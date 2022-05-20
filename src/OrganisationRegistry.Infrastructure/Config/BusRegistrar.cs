@@ -29,12 +29,6 @@ namespace OrganisationRegistry.Infrastructure.Config
             _logger.LogTrace("Creating BusRegistrar");
         }
 
-        public void RegisterCommandHandlersFromAssembly(params Type[] typesFromAssemblyContainingCommandHandlers)
-            => RegisterHandlersFromAssembly(RegisterCommandHandlers, typesFromAssemblyContainingCommandHandlers);
-
-        public void RegisterCommandHandlers(params Type[] commandHandlerTypes)
-            => RegisterHandlers(typeof(ICommandHandler<>), InvokeCommandHandler, commandHandlerTypes);
-
         public void RegisterCommandEnvelopeHandlers(Type commandType)
         {
             var commandTypes = GetAllTypesImplementingOpenGenericType(commandType, commandType.Assembly).Distinct().ToList();

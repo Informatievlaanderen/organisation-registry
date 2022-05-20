@@ -2,7 +2,6 @@ namespace OrganisationRegistry
 {
     using System;
     using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using Infrastructure.Authorization;
     using Infrastructure.Commands;
     using Infrastructure.Messages;
 
@@ -17,9 +16,6 @@ namespace OrganisationRegistry
             get => Id;
             set => Id = value;
         }
-
-        [Obsolete("todo: replace command with envelope")]
-        public IUser? User { get; set; } // todo: this should not be nullable, should be redesigned
     }
 
     public class BaseCommand<T> : BaseCommand where T : GuidValueObject<T>

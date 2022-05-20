@@ -9,8 +9,8 @@
 
     public class LifecyclePhaseTypeCommandHandlers :
         BaseCommandHandler<LifecyclePhaseTypeCommandHandlers>,
-        ICommandHandler<CreateLifecyclePhaseType>,
-        ICommandHandler<UpdateLifecyclePhaseType>
+        ICommandEnvelopeHandler<CreateLifecyclePhaseType>,
+        ICommandEnvelopeHandler<UpdateLifecyclePhaseType>
     {
         private readonly IUniqueNameValidator<LifecyclePhaseType> _uniqueNameValidator;
         private readonly IOnlyOneDefaultLifecyclePhaseTypeValidator _onlyOneDefaultLifecyclePhaseTypeValidator;
@@ -25,40 +25,40 @@
             _onlyOneDefaultLifecyclePhaseTypeValidator = onlyOneDefaultLifecyclePhaseTypeValidator;
         }
 
-        public async Task Handle(CreateLifecyclePhaseType message)
+        public async Task Handle(ICommandEnvelope<CreateLifecyclePhaseType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
                 throw new NameNotUnique();
 
-            if (_onlyOneDefaultLifecyclePhaseTypeValidator.ViolatesOnlyOneDefaultLifecyclePhaseTypeConstraint(message.LifecyclePhaseTypeIsRepresentativeFor, message.Status))
-                throw new DefaultLifecyclePhaseAlreadyPresent(message.LifecyclePhaseTypeIsRepresentativeFor);
+            if (_onlyOneDefaultLifecyclePhaseTypeValidator.ViolatesOnlyOneDefaultLifecyclePhaseTypeConstraint(envelope.Command.LifecyclePhaseTypeIsRepresentativeFor, envelope.Command.Status))
+                throw new DefaultLifecyclePhaseAlreadyPresent(envelope.Command.LifecyclePhaseTypeIsRepresentativeFor);
 
             var lifecyclePhaseType = new LifecyclePhaseType(
-                message.LifecyclePhaseTypeId,
-                message.Name,
-                message.LifecyclePhaseTypeIsRepresentativeFor,
-                message.Status);
+                envelope.Command.LifecyclePhaseTypeId,
+                envelope.Command.Name,
+                envelope.Command.LifecyclePhaseTypeIsRepresentativeFor,
+                envelope.Command.Status);
 
             Session.Add(lifecyclePhaseType);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateLifecyclePhaseType message)
+        public async Task Handle(ICommandEnvelope<UpdateLifecyclePhaseType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.LifecyclePhaseTypeId, message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.LifecyclePhaseTypeId, envelope.Command.Name))
                 throw new NameNotUnique();
 
-            if (_onlyOneDefaultLifecyclePhaseTypeValidator.ViolatesOnlyOneDefaultLifecyclePhaseTypeConstraint(message.LifecyclePhaseTypeId, message.LifecyclePhaseTypeIsRepresentativeFor, message.Status))
-                throw new DefaultLifecyclePhaseAlreadyPresent(message.LifecyclePhaseTypeIsRepresentativeFor);
+            if (_onlyOneDefaultLifecyclePhaseTypeValidator.ViolatesOnlyOneDefaultLifecyclePhaseTypeConstraint(envelope.Command.LifecyclePhaseTypeId, envelope.Command.LifecyclePhaseTypeIsRepresentativeFor, envelope.Command.Status))
+                throw new DefaultLifecyclePhaseAlreadyPresent(envelope.Command.LifecyclePhaseTypeIsRepresentativeFor);
 
-            var lifecyclePhaseType = Session.Get<LifecyclePhaseType>(message.LifecyclePhaseTypeId);
+            var lifecyclePhaseType = Session.Get<LifecyclePhaseType>(envelope.Command.LifecyclePhaseTypeId);
 
             lifecyclePhaseType.Update(
-                message.Name,
-                message.LifecyclePhaseTypeIsRepresentativeFor,
-                message.Status);
+                envelope.Command.Name,
+                envelope.Command.LifecyclePhaseTypeIsRepresentativeFor,
+                envelope.Command.Status);
 
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
     }
 }

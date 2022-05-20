@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using OrganisationRegistry.KeyTypes.Events;
@@ -12,6 +13,8 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using Moq;
     using OrganisationClassification.Events;
     using OrganisationClassificationType.Events;
+    using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Infrastructure.Domain;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
@@ -23,7 +26,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using Xunit.Abstractions;
     using Purpose = OrganisationRegistry.Organisation.Events.Purpose;
 
-    public class CoupleOrganisationToKboTests: OldSpecification<Organisation, KboOrganisationCommandHandlers, CoupleOrganisationToKbo>
+    public class CoupleOrganisationToKboTests: Specification<KboOrganisationCommandHandlers, CoupleOrganisationToKbo>
     {
         private readonly OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub= new()
         {
@@ -36,23 +39,23 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             }
         };
 
-        private Guid _organisationId;
-        private Guid _legalFormOrganisationClassificationTypeId;
-        private Guid _organisationClassificationId;
-        private Guid _registeredOfficeLocationId;
+        private readonly Guid _organisationId;
+        private readonly Guid _legalFormOrganisationClassificationTypeId;
+        private readonly Guid _organisationClassificationId;
+        private readonly Guid _registeredOfficeLocationId;
         private readonly DateTime _kboOrganisationValidFromDate = new(2000, 12, 31);
         private readonly DateTimeProviderStub _dateTimeProviderStub= new(DateTime.Today);
 
-        public CoupleOrganisationToKboTests(ITestOutputHelper helper) : base(helper) { }
-
-        protected override IEnumerable<IEvent> Given()
+        public CoupleOrganisationToKboTests(ITestOutputHelper helper) : base(helper)
         {
             _organisationId = Guid.NewGuid();
             _registeredOfficeLocationId = Guid.NewGuid();
             _legalFormOrganisationClassificationTypeId = _organisationRegistryConfigurationStub.Kbo.KboV2LegalFormOrganisationClassificationTypeId;
             _organisationClassificationId = Guid.NewGuid();
+        }
 
-            return new List<IEvent>
+        private IEvent[] Events
+            => new IEvent[]
             {
                 new OrganisationCreated(
                     _organisationId,
@@ -95,18 +98,17 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     _organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId,
                     "KBO formele naam")
             };
-        }
 
-        protected override CoupleOrganisationToKbo When()
+        private CoupleOrganisationToKbo CoupleOrganisationToKboCommand
             => new(
                 new OrganisationId(_organisationId),
                 new KboNumber("BE0123456789"));
 
-        protected override KboOrganisationCommandHandlers BuildHandler()
-            => new KboOrganisationCommandHandlers(
+        protected override KboOrganisationCommandHandlers BuildHandler(ISession session)
+            => new(
                 new Mock<ILogger<KboOrganisationCommandHandlers>>().Object,
                 _organisationRegistryConfigurationStub,
-                Session,
+                session,
                 new SequentialOvoNumberGenerator(),
                 new UniqueOvoNumberValidatorStub(false),
                 new UniqueKboNumberValidatorStub(false),
@@ -147,11 +149,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                 new KboOrganisationClassificationRetrieverStub("Some Legal Code", _organisationClassificationId),
                 new KboLocationRetrieverStub(address => address.Street == "Waregemsestraat" ? _registeredOfficeLocationId : null));
 
-        protected override int ExpectedNumberOfEvents => 7;
-
         [Fact]
-        public void CreatesTheMissingLocationsOnceBeforeCreatingTheOrganisation()
+        public async Task CreatesTheMissingLocationsOnceBeforeCreatingTheOrganisation()
         {
+            await Given(Events)
+                .When(CoupleOrganisationToKboCommand, UserBuilder.User())
+                .Then();
+
             var organisationCreated = PublishedEvents[0].UnwrapBody<LocationCreated>();
             organisationCreated.Should().NotBeNull();
 
@@ -165,8 +169,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         }
 
         [Fact]
-        public void CouplesTheOrganisationWithTheKboNumber()
+        public async Task CouplesTheOrganisationWithTheKboNumber()
         {
+            await Given(Events)
+                .When(CoupleOrganisationToKboCommand, UserBuilder.User())
+                .Then();
+
             var organisationCoupledWithKbo = PublishedEvents[1].UnwrapBody<OrganisationCoupledWithKbo>();
             organisationCoupledWithKbo.Should().NotBeNull();
 
@@ -178,8 +186,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         }
 
         [Fact]
-        public void UpdatesTheOrganisationInfoFromKbo()
+        public async Task UpdatesTheOrganisationInfoFromKbo()
         {
+            await Given(Events)
+                .When(CoupleOrganisationToKboCommand, UserBuilder.User())
+                .Then();
+
             var organisationCoupledWithKbo = PublishedEvents[2].UnwrapBody<OrganisationInfoUpdatedFromKbo>();
             organisationCoupledWithKbo.Should().NotBeNull();
 
@@ -189,8 +201,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         }
 
         [Fact]
-        public void AddsBankAccounts()
+        public async Task AddsBankAccounts()
         {
+            await Given(Events)
+                .When(CoupleOrganisationToKboCommand, UserBuilder.User())
+                .Then();
+
             var organisationBankAccountAdded = PublishedEvents[3].UnwrapBody<KboOrganisationBankAccountAdded>();
             organisationBankAccountAdded.Should().NotBeNull();
 
@@ -205,8 +221,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         }
 
         [Fact]
-        public void AddsLegalForms()
+        public async Task AddsLegalForms()
         {
+            await Given(Events)
+                .When(CoupleOrganisationToKboCommand, UserBuilder.User())
+                .Then();
+
             var organisationClassificationAdded = PublishedEvents[4].UnwrapBody<KboLegalFormOrganisationOrganisationClassificationAdded>();
             organisationClassificationAdded.Should().NotBeNull();
 
@@ -221,8 +241,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         }
 
         [Fact]
-        public void AddsLocations()
+        public async Task AddsLocations()
         {
+            await Given(Events)
+                .When(CoupleOrganisationToKboCommand, UserBuilder.User())
+                .Then();
+
             var organisationLocationAdded = PublishedEvents[5].UnwrapBody<KboRegisteredOfficeOrganisationLocationAdded>();
             organisationLocationAdded.Should().NotBeNull();
 
@@ -238,8 +262,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         }
 
         [Fact]
-        public void AddsFormalNameLabel()
+        public async Task AddsFormalNameLabel()
         {
+            await Given(Events)
+                .When(CoupleOrganisationToKboCommand, UserBuilder.User())
+                .Then();
+
             var organisationLabelAdded = PublishedEvents[6].UnwrapBody<KboFormalNameLabelAdded>();
             organisationLabelAdded.Should().NotBeNull();
 
@@ -252,5 +280,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             organisationLabelAdded.ValidTo.Should().Be(new ValidTo());
         }
 
+        [Fact]
+        public async Task PublishesTheCorrectNumberOfEvents()
+            => await Given(Events)
+                .When(CoupleOrganisationToKboCommand, UserBuilder.User())
+                .ThenItPublishesTheCorrectNumberOfEvents(7);
     }
 }

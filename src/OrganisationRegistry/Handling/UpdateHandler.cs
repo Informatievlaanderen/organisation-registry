@@ -25,15 +25,6 @@ namespace OrganisationRegistry.Handling
             _user = user;
         }
 
-        [Obsolete("todo: replace with alternative constructor that requires an IUser")]
-        public static UpdateHandler<T> For<TCommand>(BaseCommand<TCommand> command, ISession session)
-            where TCommand : GuidValueObject<TCommand>
-        {
-            var commandId = command.Id;
-            var aggregate = session.Get<T>(commandId);
-            return new UpdateHandler<T>(session, aggregate, command.User);
-        }
-
         public static UpdateHandler<T> For<TCommand>(BaseCommand<TCommand> command, IUser user, ISession session)
             where TCommand : GuidValueObject<TCommand>
         {

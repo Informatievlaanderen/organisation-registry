@@ -9,8 +9,8 @@
 
     public class BuildingCommandHandlers :
         BaseCommandHandler<BuildingCommandHandlers>,
-        ICommandHandler<CreateBuilding>,
-        ICommandHandler<UpdateBuilding>
+        ICommandEnvelopeHandler<CreateBuilding>,
+        ICommandEnvelopeHandler<UpdateBuilding>
     {
         private readonly IUniqueNameValidator<Building> _uniqueNameValidator;
 
@@ -22,24 +22,24 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public async Task Handle(CreateBuilding message)
+        public async Task Handle(ICommandEnvelope<CreateBuilding> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var building = new Building(message.BuildingId, message.Name, message.VimId);
+            var building = new Building(envelope.Command.BuildingId, envelope.Command.Name, envelope.Command.VimId);
             Session.Add(building);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateBuilding message)
+        public async Task Handle(ICommandEnvelope<UpdateBuilding> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.BuildingId, message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.BuildingId, envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var building = Session.Get<Building>(message.BuildingId);
-            building.Update(message.Name, message.VimId);
-            await Session.Commit(message.User);
+            var building = Session.Get<Building>(envelope.Command.BuildingId);
+            building.Update(envelope.Command.Name, envelope.Command.VimId);
+            await Session.Commit(envelope.User);
         }
     }
 }

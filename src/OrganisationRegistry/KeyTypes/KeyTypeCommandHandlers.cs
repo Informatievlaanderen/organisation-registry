@@ -9,9 +9,9 @@
 
     public class KeyTypeCommandHandlers :
         BaseCommandHandler<KeyTypeCommandHandlers>,
-        ICommandHandler<CreateKeyType>,
-        ICommandHandler<UpdateKeyType>,
-        ICommandHandler<RemoveKeyType>
+        ICommandEnvelopeHandler<CreateKeyType>,
+        ICommandEnvelopeHandler<UpdateKeyType>,
+        ICommandEnvelopeHandler<RemoveKeyType>
     {
         private readonly IUniqueNameValidator<KeyType> _uniqueNameValidator;
 
@@ -23,31 +23,31 @@
             _uniqueNameValidator = uniqueNameValidator;
         }
 
-        public async Task Handle(CreateKeyType message)
+        public async Task Handle(ICommandEnvelope<CreateKeyType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var keyType = new KeyType(message.KeyTypeId, message.Name);
+            var keyType = new KeyType(envelope.Command.KeyTypeId, envelope.Command.Name);
             Session.Add(keyType);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateKeyType message)
+        public async Task Handle(ICommandEnvelope<UpdateKeyType> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.KeyTypeId, message.Name))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.KeyTypeId, envelope.Command.Name))
                 throw new NameNotUnique();
 
-            var keyType = Session.Get<KeyType>(message.KeyTypeId);
-            keyType.Update(message.Name);
-            await Session.Commit(message.User);
+            var keyType = Session.Get<KeyType>(envelope.Command.KeyTypeId);
+            keyType.Update(envelope.Command.Name);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(RemoveKeyType message)
+        public async Task Handle(ICommandEnvelope<RemoveKeyType> envelope)
         {
-            var keyType = Session.Get<KeyType>(message.KeyTypeId);
+            var keyType = Session.Get<KeyType>(envelope.Command.KeyTypeId);
             keyType.Remove();
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
     }
 }

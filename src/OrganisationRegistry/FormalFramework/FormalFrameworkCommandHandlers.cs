@@ -10,8 +10,8 @@ namespace OrganisationRegistry.FormalFramework
 
     public class FormalFrameworkCommandHandlers :
         BaseCommandHandler<FormalFrameworkCommandHandlers>,
-        ICommandHandler<CreateFormalFramework>,
-        ICommandHandler<UpdateFormalFramework>
+        ICommandEnvelopeHandler<CreateFormalFramework>,
+        ICommandEnvelopeHandler<UpdateFormalFramework>
     {
         private readonly IUniqueNameWithinTypeValidator<FormalFramework> _uniqueNameValidator;
         private readonly IUniqueCodeValidator<FormalFramework> _uniqueCodeValidator;
@@ -26,34 +26,34 @@ namespace OrganisationRegistry.FormalFramework
             _uniqueCodeValidator = uniqueCodeValidator;
         }
 
-        public async Task Handle(CreateFormalFramework message)
+        public async Task Handle(ICommandEnvelope<CreateFormalFramework> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.Name, message.FormalFrameworkCategoryId))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name, envelope.Command.FormalFrameworkCategoryId))
                 throw new NameNotUniqueWithinType();
 
-            if (_uniqueCodeValidator.IsCodeTaken(message.Code))
+            if (_uniqueCodeValidator.IsCodeTaken(envelope.Command.Code))
                 throw new CodeNotUnique();
 
-            var formalFrameworkCategory = Session.Get<FormalFrameworkCategory>(message.FormalFrameworkCategoryId);
+            var formalFrameworkCategory = Session.Get<FormalFrameworkCategory>(envelope.Command.FormalFrameworkCategoryId);
 
-            var formalFramework = new FormalFramework(message.FormalFrameworkId, message.Name, message.Code, formalFrameworkCategory);
+            var formalFramework = new FormalFramework(envelope.Command.FormalFrameworkId, envelope.Command.Name, envelope.Command.Code, formalFrameworkCategory);
             Session.Add(formalFramework);
-            await Session.Commit(message.User);
+            await Session.Commit(envelope.User);
         }
 
-        public async Task Handle(UpdateFormalFramework message)
+        public async Task Handle(ICommandEnvelope<UpdateFormalFramework> envelope)
         {
-            if (_uniqueNameValidator.IsNameTaken(message.FormalFrameworkId, message.Name, message.FormalFrameworkCategoryId))
+            if (_uniqueNameValidator.IsNameTaken(envelope.Command.FormalFrameworkId, envelope.Command.Name, envelope.Command.FormalFrameworkCategoryId))
                 throw new NameNotUniqueWithinType();
 
-            if (_uniqueCodeValidator.IsCodeTaken(message.FormalFrameworkId, message.Code))
+            if (_uniqueCodeValidator.IsCodeTaken(envelope.Command.FormalFrameworkId, envelope.Command.Code))
                 throw new CodeNotUnique();
 
-            var formalFrameworkCategory = Session.Get<FormalFrameworkCategory>(message.FormalFrameworkCategoryId);
+            var formalFrameworkCategory = Session.Get<FormalFrameworkCategory>(envelope.Command.FormalFrameworkCategoryId);
 
-            var formalFramework = Session.Get<FormalFramework>(message.FormalFrameworkId);
-            formalFramework.Update(message.Name, message.Code, formalFrameworkCategory);
-            await Session.Commit(message.User);
+            var formalFramework = Session.Get<FormalFramework>(envelope.Command.FormalFrameworkId);
+            formalFramework.Update(envelope.Command.Name, envelope.Command.Code, formalFrameworkCategory);
+            await Session.Commit(envelope.User);
         }
     }
 }
