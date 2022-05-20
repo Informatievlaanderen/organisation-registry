@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Building;
 using Building.Events;
 using FluentAssertions;
@@ -13,35 +14,43 @@ using Xunit;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation.Exceptions;
 using Xunit.Abstractions;
 
-public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : ExceptionOldSpecification2<
+public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : Specification<
     AddOrganisationBuildingCommandHandler, AddOrganisationBuilding>
 {
-    private readonly OrganisationId _organisationId = new(Guid.NewGuid());
-    private readonly BuildingId _buildingAId = new(Guid.NewGuid());
-    private readonly Guid _organisationBuildingId = Guid.NewGuid();
-    private readonly bool _isMainBuilding = true;
-    private readonly DateTime _validTo = DateTime.Now.AddDays(2);
-    private readonly DateTime _validFrom = DateTime.Now.AddDays(1);
-    private readonly BuildingId _buildingBId = new(Guid.NewGuid());
+    private readonly Guid _organisationId;
+    private readonly Guid _buildingAId;
+    private readonly Guid _organisationBuildingId;
+    private readonly bool _isMainBuilding;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
+    private readonly Guid _buildingBId;
 
     public WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne(ITestOutputHelper helper) : base(helper)
     {
+        _organisationId = Guid.NewGuid();
+        _buildingAId = Guid.NewGuid();
+        _organisationBuildingId = Guid.NewGuid();
+        _isMainBuilding = true;
+        _validTo = DateTime.Now.AddDays(2);
+        _validFrom = DateTime.Now.AddDays(1);
+        _buildingBId = Guid.NewGuid();
     }
 
-    protected override AddOrganisationBuildingCommandHandler BuildHandler()
+    protected override AddOrganisationBuildingCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<AddOrganisationBuildingCommandHandler>>().Object,
-            Session,
+            session,
             new DateTimeProvider());
 
-    protected override IUser User
+    private static IUser User
         => new UserBuilder().Build();
 
-    protected override IEnumerable<IEvent> Given()
-        => new List<IEvent>
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -68,22 +77,30 @@ public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : Exceptio
                 _validTo)
         };
 
-    protected override AddOrganisationBuilding When()
+    private AddOrganisationBuilding AddOrganisationBuildingCommand
         => new(
             Guid.NewGuid(),
-            _organisationId,
-            _buildingBId,
+            new OrganisationId(_organisationId),
+            new BuildingId(_buildingBId),
             _isMainBuilding,
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task PublishesNoEvents()
+    {
+        await Given()
+            .When(AddOrganisationBuildingCommand, User)
+            .ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
 
     [Fact]
-    public void ThrowsAnException()
+    public async Task ThrowsAnException()
     {
-        Exception.Should().BeOfType<OrganisationAlreadyHasAMainBuildingInThisPeriod>();
-        Exception?.Message.Should().Be("Deze organisatie heeft reeds een hoofdgebouw binnen deze periode.");
+        await Given(Events)
+            .When(AddOrganisationBuildingCommand, User)
+            .ThenThrows<OrganisationAlreadyHasAMainBuildingInThisPeriod>()
+            .WithMessage("Deze organisatie heeft reeds een hoofdgebouw binnen deze periode.");
     }
+
 }
