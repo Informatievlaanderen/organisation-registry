@@ -28,7 +28,7 @@ export async function postImportOrganisations(file, onSuccess, onError) {
   }
 }
 
-export async function getImportStatus() {
+export async function getImportStatuses() {
   const token = getToken();
 
   const requestOptions = {

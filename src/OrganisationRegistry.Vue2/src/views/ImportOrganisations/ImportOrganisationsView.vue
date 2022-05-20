@@ -4,13 +4,17 @@
       <h1 class="h2 cta-title__title">Opladen organisaties</h1>
     </div>
     <UploadOrganisations @file-selected="uploadFile" />
-    <ImportStatusList :import-statuses="importStatuses.imports" />
+    <ImportStatusList
+      :import-statuses="importStatuses.imports"
+      :isLoading="isLoading"
+      @refresh="refresh"
+    />
   </div>
 </template>
 
 <script>
 import {
-  getImportStatus,
+  getImportStatuses,
   postImportOrganisations,
 } from "@/api/importOrganisations";
 import UploadOrganisations from "@/views/ImportOrganisations/UploadOrganisations";
@@ -22,15 +26,24 @@ export default {
   methods: {
     async uploadFile(file, onSuccess) {
       await postImportOrganisations(file, onSuccess);
-      this.importStatuses = await getImportStatus();
+      this.importStatuses = await getImportStatuses();
+    },
+    async refresh() {
+      try {
+        this.isLoading = true;
+        this.importStatuses = await getImportStatuses();
+      } finally {
+        this.isLoading = false;
+      }
     },
   },
   async mounted() {
-    this.importStatuses = await getImportStatus();
+    await this.refresh();
   },
   data() {
     return {
       importStatuses: {},
+      isLoading: false,
     };
   },
 };
