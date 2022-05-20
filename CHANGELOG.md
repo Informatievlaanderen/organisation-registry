@@ -1,3 +1,19 @@
+# [1.188.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.187.3...v1.188.0) (2022-05-20)
+
+
+### Features
+
+* or-1013 alert on session expiration ([b5abbd3](https://github.com/informatievlaanderen/organisation-registry/commit/b5abbd39949bd744b2e6a95251d57166be625e62))
+* or-1013 handle errors ([18c11fe](https://github.com/informatievlaanderen/organisation-registry/commit/18c11febb0eb5f9e3c92595198b870af3e7db6ae))
+* or-1013 handle errors ([0a8fc17](https://github.com/informatievlaanderen/organisation-registry/commit/0a8fc1729bfaaaae85b62780b41b219a7ff70a0a))
+* or-1013 provide icons ([59de42f](https://github.com/informatievlaanderen/organisation-registry/commit/59de42f0e9a3c4884c6243b702f38d5327a2b096))
+* or-1013 show alert on server error ([25d73c8](https://github.com/informatievlaanderen/organisation-registry/commit/25d73c82579b70c512c8e99bf0b372be9af06c0e))
+
+
+### Reverts
+
+* Revert "feat: or-1013 handle errors" ([a5c550b](https://github.com/informatievlaanderen/organisation-registry/commit/a5c550b8519a583cf163e8eac8fe860d9e933fc4))
+
 ## [1.187.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.187.2...v1.187.3) (2022-05-20)
 
 ## [1.187.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.187.1...v1.187.2) (2022-05-20)
