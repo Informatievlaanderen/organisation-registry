@@ -16,7 +16,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenUpdatingAnOrganisationParentWithCircularDependencies
-    : ExceptionSpecification<UpdateOrganisationParentCommandHandler, UpdateOrganisationParent>
+    : ExceptionOldSpecification2<UpdateOrganisationParentCommandHandler, UpdateOrganisationParent>
 {
     private readonly DateTimeProviderStub _dateTimeProviderStub = new(new DateTime(2016, 6, 1));
 

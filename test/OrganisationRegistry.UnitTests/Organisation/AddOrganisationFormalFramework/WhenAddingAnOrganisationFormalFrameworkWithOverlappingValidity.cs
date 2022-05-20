@@ -17,7 +17,7 @@ using OrganisationRegistry.Organisation.Exceptions;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenAddingAnOrganisationFormalFrameworkWithOverlappingValidity : ExceptionSpecification<
+public class WhenAddingAnOrganisationFormalFrameworkWithOverlappingValidity : ExceptionOldSpecification2<
     AddOrganisationFormalFrameworkCommandHandler, AddOrganisationFormalFramework>
 {
     private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);

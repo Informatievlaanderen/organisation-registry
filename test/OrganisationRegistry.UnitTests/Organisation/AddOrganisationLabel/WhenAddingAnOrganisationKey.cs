@@ -17,7 +17,7 @@ using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenAddingAnOrganisationLabel : Specification<AddOrganisationLabelCommandHandler, AddOrganisationLabel>
+public class WhenAddingAnOrganisationLabel : OldSpecification2<AddOrganisationLabelCommandHandler, AddOrganisationLabel>
 {
     private Guid _organisationId;
     private Guid _labelId;

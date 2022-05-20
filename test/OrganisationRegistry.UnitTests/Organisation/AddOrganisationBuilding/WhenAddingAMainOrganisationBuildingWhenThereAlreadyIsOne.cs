@@ -16,7 +16,7 @@ using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Organisation.Exceptions;
 using Xunit.Abstractions;
 
-public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : ExceptionSpecification<
+public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : ExceptionOldSpecification2<
     AddOrganisationBuildingCommandHandler, AddOrganisationBuilding>
 {
     private readonly OrganisationId _organisationId = new(Guid.NewGuid());

@@ -14,7 +14,7 @@ using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
 using Xunit.Abstractions;
 
-public class WhenMainBuildingIsNoLongerActive : Specification<UpdateMainBuildingCommandHandler, UpdateMainBuilding>
+public class WhenMainBuildingIsNoLongerActive : OldSpecification2<UpdateMainBuildingCommandHandler, UpdateMainBuilding>
 {
     private Guid _organisationId;
     private Guid _buildingId;

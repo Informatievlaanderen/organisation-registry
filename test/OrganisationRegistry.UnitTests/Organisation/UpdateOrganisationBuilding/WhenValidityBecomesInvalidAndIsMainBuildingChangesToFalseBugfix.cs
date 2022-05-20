@@ -16,7 +16,7 @@ using OrganisationRegistry.Organisation.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix : Specification<
+public class WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix : OldSpecification2<
     UpdateOrganisationBuildingCommandHandler, UpdateOrganisationBuilding>
 {
     private Guid _organisationId;

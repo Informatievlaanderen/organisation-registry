@@ -16,7 +16,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenAddingAnOrganisationParent
-    : Specification<AddOrganisationParentCommandHandler, AddOrganisationParent>
+    : OldSpecification2<AddOrganisationParentCommandHandler, AddOrganisationParent>
 {
     private Guid _organisationOrganisationParentId;
     private DateTime _validTo;

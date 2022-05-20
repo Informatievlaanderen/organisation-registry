@@ -12,7 +12,7 @@ using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using Xunit.Abstractions;
 
-public class WhenMainBuildingIsStillActive : Specification<UpdateMainBuildingCommandHandler, UpdateMainBuilding>
+public class WhenMainBuildingIsStillActive : OldSpecification2<UpdateMainBuildingCommandHandler, UpdateMainBuilding>
 {
     private Guid _organisationId;
     private Guid _buildingId;

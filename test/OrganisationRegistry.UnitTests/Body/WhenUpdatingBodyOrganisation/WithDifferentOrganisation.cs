@@ -15,7 +15,7 @@ using OrganisationRegistry.Organisation.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenUpdatingBodyOrganisationWithDifferentOrganisation : Specification<UpdateBodyOrganisationCommandHandler, UpdateBodyOrganisation>
+public class WhenUpdatingBodyOrganisationWithDifferentOrganisation : OldSpecification2<UpdateBodyOrganisationCommandHandler, UpdateBodyOrganisation>
 {
     private Guid _bodyId;
     private Guid _bodyOrganisationId;

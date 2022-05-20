@@ -25,7 +25,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using Xunit;
     using Xunit.Abstractions;
 
-    public class UpdateFromKboTests : Specification<SyncOrganisationWithKboCommandHandler, SyncOrganisationWithKbo>
+    public class UpdateFromKboTests : OldSpecification2<SyncOrganisationWithKboCommandHandler, SyncOrganisationWithKbo>
     {
         private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub = new()
         {

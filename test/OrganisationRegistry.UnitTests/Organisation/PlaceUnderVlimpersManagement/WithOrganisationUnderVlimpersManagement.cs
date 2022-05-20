@@ -15,7 +15,7 @@ using OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers
 using Xunit;
 using Xunit.Abstractions;
 
-public class WithOrganisationUnderVlimpersManagement: Specification<PlaceUnderVlimpersManagementCommandHandler, PlaceUnderVlimpersManagement>
+public class WithOrganisationUnderVlimpersManagement: OldSpecification2<PlaceUnderVlimpersManagementCommandHandler, PlaceUnderVlimpersManagement>
 {
     private readonly OrganisationId _organisationId= new(Guid.NewGuid());
 

@@ -17,7 +17,7 @@ using OrganisationRegistry.Organisation.Exceptions;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenAddingAnOrganisationKeyThatsAlreadyCoupled : ExceptionSpecification<AddOrganisationKeyCommandHandler, AddOrganisationKey>
+public class WhenAddingAnOrganisationKeyThatsAlreadyCoupled : ExceptionOldSpecification2<AddOrganisationKeyCommandHandler, AddOrganisationKey>
 {
     private Guid _organisationId;
     private Guid _keyId;

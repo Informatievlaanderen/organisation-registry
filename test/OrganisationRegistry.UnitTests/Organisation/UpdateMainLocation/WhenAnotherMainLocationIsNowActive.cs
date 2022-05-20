@@ -15,7 +15,7 @@ using OrganisationRegistry.Infrastructure.Authorization;
 using Xunit.Abstractions;
 
 public class WhenAnotherMainLocationIsNowActive :
-    Specification<UpdateMainLocationCommandHandler, UpdateMainLocation>
+    OldSpecification2<UpdateMainLocationCommandHandler, UpdateMainLocation>
 {
     private Guid _organisationId;
     private Guid _locationAId;

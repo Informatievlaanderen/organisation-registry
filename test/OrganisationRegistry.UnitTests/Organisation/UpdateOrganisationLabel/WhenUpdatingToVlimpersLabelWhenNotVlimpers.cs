@@ -18,7 +18,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenUpdatingToVlimpersLabelWhenNotVlimpers
-    : ExceptionSpecification<UpdateOrganisationLabelCommandHandler, UpdateOrganisationLabel>
+    : ExceptionOldSpecification2<UpdateOrganisationLabelCommandHandler, UpdateOrganisationLabel>
 {
     private Guid _organisationId;
     private Guid _vlimpersLabelTypeId;

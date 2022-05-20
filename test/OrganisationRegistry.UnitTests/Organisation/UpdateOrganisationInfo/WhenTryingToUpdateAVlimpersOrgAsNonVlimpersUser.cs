@@ -18,7 +18,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenTryingToUpdateAVlimpersOrgAsNonVlimpersUser : ExceptionSpecification<UpdateOrganisationCommandHandler,
+    WhenTryingToUpdateAVlimpersOrgAsNonVlimpersUser : ExceptionOldSpecification2<UpdateOrganisationCommandHandler,
         UpdateOrganisationInfo>
 {
     private readonly DateTime _yesterday = DateTime.Today.AddDays(-1);

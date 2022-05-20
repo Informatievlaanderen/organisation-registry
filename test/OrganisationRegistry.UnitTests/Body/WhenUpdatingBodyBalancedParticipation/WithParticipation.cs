@@ -13,7 +13,7 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyBalancedParticipat
     using Xunit;
     using Xunit.Abstractions;
 
-    public class WithParticipation : Specification<UpdateBodyBalancedParticipationCommandHandler, UpdateBodyBalancedParticipation>
+    public class WithParticipation : OldSpecification2<UpdateBodyBalancedParticipationCommandHandler, UpdateBodyBalancedParticipation>
     {
         private Guid _bodyId;
 

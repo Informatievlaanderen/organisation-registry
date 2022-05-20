@@ -18,7 +18,7 @@ using Tests.Shared.TestDataBuilders;
 using Xunit;
 using Xunit.Abstractions;
 
-public class TerminateAlreadyTerminatedOrganisation : ExceptionSpecification<TerminateOrganisationCommandHandler, TerminateOrganisation>
+public class TerminateAlreadyTerminatedOrganisation : ExceptionOldSpecification2<TerminateOrganisationCommandHandler, TerminateOrganisation>
 {
     private readonly OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub = new()
     {

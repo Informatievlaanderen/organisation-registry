@@ -15,7 +15,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenAddingAVlimpersOrganisationAsParentForANonVlimpersOrganisation
-    : ExceptionSpecification<AddOrganisationParentCommandHandler, AddOrganisationParent>
+    : ExceptionOldSpecification2<AddOrganisationParentCommandHandler, AddOrganisationParent>
 {
     private Guid _organisationId;
     private Guid _organisationOrganisationParentId;

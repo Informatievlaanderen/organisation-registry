@@ -13,7 +13,7 @@ using OrganisationRegistry.Organisation.Events;
 using Xunit.Abstractions;
 
 public class
-    WhenRemovingAnOrganisationKeyToAnUncoupledKey : Specification<RemoveOrganisationKeyCommandHandler,
+    WhenRemovingAnOrganisationKeyToAnUncoupledKey : OldSpecification2<RemoveOrganisationKeyCommandHandler,
         RemoveOrganisationKey>
 {
     private Guid _organisationId;

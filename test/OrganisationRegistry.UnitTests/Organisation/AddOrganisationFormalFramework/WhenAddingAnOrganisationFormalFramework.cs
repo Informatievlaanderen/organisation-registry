@@ -17,7 +17,7 @@ using OrganisationRegistry.Organisation.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenAddingAnOrganisationFormalFramework : Specification<AddOrganisationFormalFrameworkCommandHandler,
+public class WhenAddingAnOrganisationFormalFramework : OldSpecification2<AddOrganisationFormalFrameworkCommandHandler,
     AddOrganisationFormalFramework>
 {
     private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);

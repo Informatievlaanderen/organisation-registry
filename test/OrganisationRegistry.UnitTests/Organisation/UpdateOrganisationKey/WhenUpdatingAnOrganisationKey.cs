@@ -17,7 +17,7 @@ using OrganisationRegistry.Organisation.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenUpdatingAnOrganisationKey : Specification<UpdateOrganisationKeyCommandHandler, UpdateOrganisationKey>
+public class WhenUpdatingAnOrganisationKey : OldSpecification2<UpdateOrganisationKeyCommandHandler, UpdateOrganisationKey>
 {
     private Guid _organisationId;
     private Guid _keyId;

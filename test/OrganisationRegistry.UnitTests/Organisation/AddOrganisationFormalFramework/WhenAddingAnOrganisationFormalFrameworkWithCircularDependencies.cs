@@ -17,7 +17,7 @@ using OrganisationRegistry.Organisation.Exceptions;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenAddingAnOrganisationFormalFrameworkWithCircularDependencies : ExceptionSpecification<
+public class WhenAddingAnOrganisationFormalFrameworkWithCircularDependencies : ExceptionOldSpecification2<
     AddOrganisationFormalFrameworkCommandHandler, AddOrganisationFormalFramework>
 {
     private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);

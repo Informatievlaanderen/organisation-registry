@@ -16,7 +16,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenAddingAnOrganisationParentWithCircularDependencies
-    : ExceptionSpecification<AddOrganisationParentCommandHandler, AddOrganisationParent>
+    : ExceptionOldSpecification2<AddOrganisationParentCommandHandler, AddOrganisationParent>
 {
     private readonly DateTimeProviderStub _dateTimeProviderStub = new (DateTime.Now);
     private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new();

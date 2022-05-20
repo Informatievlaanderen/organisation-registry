@@ -19,7 +19,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenUpdatingAnOrganisationFormalFrameworkWithCircularDependenciesButInAnotherFormalFramework
-    : Specification<UpdateOrganisationFormalFrameworkCommandHandler, UpdateOrganisationFormalFramework>
+    : OldSpecification2<UpdateOrganisationFormalFrameworkCommandHandler, UpdateOrganisationFormalFramework>
 {
     private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);
     private readonly SequentialOvoNumberGenerator _ovoNumberGenerator = new();

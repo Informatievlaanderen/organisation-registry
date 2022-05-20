@@ -17,7 +17,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenAddingTheSameBuildingTwice
-    : ExceptionSpecification<AddOrganisationBuildingCommandHandler, AddOrganisationBuilding>
+    : ExceptionOldSpecification2<AddOrganisationBuildingCommandHandler, AddOrganisationBuilding>
 {
     private Guid _organisationId;
     private Guid _buildingId;

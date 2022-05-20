@@ -16,7 +16,7 @@ using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class ForceTerminateOrganisationAlreadyTerminatedInKbo : ExceptionSpecification<TerminateOrganisationCommandHandler, TerminateOrganisation>
+public class ForceTerminateOrganisationAlreadyTerminatedInKbo : ExceptionOldSpecification2<TerminateOrganisationCommandHandler, TerminateOrganisation>
 {
     private readonly OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub = new()
     {
