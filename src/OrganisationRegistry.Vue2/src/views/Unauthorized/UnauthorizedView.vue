@@ -1,16 +1,23 @@
 <template>
-  <vl-alert icon="warning" mod-error :title="alert.title" role="alertdialog">
-    <p>
+  <div>
+    <OrAlert
+      :visible="true"
+      :is-closable="false"
+      :type="alert.type"
+      :title="alert.title"
+    >
       {{ alert.content }}
-    </p>
-  </vl-alert>
+    </OrAlert>
+  </div>
 </template>
 
 <script>
 import alerts from "@/alerts/alerts";
+import OrAlert from "@/components/partials/alert/Alert";
 
 export default {
   name: "UnauthorizedView.vue",
+  components: { OrAlert },
   methods: {},
   mounted() {
     this.alert = alerts.unauthorized;
