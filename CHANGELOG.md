@@ -1,3 +1,11 @@
+# [1.189.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.188.0...v1.189.0) (2022-05-20)
+
+
+### Features
+
+* or-1013 disable upload btn when no file to upload ([6795deb](https://github.com/informatievlaanderen/organisation-registry/commit/6795deb3168816d796a66d37f558bbdd47340ba5))
+* or-1013 make alerts prettier ([cd0f235](https://github.com/informatievlaanderen/organisation-registry/commit/cd0f2354f9475dcb4561486bfdbc1bd59d674020))
+
 # [1.188.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.187.3...v1.188.0) (2022-05-20)
 
 
