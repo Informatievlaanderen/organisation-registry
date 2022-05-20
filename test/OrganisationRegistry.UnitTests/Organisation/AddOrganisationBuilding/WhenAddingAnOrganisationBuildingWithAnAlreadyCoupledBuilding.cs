@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Building;
 using Building.Events;
 using FluentAssertions;
@@ -9,6 +10,7 @@ using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -17,29 +19,16 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenAddingTheSameBuildingTwice
-    : ExceptionOldSpecification2<AddOrganisationBuildingCommandHandler, AddOrganisationBuilding>
+    : Specification<AddOrganisationBuildingCommandHandler, AddOrganisationBuilding>
 {
-    private Guid _organisationId;
-    private Guid _buildingId;
-    private Guid _organisationBuildingId;
-    private bool _isMainBuilding;
-    private DateTime _validTo;
-    private DateTime _validFrom;
+    private readonly Guid _organisationId;
+    private readonly Guid _buildingId;
+    private readonly Guid _organisationBuildingId;
+    private readonly bool _isMainBuilding;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
 
     public WhenAddingTheSameBuildingTwice(ITestOutputHelper helper) : base(helper)
-    {
-    }
-
-    protected override AddOrganisationBuildingCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<AddOrganisationBuildingCommandHandler>>().Object,
-            Session,
-            new DateTimeProvider());
-
-    protected override IUser User
-        => new UserBuilder().Build();
-
-    protected override IEnumerable<IEvent> Given()
     {
         _organisationId = Guid.NewGuid();
         _buildingId = Guid.NewGuid();
@@ -47,8 +36,19 @@ public class WhenAddingTheSameBuildingTwice
         _isMainBuilding = true;
         _validFrom = DateTime.Now.AddDays(1);
         _validTo = DateTime.Now.AddDays(2);
+    }
 
-        return new List<IEvent>
+    protected override AddOrganisationBuildingCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<AddOrganisationBuildingCommandHandler>>().Object,
+            session,
+            new DateTimeProvider());
+
+    private static IUser User
+        => new UserBuilder().Build();
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -73,9 +73,9 @@ public class WhenAddingTheSameBuildingTwice
                 _validFrom,
                 _validTo)
         };
-    }
 
-    protected override AddOrganisationBuilding When()
+
+    private AddOrganisationBuilding AddOrganisationBuildingCommand
         => new(
             Guid.NewGuid(),
             new OrganisationId(_organisationId),
@@ -84,13 +84,21 @@ public class WhenAddingTheSameBuildingTwice
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task PublishesNoEvents()
+    {
+        await Given(Events)
+            .When(AddOrganisationBuildingCommand, User)
+            .ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
+
 
     [Fact]
-    public void ThrowsAnException()
+    public async Task ThrowsAnException()
     {
-        Exception.Should().BeOfType<BuildingAlreadyCoupledToInThisPeriod>();
-        Exception?.Message.Should().Be("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.");
+        await Given(Events)
+            .When(AddOrganisationBuildingCommand, User)
+            .ThenThrows<BuildingAlreadyCoupledToInThisPeriod>()
+            .WithMessage("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.");
     }
 }
