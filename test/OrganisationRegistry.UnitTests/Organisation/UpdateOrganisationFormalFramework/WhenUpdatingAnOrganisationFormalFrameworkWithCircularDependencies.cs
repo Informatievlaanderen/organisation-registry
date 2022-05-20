@@ -17,7 +17,7 @@ using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenUpdatingAnOrganisationFormalFrameworkWithCircularDependencies : ExceptionSpecification<
+public class WhenUpdatingAnOrganisationFormalFrameworkWithCircularDependencies : ExceptionOldSpecification2<
     UpdateOrganisationFormalFrameworkCommandHandler, UpdateOrganisationFormalFramework>
 {
     private readonly SequentialOvoNumberGenerator _ovoNumberGenerator = new();

@@ -15,7 +15,7 @@ using Xunit.Abstractions;
 
 public class
     WhenAddingAParentWithDifferentValidity
-    : Specification<AddOrganisationParentCommandHandler, AddOrganisationParent>
+    : OldSpecification2<AddOrganisationParentCommandHandler, AddOrganisationParent>
 {
     private Guid _organisationId;
     private Guid _organisationOrganisationParentId1;

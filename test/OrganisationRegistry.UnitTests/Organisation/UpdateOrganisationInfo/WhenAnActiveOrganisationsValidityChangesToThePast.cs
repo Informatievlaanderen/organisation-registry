@@ -17,7 +17,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo
     using Xunit.Abstractions;
 
     public class
-        WhenAnActiveOrganisationsValidityChangesToThePast : Specification<UpdateOrganisationCommandHandler,
+        WhenAnActiveOrganisationsValidityChangesToThePast : OldSpecification2<UpdateOrganisationCommandHandler,
             UpdateOrganisationInfo>
     {
         private readonly DateTime _yesterday = DateTime.Today.AddDays(-1);

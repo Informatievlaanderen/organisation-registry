@@ -17,7 +17,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenAddingAnOrganisationContact
-    : Specification<AddOrganisationContactCommandHandler, AddOrganisationContact>
+    : OldSpecification2<AddOrganisationContactCommandHandler, AddOrganisationContact>
 {
     private Guid _organisationId;
     private Guid _contactTypeId;

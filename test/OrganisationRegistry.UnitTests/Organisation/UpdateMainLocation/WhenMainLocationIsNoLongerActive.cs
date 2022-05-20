@@ -14,7 +14,7 @@ using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
 using Xunit.Abstractions;
 
-public class WhenMainLocationIsNoLongerActive : Specification<UpdateMainLocationCommandHandler, UpdateMainLocation>
+public class WhenMainLocationIsNoLongerActive : OldSpecification2<UpdateMainLocationCommandHandler, UpdateMainLocation>
 {
     private Guid _organisationId;
     private Guid _locationId;

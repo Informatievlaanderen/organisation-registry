@@ -16,7 +16,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    TerminateOrganisationWithTerminationInKbo : Specification<TerminateOrganisationCommandHandler, TerminateOrganisation>
+    TerminateOrganisationWithTerminationInKbo : OldSpecification2<TerminateOrganisationCommandHandler, TerminateOrganisation>
 {
     private readonly OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub = new()
     {

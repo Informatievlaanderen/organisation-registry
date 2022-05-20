@@ -16,7 +16,7 @@ using OrganisationRegistry.Organisation.Exceptions;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : ExceptionSpecification<
+public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : ExceptionOldSpecification2<
     UpdateOrganisationBuildingCommandHandler, UpdateOrganisationBuilding>
 {
     private Guid _organisationId;

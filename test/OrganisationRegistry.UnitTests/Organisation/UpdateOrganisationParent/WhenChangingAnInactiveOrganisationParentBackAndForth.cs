@@ -17,7 +17,7 @@ using Xunit.Abstractions;
 // This test was introduced to fix an issue where the previous organisationid was not correctly set when updating the parent back and forth.
 // see the commit of this comment to see how it was fixed.
 public class WhenChangingAnInactiveOrganisationParentBackAndForth
-    : Specification<UpdateOrganisationParentCommandHandler, UpdateOrganisationParent>
+    : OldSpecification2<UpdateOrganisationParentCommandHandler, UpdateOrganisationParent>
 {
     private Guid _organisationId;
     private Guid _organisationParentId;

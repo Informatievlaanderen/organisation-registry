@@ -15,7 +15,7 @@ using OrganisationRegistry.Organisation.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WithOrganisationNotUnderVlimpersManagement : Specification<ReleaseFromVlimpersManagementCommandHandler, ReleaseFromVlimpersManagement>
+public class WithOrganisationNotUnderVlimpersManagement : OldSpecification2<ReleaseFromVlimpersManagementCommandHandler, ReleaseFromVlimpersManagement>
 {
     private readonly OrganisationId _organisationId = new(Guid.NewGuid());
     private readonly Fixture _fixture = new();

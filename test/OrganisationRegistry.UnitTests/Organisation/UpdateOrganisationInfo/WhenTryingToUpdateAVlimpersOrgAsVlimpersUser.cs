@@ -15,7 +15,7 @@ using OrganisationRegistry.Organisation.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenTryingToUpdateAVlimpersOrgAsVlimpersUser : Specification<
+public class WhenTryingToUpdateAVlimpersOrgAsVlimpersUser : OldSpecification2<
     UpdateOrganisationInfoLimitedToVlimpersCommandHandler, UpdateOrganisationInfoLimitedToVlimpers>
 {
     private Guid _organisationId;

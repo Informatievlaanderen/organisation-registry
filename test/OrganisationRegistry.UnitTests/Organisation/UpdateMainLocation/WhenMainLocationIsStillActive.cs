@@ -12,7 +12,7 @@ using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using Xunit.Abstractions;
 
-public class WhenMainLocationIsStillActive : Specification<UpdateMainLocationCommandHandler, UpdateMainLocation>
+public class WhenMainLocationIsStillActive : OldSpecification2<UpdateMainLocationCommandHandler, UpdateMainLocation>
 {
     private Guid _organisationId;
     private Guid _locationId;

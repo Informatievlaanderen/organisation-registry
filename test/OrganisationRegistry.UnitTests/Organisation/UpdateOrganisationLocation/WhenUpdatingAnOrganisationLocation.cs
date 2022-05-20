@@ -17,7 +17,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenUpdatingAnOrganisationLocation : Specification<UpdateOrganisationLocationCommandHandler,
+    WhenUpdatingAnOrganisationLocation : OldSpecification2<UpdateOrganisationLocationCommandHandler,
         UpdateOrganisationLocation>
 {
     private Guid _organisationId;

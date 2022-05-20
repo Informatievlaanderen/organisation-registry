@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using OrganisationRegistry.Infrastructure.Commands;
 using Xunit.Abstractions;
 
-public abstract class ExceptionSpecification<THandler, TCommand> : Specification<THandler, TCommand>
+public abstract class ExceptionOldSpecification2<THandler, TCommand> : OldSpecification2<THandler, TCommand>
     where THandler : class, ICommandEnvelopeHandler<TCommand>
     where TCommand : ICommand
 {
@@ -23,5 +23,5 @@ public abstract class ExceptionSpecification<THandler, TCommand> : Specification
         }
     }
 
-    protected ExceptionSpecification(ITestOutputHelper helper) : base(helper) { }
+    protected ExceptionOldSpecification2(ITestOutputHelper helper) : base(helper) { }
 }

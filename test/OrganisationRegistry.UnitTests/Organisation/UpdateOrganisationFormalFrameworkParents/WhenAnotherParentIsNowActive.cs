@@ -16,7 +16,7 @@ using OrganisationRegistry.Organisation.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenAnotherParentIsNowActive: Specification<UpdateOrganisationFormalFrameworkParentsCommandHandler, UpdateOrganisationFormalFrameworkParents>
+public class WhenAnotherParentIsNowActive: OldSpecification2<UpdateOrganisationFormalFrameworkParentsCommandHandler, UpdateOrganisationFormalFrameworkParents>
 {
     private readonly DateTimeProviderStub _dateTimeProvider = new(DateTime.Now);
     private Guid _organisationCreatedId;

@@ -17,7 +17,7 @@ using OrganisationRegistry.Organisation.Exceptions;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser : ExceptionSpecification<UpdateOrganisationInfoLimitedToVlimpersCommandHandler, UpdateOrganisationInfoLimitedToVlimpers>
+public class WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser : ExceptionOldSpecification2<UpdateOrganisationInfoLimitedToVlimpersCommandHandler, UpdateOrganisationInfoLimitedToVlimpers>
 {
     private Guid _organisationId;
 

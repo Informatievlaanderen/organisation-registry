@@ -16,7 +16,7 @@ using OrganisationRegistry.Organisation.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenCurrentParentIsNoLongerActive : Specification<UpdateOrganisationFormalFrameworkParentsCommandHandler, UpdateOrganisationFormalFrameworkParents>
+public class WhenCurrentParentIsNoLongerActive : OldSpecification2<UpdateOrganisationFormalFrameworkParentsCommandHandler, UpdateOrganisationFormalFrameworkParents>
 {
     private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new();
     private readonly DateTimeProviderStub _dateTimeProvider = new(DateTime.Now);

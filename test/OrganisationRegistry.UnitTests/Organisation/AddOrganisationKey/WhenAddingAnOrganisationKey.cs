@@ -3,6 +3,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationKey;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using OrganisationRegistry.KeyTypes;
@@ -11,6 +12,7 @@ using OrganisationRegistry.KeyTypes.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using Tests.Shared.Stubs;
@@ -19,18 +21,24 @@ using Xunit.Abstractions;
 
 public class WhenAddingAnOrganisationKey : Specification<AddOrganisationKeyCommandHandler, AddOrganisationKey>
 {
-    private Guid _organisationId;
-    private Guid _keyId;
-    private Guid _organisationKeyId;
-    private const string Value = "12345ABC-@#$";
-    private DateTime _validTo;
-    private DateTime _validFrom;
+    private readonly Guid _organisationId;
+    private readonly Guid _keyId;
+    private readonly Guid _organisationKeyId;
+    private readonly string _value;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
 
-    public WhenAddingAnOrganisationKey(ITestOutputHelper helper) : base(helper)
+    public WhenAddingAnOrganisationKey(ITestOutputHelper helper) : base(helper, BuildHandler)
     {
+        _keyId = Guid.NewGuid();
+        _organisationKeyId = Guid.NewGuid();
+        _validFrom = DateTime.Now.AddDays(1);
+        _validTo = DateTime.Now.AddDays(2);
+        _organisationId = Guid.NewGuid();
+        _value = "12345ABC-@#$";
     }
 
-    protected override AddOrganisationKeyCommandHandler BuildHandler()
+    private static AddOrganisationKeyCommandHandler BuildHandler(ISession session)
     {
         var securityServiceMock = new Mock<ISecurityService>();
         securityServiceMock
@@ -43,56 +51,78 @@ public class WhenAddingAnOrganisationKey : Specification<AddOrganisationKeyComma
 
         return new AddOrganisationKeyCommandHandler(
             new Mock<ILogger<AddOrganisationKeyCommandHandler>>().Object,
-            Session,
+            session,
             new OrganisationRegistryConfigurationStub(),
             securityServiceMock.Object);
     }
 
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
-    {
-        _keyId = Guid.NewGuid();
-        _organisationKeyId = Guid.NewGuid();
-        _validFrom = DateTime.Now.AddDays(1);
-        _validTo = DateTime.Now.AddDays(2);
-        _organisationId = Guid.NewGuid();
-        return new List<IEvent>
+    private IEvent[] Events
+        => new IEvent[]
         {
-            new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
+            new OrganisationCreated(
+                _organisationId,
+                "Kind en Gezin",
+                "OVO000012345",
+                "K&G",
+                Article.None,
+                "Kindjes en gezinnetjes",
+                new List<Purpose>(),
+                false,
+                null,
+                null,
+                null,
+                null),
             new KeyTypeCreated(_keyId, "Key A")
         };
-    }
 
-    protected override AddOrganisationKey When()
+    private AddOrganisationKey AddOrganisationKeyCommand
         => new(
             _organisationKeyId,
             new OrganisationId(_organisationId),
             new KeyTypeId(_keyId),
-            Value,
+            _value,
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    protected override int ExpectedNumberOfEvents
-        => 1;
+    private static IUser AlgemeenBeheerderUser
+        => new UserBuilder()
+            .AddRoles(Role.AlgemeenBeheerder)
+            .Build();
 
     [Fact]
-    public void AnOrganisationKeyAddedEventIsPublished()
+    public async Task AnOrganisationKeyAddedEventIsPublished()
     {
+        await Given(Events).When(AddOrganisationKeyCommand, AlgemeenBeheerderUser).Then();
         PublishedEvents.First().Should().BeOfType<Envelope<OrganisationKeyAdded>>();
     }
 
     [Fact]
-    public void TheEventContainsTheCorrectData()
+    public async Task TheEventContainsTheCorrectData()
     {
-        var organisationKeyAdded = PublishedEvents.First().UnwrapBody<OrganisationKeyAdded>();
-        organisationKeyAdded.OrganisationId.Should().Be(_organisationId);
-        organisationKeyAdded.KeyTypeId.Should().Be(_keyId);
-        organisationKeyAdded.Value.Should().Be(Value);
-        organisationKeyAdded.ValidFrom.Should().Be(_validFrom);
-        organisationKeyAdded.ValidTo.Should().Be(_validTo);
+        await Given(Events).When(AddOrganisationKeyCommand, AlgemeenBeheerderUser).Then();
+        PublishedEvents.First().UnwrapBody<OrganisationKeyAdded>()
+            .Should()
+            .BeEquivalentTo(
+                new OrganisationKeyAdded(
+                    _organisationId,
+                    _organisationKeyId,
+                    _keyId,
+                    "Key A",
+                    _value,
+                    _validFrom,
+                    _validTo
+                ),
+                opt =>
+                    opt.Excluding(e => e.Timestamp)
+                        .Excluding(e =>e .Version)
+            );
+    }
+
+    [Fact]
+    public async Task PublishesTheCorrectNumberOfEvents()
+    {
+        await Given(Events)
+            .When(AddOrganisationKeyCommand, AlgemeenBeheerderUser)
+            .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 }

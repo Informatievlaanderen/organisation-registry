@@ -16,7 +16,7 @@ using Tests.Shared.TestDataBuilders;
 using Xunit;
 using Xunit.Abstractions;
 
-public class AsDaughterOfVlimpersOrganisation : Specification<CreateOrganisationCommandHandler, CreateOrganisation>
+public class AsDaughterOfVlimpersOrganisation : OldSpecification2<CreateOrganisationCommandHandler, CreateOrganisation>
 {
     private readonly OrganisationCreatedBuilder _organisationCreatedBuilder = new(new SequentialOvoNumberGenerator());
 

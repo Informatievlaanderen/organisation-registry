@@ -18,7 +18,7 @@ using Xunit.Abstractions;
 
 public class
     WhenAddingAParentWithOverlappingValidity
-    : ExceptionSpecification<AddOrganisationParentCommandHandler, AddOrganisationParent>
+    : ExceptionOldSpecification2<AddOrganisationParentCommandHandler, AddOrganisationParent>
 {
     private DateTime _validTo;
     private DateTime _validFrom;

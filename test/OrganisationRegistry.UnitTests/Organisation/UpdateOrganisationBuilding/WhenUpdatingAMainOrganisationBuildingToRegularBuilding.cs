@@ -17,7 +17,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenUpdatingAMainOrganisationBuildingToRegularBuilding : Specification<UpdateOrganisationBuildingCommandHandler,
+    WhenUpdatingAMainOrganisationBuildingToRegularBuilding : OldSpecification2<UpdateOrganisationBuildingCommandHandler,
         UpdateOrganisationBuilding>
 {
     private Guid _organisationId;

@@ -16,7 +16,7 @@ using OrganisationRegistry.Organisation.Exceptions;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenMakingAnOrganisationLocationAMainLocationWhenThereAlreadyIsOne : ExceptionSpecification<
+public class WhenMakingAnOrganisationLocationAMainLocationWhenThereAlreadyIsOne : ExceptionOldSpecification2<
     UpdateOrganisationLocationCommandHandler, UpdateOrganisationLocation>
 {
     private Guid _organisationId;

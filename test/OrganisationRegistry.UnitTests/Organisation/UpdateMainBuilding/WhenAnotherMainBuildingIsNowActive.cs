@@ -15,7 +15,7 @@ using OrganisationRegistry.Infrastructure.Authorization;
 using Xunit.Abstractions;
 
 public class WhenAnotherMainBuildingIsNowActive :
-    Specification<UpdateMainBuildingCommandHandler, UpdateMainBuilding>
+    OldSpecification2<UpdateMainBuildingCommandHandler, UpdateMainBuilding>
 {
     private Guid _organisationId;
     private Guid _buildingAId;

@@ -18,7 +18,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenUpdatingToVlimpersLabelWhenVlimpers : Specification<UpdateOrganisationLabelCommandHandler,
+    WhenUpdatingToVlimpersLabelWhenVlimpers : OldSpecification2<UpdateOrganisationLabelCommandHandler,
         UpdateOrganisationLabel>
 {
     private Guid _organisationId;

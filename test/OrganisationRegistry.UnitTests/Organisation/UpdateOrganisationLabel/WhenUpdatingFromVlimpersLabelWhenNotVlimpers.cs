@@ -17,7 +17,7 @@ using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenUpdatingFromVlimpersLabelWhenNotVlimpers : ExceptionSpecification<
+public class WhenUpdatingFromVlimpersLabelWhenNotVlimpers : ExceptionOldSpecification2<
     UpdateOrganisationLabelCommandHandler, UpdateOrganisationLabel>
 {
     private Guid _organisationId;

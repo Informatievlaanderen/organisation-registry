@@ -18,7 +18,7 @@ using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenUpdatingAnOrganisationFormalFrameworkValidityToTheFuture : Specification<
+public class WhenUpdatingAnOrganisationFormalFrameworkValidityToTheFuture : OldSpecification2<
     UpdateOrganisationFormalFrameworkCommandHandler, UpdateOrganisationFormalFramework>
 {
     private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);

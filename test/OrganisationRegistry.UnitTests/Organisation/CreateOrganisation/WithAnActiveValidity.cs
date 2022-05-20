@@ -15,7 +15,7 @@ using OrganisationRegistry.Organisation.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WithAnActiveValidity : Specification<CreateOrganisationCommandHandler, CreateOrganisation>
+public class WithAnActiveValidity : OldSpecification2<CreateOrganisationCommandHandler, CreateOrganisation>
 {
     public WithAnActiveValidity(ITestOutputHelper helper) : base(helper)
     {

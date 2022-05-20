@@ -18,7 +18,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenAddingTheSameLocationTwice : ExceptionSpecification<AddOrganisationLocationCommandHandler,
+    WhenAddingTheSameLocationTwice : ExceptionOldSpecification2<AddOrganisationLocationCommandHandler,
         AddOrganisationLocation>
 {
     private Guid _organisationId;

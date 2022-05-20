@@ -18,7 +18,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenAddingAnOrganisationFormalFrameworkWithCircularDependenciesButNotInTheSameValidity :
-    ExceptionSpecification<AddOrganisationFormalFrameworkCommandHandler, AddOrganisationFormalFramework>
+    ExceptionOldSpecification2<AddOrganisationFormalFrameworkCommandHandler, AddOrganisationFormalFramework>
 {
     private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);
     private readonly SequentialOvoNumberGenerator _ovoNumberGenerator = new();

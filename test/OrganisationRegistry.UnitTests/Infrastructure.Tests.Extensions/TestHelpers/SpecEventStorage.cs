@@ -13,10 +13,17 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
 
         public List<IEvent> Events { get; set; }
 
-        public SpecEventStorage(IEventPublisher publisher, List<IEvent> events)
+        public SpecEventStorage(IEventPublisher publisher)
         {
             _publisher = publisher;
-            Events = events;
+            Events = new List<IEvent>();
+        }
+
+        public SpecEventStorage(IEventPublisher eventpublisher, List<IEvent> toList)
+        {
+            _publisher = eventpublisher;
+            Events = toList;
+
         }
 
         public Task Save<T>(IEnumerable<IEvent> events, IUser user)

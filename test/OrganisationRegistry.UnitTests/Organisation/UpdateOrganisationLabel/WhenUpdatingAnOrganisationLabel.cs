@@ -18,7 +18,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenUpdatingAnOrganisationLabel : Specification<UpdateOrganisationLabelCommandHandler, UpdateOrganisationLabel>
+    WhenUpdatingAnOrganisationLabel : OldSpecification2<UpdateOrganisationLabelCommandHandler, UpdateOrganisationLabel>
 {
     private Guid _organisationId;
     private Guid _labelTypeId;

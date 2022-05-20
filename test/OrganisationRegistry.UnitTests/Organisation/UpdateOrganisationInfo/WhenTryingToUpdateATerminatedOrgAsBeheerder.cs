@@ -19,7 +19,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenTryingToUpdateATerminatedOrgAsBeheerder : ExceptionSpecification<UpdateOrganisationCommandHandler,
+    WhenTryingToUpdateATerminatedOrgAsBeheerder : ExceptionOldSpecification2<UpdateOrganisationCommandHandler,
         UpdateOrganisationInfo>
 {
     private string _ovoNumber = null!;

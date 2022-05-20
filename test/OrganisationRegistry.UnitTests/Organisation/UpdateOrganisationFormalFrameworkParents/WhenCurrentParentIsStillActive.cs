@@ -13,7 +13,7 @@ using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using Xunit.Abstractions;
 
-public class WhenCurrentParentIsStillActive : Specification<UpdateOrganisationFormalFrameworkParentsCommandHandler, UpdateOrganisationFormalFrameworkParents>
+public class WhenCurrentParentIsStillActive : OldSpecification2<UpdateOrganisationFormalFrameworkParentsCommandHandler, UpdateOrganisationFormalFrameworkParents>
 {
     private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new();
     private readonly DateTimeProviderStub _dateTimeProvider = new(DateTime.Now);

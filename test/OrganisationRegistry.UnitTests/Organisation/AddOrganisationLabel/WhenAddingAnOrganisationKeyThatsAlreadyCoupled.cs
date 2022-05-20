@@ -18,7 +18,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenAddingAnOrganisationLabelThatsAlreadyCoupled : ExceptionSpecification<AddOrganisationLabelCommandHandler,
+    WhenAddingAnOrganisationLabelThatsAlreadyCoupled : ExceptionOldSpecification2<AddOrganisationLabelCommandHandler,
         AddOrganisationLabel>
 {
     private Guid _organisationId;

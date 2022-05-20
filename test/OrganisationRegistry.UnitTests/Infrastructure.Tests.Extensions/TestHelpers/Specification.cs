@@ -1,62 +1,98 @@
-namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers
+﻿namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using FluentAssertions;
+using FluentAssertions.Specialized;
+using Microsoft.Extensions.Logging;
+using Moq;
+using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Commands;
+using OrganisationRegistry.Infrastructure.Domain;
+using OrganisationRegistry.Infrastructure.Events;
+using Xunit.Abstractions;
+
+public abstract class Specification<THandler, TCommand>
+    where THandler : class, ICommandEnvelopeHandler<TCommand>
+    where TCommand : ICommand
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using FluentAssertions;
-    using Microsoft.Extensions.Logging;
-    using Moq;
-    using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Commands;
-    using OrganisationRegistry.Infrastructure.Domain;
-    using OrganisationRegistry.Infrastructure.Events;
-    using Xunit;
-    using Xunit.Abstractions;
+    private readonly ITestOutputHelper _helper;
+    private readonly Func<ISession, THandler> _buildHandler;
+    private readonly SpecEventStorage _eventstorage;
+    private IUser _user = null!;
+    private TCommand _command = default!;
+    protected ISession Session { get; }
+    protected IList<IEvent> EventDescriptors { get; }
+    protected List<IEnvelope> PublishedEvents { get; }
 
-    public abstract class Specification<THandler, TCommand>
-        where THandler : class, ICommandEnvelopeHandler<TCommand>
-        where TCommand : ICommand
+    protected Specification(
+        ITestOutputHelper helper,
+        Func<ISession, THandler> buildHandler
+    )
     {
-        private readonly ITestOutputHelper _helper;
-        protected ISession Session { get; set; }
-        protected abstract IEnumerable<IEvent> Given();
-        protected abstract TCommand When();
-        protected abstract THandler BuildHandler();
-        protected abstract IUser User { get; }
+        _helper = helper;
+        _buildHandler = buildHandler;
 
-        protected abstract int ExpectedNumberOfEvents { get; }
+        var eventpublisher = new SpecEventPublisher();
+        _eventstorage = new SpecEventStorage(eventpublisher);
 
-        protected IList<IEvent> EventDescriptors { get; set; }
-        protected List<IEnvelope> PublishedEvents { get; set; }
+        var repository = new Repository(new Mock<ILogger<Repository>>().Object, _eventstorage);
+        Session = new Session(new Mock<ILogger<Session>>().Object, repository);
 
-        protected Specification(ITestOutputHelper helper)
+        PublishedEvents = eventpublisher.PublishedEvents;
+        EventDescriptors = _eventstorage.Events;
+    }
+
+    protected Specification<THandler, TCommand> Given(params IEvent[] events)
+    {
+        _eventstorage.Events = NumberTheEvents(events).ToList();
+        return this;
+    }
+
+    public Specification<THandler, TCommand> When(TCommand command, IUser user)
+    {
+        _command = command;
+        _user = user;
+        return this;
+    }
+
+    public async Task Then()
+    {
+        var handler = _buildHandler(Session);
+        await handler.Handle(new CommandEnvelope<TCommand>(_command, _user));
+    }
+
+    private async Task ThenTry()
+    {
+        try
         {
-            _helper = helper;
-            var eventpublisher = new SpecEventPublisher();
-            var eventstorage = new SpecEventStorage(eventpublisher, NumberTheEvents(Given()).ToList());
-
-            var repository = new Repository(new Mock<ILogger<Repository>>().Object, eventstorage);
-            Session = new Session(new Mock<ILogger<Session>>().Object, repository);
-
-            HandleEvents().GetAwaiter().GetResult();
-
-            PublishedEvents = eventpublisher.PublishedEvents;
-            EventDescriptors = eventstorage.Events;
+            var handler = _buildHandler(Session);
+            await handler.Handle(new CommandEnvelope<TCommand>(_command, _user));
         }
-
-        protected virtual async Task HandleEvents()
+        catch
         {
-            var handler = BuildHandler();
-            var command = When();
-
-            await handler.Handle(new CommandEnvelope<TCommand>(command, User));
+            // ignored
         }
+    }
 
-        protected IEnumerable<IEvent> NumberTheEvents(IEnumerable<IEvent> toList)
-        {
-            var ids = new Dictionary<Guid, int>();
-            return toList.Select(@event =>
+    public async Task<ExceptionAssertions<TException>> ThenThrows<TException>() where TException : Exception
+        => await FluentActions.Invoking(async () => await Then()).Should()
+            .ThrowAsync<TException>();
+
+    public async Task ThenItPublishesTheCorrectNumberOfEvents(int numberOfEvents)
+    {
+        await ThenTry();
+        PublishedEvents.ForEach(envelope => _helper.WriteLine(envelope.Name));
+        PublishedEvents.Count.Should().Be(numberOfEvents);
+    }
+
+    private static IEnumerable<IEvent> NumberTheEvents(IEnumerable<IEvent> toList)
+    {
+        var ids = new Dictionary<Guid, int>();
+        return toList.Select(
+            @event =>
             {
                 if (!ids.ContainsKey(@event.Id))
                     ids[@event.Id] = 0;
@@ -65,13 +101,5 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
                 @event.Version = @event.Version != 0 ? @event.Version : ids[@event.Id];
                 return @event;
             });
-        }
-
-        [Fact]
-        public void PublishesTheCorrectNumberOfEvents()
-        {
-            PublishedEvents.ForEach(envelope => _helper.WriteLine(envelope.Name));
-            PublishedEvents.Count.Should().Be(ExpectedNumberOfEvents);
-        }
     }
 }

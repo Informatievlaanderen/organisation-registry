@@ -15,7 +15,7 @@ using OrganisationRegistry.Organisation.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WithAnInactiveValidity : Specification<CreateOrganisationCommandHandler, CreateOrganisation>
+public class WithAnInactiveValidity : OldSpecification2<CreateOrganisationCommandHandler, CreateOrganisation>
 {
     private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Today);
     private DateTime _yesterday;

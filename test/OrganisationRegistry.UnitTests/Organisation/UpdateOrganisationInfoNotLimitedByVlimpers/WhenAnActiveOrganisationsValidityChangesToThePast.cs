@@ -17,7 +17,7 @@ using Tests.Shared.TestDataBuilders;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenAnActiveOrganisationsValidityChangesToThePast : Specification<
+public class WhenAnActiveOrganisationsValidityChangesToThePast : OldSpecification2<
     UpdateOrganisationNotLimitedToVlimpersCommandHandler, UpdateOrganisationInfoNotLimitedToVlimpers>
 {
     private Guid _purposeId;

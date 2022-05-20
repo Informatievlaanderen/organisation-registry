@@ -15,7 +15,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenChangingAnOrganisationParent_DoesNotThrowParentClearedAndAssigned
-    : Specification<UpdateOrganisationParentCommandHandler, UpdateOrganisationParent>
+    : OldSpecification2<UpdateOrganisationParentCommandHandler, UpdateOrganisationParent>
 {
     private Guid _organisationAId;
     private Guid _organisationBId;

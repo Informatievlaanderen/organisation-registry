@@ -18,7 +18,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenTryingToChangeKboOwnedData : ExceptionSpecification<UpdateOrganisationCommandHandler, UpdateOrganisationInfo>
+    WhenTryingToChangeKboOwnedData : ExceptionOldSpecification2<UpdateOrganisationCommandHandler, UpdateOrganisationInfo>
 {
     private readonly DateTime _yesterday = DateTime.Today.AddDays(-1);
     private Guid _organisationId;

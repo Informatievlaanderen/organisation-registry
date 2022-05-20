@@ -15,7 +15,7 @@ using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class ForceTerminateOrganisation : Specification<TerminateOrganisationCommandHandler, TerminateOrganisation>
+public class ForceTerminateOrganisation : OldSpecification2<TerminateOrganisationCommandHandler, TerminateOrganisation>
 {
     private readonly OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub = new()
     {

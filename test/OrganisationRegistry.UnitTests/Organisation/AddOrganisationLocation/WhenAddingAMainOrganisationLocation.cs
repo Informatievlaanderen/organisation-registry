@@ -18,7 +18,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenAddingAMainOrganisationLocation : Specification<AddOrganisationLocationCommandHandler,
+    WhenAddingAMainOrganisationLocation : OldSpecification2<AddOrganisationLocationCommandHandler,
         AddOrganisationLocation>
 {
     private Guid _organisationId;
