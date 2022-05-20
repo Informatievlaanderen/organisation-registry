@@ -8,8 +8,11 @@
       url="/"
       ref="uploadControl"
       @upload-file-added="fileAdded"
+      @upload-removed-file="fileRemoved"
     />
-    <vl-button @click="uploadFile">Opladen</vl-button>
+    <vl-button @click="uploadFile" :mod-disabled="this.file === undefined">
+      Opladen
+    </vl-button>
   </div>
 </template>
 
@@ -32,6 +35,9 @@ export default {
     },
     fileAdded(e) {
       this.file = e;
+    },
+    fileRemoved() {
+      this.file = undefined;
     },
   },
 };
