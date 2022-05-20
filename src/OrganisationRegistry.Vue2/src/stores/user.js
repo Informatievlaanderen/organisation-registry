@@ -1,19 +1,32 @@
 import { defineStore } from "pinia";
-import jwtDecode from "jwt-decode";
-import { getToken, getVerifier, setToken } from "@/api/localStorage";
+import {
+  getToken,
+  getVerifier,
+  removeToken,
+  setToken,
+} from "@/api/localStorage";
 import { exchangeCode, getSecurityInfo } from "@/api/security";
 import OidcClient from "@/api/oidc";
 import { useAlertStore } from "@/stores/alert";
 import alerts from "@/alerts/alerts";
+import { UserTokenResult } from "@/stores/userTokenResult";
 
 export const useUserStore = defineStore("user", {
   state: () => {
     return {
       isLoggedIn: false,
-      name: "",
-      firstName: "",
-      roles: [],
+      user: {
+        name: "",
+        firstName: "",
+        roles: [],
+      },
     };
+  },
+  getters: {
+    userDescription: (state) =>
+      `${state.user.name} ${
+        state.user.firstName
+      } (${state.user.translatedRoles.join(", ")})`,
   },
   actions: {
     async initializeOidcClient() {
@@ -23,21 +36,38 @@ export const useUserStore = defineStore("user", {
       }
     },
     loadUserFromToken() {
-      const token = getToken();
-      if (token) {
-        const decoded = jwtDecode(token);
-        this.setUser(decoded);
-      } else {
+      try {
+        const userToken = UserTokenResult.fromJwt(getToken());
+        if (!userToken.succeeded) {
+          this.clearUser();
+          return;
+        }
+
+        if (userToken.isExpired) {
+          this.clearUser(alerts.sessionExpired);
+          return;
+        }
+
+        this.setUser(userToken);
+      } catch (e) {
+        console.error("Could not decode provided jwt", e);
         this.clearUser();
       }
     },
-    setUser(user) {
+    /**
+     * @param {UserTokenResult} userToken
+     */
+    setUser(userToken) {
       this.isLoggedIn = true;
-      this.name = user.family_name;
-      this.firstName = user.given_name;
+      this.user = { ...userToken.user };
     },
-    clearUser() {
+    clearUser(alert) {
+      if (alert) {
+        const alertStore = useAlertStore();
+        alertStore.setAlert(alert);
+      }
       this.$reset();
+      removeToken();
     },
     signIn() {
       this.oidcClient.signIn();
@@ -51,11 +81,9 @@ export const useUserStore = defineStore("user", {
       const verifier = getVerifier();
       const redirectUri = this.oidcClient.client.settings.redirect_uri;
       const response = await exchangeCode(code, verifier, redirectUri);
-      console.log("response", response);
       const token = await response.text();
 
       try {
-        jwtDecode(token);
         setToken(token);
         this.loadUserFromToken();
         await this.router.push({ path: "/" });

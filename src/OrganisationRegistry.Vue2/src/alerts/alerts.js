@@ -19,6 +19,12 @@ export default {
     type: alertTypes.error,
   },
 
+  sessionExpired: {
+    title: "Sessie verlopen",
+    content: "U bent automatisch uitgelogd omdat de sessie is verlopen.",
+    type: alertTypes.warning,
+  },
+
   connectionError: {
     title: "Er is een fout opgetreden",
     content: "De server kon niet worden bereikt.",

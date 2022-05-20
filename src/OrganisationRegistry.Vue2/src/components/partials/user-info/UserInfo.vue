@@ -23,7 +23,7 @@ export default {
   computed: {
     ...mapStores(useUserStore),
     userDescription() {
-      return `${this.userStore.firstName} ${this.userStore.name}`;
+      return this.userStore.userDescription;
     },
     isLoggedIn() {
       return this.userStore.isLoggedIn;
