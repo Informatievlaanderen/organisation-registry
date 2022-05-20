@@ -15,6 +15,7 @@ using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
+using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -124,7 +125,6 @@ public class WhenAddingAMainOrganisationBuilding
                     _buildingId,
                     _organisationBuildingId)
                 , opt =>
-                    opt.Excluding(e => e.Timestamp)
-                        .Excluding(e =>e .Version));
+                    opt.ExcludeEventProperties());
     }
 }

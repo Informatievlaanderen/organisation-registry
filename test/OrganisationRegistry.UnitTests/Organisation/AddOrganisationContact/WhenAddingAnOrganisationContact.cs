@@ -3,6 +3,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationContact;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using ContactType;
 using ContactType.Events;
 using FluentAssertions;
@@ -10,38 +11,25 @@ using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
+using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
 public class WhenAddingAnOrganisationContact
-    : OldSpecification2<AddOrganisationContactCommandHandler, AddOrganisationContact>
+    : Specification<AddOrganisationContactCommandHandler, AddOrganisationContact>
 {
-    private Guid _organisationId;
-    private Guid _contactTypeId;
-    private Guid _organisationContactId;
-    private DateTime _validTo;
-    private DateTime _validFrom;
-    private readonly string _contactValue = "info@email.com";
+    private readonly Guid _organisationId;
+    private readonly Guid _contactTypeId;
+    private readonly Guid _organisationContactId;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
+    private readonly string _contactValue;
 
     public WhenAddingAnOrganisationContact(ITestOutputHelper helper) : base(helper)
-    {
-    }
-
-    protected override IUser User
-        => new UserBuilder().Build();
-
-
-    protected override AddOrganisationContactCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<AddOrganisationContactCommandHandler>>().Object,
-            Session
-        );
-
-
-    protected override IEnumerable<IEvent> Given()
     {
         var dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
 
@@ -50,8 +38,20 @@ public class WhenAddingAnOrganisationContact
         _validFrom = dateTimeProviderStub.Today;
         _validTo = dateTimeProviderStub.Today.AddDays(2);
         _organisationId = Guid.NewGuid();
+        _contactValue = "info@email.com";
+    }
 
-        return new List<IEvent>
+    protected override AddOrganisationContactCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<AddOrganisationContactCommandHandler>>().Object,
+            session
+        );
+
+    private static IUser User
+        => new UserBuilder().Build();
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -68,9 +68,8 @@ public class WhenAddingAnOrganisationContact
                 null),
             new ContactTypeCreated(_contactTypeId, "Contact type A")
         };
-    }
 
-    protected override AddOrganisationContact When()
+    private AddOrganisationContact AddOrganisationContactCommand
         => new(
             _organisationContactId,
             new OrganisationId(_organisationId),
@@ -79,19 +78,34 @@ public class WhenAddingAnOrganisationContact
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    protected override int ExpectedNumberOfEvents
-        => 1;
+    [Fact]
+    public async Task PublishesOneEvent()
+    {
+        await Given(Events)
+            .When(AddOrganisationContactCommand, User)
+            .ThenItPublishesTheCorrectNumberOfEvents(1);
+    }
 
     [Fact]
-    public void AddsAnOrganisationContact()
+    public async Task AddsAnOrganisationContact()
     {
-        var organisationContactAdded = PublishedEvents.First().UnwrapBody<OrganisationContactAdded>();
-        organisationContactAdded.OrganisationId.Should().Be(_organisationId);
-        organisationContactAdded.Value.Should().Be(_contactValue);
-        organisationContactAdded.ContactTypeId.Should().Be(_contactTypeId);
-        organisationContactAdded.ContactTypeName.Should().Be("Contact type A");
-        organisationContactAdded.OrganisationContactId.Should().Be(_organisationContactId);
-        organisationContactAdded.ValidFrom.Should().Be(_validFrom);
-        organisationContactAdded.ValidTo.Should().Be(_validTo);
+        await Given(Events)
+            .When(AddOrganisationContactCommand, User)
+            .Then();
+        PublishedEvents
+            .First()
+            .UnwrapBody<OrganisationContactAdded>()
+            .Should()
+            .BeEquivalentTo(
+                new OrganisationContactAdded(
+                    _organisationId,
+                    _organisationContactId,
+                    _contactTypeId,
+                    "Contact type A",
+                    _contactValue,
+                    _validFrom,
+                    _validTo
+                ),
+                opt => opt.ExcludeEventProperties());
     }
 }
