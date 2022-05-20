@@ -2,7 +2,23 @@
   <div class="vl-u-table-overflow">
     <vl-data-table>
       <caption>
-        Import status
+        <vl-grid>
+          <vl-column width-l="3" width-m="4" width-s="6" width-xs="12">
+            <span>Import status</span>
+          </vl-column>
+          <vl-column width="6" width-s="12"></vl-column>
+          <vl-column width-l="3" width-m="4" width-s="6" width-xs="12">
+            <div v-vl-flex v-vl-flex:align-flex-end style="margin-right: 5px">
+              <vl-button
+                :mod-disabled="isLoading"
+                mod-tertiary
+                @click="$emit('refresh')"
+              >
+                Vernieuwen
+              </vl-button>
+            </div>
+          </vl-column>
+        </vl-grid>
       </caption>
       <thead>
         <tr>
@@ -42,6 +58,7 @@ export default {
   name: "ImportStatusList",
   props: {
     importStatuses: Array,
+    isLoading: Boolean,
   },
   methods: {
     async downloadFile({ id, fileName }) {
