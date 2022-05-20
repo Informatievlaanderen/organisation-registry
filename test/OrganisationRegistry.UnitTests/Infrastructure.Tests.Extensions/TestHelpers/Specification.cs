@@ -19,7 +19,6 @@ public abstract class Specification<THandler, TCommand>
     where TCommand : ICommand
 {
     private readonly ITestOutputHelper _helper;
-    private readonly Func<ISession, THandler> _buildHandler;
     private readonly SpecEventStorage _eventstorage;
     private IUser _user = null!;
     private TCommand _command = default!;
@@ -28,12 +27,9 @@ public abstract class Specification<THandler, TCommand>
     protected List<IEnvelope> PublishedEvents { get; }
 
     protected Specification(
-        ITestOutputHelper helper,
-        Func<ISession, THandler> buildHandler
-    )
+        ITestOutputHelper helper)
     {
         _helper = helper;
-        _buildHandler = buildHandler;
 
         var eventpublisher = new SpecEventPublisher();
         _eventstorage = new SpecEventStorage(eventpublisher);
@@ -44,6 +40,8 @@ public abstract class Specification<THandler, TCommand>
         PublishedEvents = eventpublisher.PublishedEvents;
         EventDescriptors = _eventstorage.Events;
     }
+
+    protected abstract THandler BuildHandler(ISession session);
 
     protected Specification<THandler, TCommand> Given(params IEvent[] events)
     {
@@ -60,7 +58,7 @@ public abstract class Specification<THandler, TCommand>
 
     public async Task Then()
     {
-        var handler = _buildHandler(Session);
+        var handler = BuildHandler(Session);
         await handler.Handle(new CommandEnvelope<TCommand>(_command, _user));
     }
 
@@ -68,7 +66,7 @@ public abstract class Specification<THandler, TCommand>
     {
         try
         {
-            var handler = _buildHandler(Session);
+            var handler = BuildHandler(Session);
             await handler.Handle(new CommandEnvelope<TCommand>(_command, _user));
         }
         catch

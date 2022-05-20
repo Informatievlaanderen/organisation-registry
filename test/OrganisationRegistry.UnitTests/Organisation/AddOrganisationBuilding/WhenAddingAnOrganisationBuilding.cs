@@ -3,6 +3,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationBuilding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Building;
 using Building.Events;
 using FluentAssertions;
@@ -10,6 +11,7 @@ using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -17,34 +19,17 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenAddingAMainOrganisationBuilding
-    : OldSpecification2<AddOrganisationBuildingCommandHandler, AddOrganisationBuilding>
+    : Specification<AddOrganisationBuildingCommandHandler, AddOrganisationBuilding>
 {
-    private Guid _organisationId;
-    private Guid _buildingId;
-    private Guid _organisationBuildingId;
-    private bool _isMainBuilding;
-    private DateTime _validTo;
-    private DateTime _validFrom;
-    private DateTimeProviderStub _dateTimeProviderStub;
+    private readonly Guid _organisationId;
+    private readonly Guid _buildingId;
+    private readonly Guid _organisationBuildingId;
+    private readonly bool _isMainBuilding;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
+    private readonly DateTimeProviderStub _dateTimeProviderStub;
 
     public WhenAddingAMainOrganisationBuilding(ITestOutputHelper helper) : base(helper)
-    {
-        _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
-    }
-
-    protected override IUser User
-        => new UserBuilder().Build();
-
-
-    protected override AddOrganisationBuildingCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<AddOrganisationBuildingCommandHandler>>().Object,
-            Session,
-            _dateTimeProviderStub
-        );
-
-
-    protected override IEnumerable<IEvent> Given()
     {
         _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
 
@@ -54,8 +39,22 @@ public class WhenAddingAMainOrganisationBuilding
         _validFrom = _dateTimeProviderStub.Today;
         _validTo = _dateTimeProviderStub.Today.AddDays(2);
         _organisationId = Guid.NewGuid();
+    }
 
-        return new List<IEvent>
+    protected static IUser User
+        => new UserBuilder().Build();
+
+
+    protected override AddOrganisationBuildingCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<AddOrganisationBuildingCommandHandler>>().Object,
+            session,
+            _dateTimeProviderStub
+        );
+
+
+    protected IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -72,9 +71,8 @@ public class WhenAddingAMainOrganisationBuilding
                 null),
             new BuildingCreated(_buildingId, "Gebouw A", 1234)
         };
-    }
 
-    protected override AddOrganisationBuilding When()
+    protected AddOrganisationBuilding AddOrganisationBuildingCommand
         => new(
             _organisationBuildingId,
             new OrganisationId(_organisationId),
@@ -83,25 +81,50 @@ public class WhenAddingAMainOrganisationBuilding
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    protected override int ExpectedNumberOfEvents
-        => 2;
-
     [Fact]
-    public void AddsAnOrganisationBuilding()
+    public async Task PublishesTwoEvents()
     {
-        var organisationBuildingAdded = PublishedEvents.First().UnwrapBody<OrganisationBuildingAdded>();
-        organisationBuildingAdded.OrganisationId.Should().Be(_organisationId);
-        organisationBuildingAdded.BuildingId.Should().Be(_buildingId);
-        organisationBuildingAdded.IsMainBuilding.Should().Be(_isMainBuilding);
-        organisationBuildingAdded.ValidFrom.Should().Be(_validFrom);
-        organisationBuildingAdded.ValidTo.Should().Be(_validTo);
+        await Given(Events).When(AddOrganisationBuildingCommand, User).ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
     [Fact]
-    public void AssignsAMainBuilding()
+    public async Task AddsAnOrganisationBuilding()
     {
-        var organisationBuildingAdded = PublishedEvents[1].UnwrapBody<MainBuildingAssignedToOrganisation>();
-        organisationBuildingAdded.OrganisationId.Should().Be(_organisationId);
-        organisationBuildingAdded.MainBuildingId.Should().Be(_buildingId);
+        await Given(Events).When(AddOrganisationBuildingCommand, User).Then();
+
+        PublishedEvents
+            .First()
+            .UnwrapBody<OrganisationBuildingAdded>()
+            .Should()
+            .BeEquivalentTo(
+                new OrganisationBuildingAdded(
+                    _organisationId,
+                    _organisationBuildingId,
+                    _buildingId,
+                    "Gebouw A",
+                    _isMainBuilding,
+                    _validFrom,
+                    _validTo)
+            , opt =>
+                    opt.Excluding(e => e.Timestamp)
+                        .Excluding(e =>e .Version));
+    }
+
+    [Fact]
+    public async Task AssignsAMainBuilding()
+    {
+        await Given(Events).When(AddOrganisationBuildingCommand, User).Then();
+
+        PublishedEvents[1]
+            .UnwrapBody<MainBuildingAssignedToOrganisation>()
+            .Should()
+            .BeEquivalentTo(
+                new MainBuildingAssignedToOrganisation(
+                    _organisationId,
+                    _buildingId,
+                    _organisationBuildingId)
+                , opt =>
+                    opt.Excluding(e => e.Timestamp)
+                        .Excluding(e =>e .Version));
     }
 }

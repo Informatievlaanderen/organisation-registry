@@ -28,7 +28,7 @@ public class WhenAddingAnOrganisationKey : Specification<AddOrganisationKeyComma
     private readonly DateTime _validTo;
     private readonly DateTime _validFrom;
 
-    public WhenAddingAnOrganisationKey(ITestOutputHelper helper) : base(helper, BuildHandler)
+    public WhenAddingAnOrganisationKey(ITestOutputHelper helper) : base(helper)
     {
         _keyId = Guid.NewGuid();
         _organisationKeyId = Guid.NewGuid();
@@ -38,7 +38,7 @@ public class WhenAddingAnOrganisationKey : Specification<AddOrganisationKeyComma
         _value = "12345ABC-@#$";
     }
 
-    private static AddOrganisationKeyCommandHandler BuildHandler(ISession session)
+    protected override AddOrganisationKeyCommandHandler BuildHandler(ISession session)
     {
         var securityServiceMock = new Mock<ISecurityService>();
         securityServiceMock

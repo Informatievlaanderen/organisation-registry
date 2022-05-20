@@ -33,8 +33,7 @@ public class WhenAddingAMainOrganisationLocationWhenThereAlreadyIsOne
     private readonly string _ovoNumber;
 
     public WhenAddingAMainOrganisationLocationWhenThereAlreadyIsOne(ITestOutputHelper helper) : base(
-        helper,
-        BuildHandler)
+        helper)
     {
         _organisationId = Guid.NewGuid();
         _locationAId = Guid.NewGuid();
@@ -46,7 +45,7 @@ public class WhenAddingAMainOrganisationLocationWhenThereAlreadyIsOne
         _ovoNumber = "OVO000012345";
     }
 
-    private static AddOrganisationLocationCommandHandler BuildHandler(ISession session)
+    protected override AddOrganisationLocationCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<AddOrganisationLocationCommandHandler>>().Object,
             session,
