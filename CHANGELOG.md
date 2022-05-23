@@ -1,3 +1,11 @@
+# [1.192.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.191.0...v1.192.0) (2022-05-23)
+
+
+### Features
+
+* or-1045 add missing identity server ui ([b6b4c76](https://github.com/informatievlaanderen/organisation-registry/commit/b6b4c76e62a764af653834e412bdb6ec258d84ac))
+* or-1045 fix identityserver chrome samesite cookies ([793e4f8](https://github.com/informatievlaanderen/organisation-registry/commit/793e4f8f22bced7779f31563912ad8d88c382ba0)), closes [/github.com/IdentityServer/IdentityServer4/issues/4165#issuecomment-599987118](https://github.com//github.com/IdentityServer/IdentityServer4/issues/4165/issues/issuecomment-599987118)
+
 # [1.191.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.190.0...v1.191.0) (2022-05-23)
 
 
