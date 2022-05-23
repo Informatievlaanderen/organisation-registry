@@ -3,6 +3,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLabel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using LabelType;
@@ -11,55 +12,43 @@ using OrganisationRegistry.Infrastructure.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
+using Tests.Shared;
 using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenAddingAnOrganisationLabel : OldSpecification2<AddOrganisationLabelCommandHandler, AddOrganisationLabel>
+public class WhenAddingAnOrganisationLabel : Specification<AddOrganisationLabelCommandHandler, AddOrganisationLabel>
 {
-    private Guid _organisationId;
-    private Guid _labelId;
-    private Guid _organisationLabelId;
-    private const string Value = "12345ABC-@#$";
-    private DateTime _validTo;
-    private DateTime _validFrom;
+    private readonly Guid _organisationId;
+    private readonly Guid _labelId;
+    private readonly Guid _organisationLabelId;
+    private readonly string _value;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
+    private readonly string _labelName;
 
     public WhenAddingAnOrganisationLabel(ITestOutputHelper helper) : base(helper)
-    {
-    }
-
-    protected override AddOrganisationLabelCommandHandler BuildHandler()
-    {
-        var securityServiceMock = new Mock<ISecurityService>();
-        securityServiceMock
-            .Setup(
-                service =>
-                    service.CanUseLabelType(
-                        It.IsAny<IUser>(),
-                        It.IsAny<Guid>()))
-            .Returns(true);
-
-        return new AddOrganisationLabelCommandHandler(
-            new Mock<ILogger<AddOrganisationLabelCommandHandler>>().Object,
-            Session,
-            new OrganisationRegistryConfigurationStub());
-    }
-
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
     {
         _labelId = Guid.NewGuid();
         _organisationLabelId = Guid.NewGuid();
         _validFrom = DateTime.Now.AddDays(1);
         _validTo = DateTime.Now.AddDays(2);
         _organisationId = Guid.NewGuid();
-        return new List<IEvent>
+        _labelName = "Label A";
+        _value = "12345ABC-@#$";
+    }
+
+    protected override AddOrganisationLabelCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<AddOrganisationLabelCommandHandler>>().Object,
+            session,
+            new OrganisationRegistryConfigurationStub());
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -74,36 +63,50 @@ public class WhenAddingAnOrganisationLabel : OldSpecification2<AddOrganisationLa
                 null,
                 null,
                 null),
-            new LabelTypeCreated(_labelId, "Label A")
+            new LabelTypeCreated(_labelId, _labelName)
         };
-    }
 
-    protected override AddOrganisationLabel When()
+    private AddOrganisationLabel AddOrganisationLabelCommand
         => new(
             _organisationLabelId,
             new OrganisationId(_organisationId),
             new LabelTypeId(_labelId),
-            Value,
+            _value,
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    protected override int ExpectedNumberOfEvents
-        => 1;
-
     [Fact]
-    public void AnOrganisationLabelAddedEventIsPublished()
+    public async Task PublishesOneEvent()
     {
-        PublishedEvents.First().Should().BeOfType<Envelope<OrganisationLabelAdded>>();
+        await Given(Events)
+            .When(AddOrganisationLabelCommand, UserBuilder.AlgemeenBeheerder())
+            .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
     [Fact]
-    public void TheEventContainsTheCorrectData()
+    public async Task AnOrganisationLabelAddedEventIsPublished()
     {
-        var organisationLabelAdded = PublishedEvents.First().UnwrapBody<OrganisationLabelAdded>();
-        organisationLabelAdded.OrganisationId.Should().Be(_organisationId);
-        organisationLabelAdded.LabelTypeId.Should().Be(_labelId);
-        organisationLabelAdded.Value.Should().Be(Value);
-        organisationLabelAdded.ValidFrom.Should().Be(_validFrom);
-        organisationLabelAdded.ValidTo.Should().Be(_validTo);
+        await Given(Events).When(AddOrganisationLabelCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        PublishedEvents[0].Should().BeOfType<Envelope<OrganisationLabelAdded>>();
+    }
+
+    [Fact]
+    public async Task TheEventContainsTheCorrectData()
+    {
+        await Given(Events).When(AddOrganisationLabelCommand, UserBuilder.AlgemeenBeheerder()).Then();
+
+        PublishedEvents[0]
+            .UnwrapBody<OrganisationLabelAdded>()
+            .Should()
+            .BeEquivalentTo(
+                new OrganisationLabelAdded(
+                    _organisationId,
+                    _organisationLabelId,
+                    _labelId,
+                    _labelName,
+                    _value,
+                    _validFrom,
+                    _validTo),
+                opt => opt.ExcludeEventProperties());
     }
 }
