@@ -1,3 +1,10 @@
+# [1.190.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.189.1...v1.190.0) (2022-05-23)
+
+
+### Features
+
+* or-1013 add manual refresh option ([3354812](https://github.com/informatievlaanderen/organisation-registry/commit/33548123d157a8064acc7d6222f00aae5ce345da))
+
 ## [1.189.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.189.0...v1.189.1) (2022-05-20)
 
 # [1.189.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.188.0...v1.189.0) (2022-05-20)
