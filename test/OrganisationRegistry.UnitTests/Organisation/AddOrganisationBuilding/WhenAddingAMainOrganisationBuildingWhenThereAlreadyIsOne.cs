@@ -46,9 +46,6 @@ public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : Specific
             session,
             new DateTimeProvider());
 
-    private static IUser User
-        => new UserBuilder().Build();
-
     private IEvent[] Events
         => new IEvent[]
         {
@@ -90,7 +87,7 @@ public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : Specific
     public async Task PublishesNoEvents()
     {
         await Given(Events)
-            .When(AddOrganisationBuildingCommand, User)
+            .When(AddOrganisationBuildingCommand, UserBuilder.User())
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
@@ -98,9 +95,8 @@ public class WhenAddingAMainOrganisationBuildingWhenThereAlreadyIsOne : Specific
     public async Task ThrowsAnException()
     {
         await Given(Events)
-            .When(AddOrganisationBuildingCommand, User)
+            .When(AddOrganisationBuildingCommand, UserBuilder.User())
             .ThenThrows<OrganisationAlreadyHasAMainBuildingInThisPeriod>()
             .WithMessage("Deze organisatie heeft reeds een hoofdgebouw binnen deze periode.");
     }
-
 }

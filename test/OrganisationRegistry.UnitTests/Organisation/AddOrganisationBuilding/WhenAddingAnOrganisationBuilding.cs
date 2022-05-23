@@ -42,9 +42,6 @@ public class WhenAddingAMainOrganisationBuilding
         _organisationId = Guid.NewGuid();
     }
 
-    protected static IUser User
-        => new UserBuilder().Build();
-
 
     protected override AddOrganisationBuildingCommandHandler BuildHandler(ISession session)
         => new(
@@ -85,13 +82,13 @@ public class WhenAddingAMainOrganisationBuilding
     [Fact]
     public async Task PublishesTwoEvents()
     {
-        await Given(Events).When(AddOrganisationBuildingCommand, User).ThenItPublishesTheCorrectNumberOfEvents(2);
+        await Given(Events).When(AddOrganisationBuildingCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
     [Fact]
     public async Task AddsAnOrganisationBuilding()
     {
-        await Given(Events).When(AddOrganisationBuildingCommand, User).Then();
+        await Given(Events).When(AddOrganisationBuildingCommand, UserBuilder.User()).Then();
 
         PublishedEvents
             .First()
@@ -114,7 +111,7 @@ public class WhenAddingAMainOrganisationBuilding
     [Fact]
     public async Task AssignsAMainBuilding()
     {
-        await Given(Events).When(AddOrganisationBuildingCommand, User).Then();
+        await Given(Events).When(AddOrganisationBuildingCommand, UserBuilder.User()).Then();
 
         PublishedEvents[1]
             .UnwrapBody<MainBuildingAssignedToOrganisation>()

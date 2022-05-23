@@ -47,9 +47,6 @@ public class WhenAddingAnOrganisationContact
             session
         );
 
-    private static IUser User
-        => new UserBuilder().Build();
-
     private IEvent[] Events
         => new IEvent[]
         {
@@ -82,7 +79,7 @@ public class WhenAddingAnOrganisationContact
     public async Task PublishesOneEvent()
     {
         await Given(Events)
-            .When(AddOrganisationContactCommand, User)
+            .When(AddOrganisationContactCommand, UserBuilder.User())
             .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
@@ -90,7 +87,7 @@ public class WhenAddingAnOrganisationContact
     public async Task AddsAnOrganisationContact()
     {
         await Given(Events)
-            .When(AddOrganisationContactCommand, User)
+            .When(AddOrganisationContactCommand, UserBuilder.User())
             .Then();
         PublishedEvents
             .First()

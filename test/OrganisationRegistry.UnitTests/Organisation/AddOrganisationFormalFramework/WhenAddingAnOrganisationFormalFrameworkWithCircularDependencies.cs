@@ -44,11 +44,6 @@ public class WhenAddingAnOrganisationFormalFrameworkWithCircularDependencies : S
             new DateTimeProviderStub(DateTime.Now),
             Mock.Of<IOrganisationRegistryConfiguration>());
 
-    private static IUser User
-        => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
-
     private IEvent[] Events
         => new IEvent[]
         {
@@ -87,7 +82,7 @@ public class WhenAddingAnOrganisationFormalFrameworkWithCircularDependencies : S
     public async Task PublishesNoEvents()
     {
         await Given(Events)
-            .When(AddOrganisationFormalFrameworkCommand, User)
+            .When(AddOrganisationFormalFrameworkCommand, UserBuilder.AlgemeenBeheerder())
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
@@ -95,7 +90,7 @@ public class WhenAddingAnOrganisationFormalFrameworkWithCircularDependencies : S
     public async Task ThrowsADomainException()
     {
         await Given(Events)
-            .When(AddOrganisationFormalFrameworkCommand, User)
+            .When(AddOrganisationFormalFrameworkCommand, UserBuilder.AlgemeenBeheerder())
             .ThenThrows<CircularRelationInFormalFramework>();
     }
 }
