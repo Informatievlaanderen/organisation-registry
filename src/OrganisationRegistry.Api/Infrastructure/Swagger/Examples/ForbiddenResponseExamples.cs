@@ -21,13 +21,13 @@ namespace OrganisationRegistry.Api.Infrastructure.Swagger.Examples
         }
 
         public ProblemDetails GetExamples()
-            => new ProblemDetails
+            => new()
             {
                 ProblemTypeUri = "https://tools.ietf.org/html/rfc7231#section-6.5.3",
                 HttpStatus = StatusCodes.Status400BadRequest,
                 Title = "Forbidden",
                 Detail = "",
-                ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext)
+                ProblemInstanceUri = _problemDetailsHelper.GetInstanceUri(_httpContextAccessor.HttpContext!)
             };
     }
 }

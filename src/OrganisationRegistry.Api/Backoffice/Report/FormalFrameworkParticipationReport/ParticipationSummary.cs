@@ -18,10 +18,10 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkParticipatio
     public class ParticipationSummary
     {
         [ExcludeFromCsv] public Guid OrganisationId { get; set; }
-        [DisplayName("Entiteit")] public string OrganisationName { get; set; }
+        [DisplayName("Entiteit")] public string? OrganisationName { get; set; }
 
         [ExcludeFromCsv] public Guid BodyId { get; set; }
-        [DisplayName("Orgaan")] public string BodyName { get; set; }
+        [DisplayName("Orgaan")] public string? BodyName { get; set; }
 
         [DisplayName("Percentage Man effectief")] public decimal EffectiveMalePercentage { get; set; }
         [DisplayName("Percentage Vrouw effectief")] public decimal EffectiveFemalePercentage { get; set; }
@@ -49,10 +49,10 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkParticipatio
         [DisplayName("Man ok")] public bool IsEffectiveCompliant { get; set; }
 
         [DisplayName("Beleidsdomein Id")] public Guid? PolicyDomainClassificationId { get; set; }
-        [DisplayName("Beleidsdomein Naam")] public string PolicyDomainClassificationName { get; set; }
+        [DisplayName("Beleidsdomein Naam")] public string? PolicyDomainClassificationName { get; set; }
 
         [DisplayName("Verantwoordelijke Minister Id")] public Guid? ResponsibleMinisterClassificationId { get; set; }
-        [DisplayName("Verantwoordelijke Minister Naam")] public string ResponsibleMinisterClassificationName { get; set; }
+        [DisplayName("Verantwoordelijke Minister Naam")] public string? ResponsibleMinisterClassificationName { get; set; }
 
         /// <summary>
         /// </summary>

@@ -17,12 +17,13 @@
             public bool IsMainLocation { get; set; }
 
             public Guid? LocationTypeId { get; set; }
-            public string LocationTypeName { get; set; }
+            public string? LocationTypeName { get; set; }
             public Period Validity { get; set; }
 
-            protected OrganisationLocation()
-            {
-            }
+#pragma warning disable CS8618
+            private OrganisationLocation()
+#pragma warning restore CS8618
+            { }
 
             public OrganisationLocation(
                 Guid organisationLocationId,
@@ -30,7 +31,7 @@
                 string formattedAddress,
                 bool isMainLocation,
                 Guid? locationTypeId,
-                string locationTypeName,
+                string? locationTypeName,
                 Period validity)
             {
                 OrganisationLocationId = organisationLocationId;

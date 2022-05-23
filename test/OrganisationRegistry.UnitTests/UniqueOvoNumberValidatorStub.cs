@@ -9,7 +9,7 @@ namespace OrganisationRegistry.UnitTests
         public UniqueOvoNumberValidatorStub(bool isOvoNumberTakenReturnValue)
             => _isOvoNumberTakenReturnValue = isOvoNumberTakenReturnValue;
 
-        public bool IsOvoNumberTaken(string ovoNumber)
+        public bool IsOvoNumberTaken(string? ovoNumber)
             => _isOvoNumberTakenReturnValue;
 
         public bool IsOvoNumberTaken(Guid id, string ovoNumber)

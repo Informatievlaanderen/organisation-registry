@@ -13,10 +13,8 @@
             _context = context;
         }
 
-        public bool IsOvoNumberTaken(string ovoNumber)
-        {
-            return _context.OrganisationDetail.Any(item => item.OvoNumber == ovoNumber);
-        }
+        public bool IsOvoNumberTaken(string? ovoNumber)
+            => _context.OrganisationDetail.Any(item => item.OvoNumber == ovoNumber);
 
         public bool IsOvoNumberTaken(Guid id, string ovoNumber)
         {

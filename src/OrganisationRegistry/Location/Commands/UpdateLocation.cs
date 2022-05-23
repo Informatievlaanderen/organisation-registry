@@ -4,11 +4,11 @@ namespace OrganisationRegistry.Location.Commands
     {
         public LocationId LocationId => Id;
 
-        public string CrabLocationId { get; }
+        public string? CrabLocationId { get; }
         public Address Address { get; }
 
         public UpdateLocation(LocationId locationId,
-            string crabLocationId,
+            string? crabLocationId,
             string street,
             string zipCode,
             string city,

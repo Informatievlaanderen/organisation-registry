@@ -14,6 +14,8 @@ namespace OrganisationRegistry.ElasticSearch.Bodies
             LifecyclePhases = new List<BodyLifecyclePhase>();
             Organisations = new List<BodyOrganisation>();
             FormalFrameworks = new List<BodyFormalFramework>();
+            Participations = new List<BodyParticipation>();
+            FormalValidity = Period.Infinite();
         }
 
         public int ChangeId { get; set; }
@@ -22,75 +24,77 @@ namespace OrganisationRegistry.ElasticSearch.Bodies
 
         public Guid Id { get; set; }
 
-        public string BodyNumber { get; set; }
+        public string BodyNumber { get; set; } = null!;
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
-        public string ShortName { get; set; }
+        public string? ShortName { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         public Period FormalValidity { get; set; }
 
-        public static TypeMappingDescriptor<BodyDocument> Mapping(TypeMappingDescriptor<BodyDocument> map) => map
-
-            .Properties(props => props
-
-                .Number(n => n
-                    .Name(p => p.ChangeId))
-
-                .Date(d => d
-                    .Name(p => p.ChangeTime))
-
-                .Keyword(k => k
-                    .Name(p => p.Id))
-
-                .Keyword(k => k
-                    .Name(p => p.BodyNumber))
-
-                .Text(t => t
-                    .Name(p => p.Name)
-                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
-
-                .Text(t => t
-                    .Name(p => p.ShortName)
-                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
-
-                .Text(t => t
-                    .Name(p => p.Description)
-                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
-
-                .Object<Period>(o => o
-                    .Name(p => p.FormalValidity)
-                    .Properties(Period.Mapping))
-
-                .Nested<BodySeat>(n => n
-                    .Name(p => p.Seats)
-                    .IncludeInRoot()
-                    .Properties(BodySeat.Mapping))
-
-                .Nested<BodyLifecyclePhase>(n => n
-                    .Name(p => p.LifecyclePhases)
-                    .IncludeInRoot()
-                    .Properties(BodyLifecyclePhase.Mapping))
-
-                .Nested<BodyOrganisation>(n => n
-                    .Name(p => p.Organisations)
-                    .IncludeInRoot()
-                    .Properties(BodyOrganisation.Mapping))
-
-                .Nested<BodyFormalFramework>(n => n
-                    .Name(p => p.FormalFrameworks)
-                    .IncludeInRoot()
-                    .Properties(BodyFormalFramework.Mapping))
-
-                .Nested<BodyParticipation>(n => n
-                    .Name(p => p.Participations)
-                    .IncludeInRoot()
-                    .Properties(BodyParticipation.Mapping))
-            );
+        public static TypeMappingDescriptor<BodyDocument> Mapping(TypeMappingDescriptor<BodyDocument> map)
+            => map
+                .Properties(
+                    props => props
+                        .Number(
+                            n => n
+                                .Name(p => p.ChangeId))
+                        .Date(
+                            d => d
+                                .Name(p => p.ChangeTime))
+                        .Keyword(
+                            k => k
+                                .Name(p => p.Id))
+                        .Keyword(
+                            k => k
+                                .Name(p => p.BodyNumber))
+                        .Text(
+                            t => t
+                                .Name(p => p.Name)
+                                .Fields(x => x.Keyword(y => y.Name("keyword"))))
+                        .Text(
+                            t => t
+                                .Name(p => p.ShortName)
+                                .Fields(x => x.Keyword(y => y.Name("keyword"))))
+                        .Text(
+                            t => t
+                                .Name(p => p.Description)
+                                .Fields(x => x.Keyword(y => y.Name("keyword"))))
+                        .Object<Period>(
+                            o => o
+                                .Name(p => p.FormalValidity)
+                                .Properties(Period.Mapping))
+                        .Nested<BodySeat>(
+                            n => n
+                                .Name(p => p.Seats)
+                                .IncludeInRoot()
+                                .Properties(BodySeat.Mapping))
+                        .Nested<BodyLifecyclePhase>(
+                            n => n
+                                .Name(p => p.LifecyclePhases)
+                                .IncludeInRoot()
+                                .Properties(BodyLifecyclePhase.Mapping))
+                        .Nested<BodyOrganisation>(
+                            n => n
+                                .Name(p => p.Organisations)
+                                .IncludeInRoot()
+                                .Properties(BodyOrganisation.Mapping))
+                        .Nested<BodyFormalFramework>(
+                            n => n
+                                .Name(p => p.FormalFrameworks)
+                                .IncludeInRoot()
+                                .Properties(BodyFormalFramework.Mapping))
+                        .Nested<BodyParticipation>(
+                            n => n
+                                .Name(p => p.Participations)
+                                .IncludeInRoot()
+                                .Properties(BodyParticipation.Mapping))
+                );
 
         public IList<BodySeat> Seats { get; set; }
+
         public class BodySeat
         {
             public Guid BodySeatId { get; set; }
@@ -135,38 +139,40 @@ namespace OrganisationRegistry.ElasticSearch.Bodies
                 Validity = validity;
             }
 
-            public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodySeat> map) => map
-                .Keyword(k => k
-                    .Name(p => p.BodySeatId))
-
-                .Keyword(k => k
-                    .Name(p => p.BodySeatNumber))
-
-                .Text(t => t
-                    .Name(p => p.Name)
-                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
-
-                .Boolean(b => b
-                    .Name(p => p.PaidSeat))
-
-                .Boolean(b => b
-                    .Name(p => p.EntitledToVote))
-
-                .Keyword(k => k
-                    .Name(p => p.SeatTypeId))
-
-                .Text(t => t
-                    .Name(p => p.SeatTypeName)
-                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
-
-                .Nested<BodyMandate>(n => n
-                    .Name(p => p.Mandates)
-                    .IncludeInRoot()
-                    .Properties(BodyMandate.Mapping))
-
-                .Object<Period>(o => o
-                    .Name(p => p.Validity)
-                    .Properties(Period.Mapping));
+            public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodySeat> map)
+                => map
+                    .Keyword(
+                        k => k
+                            .Name(p => p.BodySeatId))
+                    .Keyword(
+                        k => k
+                            .Name(p => p.BodySeatNumber))
+                    .Text(
+                        t => t
+                            .Name(p => p.Name)
+                            .Fields(x => x.Keyword(y => y.Name("keyword"))))
+                    .Boolean(
+                        b => b
+                            .Name(p => p.PaidSeat))
+                    .Boolean(
+                        b => b
+                            .Name(p => p.EntitledToVote))
+                    .Keyword(
+                        k => k
+                            .Name(p => p.SeatTypeId))
+                    .Text(
+                        t => t
+                            .Name(p => p.SeatTypeName)
+                            .Fields(x => x.Keyword(y => y.Name("keyword"))))
+                    .Nested<BodyMandate>(
+                        n => n
+                            .Name(p => p.Mandates)
+                            .IncludeInRoot()
+                            .Properties(BodyMandate.Mapping))
+                    .Object<Period>(
+                        o => o
+                            .Name(p => p.Validity)
+                            .Properties(Period.Mapping));
         }
 
         public class BodyMandate
@@ -211,39 +217,41 @@ namespace OrganisationRegistry.ElasticSearch.Bodies
                 Validity = validity;
             }
 
-            public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyMandate> map) => map
-                .Keyword(k => k
-                    .Name(p => p.BodyMandateId))
-
-                .Keyword(k => k
-                    .Name(p => p.OrganisationId))
-
-                .Text(t => t
-                    .Name(p => p.OrganisationName)
-                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
-
-                .Keyword(k => k
-                    .Name(p => p.FunctionTypeId))
-
-                .Text(t => t
-                    .Name(p => p.FunctionTypeName)
-                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
-
-                .Keyword(k => k
-                    .Name(p => p.PersonId))
-
-                .Text(t => t
-                    .Name(p => p.PersonName)
-                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
-
-                .Nested<Delegation>(n => n
-                    .Name(p => p.Delegations)
-                    .IncludeInRoot()
-                    .Properties(Delegation.Mapping))
-
-                .Object<Period>(o => o
-                    .Name(p => p.Validity)
-                    .Properties(Period.Mapping));
+            public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyMandate> map)
+                => map
+                    .Keyword(
+                        k => k
+                            .Name(p => p.BodyMandateId))
+                    .Keyword(
+                        k => k
+                            .Name(p => p.OrganisationId))
+                    .Text(
+                        t => t
+                            .Name(p => p.OrganisationName)
+                            .Fields(x => x.Keyword(y => y.Name("keyword"))))
+                    .Keyword(
+                        k => k
+                            .Name(p => p.FunctionTypeId))
+                    .Text(
+                        t => t
+                            .Name(p => p.FunctionTypeName)
+                            .Fields(x => x.Keyword(y => y.Name("keyword"))))
+                    .Keyword(
+                        k => k
+                            .Name(p => p.PersonId))
+                    .Text(
+                        t => t
+                            .Name(p => p.PersonName)
+                            .Fields(x => x.Keyword(y => y.Name("keyword"))))
+                    .Nested<Delegation>(
+                        n => n
+                            .Name(p => p.Delegations)
+                            .IncludeInRoot()
+                            .Properties(Delegation.Mapping))
+                    .Object<Period>(
+                        o => o
+                            .Name(p => p.Validity)
+                            .Properties(Period.Mapping));
         }
 
         public class Delegation
@@ -272,28 +280,31 @@ namespace OrganisationRegistry.ElasticSearch.Bodies
                 Contacts = contacts;
             }
 
-            public static IPromise<IProperties> Mapping(PropertiesDescriptor<Delegation> map) => map
-                .Keyword(k => k
-                    .Name(p => p.DelegationAssignmentId))
-
-                .Keyword(k => k
-                    .Name(p => p.PersonId))
-
-                .Text(t => t
-                    .Name(p => p.PersonName)
-                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
-
-                .Nested<Contact>(n => n
-                    .Name(p => p.Contacts)
-                    .IncludeInRoot()
-                    .Properties(Contact.Mapping))
-
-                .Object<Period>(o => o
-                    .Name(p => p.Validity)
-                    .Properties(Period.Mapping));
+            public static IPromise<IProperties> Mapping(PropertiesDescriptor<Delegation> map)
+                => map
+                    .Keyword(
+                        k => k
+                            .Name(p => p.DelegationAssignmentId))
+                    .Keyword(
+                        k => k
+                            .Name(p => p.PersonId))
+                    .Text(
+                        t => t
+                            .Name(p => p.PersonName)
+                            .Fields(x => x.Keyword(y => y.Name("keyword"))))
+                    .Nested<Contact>(
+                        n => n
+                            .Name(p => p.Contacts)
+                            .IncludeInRoot()
+                            .Properties(Contact.Mapping))
+                    .Object<Period>(
+                        o => o
+                            .Name(p => p.Validity)
+                            .Properties(Period.Mapping));
         }
 
         public IList<BodyLifecyclePhase> LifecyclePhases { get; set; }
+
         public class BodyLifecyclePhase
         {
             public Guid BodyLifecyclePhaseId { get; set; }
@@ -316,23 +327,26 @@ namespace OrganisationRegistry.ElasticSearch.Bodies
                 Validity = validity;
             }
 
-            public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyLifecyclePhase> map) => map
-                .Keyword(k => k
-                    .Name(p => p.BodyLifecyclePhaseId))
-
-                .Keyword(k => k
-                    .Name(p => p.LifecyclePhaseTypeId))
-
-                .Text(t => t
-                    .Name(p => p.LifecyclePhaseTypeName)
-                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
-
-                .Object<Period>(o => o
-                    .Name(p => p.Validity)
-                    .Properties(Period.Mapping));
+            public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyLifecyclePhase> map)
+                => map
+                    .Keyword(
+                        k => k
+                            .Name(p => p.BodyLifecyclePhaseId))
+                    .Keyword(
+                        k => k
+                            .Name(p => p.LifecyclePhaseTypeId))
+                    .Text(
+                        t => t
+                            .Name(p => p.LifecyclePhaseTypeName)
+                            .Fields(x => x.Keyword(y => y.Name("keyword"))))
+                    .Object<Period>(
+                        o => o
+                            .Name(p => p.Validity)
+                            .Properties(Period.Mapping));
         }
 
         public IList<BodyOrganisation> Organisations { get; set; }
+
         public class BodyOrganisation
         {
             public Guid BodyOrganisationId { get; set; }
@@ -355,23 +369,26 @@ namespace OrganisationRegistry.ElasticSearch.Bodies
                 Validity = validity;
             }
 
-            public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyOrganisation> map) => map
-                .Keyword(k => k
-                    .Name(p => p.BodyOrganisationId))
-
-                .Keyword(k => k
-                    .Name(p => p.OrganisationId))
-
-                .Text(t => t
-                    .Name(p => p.Name)
-                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
-
-                .Object<Period>(o => o
-                    .Name(p => p.Validity)
-                    .Properties(Period.Mapping));
+            public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyOrganisation> map)
+                => map
+                    .Keyword(
+                        k => k
+                            .Name(p => p.BodyOrganisationId))
+                    .Keyword(
+                        k => k
+                            .Name(p => p.OrganisationId))
+                    .Text(
+                        t => t
+                            .Name(p => p.Name)
+                            .Fields(x => x.Keyword(y => y.Name("keyword"))))
+                    .Object<Period>(
+                        o => o
+                            .Name(p => p.Validity)
+                            .Properties(Period.Mapping));
         }
 
         public IList<BodyFormalFramework> FormalFrameworks { get; set; }
+
         public class BodyFormalFramework
         {
             public Guid BodyFormalFrameworkId { get; set; }
@@ -396,30 +413,35 @@ namespace OrganisationRegistry.ElasticSearch.Bodies
                 Validity = validity;
             }
 
-            public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyFormalFramework> map) => map
-                .Keyword(k => k
-                    .Name(p => p.BodyFormalFrameworkId))
-
-                .Keyword(k => k
-                    .Name(p => p.FormalFrameworkId))
-
-                .Text(t => t
-                    .Name(p => p.FormalFrameworkName)
-                    .Fields(x => x.Keyword(y => y.Name("keyword"))))
-
-                .Object<Period>(o => o
-                    .Name(p => p.Validity)
-                    .Properties(Period.Mapping));
+            public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyFormalFramework> map)
+                => map
+                    .Keyword(
+                        k => k
+                            .Name(p => p.BodyFormalFrameworkId))
+                    .Keyword(
+                        k => k
+                            .Name(p => p.FormalFrameworkId))
+                    .Text(
+                        t => t
+                            .Name(p => p.FormalFrameworkName)
+                            .Fields(x => x.Keyword(y => y.Name("keyword"))))
+                    .Object<Period>(
+                        o => o
+                            .Name(p => p.Validity)
+                            .Properties(Period.Mapping));
         }
 
         public IList<BodyParticipation> Participations { get; set; }
+
         public class BodyParticipation
         {
             public Guid BodyParticipationId { get; set; }
 
-            public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyParticipation> map) => map
-                .Keyword(k => k
-                    .Name(p => p.BodyParticipationId));
+            public static IPromise<IProperties> Mapping(PropertiesDescriptor<BodyParticipation> map)
+                => map
+                    .Keyword(
+                        k => k
+                            .Name(p => p.BodyParticipationId));
         }
     }
 }

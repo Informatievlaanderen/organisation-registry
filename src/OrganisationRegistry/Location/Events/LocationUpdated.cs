@@ -6,8 +6,8 @@ namespace OrganisationRegistry.Location.Events
     {
         public Guid LocationId => Id;
 
-        public string CrabLocationId { get; set; }
-        public string PreviousCrabLocationId { get; set; }
+        public string? CrabLocationId { get; set; }
+        public string? PreviousCrabLocationId { get; set; }
 
         public string FormattedAddress { get; set; }
         public string PreviousFormattedAddress { get; set; }
@@ -26,13 +26,13 @@ namespace OrganisationRegistry.Location.Events
 
         public LocationUpdated(
             Guid locationId,
-            string crabLocationId,
+            string? crabLocationId,
             string formattedAddress,
             string street,
             string zipCode,
             string city,
             string country,
-            string previousCrabLocationId,
+            string? previousCrabLocationId,
             string previousFormattedAddress,
             string previousStreet,
             string previousZipCode,

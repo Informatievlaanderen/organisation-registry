@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Infrastructure;
 using Infrastructure.Security;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

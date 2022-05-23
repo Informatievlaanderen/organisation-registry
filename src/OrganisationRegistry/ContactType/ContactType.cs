@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.ContactType
 {
+    using System;
     using Events;
     using Infrastructure.Domain;
 
@@ -7,10 +8,15 @@ namespace OrganisationRegistry.ContactType
     {
         public string Name { get; private set; }
 
-        private ContactType() { }
+        private ContactType()
+        {
+            Name = string.Empty;
+        }
 
         public ContactType(ContactTypeId id, string name)
         {
+            Name = string.Empty;
+
             ApplyChange(new ContactTypeCreated(id, name));
         }
 

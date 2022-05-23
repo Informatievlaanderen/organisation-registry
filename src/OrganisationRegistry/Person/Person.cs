@@ -14,7 +14,11 @@ namespace OrganisationRegistry.Person
 
         public string FullName => $"{Name} {FirstName}";
 
-        private Person() { }
+        private Person()
+        {
+            FirstName = new PersonFirstName(string.Empty);
+            Name = new PersonName(string.Empty);
+        }
 
         public Person(
             PersonId id,
@@ -23,6 +27,9 @@ namespace OrganisationRegistry.Person
             Sex? sex,
             DateTime? dateOfBirth)
         {
+            FirstName = new PersonFirstName(string.Empty);
+            Name = new PersonName(string.Empty);
+
             ApplyChange(new PersonCreated(
                 id,
                 firstName,

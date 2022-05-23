@@ -9,15 +9,15 @@ namespace OrganisationRegistry.OrganisationRelationType.Events
         public string Name { get; }
         public string PreviousName { get; }
 
-        public string InverseName { get; set; }
-        public string PreviousInverseName { get; set; }
+        public string? InverseName { get; set; }
+        public string? PreviousInverseName { get; set; }
 
         public OrganisationRelationTypeUpdated(
             Guid organisationRelationTypeId,
             string name,
-            string inverseName,
+            string? inverseName,
             string previousName,
-            string previousInverseName)
+            string? previousInverseName)
         {
             Id = organisationRelationTypeId;
 

@@ -11,7 +11,6 @@ namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHel
     using OrganisationRegistry.Infrastructure.Commands;
     using OrganisationRegistry.Infrastructure.Domain;
     using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Organisation;
     using Xunit;
     using Xunit.Abstractions;
 

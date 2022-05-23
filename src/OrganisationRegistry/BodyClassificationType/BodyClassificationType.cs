@@ -7,10 +7,15 @@ namespace OrganisationRegistry.BodyClassificationType
     {
         public string Name { get; private set; }
 
-        private BodyClassificationType() { }
+        private BodyClassificationType()
+        {
+            Name = string.Empty;
+        }
 
         public BodyClassificationType(BodyClassificationTypeId id, string name)
         {
+            Name = string.Empty;
+
             ApplyChange(new BodyClassificationTypeCreated(id, name));
         }
 

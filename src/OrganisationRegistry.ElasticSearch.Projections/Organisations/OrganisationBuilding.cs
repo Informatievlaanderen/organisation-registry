@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 {
     using System.Data.Common;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using OrganisationRegistry.Organisation.Events;
@@ -31,7 +30,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             DbTransaction dbTransaction,
             IEnvelope<BuildingUpdated> message)
         {
-            return new ElasticMassChange
+            return await new ElasticMassChange
             (
                 elastic => elastic.TryAsync(() => elastic
                     .MassUpdateOrganisationAsync(
@@ -40,7 +39,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         "buildingName", message.Body.Name,
                         message.Number,
                         message.Timestamp))
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(
@@ -48,16 +47,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             DbTransaction dbTransaction,
             IEnvelope<OrganisationBuildingAdded> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
                 message.Body.OrganisationId,
                 document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
-
-                    if (document.Buildings == null)
-                        document.Buildings = new List<OrganisationDocument.OrganisationBuilding>();
 
                     document.Buildings.RemoveExistingListItems(x =>
                         x.OrganisationBuildingId == message.Body.OrganisationBuildingId);
@@ -70,7 +66,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.IsMainBuilding,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(
@@ -78,7 +74,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             DbTransaction dbTransaction,
             IEnvelope<OrganisationBuildingUpdated> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
                 message.Body.OrganisationId,
                 document =>
@@ -97,7 +93,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.IsMainBuilding,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(
@@ -105,7 +101,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             DbTransaction dbTransaction,
             IEnvelope<OrganisationTerminated> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
                 message.Body.OrganisationId,
                 document =>
@@ -123,7 +119,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         organisationBuilding.Validity.End = value;
                     }
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(
@@ -131,7 +127,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             DbTransaction dbTransaction,
             IEnvelope<OrganisationTerminatedV2> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
                 message.Body.OrganisationId,
                 document =>
@@ -149,7 +145,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         organisationBuilding.Validity.End = value;
                     }
                 }
-            );
+            ).ToAsyncResult();
         }
     }
 }

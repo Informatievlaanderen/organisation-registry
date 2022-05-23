@@ -15,9 +15,10 @@
             public bool IsBic { get; set; }
             public Period Validity { get; set; }
 
-            protected OrganisationBankAccount()
-            {
-            }
+#pragma warning disable CS8618
+            private OrganisationBankAccount()
+#pragma warning restore CS8618
+            { }
 
             public OrganisationBankAccount(
                 Guid organisationBankAccountId,

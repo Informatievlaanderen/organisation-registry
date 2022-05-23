@@ -12,7 +12,12 @@
         private Guid _formalFrameworkCategoryId;
         private string _formalFrameworkCategoryName;
 
-        public FormalFramework() { }
+        public FormalFramework()
+        {
+            Name = string.Empty;
+            _code = string.Empty;
+            _formalFrameworkCategoryName = string.Empty;
+        }
 
         public FormalFramework(
             FormalFrameworkId id,
@@ -20,6 +25,10 @@
             string code,
             FormalFrameworkCategory formalFrameworkCategory)
         {
+            Name = string.Empty;
+            _code = string.Empty;
+            _formalFrameworkCategoryName = string.Empty;
+
             ApplyChange(
                 new FormalFrameworkCreated(
                     id,
@@ -34,8 +43,14 @@
             ApplyChange(
                 new FormalFrameworkUpdated(
                     Id,
-                    name, code, formalFrameworkCategory.Id, formalFrameworkCategory.Name,
-                    Name, _code, _formalFrameworkCategoryId, _formalFrameworkCategoryName));
+                    name,
+                    code,
+                    formalFrameworkCategory.Id,
+                    formalFrameworkCategory.Name,
+                    Name,
+                    _code,
+                    _formalFrameworkCategoryId,
+                    _formalFrameworkCategoryName));
         }
 
         private void Apply(FormalFrameworkCreated @event)

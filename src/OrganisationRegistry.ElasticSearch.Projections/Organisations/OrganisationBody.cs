@@ -32,7 +32,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
         {
-            return new ElasticMassChange
+            return await new ElasticMassChange
             (
                 elastic => elastic.TryAsync(async () => await elastic
                     .MassUpdateOrganisationAsync(
@@ -41,21 +41,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         "bodyName", message.Body.Name,
                         message.Number,
                         message.Timestamp))
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationAdded> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
                 message.Body.OrganisationId,
                 document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
-
-                    if (document.Bodies == null)
-                        document.Bodies = new List<OrganisationDocument.OrganisationBody>();
 
                     document.Bodies.RemoveExistingListItems(x => x.BodyOrganisationId == message.Body.BodyOrganisationId);
 
@@ -66,7 +63,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.BodyName,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
@@ -102,9 +99,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
 
-                    if (document.Bodies == null)
-                        document.Bodies = new List<OrganisationDocument.OrganisationBody>();
-
                     document.Bodies.Add(
                         new OrganisationDocument.OrganisationBody(
                             message.Body.BodyOrganisationId,
@@ -115,7 +109,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 });
             }
 
-            return new ElasticPerDocumentChange<OrganisationDocument>(changes);
+            return await new ElasticPerDocumentChange<OrganisationDocument>(changes).ToAsyncResult();
         }
     }
 }

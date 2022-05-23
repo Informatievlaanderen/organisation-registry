@@ -7,10 +7,15 @@ namespace OrganisationRegistry.RegulationTheme
     {
         public RegulationThemeName Name { get; private set; }
 
-        private RegulationTheme() { }
+        private RegulationTheme()
+        {
+            Name = new RegulationThemeName(string.Empty);
+        }
 
         public RegulationTheme(RegulationThemeId id, RegulationThemeName name)
         {
+            Name = new RegulationThemeName(string.Empty);
+
             ApplyChange(new RegulationThemeCreated(id, name));
         }
 

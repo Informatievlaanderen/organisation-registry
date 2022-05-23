@@ -37,5 +37,9 @@
         [NonAction]
         protected Task<IActionResult> OkAsync(object? value)
             => Task.FromResult((IActionResult)Ok(value));
+
+        [NonAction]
+        protected Task<IActionResult> ContentAsync(string value)
+            => Task.FromResult((IActionResult)Content(value));
     }
 }

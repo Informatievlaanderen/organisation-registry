@@ -22,7 +22,7 @@
             OrganisationId organisationId,
             FunctionTypeId functionTypeId,
             PersonId personId,
-            Dictionary<ContactTypeId, string> contacts,
+            Dictionary<ContactTypeId, string>? contacts,
             ValidFrom validFrom,
             ValidTo validTo)
         {

@@ -4,10 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrganisationRegistry.Infrastructure.Commands;
 using Infrastructure.Domain;
-using Commands;
 using ContactType;
 using Handling;
-using Infrastructure.Authorization;
 
 public class UpdateOrganisationContactCommandHandler
     : BaseCommandHandler<UpdateOrganisationContactCommandHandler>,

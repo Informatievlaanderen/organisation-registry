@@ -10,6 +10,7 @@ using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Commands;
 using OrganisationRegistry.Organisation.Events;
+using Tests.Shared;
 using Xunit.Abstractions;
 
 public class

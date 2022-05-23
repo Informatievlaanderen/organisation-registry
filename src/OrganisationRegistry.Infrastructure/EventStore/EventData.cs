@@ -16,7 +16,9 @@ namespace OrganisationRegistry.Infrastructure.EventStore
         public string FirstName { get; private set; }
         public string UserId { get; private set; }
 
+#pragma warning disable CS8618
         public EventData()
+#pragma warning restore CS8618
         {
 
         }

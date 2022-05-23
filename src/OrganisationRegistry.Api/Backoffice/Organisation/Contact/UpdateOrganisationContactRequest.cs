@@ -4,7 +4,6 @@
     using ContactType;
     using FluentValidation;
     using OrganisationRegistry.Organisation;
-    using OrganisationRegistry.Organisation.Commands;
     using SqlServer.Organisation;
 
     public class UpdateOrganisationContactInternalRequest

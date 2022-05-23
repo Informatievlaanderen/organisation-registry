@@ -10,7 +10,9 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
             public Guid PurposeId { get; set; }
             public string PurposeName { get; set; }
 
+#pragma warning disable CS8618
             protected Purpose()
+#pragma warning restore CS8618
             {
             }
 

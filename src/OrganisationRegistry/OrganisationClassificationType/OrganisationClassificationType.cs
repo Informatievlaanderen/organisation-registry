@@ -7,12 +7,17 @@ namespace OrganisationRegistry.OrganisationClassificationType
     {
         public OrganisationClassificationTypeName Name { get; private set; }
 
-        private OrganisationClassificationType() { }
+        private OrganisationClassificationType()
+        {
+            Name = new OrganisationClassificationTypeName(string.Empty);
+        }
 
         public OrganisationClassificationType(
             OrganisationClassificationTypeId id,
             OrganisationClassificationTypeName name)
         {
+            Name = new OrganisationClassificationTypeName(string.Empty);
+
             ApplyChange(new OrganisationClassificationTypeCreated(id, name));
         }
 

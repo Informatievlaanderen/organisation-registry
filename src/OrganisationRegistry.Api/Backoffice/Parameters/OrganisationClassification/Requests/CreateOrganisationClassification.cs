@@ -15,7 +15,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
 
         public int Order { get; set; }
 
-        public string ExternalKey { get; set; }
+        public string? ExternalKey { get; set; }
 
         public bool Active { get; set; }
 

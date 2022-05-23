@@ -39,11 +39,11 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
 
         public string Name { get; set; }
         public string OvoNumber { get; set; }
-        public string ShortName { get; set; }
+        public string? ShortName { get; set; }
         public string? Article { get; set; }
         public Period Validity { get; set; }
         public Period? OperationalValidity { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public string KboNumber { get; set; }
         public bool? ShowOnVlaamseOverheidSites { get; set; }
         public string? ManagedBy { get; set; }

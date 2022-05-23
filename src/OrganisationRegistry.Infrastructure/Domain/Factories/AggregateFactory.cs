@@ -9,11 +9,15 @@
         {
             try
             {
-                return (T)Activator.CreateInstance(typeof(T), true);
+                var maybeInstance = (T?)Activator.CreateInstance(typeof(T), true);
+                if (maybeInstance is { } instance)
+                    return instance;
+
+                throw new AggregateInstanceNotConstructed(typeof(T));
             }
             catch (MissingMethodException)
             {
-                throw new MissingParameterLessConstructorException(typeof(T));
+                throw new MissingParameterLessConstructor(typeof(T));
             }
         }
     }

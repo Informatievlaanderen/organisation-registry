@@ -9,6 +9,7 @@ namespace OrganisationRegistry.Infrastructure.Config
     using System.Linq;
     using System.Threading.Tasks;
     using Events;
+    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
 
     public class BusRegistrar
@@ -63,23 +64,6 @@ namespace OrganisationRegistry.Infrastructure.Config
         public void RegisterReactionHandlers(params Type[] reactionHandlerTypes)
             => RegisterHandlers(typeof(IReactionHandler<>), InvokeReactionHandler, reactionHandlerTypes);
 
-        private void InvokeCommandHandler(Type @interface, Type executorType)
-            => InvokeHandler(
-                @interface,
-                executorType,
-                nameof(IHandlerRegistrar.RegisterCommandHandler),
-                new Func<dynamic, Task>(
-                    async x =>
-                    {
-                        LoggerExtensions.LogTrace(_logger, "Executing inner command handler for {CommandName} - {@Command} using {ExecutorType}", x.GetType(), x, executorType);
-
-                        var serviceProvider = _requestScopedServiceProvider();
-                        dynamic handler = serviceProvider.GetService(executorType);
-                        await handler.Handle(x);
-
-                        LoggerExtensions.LogTrace(_logger, "Finished executing inner command handler for {CommandName} - {@Command}", x.GetType(), x);
-                    }));
-
         private void InvokeEventHandler(Type @interface, Type executorType)
             => InvokeHandler(
                 @interface,
@@ -91,7 +75,7 @@ namespace OrganisationRegistry.Infrastructure.Config
                         LoggerExtensions.LogTrace(_logger, "Executing inner event handler for {EventName} - {@Event} using {ExecutorType}", envelope.GetType(), envelope, executorType);
 
                         var serviceProvider = _requestScopedServiceProvider();
-                        dynamic handler = serviceProvider.GetService(executorType);
+                        dynamic handler = serviceProvider.GetRequiredService(executorType);
                         await handler.Handle(dbConnection, dbTransaction, envelope);
 
                         LoggerExtensions.LogTrace(_logger, "Finished executing inner event handler for {EventName} - {@Event}", envelope.GetType(), envelope);
@@ -108,7 +92,7 @@ namespace OrganisationRegistry.Infrastructure.Config
                         LoggerExtensions.LogTrace(_logger, "Executing inner reaction handler for {ReactionName} - {@Event} using {ExecutorType}", envelope.GetType(), envelope, executorType);
 
                         var serviceProvider = _requestScopedServiceProvider();
-                        dynamic handler = serviceProvider.GetService(executorType);
+                        dynamic handler = serviceProvider.GetRequiredService(executorType);
                         var commands = await handler.Handle(envelope);
 
                         LoggerExtensions.LogTrace(_logger, "Finished executing inner reaction handler for {ReactionName} - {@Event}, resulting in {@Commands}", envelope.GetType(), envelope, commands);

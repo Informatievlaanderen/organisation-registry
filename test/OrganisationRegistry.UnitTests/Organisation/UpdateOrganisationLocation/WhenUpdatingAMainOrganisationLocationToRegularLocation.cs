@@ -13,6 +13,7 @@ using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
+using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -91,8 +92,7 @@ public class
     }
 
     protected override UpdateOrganisationLocation When()
-    {
-        return new UpdateOrganisationLocation(
+        => new(
             _organisationLocationId,
             new OrganisationId(_organisationId),
             new LocationId(_locationId),
@@ -101,7 +101,6 @@ public class
             new ValidFrom(_validFrom),
             new ValidTo(_validTo),
             Source.Wegwijs);
-    }
 
     protected override int ExpectedNumberOfEvents
         => 2;

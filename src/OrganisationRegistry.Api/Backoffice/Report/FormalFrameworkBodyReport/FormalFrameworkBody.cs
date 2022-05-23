@@ -21,7 +21,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkBodyReport
         public string BodyName { get; set; }
 
         [DisplayName("Korte naam")]
-        public string BodyShortName { get; set; }
+        public string? BodyShortName { get; set; }
 
         [DisplayName("Code")]
         public string BodyNumber { get; set; }
@@ -30,7 +30,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkBodyReport
         public Guid? OrganisationId { get; set; }
 
         [DisplayName("Entiteit")]
-        public string OrganisationName { get; set; }
+        public string? OrganisationName { get; set; }
 
         public FormalFrameworkBody(
             BodyDocument document,
@@ -96,15 +96,15 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkBodyReport
             foreach (var document in documents)
             {
                 var formalFrameworks = document
-                    .FormalFrameworks?
+                    .FormalFrameworks
                     .Where(x =>
                         x.FormalFrameworkId == formalFrameworkId &&
-                        (x.Validity == null ||
+                        (x.Validity.IsInfinite() ||
                          (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
                          (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))
                     .ToList();
 
-                if (formalFrameworks == null || !formalFrameworks.Any())
+                if (!formalFrameworks.Any())
                     continue;
 
                 formalFrameworkBodies.Add(new FormalFrameworkBody(document, @params));
@@ -143,7 +143,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkBodyReport
     public static class IsBodyOrganisationActiveExtension
     {
         public static bool IsBodyOrganisationActive(this BodyDocument.BodyOrganisation organisation)
-            => organisation.Validity.IsInfinit() ||
+            => organisation.Validity.IsInfinite() ||
                (!organisation.Validity.Start.HasValue || organisation.Validity.Start.Value <= DateTime.Now) &&
                (!organisation.Validity.End.HasValue || organisation.Validity.End.Value >= DateTime.Now);
     }

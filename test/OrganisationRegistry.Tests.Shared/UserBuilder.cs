@@ -1,6 +1,7 @@
-namespace OrganisationRegistry.Infrastructure.Authorization
+namespace OrganisationRegistry.Tests.Shared
 {
     using System.Collections.Generic;
+    using Infrastructure.Authorization;
 
     public class UserBuilder
     {

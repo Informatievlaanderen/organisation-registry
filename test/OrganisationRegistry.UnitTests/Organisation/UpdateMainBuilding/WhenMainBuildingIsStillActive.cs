@@ -10,6 +10,7 @@ using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
+using Tests.Shared;
 using Xunit.Abstractions;
 
 public class WhenMainBuildingIsStillActive : OldSpecification2<UpdateMainBuildingCommandHandler, UpdateMainBuilding>

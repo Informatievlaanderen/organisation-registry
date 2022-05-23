@@ -15,11 +15,9 @@
 
     public static class OrganisationRegistryExceptionHandler
     {
-        private static ILogger<OrganisationRegistryApiExceptionHandler> _logger;
-
         public static IApplicationBuilder UseOrganisationRegistryExceptionHandler(this IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
-            _logger = loggerFactory.CreateLogger<OrganisationRegistryApiExceptionHandler>();
+            var logger = loggerFactory.CreateLogger<OrganisationRegistryApiExceptionHandler>();
 
             app.UseExceptionHandler(builder =>
             {
@@ -38,19 +36,19 @@
 
                     if (exception is DomainException)
                     {
-                        await HandleDomainException(exception, context);
+                        await HandleDomainException(exception, context, logger);
                     }
                     else if (exception is ApiException)
                     {
-                        await HandleApiException(exception, context);
+                        await HandleApiException(exception, context, logger);
                     }
-                    else if (exception is AggregateNotFoundException)
+                    else if (exception is AggregateNotFoundException aggregateNotFoundException)
                     {
-                        await HandleNotFoundException((AggregateNotFoundException) exception, context);
+                        await HandleNotFoundException(aggregateNotFoundException, context, logger);
                     }
                     else
                     {
-                        await HandleUnhandledException(error?.Error, context);
+                        await HandleUnhandledException(error?.Error, context, logger);
                     }
                 });
             });
@@ -58,11 +56,11 @@
             return app;
         }
 
-        private static async Task HandleDomainException(Exception exception, HttpContext context)
+        private static async Task HandleDomainException(Exception exception, HttpContext context, ILogger<OrganisationRegistryApiExceptionHandler> logger)
         {
             var message = exception.Message;
             var exceptionNumber = GetExceptionNumber();
-            _logger.LogInformation(0, exception, "[{ErrorNumber}] DomainException handled: {ExceptionMessage}", exceptionNumber, message);
+            logger.LogInformation(0, exception, "[{ErrorNumber}] DomainException handled: {ExceptionMessage}", exceptionNumber, message);
 
             context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
             await context.Response.WriteAsync(JsonConvert.SerializeObject(new BasicApiProblem
@@ -74,11 +72,11 @@
             })).ConfigureAwait(false);
         }
 
-        private static async Task HandleApiException(Exception exception, HttpContext context)
+        private static async Task HandleApiException(Exception exception, HttpContext context, ILogger<OrganisationRegistryApiExceptionHandler> logger)
         {
             var message = exception.Message;
             var exceptionNumber = GetExceptionNumber();
-            _logger.LogInformation(0, exception, "[{ErrorNumber}] ApiException handled: {ExceptionMessage}", exceptionNumber, message);
+            logger.LogInformation(0, exception, "[{ErrorNumber}] ApiException handled: {ExceptionMessage}", exceptionNumber, message);
 
             context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
             await context.Response.WriteAsync(JsonConvert.SerializeObject(new BasicApiProblem
@@ -90,11 +88,11 @@
             })).ConfigureAwait(false);
         }
 
-        private static async Task HandleNotFoundException(AggregateNotFoundException exception, HttpContext context)
+        private static async Task HandleNotFoundException(AggregateNotFoundException exception, HttpContext context, ILogger<OrganisationRegistryApiExceptionHandler> logger)
         {
             var message = $"De resource met id '{exception.Id}' werd niet gevonden.";
             var exceptionNumber = GetExceptionNumber();
-            _logger.LogInformation(0, exception, "[{ErrorNumber}] NotFoundException handled: {ExceptionMessage}", exceptionNumber, message);
+            logger.LogInformation(0, exception, "[{ErrorNumber}] NotFoundException handled: {ExceptionMessage}", exceptionNumber, message);
 
             context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
             await context.Response.WriteAsync(JsonConvert.SerializeObject(new BasicApiProblem
@@ -106,12 +104,12 @@
             })).ConfigureAwait(false);
         }
 
-        private static async Task HandleUnhandledException(Exception exception, HttpContext context)
+        private static async Task HandleUnhandledException(Exception? exception, HttpContext context, ILogger<OrganisationRegistryApiExceptionHandler> logger)
         {
             var exceptionNumber = GetExceptionNumber();
 
             if (exception != null)
-                _logger.LogError(0, exception, "[{ErrorNumber}] Unhandled exception!", exceptionNumber);
+                logger.LogError(0, exception, "[{ErrorNumber}] Unhandled exception!", exceptionNumber);
 
             context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
             await context.Response.WriteAsync(JsonConvert.SerializeObject(new BasicApiProblem
@@ -124,8 +122,6 @@
         }
 
         private static string GetExceptionNumber()
-        {
-            return $"{Guid.NewGuid():N}";
-        }
+            => $"{Guid.NewGuid():N}";
     }
 }

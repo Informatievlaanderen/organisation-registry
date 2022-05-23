@@ -16,10 +16,10 @@ namespace OrganisationRegistry.Api.Backoffice.Report.OrganisationClassificationR
     public class ClassificationOrganisationParticipation
     {
         [ExcludeFromCsv] public Guid OrganisationId { get; set; }
-        [DisplayName("Entiteit")] public string OrganisationName { get; set; }
+        [DisplayName("Entiteit")] public string? OrganisationName { get; set; }
 
         [ExcludeFromCsv] public Guid BodyId { get; set; }
-        [DisplayName("Orgaan")] public string BodyName { get; set; }
+        [DisplayName("Orgaan")] public string? BodyName { get; set; }
 
         [DisplayName("Percentage Man")] public decimal MalePercentage { get; set; }
         [DisplayName("Percentage Vrouw")] public decimal FemalePercentage { get; set; }

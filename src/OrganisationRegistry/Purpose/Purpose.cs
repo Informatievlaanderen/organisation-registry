@@ -7,12 +7,17 @@ namespace OrganisationRegistry.Purpose
     {
         public PurposeName Name { get; private set; }
 
-        private Purpose() { }
+        private Purpose()
+        {
+            Name = new PurposeName(string.Empty);
+        }
 
         public Purpose(
             PurposeId id,
             PurposeName name)
         {
+            Name = new PurposeName(string.Empty);
+
             ApplyChange(new PurposeCreated(
                 id,
                 name));

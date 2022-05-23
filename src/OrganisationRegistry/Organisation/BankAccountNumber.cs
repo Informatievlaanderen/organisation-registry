@@ -31,12 +31,7 @@ namespace OrganisationRegistry.Organisation
             bool isValidIban)
         {
             IsValidIban = isValidIban;
-            Number = isValidIban ? CleanBankAccountNumber(bankAccountNumber) : bankAccountNumber ?? string.Empty;
-        }
-
-        private BankAccountNumber(string bankAccountNumber)
-        {
-            Number = bankAccountNumber ?? string.Empty;
+            Number = isValidIban ? CleanBankAccountNumber(bankAccountNumber) : bankAccountNumber;
         }
 
         private static string CleanBankAccountNumber(string bankAccountNumber)

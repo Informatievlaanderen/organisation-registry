@@ -11,13 +11,13 @@ namespace OrganisationRegistry.Infrastructure.Configuration
         [JsonConverter(typeof(TimestampConverter))]
         public DateTime Created => DateTime.Now;
 
-        public string Title { get; set; }
-        public string Description { get; set; }
+        public string Title { get; set; } = null!;
+        public string Description { get; set; } = null!;
 
-        public string CorsOrigin { get; set; }
+        public string CorsOrigin { get; set; } = null!;
 
-        public string EnvironmentName { get; set; }
-        public string GraphiteAddress { get; set; }
+        public string EnvironmentName { get; set; } = null!;
+        public string GraphiteAddress { get; set; } = null!;
 
         public Guid EmailContactTypeId { get; set; }
         public Guid PhoneContactTypeId { get; set; }
@@ -46,39 +46,39 @@ namespace OrganisationRegistry.Infrastructure.Configuration
         [Obsolete("Replaced by property on Organisation entity.")]
         public Guid KBO_KeyTypeId { get; set; }
         public Guid Orafin_KeyTypeId { get; set; }
-        public string Orafin_OvoCode { get; set; }
+        public string Orafin_OvoCode { get; set; } = null!;
         public Guid Vlimpers_KeyTypeId { get; set; }
         public Guid VlimpersKort_KeyTypeId { get; set; }
 
-        public string DataVlaanderenOrganisationUri { get; set; }
+        public string DataVlaanderenOrganisationUri { get; set; } = null!;
 
         public Guid FrenchLabelTypeId { get; set; }
         public Guid GermanLabelTypeId { get; set; }
         public Guid EnglishLabelTypeId { get; set; }
 
-        public string VademecumReport_FormalFrameworkIds { get; set; }
+        public string VademecumReport_FormalFrameworkIds { get; set; } = null!;
 
         public Guid Mep_FormalFrameworkId { get; set; }
 
         public Guid RegisteredOfficeLocationTypeId { get; set; }
 
-        public string KboSender { get; set; }
-        public string KboRecipient { get; set; }
-        public string KboMagdaEndpoint { get; set; }
-        public string KboCertificate { get; set; }
+        public string KboSender { get; set; } = null!;
+        public string KboRecipient { get; set; } = null!;
+        public string KboMagdaEndpoint { get; set; } = null!;
+        public string KboCertificate { get; set; } = null!;
         public int KboMagdaTimeout { get; set; }
-        public string RijksRegisterCertificatePwd { get; set; }
+        public string RijksRegisterCertificatePwd { get; set; } = null!;
 
         public int SyncFromKboBatchSize { get; set; }
 
         public Guid KboV2FormalNameLabelTypeId { get; set; }
         public Guid KboV2RegisteredOfficeLocationTypeId { get; set; }
         public Guid KboV2LegalFormOrganisationClassificationTypeId { get; set; }
-        public string RepertoriumMagdaEndpoint { get; set; }
-        public string RepertoriumCapacity { get; set; }
+        public string RepertoriumMagdaEndpoint { get; set; } = null!;
+        public string RepertoriumCapacity { get; set; } = null!;
         public Guid FormalNameLabelTypeId { get; set; }
         public Guid FormalShortNameLabelTypeId { get; set; }
-        public string? FormalFrameworkIdsAllowedForVlimpers { get; }
+        public string? FormalFrameworkIdsAllowedForVlimpers { get; set; }
         public string? FormalFrameworkIdsNotAllowedForOrganisatiebeheerders { get; set; }
     }
 }

@@ -3,7 +3,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization.Cache
     using System;
     using System.Runtime.Caching;
     using System.Threading.Tasks;
-    using OrganisationRegistry.Infrastructure.Configuration;
+    using Configuration;
 
     public class OrganisationSecurityCache: ICache<OrganisationSecurityInformation>
     {

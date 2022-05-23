@@ -7,12 +7,17 @@ namespace OrganisationRegistry.LabelType
     {
         public LabelTypeName Name { get; private set; }
 
-        private LabelType() { }
+        private LabelType()
+        {
+            Name = new LabelTypeName(string.Empty);
+        }
 
         public LabelType(
             LabelTypeId id,
             LabelTypeName name)
         {
+            Name = new LabelTypeName(string.Empty);
+
             ApplyChange(new LabelTypeCreated(
                 id,
                 name));

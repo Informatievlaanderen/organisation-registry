@@ -11,11 +11,18 @@
         public DateTimeOffset ChangeTime { get; set; }
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
-        public string FirstName { get; set; }
+        public string Name { get; set; } = null!;
+        public string FirstName { get; set; } = null!;
 
         //[JsonProperty(DefaultValueHandling = DefaultValueHandling.Include)]
         public bool? ShowOnVlaamseOverheidSites { get; set; }
+
+        public PersonDocument()
+        {
+            Functions = new List<PersonFunction>();
+            Capacities = new List<PersonCapacity>();
+            Mandates = new List<PersonMandate>();
+        }
 
         public static TypeMappingDescriptor<PersonDocument> Mapping(TypeMappingDescriptor<PersonDocument> map) => map
             .Properties(ps => ps

@@ -10,6 +10,7 @@ namespace OrganisationRegistry.UnitTests.Body.WhenUpdatingBodyBalancedParticipat
     using OrganisationRegistry.Body.Events;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Events;
+    using Tests.Shared;
     using Xunit;
     using Xunit.Abstractions;
 

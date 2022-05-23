@@ -14,6 +14,7 @@ using OrganisationRegistry.KeyTypes.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using OrganisationRegistry.Organisation.Exceptions;
+using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
 

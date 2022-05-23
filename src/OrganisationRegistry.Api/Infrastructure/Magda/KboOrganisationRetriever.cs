@@ -74,17 +74,17 @@ namespace OrganisationRegistry.Api.Infrastructure.Magda
             reply.Uitzonderingen?
                 .Where(type => type.Type == UitzonderingTypeType.INFORMATIE)
                 .ToList()
-                .ForEach(type => _logger.LogInformation($"{type.Diagnose}"));
+                .ForEach(type => _logger.LogInformation("{Diagnose}", type.Diagnose));
 
             reply.Uitzonderingen?
                 .Where(type => type.Type == UitzonderingTypeType.WAARSCHUWING)
                 .ToList()
-                .ForEach(type => _logger.LogWarning($"{type.Diagnose}"));
+                .ForEach(type => _logger.LogWarning("{Diagnose}", type.Diagnose));
 
             reply.Uitzonderingen?
                 .Where(type => type.Type == UitzonderingTypeType.FOUT)
                 .ToList()
-                .ForEach(type => _logger.LogError($"{type.Diagnose}"));
+                .ForEach(type => _logger.LogError("{Diagnose}", type.Diagnose));
         }
 
         private void LogExceptions(global::Magda.GeefOnderneming.AntwoordType reply)
@@ -92,17 +92,17 @@ namespace OrganisationRegistry.Api.Infrastructure.Magda
             reply.Uitzonderingen?
                 .Where(type => type.Type == global::Magda.GeefOnderneming.UitzonderingTypeType.INFORMATIE)
                 .ToList()
-                .ForEach(type => _logger.LogInformation($"{type.Diagnose}"));
+                .ForEach(type => _logger.LogInformation("{Diagnose}", type.Diagnose));
 
             reply.Uitzonderingen?
                 .Where(type => type.Type == global::Magda.GeefOnderneming.UitzonderingTypeType.WAARSCHUWING)
                 .ToList()
-                .ForEach(type => _logger.LogWarning($"{type.Diagnose}"));
+                .ForEach(type => _logger.LogWarning("{Diagnose}", type.Diagnose));
 
             reply.Uitzonderingen?
                 .Where(type => type.Type == global::Magda.GeefOnderneming.UitzonderingTypeType.FOUT)
                 .ToList()
-                .ForEach(type => _logger.LogError($"{type.Diagnose}"));
+                .ForEach(type => _logger.LogError("{Diagnose}", type.Diagnose));
         }
     }
 }

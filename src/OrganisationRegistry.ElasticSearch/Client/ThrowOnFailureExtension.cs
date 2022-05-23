@@ -40,7 +40,7 @@
             return response;
         }
 
-        public static RefreshResponse ThrowOnFailure<T>(this RefreshResponse response) where T : class
+        public static RefreshResponse ThrowOnFailure(this RefreshResponse response)
         {
             if (!response.IsValid)
                 throw new ElasticsearchException(response.DebugInformation, response.OriginalException);

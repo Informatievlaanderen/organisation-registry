@@ -49,7 +49,7 @@ namespace OrganisationRegistry.Api.Security
             identity.AddClaim(
                 new Claim(
                     AcmIdmConstants.Claims.Id,
-                    identity.GetOptionalClaim(JwtClaimTypes.Subject),
+                    identity.GetOptionalClaim(JwtClaimTypes.Subject) ?? string.Empty,
                     ClaimValueTypes.String));
 
             identity.AddClaim(

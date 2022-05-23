@@ -7,10 +7,15 @@
     {
         public string Name { get; private set; }
 
-        private FunctionType() { }
+        private FunctionType()
+        {
+            Name = string.Empty;
+        }
 
         public FunctionType(FunctionTypeId id, string name)
         {
+            Name = string.Empty;
+
             ApplyChange(new FunctionCreated(id, name));
         }
 

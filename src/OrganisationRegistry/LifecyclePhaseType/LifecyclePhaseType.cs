@@ -15,7 +15,10 @@ namespace OrganisationRegistry.LifecyclePhaseType
         public bool IsForInactivePhase => LifecyclePhaseTypeIsRepresentativeFor ==
                                         LifecyclePhaseTypeIsRepresentativeFor.InactivePhase;
 
-        private LifecyclePhaseType() { }
+        private LifecyclePhaseType()
+        {
+            Name = new LifecyclePhaseTypeName(string.Empty);
+        }
 
         public LifecyclePhaseType(
             LifecyclePhaseTypeId id,
@@ -23,6 +26,8 @@ namespace OrganisationRegistry.LifecyclePhaseType
             LifecyclePhaseTypeIsRepresentativeFor lifecyclePhaseTypeIsRepresentativeFor,
             LifecyclePhaseTypeStatus status)
         {
+            Name = new LifecyclePhaseTypeName(string.Empty);
+
             ApplyChange(new LifecyclePhaseTypeCreated(id, name, lifecyclePhaseTypeIsRepresentativeFor, status));
         }
 

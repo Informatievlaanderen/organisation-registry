@@ -11,6 +11,6 @@ namespace OrganisationRegistry.Infrastructure.Configuration
         [JsonConverter(typeof(TimestampConverter))]
         public DateTime Created => DateTime.Now;
 
-        public string Vlimpers { get; set; }
+        public string Vlimpers { get; set; } = null!;
     }
 }

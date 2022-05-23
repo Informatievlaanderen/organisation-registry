@@ -8,13 +8,11 @@ namespace OrganisationRegistry.Api.Infrastructure.Search.Pagination
     {
         public static PagedQueryable<TResult> WithTransformation<T, TResult>(
             this PagedQueryable<T> source,
-            Expression<Func<T, TResult>> transformationFunc)
-        {
-            return new PagedQueryable<TResult>(
+            Expression<Func<T, TResult>>? transformationFunc)
+            => new(
                 transformationFunc == null
                     ? (IQueryable<TResult>) source.Items
                     : source.Items.Select(transformationFunc),
                 source.PaginationInfo);
-        }
     }
 }

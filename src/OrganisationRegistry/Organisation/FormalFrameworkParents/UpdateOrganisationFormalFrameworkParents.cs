@@ -1,6 +1,5 @@
 ﻿namespace OrganisationRegistry.Organisation;
 
-using Commands;
 using FormalFramework;
 
 public class UpdateOrganisationFormalFrameworkParents : BaseCommand<OrganisationId>

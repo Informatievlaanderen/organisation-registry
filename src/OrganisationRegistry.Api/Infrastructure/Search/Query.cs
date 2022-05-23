@@ -25,7 +25,7 @@
         protected abstract IQueryable<T> Filter(FilteringHeader<TFilter> filtering);
         protected abstract ISorting Sorting { get; }
 
-        protected virtual Expression<Func<T, TResult>> Transformation => null;
+        protected virtual Expression<Func<T, TResult>>? Transformation => null;
 
         public PagedQueryable<TResult> Fetch(FilteringHeader<TFilter> filtering, SortingHeader sorting, IPaginationRequest paginationRequest)
         {

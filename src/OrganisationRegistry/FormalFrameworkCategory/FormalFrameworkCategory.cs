@@ -3,14 +3,19 @@
     using Events;
     using Infrastructure.Domain;
 
-    public class FormalFrameworkCategory: AggregateRoot
+    public class FormalFrameworkCategory : AggregateRoot
     {
         public string Name { get; private set; }
 
-        public FormalFrameworkCategory() { }
+        public FormalFrameworkCategory()
+        {
+            Name = string.Empty;
+        }
 
         public FormalFrameworkCategory(FormalFrameworkCategoryId id, string name)
         {
+            Name = string.Empty;
+
             ApplyChange(new FormalFrameworkCategoryCreated(id, name));
         }
 

@@ -191,7 +191,7 @@
             changes[2].Traverse().ToSeparatedList().Should().Be("OVO3");
 
             changes[3].Id.Should().Be("OVO4");
-            changes[3].Parent.Id.Should().Be("OVO2");
+            changes[3].Parent!.Id.Should().Be("OVO2");
             changes[3].Children.Count.Should().Be(1);
             changes[3].Children[0].Id.Should().Be("OVO5");
             changes[3].Traverse().ToSeparatedList().Should().Be("OVO4|OVO5");
@@ -224,7 +224,7 @@
             changes[0].Traverse().ToSeparatedList().Should().Be("OVO1|OVO3|OVO4|OVO5|OVO2");
 
             changes[1].Id.Should().Be("OVO2");
-            changes[1].Parent.Id.Should().Be("OVO1");
+            changes[1].Parent!.Id.Should().Be("OVO1");
             changes[1].Traverse().ToSeparatedList().Should().Be("OVO2");
         }
 

@@ -14,7 +14,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
             _context = context;
         }
 
-        public bool IsExternalKeyTaken(string externalKey, Guid typeId)
+        public bool IsExternalKeyTaken(string? externalKey, Guid typeId)
         {
             return !string.IsNullOrEmpty(externalKey) &&
                 _context.OrganisationClassificationList
@@ -23,7 +23,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
                     .Any(item => item.ExternalKey == externalKey);
         }
 
-        public bool IsExternalKeyTaken(Guid id, string externalKey, Guid typeId)
+        public bool IsExternalKeyTaken(Guid id, string? externalKey, Guid typeId)
         {
             return !string.IsNullOrEmpty(externalKey) &&
                 _context.OrganisationClassificationList

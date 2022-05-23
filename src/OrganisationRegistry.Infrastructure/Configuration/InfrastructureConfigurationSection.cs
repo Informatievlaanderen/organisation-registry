@@ -11,14 +11,14 @@ namespace OrganisationRegistry.Infrastructure.Configuration
         [JsonConverter(typeof(TimestampConverter))]
         public DateTime Created => DateTime.Now;
 
-        public string EventStoreConnectionString { get; set; }
-        public string EventStoreAdministrationConnectionString { get; set; }
+        public string EventStoreConnectionString { get; set; } = null!;
+        public string EventStoreAdministrationConnectionString { get; set; } = null!;
         public int EventStoreCommandTimeout { get; set; }
 
-        public string ExternalIpServiceUri { get; set; }
+        public string ExternalIpServiceUri { get; set; } = null!;
 
         public InfrastructureConfigurationSection Obfuscate()
-            => new InfrastructureConfigurationSection
+            => new()
             {
                 EventStoreConnectionString = Obfuscator.ObfuscateConnectionString(EventStoreConnectionString),
                 EventStoreAdministrationConnectionString = Obfuscator.ObfuscateConnectionString(EventStoreAdministrationConnectionString),

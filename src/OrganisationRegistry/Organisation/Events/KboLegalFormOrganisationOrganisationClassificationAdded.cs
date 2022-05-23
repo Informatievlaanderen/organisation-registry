@@ -1,6 +1,7 @@
 namespace OrganisationRegistry.Organisation.Events
 {
     using System;
+    using Infrastructure;
     using Newtonsoft.Json;
 
     public class KboLegalFormOrganisationOrganisationClassificationAdded : BaseEvent<KboLegalFormOrganisationOrganisationClassificationAdded>
@@ -9,7 +10,7 @@ namespace OrganisationRegistry.Organisation.Events
 
         public Guid OrganisationOrganisationClassificationId { get; }
         public Guid OrganisationClassificationTypeId { get; }
-        public string OrganisationClassificationTypeName { get; }
+        public string? OrganisationClassificationTypeName { get; }
         public Guid OrganisationClassificationId { get; }
         public string OrganisationClassificationName { get; }
         public DateTime? ValidFrom { get; }
@@ -45,22 +46,27 @@ namespace OrganisationRegistry.Organisation.Events
             Guid organisationId,
             Guid organisationOrganisationClassificationId,
             Guid organisationClassificationTypeId,
-            string organisationClassificationTypeName,
+            string? organisationClassificationTypeName,
             Guid organisationClassificationId,
             string organisationClassificationName,
             DateTime? validFrom,
             DateTime? validTo,
-            string classificationTypeName = null)
+            string? classificationTypeName = null)
         {
             Id = organisationId;
 
             OrganisationOrganisationClassificationId = organisationOrganisationClassificationId;
             OrganisationClassificationTypeId = organisationClassificationTypeId;
-            OrganisationClassificationTypeName = string.IsNullOrWhiteSpace(organisationClassificationTypeName) ? classificationTypeName : organisationClassificationTypeName;
+            OrganisationClassificationTypeName = GetClassificationTypeName(organisationClassificationTypeName, classificationTypeName);
             OrganisationClassificationId = organisationClassificationId;
             OrganisationClassificationName = organisationClassificationName;
             ValidFrom = validFrom;
             ValidTo = validTo;
         }
+
+        private static string? GetClassificationTypeName(string? maybeOrganisationClassificationTypeName, string? classificationTypeName)
+            => maybeOrganisationClassificationTypeName is { } organisationClassificationTypeName && organisationClassificationTypeName.IsNotEmptyOrWhiteSpace()
+                ? organisationClassificationTypeName
+                : classificationTypeName;
     }
 }

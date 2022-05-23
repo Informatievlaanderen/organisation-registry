@@ -1,4 +1,5 @@
-﻿namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure
+﻿// ReSharper disable ContextualLoggerProblem
+namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure
 {
     using Microsoft.Extensions.Logging;
 

@@ -30,7 +30,5 @@ namespace OrganisationRegistry.Infrastructure.Configuration
         public bool ReportingRunnerAvailable { get; set; }
 
         public bool KboMutationsAvailable { get; set; }
-
-        public TogglesConfigurationSection() { }
     }
 }

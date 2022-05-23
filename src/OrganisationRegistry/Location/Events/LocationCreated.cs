@@ -6,7 +6,7 @@ namespace OrganisationRegistry.Location.Events
     {
         public Guid LocationId => Id;
 
-        public string CrabLocationId { get; set; }
+        public string? CrabLocationId { get; set; }
 
         public string FormattedAddress { get; set; }
         public string Street { get; set; }
@@ -16,7 +16,7 @@ namespace OrganisationRegistry.Location.Events
 
         public LocationCreated(
             Guid locationId,
-            string crabLocationId,
+            string? crabLocationId,
             string formattedAddress,
             string street,
             string zipCode,

@@ -13,6 +13,7 @@ using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
+using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
 

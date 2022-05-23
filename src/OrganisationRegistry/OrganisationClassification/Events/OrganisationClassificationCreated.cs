@@ -10,7 +10,7 @@ namespace OrganisationRegistry.OrganisationClassification.Events
 
         public string Name { get; }
         public int Order { get; }
-        public string ExternalKey { get; }
+        public string? ExternalKey { get; }
         public bool Active { get; }
         public Guid OrganisationClassificationTypeId { get; }
         public string OrganisationClassificationTypeName { get; }
@@ -19,7 +19,7 @@ namespace OrganisationRegistry.OrganisationClassification.Events
             OrganisationClassificationId organisationClassificationId,
             OrganisationClassificationName name,
             int order,
-            string externalKey,
+            string? externalKey,
             bool active,
             OrganisationClassificationTypeId organisationClassificationTypeId,
             OrganisationClassificationTypeName organisationClassificationTypeName)
@@ -39,7 +39,7 @@ namespace OrganisationRegistry.OrganisationClassification.Events
             Guid organisationClassificationId,
             string name,
             int order,
-            string externalKey,
+            string? externalKey,
             bool active,
             Guid organisationClassificationTypeId,
             string organisationClassificationTypeName)

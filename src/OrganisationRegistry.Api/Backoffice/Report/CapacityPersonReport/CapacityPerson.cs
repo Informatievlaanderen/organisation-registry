@@ -18,7 +18,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.CapacityPersonReport
         public Guid? ParentOrganisationId { get; set; }
 
         [DisplayName("Moeder entiteit")]
-        public string ParentOrganisationName { get; set; }
+        public string? ParentOrganisationName { get; set; }
 
         [ExcludeFromCsv]
         public Guid OrganisationId { get; set; }
@@ -30,7 +30,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.CapacityPersonReport
         public string OvoNumber { get; set; }
 
         [DisplayName("Korte naam")]
-        public string OrganisationShortName { get; set; }
+        public string? OrganisationShortName { get; set; }
 
         [ExcludeFromCsv]
         public Guid? PersonId { get; set; }
@@ -71,9 +71,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report.CapacityPersonReport
             ApiConfigurationSection @params)
         {
             var parent = document
-                .Parents?
+                .Parents
                 .FirstOrDefault(
-                    x => x.Validity == null ||
+                    x => x.Validity.IsInfinite() ||
                          (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
                          (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now));
 
@@ -91,20 +91,20 @@ namespace OrganisationRegistry.Api.Backoffice.Report.CapacityPersonReport
             FunctionTypeName = capacity.FunctionName;
 
             Location = document
-                .Locations?
+                .Locations
                 .FirstOrDefault(x =>
-                    x.IsMainLocation && (x.Validity == null ||
+                    x.IsMainLocation && (x.Validity.IsInfinite() ||
                                          (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
                                          (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))?
-                .FormattedAddress;
+                .FormattedAddress ?? string.Empty;
 
-            Email = capacity.Contacts?.FirstOrDefault(x => x.ContactTypeId == @params.EmailContactTypeId)?.Value;
-            Phone = capacity.Contacts?.FirstOrDefault(x => x.ContactTypeId == @params.PhoneContactTypeId)?.Value;
-            CellPhone = capacity.Contacts?.FirstOrDefault(x => x.ContactTypeId == @params.CellPhoneContactTypeId)?.Value;
+            Email = capacity.Contacts.FirstOrDefault(x => x.ContactTypeId == @params.EmailContactTypeId)?.Value ?? string.Empty;
+            Phone = capacity.Contacts.FirstOrDefault(x => x.ContactTypeId == @params.PhoneContactTypeId)?.Value ?? string.Empty;
+            CellPhone = capacity.Contacts.FirstOrDefault(x => x.ContactTypeId == @params.CellPhoneContactTypeId)?.Value ?? string.Empty;
 
             PolicyDomain = document.OrganisationClassifications
-                ?.FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.PolicyDomainClassificationTypeId)
-                ?.OrganisationClassificationName;
+                .FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.PolicyDomainClassificationTypeId)
+                ?.OrganisationClassificationName ?? string.Empty;
         }
 
         /// <summary>
@@ -163,15 +163,15 @@ namespace OrganisationRegistry.Api.Backoffice.Report.CapacityPersonReport
             foreach (var document in documents)
             {
                 var capacities = document
-                    .Capacities?
+                    .Capacities
                     .Where(x =>
                         x.CapacityId == capacityId &&
-                        (x.Validity == null ||
+                        (x.Validity.IsInfinite() ||
                          (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
                          (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))
                     .ToList();
 
-                if (capacities == null || !capacities.Any())
+                if (!capacities.Any())
                     continue;
 
                 foreach (var capacity in capacities)
