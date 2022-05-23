@@ -27,6 +27,7 @@ public class WhenAddingAnOrganisationKey : Specification<AddOrganisationKeyComma
     private readonly string _value;
     private readonly DateTime _validTo;
     private readonly DateTime _validFrom;
+    private readonly Mock<ISecurityService> _securityServiceMock;
 
     public WhenAddingAnOrganisationKey(ITestOutputHelper helper) : base(helper)
     {
@@ -36,25 +37,23 @@ public class WhenAddingAnOrganisationKey : Specification<AddOrganisationKeyComma
         _validTo = DateTime.Now.AddDays(2);
         _organisationId = Guid.NewGuid();
         _value = "12345ABC-@#$";
-    }
 
-    protected override AddOrganisationKeyCommandHandler BuildHandler(ISession session)
-    {
-        var securityServiceMock = new Mock<ISecurityService>();
-        securityServiceMock
+        _securityServiceMock = new Mock<ISecurityService>();
+        _securityServiceMock
             .Setup(
                 service =>
                     service.CanUseKeyType(
                         It.IsAny<IUser>(),
                         It.IsAny<Guid>()))
             .Returns(true);
+    }
 
-        return new AddOrganisationKeyCommandHandler(
+    protected override AddOrganisationKeyCommandHandler BuildHandler(ISession session)
+        => new(
             new Mock<ILogger<AddOrganisationKeyCommandHandler>>().Object,
             session,
             new OrganisationRegistryConfigurationStub(),
-            securityServiceMock.Object);
-    }
+            _securityServiceMock.Object);
 
     private IEvent[] Events
         => new IEvent[]
@@ -84,22 +83,17 @@ public class WhenAddingAnOrganisationKey : Specification<AddOrganisationKeyComma
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    private static IUser AlgemeenBeheerderUser
-        => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
-
     [Fact]
     public async Task AnOrganisationKeyAddedEventIsPublished()
     {
-        await Given(Events).When(AddOrganisationKeyCommand, AlgemeenBeheerderUser).Then();
+        await Given(Events).When(AddOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder()).Then();
         PublishedEvents.First().Should().BeOfType<Envelope<OrganisationKeyAdded>>();
     }
 
     [Fact]
     public async Task TheEventContainsTheCorrectData()
     {
-        await Given(Events).When(AddOrganisationKeyCommand, AlgemeenBeheerderUser).Then();
+        await Given(Events).When(AddOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder()).Then();
         PublishedEvents.First().UnwrapBody<OrganisationKeyAdded>()
             .Should()
             .BeEquivalentTo(
@@ -119,10 +113,10 @@ public class WhenAddingAnOrganisationKey : Specification<AddOrganisationKeyComma
     }
 
     [Fact]
-    public async Task PublishesTheCorrectNumberOfEvents()
+    public async Task PublishesOneEvent()
     {
         await Given(Events)
-            .When(AddOrganisationKeyCommand, AlgemeenBeheerderUser)
+            .When(AddOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder())
             .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 }

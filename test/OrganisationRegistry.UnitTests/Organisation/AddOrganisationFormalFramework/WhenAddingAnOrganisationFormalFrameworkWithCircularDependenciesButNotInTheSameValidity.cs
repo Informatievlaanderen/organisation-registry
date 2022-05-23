@@ -29,8 +29,6 @@ public class WhenAddingAnOrganisationFormalFrameworkWithCircularDependenciesButN
     private readonly Guid _organisationFormalFrameworkId;
     private readonly Guid _formalFrameworkCategoryId;
     private readonly string _formalFrameworkCategoryName;
-    private readonly DateTime _validFrom;
-    private readonly DateTime _validTo;
     private readonly string _childOrganisationName;
     private readonly string _formalFramworkName;
 
@@ -46,9 +44,7 @@ public class WhenAddingAnOrganisationFormalFrameworkWithCircularDependenciesButN
         _childOrganisationId = Guid.NewGuid();
         _formalFrameworkCategoryId = Guid.NewGuid();
         _formalFrameworkCategoryName = "Category1";
-        _validFrom = _dateTimeProviderStub.Today.AddDays(1);
         _organisationFormalFrameworkId = Guid.NewGuid();
-        _validTo = _dateTimeProviderStub.Today.AddDays(1);
     }
 
     protected override AddOrganisationFormalFrameworkCommandHandler BuildHandler(ISession session)
@@ -57,11 +53,6 @@ public class WhenAddingAnOrganisationFormalFrameworkWithCircularDependenciesButN
             session,
             _dateTimeProviderStub,
             Mock.Of<IOrganisationRegistryConfiguration>());
-
-    private static IUser User
-        => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
 
     private IEvent[] Events
         => new IEvent[]
@@ -97,15 +88,15 @@ public class WhenAddingAnOrganisationFormalFrameworkWithCircularDependenciesButN
             new FormalFrameworkId(_formalFrameworkId),
             new OrganisationId(_parentOrganisationId),
             new OrganisationId(_childOrganisationId),
-            new ValidFrom(_validFrom),
-            new ValidTo(_validTo)
+            new ValidFrom(_dateTimeProviderStub.Today.AddDays(1)),
+            new ValidTo(_dateTimeProviderStub.Today.AddDays(1))
         );
 
     [Fact]
     public async Task PublishesOneEvent()
     {
         await Given(Events)
-            .When(AddOrganisationFormalFrameworkCommand, User)
+            .When(AddOrganisationFormalFrameworkCommand, UserBuilder.AlgemeenBeheerder())
             .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
@@ -113,7 +104,7 @@ public class WhenAddingAnOrganisationFormalFrameworkWithCircularDependenciesButN
     public async Task AnOrganisationParentWasAdded()
     {
         await Given(Events)
-            .When(AddOrganisationFormalFrameworkCommand, User)
+            .When(AddOrganisationFormalFrameworkCommand, UserBuilder.AlgemeenBeheerder())
             .Then();
 
         PublishedEvents[0]

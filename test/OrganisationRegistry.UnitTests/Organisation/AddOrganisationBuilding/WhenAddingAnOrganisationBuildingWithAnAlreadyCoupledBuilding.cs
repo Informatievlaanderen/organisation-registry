@@ -44,9 +44,6 @@ public class WhenAddingTheSameBuildingTwice
             session,
             new DateTimeProvider());
 
-    private static IUser User
-        => new UserBuilder().Build();
-
     private IEvent[] Events
         => new IEvent[]
         {
@@ -88,7 +85,7 @@ public class WhenAddingTheSameBuildingTwice
     public async Task PublishesNoEvents()
     {
         await Given(Events)
-            .When(AddOrganisationBuildingCommand, User)
+            .When(AddOrganisationBuildingCommand, UserBuilder.User())
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
@@ -97,7 +94,7 @@ public class WhenAddingTheSameBuildingTwice
     public async Task ThrowsAnException()
     {
         await Given(Events)
-            .When(AddOrganisationBuildingCommand, User)
+            .When(AddOrganisationBuildingCommand, UserBuilder.User())
             .ThenThrows<BuildingAlreadyCoupledToInThisPeriod>()
             .WithMessage("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.");
     }
