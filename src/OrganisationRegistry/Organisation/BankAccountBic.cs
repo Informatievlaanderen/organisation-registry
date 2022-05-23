@@ -6,10 +6,8 @@ namespace OrganisationRegistry.Organisation
 
     public class BankAccountBic
     {
-        public static BankAccountBic CreateWithExpectedValidity(string bic, bool isValidBic)
-        {
-            return new BankAccountBic(bic, isValidBic);
-        }
+        public static BankAccountBic CreateWithExpectedValidity(string? bic, bool isValidBic)
+            => new(bic, isValidBic);
 
         public static BankAccountBic CreateWithUnknownValidity(string bic)
         {
@@ -21,7 +19,7 @@ namespace OrganisationRegistry.Organisation
         public bool IsValidBic { get; }
 
         private BankAccountBic(
-            string bic,
+            string? bic,
             bool isValidBic)
         {
             IsValidBic = isValidBic;

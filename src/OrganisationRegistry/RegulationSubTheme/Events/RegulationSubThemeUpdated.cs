@@ -11,15 +11,6 @@ namespace OrganisationRegistry.RegulationSubTheme.Events
         public string Name { get; }
         public string PreviousName { get; }
 
-        public int Order { get; }
-        public int PreviousOrder { get; }
-
-        public string ExternalKey { get; }
-        public string PreviousExternalKey { get; }
-
-        public bool Active { get; }
-        public bool PreviousActive { get; }
-
         public Guid RegulationThemeId { get; }
         public Guid PreviousRegulationThemeId { get; }
 

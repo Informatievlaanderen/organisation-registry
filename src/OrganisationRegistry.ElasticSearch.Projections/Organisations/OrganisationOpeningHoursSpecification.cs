@@ -2,7 +2,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 {
     using Infrastructure;
     using Microsoft.Extensions.Logging;
-    using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
@@ -27,15 +26,14 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOpeningHourAdded> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
-                message.Body.OrganisationId, async document =>
+                message.Body.OrganisationId,
+                document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
 
-                    if (document.OpeningHours == null)
-                        document.OpeningHours = new List<OrganisationDocument.OrganisationOpeningHour>();
                     document.OpeningHours.RemoveExistingListItems(x => x.OrganisationOpeningHourId == message.Body.OrganisationOpeningHourId);
 
                     document.OpeningHours.Add(
@@ -46,20 +44,19 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.DayOfWeek,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOpeningHourUpdated> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
-                message.Body.OrganisationId, async document =>
+                message.Body.OrganisationId,
+                document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
 
-                    if (document.OpeningHours == null)
-                        document.OpeningHours = new List<OrganisationDocument.OrganisationOpeningHour>();
                     document.OpeningHours.RemoveExistingListItems(x => x.OrganisationOpeningHourId == message.Body.OrganisationOpeningHourId);
 
                     document.OpeningHours.Add(
@@ -71,14 +68,15 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
 
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
-                message.Body.OrganisationId, async document =>
+                message.Body.OrganisationId,
+                document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -93,14 +91,15 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         organisationOpeningHour.Validity.End = value;
                     }
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
-                message.Body.OrganisationId, async document =>
+                message.Body.OrganisationId,
+                document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -115,7 +114,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         organisationOpeningHour.Validity.End = value;
                     }
                 }
-            );
+            ).ToAsyncResult();
         }
     }
 }

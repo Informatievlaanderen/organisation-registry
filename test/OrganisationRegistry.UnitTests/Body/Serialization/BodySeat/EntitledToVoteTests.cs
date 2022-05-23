@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.UnitTests.Body.BodySeat
+namespace OrganisationRegistry.UnitTests.Body.Serialization.BodySeat
 {
     using FluentAssertions;
     using Newtonsoft.Json;

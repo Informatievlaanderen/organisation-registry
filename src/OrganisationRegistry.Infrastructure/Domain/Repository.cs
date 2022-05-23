@@ -21,7 +21,7 @@ namespace OrganisationRegistry.Infrastructure.Domain
         {
             _eventStore = eventStore ?? throw new ArgumentNullException(nameof(eventStore));
 
-            logger.LogTrace("Creating Repository.");
+            logger.LogTrace("Creating Repository");
         }
 
         public async Task Save<T>(T aggregate, IUser user, int? expectedVersion = null) where T : AggregateRoot

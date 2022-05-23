@@ -7,7 +7,6 @@ using FormalFramework;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Configuration;
 using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;

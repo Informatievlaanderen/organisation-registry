@@ -26,7 +26,6 @@ namespace OrganisationRegistry.Infrastructure.EventStore
         public const int UserIdLength = 100;
 
         private readonly IEventPublisher _publisher;
-        private readonly ISecurityService _securityService;
         private readonly IEventDataReader _eventDataReader;
         private readonly string _connectionString;
         private readonly string _administrationConnectionString;
@@ -48,14 +47,13 @@ namespace OrganisationRegistry.Infrastructure.EventStore
             return new SqlConnection(_administrationConnectionString);
         }
 
-        public SqlServerEventStore(IOptions<InfrastructureConfigurationSection> infrastructureOptions, IEventPublisher publisher, ISecurityService securityService, IEventDataReader eventDataReader = null)
+        public SqlServerEventStore(IOptions<InfrastructureConfigurationSection> infrastructureOptions, IEventPublisher publisher, ISecurityService securityService, IEventDataReader? eventDataReader = null)
         {
             var options = infrastructureOptions.Value;
 
             _connectionString = options.EventStoreConnectionString;
             _administrationConnectionString = options.EventStoreAdministrationConnectionString;
             _publisher = publisher;
-            _securityService = securityService;
 
             _jsonSerializerSettings = new JsonSerializerSettings().ConfigureForOrganisationRegistryEventStore();
             _eventDataReader = eventDataReader ?? new SqlServerEventReader(GetConnection);

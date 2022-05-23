@@ -8,7 +8,7 @@ namespace OrganisationRegistry.Infrastructure.Domain
 
     public abstract class AggregateRoot
     {
-        private readonly List<IEvent> _changes = new List<IEvent>();
+        private readonly List<IEvent> _changes = new();
 
         public Guid Id { get; protected set; }
 
@@ -82,15 +82,16 @@ namespace OrganisationRegistry.Infrastructure.Domain
         protected bool Equals(AggregateRoot other)
             => Id.Equals(other.Id);
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((AggregateRoot)obj);
         }
 
         public override int GetHashCode()
+            // ReSharper disable once NonReadonlyMemberInGetHashCode
             => Id.GetHashCode();
     }
 }

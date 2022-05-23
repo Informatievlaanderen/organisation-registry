@@ -15,10 +15,9 @@ namespace OrganisationRegistry.Security
         public static string ToSeparatedList<T>(
             this IEnumerable<T> list,
             string separator = "|",
-            Func<T, string> valueFunc = null) where T : INodeValue
+            Func<T, string>? valueFunc = null) where T : INodeValue
         {
-            if (valueFunc == null)
-                valueFunc = x => x.Id;
+            valueFunc ??= x => x.Id;
 
             return ToSeparatedListExtension.ToSeparatedList(list, separator, valueFunc);
         }
@@ -28,7 +27,7 @@ namespace OrganisationRegistry.Security
     {
         string Id { get; }
         T Value { get; }
-        INode<T> Parent { get; }
+        INode<T>? Parent { get; }
         IList<INode<T>> Children { get; }
 
         bool Dirty { get; }
@@ -49,12 +48,12 @@ namespace OrganisationRegistry.Security
         public T Value => _value;
 
         [JsonIgnore]
-        public INode<T> Parent { get; private set; }
+        public INode<T>? Parent { get; private set; }
 
         public IList<INode<T>> Children { get; }
         public bool Dirty { get; private set; }
 
-        public Node(T value, INode<T> parent = null)
+        public Node(T value, INode<T>? parent = null)
         {
             _value = value;
             Parent = parent;

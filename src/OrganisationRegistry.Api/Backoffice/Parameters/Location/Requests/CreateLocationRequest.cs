@@ -10,7 +10,7 @@
     {
         public Guid Id { get; set; }
 
-        public string CrabLocationId { get; set; }
+        public string? CrabLocationId { get; set; }
 
         public string Street { get; set; } = null!;
         public string ZipCode { get; set; } = null!;

@@ -1,4 +1,4 @@
-namespace OrganisationRegistry.UnitTests
+namespace OrganisationRegistry.UnitTests.EventStore
 {
     using System;
     using System.IO;

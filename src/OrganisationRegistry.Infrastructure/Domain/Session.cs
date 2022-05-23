@@ -26,8 +26,9 @@ namespace OrganisationRegistry.Infrastructure.Domain
         public void Add<T>(T aggregate) where T : AggregateRoot
         {
             if (!IsTracked(aggregate.Id))
-                _trackedAggregates.Add(aggregate.Id, new AggregateDescriptor { Aggregate = aggregate, Version = aggregate.Version });
+                _trackedAggregates.Add(aggregate.Id, new AggregateDescriptor(aggregate, aggregate.Version));
 
+            // ReSharper disable once PossibleUnintendedReferenceComparison
             else if (_trackedAggregates[aggregate.Id].Aggregate != aggregate)
                 throw new ConcurrencyException(aggregate.Id);
         }
@@ -66,10 +67,6 @@ namespace OrganisationRegistry.Infrastructure.Domain
         public void Reset()
             => _trackedAggregates.Clear();
 
-        private class AggregateDescriptor
-        {
-            public AggregateRoot Aggregate { get; set; }
-            public int Version { get; set; }
-        }
+        private record AggregateDescriptor(AggregateRoot Aggregate, int Version);
     }
 }

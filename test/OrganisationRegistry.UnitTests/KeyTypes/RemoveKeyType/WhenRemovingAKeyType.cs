@@ -15,6 +15,7 @@ namespace OrganisationRegistry.UnitTests.KeyTypes.RemoveKeyType
     using Xunit;
     using Xunit.Abstractions;
     using OrganisationRegistry.Infrastructure.Domain;
+    using Tests.Shared;
 
     public class WhenRemovingAKeyType : Specification<KeyTypeCommandHandlers, RemoveKeyType>
     {

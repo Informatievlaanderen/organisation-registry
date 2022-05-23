@@ -18,7 +18,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.BuildingOrganisationReport
         public Guid? ParentOrganisationId { get; set; }
 
         [DisplayName("Moeder entiteit")]
-        public string ParentOrganisationName { get; set; }
+        public string? ParentOrganisationName { get; set; }
 
         [ExcludeFromCsv]
         public Guid OrganisationId { get; set; }
@@ -27,7 +27,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.BuildingOrganisationReport
         public string OrganisationName { get; set; }
 
         [DisplayName("Korte naam")]
-        public string OrganisationShortName { get; set; }
+        public string? OrganisationShortName { get; set; }
 
         [DisplayName("OVO-nummer")]
         public string OrganisationOvoNumber { get; set; }
@@ -54,9 +54,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report.BuildingOrganisationReport
             ApiConfigurationSection @params)
         {
             var parent = document
-                .Parents?
+                .Parents
                 .FirstOrDefault(
-                    x => x.Validity == null ||
+                    x => x.Validity.IsInfinite() ||
                          (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
                          (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now));
 
@@ -71,16 +71,16 @@ namespace OrganisationRegistry.Api.Backoffice.Report.BuildingOrganisationReport
             DataVlaanderenOrganisationUri = new Uri(string.Format(@params.DataVlaanderenOrganisationUri, document.OvoNumber));
 
             LegalForm = document.OrganisationClassifications
-                ?.FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.LegalFormClassificationTypeId)
-                ?.OrganisationClassificationName;
+                .FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.LegalFormClassificationTypeId)
+                ?.OrganisationClassificationName ?? string.Empty;
 
             PolicyDomain = document.OrganisationClassifications
-                ?.FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.PolicyDomainClassificationTypeId)
-                ?.OrganisationClassificationName;
+                .FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.PolicyDomainClassificationTypeId)
+                ?.OrganisationClassificationName ?? string.Empty;
 
             ResponsibleMinister = document.OrganisationClassifications
-                ?.FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.ResponsibleMinisterClassificationTypeId)
-                ?.OrganisationClassificationName;
+                .FirstOrDefault(x => x.OrganisationClassificationTypeId == @params.ResponsibleMinisterClassificationTypeId)
+                ?.OrganisationClassificationName ?? string.Empty;
         }
 
         /// <summary>
@@ -139,15 +139,16 @@ namespace OrganisationRegistry.Api.Backoffice.Report.BuildingOrganisationReport
             foreach (var document in documents)
             {
                 var buildings = document
-                    .Buildings?
-                    .Where(x =>
-                        x.BuildingId == buildingId &&
-                        (x.Validity == null ||
-                         (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
-                         (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))
+                    .Buildings
+                    .Where(
+                        x =>
+                            x.BuildingId == buildingId &&
+                            (x.Validity.IsInfinite() ||
+                             (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
+                             (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))
                     .ToList();
 
-                if (buildings == null || !buildings.Any())
+                if (!buildings.Any())
                     continue;
 
                 buildingOrganisations.Add(new BuildingOrganisation(document, @params));

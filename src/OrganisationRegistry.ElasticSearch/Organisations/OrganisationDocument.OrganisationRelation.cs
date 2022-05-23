@@ -16,7 +16,9 @@
             public string RelatedOrganisationName { get; }
             public Period Validity { get; set; }
 
+#pragma warning disable CS8618
             protected OrganisationRelation()
+#pragma warning restore CS8618
             {
             }
 

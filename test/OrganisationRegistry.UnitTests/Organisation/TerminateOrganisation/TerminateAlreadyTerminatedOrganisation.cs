@@ -13,6 +13,7 @@ using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using OrganisationRegistry.Organisation.Exceptions;
 using OrganisationRegistry.Organisation.State;
+using Tests.Shared;
 using Tests.Shared.Stubs;
 using Tests.Shared.TestDataBuilders;
 using Xunit;

@@ -76,7 +76,7 @@
             : base(document, @params, today)
         {
             INR = document.Keys
-                ?.SingleOrDefault(x =>
+                .SingleOrDefault(x =>
                     x.KeyTypeId == @params.INR_KeyTypeId &&
                     x.Validity.OverlapsWith(today))
                 ?.Value;
@@ -84,68 +84,68 @@
             KBO = document.KboNumber;
 
             Orafin = document.Keys
-                ?.SingleOrDefault(x =>
+                .SingleOrDefault(x =>
                     x.KeyTypeId == @params.Orafin_KeyTypeId &&
                     x.Validity.OverlapsWith(today))
                 ?.Value;
 
             Vlimpers = document.Keys
-                ?.SingleOrDefault(x =>
+                .SingleOrDefault(x =>
                     x.KeyTypeId == @params.Vlimpers_KeyTypeId &&
                     x.Validity.OverlapsWith(today))
                 ?.Value;
 
             VlimpersKort = document.Keys
-                ?.SingleOrDefault(x =>
+                .SingleOrDefault(x =>
                     x.KeyTypeId == @params.VlimpersKort_KeyTypeId &&
                     x.Validity.OverlapsWith(today))
                 ?.Value;
 
             Bestuursniveau = document.OrganisationClassifications
-                ?.SingleOrDefault(x =>
+                .SingleOrDefault(x =>
                     x.OrganisationClassificationTypeId == @params.Bestuursniveau_ClassificationTypeId &&
                     x.Validity.OverlapsWith(today))
                 ?.OrganisationClassificationName;
 
             Categorie = document.OrganisationClassifications
-                ?.SingleOrDefault(x =>
+                .SingleOrDefault(x =>
                     x.OrganisationClassificationTypeId == @params.Categorie_ClassificationTypeId &&
                     x.Validity.OverlapsWith(today))
                 ?.OrganisationClassificationName;
 
             Entiteitsvorm = document.OrganisationClassifications
-                ?.SingleOrDefault(x =>
+                .SingleOrDefault(x =>
                     x.OrganisationClassificationTypeId == @params.Entiteitsvorm_ClassificationTypeId &&
                     x.Validity.OverlapsWith(today))
                 ?.OrganisationClassificationName;
 
             ESRKlasseToezichthoudendeOverheid = document.OrganisationClassifications
-                ?.SingleOrDefault(x =>
+                .SingleOrDefault(x =>
                     x.OrganisationClassificationTypeId ==
                     @params.ESRKlasseToezichthoudendeOverheid_ClassificationTypeId &&
                     x.Validity.OverlapsWith(today))
                 ?.OrganisationClassificationName;
 
             ESRSector = document.OrganisationClassifications
-                ?.SingleOrDefault(x =>
+                .SingleOrDefault(x =>
                     x.OrganisationClassificationTypeId == @params.ESRSector_ClassificationTypeId &&
                     x.Validity.OverlapsWith(today))
                 ?.OrganisationClassificationName;
 
             ESRToezichthoudendeOverheid = document.OrganisationClassifications
-                ?.SingleOrDefault(x =>
+                .SingleOrDefault(x =>
                     x.OrganisationClassificationTypeId == @params.ESRToezichthoudendeOverheid_ClassificationTypeId &&
                     x.Validity.OverlapsWith(today))
                 ?.OrganisationClassificationName;
 
             UitvoerendNiveau = document.OrganisationClassifications
-                ?.SingleOrDefault(x =>
+                .SingleOrDefault(x =>
                     x.OrganisationClassificationTypeId == @params.UitvoerendNiveau_ClassificationTypeId &&
                     x.Validity.OverlapsWith(today))
                 ?.OrganisationClassificationName;
 
             OrganisatieTypeMandatenEnVermogensaangifte = document.OrganisationClassifications
-                ?.SingleOrDefault(x =>
+                .SingleOrDefault(x =>
                     x.OrganisationClassificationTypeId == @params.Organisatietype_Mandaten_En_Vermogensaangifte_ClassificationTypeId &&
                     x.Validity.OverlapsWith(today))
                 ?.OrganisationClassificationName;

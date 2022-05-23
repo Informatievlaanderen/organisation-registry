@@ -15,6 +15,7 @@ using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using OrganisationRegistry.Organisation.Exceptions;
+using Tests.Shared;
 using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;

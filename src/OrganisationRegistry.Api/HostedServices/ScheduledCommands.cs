@@ -8,7 +8,6 @@
     using FormalFramework;
     using Microsoft.EntityFrameworkCore;
     using Organisation;
-    using Organisation.Commands;
     using OrganisationRegistry.Infrastructure.Commands;
     using SqlServer.Body.ScheduledActions.Organisation;
     using SqlServer.Organisation;

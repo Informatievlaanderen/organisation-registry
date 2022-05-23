@@ -27,7 +27,7 @@ namespace OrganisationRegistry.Infrastructure.Authorization
         public Task<bool> CanEditDelegation(ClaimsPrincipal user, Guid? organisationId, Guid? bodyId)
             => throw new NotImplementedException();
 
-        public Task<SecurityInformation> GetSecurityInformation(ClaimsPrincipal user)
+        public Task<SecurityInformation> GetSecurityInformation(ClaimsPrincipal? user)
             => throw new NotImplementedException();
 
         public Task<IUser> GetRequiredUser(ClaimsPrincipal? principal)

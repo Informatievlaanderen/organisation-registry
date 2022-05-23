@@ -6,7 +6,7 @@
     public class ElasticsearchMetaData<T> where T : class
     {
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string ScrollId { get; }
+        public string? ScrollId { get; }
 
         public long TimeInMs { get; }
         public long TotalItems { get; }

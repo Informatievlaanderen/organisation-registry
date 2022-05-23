@@ -8,10 +8,15 @@
         public string Name { get; private set; }
         private int? _vimId;
 
-        private Building() { }
+        private Building()
+        {
+            Name = string.Empty;
+        }
 
         public Building(BuildingId id, string name, int? vimId)
         {
+            Name = string.Empty;
+
             var @event = new BuildingCreated(id, name, vimId);
             ApplyChange(@event);
         }

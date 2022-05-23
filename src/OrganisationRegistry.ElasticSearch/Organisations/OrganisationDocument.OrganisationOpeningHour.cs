@@ -18,9 +18,10 @@
 
             public Period Validity { get; set; }
 
+#pragma warning disable CS8618
             protected OrganisationOpeningHour()
-            {
-            }
+#pragma warning restore CS8618
+            { }
 
             public OrganisationOpeningHour(
                 Guid organisationOpeningHourId,

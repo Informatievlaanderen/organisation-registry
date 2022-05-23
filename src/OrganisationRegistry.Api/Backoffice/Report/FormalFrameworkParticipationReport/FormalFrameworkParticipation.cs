@@ -15,13 +15,13 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkParticipatio
     public class FormalFrameworkParticipation
     {
         [ExcludeFromCsv] public Guid OrganisationId { get; set; }
-        [DisplayName("Entiteit")] public string OrganisationName { get; set; }
+        [DisplayName("Entiteit")] public string? OrganisationName { get; set; }
 
         [ExcludeFromCsv] public Guid BodyId { get; set; }
-        [DisplayName("Orgaan")] public string BodyName { get; set; }
+        [DisplayName("Orgaan")] public string? BodyName { get; set; }
 
         [ExcludeFromCsv] public bool? IsEffective { get; set; }
-        [DisplayName("Is Effectief")] public string IsEffectiveTranslation { get; set; }
+        [DisplayName("Is Effectief")] public string? IsEffectiveTranslation { get; set; }
 
         [DisplayName("Percentage Man")] public decimal MalePercentage { get; set; }
         [DisplayName("Percentage Vrouw")] public decimal FemalePercentage { get; set; }

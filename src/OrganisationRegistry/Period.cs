@@ -24,7 +24,7 @@ namespace OrganisationRegistry
             End = end;
         }
 
-        public bool OverlapsWith(Period period)
+        public bool OverlapsWith(Period? period)
         {
             if (period == null)
                 return false;

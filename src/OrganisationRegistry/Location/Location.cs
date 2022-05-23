@@ -6,7 +6,7 @@
 
     public class Location : AggregateRoot
     {
-        private string _crabLocationId;
+        private string? _crabLocationId;
 
         private string _street;
         private string _zipCode;
@@ -14,10 +14,25 @@
         private string _country;
         public string FormattedAddress { get; private set; }
 
-        private Location() { }
-
-        public Location(LocationId id, string crabLocationId, Address address)
+        private Location()
         {
+            _crabLocationId = string.Empty;
+            _street = string.Empty;
+            _zipCode = string.Empty;
+            _city = string.Empty;
+            _country = string.Empty;
+            FormattedAddress = string.Empty;
+        }
+
+        public Location(LocationId id, string? crabLocationId, Address address)
+        {
+            _crabLocationId = string.Empty;
+            _street = string.Empty;
+            _zipCode = string.Empty;
+            _city = string.Empty;
+            _country = string.Empty;
+            FormattedAddress = string.Empty;
+
             ApplyChange(
                 new LocationCreated(
                     id,
@@ -29,7 +44,7 @@
                     address.Country));
         }
 
-        public void Update(string crabLocationId, Address address)
+        public void Update(string? crabLocationId, Address address)
         {
             ApplyChange(new LocationUpdated(
                     Id,

@@ -25,7 +25,7 @@
 
         [Order]
         [DisplayName("Korte naam")]
-        public string OrganisationShortName { get; set; }
+        public string? OrganisationShortName { get; set; }
 
         [Order]
         [DisplayName("OVO-nummer")]

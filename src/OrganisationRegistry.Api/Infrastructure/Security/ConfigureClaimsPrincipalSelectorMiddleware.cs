@@ -20,22 +20,22 @@ namespace OrganisationRegistry.Api.Infrastructure.Security
             {
                 try
                 {
-                    var authInfo = httpContextAccessor.HttpContext.GetAuthenticateInfo();
+                    var authInfo = httpContextAccessor.HttpContext?.GetAuthenticateInfo();
                     if (authInfo?.Principal == null)
-                        return null;
+                        return null!;
                     if (!(authInfo.Principal.Identity is ClaimsIdentity user))
                         return authInfo.Principal;
 
                     var ip = context.Request.HttpContext.Connection.RemoteIpAddress;
 
                     if (!user.HasClaim(x => x.Type == AcmIdmConstants.Claims.Ip))
-                        user.AddClaim(new Claim(AcmIdmConstants.Claims.Ip, ip.ToString(), ClaimValueTypes.String));
+                        user.AddClaim(new Claim(AcmIdmConstants.Claims.Ip, ip?.ToString() ?? "Unknown", ClaimValueTypes.String));
 
                     return authInfo.Principal;
                 }
                 catch
                 {
-                    return null;
+                    return null!;
                 }
             };
 

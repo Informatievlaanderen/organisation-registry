@@ -5,12 +5,12 @@ namespace OrganisationRegistry.OrganisationRelationType.Commands
         public OrganisationRelationTypeId OrganisationRelationTypeId => Id;
 
         public string Name { get; }
-        public string InverseName { get; }
+        public string? InverseName { get; }
 
         public CreateOrganisationRelationType(
             OrganisationRelationTypeId organisationRelationTypeId,
             string name,
-            string inverseName)
+            string? inverseName)
         {
             Id = organisationRelationTypeId;
 

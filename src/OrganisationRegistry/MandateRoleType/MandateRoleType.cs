@@ -7,12 +7,17 @@ namespace OrganisationRegistry.MandateRoleType
     {
         public MandateRoleTypeName Name { get; private set; }
 
-        private MandateRoleType() { }
+        private MandateRoleType()
+        {
+            Name = new MandateRoleTypeName(string.Empty);
+        }
 
         public MandateRoleType(
             MandateRoleTypeId id,
             MandateRoleTypeName name)
         {
+            Name = new MandateRoleTypeName(string.Empty);
+
             ApplyChange(new MandateRoleTypeCreated(id, name));
         }
 

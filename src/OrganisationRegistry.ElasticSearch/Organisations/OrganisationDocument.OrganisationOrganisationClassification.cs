@@ -15,7 +15,9 @@
             public string OrganisationClassificationName { get; set; }
             public Period Validity { get; set; }
 
+#pragma warning disable CS8618
             protected OrganisationOrganisationClassification()
+#pragma warning restore CS8618
             {
             }
 

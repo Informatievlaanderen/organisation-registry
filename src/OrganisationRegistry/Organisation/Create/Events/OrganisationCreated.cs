@@ -9,9 +9,9 @@ namespace OrganisationRegistry.Organisation.Events
 
         public string Name { get; }
         public string OvoNumber { get; }
-        public string ShortName { get; }
+        public string? ShortName { get; }
         public string? Article { get; }
-        public string Description { get; }
+        public string? Description { get; }
         public List<Purpose> Purposes { get; }
         public bool ShowOnVlaamseOverheidSites { get; }
         public DateTime? ValidFrom { get; }
@@ -22,9 +22,9 @@ namespace OrganisationRegistry.Organisation.Events
         public OrganisationCreated(Guid organisationId,
             string name,
             string ovoNumber,
-            string shortName,
+            string? shortName,
             string? article,
-            string description,
+            string? description,
             List<Purpose> purposes,
             bool showOnVlaamseOverheidSites,
             DateTime? validFrom,

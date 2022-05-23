@@ -2,7 +2,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLabel;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
@@ -11,7 +10,6 @@ using LabelType.Events;
 using OrganisationRegistry.Infrastructure.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;

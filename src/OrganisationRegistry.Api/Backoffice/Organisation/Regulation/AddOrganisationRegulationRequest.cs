@@ -26,7 +26,7 @@
         public Guid RegulationThemeId { get; set; }
         public Guid RegulationSubThemeId { get; set; }
         public DateTime? Date { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public string? Url { get; set; }
 
         public string? WorkRulesUrl { get; set; }
@@ -44,6 +44,10 @@
             RuleFor(x => x.OrganisationId)
                 .NotEmpty()
                 .WithMessage("Id is required.");
+
+            RuleFor(x => x.Body.Name)
+                .NotEmpty()
+                .WithMessage("Name is required.");
 
             RuleFor(x => x.Body.ValidTo)
                 .GreaterThanOrEqualTo(x => x.Body.ValidFrom)

@@ -4,6 +4,7 @@ using FluentAssertions;
 using Handling.Authorization;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Organisation.Exceptions;
+using Tests.Shared;
 using Xunit;
 
 public class RegulationPolicyTests

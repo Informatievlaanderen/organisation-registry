@@ -51,7 +51,7 @@ namespace OrganisationRegistry.UnitTests.Magda
                 clientCertificate: magdaClientCertificate,
                 timeout: _apiConfiguration.KboMagdaTimeout,
                 sender: _apiConfiguration.KboSender,
-                capacity: null,
+                capacity: string.Empty,
                 recipient: _apiConfiguration.KboRecipient,
                 kboMagdaEndPoint: _apiConfiguration.KboMagdaEndpoint,
                 repertoriumMagdaEndpoint: _apiConfiguration.RepertoriumMagdaEndpoint,

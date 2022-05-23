@@ -2,7 +2,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 {
     using System;
     using System.Data.Common;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using ElasticSearch.Organisations;
@@ -33,7 +32,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkUpdated> message)
         {
-            return new ElasticMassChange
+            return await new ElasticMassChange
             (
                 elastic => elastic.TryAsync(() => elastic
                     .MassUpdateOrganisationAsync(
@@ -42,32 +41,24 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         "formalFrameworkName", message.Body.Name,
                         message.Number,
                         message.Timestamp))
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
-        {
-            return await MassUpdateOrganisationFormalFrameworkParentName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
-        }
+            => await MassUpdateOrganisationFormalFrameworkParentName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
-        {
-            return await MassUpdateOrganisationFormalFrameworkParentName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
-        }
+            => await MassUpdateOrganisationFormalFrameworkParentName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
-        {
-            return await MassUpdateOrganisationFormalFrameworkParentName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
-        }
+            => await MassUpdateOrganisationFormalFrameworkParentName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
-        {
-            return await MassUpdateOrganisationFormalFrameworkParentName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling, message.Number, message.Timestamp);
-        }
+            => await MassUpdateOrganisationFormalFrameworkParentName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling, message.Number, message.Timestamp);
 
         private async Task<IElasticChange> MassUpdateOrganisationFormalFrameworkParentName(Guid bodyOrganisationId, string bodyName, int messageNumber, DateTimeOffset dateTimeOffset)
         {
-            return new ElasticMassChange
+            return await new ElasticMassChange
             (
                 elastic => elastic.TryAsync(() => elastic
                     .MassUpdateOrganisationAsync(
@@ -76,20 +67,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         "parentOrganisationName", bodyName,
                         messageNumber,
                         dateTimeOffset))
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkAdded> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
-                message.Body.OrganisationId, async document =>
+                message.Body.OrganisationId,
+                document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
-
-                    if (document.FormalFrameworks == null)
-                        document.FormalFrameworks = new List<OrganisationDocument.OrganisationFormalFramework>();
 
                     document.FormalFrameworks.RemoveExistingListItems(x => x.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
 
@@ -102,14 +91,15 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.ParentOrganisationName,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkUpdated> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
-                message.Body.OrganisationId, async document =>
+                message.Body.OrganisationId,
+                document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -126,14 +116,15 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.ParentOrganisationName,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
-                message.Body.OrganisationId, async document =>
+                message.Body.OrganisationId,
+                document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -148,14 +139,15 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         organisationFormalFramework.Validity.End = value;
                     }
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
-                message.Body.OrganisationId, async document =>
+                message.Body.OrganisationId,
+                document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -170,7 +162,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         organisationFormalFramework.Validity.End = value;
                     }
                 }
-            );
+            ).ToAsyncResult();
         }
     }
 }

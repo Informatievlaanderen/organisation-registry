@@ -5,7 +5,7 @@ namespace OrganisationRegistry
 
     public interface IUniqueExternalKeyWithinTypeValidator<T> where T : AggregateRoot
     {
-        bool IsExternalKeyTaken(string externalKey, Guid typeId);
-        bool IsExternalKeyTaken(Guid id, string externalKey, Guid typeId);
+        bool IsExternalKeyTaken(string? externalKey, Guid typeId);
+        bool IsExternalKeyTaken(Guid id, string? externalKey, Guid typeId);
     }
 }

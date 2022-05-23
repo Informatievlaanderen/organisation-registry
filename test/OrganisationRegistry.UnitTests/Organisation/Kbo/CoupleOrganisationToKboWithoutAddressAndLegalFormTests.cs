@@ -13,7 +13,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using Moq;
     using OrganisationClassification.Events;
     using OrganisationClassificationType.Events;
-    using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Domain;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;

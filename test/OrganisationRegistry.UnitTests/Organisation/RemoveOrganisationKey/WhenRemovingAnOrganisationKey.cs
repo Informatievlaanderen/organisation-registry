@@ -13,6 +13,7 @@ using OrganisationRegistry.KeyTypes.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Commands;
 using OrganisationRegistry.Organisation.Events;
+using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
 

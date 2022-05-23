@@ -7,7 +7,6 @@ using Exceptions;
 using FormalFramework;
 using Handling;
 using Handling.Authorization;
-using Infrastructure.Authorization;
 using Infrastructure.Commands;
 using Infrastructure.Configuration;
 using Infrastructure.Domain;

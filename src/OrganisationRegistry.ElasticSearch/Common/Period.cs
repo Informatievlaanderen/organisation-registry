@@ -21,7 +21,7 @@ namespace OrganisationRegistry.ElasticSearch.Common
         public static Period Infinite()
             => new();
 
-        public bool IsInfinit()
+        public bool IsInfinite()
             => Start == null && End == null;
 
         public static Period FromDates(DateTime? start, DateTime? end)

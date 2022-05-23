@@ -21,7 +21,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationRelationTyp
     public class UpdateOrganisationRelationTypeRequest
     {
         public string Name { get; set; } = null!;
-        public string InverseName { get; set; }
+        public string? InverseName { get; set; }
     }
 
     public class UpdateOrganisationRelationTypeRequestValidator : AbstractValidator<UpdateOrganisationRelationTypeInternalRequest>

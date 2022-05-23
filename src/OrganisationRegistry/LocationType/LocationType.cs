@@ -7,12 +7,17 @@ namespace OrganisationRegistry.LocationType
     {
         public LocationTypeName Name { get; private set; }
 
-        private LocationType() { }
+        private LocationType()
+        {
+            Name = new LocationTypeName(string.Empty);
+        }
 
         public LocationType(
             LocationTypeId id,
             LocationTypeName name)
         {
+            Name = new LocationTypeName(string.Empty);
+
             ApplyChange(new LocationTypeCreated(id, name));
         }
 

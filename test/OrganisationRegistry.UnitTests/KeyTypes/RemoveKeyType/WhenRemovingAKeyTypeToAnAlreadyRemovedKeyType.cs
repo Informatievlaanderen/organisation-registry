@@ -12,6 +12,7 @@ namespace OrganisationRegistry.UnitTests.KeyTypes.RemoveKeyType
     using OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers;
     using Xunit.Abstractions;
     using OrganisationRegistry.Infrastructure.Domain;
+    using Tests.Shared;
     using Xunit;
 
     public class WhenRemovingAKeyTypeToAnAlreadyRemovedKeyType

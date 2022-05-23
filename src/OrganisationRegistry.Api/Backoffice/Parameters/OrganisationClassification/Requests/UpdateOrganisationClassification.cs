@@ -23,7 +23,7 @@ namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassificat
     {
         public string Name { get; set; } = null!;
         public int Order { get; set; }
-        public string ExternalKey { get; set; }
+        public string? ExternalKey { get; set; }
         public bool Active { get; set; }
         public Guid OrganisationClassificationTypeId { get; set; }
     }

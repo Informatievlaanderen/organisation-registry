@@ -20,7 +20,9 @@
             public string? Description { get; set; }
             public Period Validity { get; set; }
 
+#pragma warning disable CS8618
             protected OrganisationRegulation()
+#pragma warning restore CS8618
             {
             }
 

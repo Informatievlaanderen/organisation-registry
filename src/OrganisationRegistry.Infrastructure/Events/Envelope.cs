@@ -111,7 +111,7 @@ namespace OrganisationRegistry.Infrastructure.Events
                 ip,
                 lastName,
                 firstName,
-                userId);
+                userId)!;
 
             envelope.Number = number;
             return envelope;
@@ -141,7 +141,7 @@ namespace OrganisationRegistry.Infrastructure.Events
             => new Envelope<T>(
                 source.Id,
                 source.Version,
-                source.GetType().AssemblyQualifiedName,
+                source.GetType().AssemblyQualifiedName!,
                 source.Timestamp,
                 source,
                 ip,

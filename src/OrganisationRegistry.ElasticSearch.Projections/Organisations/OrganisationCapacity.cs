@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 {
     using System.Data.Common;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using OrganisationRegistry.Organisation.Events;
@@ -98,9 +97,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
 
-                    if (document.Capacities == null)
-                        document.Capacities = new List<OrganisationDocument.OrganisationCapacity>();
-
                     document.Capacities.RemoveExistingListItems(x => x.OrganisationCapacityId == message.Body.OrganisationCapacityId);
 
                     document.Capacities.Add(
@@ -149,7 +145,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
             => await new ElasticPerDocumentChange<OrganisationDocument>(
                 message.Body.OrganisationId,
-                async document =>
+                document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -169,7 +165,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
             => await new ElasticPerDocumentChange<OrganisationDocument>(
                 message.Body.OrganisationId,
-                async document =>
+                document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;

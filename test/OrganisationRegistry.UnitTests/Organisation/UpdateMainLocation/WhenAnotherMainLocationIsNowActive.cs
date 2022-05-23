@@ -12,6 +12,7 @@ using Location.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using Tests.Shared;
 using Xunit.Abstractions;
 
 public class WhenAnotherMainLocationIsNowActive :

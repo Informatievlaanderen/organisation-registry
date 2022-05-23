@@ -12,6 +12,7 @@ using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers;
+using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -7,16 +7,21 @@ namespace OrganisationRegistry.OrganisationRelationType
     {
         public string Name { get; private set; }
 
-        public string InverseName { get; private set; }
+        public string? InverseName { get; private set; }
 
-        private OrganisationRelationType() { }
-
-        public OrganisationRelationType(OrganisationRelationTypeId id, string name, string inverseName)
+        private OrganisationRelationType()
         {
+            Name = string.Empty;
+        }
+
+        public OrganisationRelationType(OrganisationRelationTypeId id, string name, string? inverseName)
+        {
+            Name = string.Empty;
+
             ApplyChange(new OrganisationRelationTypeCreated(id, name, inverseName));
         }
 
-        public void Update(string name, string inverseName)
+        public void Update(string name, string? inverseName)
         {
             var @event = new OrganisationRelationTypeUpdated(Id, name, inverseName, Name, InverseName);
             ApplyChange(@event);

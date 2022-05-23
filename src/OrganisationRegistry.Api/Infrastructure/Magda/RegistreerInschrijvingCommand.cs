@@ -51,7 +51,7 @@ namespace OrganisationRegistry.Api.Infrastructure.Magda
             using (var organisationRegistryContext = _contextFactory().Value)
             {
                 var reference = await CreateAndStoreReference(organisationRegistryContext, user);
-                _logger.LogTrace($"Reference: {reference}");
+                _logger.LogTrace("Reference: {Reference}", reference);
                 return await PerformMagdaRequest<RegistreerInschrijvingResponseBody>(
                     $"{_magdaConfiguration.RepertoriumMagdaEndpoint}/RegistreerInschrijvingDienst-02.01/soap/WebService",
                     SignEnvelope(
@@ -69,7 +69,7 @@ namespace OrganisationRegistry.Api.Infrastructure.Magda
             {
                 try
                 {
-                    _logger.LogTrace(signedEnvelope);
+                    _logger.LogTrace("{SignedEnvelope}", signedEnvelope);
                     var response = await client
                         .PostAsync(
                             endpoint,
@@ -93,7 +93,7 @@ namespace OrganisationRegistry.Api.Infrastructure.Magda
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogCritical(ex, ex.Message);
+                    _logger.LogCritical(ex, "{Message}", ex.Message);
                 }
 
                 return null;

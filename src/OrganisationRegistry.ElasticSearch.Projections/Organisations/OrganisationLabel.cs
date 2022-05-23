@@ -2,7 +2,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 {
     using System;
     using System.Data.Common;
-    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
     using ElasticSearch.Organisations;
@@ -33,7 +32,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<LabelTypeUpdated> message)
         {
-            return new ElasticMassChange
+            return await new ElasticMassChange
             (
                 elastic => elastic.TryAsync(() => elastic
                     .MassUpdateOrganisationAsync(
@@ -42,23 +41,17 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         "labelTypeName", message.Body.Name,
                         message.Number,
                         message.Timestamp))
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLabelAdded> message)
-        {
-            return await AddLabel(message.Body.OrganisationId, message.Body.OrganisationLabelId, message.Body.LabelTypeId, message.Body.LabelTypeName, message.Body.Value, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
-        }
+            => await AddLabel(message.Body.OrganisationId, message.Body.OrganisationLabelId, message.Body.LabelTypeId, message.Body.LabelTypeName, message.Body.Value, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboFormalNameLabelAdded> message)
-        {
-            return await AddLabel(message.Body.OrganisationId, message.Body.OrganisationLabelId, message.Body.LabelTypeId, message.Body.LabelTypeName, message.Body.Value, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
-        }
+            => await AddLabel(message.Body.OrganisationId, message.Body.OrganisationLabelId, message.Body.LabelTypeId, message.Body.LabelTypeName, message.Body.Value, message.Body.ValidFrom, message.Body.ValidTo, message.Number, message.Timestamp);
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboFormalNameLabelRemoved> message)
-        {
-            return await RemoveLabel(message.Body.OrganisationId, message.Body.OrganisationLabelId, message.Number, message.Timestamp);
-        }
+            => await RemoveLabel(message.Body.OrganisationId, message.Body.OrganisationLabelId, message.Number, message.Timestamp);
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
@@ -71,37 +64,33 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
         {
             if (message.Body.FormalNameOrganisationLabelIdToTerminate == null)
-                return new ElasticNoChange();
+                return await new ElasticNoChange().ToAsyncResult();
 
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
-                message.Body.OrganisationId, async document =>
+                message.Body.OrganisationId,
+                document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
-
-                    if (document.Labels == null)
-                        document.Labels = new List<OrganisationDocument.OrganisationLabel>();
 
                     var formalNameLabel = document.Labels.Single(label =>
                         label.OrganisationLabelId == message.Body.FormalNameOrganisationLabelIdToTerminate);
 
                     formalNameLabel.Validity.End = message.Body.DateOfTermination;
                 }
-            );
+            ).ToAsyncResult();
         }
 
         private async Task<IElasticChange> AddLabel(Guid organisationId, Guid organisationLabelId, Guid labelTypeId, string labelTypeName, string labelValue, DateTime? validFrom, DateTime? validTo, int documentChangeId, DateTimeOffset timestamp)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
-                organisationId, async document =>
+                organisationId,
+                document =>
                 {
                     document.ChangeId = documentChangeId;
                     document.ChangeTime = timestamp;
-
-                    if (document.Labels == null)
-                        document.Labels = new List<OrganisationDocument.OrganisationLabel>();
 
                     document.Labels.RemoveExistingListItems(x => x.OrganisationLabelId == organisationLabelId);
 
@@ -113,31 +102,30 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             labelValue,
                             Period.FromDates(validFrom, validTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         private async Task<IElasticChange> RemoveLabel(Guid organisationId, Guid organisationLabelId, int documentChangeId, DateTimeOffset timestamp)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
-                organisationId, async document =>
+                organisationId,
+                document =>
                 {
                     document.ChangeId = documentChangeId;
                     document.ChangeTime = timestamp;
 
-                    if (document.Labels == null)
-                        document.Labels = new List<OrganisationDocument.OrganisationLabel>();
-
                     document.Labels.RemoveExistingListItems(x => x.OrganisationLabelId == organisationLabelId);
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLabelUpdated> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
-                message.Body.OrganisationId, async document =>
+                message.Body.OrganisationId,
+                document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -152,14 +140,15 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.Value,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
-                message.Body.OrganisationId, async document =>
+                message.Body.OrganisationId,
+                document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -180,14 +169,15 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         organisationBankAccount.Validity.End = value;
                     }
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
-                message.Body.OrganisationId, async document =>
+                message.Body.OrganisationId,
+                document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -208,7 +198,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         organisationBankAccount.Validity.End = value;
                     }
                 }
-            );
+            ).ToAsyncResult();
         }
     }
 }

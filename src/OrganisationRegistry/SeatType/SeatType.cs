@@ -10,7 +10,10 @@ namespace OrganisationRegistry.SeatType
         public int? Order { get; private set; }
         public bool IsEffective { get; private set; }
 
-        private SeatType() { }
+        public SeatType()
+        {
+            Name = new SeatTypeName(string.Empty);
+        }
 
         public SeatType(
             SeatTypeId id,
@@ -18,6 +21,8 @@ namespace OrganisationRegistry.SeatType
             int? order,
             bool isEffective)
         {
+            Name = new SeatTypeName(string.Empty);
+
             ApplyChange(new SeatTypeCreated(
                 id,
                 name,

@@ -7,15 +7,18 @@ namespace OrganisationRegistry.Infrastructure.EventStore
     public static class EventTypeExtensions
     {
         public static List<string> GetEventTypeNames(this IEnumerable<Type> eventTypes)
-        {
-            return eventTypes
-                .Select(et => et.FullName)
+            => eventTypes
+                .Select(et => et.FullName ?? string.Empty)
                 .ToList();
-        }
 
         public static Type ToEventType(this string name)
         {
-            return Type.GetType($"{name}, OrganisationRegistry");
+            var typeName = $"{name}, OrganisationRegistry";
+            var maybeType = Type.GetType(typeName);
+            if (maybeType is { } type)
+                return type;
+
+            throw new CannotCreateType(typeName);
         }
     }
 }

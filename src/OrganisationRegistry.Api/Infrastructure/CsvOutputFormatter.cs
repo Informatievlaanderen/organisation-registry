@@ -50,7 +50,7 @@ namespace OrganisationRegistry.Api.Infrastructure
             //SupportedEncodings.Add(Encoding.GetEncoding("utf-8"));
         }
 
-        protected override bool CanWriteType(Type type)
+        protected override bool CanWriteType(Type? type)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
@@ -77,14 +77,14 @@ namespace OrganisationRegistry.Api.Infrastructure
                 parent = parent.BaseType;
             }
 
-            return type.GetProperties().OrderByDescending(prop => lookup[prop.DeclaringType]);
+            return type.GetProperties().OrderByDescending(prop => prop.DeclaringType is { } declaringType ? lookup[declaringType] : int.MaxValue);
         }
 
         public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context)
         {
             var response = context.HttpContext.Response;
 
-            var type = context.Object.GetType();
+            var type = context.Object!.GetType();
 
             var itemType = type.GetGenericArguments().Length > 0
                 ? type.GetGenericArguments()[0]
@@ -95,7 +95,7 @@ namespace OrganisationRegistry.Api.Infrastructure
             if (_options.UseSingleLineHeaderInCsv)
                 stringWriter.WriteLine(string.Join<string>(
                     _options.CsvDelimiter,
-                    GetOrderedProperties(itemType)
+                    GetOrderedProperties(itemType!)
                         .Where(pi => pi.GetCustomAttribute<ExcludeFromCsvAttribute>() == null)
                         .Select(pi => pi.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName
                             ?? pi.GetCustomAttribute<DisplayAttribute>()?.Name
@@ -117,7 +117,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                         var tempVal = val.Value.ToString();
 
                         //Check if the value contans a comma and place it in quotes if so
-                        if (tempVal.Contains(_options.CsvDelimiter))
+                        if (tempVal!.Contains(_options.CsvDelimiter))
                             tempVal = string.Concat("\"", tempVal, "\"");
 
                         //Replace any \r or \n special characters from a new line with a space

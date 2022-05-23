@@ -18,7 +18,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.OrganisationClassificationR
         public Guid? ParentOrganisationId { get; set; }
 
         [DisplayName("Moeder entiteit")]
-        public string ParentOrganisationName { get; set; }
+        public string? ParentOrganisationName { get; set; }
 
         [ExcludeFromCsv]
         public Guid OrganisationId { get; set; }
@@ -27,7 +27,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.OrganisationClassificationR
         public string OrganisationName { get; set; }
 
         [DisplayName("Korte naam")]
-        public string OrganisationShortName { get; set; }
+        public string? OrganisationShortName { get; set; }
 
         [DisplayName("Franse naam")]
         public string OrganisationNameFrench { get; set; }
@@ -47,9 +47,9 @@ namespace OrganisationRegistry.Api.Backoffice.Report.OrganisationClassificationR
             ApiConfigurationSection @params)
         {
             var parent = document
-                .Parents?
+                .Parents
                 .FirstOrDefault(
-                    x => x.Validity == null ||
+                    x => x.Validity.IsInfinite() ||
                          (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
                          (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now));
 
@@ -61,16 +61,16 @@ namespace OrganisationRegistry.Api.Backoffice.Report.OrganisationClassificationR
             OrganisationShortName = document.ShortName;
 
             OrganisationNameFrench = document.Labels
-                ?.FirstOrDefault(x => x.LabelTypeId == @params.FrenchLabelTypeId)
-                ?.Value;
+                .FirstOrDefault(x => x.LabelTypeId == @params.FrenchLabelTypeId)
+                ?.Value ?? string.Empty;
 
             OrganisationNameEnglish = document.Labels
-                ?.FirstOrDefault(x => x.LabelTypeId == @params.EnglishLabelTypeId)
-                ?.Value;
+                .FirstOrDefault(x => x.LabelTypeId == @params.EnglishLabelTypeId)
+                ?.Value ?? string.Empty;
 
             OrganisationNameGerman = document.Labels
-                ?.FirstOrDefault(x => x.LabelTypeId == @params.GermanLabelTypeId)
-                ?.Value;
+                .FirstOrDefault(x => x.LabelTypeId == @params.GermanLabelTypeId)
+                ?.Value ?? string.Empty;
         }
 
         /// <summary>
@@ -129,15 +129,15 @@ namespace OrganisationRegistry.Api.Backoffice.Report.OrganisationClassificationR
             foreach (var document in documents)
             {
                 var classifications = document
-                    .OrganisationClassifications?
+                    .OrganisationClassifications
                     .Where(x =>
                         x.OrganisationClassificationId == organisationClassificationId &&
-                        (x.Validity == null ||
+                        (x.Validity.IsInfinite() ||
                          (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
                          (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))
                     .ToList();
 
-                if (classifications == null || !classifications.Any())
+                if (!classifications.Any())
                     continue;
 
                 classificationOrganisations.Add(new ClassificationOrganisation(document, @params));

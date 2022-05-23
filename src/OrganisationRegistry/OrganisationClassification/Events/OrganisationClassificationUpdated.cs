@@ -14,8 +14,8 @@ namespace OrganisationRegistry.OrganisationClassification.Events
         public int Order { get; }
         public int PreviousOrder { get; }
 
-        public string ExternalKey { get; }
-        public string PreviousExternalKey { get; }
+        public string? ExternalKey { get; }
+        public string? PreviousExternalKey { get; }
 
         public bool Active { get; }
         public bool PreviousActive { get; }
@@ -30,13 +30,13 @@ namespace OrganisationRegistry.OrganisationClassification.Events
             OrganisationClassificationId organisationClassificationId,
             OrganisationClassificationName name,
             int order,
-            string externalKey,
+            string? externalKey,
             bool active,
             OrganisationClassificationTypeId organisationClassificationTypeId,
             OrganisationClassificationTypeName organisationClassificationTypeName,
             OrganisationClassificationName previousName,
             int previousOrder,
-            string previousExternalKey,
+            string? previousExternalKey,
             bool previousActive,
             OrganisationClassificationTypeId previousOrganisationClassificationTypeId,
             OrganisationClassificationTypeName previousOrganisationClassificationTypeName)
@@ -63,13 +63,13 @@ namespace OrganisationRegistry.OrganisationClassification.Events
             Guid organisationClassificationId,
             string name,
             int order,
-            string externalKey,
+            string? externalKey,
             bool active,
             Guid organisationClassificationTypeId,
             string organisationClassificationTypeName,
             string previousName,
             int previousOrder,
-            string previousExternalKey,
+            string? previousExternalKey,
             bool previousActive,
             Guid previousOrganisationClassificationTypeId,
             string previousOrganisationClassificationTypeName)

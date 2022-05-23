@@ -52,14 +52,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
                 message.Body.OrganisationId,
                 document =>
                 {
-                    if (document.BankAccounts == null)
-                        document.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
-
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
 
@@ -69,24 +66,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         organisationBankAccount.Validity.End = message.Body.DateOfTermination;
                     }
                 }
-            );
+            ).ToAsyncResult();
         }
 
         private static async Task<IElasticChange> AddBankAccount(Guid organisationId, Guid organisationBankAccountId, string bankAccountNumber, bool isIban, string bic, bool isBic, DateTime? validFrom, DateTime? validTo, int changeId, DateTimeOffset timestamp)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
                 organisationId,
                 document =>
                 {
-                    if (document.BankAccounts == null)
-                        document.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
-
                     document.ChangeId = changeId;
                     document.ChangeTime = timestamp;
-
-                    if (document.BankAccounts == null)
-                        document.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
 
                     document.BankAccounts.RemoveExistingListItems(x =>
                         x.OrganisationBankAccountId == organisationBankAccountId);
@@ -100,40 +91,34 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             isBic,
                             Period.FromDates(validFrom, validTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         private static async Task<IElasticChange> RemoveBankAccount(Guid organisationId, Guid organisationBankAccountId, int changeId, DateTimeOffset timestamp)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
                 organisationId,
                 document =>
                 {
                     document.ChangeId = changeId;
                     document.ChangeTime = timestamp;
-
-                    if (document.BankAccounts == null)
-                        document.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
 
                     document.BankAccounts.RemoveExistingListItems(x =>
                         x.OrganisationBankAccountId == organisationBankAccountId);
                 }
-            );
+            ).ToAsyncResult();
         }
 
         private static async Task<IElasticChange> RemoveBankAccounts(Guid organisationId, List<Guid> organisationBankAccountIdsToCancel, int changeId, DateTimeOffset timestamp)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
                 organisationId,
                 document =>
                 {
                     document.ChangeId = changeId;
                     document.ChangeTime = timestamp;
-
-                    if (document.BankAccounts == null)
-                        document.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
 
                     foreach (var organisationBankAccountId in organisationBankAccountIdsToCancel)
                     {
@@ -141,21 +126,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             x.OrganisationBankAccountId == organisationBankAccountId);
                     }
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountUpdated> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
                 message.Body.OrganisationId,
                 document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
-
-                    if (document.BankAccounts == null)
-                        document.BankAccounts = new List<OrganisationDocument.OrganisationBankAccount>();
 
                     document.BankAccounts.RemoveExistingListItems(x => x.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
 
@@ -168,12 +150,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                             message.Body.IsBic,
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
                 message.Body.OrganisationId,
                 document =>
@@ -195,12 +177,12 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         organisationBankAccount.Validity.End = value;
                     }
                 }
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            return await new ElasticPerDocumentChange<OrganisationDocument>
             (
                 message.Body.OrganisationId,
                 document =>
@@ -222,7 +204,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         organisationBankAccount.Validity.End = value;
                     }
                 }
-            );
+            ).ToAsyncResult();
         }
     }
 }

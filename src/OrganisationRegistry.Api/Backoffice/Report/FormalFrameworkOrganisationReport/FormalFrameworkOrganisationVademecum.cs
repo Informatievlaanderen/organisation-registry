@@ -18,7 +18,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkOrganisation
         public Guid? ParentOrganisationId { get; set; }
 
         [DisplayName("Moeder entiteit")]
-        public string ParentOrganisationName { get; set; }
+        public string? ParentOrganisationName { get; set; }
 
         [ExcludeFromCsv]
         public Guid OrganisationId { get; set; }
@@ -27,7 +27,7 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkOrganisation
         public string OrganisationName { get; set; }
 
         [DisplayName("Korte naam")]
-        public string OrganisationShortName { get; set; }
+        public string? OrganisationShortName { get; set; }
 
         [DisplayName("OVO-nummer")]
         public string OrganisationOvoNumber { get; set; }
@@ -48,9 +48,8 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkOrganisation
             ApiConfigurationSection @params)
         {
             var parent = document
-                .Parents?
-                .FirstOrDefault(
-                    x => x.Validity == null ||
+                .Parents.FirstOrDefault(
+                    x => x.Validity.IsInfinite() ||
                          (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
                          (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now));
 
@@ -65,10 +64,10 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkOrganisation
             DataVlaanderenOrganisationUri = new Uri(string.Format(@params.DataVlaanderenOrganisationUri, document.OvoNumber));
 
             VademecumKey = document.Keys
-                ?.FirstOrDefault(x => x.KeyTypeId == @params.VademecumKeyTypeId && (x.Validity == null ||
+                .FirstOrDefault(x => x.KeyTypeId == @params.VademecumKeyTypeId && (x.Validity.IsInfinite() ||
                                       (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
                                       (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))
-                ?.Value;
+                ?.Value ?? string.Empty;
         }
 
         /// <summary>
@@ -127,15 +126,15 @@ namespace OrganisationRegistry.Api.Backoffice.Report.FormalFrameworkOrganisation
             foreach (var document in documents)
             {
                 var formalFrameworks = document
-                    .FormalFrameworks?
+                    .FormalFrameworks
                     .Where(x =>
                         x.FormalFrameworkId == formalFrameworkId &&
-                        (x.Validity == null ||
+                        (x.Validity.IsInfinite() ||
                          (!x.Validity.Start.HasValue || x.Validity.Start.Value <= DateTime.Now) &&
                          (!x.Validity.End.HasValue || x.Validity.End.Value >= DateTime.Now)))
                     .ToList();
 
-                if (formalFrameworks == null || !formalFrameworks.Any())
+                if (!formalFrameworks.Any())
                     continue;
 
                 formalFrameworkOrganisations.Add(new FormalFrameworkOrganisationVademecum(document, @params));
