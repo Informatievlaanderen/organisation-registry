@@ -1,3 +1,10 @@
+# [1.191.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.190.0...v1.191.0) (2022-05-23)
+
+
+### Features
+
+* or-1024 add extra capacity to regelgevingbeheerder ([0248bc4](https://github.com/informatievlaanderen/organisation-registry/commit/0248bc42bc65c45c2f419d79342410071374e19e))
+
 # [1.190.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.189.1...v1.190.0) (2022-05-23)
 
 
