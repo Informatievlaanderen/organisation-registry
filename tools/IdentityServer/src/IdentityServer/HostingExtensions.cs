@@ -2,12 +2,17 @@ using Serilog;
 
 namespace IdentityServer;
 
+using Microsoft.AspNetCore.Cors.Infrastructure;
+
 internal static class HostingExtensions
 {
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
     {
         // uncomment if you want to add a UI
         builder.Services.AddRazorPages();
+
+        builder.Services.AddCors(options => options.AddDefaultPolicy(policyBuilder => policyBuilder.AllowAnyOrigin()));
+        builder.Services.ConfigureNonBreakingSameSiteCookies();
 
         builder.Services.AddIdentityServer(options =>
             {
@@ -36,6 +41,12 @@ internal static class HostingExtensions
         app.UseRouting();
 
         app.UseIdentityServer();
+
+        app.UseCookiePolicy();
+
+        // This will write cookies, so make sure it's after the cookie policy
+        app.UseAuthentication();
+
 
         // uncomment if you want to add a UI
         app.UseAuthorization();
