@@ -5,6 +5,7 @@ appsettings.*.json
 !appsettings.development.json
 *.Importer-*.config
 wwwroot/
+!tools/IdentityServer/src/IdentityServer/wwwroot
 
 .vs/
 .vscode/
