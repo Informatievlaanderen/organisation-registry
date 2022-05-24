@@ -117,7 +117,7 @@ public class
                     _formatedAdress,
                     _isMainLocation,
                     null,
-                    null,
+                    string.Empty,
                     _validFrom,
                     _validTo),
                 opt => opt.ExcludeEventProperties());
@@ -128,7 +128,7 @@ public class
     {
         await Given(Events).When(AddOrganisationLocationCommand, User).Then();
 
-        PublishedEvents[0]
+        PublishedEvents[1]
             .UnwrapBody<MainLocationAssignedToOrganisation>()
             .Should()
             .BeEquivalentTo(
@@ -137,8 +137,6 @@ public class
                     _locationId,
                     _organisationLocationId),
                 opt => opt.ExcludeEventProperties());
-        var organisationLocationAdded = PublishedEvents[1].UnwrapBody<MainLocationAssignedToOrganisation>();
-        organisationLocationAdded.OrganisationId.Should().Be(_organisationId);
-        organisationLocationAdded.MainLocationId.Should().Be(_locationId);
+
     }
 }

@@ -35,8 +35,8 @@ public class
     {
         _organisationOrganisationParentId1 = Guid.NewGuid();
         _organisationOrganisationParentId2 = Guid.NewGuid();
-        _validFrom = _dateTimeProviderStub.Today;
-        _validTo = _dateTimeProviderStub.Today.AddDays(2);
+        _validFrom = _dateTimeProviderStub.Today.AddYears(1);
+        _validTo = _dateTimeProviderStub.Today.AddYears(1).AddDays(2);
         _organisationId = Guid.NewGuid();
         _organisationParentId = Guid.NewGuid();
         _ovoNumber = "OVO000012345";
@@ -88,9 +88,9 @@ public class
                 _organisationId,
                 _organisationOrganisationParentId1,
                 _organisationParentId,
-                "Ouder en Gezin",
-                _validFrom,
-                _validTo),
+                _parentOrganisationName,
+                _dateTimeProviderStub.Today,
+                _dateTimeProviderStub.Today),
             new ParentAssignedToOrganisation(
                 _organisationId,
                 _organisationParentId,
@@ -102,8 +102,8 @@ public class
             _organisationOrganisationParentId2,
             new OrganisationId(_organisationId),
             new OrganisationId(_organisationParentId),
-            new ValidFrom(_validFrom.AddYears(1)),
-            new ValidTo(_validTo.AddYears(1)));
+            new ValidFrom(_validFrom),
+            new ValidTo(_validTo));
 
     [Fact]
     public async Task PublishesOneEvent()
