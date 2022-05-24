@@ -9,7 +9,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
     {
         public OrganisationId Id { get; private set; }
         public string Name { get; private set; }
-        public string OvoNumber { get; }
+        public string OvoNumber { get; private set; }
         public string ShortName { get; }
         public string Description { get; }
         public DateTime? ValidFrom { get; private set; }
@@ -62,5 +62,11 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
 
         public static implicit operator OrganisationCreated(OrganisationCreatedBuilder builder)
             => builder.Build();
+
+        public OrganisationCreatedBuilder WithOvoNumber(string ovoNumber)
+        {
+            OvoNumber = ovoNumber;
+            return this;
+        }
     }
 }

@@ -26,7 +26,6 @@ public class WhenAddingAMainOrganisationLocationWhenThereAlreadyIsOne
     private readonly Guid _organisationId;
     private readonly Guid _locationAId;
     private readonly Guid _locationBId;
-    private readonly Guid _organisationLocationId;
     private readonly bool _isMainLocation;
     private readonly DateTime _validTo;
     private readonly DateTime _validFrom;
@@ -39,7 +38,6 @@ public class WhenAddingAMainOrganisationLocationWhenThereAlreadyIsOne
         _organisationId = Guid.NewGuid();
         _locationAId = Guid.NewGuid();
         _locationBId = Guid.NewGuid();
-        _organisationLocationId = Guid.NewGuid();
         _isMainLocation = true;
         _validFrom = DateTime.Now.AddDays(1);
         _validTo = DateTime.Now.AddDays(2);
@@ -90,7 +88,7 @@ public class WhenAddingAMainOrganisationLocationWhenThereAlreadyIsOne
                 "Belgie"),
             new OrganisationLocationAdded(
                 _organisationId,
-                _organisationLocationId,
+                Guid.NewGuid(),
                 _locationAId,
                 "Gebouw A",
                 _isMainLocation,

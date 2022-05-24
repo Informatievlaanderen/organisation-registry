@@ -1,12 +1,13 @@
 namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent;
 
 using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
@@ -18,63 +19,64 @@ using Xunit.Abstractions;
 
 public class
     WhenAddingAParentWithOverlappingValidity
-    : ExceptionOldSpecification2<AddOrganisationParentCommandHandler, AddOrganisationParent>
+    : Specification<AddOrganisationParentCommandHandler, AddOrganisationParent>
 {
-    private DateTime _validTo;
-    private DateTime _validFrom;
-    private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
 
     private readonly SequentialOvoNumberGenerator
-        _sequentialOvoNumberGenerator = new();
+        _sequentialOvoNumberGenerator;
 
-    private string _childOvoNumber = null!;
-    private Guid _childId;
-    private Guid _parentId;
+    private readonly string _childOvoNumber;
+    private readonly Guid _childId;
+    private readonly Guid _parentId;
 
     public WhenAddingAParentWithOverlappingValidity(ITestOutputHelper helper) : base(helper)
     {
+        var dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
+        _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
+
+        _validFrom = dateTimeProviderStub.Today;
+        _validTo = dateTimeProviderStub.Today.AddDays(2);
+
+        _childOvoNumber = _sequentialOvoNumberGenerator.GenerateNumber();
+        _childId = Guid.NewGuid();
+        _parentId = Guid.NewGuid();
     }
 
-    protected override AddOrganisationParentCommandHandler BuildHandler()
+    protected override AddOrganisationParentCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<AddOrganisationParentCommandHandler>>().Object,
-            Session,
+            session,
             new DateTimeProvider()
         );
 
-    protected override IUser User
+    private IUser User
         => new UserBuilder()
             .AddOrganisations(_childOvoNumber)
             .AddRoles(Role.DecentraalBeheerder)
             .Build();
 
-    protected override IEnumerable<IEvent> Given()
-    {
-        _validFrom = _dateTimeProviderStub.Today;
-        _validTo = _dateTimeProviderStub.Today.AddDays(2);
-
-        var childCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator).Build();
-        var parentCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator).Build();
-
-        _childOvoNumber = childCreated.OvoNumber;
-        _childId = childCreated.OrganisationId;
-        _parentId = parentCreated.OrganisationId;
-
-        return new List<IEvent>
+    private IEvent[] Events
+        => new IEvent[]
         {
-            childCreated,
-            parentCreated,
+            new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator)
+                .WithId(new OrganisationId(_childId))
+                .WithOvoNumber(_childOvoNumber)
+                .Build(),
+            new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator)
+                .WithId(new OrganisationId(_parentId))
+                .Build(),
             new OrganisationParentAdded(
-                childCreated.OrganisationId,
+                _childId,
                 Guid.NewGuid(),
-                parentCreated.OrganisationId,
+                _parentId,
                 "Ouder en Gezin",
                 null,
                 null)
         };
-    }
 
-    protected override AddOrganisationParent When()
+    private AddOrganisationParent AddOrganisationParentCommand
         => new(
             Guid.NewGuid(),
             new OrganisationId(_childId),
@@ -82,14 +84,17 @@ public class
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task PublishesNoEvents()
+    {
+        await Given(Events).When(AddOrganisationParentCommand, User).ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
 
     [Fact]
-    public void ThrowsAnException()
+    public async Task ThrowsAnException()
     {
-        Exception.Should().BeOfType<OrganisationAlreadyCoupledToParentInThisPeriod>();
-        Exception?.Message.Should()
-            .Be("Deze organisatie is in deze periode reeds gekoppeld aan een moeder entiteit.");
+        await Given(Events).When(AddOrganisationParentCommand, User)
+            .ThenThrows<OrganisationAlreadyCoupledToParentInThisPeriod>()
+            .WithMessage("Deze organisatie is in deze periode reeds gekoppeld aan een moeder entiteit.");
     }
 }

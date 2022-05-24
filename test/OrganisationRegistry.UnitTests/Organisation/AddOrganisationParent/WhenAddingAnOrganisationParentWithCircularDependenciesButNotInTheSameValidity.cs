@@ -2,11 +2,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
 using OrganisationRegistry.Infrastructure.Events;
@@ -16,79 +18,96 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenAddingAnOrganisationParentWithCircularDependenciesButNotInTheSameValidity
-    : ExceptionOldSpecification2<AddOrganisationParentCommandHandler, AddOrganisationParent>
+    : Specification<AddOrganisationParentCommandHandler, AddOrganisationParent>
 {
-    private readonly DateTimeProviderStub _dateTimeProviderStub = new(new DateTime(2016, 6, 1));
+    private readonly DateTimeProviderStub _dateTimeProviderStub;
 
     private readonly SequentialOvoNumberGenerator
-        _sequentialOvoNumberGenerator = new();
+        _sequentialOvoNumberGenerator;
 
-    private string _ovoNumberA = null!;
-    private Guid _organisationAId;
-    private Guid _organisationBId;
+    private readonly string _ovoNumberA;
+    private readonly Guid _organisationAId;
+    private readonly Guid _organisationBId;
+    private Guid _organisationOrganisationParentId;
+    private string _parentOrganisationName;
+    private DateTime _validFrom;
+    private DateTime _validTo;
 
     public WhenAddingAnOrganisationParentWithCircularDependenciesButNotInTheSameValidity(ITestOutputHelper helper) :
         base(helper)
     {
+        _dateTimeProviderStub = new DateTimeProviderStub(new DateTime(2016, 6, 1));
+        _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
+
+
+        _ovoNumberA = _sequentialOvoNumberGenerator.GenerateNumber();
+        _organisationAId = Guid.NewGuid();
+        _organisationBId = Guid.NewGuid();
+        _organisationOrganisationParentId = Guid.NewGuid();
+        _parentOrganisationName = "Parent organisation";
+        _validFrom = new DateTime(2017, 1, 1);
+        _validTo = new DateTime(2017, 12, 31);
     }
 
-    protected override AddOrganisationParentCommandHandler BuildHandler()
+    protected override AddOrganisationParentCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<AddOrganisationParentCommandHandler>>().Object,
-            Session,
+            session,
             _dateTimeProviderStub);
 
-    protected override IUser User
+    private IUser User
         => new UserBuilder()
             .AddOrganisations(_ovoNumberA)
             .AddRoles(Role.DecentraalBeheerder)
             .Build();
 
-    protected override IEnumerable<IEvent> Given()
-    {
-        var organisationACreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
-        var organisationBCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
-        var organisationABecameDaughterOfOrganisationBFor2016 =
-            new OrganisationParentAddedBuilder(organisationACreated.Id, organisationBCreated.Id)
-                .WithValidity(new DateTime(2016, 1, 1), new DateTime(2016, 12, 31));
-
-        _ovoNumberA = organisationACreated.OvoNumber;
-        _organisationAId = organisationACreated.Id;
-        _organisationBId = organisationBCreated.Id;
-
-        return new List<IEvent>
+    private IEvent[] Events
+        => new IEvent[]
         {
-            organisationACreated.Build(),
-            organisationBCreated.Build(),
-            organisationABecameDaughterOfOrganisationBFor2016.Build()
+            new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator)
+                .WithId(new OrganisationId(_organisationAId))
+                .WithOvoNumber(_ovoNumberA)
+                .Build(),
+            new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator)
+                .WithId(new OrganisationId(_organisationBId))
+                .WithName(_parentOrganisationName)
+                .Build(),
+            new OrganisationParentAddedBuilder(_organisationAId, _organisationBId)
+                .WithValidity(new DateTime(2016, 1, 1), new DateTime(2016, 12, 31)).Build()
         };
-    }
 
-    protected override AddOrganisationParent When()
+    private AddOrganisationParent AddOrganisationParentCommand
         => new(
-            Guid.NewGuid(),
+            _organisationOrganisationParentId,
             new OrganisationId(_organisationAId),
             new OrganisationId(_organisationBId),
-            new ValidFrom(new DateTime(2017, 1, 1)),
-            new ValidTo(new DateTime(2017, 12, 31)));
+            new ValidFrom(_validFrom),
+            new ValidTo(_validTo));
 
-    protected override int ExpectedNumberOfEvents
-        => 1;
 
     [Fact]
-    public void DoesNotThrowAnException()
+    public async Task PublishesOneEvent()
     {
-        Exception.Should().BeNull();
+        await Given(Events).When(AddOrganisationParentCommand, User).ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
     [Fact]
-    public void AnOrganisationParentWasAdded()
+    public async Task AddsAnOrganisationParent()
     {
-        var organisationParentAdded = PublishedEvents[0].UnwrapBody<OrganisationParentAdded>();
+        await Given(Events).When(AddOrganisationParentCommand, User).Then();
 
-        organisationParentAdded.OrganisationId.Should().Be(_organisationAId);
-        organisationParentAdded.ParentOrganisationId.Should().Be(_organisationBId);
-        organisationParentAdded.ValidFrom.Should().Be(new DateTime(2017, 1, 1));
-        organisationParentAdded.ValidTo.Should().Be(new DateTime(2017, 12, 31));
+        PublishedEvents[0]
+            .UnwrapBody<OrganisationParentAdded>()
+            .Should()
+            .BeEquivalentTo(
+                new OrganisationParentAdded(
+                    _organisationAId,
+                    _organisationOrganisationParentId,
+                    _organisationBId,
+                    _parentOrganisationName,
+                    _validFrom,
+                    _validTo
+                ),
+                opt => opt.ExcludeEventProperties());
     }
 }

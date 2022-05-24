@@ -2,11 +2,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Purpose;
 using Tests.Shared;
 using OrganisationRegistry.Infrastructure.Events;
@@ -15,16 +17,16 @@ using OrganisationRegistry.Organisation.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WithAnActiveValidity : OldSpecification2<CreateOrganisationCommandHandler, CreateOrganisation>
+public class WithAnActiveValidity : Specification<CreateOrganisationCommandHandler, CreateOrganisation>
 {
     public WithAnActiveValidity(ITestOutputHelper helper) : base(helper)
     {
     }
 
-    protected override IEnumerable<IEvent> Given()
-        => new List<IEvent>();
+    private static IEvent[] Events
+        => Array.Empty<IEvent>();
 
-    protected override CreateOrganisation When()
+    private static CreateOrganisation CreateOrganisationCommand
         => new(
             new OrganisationId(Guid.NewGuid()),
             "Test",
@@ -40,32 +42,33 @@ public class WithAnActiveValidity : OldSpecification2<CreateOrganisationCommandH
             new ValidFrom(),
             new ValidTo());
 
-    protected override CreateOrganisationCommandHandler BuildHandler()
+    protected override CreateOrganisationCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<CreateOrganisationCommandHandler>>().Object,
-            Session,
+            session,
             new SequentialOvoNumberGenerator(),
             new UniqueOvoNumberValidatorStub(false),
             new DateTimeProviderStub(DateTime.Today));
 
-
-    protected override IUser User
-        => new UserBuilder().AddRoles(Role.AlgemeenBeheerder).Build();
-
-    protected override int ExpectedNumberOfEvents
-        => 2;
-
     [Fact]
-    public void CreatesAnOrganisation()
+    public async Task PublishesFiveEvents()
     {
-        var organisationCreated = PublishedEvents[0].UnwrapBody<OrganisationCreated>();
-        organisationCreated.Should().NotBeNull();
+        await Given(Events).When(CreateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
     [Fact]
-    public void TheOrganisationBecomesActive()
+    public async Task CreatesAnOrganisation()
     {
-        var organisationBecameActive = PublishedEvents[1].UnwrapBody<OrganisationBecameActive>();
-        organisationBecameActive.Should().NotBeNull();
+        await Given(Events).When(CreateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        PublishedEvents[0]
+            .UnwrapBody<OrganisationCreated>().Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task TheOrganisationBecomesActive()
+    {
+        await Given(Events).When(CreateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).Then();
+
+        PublishedEvents[1].UnwrapBody<OrganisationBecameActive>().Should().NotBeNull();
     }
 }

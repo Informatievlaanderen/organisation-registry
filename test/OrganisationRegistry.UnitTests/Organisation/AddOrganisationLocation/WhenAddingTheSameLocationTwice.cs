@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Location;
@@ -10,6 +11,7 @@ using Location.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using OrganisationRegistry.Organisation.Exceptions;
@@ -19,42 +21,39 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenAddingTheSameLocationTwice : ExceptionOldSpecification2<AddOrganisationLocationCommandHandler,
+    WhenAddingTheSameLocationTwice : Specification<AddOrganisationLocationCommandHandler,
         AddOrganisationLocation>
 {
-    private Guid _organisationId;
-    private Guid _locationId;
-    private Guid _organisationLocationId;
-    private bool _isMainLocation;
-    private DateTime _validTo;
-    private DateTime _validFrom;
-    private string _ovoNumber = "OVO000012345";
+    private readonly Guid _organisationId;
+    private readonly Guid _locationId;
+    private readonly bool _isMainLocation;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
+    private readonly string _ovoNumber;
 
     public WhenAddingTheSameLocationTwice(ITestOutputHelper helper) : base(helper)
     {
+        _organisationId = Guid.NewGuid();
+        _locationId = Guid.NewGuid();
+        _isMainLocation = true;
+        _validFrom = DateTime.Now.AddDays(1);
+        _validTo = DateTime.Now.AddDays(2);
+        _ovoNumber = "OVO000012345";
     }
 
-    protected override AddOrganisationLocationCommandHandler BuildHandler()
+    protected override AddOrganisationLocationCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<AddOrganisationLocationCommandHandler>>().Object,
-            Session,
+            session,
             new DateTimeProvider(),
             new OrganisationRegistryConfigurationStub()
         );
 
-    protected override IUser User
+    private IUser User
         => new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build();
 
-    protected override IEnumerable<IEvent> Given()
-    {
-        _organisationId = Guid.NewGuid();
-        _locationId = Guid.NewGuid();
-        _organisationLocationId = Guid.NewGuid();
-        _isMainLocation = true;
-        _validFrom = DateTime.Now.AddDays(1);
-        _validTo = DateTime.Now.AddDays(2);
-
-        return new List<IEvent>
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -79,7 +78,7 @@ public class
                 "Belgie"),
             new OrganisationLocationAdded(
                 _organisationId,
-                _organisationLocationId,
+                Guid.NewGuid(),
                 _locationId,
                 "Gebouw A",
                 _isMainLocation,
@@ -88,9 +87,9 @@ public class
                 _validFrom,
                 _validTo)
         };
-    }
 
-    protected override AddOrganisationLocation When()
+
+    private AddOrganisationLocation AddOrganisationLocationCommand
         => new(
             Guid.NewGuid(),
             new OrganisationId(_organisationId),
@@ -100,13 +99,18 @@ public class
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task PublishesNoEvents()
+        => await Given(Events)
+            .When(AddOrganisationLocationCommand, User)
+            .ThenItPublishesTheCorrectNumberOfEvents(0);
 
     [Fact]
-    public void ThrowsAnException()
+    public async Task ThrowsAnException()
     {
-        Exception.Should().BeOfType<LocationAlreadyCoupledToInThisPeriod>();
-        Exception?.Message.Should().Be("Deze locatie is in deze periode reeds gekoppeld aan de organisatie.");
+        await Given(Events)
+            .When(AddOrganisationLocationCommand, User)
+            .ThenThrows<LocationAlreadyCoupledToInThisPeriod>()
+            .WithMessage("Deze locatie is in deze periode reeds gekoppeld aan de organisatie.");
     }
 }

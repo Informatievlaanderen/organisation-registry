@@ -1,12 +1,12 @@
 namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent;
 
 using System;
-using System.Collections.Generic;
-using FluentAssertions;
+using System.Threading.Tasks;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
 using OrganisationRegistry.Infrastructure.Events;
@@ -16,51 +16,53 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenAddingAnOrganisationParentWithCircularDependencies
-    : ExceptionOldSpecification2<AddOrganisationParentCommandHandler, AddOrganisationParent>
+    : Specification<AddOrganisationParentCommandHandler, AddOrganisationParent>
 {
-    private readonly DateTimeProviderStub _dateTimeProviderStub = new (DateTime.Now);
-    private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator = new();
-    private string _ovoNumberB = null!;
-    private Guid _organisationAId;
-    private Guid _organisationBId;
+    private readonly DateTimeProviderStub _dateTimeProviderStub;
+    private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator;
+    private readonly string _ovoNumberB;
+    private readonly Guid _organisationAId;
+    private readonly Guid _organisationBId;
 
     public WhenAddingAnOrganisationParentWithCircularDependencies(ITestOutputHelper helper) : base(helper)
     {
+        _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
+        _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
+
+        _ovoNumberB = _sequentialOvoNumberGenerator.GenerateNumber();
+        _organisationAId = Guid.NewGuid();
+        _organisationBId = Guid.NewGuid();
     }
 
-    protected override AddOrganisationParentCommandHandler BuildHandler()
+    protected override AddOrganisationParentCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<AddOrganisationParentCommandHandler>>().Object,
-            Session,
+            session,
             _dateTimeProviderStub);
 
-    protected override IUser User
+    private IUser User
         => new UserBuilder()
             .AddOrganisations(_ovoNumberB)
             .AddRoles(Role.DecentraalBeheerder)
             .Build();
 
-    protected override IEnumerable<IEvent> Given()
-    {
-        var organisationACreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
-        var organisationBCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
-        var organisationABecameDaughterOfOrganisationB = new OrganisationParentAddedBuilder(
-            organisationACreated.Id,
-            organisationBCreated.Id);
-
-        _ovoNumberB = organisationBCreated.OvoNumber;
-        _organisationAId = organisationACreated.Id;
-        _organisationBId = organisationBCreated.Id;
-
-        return new List<IEvent>
+    private IEvent[] Events
+        => new IEvent[]
         {
-            organisationACreated.Build(),
-            organisationBCreated.Build(),
-            organisationABecameDaughterOfOrganisationB.Build(),
+            new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator)
+                .WithId(new OrganisationId(_organisationAId))
+                .Build(),
+            new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator)
+                .WithId(new OrganisationId(_organisationBId))
+                .WithOvoNumber(_ovoNumberB)
+                .Build(),
+            new OrganisationParentAddedBuilder(
+                    _organisationAId,
+                    _organisationBId)
+                .Build()
         };
-    }
 
-    protected override AddOrganisationParent When()
+    private AddOrganisationParent AddOrganisationParentCommand
         => new(
             Guid.NewGuid(),
             new OrganisationId(_organisationBId),
@@ -68,12 +70,15 @@ public class WhenAddingAnOrganisationParentWithCircularDependencies
             new ValidFrom(),
             new ValidTo());
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task ThrowsADomainException()
+    {
+        await Given(Events).When(AddOrganisationParentCommand, User).ThenThrows<CircularRelationshipDetected>();
+    }
 
     [Fact]
-    public void ThrowsADomainException()
+    public async Task PublishesNoEvents()
     {
-        Exception.Should().BeOfType<CircularRelationshipDetected>();
+        await Given(Events).When(AddOrganisationParentCommand, User).ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 }
