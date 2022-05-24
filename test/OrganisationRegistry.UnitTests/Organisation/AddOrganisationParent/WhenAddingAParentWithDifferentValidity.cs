@@ -2,11 +2,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -16,35 +18,20 @@ using Xunit.Abstractions;
 
 public class
     WhenAddingAParentWithDifferentValidity
-    : OldSpecification2<AddOrganisationParentCommandHandler, AddOrganisationParent>
+    : Specification<AddOrganisationParentCommandHandler, AddOrganisationParent>
 {
-    private Guid _organisationId;
-    private Guid _organisationOrganisationParentId1;
-    private Guid _organisationOrganisationParentId2;
-    private DateTime _validTo;
-    private DateTime _validFrom;
-    private readonly DateTimeProviderStub _dateTimeProviderStub = new (DateTime.Now);
-    private Guid _organisationParentId;
+    private readonly Guid _organisationId;
+    private readonly Guid _organisationOrganisationParentId1;
+    private readonly Guid _organisationOrganisationParentId2;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
+    private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);
+    private readonly Guid _organisationParentId;
 
-    private const string OvoNumber = "OVO000012345";
+    private readonly string _ovoNumber;
+    private readonly string _parentOrganisationName;
 
     public WhenAddingAParentWithDifferentValidity(ITestOutputHelper helper) : base(helper)
-    {
-    }
-
-    protected override AddOrganisationParentCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<AddOrganisationParentCommandHandler>>().Object,
-            Session,
-            new DateTimeProvider());
-
-    protected override IUser User
-        => new UserBuilder()
-            .AddOrganisations(OvoNumber)
-            .AddRoles(Role.DecentraalBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
     {
         _organisationOrganisationParentId1 = Guid.NewGuid();
         _organisationOrganisationParentId2 = Guid.NewGuid();
@@ -52,13 +39,29 @@ public class
         _validTo = _dateTimeProviderStub.Today.AddDays(2);
         _organisationId = Guid.NewGuid();
         _organisationParentId = Guid.NewGuid();
+        _ovoNumber = "OVO000012345";
+        _parentOrganisationName = "Parent Organisation";
+    }
 
-        return new List<IEvent>
+    protected override AddOrganisationParentCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<AddOrganisationParentCommandHandler>>().Object,
+            session,
+            new DateTimeProvider());
+
+    private IUser User
+        => new UserBuilder()
+            .AddOrganisations(_ovoNumber)
+            .AddRoles(Role.DecentraalBeheerder)
+            .Build();
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
                 "Kind en Gezin",
-                OvoNumber,
+                _ovoNumber,
                 "K&G",
                 Article.None,
                 "Kindjes en gezinnetjes",
@@ -70,7 +73,7 @@ public class
                 null),
             new OrganisationCreated(
                 _organisationParentId,
-                "Ouder en Gezin",
+                _parentOrganisationName,
                 "OVO000012346",
                 "O&G",
                 Article.None,
@@ -93,9 +96,8 @@ public class
                 _organisationParentId,
                 _organisationOrganisationParentId1)
         };
-    }
 
-    protected override AddOrganisationParent When()
+    private AddOrganisationParent AddOrganisationParentCommand
         => new(
             _organisationOrganisationParentId2,
             new OrganisationId(_organisationId),
@@ -103,18 +105,29 @@ public class
             new ValidFrom(_validFrom.AddYears(1)),
             new ValidTo(_validTo.AddYears(1)));
 
-    protected override int ExpectedNumberOfEvents
-        => 1;
+    [Fact]
+    public async Task PublishesOneEvent()
+    {
+        await Given(Events).When(AddOrganisationParentCommand, User).ThenItPublishesTheCorrectNumberOfEvents(1);
+    }
 
     [Fact]
-    public void AddsAnOrganisationParent()
+    public async Task AddsAnOrganisationParent()
     {
-        var organisationParentAdded = PublishedEvents[0].UnwrapBody<OrganisationParentAdded>();
+        await Given(Events).When(AddOrganisationParentCommand, User).Then();
 
-        organisationParentAdded.OrganisationOrganisationParentId.Should().Be(_organisationOrganisationParentId2);
-        organisationParentAdded.OrganisationId.Should().Be(_organisationId);
-        organisationParentAdded.ParentOrganisationId.Should().Be(_organisationParentId);
-        organisationParentAdded.ValidFrom.Should().Be(_validFrom.AddYears(1));
-        organisationParentAdded.ValidTo.Should().Be(_validTo.AddYears(1));
+        PublishedEvents[0]
+            .UnwrapBody<OrganisationParentAdded>()
+            .Should()
+            .BeEquivalentTo(
+                new OrganisationParentAdded(
+                    _organisationId,
+                    _organisationOrganisationParentId2,
+                    _organisationParentId,
+                    _parentOrganisationName,
+                    _validFrom,
+                    _validTo
+                ),
+                opt => opt.ExcludeEventProperties());
     }
 }

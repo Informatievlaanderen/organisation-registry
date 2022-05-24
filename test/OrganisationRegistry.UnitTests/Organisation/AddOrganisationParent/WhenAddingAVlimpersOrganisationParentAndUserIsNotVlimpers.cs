@@ -2,11 +2,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent;
 
 using System;
 using System.Collections.Generic;
-using FluentAssertions;
+using System.Threading.Tasks;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -16,37 +17,32 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenAddingAVlimpersOrganisationParentAndUserIsNotVlimpers
-    : ExceptionOldSpecification2<AddOrganisationParentCommandHandler, AddOrganisationParent>
+    : Specification<AddOrganisationParentCommandHandler, AddOrganisationParent>
 {
-    private Guid _organisationId;
-    private Guid _organisationOrganisationParentId;
-    private DateTime _validTo;
-    private DateTime _validFrom;
+    private readonly Guid _organisationId;
+    private readonly Guid _organisationOrganisationParentId;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
     private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);
-    private Guid _organisationParentId;
+    private readonly Guid _organisationParentId;
 
     public WhenAddingAVlimpersOrganisationParentAndUserIsNotVlimpers(ITestOutputHelper helper) : base(helper)
-    {
-    }
-
-    protected override AddOrganisationParentCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<AddOrganisationParentCommandHandler>>().Object,
-            Session,
-            _dateTimeProviderStub);
-
-    protected override IUser User
-        => new UserBuilder().Build();
-
-    protected override IEnumerable<IEvent> Given()
     {
         _organisationOrganisationParentId = Guid.NewGuid();
         _validFrom = _dateTimeProviderStub.Today;
         _validTo = _dateTimeProviderStub.Today.AddDays(2);
         _organisationId = Guid.NewGuid();
         _organisationParentId = Guid.NewGuid();
+    }
 
-        return new List<IEvent>
+    protected override AddOrganisationParentCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<AddOrganisationParentCommandHandler>>().Object,
+            session,
+            _dateTimeProviderStub);
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -76,9 +72,8 @@ public class WhenAddingAVlimpersOrganisationParentAndUserIsNotVlimpers
                 null,
                 null)
         };
-    }
 
-    protected override AddOrganisationParent When()
+    private AddOrganisationParent AddOrganisationParentCommand
         => new(
             _organisationOrganisationParentId,
             new OrganisationId(_organisationId),
@@ -86,12 +81,17 @@ public class WhenAddingAVlimpersOrganisationParentAndUserIsNotVlimpers
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task PublishesNoEvents()
+    {
+        await Given(Events).When(AddOrganisationParentCommand, UserBuilder.User())
+            .ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
 
     [Fact]
-    public void ThrowsException()
+    public async Task ThrowsException()
     {
-        Exception.Should().BeOfType<UserIsNotAuthorizedForVlimpersOrganisations>();
+        await Given(Events).When(AddOrganisationParentCommand, UserBuilder.User())
+            .ThenThrows<UserIsNotAuthorizedForVlimpersOrganisations>();
     }
 }

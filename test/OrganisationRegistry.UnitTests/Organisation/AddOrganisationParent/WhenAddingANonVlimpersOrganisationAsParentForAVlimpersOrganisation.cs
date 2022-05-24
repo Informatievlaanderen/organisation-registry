@@ -2,11 +2,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent;
 
 using System;
 using System.Collections.Generic;
-using FluentAssertions;
+using System.Threading.Tasks;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -16,38 +17,35 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation
-    : ExceptionOldSpecification2<AddOrganisationParentCommandHandler, AddOrganisationParent>
+    : Specification<AddOrganisationParentCommandHandler, AddOrganisationParent>
 {
-    private readonly Guid _organisationId = Guid.NewGuid();
-    private readonly Guid _organisationOrganisationParentId = Guid.NewGuid();
-    private DateTime _validTo;
-    private DateTime _validFrom;
-    private readonly DateTimeProviderStub _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
-    private readonly Guid _organisationParentId = Guid.NewGuid();
+    private readonly Guid _organisationId;
+    private readonly Guid _organisationOrganisationParentId;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
+    private readonly DateTimeProviderStub _dateTimeProviderStub;
+    private readonly Guid _organisationParentId;
 
     public WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation(ITestOutputHelper helper) : base(
         helper)
     {
+        _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
+        _organisationId = Guid.NewGuid();
+        _organisationOrganisationParentId = Guid.NewGuid();
+        _organisationParentId = Guid.NewGuid();
+        _validFrom = _dateTimeProviderStub.Today;
+        _validTo = _dateTimeProviderStub.Today.AddDays(2);
     }
 
-    protected override AddOrganisationParentCommandHandler BuildHandler()
+    protected override AddOrganisationParentCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<AddOrganisationParentCommandHandler>>().Object,
-            Session,
+            session,
             _dateTimeProviderStub
         );
 
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.VlimpersBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
-    {
-        _validFrom = _dateTimeProviderStub.Today;
-        _validTo = _dateTimeProviderStub.Today.AddDays(2);
-
-        return new List<IEvent>
+    protected IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -77,9 +75,8 @@ public class WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation
                 null),
             new OrganisationPlacedUnderVlimpersManagement(_organisationId)
         };
-    }
 
-    protected override AddOrganisationParent When()
+    protected AddOrganisationParent AddOrganisationParentCommand
         => new(
             _organisationOrganisationParentId,
             new OrganisationId(_organisationId),
@@ -87,12 +84,17 @@ public class WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task PublishesNoEvents()
+        => await Given(Events)
+            .When(AddOrganisationParentCommand, UserBuilder.VlimpersBeheerder())
+            .ThenItPublishesTheCorrectNumberOfEvents(0);
 
     [Fact]
-    public void AddsAnOrganisationParent()
+    public async Task ThrowsAnException()
     {
-        Exception.Should().BeOfType<VlimpersAndNonVlimpersOrganisationCannotBeInParentalRelationship>();
+        await Given(Events)
+            .When(AddOrganisationParentCommand, UserBuilder.VlimpersBeheerder())
+            .ThenThrows<VlimpersAndNonVlimpersOrganisationCannotBeInParentalRelationship>();
     }
 }

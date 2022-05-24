@@ -2,11 +2,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Purpose;
 using Tests.Shared;
 using OrganisationRegistry.Infrastructure.Events;
@@ -16,29 +18,31 @@ using Tests.Shared.TestDataBuilders;
 using Xunit;
 using Xunit.Abstractions;
 
-public class AsDaughterOfVlimpersOrganisation : OldSpecification2<CreateOrganisationCommandHandler, CreateOrganisation>
+public class AsDaughterOfVlimpersOrganisation : Specification<CreateOrganisationCommandHandler, CreateOrganisation>
 {
-    private readonly OrganisationCreatedBuilder _organisationCreatedBuilder = new(new SequentialOvoNumberGenerator());
+    private readonly Guid _organisationId;
 
     public AsDaughterOfVlimpersOrganisation(ITestOutputHelper helper) : base(helper)
     {
+        _organisationId = Guid.NewGuid();
     }
 
-    protected override IEnumerable<IEvent> Given()
-        => new List<IEvent>
-        {
-            _organisationCreatedBuilder.Build(),
-            new OrganisationPlacedUnderVlimpersManagement(_organisationCreatedBuilder.Id)
+    private IEvent[] Events
+        => new IEvent[] {
+            new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator())
+                .WithId(new OrganisationId(_organisationId))
+                .Build(),
+            new OrganisationPlacedUnderVlimpersManagement(_organisationId)
         };
 
-    protected override CreateOrganisation When()
+    private CreateOrganisation CreateOrganisationCommand
         => new(
             new OrganisationId(Guid.NewGuid()),
             "Test",
             "OVO0001234",
             "",
             Article.None,
-            _organisationCreatedBuilder.Id,
+            new OrganisationId(_organisationId),
             "",
             new List<PurposeId>(),
             false,
@@ -47,31 +51,38 @@ public class AsDaughterOfVlimpersOrganisation : OldSpecification2<CreateOrganisa
             new ValidFrom(),
             new ValidTo());
 
-    protected override CreateOrganisationCommandHandler BuildHandler()
+    protected override CreateOrganisationCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<CreateOrganisationCommandHandler>>().Object,
-            Session,
+            session,
             new SequentialOvoNumberGenerator(),
             new UniqueOvoNumberValidatorStub(false),
             new DateTimeProviderStub(DateTime.Today));
 
-    protected override IUser User
-        => new UserBuilder().AddRoles(Role.VlimpersBeheerder).Build();
-
-    protected override int ExpectedNumberOfEvents
-        => 5;
 
     [Fact]
-    public void CreatesAnOrganisation()
+    public async Task PublishesFiveEvents()
     {
-        var organisationCreated = PublishedEvents[0].UnwrapBody<OrganisationCreated>();
-        organisationCreated.Should().NotBeNull();
+        await Given(Events).When(CreateOrganisationCommand, UserBuilder.VlimpersBeheerder()).ThenItPublishesTheCorrectNumberOfEvents(5);
     }
 
     [Fact]
-    public void TheOrganisationIsPlacedUnderVlimpersManagement()
+    public async Task CreatesAnOrganisation()
     {
-        var organisationBecameActive = PublishedEvents[4].UnwrapBody<OrganisationPlacedUnderVlimpersManagement>();
-        organisationBecameActive.Should().NotBeNull();
+        await Given(Events).When(CreateOrganisationCommand, UserBuilder.VlimpersBeheerder()).Then();
+        PublishedEvents[0]
+            .UnwrapBody<OrganisationCreated>()
+            .Should()
+            .NotBeNull();
+    }
+
+    [Fact]
+    public async Task TheOrganisationIsPlacedUnderVlimpersManagement()
+    {
+        await Given(Events).When(CreateOrganisationCommand, UserBuilder.VlimpersBeheerder()).Then();
+        PublishedEvents[4]
+            .UnwrapBody<OrganisationPlacedUnderVlimpersManagement>()
+            .Should()
+            .NotBeNull();
     }
 }

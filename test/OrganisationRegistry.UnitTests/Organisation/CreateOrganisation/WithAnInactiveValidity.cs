@@ -2,11 +2,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.CreateOrganisation;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Purpose;
 using Tests.Shared;
 using OrganisationRegistry.Infrastructure.Events;
@@ -15,23 +17,21 @@ using OrganisationRegistry.Organisation.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WithAnInactiveValidity : OldSpecification2<CreateOrganisationCommandHandler, CreateOrganisation>
+public class WithAnInactiveValidity : Specification<CreateOrganisationCommandHandler, CreateOrganisation>
 {
-    private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Today);
-    private DateTime _yesterday;
+    private readonly DateTimeProviderStub _dateTimeProviderStub;
+    private readonly DateTime _yesterday;
 
     public WithAnInactiveValidity(ITestOutputHelper helper) : base(helper)
     {
+        _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today);
+        _yesterday = _dateTimeProviderStub.Yesterday;
     }
 
-    protected override IEnumerable<IEvent> Given()
-    {
-        _yesterday = _dateTimeProviderStub.Now.AddDays(-1);
+    private static IEvent[] Events
+        => Array.Empty<IEvent>();
 
-        return new List<IEvent>();
-    }
-
-    protected override CreateOrganisation When()
+    private CreateOrganisation CreateOrganisationCommand
         => new(
             new OrganisationId(Guid.NewGuid()),
             "Test",
@@ -47,25 +47,28 @@ public class WithAnInactiveValidity : OldSpecification2<CreateOrganisationComman
             new ValidFrom(),
             new ValidTo());
 
-    protected override CreateOrganisationCommandHandler BuildHandler()
+    protected override CreateOrganisationCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<CreateOrganisationCommandHandler>>().Object,
-            Session,
+            session,
             new SequentialOvoNumberGenerator(),
             new UniqueOvoNumberValidatorStub(false),
             _dateTimeProviderStub);
 
 
-    protected override IUser User
-        => new UserBuilder().AddRoles(Role.AlgemeenBeheerder).Build();
-
-    protected override int ExpectedNumberOfEvents
-        => 1;
+    [Fact]
+    public async Task PublishesOneEvent()
+    {
+        await Given(Events).When(CreateOrganisationCommand, UserBuilder.VlimpersBeheerder())
+            .ThenItPublishesTheCorrectNumberOfEvents(1);
+    }
 
     [Fact]
-    public void CreatesAnOrganisation()
+    public async Task CreatesAnOrganisation()
     {
-        var organisationCreated = PublishedEvents[0].UnwrapBody<OrganisationCreated>();
-        organisationCreated.Should().NotBeNull();
+        await Given(Events).When(CreateOrganisationCommand, UserBuilder.VlimpersBeheerder()).Then();
+        PublishedEvents[0]
+            .UnwrapBody<OrganisationCreated>()
+            .Should().NotBeNull();
     }
 }

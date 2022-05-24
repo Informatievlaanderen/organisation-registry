@@ -2,7 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationLocation;
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Location;
@@ -11,6 +11,7 @@ using Location.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using Tests.Shared;
@@ -19,42 +20,45 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenAddingAMainOrganisationLocation : OldSpecification2<AddOrganisationLocationCommandHandler,
+    WhenAddingAMainOrganisationLocation : Specification<AddOrganisationLocationCommandHandler,
         AddOrganisationLocation>
 {
-    private Guid _organisationId;
-    private Guid _locationId;
-    private Guid _organisationLocationId;
-    private bool _isMainLocation;
-    private DateTime _validTo;
-    private DateTime _validFrom;
-    private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);
-    private readonly string _ovoNumber = "OVO000012345";
+    private readonly Guid _organisationId;
+    private readonly Guid _locationId;
+    private readonly Guid _organisationLocationId;
+    private readonly bool _isMainLocation;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
+    private readonly DateTimeProviderStub _dateTimeProviderStub;
+    private readonly string _ovoNumber;
+    private readonly string _formatedAdress;
 
     public WhenAddingAMainOrganisationLocation(ITestOutputHelper helper) : base(helper)
     {
-    }
+        _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
 
-    protected override AddOrganisationLocationCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<AddOrganisationLocationCommandHandler>>().Object,
-            Session,
-            _dateTimeProviderStub,
-            new OrganisationRegistryConfigurationStub());
-
-    protected override IUser User
-        => new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build();
-
-    protected override IEnumerable<IEvent> Given()
-    {
         _locationId = Guid.NewGuid();
         _organisationLocationId = Guid.NewGuid();
         _isMainLocation = true;
         _validFrom = _dateTimeProviderStub.Today;
         _validTo = _dateTimeProviderStub.Today.AddDays(2);
-
         _organisationId = Guid.NewGuid();
-        return new List<IEvent>
+        _ovoNumber = "OVO000012345";
+        _formatedAdress = "Albert 1 laan 32, 1000 Brussel";
+    }
+
+    protected override AddOrganisationLocationCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<AddOrganisationLocationCommandHandler>>().Object,
+            session,
+            _dateTimeProviderStub,
+            new OrganisationRegistryConfigurationStub());
+
+    private IUser User
+        => new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build();
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -78,9 +82,8 @@ public class
                 "Brussel",
                 "Belgie")
         };
-    }
 
-    protected override AddOrganisationLocation When()
+    private AddOrganisationLocation AddOrganisationLocationCommand
         => new(
             _organisationLocationId,
             new OrganisationId(_organisationId),
@@ -90,23 +93,50 @@ public class
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    protected override int ExpectedNumberOfEvents
-        => 2;
-
     [Fact]
-    public void AddsAnOrganisationLocation()
+    public async Task PublishesTwoEvents()
     {
-        var organisationLocationAdded = PublishedEvents.First().UnwrapBody<OrganisationLocationAdded>();
-        organisationLocationAdded.OrganisationId.Should().Be(_organisationId);
-        organisationLocationAdded.LocationId.Should().Be(_locationId);
-        organisationLocationAdded.IsMainLocation.Should().Be(_isMainLocation);
-        organisationLocationAdded.ValidFrom.Should().Be(_validFrom);
-        organisationLocationAdded.ValidTo.Should().Be(_validTo);
+        await Given(Events)
+            .When(AddOrganisationLocationCommand, User)
+            .ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
     [Fact]
-    public void AssignsAMainLocation()
+    public async Task AddsAnOrganisationLocation()
     {
+        await Given(Events).When(AddOrganisationLocationCommand, User).Then();
+
+        PublishedEvents[0]
+            .UnwrapBody<OrganisationLocationAdded>()
+            .Should()
+            .BeEquivalentTo(
+                new OrganisationLocationAdded(
+                    _organisationId,
+                    _organisationLocationId,
+                    _locationId,
+                    _formatedAdress,
+                    _isMainLocation,
+                    null,
+                    null,
+                    _validFrom,
+                    _validTo),
+                opt => opt.ExcludeEventProperties());
+    }
+
+    [Fact]
+    public async Task AssignsAMainLocation()
+    {
+        await Given(Events).When(AddOrganisationLocationCommand, User).Then();
+
+        PublishedEvents[0]
+            .UnwrapBody<MainLocationAssignedToOrganisation>()
+            .Should()
+            .BeEquivalentTo(
+                new MainLocationAssignedToOrganisation(
+                    _organisationId,
+                    _locationId,
+                    _organisationLocationId),
+                opt => opt.ExcludeEventProperties());
         var organisationLocationAdded = PublishedEvents[1].UnwrapBody<MainLocationAssignedToOrganisation>();
         organisationLocationAdded.OrganisationId.Should().Be(_organisationId);
         organisationLocationAdded.MainLocationId.Should().Be(_locationId);
