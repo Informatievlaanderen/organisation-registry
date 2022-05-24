@@ -63,7 +63,7 @@ public class WhenAddingAVlimpersOrganisationParentAndUserIsVlimpers
             new OrganisationPlacedUnderVlimpersManagement(_organisationId),
             new OrganisationCreated(
                 _organisationParentId,
-                "Ouder en Gezin",
+                _organisationParentName,
                 "OVO000012346",
                 "O&G",
                 Article.None,
@@ -88,7 +88,7 @@ public class WhenAddingAVlimpersOrganisationParentAndUserIsVlimpers
     [Fact]
     public async Task PublishesTwoEvents()
     {
-        await Given(Events).When(AddOrganisationParentCommand, UserBuilder.User())
+        await Given(Events).When(AddOrganisationParentCommand, UserBuilder.VlimpersBeheerder())
             .ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
@@ -112,8 +112,10 @@ public class WhenAddingAVlimpersOrganisationParentAndUserIsVlimpers
     }
 
     [Fact]
-    public void AssignsAParent()
+    public async Task AssignsAParent()
     {
+        await Given(Events).When(AddOrganisationParentCommand, UserBuilder.VlimpersBeheerder()).Then();
+
         PublishedEvents[1]
             .UnwrapBody<ParentAssignedToOrganisation>()
             .Should()

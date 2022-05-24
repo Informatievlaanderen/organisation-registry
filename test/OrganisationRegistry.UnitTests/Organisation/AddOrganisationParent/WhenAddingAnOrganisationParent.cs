@@ -117,6 +117,6 @@ public class WhenAddingAnOrganisationParent
                 new ParentAssignedToOrganisation(
                     _childId,
                     _parentId,
-                    _organisationOrganisationParentId));
+                    _organisationOrganisationParentId),opt=>opt.ExcludeEventProperties());
     }
 }
