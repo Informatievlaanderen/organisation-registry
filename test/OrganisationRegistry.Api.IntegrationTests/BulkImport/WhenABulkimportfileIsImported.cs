@@ -20,11 +20,34 @@ public class WhenABulkimportfileIsImported
     }
 
     [Fact]
-    public async Task ThenItAppearsInTheStatusList()
+    public async Task GivenTheFileIsNotValid_ThenHttp400BadRequestIsReceivedAndItDoesNotAppearInTheList()
     {
         var client = _fixture.HttpClient;
 
-        var importFileStream = GetType().Assembly.GetResource("OrganisationRegistry.Api.IntegrationTests.BulkImport.TestImportFile.csv");
+        var importFileStream = GetType().Assembly.GetResource("OrganisationRegistry.Api.IntegrationTests.BulkImport.Invalid_TestImportFile.csv");
+
+        using var content = new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture));
+        content.Add(new StreamContent(importFileStream), "bulkimportfile", "upload.csv");
+
+        using var message = await client.PostAsync("import/organisations", content);
+
+        message.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        using var result = await client.GetAsync("import/organisations");
+
+        result.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var statusResultContent = await result.Content.ReadAsStringAsync();
+
+        statusResultContent.Should().BeEquivalentTo("{\"imports\":[]}");
+    }
+
+    [Fact]
+    public async Task GivenAValidFile_ThenItAppearsInTheStatusList()
+    {
+        var client = _fixture.HttpClient;
+
+        var importFileStream = GetType().Assembly.GetResource("OrganisationRegistry.Api.IntegrationTests.BulkImport.Valid_TestImportFile.csv");
 
         using var content = new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture));
         content.Add(new StreamContent(importFileStream), "bulkimportfile", "upload.csv");

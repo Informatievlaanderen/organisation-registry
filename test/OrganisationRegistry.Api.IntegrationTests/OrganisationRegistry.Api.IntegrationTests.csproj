@@ -15,9 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="BulkImport\TestImportFile.csv" />
-    <EmbeddedResource Include="BulkImport\TestImportFile.csv" />
-    <None Remove="BulkImport\ExpectedStatusResult.json" />
+    <EmbeddedResource Include="BulkImport\Invalid_TestImportFile.csv" />
+    <EmbeddedResource Include="BulkImport\Valid_TestImportFile.csv" />
     <EmbeddedResource Include="BulkImport\ExpectedStatusResult.json" />
   </ItemGroup>
 
