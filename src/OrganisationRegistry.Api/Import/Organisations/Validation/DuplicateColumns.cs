@@ -6,7 +6,7 @@ using System.Linq;
 
 public static class DuplicateColumns
 {
-    public static IEnumerable<ValidationIssue> Validate(IEnumerable<string> csvHeaderRecord)
+    public static ValidationIssue? Validate(IEnumerable<string> csvHeaderRecord)
         => ValidationIssuesFactory.Create(GetDuplicateColumns(csvHeaderRecord), FormatMessage);
 
     public static string FormatMessage(string duplicatecolumns)

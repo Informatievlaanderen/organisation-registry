@@ -9,8 +9,11 @@ using Xunit;
 
 public class WhenValidatingACsvImportFile
 {
-    private static ImportOrganisationCsvHeaderValidator.CsvValidationResult Validate(string csvFile)
-        => ImportOrganisationCsvHeaderValidator.Validate(Mock.Of<ILogger>(), "testfile.csv", csvFile);
+    private static CsvValidationResult Validate(string csvContent)
+        => Validate("testfile.csv", csvContent);
+
+    private static CsvValidationResult Validate(string csvFilename, string csvContent)
+        => ImportOrganisationCsvHeaderValidator.Validate(Mock.Of<ILogger>(), csvFilename, csvContent);
 
     [Fact]
     public void GivenAnEmptyCsvFile_ThenItReturnsInValid()
@@ -92,5 +95,28 @@ public class WhenValidatingACsvImportFile
 
         validationResult.IsValid.Should().BeFalse();
         validationResult.ValidationIssues.Single().Description.Should().Be(InvalidColumns.FormatMessage(expectedInvalidColumns));
+    }
+
+    [Fact]
+    public void GivenACsvFileWithNotAllRequiredColumnsAndInvalidColumns_ThenItReturnsInvalid()
+    {
+        var validationResult = Validate("reference; blah");
+
+        validationResult.IsValid.Should().BeFalse();
+        validationResult.ValidationIssues[0].Description.Should().Be(MissingRequiredColumns.FormatMessage("parent, name"));
+        validationResult.ValidationIssues[1].Description.Should().Be(InvalidColumns.FormatMessage("blah"));
+    }
+
+    [Theory]
+    [InlineData("test.vsc")]
+    [InlineData("test.txt")]
+    [InlineData("csv.txt")]
+    [InlineData("test.csv.bin")]
+    public void GivenACsvFilenameThatDoesntEndWithCsv_ThenItReturnsInvalid(string csvFilename)
+    {
+        var validationResult = Validate(csvFilename, "reference; parent; name");
+
+        validationResult.IsValid.Should().BeFalse();
+        validationResult.ValidationIssues.Single().Description.Should().Be(InvalidFilename.FormatMessage(csvFilename));
     }
 }

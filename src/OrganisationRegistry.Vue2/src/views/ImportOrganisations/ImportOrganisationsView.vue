@@ -3,7 +3,7 @@
     <div class="cta-title">
       <h1 class="h2 cta-title__title">Opladen organisaties</h1>
     </div>
-    <UploadOrganisations @file-selected="uploadFile" />
+    <UploadOrganisations @file-selected="uploadFile" @file-added="fileAdded" />
     <ImportStatusList
       :import-statuses="importStatuses.imports"
       :isLoading="isLoading"
@@ -19,14 +19,28 @@ import {
 } from "@/api/importOrganisations";
 import UploadOrganisations from "@/views/ImportOrganisations/UploadOrganisations";
 import ImportStatusList from "@/views/ImportOrganisations/ImportStatusList";
+import { useAlertStore } from "@/stores/alert";
+import Alerts from "@/alerts/alerts";
 
 export default {
   name: "ImportOrganisationsView",
   components: { ImportStatusList, UploadOrganisations },
   methods: {
-    async uploadFile(file, onSuccess) {
-      await postImportOrganisations(file, onSuccess);
-      this.importStatuses = await getImportStatuses();
+    async uploadFile(file, clearUploadOrganisations) {
+      await postImportOrganisations({
+        file,
+        onSuccess: async () => {
+          const alertStore = useAlertStore();
+          alertStore.$reset();
+          clearUploadOrganisations();
+          this.importStatuses = await getImportStatuses();
+        },
+        onError: this.showError,
+      });
+    },
+    async fileAdded() {
+      const alertStore = useAlertStore();
+      alertStore.$reset();
     },
     async refresh() {
       try {
@@ -34,6 +48,17 @@ export default {
         this.importStatuses = await getImportStatuses();
       } finally {
         this.isLoading = false;
+      }
+    },
+    async showError(response) {
+      const error = await response.json();
+      if (!error.isValid) {
+        const message = error.validationIssues
+          .map((issue) => issue.description)
+          .reduce((aggregated, issue) => `${aggregated}\n${issue}`);
+
+        const alertStore = useAlertStore();
+        alertStore.setAlert(Alerts.createDomainError(message));
       }
     },
   },

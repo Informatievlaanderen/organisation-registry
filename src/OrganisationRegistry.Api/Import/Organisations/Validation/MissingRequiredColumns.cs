@@ -6,7 +6,7 @@ using System.Linq;
 
 public static class MissingRequiredColumns
 {
-    public static IEnumerable<ValidationIssue> Validate(IEnumerable<string> csvHeaderRecord, IEnumerable<string> requiredColumnNames)
+    public static ValidationIssue? Validate(IEnumerable<string> csvHeaderRecord, IEnumerable<string> requiredColumnNames)
         => ValidationIssuesFactory.Create(GetMissingColumns(csvHeaderRecord, requiredColumnNames), FormatMessage);
 
     public static string FormatMessage(string notfoundcolumns)
