@@ -16,7 +16,7 @@ public static class ImportOrganisationCsvHeaderValidator
 
     public static CsvValidationResult Validate(ILogger logger, string filename, string csvContent)
     {
-        var validationIssues = ImmutableList<ValidationIssue>.Empty;
+        var validationIssues = new ValidationIssues();
         try
         {
             using var reader = new StringReader(csvContent);
@@ -29,9 +29,10 @@ public static class ImportOrganisationCsvHeaderValidator
                 .Select(columnName => columnName.Trim().ToLower())
                 .ToImmutableList();
 
-            validationIssues = validationIssues.AddRange(MissingRequiredColumns.Validate(csvHeaderRecord, RequiredColumnNames));
-            validationIssues = validationIssues.AddRange(DuplicateColumns.Validate(csvHeaderRecord));
-            validationIssues = validationIssues.AddRange(InvalidColumns.Validate(csvHeaderRecord, RequiredColumnNames.AddRange(OptionalColumnNames)));
+            validationIssues = validationIssues.Add(InvalidFilename.Validate(filename));
+            validationIssues = validationIssues.Add(MissingRequiredColumns.Validate(csvHeaderRecord, RequiredColumnNames));
+            validationIssues = validationIssues.Add(DuplicateColumns.Validate(csvHeaderRecord));
+            validationIssues = validationIssues.Add(InvalidColumns.Validate(csvHeaderRecord, RequiredColumnNames.AddRange(OptionalColumnNames)));
         }
         catch (Exception ex)
         {
@@ -41,8 +42,6 @@ public static class ImportOrganisationCsvHeaderValidator
             logger.LogError(ex, "Error occured when validating imported CSV file {File}: {Message}", filename, ex.Message);
         }
 
-        return new CsvValidationResult(!validationIssues.Any(), validationIssues);
+        return validationIssues.ToResult();
     }
-
-    public record CsvValidationResult(bool IsValid, ImmutableList<ValidationIssue> ValidationIssues);
 }

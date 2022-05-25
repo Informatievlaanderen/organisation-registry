@@ -35,6 +35,7 @@ export default {
     },
     fileAdded(e) {
       this.file = e;
+      this.$emit("file-added");
     },
     fileRemoved() {
       this.file = undefined;

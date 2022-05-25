@@ -6,7 +6,7 @@ using System.Linq;
 
 public static class InvalidColumns
 {
-    public static IEnumerable<ValidationIssue> Validate(IEnumerable<string> csvHeaderRecord, ImmutableList<string> validColumnNames)
+    public static ValidationIssue? Validate(IEnumerable<string> csvHeaderRecord, ImmutableList<string> validColumnNames)
         => ValidationIssuesFactory.Create(GetInvalidColumns(csvHeaderRecord, validColumnNames), FormatMessage);
 
     public static string FormatMessage(string invalidColumns)

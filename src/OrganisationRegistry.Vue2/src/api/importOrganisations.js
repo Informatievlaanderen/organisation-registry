@@ -3,7 +3,11 @@ import { getToken } from "@/api/localStorage";
 import { useAlertStore } from "@/stores/alert";
 import alerts from "@/alerts/alerts";
 
-export async function postImportOrganisations(file, onSuccess, onError) {
+export async function postImportOrganisations({
+  file,
+  onSuccess,
+  onError,
+} = {}) {
   const data = new FormData();
   data.append("bulkimportfile", file, file.upload.filename);
 
