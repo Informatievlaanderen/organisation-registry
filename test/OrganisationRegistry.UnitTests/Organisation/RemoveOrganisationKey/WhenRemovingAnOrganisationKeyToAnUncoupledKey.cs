@@ -2,50 +2,40 @@ namespace OrganisationRegistry.UnitTests.Organisation.RemoveOrganisationKey;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using OrganisationRegistry.Infrastructure.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Commands;
 using OrganisationRegistry.Organisation.Events;
 using Tests.Shared;
+using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenRemovingAnOrganisationKeyToAnUncoupledKey : OldSpecification2<RemoveOrganisationKeyCommandHandler,
-        RemoveOrganisationKey>
+    WhenRemovingAnOrganisationKeyToAnUncoupledKey :
+        Specification<RemoveOrganisationKeyCommandHandler, RemoveOrganisationKey>
 {
-    private Guid _organisationId;
-    private Guid _organisationKeyId;
+    private readonly Guid _organisationId;
+    private readonly Guid _organisationKeyId;
 
-    protected override RemoveOrganisationKeyCommandHandler BuildHandler()
-    {
-        var securityServiceMock = new Mock<ISecurityService>();
-        securityServiceMock.Setup(
-                service =>
-                    service.CanUseKeyType(
-                        It.IsAny<IUser>(),
-                        It.IsAny<Guid>()))
-            .Returns(true);
-
-        return new RemoveOrganisationKeyCommandHandler(
-            new Mock<ILogger<RemoveOrganisationKeyCommandHandler>>().Object,
-            Session);
-    }
-
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
+    public WhenRemovingAnOrganisationKeyToAnUncoupledKey(ITestOutputHelper helper) : base(helper)
     {
         _organisationId = Guid.NewGuid();
         _organisationKeyId = Guid.NewGuid();
+    }
 
-        return new List<IEvent>
+    protected override RemoveOrganisationKeyCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<RemoveOrganisationKeyCommandHandler>>().Object,
+            session);
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -61,18 +51,17 @@ public class
                 null,
                 null)
         };
-    }
 
-    protected override RemoveOrganisationKey When()
+    private RemoveOrganisationKey RemoveOrganisationKeyCommand
         => new(
             new OrganisationId(_organisationId),
             new OrganisationKeyId(_organisationKeyId)
         );
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
-
-    public WhenRemovingAnOrganisationKeyToAnUncoupledKey(ITestOutputHelper helper) : base(helper)
+    [Fact]
+    public async Task PublishesNoEvents()
     {
+        await Given(Events).When(RemoveOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder())
+            .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 }
