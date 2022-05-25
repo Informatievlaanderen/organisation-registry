@@ -19,7 +19,7 @@
 
         public Guid PersonId { get; set; }
 
-        public string PersonFullName { get; set; }
+        public string PersonFullName { get; set; } = null!;
 
         public Guid BodySeatId { get; set; }
 
@@ -89,36 +89,36 @@
             if (validFrom.IsInPastOf(_dateTimeProvider.Today, true))
                 return;
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-                InsertFutureActivePerson(context, message);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+
+            InsertFutureActivePerson(context, message);
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+
+            var validFrom = new ValidFrom(message.Body.ValidFrom);
+            if (validFrom.IsInPastOf(_dateTimeProvider.Today, true))
             {
-                var validFrom = new ValidFrom(message.Body.ValidFrom);
-                if (validFrom.IsInPastOf(_dateTimeProvider.Today, true))
-                {
-                    DeleteFutureActivePerson(context, message.Body.DelegationAssignmentId);
-                }
-                else
-                {
-                    UpsertFutureActivePerson(context, message);
-                }
+                DeleteFutureActivePerson(context, message.Body.DelegationAssignmentId);
+            }
+            else
+            {
+                UpsertFutureActivePerson(context, message);
             }
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonAssignedToBodyMandate> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-                DeleteFutureActivePerson(context, message.Body.DelegationAssignmentId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            DeleteFutureActivePerson(context, message.Body.DelegationAssignmentId);
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
         {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-                DeleteFutureActivePerson(context, message.Body.DelegationAssignmentId);
+            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+            DeleteFutureActivePerson(context, message.Body.DelegationAssignmentId);
         }
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)

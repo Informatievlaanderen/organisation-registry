@@ -9,7 +9,7 @@
 
     public static class Migrations
     {
-        public static void Run(SqlServerConfiguration sqlServerConfiguration, ILoggerFactory loggerFactory = null)
+        public static void Run(SqlServerConfiguration sqlServerConfiguration, ILoggerFactory? maybeLoggerFactory = null)
         {
             EnsureMigrationsInSchema(sqlServerConfiguration.MigrationsConnectionString, WellknownSchemas.BackofficeSchema);
 
@@ -19,11 +19,11 @@
                     x => x.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema));
 
 
-            if (loggerFactory != null)
+            if (maybeLoggerFactory is { } loggerFactory)
                 migratorOptions = migratorOptions.UseLoggerFactory(loggerFactory);
 
-            using (var migrator = new OrganisationRegistryContext(migratorOptions.Options))
-                migrator.Database.Migrate();
+            using var migrator = new OrganisationRegistryContext(migratorOptions.Options);
+            migrator.Database.Migrate();
         }
 
         private static void EnsureMigrationsInSchema(string connectionString, string schema)

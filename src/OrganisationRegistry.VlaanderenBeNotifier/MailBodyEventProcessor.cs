@@ -54,6 +54,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     .ToString();
 
             SendMails(new Mail(subject, body));
+
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<BodyAssignedToOrganisation> message)
@@ -68,6 +70,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     .ToString();
 
             SendMails(new Mail(subject, body));
+
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkAdded> message)
@@ -86,6 +90,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     .ToString();
 
             SendMails(new Mail(subject, body));
+
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyFormalFrameworkUpdated> message)
@@ -126,6 +132,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
 
                 SendMails(new Mail(subject, body));
             }
+
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyBalancedParticipationChanged> message)
@@ -146,6 +154,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     .ToString();
 
             SendMails(new Mail(subject, body));
+
+            await Task.CompletedTask;
         }
 
         private void SendMails(params Mail[] mails)
@@ -153,7 +163,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             if (!_toggles.SendVlaanderenBeNotifierMails)
                 return;
 
-            mails?
+            mails
                 .ToList()
                 .ForEach(mail =>
                     _mailer.SendEmailAsync(fromAddress: _configuration.FromAddress,

@@ -15,6 +15,8 @@
 
             protected OrganisationBody()
             {
+                BodyName = string.Empty;
+                Validity = Period.Infinite();
             }
 
             public OrganisationBody(

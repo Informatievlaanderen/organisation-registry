@@ -1,5 +1,6 @@
 namespace OrganisationRegistry.Infrastructure.Infrastructure.Json
 {
+    using System;
     using Be.Vlaanderen.Basisregisters.Converters.TrimString;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
@@ -18,14 +19,19 @@ namespace OrganisationRegistry.Infrastructure.Infrastructure.Json
 
             source.ContractResolver = wegwijsSettings.ContractResolver;
 
-            var resolver = source.ContractResolver as DefaultContractResolver;
-            if (resolver != null)
-                resolver.NamingStrategy.ProcessDictionaryKeys = false;
+            var maybeResolver = (DefaultContractResolver?)source.ContractResolver;
+            if (maybeResolver is not { } resolver)
+                throw new NullReferenceException("Resolver should not be null");
+
+            if (resolver.NamingStrategy is not { } namingStrategy)
+                throw new NullReferenceException("Resolver.NamingStrategy should not be null");
+
+            namingStrategy.ProcessDictionaryKeys = false;
 
             source.DateFormatHandling = DateFormatHandling.IsoDateFormat;
             source.DateFormatString = "yyyy-MM-dd";
             source.Converters.Add(new TrimStringConverter());
-            source.Converters.Add(new StringEnumConverter { CamelCaseText = true });
+            source.Converters.Add(new StringEnumConverter { NamingStrategy = new CamelCaseNamingStrategy() });
             source.Converters.Add(new GuidConverter());
 
             return source;
@@ -37,13 +43,18 @@ namespace OrganisationRegistry.Infrastructure.Infrastructure.Json
 
             source.ContractResolver = wegwijsSettings.ContractResolver;
 
-            var resolver = source.ContractResolver as DefaultContractResolver;
-            if (resolver != null)
-                resolver.NamingStrategy.ProcessDictionaryKeys = false;
+            var maybeResolver = (DefaultContractResolver?)source.ContractResolver;
+            if (maybeResolver is not { } resolver)
+                throw new NullReferenceException("Resolver should not be null");
+
+            if (resolver.NamingStrategy is not { } namingStrategy)
+                throw new NullReferenceException("Resolver.NamingStrategy should not be null");
+
+            namingStrategy.ProcessDictionaryKeys = false;
 
             source.DateFormatHandling = DateFormatHandling.IsoDateFormat;
             source.DateFormatString = "yyyy-MM-dd";
-            source.Converters.Add(new StringEnumConverter { CamelCaseText = true });
+            source.Converters.Add(new StringEnumConverter { NamingStrategy = new CamelCaseNamingStrategy() });
             source.Converters.Add(new GuidConverter());
 
             return source;

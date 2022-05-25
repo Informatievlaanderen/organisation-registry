@@ -16,7 +16,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.SendGrid
     {
         private readonly ILogger<SendGridMailer> _logger;
 
-        private static HttpClient _httpClient;
+        private static HttpClient _httpClient = null!;
 
         public SendGridMailer(
             ILogger<SendGridMailer> logger,
@@ -79,7 +79,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.SendGrid
             }
             catch (Exception ex)
             {
-                _logger.LogError(0, ex, "Could not send mail.");
+                _logger.LogError(0, ex, "Could not send mail");
                 throw;
             }
         }

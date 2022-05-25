@@ -1,7 +1,6 @@
 ﻿namespace OrganisationRegistry.SqlServer.DelegationAssignments
 {
     using System;
-    using System.Collections.Generic;
     using System.Data.Common;
     using System.Linq;
     using System.Threading.Tasks;
@@ -77,7 +76,7 @@
             DelegationAssignmentList
         }
 
-        private readonly IEventStore _eventStore;
+        private readonly IEventStore? _eventStore;
 
         public DelegationAssignmentListView(
             ILogger<DelegationAssignmentListView> logger,
@@ -101,7 +100,7 @@
                 BodyMandateId = message.Body.BodyMandateId,
                 PersonId = message.Body.PersonId,
                 PersonName = message.Body.PersonFullName,
-                ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts ?? new Dictionary<Guid, string>()),
+                ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts),
                 ValidFrom = message.Body.ValidFrom,
                 ValidTo = message.Body.ValidTo,
 
@@ -123,7 +122,7 @@
 
                 delegationAssignment.PersonId = message.Body.PersonId;
                 delegationAssignment.PersonName = message.Body.PersonFullName;
-                delegationAssignment.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts ?? new Dictionary<Guid, string>());
+                delegationAssignment.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts);
                 delegationAssignment.ValidFrom = message.Body.ValidFrom;
                 delegationAssignment.ValidTo = message.Body.ValidTo;
 
@@ -145,7 +144,7 @@
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore!, dbConnection, dbTransaction, message);
         }
     }
 }

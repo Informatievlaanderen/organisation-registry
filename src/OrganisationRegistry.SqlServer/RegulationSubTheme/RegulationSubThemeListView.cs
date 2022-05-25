@@ -18,10 +18,10 @@ namespace OrganisationRegistry.SqlServer.RegulationSubTheme
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         public Guid RegulationThemeId { get; set; }
-        public string RegulationThemeName { get; set; }
+        public string RegulationThemeName { get; set; } = null!;
     }
 
     public class RegulationSubThemeListConfiguration : EntityMappingConfiguration<RegulationSubThemeListItem>

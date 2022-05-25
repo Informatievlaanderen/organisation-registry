@@ -8,14 +8,14 @@
     using Infrastructure;
     using Microsoft.Extensions.Logging;
     using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Function.Events;
+    using Function.Events;
     using OrganisationRegistry.Infrastructure;
 
     public class FunctionTypeListItem
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class FunctionTypeListConfiguration : EntityMappingConfiguration<FunctionTypeListItem>

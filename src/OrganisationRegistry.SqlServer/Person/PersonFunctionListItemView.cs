@@ -22,10 +22,10 @@ namespace OrganisationRegistry.SqlServer.Person
         public Guid OrganisationFunctionId { get; set; }
 
         public Guid OrganisationId { get; set; }
-        public string OrganisationName { get; set; }
+        public string OrganisationName { get; set; } = null!;
 
         public Guid FunctionId { get; set; }
-        public string FunctionName { get; set; }
+        public string FunctionName { get; set; } = null!;
 
         public Guid PersonId { get; set; }
 
@@ -93,21 +93,25 @@ namespace OrganisationRegistry.SqlServer.Person
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
             UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
         {
             UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
             UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
+            await Task.CompletedTask;
         }
 
         private static void UpdateOrganisationName(
@@ -170,7 +174,7 @@ namespace OrganisationRegistry.SqlServer.Person
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var key = context.PersonFunctionList.SingleOrDefault(item => item.OrganisationFunctionId == message.Body.OrganisationFunctionId);
+                var key = await context.PersonFunctionList.SingleAsync(item => item.OrganisationFunctionId == message.Body.OrganisationFunctionId);
 
                 key.OrganisationFunctionId = message.Body.OrganisationFunctionId;
                 key.OrganisationId = message.Body.OrganisationId;

@@ -19,7 +19,7 @@
 
         public Guid PersonId { get; set; }
 
-        public string PersonFullName { get; set; }
+        public string PersonFullName { get; set; } = null!;
 
         public Guid BodySeatId { get; set; }
 

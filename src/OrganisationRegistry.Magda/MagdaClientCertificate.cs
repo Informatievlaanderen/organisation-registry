@@ -15,15 +15,14 @@ namespace OrganisationRegistry.Magda
         {
         }
 
+        // todo: why not throw an exception instead of calling this obsolete empty constructor ?
         private MagdaClientCertificate()
         {
         }
 
         public static MagdaClientCertificate Create(string base64Cert, string password)
-        {
-            return !string.IsNullOrWhiteSpace(base64Cert)
+            => !string.IsNullOrWhiteSpace(base64Cert)
                 ? new MagdaClientCertificate(base64Cert, password)
                 : new MagdaClientCertificate();
-        }
     }
 }

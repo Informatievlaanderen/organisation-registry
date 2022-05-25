@@ -73,10 +73,11 @@
             var kboFtpClientMock = new Mock<IKboMutationsFetcher>();
             kboFtpClientMock
                 .Setup(ftpClient => ftpClient.GetKboMutationFiles())
-                .Returns(new List<MutationsFile>
-                {
-                    new MutationsFile {FullName = "filename.csv", KboMutations = new List<MutationsLine>()}
-                });
+                .Returns(
+                    new List<MutationsFile>
+                    {
+                        new("filename.csv", string.Empty, new List<MutationsLine>())
+                    });
 
             var runner =
                 new Runner(_logger,
@@ -100,10 +101,10 @@
 
             var kboFtpClientMock = new Mock<IKboMutationsFetcher>();
             var mutationsFiles = new List<MutationsFile>
-            {
-                new MutationsFile {FullName = "filename.csv", KboMutations = new List<MutationsLine>()},
-                new MutationsFile {FullName = "filename2.csv", KboMutations = new List<MutationsLine>()}
-            };
+                {
+                    new("filename.csv", string.Empty, new List<MutationsLine>()),
+                    new("filename2.csv", string.Empty, new List<MutationsLine>()),
+                };
             kboFtpClientMock
                 .Setup(ftpClient => ftpClient.GetKboMutationFiles())
                 .Returns(mutationsFiles);
@@ -148,8 +149,9 @@
                 .Setup(ftpClient => ftpClient.GetKboMutationFiles())
                 .Returns(new List<MutationsFile>
                 {
-                    new MutationsFile {FullName = "filename.csv", KboMutations = mutationsLines1},
-                    new MutationsFile {FullName = "filename2.csv", KboMutations = mutationsLines2}
+
+                    new("filename.csv", string.Empty, mutationsLines1),
+                    new("filename2.csv", string.Empty, mutationsLines2),
                 });
 
             var kboMutationsPersisterMock = new Mock<IKboMutationsPersister>();

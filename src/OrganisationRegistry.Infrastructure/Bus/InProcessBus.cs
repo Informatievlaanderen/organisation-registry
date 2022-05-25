@@ -17,7 +17,7 @@ namespace OrganisationRegistry.Infrastructure.Bus
     {
         private readonly ILogger<InProcessBus> _logger;
         private readonly ISecurityService _securityService;
-        private readonly Dictionary<Type, List<Func<DbConnection, DbTransaction, IMessage, Task>>> _eventRoutes = new();
+        private readonly Dictionary<Type, List<Func<DbConnection?, DbTransaction?, IMessage, Task>>> _eventRoutes = new();
         private readonly Dictionary<Type, List<Func<IMessage, Task<List<ICommand>>>>> _reactionRoutes = new();
 
         private readonly Dictionary<Type, List<Func<IMessage, Task>>> _commandRoutes = new();
@@ -30,11 +30,11 @@ namespace OrganisationRegistry.Infrastructure.Bus
             _logger.LogTrace("Creating InProcessBus");
         }
 
-        public void RegisterEventHandler<T>(Func<DbConnection, DbTransaction, IEnvelope<T>, Task> handler) where T : IEvent<T>
+        public void RegisterEventHandler<T>(Func<DbConnection?, DbTransaction?, IEnvelope<T>, Task> handler) where T : IEvent<T>
         {
             if (!_eventRoutes.TryGetValue(typeof(T), out var handlers))
             {
-                handlers = new List<Func<DbConnection, DbTransaction, IMessage, Task>>();
+                handlers = new List<Func<DbConnection?, DbTransaction?, IMessage, Task>>();
                 _eventRoutes.Add(typeof(T), handlers);
             }
 
@@ -99,10 +99,10 @@ namespace OrganisationRegistry.Infrastructure.Bus
             throw new InvalidOperationException("No handler registered.");
         }
 
-        public async Task Publish<T>(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<T> envelope) where T : IEvent<T>
+        public async Task Publish<T>(DbConnection? dbConnection, DbTransaction? dbTransaction, IEnvelope<T> envelope) where T : IEvent<T>
         {
             if (!_eventRoutes.TryGetValue(envelope.Body.GetType(), out var handlers))
-                handlers = new List<Func<DbConnection, DbTransaction, IMessage, Task>>();
+                handlers = new List<Func<DbConnection?, DbTransaction?, IMessage, Task>>();
 
             _logger.LogDebug(
                 "Publishing event {@Event} to {NumberOfEventHandlers} event handler(s)",

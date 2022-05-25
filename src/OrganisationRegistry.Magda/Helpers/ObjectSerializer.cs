@@ -7,7 +7,7 @@ namespace OrganisationRegistry.Magda.Helpers
     {
         public static string SerializeObject<T>(this T @object)
         {
-            var serializer = new XmlSerializer(@object.GetType());
+            var serializer = new XmlSerializer(@object!.GetType());
 
             var ns = new XmlSerializerNamespaces();
             ns.Add("s", "http://schemas.xmlsoap.org/soap/envelope/");
@@ -25,7 +25,7 @@ namespace OrganisationRegistry.Magda.Helpers
 
         public static string SerializeObject<T>(this T @object, IDictionary<string, string> namespaces)
         {
-            var serializer = new XmlSerializer(@object.GetType());
+            var serializer = new XmlSerializer(@object!.GetType());
 
             var ns = new XmlSerializerNamespaces();
             ns.Add("s", "http://schemas.xmlsoap.org/soap/envelope/");

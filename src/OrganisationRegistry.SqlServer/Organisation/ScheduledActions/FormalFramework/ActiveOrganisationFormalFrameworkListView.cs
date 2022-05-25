@@ -86,6 +86,7 @@
             // cache ValidTo for the OrganisationFormalFrameworkId,
             // because we will need it when FormalFrameworkAssignedToOrganisation is published, which does not contain the ValidTo.
             _endDatePerOrganisationFormalFrameworkId.UpdateMemoryCache(message.Body.OrganisationFormalFrameworkId, new ValidTo(message.Body.ValidTo));
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkUpdated> message)

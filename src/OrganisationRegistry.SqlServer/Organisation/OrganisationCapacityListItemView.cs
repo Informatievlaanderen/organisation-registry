@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.SqlServer.Organisation
 {
     using System;
-    using System.Collections.Generic;
     using System.Data.Common;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -199,7 +198,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 PersonName = message.Body.PersonId.HasValue ? message.Body.PersonFullName : string.Empty,
                 FunctionName = message.Body.FunctionId.HasValue ? message.Body.FunctionName : string.Empty,
                 LocationName = message.Body.LocationId.HasValue ? message.Body.LocationName : string.Empty,
-                ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts ?? new Dictionary<Guid, string>()),
+                ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts),
                 ValidFrom = message.Body.ValidFrom,
                 ValidTo = message.Body.ValidTo
             };
@@ -224,7 +223,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             capacity.PersonName = message.Body.PersonId.HasValue ? message.Body.PersonFullName : string.Empty;
             capacity.FunctionName = message.Body.FunctionId.HasValue ? message.Body.FunctionName : string.Empty;
             capacity.LocationName = message.Body.LocationId.HasValue ? message.Body.LocationName : string.Empty;
-            capacity.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts ?? new Dictionary<Guid, string>());
+            capacity.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts);
             capacity.ValidFrom = message.Body.ValidFrom;
             capacity.ValidTo = message.Body.ValidTo;
 

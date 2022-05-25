@@ -21,7 +21,7 @@
         public Guid BodyId { get; set; }
 
         public Guid LifecyclePhaseTypeId { get; set; }
-        public string LifecyclePhaseTypeName { get; set; }
+        public string LifecyclePhaseTypeName { get; set; } = null!;
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
@@ -117,7 +117,7 @@
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var bodyLifecyclePhase = context.BodyLifecyclePhaseList.SingleOrDefault(item => item.BodyLifecyclePhaseId == message.Body.BodyLifecyclePhaseId);
+                var bodyLifecyclePhase = await context.BodyLifecyclePhaseList.SingleAsync(item => item.BodyLifecyclePhaseId == message.Body.BodyLifecyclePhaseId);
 
                 bodyLifecyclePhase.BodyLifecyclePhaseId = message.Body.BodyLifecyclePhaseId;
                 bodyLifecyclePhase.BodyId = message.Body.BodyId;
@@ -174,7 +174,7 @@
                         EndDate = previous.ValidTo,
                         StartDate = current.ValidFrom
                     })
-                    .Where(x => x.EndDate.Value.AddDays(1) != x.StartDate)
+                    .Where(x => x.EndDate!.Value.AddDays(1) != x.StartDate)
                     .ToList();
 
                 foreach (var lifecyclePhasesWithGap in lifecyclePhasesWithGaps)

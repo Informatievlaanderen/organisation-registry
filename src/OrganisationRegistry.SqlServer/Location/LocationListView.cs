@@ -18,10 +18,10 @@
 
         public string? CrabLocationId { get; set; }
         public string? FormattedAddress { get; set; }
-        public string Street { get; set; }
-        public string ZipCode { get; set; }
-        public string City { get; set; }
-        public string Country { get; set; }
+        public string Street { get; set; } = null!;
+        public string ZipCode { get; set; } = null!;
+        public string City { get; set; } = null!;
+        public string Country { get; set; } = null!;
         public bool HasCrabLocation { get; set; }
     }
 

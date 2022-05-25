@@ -4,6 +4,7 @@ namespace OrganisationRegistry.KboMutations
     using System.Reflection;
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
+    using Configuration;
     using ElasticSearch;
     using Ftps;
     using Infrastructure;
@@ -35,7 +36,9 @@ namespace OrganisationRegistry.KboMutations
             builder.RegisterModule(new OrganisationRegistryModule());
             builder.RegisterModule(new ElasticSearchModule(_configuration, _services));
             builder.RegisterModule(new SqlServerModule(_configuration, _services, _loggerFactory));
-            builder.RegisterModule(new KboMutationsModule(_configuration, _services));
+
+            _services.Configure<KboMutationsConfiguration>(
+                _configuration.GetSection(KboMutationsConfiguration.Section));
 
             builder.RegisterAssemblyTypes(typeof(WegwijsKboMutationsAssemblyTokenClass).GetTypeInfo().Assembly)
                 .AsClosedTypesOf(typeof(IEventHandler<>))

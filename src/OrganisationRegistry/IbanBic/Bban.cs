@@ -31,7 +31,7 @@ namespace OrganisationRegistry.IbanBic
     /// </summary>
     public class Bban
     {
-        private SortedDictionary<string, BBanStructure> _bbanStructures = null;
+        private SortedDictionary<string, BBanStructure>? _bbanStructures = null;
 
         public Bban()
         {
@@ -317,21 +317,17 @@ namespace OrganisationRegistry.IbanBic
         /// </summary>
         /// <param name="countryCode">Country code object</param>
         /// <returns>BBAN structure of defined country, or null if given country code is unsupported</returns>
-        public static BBanStructure GetStructureForCountry(CountryCodeEntry countryCode)
+        public static BBanStructure? GetStructureForCountry(CountryCodeEntry? countryCode)
         {
-            Bban bban = new Bban();
-            BBanStructure result = null;
+            var bban = new Bban();
+            BBanStructure? result = null;
 
-            if (countryCode != null)
-            {
-                if (bban._bbanStructures != null)
-                {
-                    if (bban._bbanStructures.ContainsKey(countryCode.Alpha2))
-                    {
-                        result = bban._bbanStructures[countryCode.Alpha2];
-                    }
-                }
-            }
+            if (countryCode == null) return result;
+
+            if (bban._bbanStructures == null) return result;
+
+            if (bban._bbanStructures.ContainsKey(countryCode.Alpha2))
+                result = bban._bbanStructures[countryCode.Alpha2];
 
             return result;
         }
@@ -341,21 +337,17 @@ namespace OrganisationRegistry.IbanBic
         /// </summary>
         /// <param name="alpha2Code">Alpha2 Country code</param>
         /// <returns>BBAN structure of defined country, or null if given country code is unsupported</returns>
-        public static BBanStructure GetStructureForCountry(string alpha2Code)
+        public static BBanStructure? GetStructureForCountry(string alpha2Code)
         {
-            Bban bban = new Bban();
-            BBanStructure result = null;
+            var bban = new Bban();
+            BBanStructure? result = null;
 
-            if (!string.IsNullOrEmpty(alpha2Code) && alpha2Code.Length == 2)
-            {
-                if (bban._bbanStructures != null)
-                {
-                    if (bban._bbanStructures.ContainsKey(alpha2Code.ToUpper()))
-                    {
-                        result = bban._bbanStructures[alpha2Code];
-                    }
-                }
-            }
+            if (string.IsNullOrEmpty(alpha2Code) || alpha2Code.Length != 2) return result;
+
+            if (bban._bbanStructures == null) return result;
+
+            if (bban._bbanStructures.ContainsKey(alpha2Code.ToUpper()))
+                result = bban._bbanStructures[alpha2Code];
 
             return result;
         }
@@ -368,9 +360,8 @@ namespace OrganisationRegistry.IbanBic
         /// <returns>True if given country contains rule for specified entry</returns>
         public static bool IsBbanEntrySupported(string alpha2Code, BBanEntryType entryType)
         {
-            Bban bban = new Bban();
-            BBanStructure structure = GetStructureForCountry(alpha2Code);
-            bool result = false;
+            var structure = GetStructureForCountry(alpha2Code);
+            var result = false;
 
             if (structure != null)
             {

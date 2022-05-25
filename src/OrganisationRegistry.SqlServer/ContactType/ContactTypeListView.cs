@@ -16,7 +16,7 @@
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class ContactTypeListConfiguration : EntityMappingConfiguration<ContactTypeListItem>
@@ -50,7 +50,7 @@
             ContactTypeList
         }
 
-        private readonly IEventStore _eventStore;
+        private readonly IEventStore? _eventStore;
 
         public ContactTypeListView(
             ILogger<ContactTypeListView> logger,
@@ -94,7 +94,7 @@
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
         {
-            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
+            await RebuildProjection(_eventStore!, dbConnection, dbTransaction, message);
         }
     }
 }

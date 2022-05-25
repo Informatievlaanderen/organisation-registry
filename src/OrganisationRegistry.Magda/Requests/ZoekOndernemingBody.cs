@@ -8,6 +8,6 @@ namespace OrganisationRegistry.Magda.Requests
     public class ZoekOndernemingBody
     {
         [XmlElement(Namespace = "http://webservice.zoekondernemingdienst-02_00.onderneming-02_00.vip.vlaanderen.be")]
-        public ZoekOnderneming ZoekOnderneming { get; set; }
+        public ZoekOnderneming ZoekOnderneming { get; set; } = null!;
     }
 }

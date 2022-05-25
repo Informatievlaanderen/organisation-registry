@@ -17,13 +17,13 @@ namespace OrganisationRegistry.SqlServer.FormalFramework
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
-        public string Code { get; set; }
+        public string Code { get; set; } = null!;
 
         public Guid FormalFrameworkCategoryId { get; set; }
 
-        public string FormalFrameworkCategoryName { get; set; }
+        public string FormalFrameworkCategoryName { get; set; } = null!;
     }
 
     public class FormalFrameworkListConfiguration : EntityMappingConfiguration<FormalFrameworkListItem>

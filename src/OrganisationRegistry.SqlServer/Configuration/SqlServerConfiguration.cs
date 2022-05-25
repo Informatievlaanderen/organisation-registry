@@ -12,16 +12,14 @@ namespace OrganisationRegistry.SqlServer.Configuration
         [JsonConverter(typeof(TimestampConverter))]
         public DateTime Created => DateTime.Now;
 
-        public string ConnectionString { get; set; }
-        public string MigrationsConnectionString { get; set; }
+        public string ConnectionString { get; set; } = null!;
+        public string MigrationsConnectionString { get; set; } = null!;
 
         public SqlServerConfiguration Obfuscate()
-        {
-            return new SqlServerConfiguration
+            => new()
             {
                 ConnectionString = Obfuscator.ObfuscateConnectionString(ConnectionString),
                 MigrationsConnectionString = Obfuscator.ObfuscateConnectionString(MigrationsConnectionString)
             };
-        }
     }
 }

@@ -11,7 +11,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
         public Guid BodyId { get; set; }
         public Guid BodyOrganisationId { get; set; }
         public Guid OrganisationId { get; set; }
-        public string OrganisationName { get; set; }
+        public string OrganisationName { get; set; } = null!;
         public bool OrganisationActive { get; set; }
     }
 

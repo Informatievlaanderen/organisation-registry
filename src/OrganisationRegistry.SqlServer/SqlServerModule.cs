@@ -35,12 +35,7 @@ namespace OrganisationRegistry.SqlServer
 
             services.Configure<SqlServerConfiguration>(configuration.GetSection(SqlServerConfiguration.Section));
 
-            logger.LogInformation(
-                "Added {Context} to services:" +
-                Environment.NewLine +
-                "\tSchema: {Schema}" +
-                Environment.NewLine +
-                "\tTableName: {TableName}",
+            logger.LogInformation("Added {Context} to services:\n\tSchema: {Schema}\n\tTableName: {TableName}",
                 nameof(OrganisationRegistryContext), WellknownSchemas.BackofficeSchema, MigrationTables.Default);
         }
 

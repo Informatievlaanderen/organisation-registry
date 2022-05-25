@@ -78,15 +78,15 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
 
             var app = ConfigureServices(services, configuration);
 
-            var logger = app.GetService<ILogger<Program>>();
+            var logger = app.GetRequiredService<ILogger<Program>>();
 
-            if (!app.GetService<IOptions<TogglesConfigurationSection>>().Value.ApplicationAvailable)
+            if (!app.GetRequiredService<IOptions<TogglesConfigurationSection>>().Value.ApplicationAvailable)
             {
-                logger.LogInformation("Application offline, exiting program.");
+                logger.LogInformation("Application offline, exiting program");
                 return;
             }
 
-            var options = app.GetService<IOptions<VlaanderenBeNotifierConfiguration>>().Value;
+            var options = app.GetRequiredService<IOptions<VlaanderenBeNotifierConfiguration>>().Value;
 
             var distributedLock = new DistributedLock<T>(
                 new DistributedLockOptions
@@ -104,7 +104,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             var acquiredLock = false;
             try
             {
-                logger.LogInformation("Trying to acquire lock.");
+                logger.LogInformation("Trying to acquire lock");
                 acquiredLock = distributedLock.AcquireLock();
 
                 if (!acquiredLock)
@@ -113,7 +113,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     return;
                 }
 
-                if (app.GetService<IOptions<TogglesConfigurationSection>>().Value.VlaanderenBeNotifierAvailable)
+                if (app.GetRequiredService<IOptions<TogglesConfigurationSection>>().Value.VlaanderenBeNotifierAvailable)
                 {
                     var sqlServerConfiguration = app.GetRequiredService<IOptions<SqlServerConfiguration>>().Value;
                     var migratorOptions = new DbContextOptionsBuilder<VlaanderenBeNotifierContext>()
@@ -124,22 +124,22 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     await using (var migrator = new VlaanderenBeNotifierContext(migratorOptions.Options))
                         await migrator.Database.MigrateAsync();
 
-                    var runner = app.GetService<T>();
+                    var runner = app.GetRequiredService<T>();
                     UseOrganisationRegistryEventSourcing(app);
 
                     await ExecuteRunner(runner);
-                    logger.LogInformation("Processing completed successfully, exiting program.");
+                    logger.LogInformation("Processing completed successfully, exiting program");
                 }
                 else
                 {
-                    logger.LogInformation("VlaanderenBeNotifier Toggle not enabled, exiting program.");
+                    logger.LogInformation("VlaanderenBeNotifier Toggle not enabled, exiting program");
                 }
 
                 FlushLoggerAndTelemetry();
             }
             catch (Exception e)
             {
-                logger.LogCritical(0, e, "Encountered a fatal exception, exiting program."); // dotnet core only supports global exceptionhandler starting from 1.2
+                logger.LogCritical(0, e, "Encountered a fatal exception, exiting program"); // dotnet core only supports global exceptionhandler starting from 1.2
                 FlushLoggerAndTelemetry();
                 throw;
             }
@@ -169,13 +169,13 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             var serviceProvider = services.BuildServiceProvider();
 
             var builder = new ContainerBuilder();
-            builder.RegisterModule(new VlaanderenBeNotifierRunnerModule(configuration, services, serviceProvider.GetService<ILoggerFactory>()));
+            builder.RegisterModule(new VlaanderenBeNotifierRunnerModule(configuration, services, serviceProvider.GetRequiredService<ILoggerFactory>()));
             return new AutofacServiceProvider(builder.Build());
         }
 
         private static void UseOrganisationRegistryEventSourcing(IServiceProvider app)
         {
-            var registrar = app.GetService<BusRegistrar>();
+            var registrar = app.GetRequiredService<BusRegistrar>();
 
             registrar.RegisterEventHandlers(typeof(MemoryCachesMaintainer));
             registrar.RegisterEventHandlersFromAssembly(typeof(OrganisationRegistryVlaanderenBeNotifierAssemblyTokenClass));

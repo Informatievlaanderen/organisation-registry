@@ -17,14 +17,14 @@ namespace OrganisationRegistry.Infrastructure.Authorization
             FirstName = firstName;
             LastName = lastName;
             UserId = userId;
-            Ip = ip;
+            Ip = ip ?? string.Empty;
             Roles = roles;
         }
 
         public List<string> Organisations { get; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string? Ip { get; set; }
+        public string Ip { get; set; }
         public string UserId { get; set; }
         public Role[] Roles { get; set; }
 

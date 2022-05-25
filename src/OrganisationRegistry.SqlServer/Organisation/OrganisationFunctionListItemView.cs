@@ -1,7 +1,6 @@
 ﻿namespace OrganisationRegistry.SqlServer.Organisation
 {
     using System;
-    using System.Collections.Generic;
     using System.Data.Common;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -15,7 +14,7 @@
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using Person;
-    using OrganisationRegistry.Function.Events;
+    using Function.Events;
     using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Person.Events;
 
@@ -25,10 +24,10 @@
         public Guid OrganisationId { get; set; }
 
         public Guid FunctionId { get; set; }
-        public string FunctionName { get; set; }
+        public string FunctionName { get; set; } = null!;
 
         public Guid PersonId { get; set; }
-        public string PersonName { get; set; }
+        public string PersonName { get; set; } = null!;
 
         public string? ContactsJson { get; set; }
 
@@ -126,7 +125,7 @@
                 PersonId = message.Body.PersonId,
                 FunctionName = message.Body.FunctionName,
                 PersonName = message.Body.PersonFullName,
-                ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts ?? new Dictionary<Guid, string>()),
+                ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts),
                 ValidFrom = message.Body.ValidFrom,
                 ValidTo = message.Body.ValidTo
             };
@@ -139,7 +138,7 @@
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionUpdated> message)
         {
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var key = context.OrganisationFunctionList.SingleOrDefault(item => item.OrganisationFunctionId == message.Body.OrganisationFunctionId);
+            var key = await context.OrganisationFunctionList.SingleAsync(item => item.OrganisationFunctionId == message.Body.OrganisationFunctionId);
 
             key.OrganisationFunctionId = message.Body.OrganisationFunctionId;
             key.OrganisationId = message.Body.OrganisationId;
@@ -147,7 +146,7 @@
             key.PersonId = message.Body.PersonId;
             key.FunctionName = message.Body.FunctionName;
             key.PersonName = message.Body.PersonFullName;
-            key.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts ?? new Dictionary<Guid, string>());
+            key.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts);
             key.ValidFrom = message.Body.ValidFrom;
             key.ValidTo = message.Body.ValidTo;
 

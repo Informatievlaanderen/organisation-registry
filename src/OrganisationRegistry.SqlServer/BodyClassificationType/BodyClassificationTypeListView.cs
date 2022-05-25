@@ -16,7 +16,7 @@ namespace OrganisationRegistry.SqlServer.BodyClassificationType
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class BodyClassificationTypeListConfiguration : EntityMappingConfiguration<BodyClassificationTypeListItem>

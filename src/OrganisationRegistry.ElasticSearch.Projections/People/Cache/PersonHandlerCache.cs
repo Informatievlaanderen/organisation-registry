@@ -32,7 +32,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Cache
         public async Task<OrganisationCacheItem> GetOrganisation(
             OrganisationRegistryContext context,
             Guid organisationId)
-            => await context.OrganisationCache.FindAsync(organisationId);
+            => await context.OrganisationCache.FindAsync(organisationId) ?? throw new OrganisationNotFoundInCache(organisationId, nameof(context.OrganisationCache));
 
         public async Task<List<Guid>> GetIdsForOrganisationsShownOnVlaamseOverheidSite(
             OrganisationRegistryContext context)
@@ -118,10 +118,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Cache
             bool showOnVlaamseOverheidSites)
         {
             await using var context = contextFactory.Create();
-            var showOnVlaamseOverheidSitesPerOrganisation =
+            var maybeShowOnVlaamseOverheidSitesPerOrganisation =
                 await context
                     .ShowOnVlaamseOverheidSitesPerOrganisationList
                     .FindAsync(organisationId);
+
+            if (maybeShowOnVlaamseOverheidSitesPerOrganisation is not { } showOnVlaamseOverheidSitesPerOrganisation)
+                throw new OrganisationNotFoundInCache(organisationId, nameof(context.ShowOnVlaamseOverheidSitesPerOrganisationList));
 
             showOnVlaamseOverheidSitesPerOrganisation.ShowOnVlaamseOverheidSites = showOnVlaamseOverheidSites;
 

@@ -21,6 +21,11 @@
 
             protected OrganisationCapacity()
             {
+                CapacityName = string.Empty;
+                PersonName = string.Empty;
+                FunctionName = string.Empty;
+                Contacts = new List<Contact>();
+                Validity = Period.Infinite();
             }
 
             public OrganisationCapacity(

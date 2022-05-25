@@ -14,7 +14,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
     public class OrganisationsRunner : BaseRunner<OrganisationDocument>
     {
         public const string ElasticSearchProjectionsProjectionName = "ElasticSearchOrganisationsProjection";
-        private static readonly string ProjectionFullName = typeof(Organisation).FullName;
+        private static readonly string ProjectionFullName = typeof(Organisation).FullName!;
         private new const string ProjectionName = nameof(Organisation);
 
         public new static readonly Type[] EventHandlers =

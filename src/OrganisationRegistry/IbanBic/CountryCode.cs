@@ -32,11 +32,11 @@ namespace OrganisationRegistry.IbanBic
         /// ISO 3166-1
         ///
         /// </summary>
-        private SortedDictionary<string, CountryCodeEntry> _alpha3Map = new SortedDictionary<string, CountryCodeEntry>();
+        private SortedDictionary<string, CountryCodeEntry> _alpha3Map = new();
 
         public CountryCode()
         {
-            loadMap();
+            LoadMap();
         }
 
         /// <summary>
@@ -44,20 +44,20 @@ namespace OrganisationRegistry.IbanBic
         /// </summary>
         /// <param name="code">2 or 3 letters code for country</param>
         /// <returns>Found CountryCodeItem object or null if it is not found</returns>
-        public static CountryCodeEntry GetCountryCode(string code)
+        public static CountryCodeEntry? GetCountryCode(string code)
         {
-            CountryCodeEntry result = null;
-            CountryCode cc = new CountryCode();
+            CountryCodeEntry? result = null;
+            var cc = new CountryCode();
 
             if (!string.IsNullOrEmpty(code))
             {
                 switch (code.Length)
                 {
                     case 2:
-                        result = cc.getByAlpha2(code.ToUpper());
+                        result = cc.GetByAlpha2(code.ToUpper());
                         break;
                     case 3:
-                        result = cc.getByAlpha3(code.ToUpper());
+                        result = cc.GetByAlpha3(code.ToUpper());
                         break;
                 }
             }
@@ -65,34 +65,13 @@ namespace OrganisationRegistry.IbanBic
             return result;
         }
 
-        private CountryCodeEntry getByAlpha2(string code)
-        {
-            CountryCodeEntry result = null;
+        private CountryCodeEntry? GetByAlpha2(string code)
+            => _alpha3Map.ContainsKey(code) ? _alpha3Map[code] : null;
 
-            if (_alpha3Map != null)
-            {
-                if (_alpha3Map.ContainsKey(code))
-                {
-                    result = _alpha3Map[code];
-                }
-            }
+        private CountryCodeEntry? GetByAlpha3(string code)
+            => _alpha3Map.Values.SingleOrDefault(x => x.Alpha3.Equals(code));
 
-            return result;
-        }
-
-        private CountryCodeEntry getByAlpha3(string code)
-        {
-            CountryCodeEntry result = null;
-
-            if (_alpha3Map != null)
-            {
-                result = _alpha3Map.Values.Where(x => x.Alpha3.Equals(code)).SingleOrDefault();
-            }
-
-            return result;
-        }
-
-        private void loadMap()
+        private void LoadMap()
         {
             _alpha3Map.Add("AF", new CountryCodeEntry() { Alpha2 = "AF", Alpha3 = "AFG", CountryName = "Afghanistan" });
             _alpha3Map.Add("AX", new CountryCodeEntry() { Alpha2 = "AX", Alpha3 = "ALA", CountryName = "Åland Islands" });
@@ -357,29 +336,26 @@ namespace OrganisationRegistry.IbanBic
         /// 2-letters code for country
         /// ISO 3166-1 Alpha2
         /// </summary>
-        public string Alpha2 { get; set; }
+        public string Alpha2 { get; init; } = null!;
 
         /// <summary>
         /// 3-letters code for country
         /// ISO 3166-1 Alpha3
         /// </summary>
-        public string Alpha3 { get; set; }
+        public string Alpha3 { get; init; } = null!;
 
         /// <summary>
         /// English abbreviation of country name
         /// </summary>
-        public string CountryName { get; set; }
+        public string CountryName { get; init; } = null!;
 
         public override int GetHashCode()
-        {
-            return Alpha2.GetHashCode() + Alpha3.GetHashCode() + CountryName.GetHashCode();
-        }
+            => Alpha2.GetHashCode() + Alpha3.GetHashCode() + CountryName.GetHashCode();
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (obj is CountryCodeEntry)
+            if (obj is CountryCodeEntry other)
             {
-                CountryCodeEntry other = obj as CountryCodeEntry;
                 return Alpha2.Equals(other.Alpha2) & Alpha3.Equals(other.Alpha3) & CountryName.Equals(other.CountryName);
             }
 

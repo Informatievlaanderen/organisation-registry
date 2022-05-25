@@ -19,8 +19,8 @@
         public Guid OrganisationContactId { get; set; }
         public Guid OrganisationId { get; set; }
         public Guid ContactTypeId { get; set; }
-        public string ContactTypeName { get; set; }
-        public string ContactValue { get; set; }
+        public string ContactTypeName { get; set; } = null!;
+        public string ContactValue { get; set; } = null!;
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }
@@ -112,7 +112,7 @@
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationContactUpdated> message)
         {
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var contact = context.OrganisationContactList.SingleOrDefault(item => item.OrganisationContactId == message.Body.OrganisationContactId);
+            var contact = await context.OrganisationContactList.SingleAsync(item => item.OrganisationContactId == message.Body.OrganisationContactId);
 
             contact.OrganisationContactId = message.Body.OrganisationContactId;
             contact.OrganisationId = message.Body.OrganisationId;

@@ -22,10 +22,10 @@ namespace OrganisationRegistry.SqlServer.Body
         public Guid BodyId { get; set; }
 
         public Guid BodyClassificationTypeId { get; set; }
-        public string BodyClassificationTypeName { get; set; }
+        public string BodyClassificationTypeName { get; set; } = null!;
 
         public Guid BodyClassificationId { get; set; }
-        public string BodyClassificationName { get; set; }
+        public string BodyClassificationName { get; set; } = null!;
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
@@ -147,7 +147,7 @@ namespace OrganisationRegistry.SqlServer.Body
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var key = context.BodyBodyClassificationList.SingleOrDefault(item => item.BodyBodyClassificationId == message.Body.BodyBodyClassificationId);
+                var key = await context.BodyBodyClassificationList.SingleAsync(item => item.BodyBodyClassificationId == message.Body.BodyBodyClassificationId);
 
                 key.BodyBodyClassificationId = message.Body.BodyBodyClassificationId;
                 key.BodyId = message.Body.BodyId;

@@ -23,7 +23,6 @@ namespace OrganisationRegistry.UI.Infrastructure
 
             if (!StringValues.IsNullOrEmpty(encodings) &&
                 StringWithQualityHeaderValue.TryParseList(encodings, out var encodingsList) &&
-                encodingsList != null &&
                 encodingsList.Count > 0)
             {
                 var encodingsWithQuality = new string[encodingsList.Count];

@@ -27,7 +27,10 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public bool IsEditable => Source != OrganisationRegistry.Organisation.Source.Kbo;
 
-        public OrganisationBankAccountListItem() { }
+        public OrganisationBankAccountListItem()
+        {
+            BankAccountNumber = string.Empty;
+        }
 
         public OrganisationBankAccountListItem(
             Guid organisationBankAccountId,
@@ -38,7 +41,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             bool isBic,
             DateTime? validFrom,
             DateTime? validTo,
-            string source = null)
+            string? source = null)
         {
             OrganisationBankAccountId = organisationBankAccountId;
             OrganisationId = organisationId;

@@ -75,16 +75,16 @@ namespace OrganisationRegistry.Projections.Reporting
             });
             var app = ConfigureServices(services, configuration);
 
-            var logger = app.GetService<ILogger<Program>>();
+            var logger = app.GetRequiredService<ILogger<Program>>();
 
-            if (!app.GetService<IOptions<TogglesConfigurationSection>>().Value.ApplicationAvailable)
+            if (!app.GetRequiredService<IOptions<TogglesConfigurationSection>>().Value.ApplicationAvailable)
             {
-                logger.LogInformation("Application offline, exiting program.");
+                logger.LogInformation("Application offline, exiting program");
 
                 return;
             }
 
-            var reportingRunnerOptions = app.GetService<IOptions<ReportingRunnerConfiguration>>().Value;
+            var reportingRunnerOptions = app.GetRequiredService<IOptions<ReportingRunnerConfiguration>>().Value;
 
             var distributedLock = new DistributedLock<Program>(
                 new DistributedLockOptions
@@ -102,7 +102,7 @@ namespace OrganisationRegistry.Projections.Reporting
             bool acquiredLock = false;
             try
             {
-                logger.LogInformation("Trying to acquire lock.");
+                logger.LogInformation("Trying to acquire lock");
                 acquiredLock = distributedLock.AcquireLock();
                 if (!acquiredLock)
                 {
@@ -110,19 +110,19 @@ namespace OrganisationRegistry.Projections.Reporting
                     return;
                 }
 
-                if (app.GetService<IOptions<TogglesConfigurationSection>>().Value.ReportingRunnerAvailable)
+                if (app.GetRequiredService<IOptions<TogglesConfigurationSection>>().Value.ReportingRunnerAvailable)
                 {
-                    var runner = app.GetService<T>();
+                    var runner = app.GetRequiredService<T>();
 
                     UseOrganisationRegistryEventSourcing(app, runner);
 
                     await ExecuteRunner(runner);
 
-                    logger.LogInformation("Processing completed successfully, exiting program.");
+                    logger.LogInformation("Processing completed successfully, exiting program");
                 }
                 else
                 {
-                    logger.LogInformation("Reporting Runner Toggle not enabled, exiting program.");
+                    logger.LogInformation("Reporting Runner Toggle not enabled, exiting program");
                 }
 
                 FlushLoggerAndTelemetry();
@@ -130,7 +130,7 @@ namespace OrganisationRegistry.Projections.Reporting
             catch (Exception e)
             {
                 // dotnet core only supports global exceptionhandler starting from 1.2
-                logger.LogCritical(0, e, "Encountered a fatal exception, exiting program.");
+                logger.LogCritical(0, e, "Encountered a fatal exception, exiting program");
                 FlushLoggerAndTelemetry();
                 throw;
             }
@@ -165,13 +165,13 @@ namespace OrganisationRegistry.Projections.Reporting
             var serviceProvider = services.BuildServiceProvider();
 
             var builder = new ContainerBuilder();
-            builder.RegisterModule(new ReportingRunnerModule(configuration, services, serviceProvider.GetService<ILoggerFactory>()));
+            builder.RegisterModule(new ReportingRunnerModule(configuration, services, serviceProvider.GetRequiredService<ILoggerFactory>()));
             return new AutofacServiceProvider(builder.Build());
         }
 
         private static void UseOrganisationRegistryEventSourcing(IServiceProvider app, BaseRunner runner)
         {
-            var registrar = app.GetService<BusRegistrar>();
+            var registrar = app.GetRequiredService<BusRegistrar>();
 
             registrar.RegisterEventHandlers(typeof(MemoryCachesMaintainer));
 

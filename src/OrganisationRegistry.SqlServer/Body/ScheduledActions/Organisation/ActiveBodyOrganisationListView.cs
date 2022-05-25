@@ -86,6 +86,8 @@
             // cache ValidTo for the OrganisationParent,
             // because we will need it when BodyAssignedToOrganisation is published, which does not contain the ValidTo.
             _endDatePerBodyOrganisationId.UpdateMemoryCache(message.Body.BodyOrganisationId, new ValidTo(message.Body.ValidTo));
+            await Task.CompletedTask;
+
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)

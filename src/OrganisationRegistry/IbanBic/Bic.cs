@@ -29,7 +29,7 @@ namespace OrganisationRegistry.IbanBic
     /// </summary>
     public class Bic
     {
-        public string Value { get; private set; }
+        public string Value { get; }
 
         private Bic(string value)
         {
@@ -70,35 +70,15 @@ namespace OrganisationRegistry.IbanBic
         /// </summary>
         /// <returns>String represenation of the BIC's branch code, empty string if BIC has no branch code.</returns>
         public string GetBranchCode()
-        {
-            string result = "";
-
-            if (BicUtils.HasBranchCode(Value))
-            {
-                result = BicUtils.GetBranchCode(Value);
-            }
-
-            return result;
-        }
+            => BicUtils.HasBranchCode(Value) ? BicUtils.GetBranchCode(Value) : "";
 
         public override int GetHashCode()
-        {
-            return Value.GetHashCode();
-        }
+            => Value.GetHashCode();
 
         public override string ToString()
-        {
-            return Value;
-        }
+            => Value;
 
-        public override bool Equals(object obj)
-        {
-            if (obj is Bic)
-            {
-                return Value.Equals((obj as Bic).Value);
-            }
-
-            return false;
-        }
+        public override bool Equals(object? obj)
+            => obj is Bic bic && Value.Equals(bic.Value);
     }
 }
