@@ -144,8 +144,10 @@ public class
     }
 
     [Fact]
-    public void OrganisationTerminationSyncedWithKbo()
+    public async Task OrganisationTerminationSyncedWithKbo()
     {
+        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).Then();
+
         var organisationTerminationSyncedWithKbo =
             PublishedEvents[1].UnwrapBody<OrganisationTerminationSyncedWithKbo>();
         organisationTerminationSyncedWithKbo.Should().NotBeNull();

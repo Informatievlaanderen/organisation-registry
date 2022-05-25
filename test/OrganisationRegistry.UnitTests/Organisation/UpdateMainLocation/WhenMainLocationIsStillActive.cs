@@ -2,44 +2,40 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainLocation;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Location.Events;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using Tests.Shared;
+using Xunit;
 using Xunit.Abstractions;
 
-public class WhenMainLocationIsStillActive : OldSpecification2<UpdateMainLocationCommandHandler, UpdateMainLocation>
+public class WhenMainLocationIsStillActive : Specification<UpdateMainLocationCommandHandler, UpdateMainLocation>
 {
-    private Guid _organisationId;
-    private Guid _locationId;
-    private Guid _organisationLocationId;
+    private readonly Guid _organisationId;
+    private readonly Guid _locationId;
+    private readonly Guid _organisationLocationId;
 
     public WhenMainLocationIsStillActive(ITestOutputHelper helper) : base(helper)
-    {
-    }
-
-    protected override UpdateMainLocationCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<UpdateMainLocationCommandHandler>>().Object,
-            Session,
-            new DateTimeProvider());
-
-    protected override IUser User
-        => new UserBuilder().Build();
-
-    protected override IEnumerable<IEvent> Given()
     {
         _organisationId = Guid.NewGuid();
         _locationId = Guid.NewGuid();
         _organisationLocationId = Guid.NewGuid();
+    }
 
-        return new List<IEvent>
-        {
+    protected override UpdateMainLocationCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<UpdateMainLocationCommandHandler>>().Object,
+            session,
+            new DateTimeProvider());
+
+    private IEvent[] Events
+        => new IEvent[] {
             new OrganisationCreated(
                 _organisationId,
                 "Kind en Gezin",
@@ -73,11 +69,13 @@ public class WhenMainLocationIsStillActive : OldSpecification2<UpdateMainLocatio
                 DateTime.Today),
             new MainLocationAssignedToOrganisation(_organisationId, _locationId, _organisationLocationId)
         };
-    }
 
-    protected override UpdateMainLocation When()
+    private UpdateMainLocation UpdateMainLocationCommand
         => new(new OrganisationId(_organisationId));
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task PublishesNoEvents()
+    {
+        await Given(Events).When(UpdateMainLocationCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
 }

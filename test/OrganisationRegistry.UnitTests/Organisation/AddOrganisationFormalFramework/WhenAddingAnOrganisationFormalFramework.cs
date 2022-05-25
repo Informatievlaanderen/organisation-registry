@@ -48,7 +48,7 @@ public class WhenAddingAnOrganisationFormalFramework : Specification<AddOrganisa
     protected override AddOrganisationFormalFrameworkCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<AddOrganisationFormalFrameworkCommandHandler>>().Object,
-            Session,
+            session,
             new DateTimeProviderStub(DateTime.Now),
             Mock.Of<IOrganisationRegistryConfiguration>()
         );

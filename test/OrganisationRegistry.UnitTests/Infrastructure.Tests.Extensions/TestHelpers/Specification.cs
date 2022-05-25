@@ -22,11 +22,6 @@ public abstract class Specification<THandler, TCommand>
     private readonly SpecEventStorage _eventstorage;
     private IUser _user = null!;
     private TCommand _command = default!;
-
-    [Obsolete("Replaced by private field.")]
-    protected ISession Session
-        => _session;
-
     private readonly ISession _session;
     protected IList<IEvent> EventDescriptors { get; }
     protected List<IEnvelope> PublishedEvents { get; }

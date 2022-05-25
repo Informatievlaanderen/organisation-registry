@@ -136,7 +136,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             => new(
                 new Mock<ILogger<KboOrganisationCommandHandlers>>().Object,
                 _organisationRegistryConfigurationStub,
-                Session,
+                session,
                 new SequentialOvoNumberGenerator(),
                 new UniqueOvoNumberValidatorStub(false),
                 new UniqueKboNumberValidatorStub(false),

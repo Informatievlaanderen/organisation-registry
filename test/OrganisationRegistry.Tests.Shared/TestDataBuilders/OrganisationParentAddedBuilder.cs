@@ -1,14 +1,15 @@
 namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
 {
     using System;
+    using Infrastructure.Events;
     using Organisation;
     using Organisation.Events;
 
     public class OrganisationParentAddedBuilder
     {
-        public OrganisationId OrganisationId { get; }
-        public Guid OrganisationOrganisationParentId { get; }
-        public OrganisationId ParentOrganisationId { get; }
+        public OrganisationId OrganisationId { get; private set; }
+        public Guid OrganisationOrganisationParentId { get; private set; }
+        public OrganisationId ParentOrganisationId { get; private set; }
         public string ParentOrganisationName { get; }
         public DateTime? ValidFrom { get; private set; }
         public DateTime? ValidTo { get; private set; }
@@ -41,5 +42,12 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
 
         public static implicit operator OrganisationParentAdded(OrganisationParentAddedBuilder builder)
             => builder.Build();
+
+        public OrganisationParentAddedBuilder WithOrganisationOrganisationParentId(
+            Guid organisationOrganisationParentId)
+        {
+            OrganisationOrganisationParentId = organisationOrganisationParentId;
+            return this;
+        }
     }
 }

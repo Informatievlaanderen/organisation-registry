@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainBuilding;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
@@ -11,40 +12,37 @@ using OrganisationRegistry.Organisation.Events;
 using Building.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
 using Xunit.Abstractions;
 
 public class WhenAnotherMainBuildingIsNowActive :
-    OldSpecification2<UpdateMainBuildingCommandHandler, UpdateMainBuilding>
+    Specification<UpdateMainBuildingCommandHandler, UpdateMainBuilding>
 {
-    private Guid _organisationId;
-    private Guid _buildingAId;
-    private Guid _buildingBId;
-    private Guid _organisationBuildingAId;
-    private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);
+    private readonly Guid _organisationId;
+    private readonly Guid _buildingAId;
+    private readonly Guid _buildingBId;
+    private readonly Guid _organisationBuildingAId;
+    private readonly DateTimeProviderStub _dateTimeProviderStub;
 
     public WhenAnotherMainBuildingIsNowActive(ITestOutputHelper helper) : base(helper)
-    {
-    }
-
-    protected override UpdateMainBuildingCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<UpdateMainBuildingCommandHandler>>().Object,
-            Session,
-            _dateTimeProviderStub);
-
-    protected override IUser User
-        => new UserBuilder().Build();
-
-    protected override IEnumerable<IEvent> Given()
     {
         _organisationId = Guid.NewGuid();
         _buildingAId = Guid.NewGuid();
         _buildingBId = Guid.NewGuid();
-
         _organisationBuildingAId = Guid.NewGuid();
-        return new List<IEvent>
+        _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
+        _dateTimeProviderStub.StubDate = _dateTimeProviderStub.StubDate.AddDays(1);
+    }
+
+    protected override UpdateMainBuildingCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<UpdateMainBuildingCommandHandler>>().Object,
+            session,
+            _dateTimeProviderStub);
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -59,8 +57,7 @@ public class WhenAnotherMainBuildingIsNowActive :
                 null,
                 null,
                 null),
-            new BuildingCreated(_buildingAId, "Gebouw A", 12345),
-            new BuildingCreated(_buildingBId, "Gebouw B", 12345),
+            new BuildingCreated(_buildingAId, "Gebouw A", 12345), new BuildingCreated(_buildingBId, "Gebouw B", 12345),
             new OrganisationBuildingAdded(
                 _organisationId,
                 _organisationBuildingAId,
@@ -79,27 +76,30 @@ public class WhenAnotherMainBuildingIsNowActive :
                 DateTime.Today.AddDays(1),
                 DateTime.Today.AddDays(1))
         };
-    }
 
-    protected override UpdateMainBuilding When()
-    {
-        _dateTimeProviderStub.StubDate = _dateTimeProviderStub.StubDate.AddDays(1);
-
-        return new UpdateMainBuilding(new OrganisationId(_organisationId));
-    }
-
-    protected override int ExpectedNumberOfEvents
-        => 2;
+    private UpdateMainBuilding UpdateMainBuildingCommand
+        => new(new OrganisationId(_organisationId));
 
     [Fact]
-    public void ClearsTheMainBuilding()
+    public async Task PublishesTwoEvents()
     {
+        await Given(Events).When(UpdateMainBuildingCommand, UserBuilder.User())
+            .ThenItPublishesTheCorrectNumberOfEvents(2);
+    }
+
+    [Fact]
+    public async Task ClearsTheMainBuilding()
+    {
+        await Given(Events).When(UpdateMainBuildingCommand, UserBuilder.User()).Then();
+
         PublishedEvents[0].Should().BeOfType<Envelope<MainBuildingClearedFromOrganisation>>();
     }
 
     [Fact]
-    public void AssignsTheNewBuilding()
+    public async Task AssignsTheNewBuilding()
     {
+        await Given(Events).When(UpdateMainBuildingCommand, UserBuilder.User()).Then();
+
         var mainBuildingAssignedToOrganisation =
             PublishedEvents[1].UnwrapBody<MainBuildingAssignedToOrganisation>();
         mainBuildingAssignedToOrganisation.Should().NotBeNull();

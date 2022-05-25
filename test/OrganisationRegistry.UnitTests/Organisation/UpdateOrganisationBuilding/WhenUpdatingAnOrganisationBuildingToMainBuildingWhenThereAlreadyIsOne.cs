@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Building;
 using Building.Events;
 using FluentAssertions;
@@ -9,6 +10,7 @@ using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -17,31 +19,18 @@ using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenMakingAnOrganisationBuildingAMainBuildingWhenThereAlreadyIsOne : ExceptionOldSpecification2<
+public class WhenMakingAnOrganisationBuildingAMainBuildingWhenThereAlreadyIsOne : Specification<
     UpdateOrganisationBuildingCommandHandler, UpdateOrganisationBuilding>
 {
-    private Guid _organisationId;
-    private Guid _organisationBuildingId;
-    private DateTime _validTo;
-    private DateTime _validFrom;
-    private Guid _buildingBId;
-    private Guid _buildingAId;
+    private readonly Guid _organisationId;
+    private readonly Guid _organisationBuildingId;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
+    private readonly Guid _buildingBId;
+    private readonly Guid _buildingAId;
 
     public WhenMakingAnOrganisationBuildingAMainBuildingWhenThereAlreadyIsOne(ITestOutputHelper helper) : base(
         helper)
-    {
-    }
-
-    protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<UpdateOrganisationBuildingCommandHandler>>().Object,
-            Session,
-            new DateTimeProvider());
-
-    protected override IUser User
-        => new UserBuilder().Build();
-
-    protected override IEnumerable<IEvent> Given()
     {
         _organisationId = Guid.NewGuid();
 
@@ -50,8 +39,16 @@ public class WhenMakingAnOrganisationBuildingAMainBuildingWhenThereAlreadyIsOne 
         _validTo = DateTime.Now.AddDays(2);
         _buildingAId = Guid.NewGuid();
         _buildingBId = Guid.NewGuid();
+    }
 
-        return new List<IEvent>
+    protected override UpdateOrganisationBuildingCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<UpdateOrganisationBuildingCommandHandler>>().Object,
+            session,
+            new DateTimeProvider());
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -85,26 +82,28 @@ public class WhenMakingAnOrganisationBuildingAMainBuildingWhenThereAlreadyIsOne 
                 _validFrom,
                 _validTo)
         };
-    }
 
-    protected override UpdateOrganisationBuilding When()
-    {
-        return new UpdateOrganisationBuilding(
+    private UpdateOrganisationBuilding UpdateOrganisationBuildingCommand
+        => new(
             _organisationBuildingId,
             new OrganisationId(_organisationId),
             new BuildingId(_buildingBId),
             true,
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
-    }
-
-    protected override int ExpectedNumberOfEvents
-        => 0;
 
     [Fact]
-    public void ThrowsAnException()
+    public async Task PublishesNoEvent()
     {
-        Exception.Should().BeOfType<OrganisationAlreadyHasAMainBuildingInThisPeriod>();
-        Exception?.Message.Should().Be("Deze organisatie heeft reeds een hoofdgebouw binnen deze periode.");
+        await Given(Events).When(UpdateOrganisationBuildingCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
+
+    [Fact]
+    public async Task ThrowsAnException()
+    {
+        await Given(Events).When(UpdateOrganisationBuildingCommand, UserBuilder.User())
+            .ThenThrows<OrganisationAlreadyHasAMainBuildingInThisPeriod>()
+            .WithMessage("Deze organisatie heeft reeds een hoofdgebouw binnen deze periode.");
+
     }
 }
