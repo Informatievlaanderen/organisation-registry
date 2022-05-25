@@ -3,11 +3,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.PlaceUnderVlimpersManageme
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -16,57 +18,64 @@ using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WithOrganisationUnderVlimpersManagement: OldSpecification2<PlaceUnderVlimpersManagementCommandHandler, PlaceUnderVlimpersManagement>
+public class
+    WithOrganisationUnderVlimpersManagement : Specification<PlaceUnderVlimpersManagementCommandHandler,
+        PlaceUnderVlimpersManagement>
 {
-    private readonly OrganisationId _organisationId= new(Guid.NewGuid());
+    private readonly Guid _organisationId;
+    private readonly Fixture _fixture;
+    private readonly Period _validity;
+    private readonly Period _formalValidity;
 
-    public WithOrganisationUnderVlimpersManagement(ITestOutputHelper helper) : base(helper) { }
-
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
+    public WithOrganisationUnderVlimpersManagement(ITestOutputHelper helper) : base(helper)
     {
-        var fixture = new Fixture();
-        fixture.CustomizeArticle();
-        fixture.CustomizePeriod();
+        _organisationId = Guid.NewGuid();
+        _fixture = new Fixture();
+        _fixture.CustomizeArticle();
+        _fixture.CustomizePeriod();
 
-        var validity = fixture.Create<Period>();
-        var formalValidity = fixture.Create<Period>();
-        return new List<IEvent>
+        _validity = _fixture.Create<Period>();
+        _formalValidity = _fixture.Create<Period>();
+    }
+
+    protected IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
-                fixture.Create<string>(),
-                fixture.Create<string>(),
-                fixture.Create<string>(),
-                fixture.Create<Article>(),
-                fixture.Create<string>(),
-                fixture.Create<List<Purpose>>(),
-                fixture.Create<bool>(),
-                formalValidity.Start,
-                formalValidity.End,
-                validity.Start,
-                validity.End),
+                _fixture.Create<string>(),
+                _fixture.Create<string>(),
+                _fixture.Create<string>(),
+                _fixture.Create<Article>(),
+                _fixture.Create<string>(),
+                _fixture.Create<List<Purpose>>(),
+                _fixture.Create<bool>(),
+                _formalValidity.Start,
+                _formalValidity.End,
+                _validity.Start,
+                _validity.End),
             new OrganisationPlacedUnderVlimpersManagement(_organisationId)
         };
-    }
 
-    protected override PlaceUnderVlimpersManagement When()
-        => new(_organisationId);
+    protected PlaceUnderVlimpersManagement PlaceUnderVlimpersManagementCommand
+        => new(new OrganisationId(_organisationId));
 
-    protected override PlaceUnderVlimpersManagementCommandHandler BuildHandler()
+    protected override PlaceUnderVlimpersManagementCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<PlaceUnderVlimpersManagementCommandHandler>>().Object,
-            Session);
-
-    protected override int ExpectedNumberOfEvents => 1;
+            session);
 
     [Fact]
-    public void PlacesTheOrganisationUnderVlimpersManagement()
+    public async Task PublishesOneEvent()
     {
+        await Given(Events).When(PlaceUnderVlimpersManagementCommand, UserBuilder.AlgemeenBeheerder())
+            .ThenItPublishesTheCorrectNumberOfEvents(1);
+    }
+
+    [Fact]
+    public async Task PlacesTheOrganisationUnderVlimpersManagement()
+    {
+        await Given(Events).When(PlaceUnderVlimpersManagementCommand, UserBuilder.AlgemeenBeheerder()).Then();
         PublishedEvents.Single().Should().BeOfType<Envelope<OrganisationPlacedUnderVlimpersManagement>>();
     }
 }

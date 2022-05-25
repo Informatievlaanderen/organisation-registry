@@ -2,20 +2,18 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using OrganisationRegistry.KeyTypes.Events;
     using LabelType.Events;
-    using Location;
     using Location.Events;
     using LocationType.Events;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using OrganisationClassification;
     using OrganisationClassification.Events;
-    using OrganisationClassificationType;
     using OrganisationClassificationType.Events;
-    using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Infrastructure.Domain;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
@@ -25,38 +23,21 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using Xunit;
     using Xunit.Abstractions;
 
-    public class UpdateFromKboTests : OldSpecification2<KboOrganisationCommandHandlers, SyncOrganisationWithKbo>
+    public class UpdateFromKboTests : Specification<KboOrganisationCommandHandlers, SyncOrganisationWithKbo>
     {
-        private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub = new()
-        {
-            KboKeyTypeId = Guid.NewGuid(),
-            Kbo = new KboConfigurationStub
-            {
-                KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
-                KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
-                KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-            }
-        };
-
-        private Guid _organisationId;
-        private Guid _kboSyncItemId;
-        private Guid _legalFormOrganisationClassificationTypeId;
-        private Guid _organisationClassificationId;
-        private Guid _anotherOrganisationClassificationId;
-        private Guid _registeredOfficeLocationToRemoveId;
-        private readonly KboNumber _kboNumber = new("BE0123456789");
+        private readonly OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
+        private readonly Guid _organisationId;
+        private readonly Guid _kboSyncItemId;
+        private readonly Guid _legalFormOrganisationClassificationTypeId;
+        private readonly Guid _organisationClassificationId;
+        private readonly Guid _anotherOrganisationClassificationId;
+        private readonly Guid _registeredOfficeLocationToRemoveId;
+        private readonly string _kboNumber = "BE0123456789";
         private readonly DateTimeProviderStub _dateTimeProviderStub;
 
         public UpdateFromKboTests(ITestOutputHelper helper) : base(helper)
         {
             _dateTimeProviderStub = new DateTimeProviderStub(new DateTime(2019, 9, 20));
-        }
-
-        protected override IUser User
-            => new UserBuilder().Build();
-
-        protected override IEnumerable<IEvent> Given()
-        {
             _organisationRegistryConfigurationStub = new OrganisationRegistryConfigurationStub
             {
                 KboKeyTypeId = Guid.NewGuid(),
@@ -67,20 +48,41 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     KboV2FormalNameLabelTypeId = Guid.NewGuid(),
                 }
             };
-            _organisationId = new OrganisationId(Guid.NewGuid());
-            _registeredOfficeLocationToRemoveId = new LocationId(Guid.NewGuid());
-            _legalFormOrganisationClassificationTypeId = new OrganisationClassificationTypeId(_organisationRegistryConfigurationStub.Kbo.KboV2LegalFormOrganisationClassificationTypeId);
-            _organisationClassificationId = new OrganisationClassificationId(Guid.NewGuid());
-            _anotherOrganisationClassificationId = new OrganisationClassificationId(Guid.NewGuid());
+            _organisationId = Guid.NewGuid();
+            _registeredOfficeLocationToRemoveId = Guid.NewGuid();
+            _legalFormOrganisationClassificationTypeId = _organisationRegistryConfigurationStub.Kbo
+                .KboV2LegalFormOrganisationClassificationTypeId;
+            _organisationClassificationId = Guid.NewGuid();
+            _anotherOrganisationClassificationId = Guid.NewGuid();
             _kboSyncItemId = Guid.NewGuid();
+        }
 
-            return new List<IEvent>
+        private IEvent[] Events
+            => new IEvent[]
             {
                 new KeyTypeCreated(_organisationRegistryConfigurationStub.KboKeyTypeId, "KBO sleutel"),
-                new OrganisationClassificationTypeCreated(_legalFormOrganisationClassificationTypeId, "ClassificatieType"),
-                new OrganisationClassificationCreated(_organisationClassificationId, "Classificatie", 1, "Some Legal Code", true, _legalFormOrganisationClassificationTypeId, "ClassificatieType"),
-                new OrganisationClassificationCreated(_anotherOrganisationClassificationId, "Classificatie", 1, "Another Legal Code", true, _legalFormOrganisationClassificationTypeId, "ClassificatieType"),
-                new LocationTypeCreated(_organisationRegistryConfigurationStub.Kbo.KboV2RegisteredOfficeLocationTypeId, "Registered KBO Office"),
+                new OrganisationClassificationTypeCreated(
+                    _legalFormOrganisationClassificationTypeId,
+                    "ClassificatieType"),
+                new OrganisationClassificationCreated(
+                    _organisationClassificationId,
+                    "Classificatie",
+                    1,
+                    "Some Legal Code",
+                    true,
+                    _legalFormOrganisationClassificationTypeId,
+                    "ClassificatieType"),
+                new OrganisationClassificationCreated(
+                    _anotherOrganisationClassificationId,
+                    "Classificatie",
+                    1,
+                    "Another Legal Code",
+                    true,
+                    _legalFormOrganisationClassificationTypeId,
+                    "ClassificatieType"),
+                new LocationTypeCreated(
+                    _organisationRegistryConfigurationStub.Kbo.KboV2RegisteredOfficeLocationTypeId,
+                    "Registered KBO Office"),
                 new LocationCreated(
                     _registeredOfficeLocationToRemoveId,
                     string.Empty,
@@ -89,10 +91,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     "8881",
                     "Adinkerke",
                     "Belgie"),
-                new LabelTypeCreated(_organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId, "KBO formele naam"),
+                new LabelTypeCreated(
+                    _organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId,
+                    "KBO formele naam"),
                 new OrganisationCreatedFromKbo(
                     _organisationId,
-                    _kboNumber.ToDigitsOnly(),
+                    new KboNumber(_kboNumber).ToDigitsOnly(),
                     "organisation X",
                     "OVO001234",
                     "org",
@@ -150,24 +154,23 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     new DateTime(2000, 1, 1),
                     new DateTime(2001, 1, 1))
             };
-        }
 
-        protected override SyncOrganisationWithKbo When()
+        private SyncOrganisationWithKbo SyncOrganisationWithKboCommand
             => new(
                 new OrganisationId(_organisationId),
                 new DateTimeOffset(new DateTime(2019, 9, 9)),
                 _kboSyncItemId);
 
-        protected override KboOrganisationCommandHandlers BuildHandler()
+        protected override KboOrganisationCommandHandlers BuildHandler(ISession session)
             => new(
-                logger: new Mock<ILogger<KboOrganisationCommandHandlers>>().Object,
-                organisationRegistryConfiguration: _organisationRegistryConfigurationStub,
-                session: Session,
-                ovoNumberGenerator: new SequentialOvoNumberGenerator(),
-                uniqueOvoNumberValidator: new UniqueOvoNumberValidatorStub(false),
-                uniqueKboValidator: new UniqueKboNumberValidatorStub(false),
-                dateTimeProvider: _dateTimeProviderStub,
-                kboOrganisationRetriever: new KboOrganisationRetrieverStub(
+                new Mock<ILogger<KboOrganisationCommandHandlers>>().Object,
+                _organisationRegistryConfigurationStub,
+                session,
+                new SequentialOvoNumberGenerator(),
+                new UniqueOvoNumberValidatorStub(false),
+                new UniqueKboNumberValidatorStub(false),
+                _dateTimeProviderStub,
+                new KboOrganisationRetrieverStub(
                     new MockMagdaOrganisationResponse
                     {
                         FormalName = new NameStub("NAME FROM KBO", new DateTime(2009, 1, 1)),
@@ -212,13 +215,20 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     _anotherOrganisationClassificationId),
                 locationRetriever: new KboLocationRetrieverStub(_ => null));
 
-        protected override int ExpectedNumberOfEvents
-            => 11;
 
         [Fact]
-        public void CreatesTheMissingLocationsOnceBeforeCreatingTheOrganisation()
+        public async Task PublishesElevenEvents()
         {
-            var organisationCreated = PublishedEvents[0].UnwrapBody<LocationCreated>();
+            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User())
+                .ThenItPublishesTheCorrectNumberOfEvents(11);
+        }
+
+        [Fact]
+        public async Task CreatesTheMissingLocationsOnceBeforeCreatingTheOrganisation()
+        {
+            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
+            var organisationCreated = PublishedEvents[0]
+                    .UnwrapBody<LocationCreated>();
             organisationCreated.Should().NotBeNull();
 
             organisationCreated.LocationId.Should().NotBeEmpty();
@@ -231,8 +241,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         }
 
         [Fact]
-        public void UpdatesTheOrganisationInfoFromKbo()
+        public async Task UpdatesTheOrganisationInfoFromKbo()
         {
+            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
+
             var organisationCoupledWithKbo = PublishedEvents[1].UnwrapBody<OrganisationInfoUpdatedFromKbo>();
             organisationCoupledWithKbo.Should().NotBeNull();
 
@@ -242,9 +254,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         }
 
         [Fact]
-        public void UpdatesTheLocations()
+        public async Task UpdatesTheLocations()
         {
-            var organisationLocationRemoved = PublishedEvents[2].UnwrapBody<KboRegisteredOfficeOrganisationLocationRemoved>();
+            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
+
+            var organisationLocationRemoved =
+                PublishedEvents[2].UnwrapBody<KboRegisteredOfficeOrganisationLocationRemoved>();
             organisationLocationRemoved.Should().NotBeNull();
 
             organisationLocationRemoved.OrganisationId.Should().Be(_organisationId);
@@ -252,34 +267,41 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             organisationLocationRemoved.LocationId.Should().Be(_registeredOfficeLocationToRemoveId);
             organisationLocationRemoved.IsMainLocation.Should().BeFalse();
             organisationLocationRemoved.LocationFormattedAddress.Should().Be("Derbylaan, 8881 Adinkerke, Belgie");
-            organisationLocationRemoved.LocationTypeId.Should().Be(_organisationRegistryConfigurationStub.Kbo.KboV2RegisteredOfficeLocationTypeId);
+            organisationLocationRemoved.LocationTypeId.Should().Be(
+                _organisationRegistryConfigurationStub.Kbo.KboV2RegisteredOfficeLocationTypeId);
             organisationLocationRemoved.LocationTypeName.Should().Be("Registered KBO Office");
             organisationLocationRemoved.ValidFrom.Should().Be(new ValidFrom(1999, 12, 31));
             organisationLocationRemoved.ValidTo.Should().Be(new ValidTo(null));
 
-            var organisationLocationAdded = PublishedEvents[3].UnwrapBody<KboRegisteredOfficeOrganisationLocationAdded>();
+            var organisationLocationAdded =
+                PublishedEvents[3].UnwrapBody<KboRegisteredOfficeOrganisationLocationAdded>();
             organisationLocationAdded.Should().NotBeNull();
 
             organisationLocationAdded.OrganisationId.Should().Be(_organisationId);
             organisationLocationAdded.OrganisationLocationId.Should().NotBeEmpty();
-            organisationLocationAdded.LocationId.Should().Be(PublishedEvents[0].UnwrapBody<LocationCreated>().LocationId);
+            organisationLocationAdded.LocationId.Should()
+                .Be(PublishedEvents[0].UnwrapBody<LocationCreated>().LocationId);
             organisationLocationAdded.IsMainLocation.Should().BeFalse();
             organisationLocationAdded.LocationFormattedAddress.Should().Be("AndereStraat, 8999 Evergem, Belgie");
-            organisationLocationAdded.LocationTypeId.Should().Be(_organisationRegistryConfigurationStub.Kbo.KboV2RegisteredOfficeLocationTypeId);
+            organisationLocationAdded.LocationTypeId.Should().Be(
+                _organisationRegistryConfigurationStub.Kbo.KboV2RegisteredOfficeLocationTypeId);
             organisationLocationAdded.LocationTypeName.Should().Be("Registered KBO Office");
             organisationLocationAdded.ValidFrom.Should().Be(null);
             organisationLocationAdded.ValidTo.Should().Be(null);
         }
 
         [Fact]
-        public void UpdatesTheFormalNameLabel()
+        public async Task UpdatesTheFormalNameLabel()
         {
+            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
+
             var kboFormalNameLabelRemoved = PublishedEvents[4].UnwrapBody<KboFormalNameLabelRemoved>();
             kboFormalNameLabelRemoved.Should().NotBeNull();
 
             kboFormalNameLabelRemoved.OrganisationId.Should().Be(_organisationId);
             kboFormalNameLabelRemoved.OrganisationLabelId.Should().NotBeEmpty();
-            kboFormalNameLabelRemoved.LabelTypeId.Should().Be(_organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId);
+            kboFormalNameLabelRemoved.LabelTypeId.Should()
+                .Be(_organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId);
             kboFormalNameLabelRemoved.LabelTypeName.Should().Be("KBO formele naam");
             kboFormalNameLabelRemoved.Value.Should().Be("Formele naam organisatie");
             kboFormalNameLabelRemoved.ValidFrom.Should().Be(new ValidFrom(new DateTime(2008, 12, 22)));
@@ -289,8 +311,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
             kboFormalNameLabelAdded.Should().NotBeNull();
 
             kboFormalNameLabelAdded.OrganisationId.Should().Be(_organisationId);
-            kboFormalNameLabelAdded.OrganisationLabelId.Should().NotBeEmpty().And.NotBe(kboFormalNameLabelRemoved.OrganisationLabelId);
-            kboFormalNameLabelAdded.LabelTypeId.Should().Be(_organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId);
+            kboFormalNameLabelAdded.OrganisationLabelId.Should().NotBeEmpty().And
+                .NotBe(kboFormalNameLabelRemoved.OrganisationLabelId);
+            kboFormalNameLabelAdded.LabelTypeId.Should()
+                .Be(_organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId);
             kboFormalNameLabelAdded.LabelTypeName.Should().Be("KBO formele naam");
             kboFormalNameLabelAdded.Value.Should().Be("NAME FROM KBO");
             kboFormalNameLabelAdded.ValidFrom.Should().Be(new ValidFrom(new DateTime(2009, 1, 1)));
@@ -298,36 +322,51 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         }
 
         [Fact]
-        public void UpdatesLegalForms()
+        public async Task UpdatesLegalForms()
         {
-            var legalFormOrganisationOrganisationClassificationEnded = PublishedEvents[6].UnwrapBody<KboLegalFormOrganisationOrganisationClassificationRemoved>();
+            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
+
+            var legalFormOrganisationOrganisationClassificationEnded = PublishedEvents[6]
+                .UnwrapBody<KboLegalFormOrganisationOrganisationClassificationRemoved>();
             legalFormOrganisationOrganisationClassificationEnded.Should().NotBeNull();
 
             legalFormOrganisationOrganisationClassificationEnded.OrganisationId.Should().Be(_organisationId);
-            legalFormOrganisationOrganisationClassificationEnded.OrganisationOrganisationClassificationId.Should().NotBeEmpty();
-            legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationTypeId.Should().Be(_legalFormOrganisationClassificationTypeId);
-            legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationTypeName.Should().Be("ClassificatieType");
-            legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationId.Should().Be(_organisationClassificationId);
-            legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationName.Should().Be("Classificatie");
+            legalFormOrganisationOrganisationClassificationEnded.OrganisationOrganisationClassificationId.Should()
+                .NotBeEmpty();
+            legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationTypeId.Should()
+                .Be(_legalFormOrganisationClassificationTypeId);
+            legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationTypeName.Should()
+                .Be("ClassificatieType");
+            legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationId.Should()
+                .Be(_organisationClassificationId);
+            legalFormOrganisationOrganisationClassificationEnded.OrganisationClassificationName.Should()
+                .Be("Classificatie");
             legalFormOrganisationOrganisationClassificationEnded.ValidFrom.Should().Be(new ValidFrom(2020, 12, 11));
             legalFormOrganisationOrganisationClassificationEnded.ValidTo.Should().Be(new ValidTo(2020, 12, 12));
 
-            var legalFormOrganisationOrganisationClassificationAdded = PublishedEvents[7].UnwrapBody<KboLegalFormOrganisationOrganisationClassificationAdded>();
+            var legalFormOrganisationOrganisationClassificationAdded = PublishedEvents[7]
+                .UnwrapBody<KboLegalFormOrganisationOrganisationClassificationAdded>();
             legalFormOrganisationOrganisationClassificationAdded.Should().NotBeNull();
 
             legalFormOrganisationOrganisationClassificationAdded.OrganisationId.Should().Be(_organisationId);
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationOrganisationClassificationId.Should().NotBeEmpty();
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationTypeId.Should().Be(_legalFormOrganisationClassificationTypeId);
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationTypeName.Should().Be("ClassificatieType");
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationId.Should().Be(_anotherOrganisationClassificationId);
-            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationName.Should().Be("Classificatie");
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationOrganisationClassificationId.Should()
+                .NotBeEmpty();
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationTypeId.Should()
+                .Be(_legalFormOrganisationClassificationTypeId);
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationTypeName.Should()
+                .Be("ClassificatieType");
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationId.Should()
+                .Be(_anotherOrganisationClassificationId);
+            legalFormOrganisationOrganisationClassificationAdded.OrganisationClassificationName.Should()
+                .Be("Classificatie");
             legalFormOrganisationOrganisationClassificationAdded.ValidFrom.Should().Be(new ValidFrom(2020, 12, 11));
             legalFormOrganisationOrganisationClassificationAdded.ValidTo.Should().Be(null);
         }
 
         [Fact]
-        public void AddsBankAccounts()
+        public async Task AddsBankAccounts()
         {
+            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
             var organisationBankAccountRemoved = PublishedEvents[8].UnwrapBody<KboOrganisationBankAccountRemoved>();
             organisationBankAccountRemoved.Should().NotBeNull();
 
@@ -354,8 +393,10 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         }
 
         [Fact]
-        public void MarksAsSynced()
+        public async Task MarksAsSynced()
         {
+            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
+
             var organisationSyncedFromKbo = PublishedEvents[10].UnwrapBody<OrganisationSyncedFromKbo>();
             organisationSyncedFromKbo.Should().NotBeNull();
 

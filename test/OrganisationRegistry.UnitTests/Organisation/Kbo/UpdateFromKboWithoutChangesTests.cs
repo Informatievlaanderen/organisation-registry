@@ -2,20 +2,18 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using Infrastructure.Tests.Extensions.TestHelpers;
     using OrganisationRegistry.KeyTypes.Events;
     using LabelType.Events;
-    using Location;
     using Location.Events;
     using LocationType.Events;
     using Microsoft.Extensions.Logging;
     using Moq;
-    using OrganisationClassification;
     using OrganisationClassification.Events;
-    using OrganisationClassificationType;
     using OrganisationClassificationType.Events;
-    using OrganisationRegistry.Infrastructure.Authorization;
+    using OrganisationRegistry.Infrastructure.Domain;
     using OrganisationRegistry.Infrastructure.Events;
     using OrganisationRegistry.Organisation;
     using OrganisationRegistry.Organisation.Commands;
@@ -25,36 +23,20 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
     using Xunit;
     using Xunit.Abstractions;
 
-    public class UpdateFromKboWithoutChangesTests : OldSpecification2<KboOrganisationCommandHandlers, SyncOrganisationWithKbo>
+    public class
+        UpdateFromKboWithoutChangesTests : Specification<KboOrganisationCommandHandlers, SyncOrganisationWithKbo>
     {
-        private OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub = new()
-        {
-            KboKeyTypeId = Guid.NewGuid(),
-            Kbo = new KboConfigurationStub
-            {
-                KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
-                KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
-                KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-            }
-        };
+        private readonly OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
 
-        private Guid _organisationId;
-        private Guid _kboSyncItemId;
-        private Guid _legalFormOrganisationClassificationTypeId;
-        private Guid _organisationClassificationId;
-        private Guid _registeredOfficeLocationId;
-        private readonly KboNumber _kboNumber = new("BE0123456789");
+        private readonly Guid _organisationId;
+        private readonly Guid _kboSyncItemId;
+        private readonly Guid _legalFormOrganisationClassificationTypeId;
+        private readonly Guid _organisationClassificationId;
+        private readonly Guid _registeredOfficeLocationId;
+        private readonly string _kboNumber;
         private readonly DateTimeProviderStub _dateTimeProviderStub;
 
         public UpdateFromKboWithoutChangesTests(ITestOutputHelper helper) : base(helper)
-        {
-            _dateTimeProviderStub = new DateTimeProviderStub(new DateTime(2019, 9, 20));
-        }
-
-        protected override IUser User
-            => new UserBuilder().Build();
-
-        protected override IEnumerable<IEvent> Given()
         {
             _organisationRegistryConfigurationStub = new OrganisationRegistryConfigurationStub
             {
@@ -66,18 +48,35 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     KboV2FormalNameLabelTypeId = Guid.NewGuid(),
                 }
             };
-            _organisationId = new OrganisationId(Guid.NewGuid());
-            _registeredOfficeLocationId = new LocationId(Guid.NewGuid());
-            _legalFormOrganisationClassificationTypeId = new OrganisationClassificationTypeId(_organisationRegistryConfigurationStub.Kbo.KboV2LegalFormOrganisationClassificationTypeId);
-            _organisationClassificationId = new OrganisationClassificationId(Guid.NewGuid());
-            _kboSyncItemId = Guid.NewGuid();
+            _dateTimeProviderStub = new DateTimeProviderStub(new DateTime(2019, 9, 20));
 
-            return new List<IEvent>
+            _organisationId = Guid.NewGuid();
+            _registeredOfficeLocationId = Guid.NewGuid();
+            _legalFormOrganisationClassificationTypeId = _organisationRegistryConfigurationStub.Kbo
+                .KboV2LegalFormOrganisationClassificationTypeId;
+            _organisationClassificationId = Guid.NewGuid();
+            _kboSyncItemId = Guid.NewGuid();
+            _kboNumber = "BE0123456789";
+        }
+
+        private IEvent[] Events
+            => new IEvent[]
             {
                 new KeyTypeCreated(_organisationRegistryConfigurationStub.KboKeyTypeId, "KBO sleutel"),
-                new OrganisationClassificationTypeCreated(_legalFormOrganisationClassificationTypeId, "ClassificatieType"),
-                new OrganisationClassificationCreated(_organisationClassificationId, "Classificatie", 1, "Some Legal Code", true, _legalFormOrganisationClassificationTypeId, "ClassificatieType"),
-                new LocationTypeCreated(_organisationRegistryConfigurationStub.Kbo.KboV2RegisteredOfficeLocationTypeId, "Registered KBO Office"),
+                new OrganisationClassificationTypeCreated(
+                    _legalFormOrganisationClassificationTypeId,
+                    "ClassificatieType"),
+                new OrganisationClassificationCreated(
+                    _organisationClassificationId,
+                    "Classificatie",
+                    1,
+                    "Some Legal Code",
+                    true,
+                    _legalFormOrganisationClassificationTypeId,
+                    "ClassificatieType"),
+                new LocationTypeCreated(
+                    _organisationRegistryConfigurationStub.Kbo.KboV2RegisteredOfficeLocationTypeId,
+                    "Registered KBO Office"),
                 new LocationCreated(
                     _registeredOfficeLocationId,
                     null,
@@ -86,10 +85,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     "8881",
                     "Adinkerke",
                     "Belgie"),
-                new LabelTypeCreated(_organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId, "KBO formele naam"),
+                new LabelTypeCreated(
+                    _organisationRegistryConfigurationStub.Kbo.KboV2FormalNameLabelTypeId,
+                    "KBO formele naam"),
                 new OrganisationCreatedFromKbo(
                     _organisationId,
-                    _kboNumber.ToDigitsOnly(),
+                    new KboNumber(_kboNumber).ToDigitsOnly(),
                     "NAME FROM KBO",
                     "OVO001234",
                     "SHORT NAME FROM KBO",
@@ -147,27 +148,23 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     new DateTime(2000, 1, 1),
                     new DateTime(2001, 1, 1))
             };
-        }
 
-        protected override SyncOrganisationWithKbo When()
-        {
-            return new SyncOrganisationWithKbo(
+        private SyncOrganisationWithKbo SyncOrganisationWithKboCommand
+            => new(
                 new OrganisationId(_organisationId),
                 new DateTimeOffset(new DateTime(2019, 9, 9)),
                 _kboSyncItemId);
-        }
 
-        protected override KboOrganisationCommandHandlers BuildHandler()
-        {
-            return new KboOrganisationCommandHandlers(
-                logger: new Mock<ILogger<KboOrganisationCommandHandlers>>().Object,
-                organisationRegistryConfiguration: _organisationRegistryConfigurationStub,
-                session: Session,
-                ovoNumberGenerator: new SequentialOvoNumberGenerator(),
-                uniqueOvoNumberValidator: new UniqueOvoNumberValidatorStub(false),
-                uniqueKboValidator: new UniqueKboNumberValidatorStub(false),
-                dateTimeProvider: _dateTimeProviderStub,
-                kboOrganisationRetriever: new KboOrganisationRetrieverStub(
+        protected override KboOrganisationCommandHandlers BuildHandler(ISession session)
+            => new(
+                new Mock<ILogger<KboOrganisationCommandHandlers>>().Object,
+                _organisationRegistryConfigurationStub,
+                session,
+                new SequentialOvoNumberGenerator(),
+                new UniqueOvoNumberValidatorStub(false),
+                new UniqueKboNumberValidatorStub(false),
+                _dateTimeProviderStub,
+                new KboOrganisationRetrieverStub(
                     new MockMagdaOrganisationResponse
                     {
                         FormalName = new NameStub("NAME FROM KBO", new DateTime(2009, 1, 1)),
@@ -212,14 +209,19 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
                     "Some Legal Code",
                     _organisationClassificationId),
                 locationRetriever: new KboLocationRetrieverStub(address => _registeredOfficeLocationId));
-        }
-
-        protected override int ExpectedNumberOfEvents
-            => 1;
 
         [Fact]
-        public void MarksAsSynced()
+        public async Task PublishesOneEvent()
         {
+            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User())
+                .ThenItPublishesTheCorrectNumberOfEvents(1);
+        }
+
+        [Fact]
+        public async Task MarksAsSynced()
+        {
+            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
+
             var organisationSyncedFromKbo = PublishedEvents[0].UnwrapBody<OrganisationSyncedFromKbo>();
             organisationSyncedFromKbo.Should().NotBeNull();
 
