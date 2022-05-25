@@ -1,3 +1,10 @@
+# [1.194.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.193.1...v1.194.0) (2022-05-25)
+
+
+### Features
+
+* or-1025 improve import csv header validation ([ed02e33](https://github.com/informatievlaanderen/organisation-registry/commit/ed02e3369cff13a7bc8c65f9213cc71db49cace3))
+
 ## [1.193.1](https://github.com/informatievlaanderen/organisation-registry/compare/v1.193.0...v1.193.1) (2022-05-25)
 
 # [1.193.0](https://github.com/informatievlaanderen/organisation-registry/compare/v1.192.1...v1.193.0) (2022-05-24)
