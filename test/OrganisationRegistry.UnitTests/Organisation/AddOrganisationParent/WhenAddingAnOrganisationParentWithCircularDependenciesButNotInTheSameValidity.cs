@@ -1,7 +1,6 @@
 namespace OrganisationRegistry.UnitTests.Organisation.AddOrganisationParent;
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;

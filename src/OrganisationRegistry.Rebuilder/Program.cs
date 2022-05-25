@@ -37,8 +37,6 @@ namespace OrganisationRegistry.Rebuilder
     using SqlServer.Infrastructure;
     using SqlServer.ProjectionState;
     using IClock = NodaTime.IClock;
-    using OrganisationRegistry.Security;
-    using OrganisationRegistry.Configuration;
 
     public class Program
     {

@@ -26,11 +26,6 @@
 */
 
 using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
-using OpenSearch.Net;
 
 namespace Osc
 {

@@ -40,7 +40,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections
     using Organisations;
     using People;
     using People.Cache;
-    using People.Handlers;
     using Serilog.Events;
     using SqlServer;
     using SqlServer.Configuration;

@@ -48,9 +48,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 document.ChangeId = message.Number;
                 document.ChangeTime = message.Timestamp;
 
-                if (document.Relations == null)
-                    document.Relations = new List<OrganisationDocument.OrganisationRelation>();
-
                 document.Relations.RemoveExistingListItems(x => x.OrganisationRelationId == message.Body.OrganisationRelationId);
                 document.Relations.Add(
                     new OrganisationDocument.OrganisationRelation(
@@ -71,9 +68,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 document.ChangeId = message.Number;
                 document.ChangeTime = message.Timestamp;
 
-                if (document.Relations == null)
-                    document.Relations = new List<OrganisationDocument.OrganisationRelation>();
-
                 document.Relations.RemoveExistingListItems(x => x.OrganisationRelationId == message.Body.OrganisationRelationId);
                 document.Relations.Add(
                     new OrganisationDocument.OrganisationRelation(
@@ -86,7 +80,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
 
             });
-            return new ElasticPerDocumentChange<OrganisationDocument>(changes);
+            return await new ElasticPerDocumentChange<OrganisationDocument>(changes).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationUpdated> message)
@@ -102,8 +96,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 document.ChangeId = message.Number;
                 document.ChangeTime = message.Timestamp;
 
-                if (document.Relations == null)
-                    document.Relations = new List<OrganisationDocument.OrganisationRelation>();
                 document.Relations.RemoveExistingListItems(x =>
                     x.OrganisationRelationId == message.Body.OrganisationRelationId);
                 document.Relations.Add(
@@ -127,8 +119,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                 document.ChangeId = message.Number;
                 document.ChangeTime = message.Timestamp;
 
-                if (document.Relations == null)
-                    document.Relations = new List<OrganisationDocument.OrganisationRelation>();
                 document.Relations.RemoveExistingListItems(x =>
                     x.OrganisationRelationId == message.Body.OrganisationRelationId);
                 document.Relations.Add(
@@ -142,32 +132,23 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
             });
 
-            return new ElasticPerDocumentChange<OrganisationDocument>(changes);
+            return await new ElasticPerDocumentChange<OrganisationDocument>(changes).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
-        {
-            return await MassUpdateOrganisationRelationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
-        }
+            => await MassUpdateOrganisationRelationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
-        {
-            return await MassUpdateOrganisationRelationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
-        }
+            => await MassUpdateOrganisationRelationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
-        {
-            return await MassUpdateOrganisationRelationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
-        }
+            => await MassUpdateOrganisationRelationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
-        {
-            return await MassUpdateOrganisationRelationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling, message.Number, message.Timestamp);
-        }
+            => await MassUpdateOrganisationRelationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling, message.Number, message.Timestamp);
 
         private static async Task<IElasticChange> MassUpdateOrganisationRelationName(Guid organisationId, string name, int messageNumber, DateTimeOffset timestamp)
-        {
-            return new ElasticMassChange
+            => await new ElasticMassChange
             (
                 elastic => elastic.TryAsync(() => elastic
                     .MassUpdateOrganisationAsync(
@@ -176,12 +157,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         "relationName", name,
                         messageNumber,
                         timestamp))
-            );
-        }
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationTypeUpdated> message)
-        {
-            return new ElasticMassChange
+            => await new ElasticMassChange
             (
                 elastic => elastic.TryAsync(() => elastic
                     .MassUpdateOrganisationAsync(
@@ -190,14 +169,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         "relationName", message.Body.Name,
                         message.Number,
                         message.Timestamp))
-            );
-        }
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            => await new ElasticPerDocumentChange<OrganisationDocument>
             (
-                message.Body.OrganisationId, async document =>
+                message.Body.OrganisationId,
+                document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -212,14 +190,13 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         organisationRelation.Validity.End = value;
                     }
                 }
-            );
-        }
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
-        {
-            return new ElasticPerDocumentChange<OrganisationDocument>
+            => await new ElasticPerDocumentChange<OrganisationDocument>
             (
-                message.Body.OrganisationId, async document =>
+                message.Body.OrganisationId,
+                document =>
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
@@ -234,7 +211,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                         organisationRelation.Validity.End = value;
                     }
                 }
-            );
-        }
+            ).ToAsyncResult();
     }
 }

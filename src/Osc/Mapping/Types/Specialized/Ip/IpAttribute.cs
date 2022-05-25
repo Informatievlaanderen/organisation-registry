@@ -25,8 +25,6 @@
 *  under the License.
 */
 
-using System;
-
 namespace Osc
 {
 	public class IpAttribute : OpenSearchDocValuesPropertyAttributeBase, IIpProperty

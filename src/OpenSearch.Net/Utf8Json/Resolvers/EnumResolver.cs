@@ -50,7 +50,6 @@
 #endregion
 
 using System;
-using System.Reflection;
 using OpenSearch.Net.Utf8Json.Formatters;
 using OpenSearch.Net.Utf8Json.Internal;
 

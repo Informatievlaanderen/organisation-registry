@@ -25,8 +25,6 @@
 *  under the License.
 */
 
-using System;
-using System.Linq;
 #if NET461
 using System.Reflection;
 

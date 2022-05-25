@@ -48,10 +48,7 @@
 // ---------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics.Tracing;
-using System.Threading;
 
 namespace OpenSearch.Net
 {

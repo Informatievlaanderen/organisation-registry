@@ -33,7 +33,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 #if DOTNETCORE
-using System.Net.Http;
 using System.Runtime.InteropServices;
 #endif
 using System.Net.Security;

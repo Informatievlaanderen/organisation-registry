@@ -16,7 +16,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using OrganisationRegistry.Person.Events;
     using Osc;
     using SqlServer;
-    using SqlServer.ElasticSearchProjections;
 
     public class Person : BaseProjection<Person>,
         IElasticEventHandler<InitialiseProjection>,
@@ -62,7 +61,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<PersonCreated> message)
-            => new ElasticDocumentCreation<PersonDocument>(
+            => await new ElasticDocumentCreation<PersonDocument>(
                 message.Body.PersonId,
                 () => new PersonDocument
                 {
@@ -71,14 +70,14 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     Id = message.Body.PersonId,
                     FirstName = message.Body.FirstName,
                     Name = message.Body.Name
-                });
+                }).ToAsyncResult();
 
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<PersonUpdated> message)
-            => new ElasticPerDocumentChange<PersonDocument>(
+            => await new ElasticPerDocumentChange<PersonDocument>(
                 message.Body.PersonId,
                 document =>
                 {
@@ -88,7 +87,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     document.FirstName = message.Body.FirstName;
                     document.Name = message.Body.Name;
                 }
-            );
+            ).ToAsyncResult();
 
         private async Task PrepareIndex(IOpenSearchClient client, bool deleteIndex)
         {

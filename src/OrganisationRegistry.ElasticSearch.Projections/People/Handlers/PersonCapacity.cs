@@ -55,7 +55,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             DbTransaction dbTransaction,
             IEnvelope<CapacityUpdated> message)
         {
-            return new ElasticMassChange
+            return await new ElasticMassChange
             (
                 elastic => elastic.TryAsync(
                     async () => await elastic
@@ -68,7 +68,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             message.Body.Name,
                             message.Number,
                             message.Timestamp))
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(
@@ -76,7 +76,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             DbTransaction dbTransaction,
             IEnvelope<FunctionUpdated> message)
         {
-            return new ElasticMassChange
+            return await new ElasticMassChange
             (
                 elastic => elastic.TryAsync(
                     async () => await elastic
@@ -89,7 +89,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             message.Body.Name,
                             message.Number,
                             message.Timestamp))
-            );
+            ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(
@@ -101,7 +101,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             if (!message.Body.PersonId.HasValue)
                 return new ElasticNoChange();
 
-            return new ElasticPerDocumentChange<PersonDocument>(
+            return await new ElasticPerDocumentChange<PersonDocument>(
                 message.Body.PersonId.Value,
                 async document =>
                 {
@@ -114,9 +114,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
-
-                    if (document.Capacities == null)
-                        document.Capacities = new List<PersonDocument.PersonCapacity>();
 
                     document.Capacities.RemoveExistingListItems(
                         x =>
@@ -137,7 +134,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
                     document.ShowOnVlaamseOverheidSites =
                         await ShouldPersonBeShownOnVlaamseOverheidSites(document);
-                });
+                }).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(
@@ -184,9 +181,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         document.ChangeId = message.Number;
                         document.ChangeTime = message.Timestamp;
 
-                        if (document.Capacities == null)
-                            document.Capacities = new List<PersonDocument.PersonCapacity>();
-
                         document.Capacities.RemoveExistingListItems(
                             x =>
                                 x.PersonCapacityId == message.Body.OrganisationCapacityId);
@@ -207,9 +201,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
                         document.ChangeId = message.Number;
                         document.ChangeTime = message.Timestamp;
-
-                        if (document.Capacities == null)
-                            document.Capacities = new List<PersonDocument.PersonCapacity>();
 
                         document.Capacities.RemoveExistingListItems(
                             x =>
@@ -232,7 +223,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     }
                 );
 
-            return new ElasticPerDocumentChange<PersonDocument>(changes);
+            return await new ElasticPerDocumentChange<PersonDocument>(changes).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(
@@ -240,14 +231,14 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             DbTransaction dbTransaction,
             IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
-            return new ElasticMassChange(
+            return await new ElasticMassChange(
                 elastic =>
                     MassUpdateOrganisationName(
                         elastic,
                         message.Body.OrganisationId,
                         message.Body.NameBeforeKboCoupling,
                         message.Number,
-                        message.Timestamp));
+                        message.Timestamp)).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(
@@ -276,7 +267,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             DbTransaction dbTransaction,
             IEnvelope<OrganisationInfoUpdated> message)
         {
-            return new ElasticMassChange
+            return await new ElasticMassChange
             (
                 async elastic =>
                 {
@@ -310,7 +301,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                                                 .Query(message.Body.OrganisationId.ToString())))))),
                         async document => document.ShowOnVlaamseOverheidSites =
                             await ShouldPersonBeShownOnVlaamseOverheidSites(document));
-                });
+                }).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(
@@ -318,14 +309,14 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             DbTransaction dbTransaction,
             IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
-            return new ElasticMassChange(
+            return await new ElasticMassChange(
                 elastic =>
                     MassUpdateOrganisationName(
                         elastic,
                         message.Body.OrganisationId,
                         message.Body.Name,
                         message.Number,
-                        message.Timestamp));
+                        message.Timestamp)).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(
@@ -333,7 +324,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             DbTransaction dbTransaction,
             IEnvelope<OrganisationNameUpdated> message)
         {
-            return new ElasticMassChange
+            return await new ElasticMassChange
             (
                 async elastic =>
                 {
@@ -343,7 +334,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         message.Body.Name,
                         message.Number,
                         message.Timestamp);
-                });
+                }).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(
@@ -351,7 +342,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             DbTransaction dbTransaction,
             IEnvelope<OrganisationShowOnVlaamseOverheidSitesUpdated> message)
         {
-            return new ElasticMassChange
+            return await new ElasticMassChange
             (
                 async elastic =>
                 {
@@ -374,7 +365,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                                                 .Query(message.Body.OrganisationId.ToString())))))),
                         async document => document.ShowOnVlaamseOverheidSites =
                             await ShouldPersonBeShownOnVlaamseOverheidSites(document));
-                });
+                }).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(
@@ -382,7 +373,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             DbTransaction dbTransaction,
             IEnvelope<OrganisationTerminated> message)
         {
-            return new ElasticMassChange
+            return await new ElasticMassChange
             (
                 async elastic =>
                 {
@@ -398,7 +389,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                                     value,
                                     message.Number,
                                     message.Timestamp));
-                });
+                }).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(
@@ -406,7 +397,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             DbTransaction dbTransaction,
             IEnvelope<OrganisationTerminatedV2> message)
         {
-            return new ElasticMassChange
+            return await new ElasticMassChange
             (
                 async elastic =>
                 {
@@ -422,7 +413,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                                     value,
                                     message.Number,
                                     message.Timestamp));
-                });
+                }).ToAsyncResult();
         }
 
         private async Task MassUpdateOrganisationName(
@@ -450,11 +441,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             if (!personId.HasValue)
                 return new ElasticNoChange();
 
-            return new ElasticPerDocumentChange<PersonDocument>(
+            return await new ElasticPerDocumentChange<PersonDocument>(
                 personId.Value,
                 async document => document.ShowOnVlaamseOverheidSites =
                     await ShouldPersonBeShownOnVlaamseOverheidSites(document)
-            );
+            ).ToAsyncResult();
         }
 
         private async Task<bool> ShouldPersonBeShownOnVlaamseOverheidSites(PersonDocument personDocument)

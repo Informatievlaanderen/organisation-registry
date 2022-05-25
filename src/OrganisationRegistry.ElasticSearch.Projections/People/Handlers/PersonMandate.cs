@@ -18,7 +18,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
     using SqlServer;
 
     public class PersonMandate :
-        Infrastructure.BaseProjection<PersonMandate>,
+        BaseProjection<PersonMandate>,
         IElasticEventHandler<AssignedPersonToBodySeat>,
         IElasticEventHandler<ReassignedPersonToBodySeat>,
         IElasticEventHandler<BodyInfoChanged>,
@@ -48,8 +48,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<AssignedPersonToBodySeat> message)
-        {
-            return new ElasticPerDocumentChange<PersonDocument>
+            => await new ElasticPerDocumentChange<PersonDocument>
             (
                 message.Body.PersonId, async document =>
                 {
@@ -58,9 +57,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
-
-                    if (document.Mandates == null)
-                        document.Mandates = new List<PersonDocument.PersonMandate>();
 
                     document.Mandates.RemoveExistingListItems(x =>
                         x.BodyMandateId == message.Body.BodyMandateId &&
@@ -83,8 +79,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             Period.FromDates(message.Body.ValidFrom,
                                 message.Body.ValidTo)));
                 }
-            );
-        }
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<ReassignedPersonToBodySeat> message)
         {
@@ -97,9 +92,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
-
-                    if (document.Mandates == null)
-                        document.Mandates = new List<PersonDocument.PersonMandate>();
 
                     document.Mandates.RemoveExistingListItems(x =>
                         x.BodyMandateId == message.Body.BodyMandateId &&
@@ -114,9 +106,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
                 document.ChangeId = message.Number;
                 document.ChangeTime = message.Timestamp;
-
-                if (document.Mandates == null)
-                    document.Mandates = new List<PersonDocument.PersonMandate>();
 
                 document.Mandates.RemoveExistingListItems(x =>
                     x.BodyMandateId == message.Body.BodyMandateId &&
@@ -139,12 +128,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         Period.FromDates(message.Body.ValidFrom,
                             message.Body.ValidTo)));
             });
-            return new ElasticPerDocumentChange<PersonDocument>(changes);
+            return await new ElasticPerDocumentChange<PersonDocument>(changes).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyInfoChanged> message)
-        {
-            return new ElasticMassChange
+            => await new ElasticMassChange
             (
                 async elastic => await elastic
                     .MassUpdatePersonAsync(
@@ -153,12 +141,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         "bodyName", message.Body.Name,
                         message.Number,
                         message.Timestamp)
-            );
-        }
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
-        {
-            return new ElasticMassChange
+            => await new ElasticMassChange
             (
                 async elastic =>
                 {
@@ -181,13 +167,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             message.Number,
                             message.Timestamp));
                 }
-            );
-
-        }
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodySeatUpdated> message)
-        {
-            return new ElasticMassChange
+            => await new ElasticMassChange
             (
                 async elastic =>
                 {
@@ -207,33 +190,22 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             message.Number,
                             message.Timestamp));
                 }
-            );
-
-        }
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
-        {
-            return await MassUpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
-        }
+            => await MassUpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
-        {
-            return await MassUpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
-        }
+            => await MassUpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
-        {
-            return await MassUpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
-        }
+            => await MassUpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.Name, message.Number, message.Timestamp);
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
-        {
-            return await MassUpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling, message.Number, message.Timestamp);
-        }
+            => await MassUpdateMandateOrganisationName(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling, message.Number, message.Timestamp);
 
         private async Task<IElasticChange> MassUpdateMandateOrganisationName(Guid organisationId, string name, int messageNumber, DateTimeOffset timestamp)
-        {
-            return new ElasticMassChange
+            => await new ElasticMassChange
             (
                 async elastic => await elastic
                     .MassUpdatePersonAsync(
@@ -242,12 +214,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         "bodyOrganisationName", name,
                         messageNumber,
                         timestamp)
-            );
-        }
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
-        {
-            return new ElasticPerDocumentChange<PersonDocument>
+            => await new ElasticPerDocumentChange<PersonDocument>
             (
                 message.Body.PersonId,
                 async document =>
@@ -258,9 +228,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
-
-                    if (document.Mandates == null)
-                        document.Mandates = new List<PersonDocument.PersonMandate>();
 
                     document.Mandates.RemoveExistingListItems(x =>
                         x.BodyMandateId == message.Body.BodyMandateId &&
@@ -283,8 +250,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             Period.FromDates(message.Body.ValidFrom,
                                 message.Body.ValidTo)));
                 }
-            );
-        }
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationUpdated> message)
         {
@@ -297,9 +263,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                 {
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
-
-                    if (document.Mandates == null)
-                        document.Mandates = new List<PersonDocument.PersonMandate>();
 
                     document.Mandates.RemoveExistingListItems(x =>
                         x.BodyMandateId == message.Body.BodyMandateId &&
@@ -315,9 +278,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
                 document.ChangeId = message.Number;
                 document.ChangeTime = message.Timestamp;
-
-                if (document.Mandates == null)
-                    document.Mandates = new List<PersonDocument.PersonMandate>();
 
                 document.Mandates.RemoveExistingListItems(x =>
                     x.BodyMandateId == message.Body.BodyMandateId &&
@@ -341,12 +301,11 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             message.Body.ValidTo)));
             });
 
-            return new ElasticPerDocumentChange<PersonDocument>(changes);
+            return await  new ElasticPerDocumentChange<PersonDocument>(changes).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
-        {
-            return new ElasticPerDocumentChange<PersonDocument>
+            => await new ElasticPerDocumentChange<PersonDocument>
             (
                 message.Body.PreviousPersonId,
                 document =>
@@ -354,19 +313,14 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
 
-                    if (document.Mandates == null)
-                        document.Mandates = new List<PersonDocument.PersonMandate>();
-
                     document.Mandates.RemoveExistingListItems(x =>
                         x.BodyMandateId == message.Body.BodyMandateId &&
                         x.DelegationAssignmentId == message.Body.DelegationAssignmentId);
                 }
-            );
-        }
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyAssignedToOrganisation> message)
-        {
-            return new ElasticMassChange(
+            => await new ElasticMassChange(
                 async elastic =>
                 {
                     await using var organisationRegistryContext = _contextFactory.Create();
@@ -389,12 +343,10 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             message.Timestamp));
 
                 }
-            );
-        }
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyClearedFromOrganisation> message)
-        {
-            return new ElasticMassChange(
+            => await new ElasticMassChange(
                 async elastic =>
                 {
                     await elastic.TryAsync(() => elastic
@@ -413,7 +365,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             message.Number,
                             message.Timestamp));
                 }
-            );
-        }
+            ).ToAsyncResult();
     }
 }
