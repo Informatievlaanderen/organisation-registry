@@ -3,12 +3,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.ReleaseFromVlimpersManagem
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -16,28 +17,28 @@ using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WithOrganisationUnderVlimpersManagement : OldSpecification2<ReleaseFromVlimpersManagementCommandHandler, ReleaseFromVlimpersManagement>
+public class WithOrganisationUnderVlimpersManagement : Specification<ReleaseFromVlimpersManagementCommandHandler,
+    ReleaseFromVlimpersManagement>
 {
-    private readonly OrganisationId _organisationId = new(Guid.NewGuid());
-    private readonly Fixture _fixture = new();
+    private readonly Guid _organisationId;
+    private readonly Fixture _fixture;
+    private readonly Period _validity;
+    private readonly Period _formalValidity;
 
     public WithOrganisationUnderVlimpersManagement(ITestOutputHelper helper) : base(helper)
     {
-    }
-
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
-    {
+        _organisationId = Guid.NewGuid();
+        _fixture = new Fixture();
         _fixture.CustomizeArticle();
         _fixture.CustomizePeriod();
 
-        var validity = _fixture.Create<Period>();
-        var formalValidity = _fixture.Create<Period>();
-        return new List<IEvent>
+        _validity = _fixture.Create<Period>();
+        _formalValidity = _fixture.Create<Period>();
+    }
+
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -48,28 +49,32 @@ public class WithOrganisationUnderVlimpersManagement : OldSpecification2<Release
                 _fixture.Create<string>(),
                 _fixture.Create<List<Purpose>>(),
                 _fixture.Create<bool>(),
-                formalValidity.Start,
-                formalValidity.End,
-                validity.Start,
-                validity.End),
+                _formalValidity.Start,
+                _formalValidity.End,
+                _validity.Start,
+                _validity.End),
             new OrganisationPlacedUnderVlimpersManagement(_organisationId)
         };
-    }
 
-    protected override ReleaseFromVlimpersManagement When()
-        => new(_organisationId);
+    private ReleaseFromVlimpersManagement ReleaseFromVlimpersManagementCommand
+        => new(new OrganisationId(_organisationId));
 
-    protected override ReleaseFromVlimpersManagementCommandHandler BuildHandler()
+    protected override ReleaseFromVlimpersManagementCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<ReleaseFromVlimpersManagementCommandHandler>>().Object,
-            Session);
-
-    protected override int ExpectedNumberOfEvents
-        => 1;
+            session);
 
     [Fact]
-    public void PlacesTheOrganisationUnderVlimpersManagement()
+    public async Task PublishesOneEvent()
     {
+        await Given(Events).When(ReleaseFromVlimpersManagementCommand, UserBuilder.AlgemeenBeheerder())
+            .ThenItPublishesTheCorrectNumberOfEvents(1);
+    }
+
+    [Fact]
+    public async Task PlacesTheOrganisationUnderVlimpersManagement()
+    {
+        await Given(Events).When(ReleaseFromVlimpersManagementCommand, UserBuilder.AlgemeenBeheerder()).Then();
         PublishedEvents.Single().Should().BeOfType<Envelope<OrganisationReleasedFromVlimpersManagement>>();
     }
 }
