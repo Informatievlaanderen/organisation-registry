@@ -7,7 +7,6 @@ using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Domain;
 using Purpose;
 using Tests.Shared;

@@ -1,6 +1,5 @@
 namespace OrganisationRegistry.ContactType
 {
-    using System;
     using Events;
     using Infrastructure.Domain;
 

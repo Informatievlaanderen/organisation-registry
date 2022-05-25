@@ -42,7 +42,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<FunctionUpdated> message)
-            => new ElasticMassChange
+            => await new ElasticMassChange
             (
                 async elastic => await elastic
                     .MassUpdatePersonAsync(
@@ -54,23 +54,23 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                         message.Body.Name,
                         message.Number,
                         message.Timestamp)
-            );
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationCouplingWithKboCancelled> message)
-            => MassUpdateFunctionOrganisationName(
+            => await MassUpdateFunctionOrganisationName(
                 message.Body.OrganisationId,
                 message.Body.NameBeforeKboCoupling,
                 message.Number,
-                message.Timestamp);
+                message.Timestamp).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationFunctionAdded> message)
-            => new ElasticPerDocumentChange<PersonDocument>(
+            => await new ElasticPerDocumentChange<PersonDocument>(
                 message.Body.PersonId,
                 async document =>
                 {
@@ -82,9 +82,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
-
-                    if (document.Functions == null)
-                        document.Functions = new List<PersonDocument.PersonFunction>();
 
                     document.Functions.RemoveExistingListItems(
                         x => x.PersonFunctionId == message.Body.OrganisationFunctionId);
@@ -100,7 +97,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                                 .ToList(),
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 }
-            );
+            ).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
@@ -117,9 +114,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     {
                         document.ChangeId = message.Number;
                         document.ChangeTime = message.Timestamp;
-
-                        if (document.Functions == null)
-                            document.Functions = new List<PersonDocument.PersonFunction>();
 
                         document.Functions.RemoveExistingListItems(
                             x => x.PersonFunctionId == message.Body.OrganisationFunctionId);
@@ -138,9 +132,6 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                     document.ChangeId = message.Number;
                     document.ChangeTime = message.Timestamp;
 
-                    if (document.Functions == null)
-                        document.Functions = new List<PersonDocument.PersonFunction>();
-
                     document.Functions.RemoveExistingListItems(
                         x => x.PersonFunctionId == message.Body.OrganisationFunctionId);
 
@@ -156,38 +147,38 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
                             Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
                 });
 
-            return new ElasticPerDocumentChange<PersonDocument>(changes);
+            return await new ElasticPerDocumentChange<PersonDocument>(changes).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationInfoUpdated> message)
-            => MassUpdateFunctionOrganisationName(
+            => await MassUpdateFunctionOrganisationName(
                 message.Body.OrganisationId,
                 message.Body.Name,
                 message.Number,
-                message.Timestamp);
+                message.Timestamp).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationInfoUpdatedFromKbo> message)
-            => MassUpdateFunctionOrganisationName(
+            => await MassUpdateFunctionOrganisationName(
                 message.Body.OrganisationId,
                 message.Body.Name,
                 message.Number,
-                message.Timestamp);
+                message.Timestamp).ToAsyncResult();
 
         public async Task<IElasticChange> Handle(
             DbConnection dbConnection,
             DbTransaction dbTransaction,
             IEnvelope<OrganisationNameUpdated> message)
-            => MassUpdateFunctionOrganisationName(
+            => await MassUpdateFunctionOrganisationName(
                 message.Body.OrganisationId,
                 message.Body.Name,
                 message.Number,
-                message.Timestamp);
+                message.Timestamp).ToAsyncResult();
 
         private ElasticMassChange MassUpdateFunctionOrganisationName(
             Guid organisationId,

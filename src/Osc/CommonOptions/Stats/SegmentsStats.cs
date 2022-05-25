@@ -25,7 +25,6 @@
 *  under the License.
 */
 
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace Osc

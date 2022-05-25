@@ -51,7 +51,6 @@
 
 using System;
 using System.Reflection;
-using OpenSearch.Net.Utf8Json.Internal;
 
 namespace OpenSearch.Net.Utf8Json.Resolvers
 {

@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using OpenSearch.Net;
 
 namespace Osc
 {

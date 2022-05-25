@@ -5,7 +5,6 @@ namespace OrganisationRegistry.Handling
     using Infrastructure.Authorization;
     using Infrastructure.Configuration;
     using Organisation;
-    using Organisation.Commands;
 
     public static class UpdateHandlerExtensionMethods
     {

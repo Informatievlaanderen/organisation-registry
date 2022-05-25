@@ -49,8 +49,6 @@
 // SOFTWARE.
 #endregion
 
-using System;
-
 namespace OpenSearch.Net.Utf8Json.Internal
 {
 	internal static class StringMutator

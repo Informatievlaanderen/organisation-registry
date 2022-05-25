@@ -25,7 +25,6 @@
 *  under the License.
 */
 
-using System.Reflection;
 using OpenSearch.Net;
 using OpenSearch.Net.Utf8Json;
 
