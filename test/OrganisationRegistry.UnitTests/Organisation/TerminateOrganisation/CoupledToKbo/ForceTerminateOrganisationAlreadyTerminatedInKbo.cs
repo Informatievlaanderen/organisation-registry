@@ -2,12 +2,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.Coup
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoFixture;
-using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -17,39 +17,38 @@ using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class ForceTerminateOrganisationAlreadyTerminatedInKbo : ExceptionOldSpecification2<TerminateOrganisationCommandHandler, TerminateOrganisation>
+public class
+    ForceTerminateOrganisationAlreadyTerminatedInKbo : Specification<TerminateOrganisationCommandHandler,
+        TerminateOrganisation>
 {
-    private readonly OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub = new()
-    {
-        Kbo = new KboConfigurationStub
-        {
-            KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
-            KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
-            KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-        }
-    };
+    private readonly OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
 
-    private readonly OrganisationId _organisationId = new(Guid.NewGuid());
-    private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Today);
-    private DateTime _dateOfTermination;
+    private readonly Guid _organisationId;
+    private readonly DateTimeProviderStub _dateTimeProviderStub;
+    private readonly DateTime _dateOfTermination;
+    private readonly Fixture _fixture;
 
     public ForceTerminateOrganisationAlreadyTerminatedInKbo(ITestOutputHelper helper) : base(helper)
     {
+        _organisationRegistryConfigurationStub = new OrganisationRegistryConfigurationStub
+        {
+            Kbo = new KboConfigurationStub
+            {
+                KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
+                KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
+                KboV2FormalNameLabelTypeId = Guid.NewGuid(),
+            }
+        };
+        _organisationId = Guid.NewGuid();
+        _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today);
+        _fixture = new Fixture();
+
+        _dateOfTermination = _dateTimeProviderStub.Today.AddDays(_fixture.Create<int>());
     }
 
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
 
-    protected override IEnumerable<IEvent> Given()
-    {
-        var fixture = new Fixture();
-
-        _dateOfTermination = _dateTimeProviderStub.Today.AddDays(fixture.Create<int>());
-
-        return new List<IEvent>
-        {
+    private IEvent[] Events
+        => new IEvent[] {
             new OrganisationCreated(
                 _organisationId,
                 "organisation X",
@@ -65,30 +64,34 @@ public class ForceTerminateOrganisationAlreadyTerminatedInKbo : ExceptionOldSpec
                 new ValidTo()),
             new OrganisationTerminationFoundInKbo(
                 _organisationId,
-                fixture.Create<string>(),
-                fixture.Create<DateTime>(),
-                fixture.Create<string>(),
-                fixture.Create<string>())
+                _fixture.Create<string>(),
+                _fixture.Create<DateTime>(),
+                _fixture.Create<string>(),
+                _fixture.Create<string>())
         };
-    }
 
-    protected override TerminateOrganisation When()
-        => new(_organisationId, _dateOfTermination, true);
+    private TerminateOrganisation TerminateOrganisationCommand
+        => new(new OrganisationId(_organisationId), _dateOfTermination, true);
 
-    protected override TerminateOrganisationCommandHandler BuildHandler()
+    protected override TerminateOrganisationCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<TerminateOrganisationCommandHandler>>().Object,
-            Session,
+            session,
             _dateTimeProviderStub,
             _organisationRegistryConfigurationStub);
 
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task PublishesNoEvents()
+    {
+        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder())
+            .ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
 
     [Fact]
-    public void ThrowsOrganisationAlreadyCoupledWithKbo()
+    public async Task ThrowsOrganisationAlreadyCoupledWithKbo()
     {
-        Exception.Should().BeOfType<OrganisationAlreadyTerminatedInKbo>();
+        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder())
+            .ThenThrows<OrganisationAlreadyTerminatedInKbo>();
     }
 }

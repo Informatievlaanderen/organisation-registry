@@ -2,12 +2,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.TerminateOrganisation.Coup
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -16,38 +17,36 @@ using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class TerminateOrganisationCoupledToKbo : OldSpecification2<TerminateOrganisationCommandHandler, TerminateOrganisation>
+public class
+    TerminateOrganisationCoupledToKbo : Specification<TerminateOrganisationCommandHandler, TerminateOrganisation>
 {
-    private readonly OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub = new()
-    {
-        Kbo = new KboConfigurationStub
-        {
-            KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
-            KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
-            KboV2FormalNameLabelTypeId = Guid.NewGuid(),
-        }
-    };
+    private readonly OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
 
-    private readonly OrganisationId _organisationId = new(Guid.NewGuid());
-    private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Today);
-    private DateTime _dateOfTermination;
+    private readonly Guid _organisationId;
+    private readonly DateTimeProviderStub _dateTimeProviderStub;
+    private readonly DateTime _dateOfTermination;
+    private readonly Fixture _fixture;
 
     public TerminateOrganisationCoupledToKbo(ITestOutputHelper helper) : base(helper)
     {
+        _organisationRegistryConfigurationStub = new OrganisationRegistryConfigurationStub
+        {
+            Kbo = new KboConfigurationStub
+            {
+                KboV2LegalFormOrganisationClassificationTypeId = Guid.NewGuid(),
+                KboV2RegisteredOfficeLocationTypeId = Guid.NewGuid(),
+                KboV2FormalNameLabelTypeId = Guid.NewGuid(),
+            }
+        };
+        _organisationId = Guid.NewGuid();
+        _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today);
+        _fixture = new Fixture();
+
+        _dateOfTermination = _dateTimeProviderStub.Today.AddDays(_fixture.Create<int>());
     }
 
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
-    {
-        var fixture = new Fixture();
-
-        _dateOfTermination = _dateTimeProviderStub.Today.AddDays(fixture.Create<int>());
-
-        return new List<IEvent>
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -64,50 +63,55 @@ public class TerminateOrganisationCoupledToKbo : OldSpecification2<TerminateOrga
                 new ValidTo()),
             new OrganisationCoupledWithKbo(
                 _organisationId,
-                fixture.Create<string>(),
-                fixture.Create<string>(),
-                fixture.Create<string>(),
+                _fixture.Create<string>(),
+                _fixture.Create<string>(),
+                _fixture.Create<string>(),
                 null),
             new KboOrganisationBankAccountAdded(
                 _organisationId,
-                fixture.Create<Guid>(),
-                fixture.Create<string>(),
-                fixture.Create<bool>(),
-                fixture.Create<string>(),
-                fixture.Create<bool>(),
+                _fixture.Create<Guid>(),
+                _fixture.Create<string>(),
+                _fixture.Create<bool>(),
+                _fixture.Create<string>(),
+                _fixture.Create<bool>(),
                 null,
                 null),
             new KboFormalNameLabelAdded(
                 _organisationId,
-                fixture.Create<Guid>(),
-                fixture.Create<Guid>(),
-                fixture.Create<string>(),
-                fixture.Create<string>(),
+                _fixture.Create<Guid>(),
+                _fixture.Create<Guid>(),
+                _fixture.Create<string>(),
+                _fixture.Create<string>(),
                 null,
-                null),
+                null)
         };
-    }
 
-    protected override TerminateOrganisation When()
-        => new(_organisationId, _dateOfTermination, false);
+    private TerminateOrganisation TerminateOrganisationCommand
+        => new(new OrganisationId(_organisationId), _dateOfTermination, false);
 
-    protected override TerminateOrganisationCommandHandler BuildHandler()
+    protected override TerminateOrganisationCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<TerminateOrganisationCommandHandler>>().Object,
-            Session,
+            session,
             _dateTimeProviderStub,
             _organisationRegistryConfigurationStub);
 
-    protected override int ExpectedNumberOfEvents
-        => 1;
+    [Fact]
+    public async Task PublishesOneEvent()
+    {
+        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder())
+            .ThenItPublishesTheCorrectNumberOfEvents(1);
+    }
 
     [Fact]
-    public void TerminatesTheOrganisation()
+    public async Task TerminatesTheOrganisation()
     {
+        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).Then();
+
         var organisationTerminated = PublishedEvents[0].UnwrapBody<OrganisationTerminatedV2>();
         organisationTerminated.Should().NotBeNull();
 
-        organisationTerminated.OrganisationId.Should().Be((Guid)_organisationId);
+        organisationTerminated.OrganisationId.Should().Be(_organisationId);
         organisationTerminated.FieldsToTerminate.OrganisationValidity.Should().Be(_dateOfTermination);
         organisationTerminated.OvoNumber.Should().Be("OVO001234");
         organisationTerminated.FieldsToTerminate.Buildings.Should().BeEmpty();

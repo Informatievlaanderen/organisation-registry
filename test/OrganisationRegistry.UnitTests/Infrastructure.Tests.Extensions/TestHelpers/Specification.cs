@@ -22,8 +22,12 @@ public abstract class Specification<THandler, TCommand>
     private readonly SpecEventStorage _eventstorage;
     private IUser _user = null!;
     private TCommand _command = default!;
+
     [Obsolete("Replaced by private field.")]
-    protected ISession Session { get; }
+    protected ISession Session
+        => _session;
+
+    private readonly ISession _session;
     protected IList<IEvent> EventDescriptors { get; }
     protected List<IEnvelope> PublishedEvents { get; }
 
@@ -36,7 +40,7 @@ public abstract class Specification<THandler, TCommand>
         _eventstorage = new SpecEventStorage(eventpublisher);
 
         var repository = new Repository(new Mock<ILogger<Repository>>().Object, _eventstorage);
-        Session = new Session(new Mock<ILogger<Session>>().Object, repository);
+        _session = new Session(new Mock<ILogger<Session>>().Object, repository);
 
         PublishedEvents = eventpublisher.PublishedEvents;
         EventDescriptors = _eventstorage.Events;
@@ -59,7 +63,7 @@ public abstract class Specification<THandler, TCommand>
 
     public async Task Then()
     {
-        var handler = BuildHandler(Session);
+        var handler = BuildHandler(_session);
         await handler.Handle(new CommandEnvelope<TCommand>(_command, _user));
     }
 
@@ -67,7 +71,7 @@ public abstract class Specification<THandler, TCommand>
     {
         try
         {
-            var handler = BuildHandler(Session);
+            var handler = BuildHandler(_session);
             await handler.Handle(new CommandEnvelope<TCommand>(_command, _user));
         }
         catch
@@ -84,7 +88,7 @@ public abstract class Specification<THandler, TCommand>
     {
         await ThenTry();
         PublishedEvents.ForEach(envelope => _helper.WriteLine(envelope.Name));
-        PublishedEvents.Count.Should().Be(numberOfEvents);
+        PublishedEvents.Should().HaveCount(numberOfEvents);
     }
 
     private static IEnumerable<IEvent> NumberTheEvents(IEnumerable<IEvent> toList)
