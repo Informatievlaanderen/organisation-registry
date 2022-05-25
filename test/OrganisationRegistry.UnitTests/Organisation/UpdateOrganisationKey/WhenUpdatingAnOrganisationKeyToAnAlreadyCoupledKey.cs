@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationKey;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using OrganisationRegistry.Infrastructure.Events;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Configuration;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.KeyTypes;
 using OrganisationRegistry.KeyTypes.Events;
 using OrganisationRegistry.Organisation;
@@ -18,77 +20,89 @@ using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenUpdatingAnOrganisationKeyToAnAlreadyCoupledKey : ExceptionOldSpecification2<UpdateOrganisationKeyCommandHandler, UpdateOrganisationKey>
+public class
+    WhenUpdatingAnOrganisationKeyToAnAlreadyCoupledKey : Specification<UpdateOrganisationKeyCommandHandler,
+        UpdateOrganisationKey>
 {
-    private OrganisationKeyAdded? _organisationKeyAdded;
-    private OrganisationKeyAdded? _anotherOrganisationKeyAdded;
-    private Guid _organisationId;
-    private Guid _keyAId;
-    private Guid _keyBId;
+    private readonly Guid _organisationId;
+    private readonly Guid _keyAId;
+    private readonly Guid _keyBId;
+    private readonly Mock<ISecurityService> _securityServiceMock;
+    private readonly Guid _organisationKeyBId;
 
     public WhenUpdatingAnOrganisationKeyToAnAlreadyCoupledKey(ITestOutputHelper helper) : base(helper)
     {
-    }
-
-    protected override UpdateOrganisationKeyCommandHandler BuildHandler()
-    {
-        var securityServiceMock = new Mock<ISecurityService>();
-        securityServiceMock.Setup(service =>
-                service.CanUseKeyType(
-                    It.IsAny<IUser>(),
-                    It.IsAny<Guid>()))
+        _securityServiceMock = new Mock<ISecurityService>();
+        _securityServiceMock.Setup(
+                service =>
+                    service.CanUseKeyType(
+                        It.IsAny<IUser>(),
+                        It.IsAny<Guid>()))
             .Returns(true);
 
-        return new UpdateOrganisationKeyCommandHandler(
-            new Mock<ILogger<UpdateOrganisationKeyCommandHandler>>().Object,
-            Session,
-            Mock.Of<IOrganisationRegistryConfiguration>(),
-            securityServiceMock.Object);
-    }
-
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
-    {
         _organisationId = Guid.NewGuid();
         _keyAId = Guid.NewGuid();
-        _organisationKeyAdded = new OrganisationKeyAdded(_organisationId, Guid.NewGuid(), _keyAId, "Sleutel A", "123123456", null, null) { Version = 2 };
+        _organisationKeyBId = Guid.NewGuid();
         _keyBId = Guid.NewGuid();
-        _anotherOrganisationKeyAdded = new OrganisationKeyAdded(_organisationId, Guid.NewGuid(), _keyBId, "Sleutel B", "123123456", null, null) { Version = 3 };
-
-        return new List<IEvent>
-        {
-            new OrganisationCreated(_organisationId, "Kind en Gezin", "OVO000012345", "K&G", Article.None, "Kindjes en gezinnetjes", new List<Purpose>(), false, null, null, null, null),
-            new KeyTypeCreated(_keyAId, "Sleutel A"),
-            new KeyTypeCreated(_keyBId, "Sleutel B"),
-            _organisationKeyAdded,
-            _anotherOrganisationKeyAdded
-        };
     }
 
-    protected override UpdateOrganisationKey When()
-    {
-        if (_organisationKeyAdded is not { } || _anotherOrganisationKeyAdded is not { })
-            throw new NullReferenceException("You screwed up test setup !");
+    protected override UpdateOrganisationKeyCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<UpdateOrganisationKeyCommandHandler>>().Object,
+            session,
+            Mock.Of<IOrganisationRegistryConfiguration>(),
+            _securityServiceMock.Object);
 
-        return new UpdateOrganisationKey(
-            _anotherOrganisationKeyAdded.OrganisationKeyId,
+    private IEvent[] Events
+        => new IEvent[]
+        {
+            new OrganisationCreated(
+                _organisationId,
+                "Kind en Gezin",
+                "OVO000012345",
+                "K&G",
+                Article.None,
+                "Kindjes en gezinnetjes",
+                new List<Purpose>(),
+                false,
+                null,
+                null,
+                null,
+                null),
+            new KeyTypeCreated(_keyAId, "Sleutel A"), new KeyTypeCreated(_keyBId, "Sleutel B"),
+            new OrganisationKeyAdded(_organisationId, Guid.NewGuid(), _keyAId, "Sleutel A", "123123456", null, null)
+                { Version = 2 },
+            new OrganisationKeyAdded(
+                    _organisationId,
+                    _organisationKeyBId,
+                    _keyBId,
+                    "Sleutel B",
+                    "123123456",
+                    null,
+                    null)
+                { Version = 3 }
+        };
+
+    private UpdateOrganisationKey UpdateOrganisationKeyCommand
+        => new(
+            _organisationKeyBId,
             new OrganisationId(_organisationId),
-            new KeyTypeId(_organisationKeyAdded.KeyTypeId),
+            new KeyTypeId(_keyAId),
             "987987654",
             new ValidFrom(null),
             new ValidTo(null));
-    }
-
-    protected override int ExpectedNumberOfEvents => 0;
 
     [Fact]
-    public void ThrowsAnException()
+    public async Task PublishesNoEvents()
     {
-        Exception.Should().BeOfType<KeyAlreadyCoupledToInThisPeriod>();
-        Exception?.Message.Should().Be("Deze sleutel is in deze periode reeds gekoppeld aan de organisatie.");
+        await Given(Events).When(UpdateOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder()).ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
+
+    [Fact]
+    public async Task ThrowsAnException()
+    {
+        await Given(Events).When(UpdateOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder())
+            .ThenThrows<KeyAlreadyCoupledToInThisPeriod>()
+            .WithMessage("Deze sleutel is in deze periode reeds gekoppeld aan de organisatie.");
     }
 }

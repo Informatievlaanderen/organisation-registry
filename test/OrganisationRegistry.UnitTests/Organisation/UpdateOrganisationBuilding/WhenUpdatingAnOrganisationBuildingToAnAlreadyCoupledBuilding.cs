@@ -2,13 +2,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Building;
 using Building.Events;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -17,36 +18,30 @@ using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : ExceptionOldSpecification2<
+public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : Specification<
     UpdateOrganisationBuildingCommandHandler, UpdateOrganisationBuilding>
 {
-    private Guid _organisationId;
-    private Guid _buildingAId;
-    private Guid _buildingBId;
-    private Guid _anotherOrganisationBuildingAddedOrganisationBuildingId;
+    private readonly Guid _organisationId;
+    private readonly Guid _buildingAId;
+    private readonly Guid _buildingBId;
+    private readonly Guid _anotherOrganisationBuildingAddedOrganisationBuildingId;
 
     public WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding(ITestOutputHelper helper) : base(helper)
-    {
-    }
-
-    protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<UpdateOrganisationBuildingCommandHandler>>().Object,
-            Session,
-            new DateTimeProvider());
-
-    protected override IUser User
-        => new UserBuilder().Build();
-
-    protected override IEnumerable<IEvent> Given()
     {
         _organisationId = Guid.NewGuid();
         _buildingAId = Guid.NewGuid();
         _buildingBId = Guid.NewGuid();
         _anotherOrganisationBuildingAddedOrganisationBuildingId = Guid.NewGuid();
+    }
 
-        return new List<IEvent>
-        {
+    protected override UpdateOrganisationBuildingCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<UpdateOrganisationBuildingCommandHandler>>().Object,
+            session,
+            new DateTimeProvider());
+
+    private IEvent[] Events
+        => new IEvent[] {
             new OrganisationCreated(
                 _organisationId,
                 "Kind en Gezin",
@@ -60,8 +55,7 @@ public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : Exce
                 null,
                 null,
                 null),
-            new BuildingCreated(_buildingAId, "Gebouw A", 12345),
-            new OrganisationBuildingAdded(
+            new BuildingCreated(_buildingAId, "Gebouw A", 12345), new OrganisationBuildingAdded(
                 _organisationId,
                 Guid.NewGuid(),
                 _buildingAId,
@@ -78,9 +72,8 @@ public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : Exce
                 null,
                 null)
         };
-    }
 
-    protected override UpdateOrganisationBuilding When()
+    private UpdateOrganisationBuilding UpdateOrganisationBuildingCommand
         => new(
             _anotherOrganisationBuildingAddedOrganisationBuildingId,
             new OrganisationId(_organisationId),
@@ -89,13 +82,17 @@ public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : Exce
             new ValidFrom(),
             new ValidTo());
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task PublishesNoEvents()
+    {
+        await Given(Events).When(UpdateOrganisationBuildingCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
 
     [Fact]
-    public void ThrowsAnException()
+    public async Task ThrowsAnException()
     {
-        Exception.Should().BeOfType<BuildingAlreadyCoupledToInThisPeriod>();
-        Exception?.Message.Should().Be("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.");
+        await Given(Events).When(UpdateOrganisationBuildingCommand, UserBuilder.User())
+            .ThenThrows<BuildingAlreadyCoupledToInThisPeriod>()
+            .WithMessage("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.");
     }
 }

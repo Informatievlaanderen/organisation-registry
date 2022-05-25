@@ -8,6 +8,7 @@ using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
+using OrganisationRegistry.Infrastructure.Authorization;
 using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
@@ -17,19 +18,18 @@ using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class
-    TerminateOrganisationThatBecomesInvalid : Specification<TerminateOrganisationCommandHandler, TerminateOrganisation>
+public class TerminateOrganisationThatBecomesInvalid : Specification<TerminateOrganisationCommandHandler, TerminateOrganisation>
 {
     private readonly OrganisationRegistryConfigurationStub _organisationRegistryConfigurationStub;
 
     private readonly Guid _organisationId;
     private readonly DateTimeProviderStub _dateTimeProviderStub;
-    private readonly DateTime _dateOfTermination;
+    private DateTime _dateOfTermination;
+    private readonly Fixture _fixture;
     private readonly Guid _organisationOrganisationParentId;
     private readonly Guid _parentOrganisationId;
     private readonly Guid _organisationFormalFrameworkId;
     private readonly Guid _formalFrameworkId;
-    private readonly Fixture _fixture;
 
     public TerminateOrganisationThatBecomesInvalid(ITestOutputHelper helper) : base(helper)
     {
@@ -46,17 +46,16 @@ public class
         _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Today);
         _fixture = new Fixture();
 
-        _dateOfTermination = _dateTimeProviderStub.Today.AddDays(_fixture.Create<int>());
-        _organisationOrganisationParentId = _fixture.Create<Guid>();
-        _parentOrganisationId = _fixture.Create<Guid>();
-        _organisationFormalFrameworkId = _fixture.Create<Guid>();
-        _formalFrameworkId = _fixture.Create<Guid>();
+        _dateOfTermination = _dateTimeProviderStub.Today.AddDays(_fixture.Create<int>() * -1);
+
+         _organisationOrganisationParentId = _fixture.Create<Guid>();
+         _parentOrganisationId = _fixture.Create<Guid>();
+         _organisationFormalFrameworkId = _fixture.Create<Guid>();
+         _formalFrameworkId = _fixture.Create<Guid>();
     }
 
-
     private IEvent[] Events
-        => new IEvent[]
-        {
+        => new IEvent[] {
             new OrganisationCreated(
                 _organisationId,
                 "organisation X",
@@ -126,8 +125,7 @@ public class
     [Fact]
     public async Task PublishesThreeEvents()
     {
-        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder())
-            .ThenItPublishesTheCorrectNumberOfEvents(3);
+        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).ThenItPublishesTheCorrectNumberOfEvents(3);
     }
 
     [Fact]
@@ -172,8 +170,10 @@ public class
     }
 
     [Fact]
-    public void FormalFrameworkClearedFromOrganisation()
+    public async Task FormalFrameworkClearedFromOrganisation()
     {
+        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).Then();
+
         var frameworkClearedFromOrganisation = PublishedEvents[2].UnwrapBody<FormalFrameworkClearedFromOrganisation>();
         frameworkClearedFromOrganisation.Should().NotBeNull();
 

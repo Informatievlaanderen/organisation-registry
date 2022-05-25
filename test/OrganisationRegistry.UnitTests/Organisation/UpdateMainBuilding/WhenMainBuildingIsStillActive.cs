@@ -2,44 +2,41 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainBuilding;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Building.Events;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using Tests.Shared;
+using Xunit;
 using Xunit.Abstractions;
 
-public class WhenMainBuildingIsStillActive : OldSpecification2<UpdateMainBuildingCommandHandler, UpdateMainBuilding>
+public class WhenMainBuildingIsStillActive : Specification<UpdateMainBuildingCommandHandler, UpdateMainBuilding>
 {
-    private Guid _organisationId;
-    private Guid _buildingId;
-    private Guid _organisationBuildingId;
+    private readonly Guid _organisationId;
+    private readonly Guid _buildingId;
+    private readonly Guid _organisationBuildingId;
 
     public WhenMainBuildingIsStillActive(ITestOutputHelper helper) : base(helper)
-    {
-    }
-
-    protected override UpdateMainBuildingCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<UpdateMainBuildingCommandHandler>>().Object,
-            Session,
-            new DateTimeProvider());
-
-    protected override IUser User
-        => new UserBuilder().Build();
-
-    protected override IEnumerable<IEvent> Given()
     {
         _organisationId = Guid.NewGuid();
         _buildingId = Guid.NewGuid();
         _organisationBuildingId = Guid.NewGuid();
+    }
 
-        return new List<IEvent>
-        {
+    protected override UpdateMainBuildingCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<UpdateMainBuildingCommandHandler>>().Object,
+            session,
+            new DateTimeProvider());
+
+    private IEvent[] Events
+        => new IEvent[] {
             new OrganisationCreated(
                 _organisationId,
                 "Kind en Gezin",
@@ -53,8 +50,7 @@ public class WhenMainBuildingIsStillActive : OldSpecification2<UpdateMainBuildin
                 null,
                 null,
                 null),
-            new BuildingCreated(_buildingId, "Gebouw A", 12345),
-            new OrganisationBuildingAdded(
+            new BuildingCreated(_buildingId, "Gebouw A", 12345), new OrganisationBuildingAdded(
                 _organisationId,
                 _organisationBuildingId,
                 _buildingId,
@@ -64,13 +60,13 @@ public class WhenMainBuildingIsStillActive : OldSpecification2<UpdateMainBuildin
                 DateTime.Today),
             new MainBuildingAssignedToOrganisation(_organisationId, _buildingId, _organisationBuildingId)
         };
-    }
 
-    protected override UpdateMainBuilding When()
+    private UpdateMainBuilding UpdateMainBuildingCommand
+        => new(new OrganisationId(_organisationId));
+
+    [Fact]
+   public async Task PublishesNoEvents()
     {
-        return new UpdateMainBuilding(new OrganisationId(_organisationId));
+        await Given(Events).When(UpdateMainBuildingCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(0);
     }
-
-    protected override int ExpectedNumberOfEvents
-        => 0;
 }

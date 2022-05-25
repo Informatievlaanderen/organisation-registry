@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateMainLocation;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
@@ -11,40 +12,38 @@ using OrganisationRegistry.Organisation.Events;
 using Location.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
 using Xunit.Abstractions;
 
 public class WhenAnotherMainLocationIsNowActive :
-    OldSpecification2<UpdateMainLocationCommandHandler, UpdateMainLocation>
+    Specification<UpdateMainLocationCommandHandler, UpdateMainLocation>
 {
-    private Guid _organisationId;
-    private Guid _locationAId;
-    private Guid _locationBId;
-    private Guid _organisationLocationAId;
-    private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);
+    private readonly Guid _organisationId;
+    private readonly Guid _locationAId;
+    private readonly Guid _locationBId;
+    private readonly Guid _organisationLocationAId;
+    private readonly DateTimeProviderStub _dateTimeProviderStub;
 
     public WhenAnotherMainLocationIsNowActive(ITestOutputHelper helper) : base(helper)
     {
-    }
-
-    protected override UpdateMainLocationCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<UpdateMainLocationCommandHandler>>().Object,
-            Session,
-            _dateTimeProviderStub);
-
-    protected override IUser User
-        => new UserBuilder().Build();
-
-    protected override IEnumerable<IEvent> Given()
-    {
+        _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
         _organisationId = Guid.NewGuid();
         _locationAId = Guid.NewGuid();
         _locationBId = Guid.NewGuid();
 
         _organisationLocationAId = Guid.NewGuid();
-        return new List<IEvent>
+        _dateTimeProviderStub.StubDate = _dateTimeProviderStub.StubDate.AddDays(1);
+    }
+
+    protected override UpdateMainLocationCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<UpdateMainLocationCommandHandler>>().Object,
+            session,
+            _dateTimeProviderStub);
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -97,27 +96,28 @@ public class WhenAnotherMainLocationIsNowActive :
                 DateTime.Today.AddDays(1),
                 DateTime.Today.AddDays(1))
         };
-    }
 
-    protected override UpdateMainLocation When()
+    private UpdateMainLocation UpdateMainLocationCommand
+        => new(new OrganisationId(_organisationId));
+
+   [Fact]
+    public async Task PublishesTwoEvents()
     {
-        _dateTimeProviderStub.StubDate = _dateTimeProviderStub.StubDate.AddDays(1);
-
-        return new UpdateMainLocation(new OrganisationId(_organisationId));
+        await Given(Events).When(UpdateMainLocationCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(2);
     }
-
-    protected override int ExpectedNumberOfEvents
-        => 2;
 
     [Fact]
-    public void ClearsTheMainLocation()
+    public async Task ClearsTheMainLocation()
     {
+        await Given(Events).When(UpdateMainLocationCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(2);
         PublishedEvents[0].Should().BeOfType<Envelope<MainLocationClearedFromOrganisation>>();
     }
 
     [Fact]
-    public void AssignsTheNewLocation()
+    public async Task AssignsTheNewLocation()
     {
+        await Given(Events).When(UpdateMainLocationCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(2);
+
         var mainLocationAssignedToOrganisation =
             PublishedEvents[1].UnwrapBody<MainLocationAssignedToOrganisation>();
         mainLocationAssignedToOrganisation.Should().NotBeNull();
