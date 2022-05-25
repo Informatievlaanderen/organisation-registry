@@ -19,8 +19,8 @@ namespace OrganisationRegistry.SqlServer.Body
         public Guid BodyContactId { get; set; }
         public Guid BodyId { get; set; }
         public Guid ContactTypeId { get; set; }
-        public string ContactTypeName { get; set; }
-        public string ContactValue { get; set; }
+        public string ContactTypeName { get; set; } = null!;
+        public string ContactValue { get; set; } = null!;
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }
@@ -115,7 +115,7 @@ namespace OrganisationRegistry.SqlServer.Body
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var contact = context.BodyContactList.SingleOrDefault(item => item.BodyContactId == message.Body.BodyContactId);
+                var contact = await context.BodyContactList.SingleAsync(item => item.BodyContactId == message.Body.BodyContactId);
 
                 contact.BodyContactId = message.Body.BodyContactId;
                 contact.BodyId = message.Body.BodyId;

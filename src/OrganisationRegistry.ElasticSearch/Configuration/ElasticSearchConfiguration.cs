@@ -20,29 +20,29 @@ namespace OrganisationRegistry.ElasticSearch.Configuration
         [JsonConverter(typeof(TimestampConverter))]
         public DateTime Created => DateTime.Now;
 
-        public string WriteConnectionString { get; set; }
-        public string ReadConnectionString { get; set; }
-        public string WriteUser { get; set; }
-        public string ReadUser { get; set; }
-        public string WritePass { get; set; }
-        public string ReadPass { get; set; }
+        public string WriteConnectionString { get; set; } = null!;
+        public string ReadConnectionString { get; set; } = null!;
+        public string WriteUser { get; set; } = null!;
+        public string ReadUser { get; set; } = null!;
+        public string WritePass { get; set; } = null!;
+        public string ReadPass { get; set; } = null!;
 
-        public string OrganisationsReadIndex { get; set; }
-        public string OrganisationsWriteIndex { get; set; }
-        public string OrganisationType { get; set; }
+        public string OrganisationsReadIndex { get; set; } = null!;
+        public string OrganisationsWriteIndex { get; set; } = null!;
+        public string OrganisationType { get; set; } = null!;
 
-        public string PeopleReadIndex { get; set; }
-        public string PeopleWriteIndex { get; set; }
-        public string PersonType { get; set; }
+        public string PeopleReadIndex { get; set; } = null!;
+        public string PeopleWriteIndex { get; set; } = null!;
+        public string PersonType { get; set; } = null!;
 
-        public string BodyReadIndex { get; set; }
-        public string BodyWriteIndex { get; set; }
-        public string BodyType { get; set; }
+        public string BodyReadIndex { get; set; } = null!;
+        public string BodyWriteIndex { get; set; } = null!;
+        public string BodyType { get; set; } = null!;
 
-        public string LockRegionEndPoint { get; set; }
-        public string LockAccessKeyId { get; set; }
-        public string LockAccessKeySecret { get; set; }
-        public string LockTableName { get; set; }
+        public string LockRegionEndPoint { get; set; } = null!;
+        public string LockAccessKeyId { get; set; } = null!;
+        public string LockAccessKeySecret { get; set; } = null!;
+        public string LockTableName { get; set; } = null!;
         public int LockLeasePeriodInMinutes { get; set; }
         public bool LockEnabled { get; set; }
 
@@ -52,8 +52,7 @@ namespace OrganisationRegistry.ElasticSearch.Configuration
         public int NumberOfReplicas { get; set; }
 
         public ElasticSearchConfiguration Obfuscate()
-        {
-            return new ElasticSearchConfiguration
+            => new()
             {
                 WriteConnectionString = WriteConnectionString,
                 ReadConnectionString = ReadConnectionString,
@@ -77,6 +76,5 @@ namespace OrganisationRegistry.ElasticSearch.Configuration
                 BodyWriteIndex = BodyWriteIndex,
                 BodyType = BodyType,
             };
-        }
     }
 }

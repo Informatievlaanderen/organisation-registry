@@ -42,7 +42,7 @@ namespace OrganisationRegistry.KboMutations
         public IEnumerable<MutationsFile> GetKboMutationFiles()
         {
             _logger.LogInformation(
-                "Fetching mutation files from folder {SourcePath}.",
+                "Fetching mutation files from folder {SourcePath}",
                 _kboMutationsConfiguration.SourcePath);
 
             var sourceDirectoryUri = _baseUriBuilder.AppendDir(_kboMutationsConfiguration.SourcePath);
@@ -56,7 +56,7 @@ namespace OrganisationRegistry.KboMutations
                     .ToList();
 
             _logger.LogInformation(
-                "Found {NumberOfMutationFiles} mutation files to process.",
+                "Found {NumberOfMutationFiles} mutation files to process",
                 mutationFiles.Count);
 
             return mutationFiles;
@@ -82,12 +82,11 @@ namespace OrganisationRegistry.KboMutations
         private Option<MutationsFile> GetMutationFile(FtpsListItem ftpsListItem)
         {
             if (ftpsListItem.Size == 0L)
-                return new MutationsFile
-                {
-                    FullName = ftpsListItem.FullName,
-                    Name = ftpsListItem.Name,
-                    KboMutations = new List<MutationsLine>()
-                }.Some();
+                return new MutationsFile(
+                    ftpsListItem.FullName,
+                    ftpsListItem.Name,
+                    new List<MutationsLine>()
+                ).Some();
 
             using (var stream = new MemoryStream())
             {
@@ -103,12 +102,11 @@ namespace OrganisationRegistry.KboMutations
                     try
                     {
                         var mutationsLines = reader.GetRecords<MutationsLine>();
-                        return new MutationsFile
-                        {
-                            FullName = ftpsListItem.FullName,
-                            Name = ftpsListItem.Name,
-                            KboMutations = new List<MutationsLine>(mutationsLines)
-                        }.Some();
+                        return new MutationsFile(
+                            ftpsListItem.FullName,
+                            ftpsListItem.Name,
+                            new List<MutationsLine>(mutationsLines)
+                        ).Some();
                     }
                     catch
                     {

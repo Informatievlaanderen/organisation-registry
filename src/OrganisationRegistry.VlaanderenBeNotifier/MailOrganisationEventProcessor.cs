@@ -90,6 +90,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     .ToString();
 
             SendMails(new Mail(subject, body));
+
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationBecameActive> message)
@@ -103,6 +105,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     .ToString();
 
             SendMails(new Mail(subject, body));
+
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationBecameInactive> message)
@@ -116,6 +120,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     .ToString();
 
             SendMails(new Mail(subject, body));
+
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationInfoUpdated> message)
@@ -137,6 +143,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                 mails.Add(OrganisationShowOnVlaanderenBeChanged(message.Body.OvoNumber, message.Body.Name, message.Body.ShowOnVlaamseOverheidSites, message.Body.Timestamp, message.Body.OrganisationId));
 
             SendMails(mails.ToArray());
+
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection connection, DbTransaction transaction, IEnvelope<OrganisationNameUpdated> message)
@@ -164,6 +172,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     message.Body.Timestamp,
                     message.Body.OrganisationId)
             );
+
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
@@ -181,6 +191,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     message.Body.Timestamp));
 
             SendMails(mails.ToArray());
+
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationCouplingWithKboCancelled> message)
@@ -198,6 +210,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                     message.Body.Timestamp));
 
             SendMails(mails.ToArray());
+
+            await Task.CompletedTask;
         }
 
         private Mail OrganisationNameChanged(Guid organisationId, string ovoNumber, string name, string previousName,
@@ -234,7 +248,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             if (!_toggles.SendVlaanderenBeNotifierMails)
                 return;
 
-            mails?
+            mails
                 .ToList()
                 .ForEach(mail =>
                     _mailer.SendEmailAsync(fromAddress: _configuration.FromAddress,

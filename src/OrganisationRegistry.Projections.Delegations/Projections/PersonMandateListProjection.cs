@@ -6,6 +6,7 @@
     using System.Threading.Tasks;
     using Autofac.Features.OwnedInstances;
     using Body.Events;
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using Organisation.Events;
     using SqlServer.Infrastructure;
@@ -79,8 +80,7 @@
             await using var context = _contextFactory().Value;
             var organisationForBody = GetOrganisationForBodyFromCache(context, message.Body.BodyId);
 
-            var personMandateListItem =
-                context.PersonMandateList.SingleOrDefault(item =>
+            var personMandateListItem = await context.PersonMandateList.SingleAsync(item =>
                     item.BodyMandateId == message.Body.BodyMandateId &&
                     item.DelegationAssignmentId == null);
 
@@ -253,8 +253,7 @@
             await using var context = _contextFactory().Value;
             var organisationForBody = GetOrganisationForBodyFromCache(context, message.Body.BodyId);
 
-            var personMandateListItem =
-                context.PersonMandateList.SingleOrDefault(item =>
+            var personMandateListItem = await context.PersonMandateList.SingleAsync(item =>
                     item.BodyMandateId == message.Body.BodyMandateId &&
                     item.DelegationAssignmentId == message.Body.DelegationAssignmentId);
 
@@ -281,8 +280,7 @@
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
         {
             await using var context = _contextFactory().Value;
-            var personMandateListItem =
-                context.PersonMandateList.SingleOrDefault(item =>
+            var personMandateListItem = await context.PersonMandateList.SingleAsync(item =>
                     item.BodyMandateId == message.Body.BodyMandateId &&
                     item.DelegationAssignmentId == message.Body.DelegationAssignmentId);
 

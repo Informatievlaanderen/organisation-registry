@@ -9,7 +9,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.Schema
     {
 
         //Kbo Sync Queue
-        public DbSet<OrganisationCacheItem> OrganisationCache { get; set; }
+        public DbSet<OrganisationCacheItem> OrganisationCache { get; set; } = null!;
 
         // This needs to be DbContextOptions<T> for Autofac!
         public VlaanderenBeNotifierContext(DbContextOptions<VlaanderenBeNotifierContext> options)
@@ -18,9 +18,6 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.Schema
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.ConfigureWarnings(
-            //    x => x.Throw(RelationalEventId.QueryClientEvaluationWarning));
-
             if (!optionsBuilder.IsConfigured)
                 optionsBuilder.UseSqlServer(
                     @"Server=localhost,21433;Database=OrganisationRegistry;User ID=sa;Password=E@syP@ssw0rd;TrustServerCertificate=True;",

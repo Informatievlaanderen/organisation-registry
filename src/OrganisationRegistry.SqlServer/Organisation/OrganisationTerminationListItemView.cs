@@ -16,11 +16,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public Guid Id { get; set; }
 
-        public string OvoNumber { get; set; }
+        public string OvoNumber { get; set; } = null!;
 
         public string? KboNumber { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         public TerminationStatus Status { get; set; }
         public DateTime Date { get; set; }

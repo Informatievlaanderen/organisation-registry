@@ -14,7 +14,12 @@
             public string Value { get; set; }
             public Period Validity { get; set; }
 
-            protected OrganisationKey() { }
+            protected OrganisationKey()
+            {
+                KeyTypeName = string.Empty;
+                Value = string.Empty;
+                Validity = Period.Infinite();
+            }
 
             public OrganisationKey(
                 Guid organisationKeyId,

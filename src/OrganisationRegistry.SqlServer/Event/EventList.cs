@@ -12,9 +12,9 @@ namespace OrganisationRegistry.SqlServer.Event
         public Guid Id { get; set; }
         public int Number { get; set; }
         public int Version { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public DateTime Timestamp { get; set; }
-        public string Data { get; set; }
+        public string Data { get; set; } = null!;
         public string? Ip { get; set; }
         public string? LastName { get; set; }
         public string? FirstName { get; set; }

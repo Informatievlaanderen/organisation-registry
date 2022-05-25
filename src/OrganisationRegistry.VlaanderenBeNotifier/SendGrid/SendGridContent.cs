@@ -5,7 +5,11 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.SendGrid
         public string Type { get; set; }
         public string Value { get; set; }
 
-        public SendGridContent() { }
+        public SendGridContent()
+        {
+            Type = string.Empty;
+            Value = string.Empty;
+        }
 
         public SendGridContent(string type, string content)
         {

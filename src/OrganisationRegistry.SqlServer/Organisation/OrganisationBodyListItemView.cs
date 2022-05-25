@@ -18,7 +18,7 @@
         public Guid OrganisationBodyId { get; set; }
         public Guid OrganisationId { get; set; }
         public Guid BodyId { get; set; }
-        public string BodyName { get; set; }
+        public string BodyName { get; set; } = null!;
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }
@@ -105,7 +105,7 @@
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var organisation = context.OrganisationBodyList.SingleOrDefault(item => item.OrganisationBodyId == message.Body.BodyOrganisationId);
+                var organisation = await context.OrganisationBodyList.SingleAsync(item => item.OrganisationBodyId == message.Body.BodyOrganisationId);
 
                 organisation.OrganisationBodyId = message.Body.BodyOrganisationId;
                 organisation.OrganisationId = message.Body.OrganisationId;

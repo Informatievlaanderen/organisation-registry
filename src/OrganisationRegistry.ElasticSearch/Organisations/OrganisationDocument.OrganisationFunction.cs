@@ -19,6 +19,10 @@
 
             protected OrganisationFunction()
             {
+                FunctionName = string.Empty;
+                PersonName = string.Empty;
+                Contacts = new List<Contact>();
+                Validity = Period.Infinite();
             }
 
             public OrganisationFunction(

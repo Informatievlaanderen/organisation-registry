@@ -4,6 +4,12 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.SendGrid
 
     public class SendGridPersonalization
     {
+        public SendGridPersonalization()
+        {
+            To = new List<SendGridEmail>();
+            Subject = string.Empty;
+        }
+
         public IList<SendGridEmail> To { get; set; }
         public string Subject { get; set; }
     }

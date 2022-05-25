@@ -88,21 +88,25 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
             UpdateParentOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
         {
             UpdateParentOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             UpdateParentOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
             UpdateParentOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
+            await Task.CompletedTask;
         }
 
         private static void UpdateParentOrganisationName(DbConnection dbConnection,
@@ -155,12 +159,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkUpdated> message)
         {
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var organisationFormalFramework = await context.OrganisationFormalFrameworkList.SingleOrDefaultAsync(item => item.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
+            var organisationFormalFramework = await context.OrganisationFormalFrameworkList.SingleAsync(item => item.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
 
             organisationFormalFramework.OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId;
             organisationFormalFramework.OrganisationId = message.Body.OrganisationId;
             organisationFormalFramework.FormalFrameworkId = message.Body.FormalFrameworkId;
-            organisationFormalFramework.FormalFrameworkName = message.Body.FormalFrameworkName ?? string.Empty;
+            organisationFormalFramework.FormalFrameworkName = message.Body.FormalFrameworkName;
             organisationFormalFramework.ParentOrganisationId = message.Body.ParentOrganisationId;
             organisationFormalFramework.ParentOrganisationName = message.Body.ParentOrganisationName;
             organisationFormalFramework.ValidFrom = message.Body.ValidFrom;

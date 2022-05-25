@@ -19,8 +19,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public Guid OrganisationLabelId { get; set; }
         public Guid OrganisationId { get; set; }
         public Guid LabelTypeId { get; set; }
-        public string LabelTypeName { get; set; }
-        public string LabelValue { get; set; }
+        public string LabelTypeName { get; set; } = null!;
+        public string LabelValue { get; set; } = null!;
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
 
@@ -169,7 +169,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboFormalNameLabelRemoved> message)
         {
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var label = context.OrganisationLabelList.SingleOrDefault(item => item.OrganisationLabelId == message.Body.OrganisationLabelId);
+            var label = await context.OrganisationLabelList.SingleAsync(item => item.OrganisationLabelId == message.Body.OrganisationLabelId);
 
             context.OrganisationLabelList.Remove(label);
 
@@ -179,7 +179,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLabelUpdated> message)
         {
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var label = context.OrganisationLabelList.SingleOrDefault(item => item.OrganisationLabelId == message.Body.OrganisationLabelId);
+            var label = await context.OrganisationLabelList.SingleAsync(item => item.OrganisationLabelId == message.Body.OrganisationLabelId);
 
             label.OrganisationLabelId = message.Body.OrganisationLabelId;
             label.OrganisationId = message.Body.OrganisationId;

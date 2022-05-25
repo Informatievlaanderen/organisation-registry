@@ -150,7 +150,7 @@ namespace OrganisationRegistry.UI.Infrastructure
 
         private string BuildConfigJavascript(IHostingEnvironment env)
         {
-            var version = Assembly.GetEntryAssembly().GetName().Version.ToString();
+            var version = Assembly.GetEntryAssembly()!.GetName().Version!.ToString();
 
             return $"window.organisationRegistryVersion = '{version}';\n" +
                    $"window.organisationRegistryApiEndpoint = '{Configuration["Api:Endpoint"]}';\n" +

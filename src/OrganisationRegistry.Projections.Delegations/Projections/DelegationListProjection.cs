@@ -144,7 +144,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             var organisationForBody = await GetOrganisationForBodyFromCache(context, message.Body.BodyId);
             var bodySeat = await context.BodySeatCacheForBodyMandateList.SingleAsync(item => item.BodySeatId == message.Body.BodySeatId);
 
-            var delegationListItem = await context.DelegationList.SingleOrDefaultAsync(item => item.Id == message.Body.BodyMandateId);
+            var delegationListItem = await context.DelegationList.SingleAsync(item => item.Id == message.Body.BodyMandateId);
 
             delegationListItem.OrganisationId = message.Body.OrganisationId;
             delegationListItem.OrganisationName = message.Body.OrganisationName;
@@ -176,7 +176,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
             var organisationForBody = await GetOrganisationForBodyFromCache(context, message.Body.BodyId);
             var bodySeat = await context.BodySeatCacheForBodyMandateList.SingleAsync(item => item.BodySeatId == message.Body.BodySeatId);
 
-            var delegationListItem = await context.DelegationList.SingleOrDefaultAsync(item => item.Id == message.Body.BodyMandateId);
+            var delegationListItem = await context.DelegationList.SingleAsync(item => item.Id == message.Body.BodyMandateId);
 
             delegationListItem.OrganisationId = message.Body.OrganisationId;
             delegationListItem.OrganisationName = message.Body.OrganisationName;
@@ -203,7 +203,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegation> message)
         {
             await using var context = ContextFactory.Create();
-            var delegationListItem = await context.DelegationList.SingleOrDefaultAsync(item => item.Id == message.Body.BodyMandateId);
+            var delegationListItem = await context.DelegationList.SingleAsync(item => item.Id == message.Body.BodyMandateId);
 
             delegationListItem.NumberOfDelegationAssignments++;
             delegationListItem.IsDelegated = delegationListItem.NumberOfDelegationAssignments > 0;
@@ -214,7 +214,7 @@ namespace OrganisationRegistry.Projections.Delegations.Projections
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonAssignedToDelegationRemoved> message)
         {
             await using var context = ContextFactory.Create();
-            var delegationListItem = await context.DelegationList.SingleOrDefaultAsync(item => item.Id == message.Body.BodyMandateId);
+            var delegationListItem = await context.DelegationList.SingleAsync(item => item.Id == message.Body.BodyMandateId);
 
             delegationListItem.NumberOfDelegationAssignments--;
             delegationListItem.IsDelegated = delegationListItem.NumberOfDelegationAssignments > 0;

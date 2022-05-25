@@ -209,7 +209,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             (
                 async elastic => await elastic
                     .MassUpdatePersonAsync(
-                        x => x.Mandates.Single().BodyOrganisationId, organisationId,
+                        x => x.Mandates.Single().BodyOrganisationId!, organisationId,
                         "mandates", "bodyOrganisationId",
                         "bodyOrganisationName", name,
                         messageNumber,

@@ -21,7 +21,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public Guid OrganisationLocationId { get; set; }
         public Guid OrganisationId { get; set; }
         public Guid LocationId { get; set; }
-        public string LocationName { get; set; }
+        public string LocationName { get; set; } = null!;
         public Guid? LocationTypeId { get; set; }
         public string? LocationTypeName { get; set; }
         public bool IsMainLocation { get; set; }
@@ -41,7 +41,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             string locationName,
             bool isMainLocation,
             Guid? locationTypeId,
-            string locationTypeName,
+            string? locationTypeName,
             DateTime? validFrom,
             DateTime? validTo)
         {

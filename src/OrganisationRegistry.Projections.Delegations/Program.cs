@@ -71,13 +71,13 @@ namespace OrganisationRegistry.Projections.Delegations
 
             var app = ConfigureServices(services, configuration);
 
-            var logger = app.GetService<ILogger<Program>>();
+            var logger = app.GetRequiredService<ILogger<Program>>();
 
-            var delegationsRunnerOptions = app.GetService<IOptions<DelegationsRunnerConfiguration>>().Value;
+            var delegationsRunnerOptions = app.GetRequiredService<IOptions<DelegationsRunnerConfiguration>>().Value;
 
-            if (!app.GetService<IOptions<TogglesConfigurationSection>>().Value.ApplicationAvailable)
+            if (!app.GetRequiredService<IOptions<TogglesConfigurationSection>>().Value.ApplicationAvailable)
             {
-                logger.LogInformation("Application offline, exiting program.");
+                logger.LogInformation("Application offline, exiting program");
                 return;
             }
 
@@ -99,22 +99,22 @@ namespace OrganisationRegistry.Projections.Delegations
             bool acquiredLock = false;
             try
             {
-                logger.LogInformation("Trying to acquire lock.");
+                logger.LogInformation("Trying to acquire lock");
                 acquiredLock = distributedLock.AcquireLock();
                 if (!acquiredLock)
                 {
-                    logger.LogInformation("Could not get lock, another instance is busy.");
+                    logger.LogInformation("Could not get lock, another instance is busy");
                     return;
                 }
 
-                var runner = app.GetService<Runner>();
+                var runner = app.GetRequiredService<Runner>();
                 if (await runner.Run())
                 {
-                    logger.LogInformation("Processing completed successfully, exiting program.");
+                    logger.LogInformation("Processing completed successfully, exiting program");
                 }
                 else
                 {
-                    logger.LogInformation("DelegationsRunner Toggle not enabled, exiting program.");
+                    logger.LogInformation("DelegationsRunner Toggle not enabled, exiting program");
                 }
 
                 FlushLoggerAndTelemetry();
@@ -122,7 +122,7 @@ namespace OrganisationRegistry.Projections.Delegations
             catch (Exception e)
             {
                 // dotnet core only supports global exceptionhandler starting from 1.2 (TODO)
-                logger.LogCritical(0, e, "Encountered a fatal exception, exiting program.");
+                logger.LogCritical(0, e, "Encountered a fatal exception, exiting program");
                 FlushLoggerAndTelemetry();
                 throw;
             }
@@ -150,13 +150,13 @@ namespace OrganisationRegistry.Projections.Delegations
             var serviceProvider = services.BuildServiceProvider();
 
             var builder = new ContainerBuilder();
-            builder.RegisterModule(new DelegationsRunnerModule(configuration, services, serviceProvider.GetService<ILoggerFactory>()));
+            builder.RegisterModule(new DelegationsRunnerModule(configuration, services, serviceProvider.GetRequiredService<ILoggerFactory>()));
             return new AutofacServiceProvider(builder.Build());
         }
 
         private static void UseOrganisationRegistryEventSourcing(IServiceProvider app)
         {
-            var registrar = app.GetService<BusRegistrar>();
+            var registrar = app.GetRequiredService<BusRegistrar>();
 
             registrar.RegisterEventHandlers(typeof(MemoryCachesMaintainer));
             registrar.RegisterEventHandlersFromAssembly(typeof(OrganisationRegistryDelegationsRunnerAssemblyTokenClass));

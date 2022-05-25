@@ -20,6 +20,8 @@
 
             protected OrganisationBuilding()
             {
+                BuildingName = string.Empty;
+                Validity = Period.Infinite();
             }
 
             public OrganisationBuilding(

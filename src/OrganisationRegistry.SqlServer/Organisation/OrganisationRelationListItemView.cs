@@ -21,11 +21,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public Guid OrganisationId { get; set; }
 
         public Guid RelationId { get; set; }
-        public string RelationName { get; set; }
-        public string RelationInverseName { get; set; }
+        public string RelationName { get; set; } = null!;
+        public string RelationInverseName { get; set; } = null!;
 
         public Guid RelatedOrganisationId { get; set; }
-        public string RelatedOrganisationName { get; set; }
+        public string RelatedOrganisationName { get; set; } = null!;
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
@@ -153,21 +153,25 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
             UpdateRelatedOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
         {
             UpdateRelatedOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             UpdateRelatedOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
             UpdateRelatedOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
+            await Task.CompletedTask;
         }
 
         private static void UpdateRelatedOrganisationName(

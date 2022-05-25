@@ -127,7 +127,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             IEnvelope<OrganisationOpeningHourUpdated> message)
         {
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var label = context.OrganisationOpeningHourList.SingleOrDefault(item => item.OrganisationOpeningHourId == message.Body.OrganisationOpeningHourId);
+            var label = await context.OrganisationOpeningHourList.SingleAsync(item => item.OrganisationOpeningHourId == message.Body.OrganisationOpeningHourId);
 
             label.OrganisationOpeningHourId = message.Body.OrganisationOpeningHourId;
             label.OrganisationId = message.Body.OrganisationId;

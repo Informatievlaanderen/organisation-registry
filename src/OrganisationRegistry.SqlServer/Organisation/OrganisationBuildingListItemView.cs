@@ -25,7 +25,10 @@
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
 
-        public OrganisationBuildingListItem() { }
+        public OrganisationBuildingListItem()
+        {
+            BuildingName = string.Empty;
+        }
 
         public OrganisationBuildingListItem(Guid organisationBuildingId, Guid organisationId, Guid buildingId, string buildingName, bool isMainBuilding, DateTime? validFrom, DateTime? validTo)
         {

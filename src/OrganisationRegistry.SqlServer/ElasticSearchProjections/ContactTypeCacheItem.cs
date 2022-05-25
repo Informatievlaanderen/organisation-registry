@@ -9,7 +9,7 @@ namespace OrganisationRegistry.SqlServer.ElasticSearchProjections
     public class ContactTypeCacheItem
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
     }
 
     public class ContactTypeCacheForEsConfiguration : EntityMappingConfiguration<ContactTypeCacheItem>

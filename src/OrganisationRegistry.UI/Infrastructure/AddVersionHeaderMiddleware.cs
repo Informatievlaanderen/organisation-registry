@@ -15,7 +15,7 @@
 
         public Task Invoke(HttpContext context)
         {
-            var version = Assembly.GetEntryAssembly().GetName().Version.ToString();
+            var version = Assembly.GetEntryAssembly()!.GetName().Version!.ToString();
             context.Response.Headers.Add("x-wegwijs-version", version);
 
             return _next(context);

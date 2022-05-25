@@ -17,11 +17,11 @@ namespace OrganisationRegistry.SqlServer.Person
     {
         public Guid Id { get; set; }
 
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = null!;
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
-        public string FullName { get; set; }
+        public string FullName { get; set; } = null!;
 
         public Sex? Sex { get; set; }
 
@@ -113,7 +113,7 @@ namespace OrganisationRegistry.SqlServer.Person
                 person.FirstName = message.Body.FirstName;
                 person.Name = message.Body.Name;
                 person.FullName = $"{message.Body.FirstName} {message.Body.Name}";
-                person.Sex = (Sex?) message.Body.Sex;
+                person.Sex = message.Body.Sex;
                 person.DateOfBirth = message.Body.DateOfBirth;
                 await context.SaveChangesAsync();
             }

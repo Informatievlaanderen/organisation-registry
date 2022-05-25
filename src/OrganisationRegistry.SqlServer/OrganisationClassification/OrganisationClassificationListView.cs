@@ -18,7 +18,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         public int Order { get; set; }
 
@@ -27,7 +27,7 @@ namespace OrganisationRegistry.SqlServer.OrganisationClassification
         public bool Active { get; set; }
 
         public Guid OrganisationClassificationTypeId { get; set; }
-        public string OrganisationClassificationTypeName { get; set; }
+        public string OrganisationClassificationTypeName { get; set; } = null!;
     }
 
     public class OrganisationClassificationListConfiguration : EntityMappingConfiguration<OrganisationClassificationListItem>

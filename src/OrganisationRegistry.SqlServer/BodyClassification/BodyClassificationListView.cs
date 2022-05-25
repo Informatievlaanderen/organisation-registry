@@ -18,14 +18,14 @@ namespace OrganisationRegistry.SqlServer.BodyClassification
     {
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         public int Order { get; set; }
 
         public bool Active { get; set; }
 
         public Guid BodyClassificationTypeId { get; set; }
-        public string BodyClassificationTypeName { get; set; }
+        public string BodyClassificationTypeName { get; set; } = null!;
     }
 
     public class BodyClassificationListConfiguration : EntityMappingConfiguration<BodyClassificationListItem>

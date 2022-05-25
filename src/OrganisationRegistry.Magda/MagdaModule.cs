@@ -5,7 +5,7 @@ namespace OrganisationRegistry.Magda
 
     public class MagdaModule : Module
     {
-        protected internal static MagdaConfiguration MagdaConfiguration;
+        protected internal readonly MagdaConfiguration MagdaConfiguration;
 
         public MagdaModule(IConfiguration configuration)
         {

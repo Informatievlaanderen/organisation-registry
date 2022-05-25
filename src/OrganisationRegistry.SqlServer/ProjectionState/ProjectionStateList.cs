@@ -9,7 +9,7 @@
     public class ProjectionStateItem
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public int EventNumber { get; set; }
         public DateTimeOffset? LastUpdatedUtc { get; set; }
     }

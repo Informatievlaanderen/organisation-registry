@@ -9,7 +9,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
     public class BodySeatGenderRatioOrganisationListItem
     {
         public Guid OrganisationId { get; set; }
-        public string OrganisationName { get; set; }
+        public string OrganisationName { get; set; } = null!;
         public bool OrganisationActive { get; set; }
     }
 

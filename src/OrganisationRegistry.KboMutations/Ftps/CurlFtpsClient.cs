@@ -22,7 +22,7 @@ namespace OrganisationRegistry.KboMutations.Ftps
 
         public string GetListing(string sourceDirectory)
         {
-            _logger.LogInformation("Fetching mutation files from folder {SourcePath}.", sourceDirectory);
+            _logger.LogInformation("Fetching mutation files from folder {SourcePath}", sourceDirectory);
 
             using (var process = new Process
             {

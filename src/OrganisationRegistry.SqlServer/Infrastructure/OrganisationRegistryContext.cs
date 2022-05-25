@@ -47,125 +47,125 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
     public class OrganisationRegistryContext : DbContext
     {
-        public DbSet<EventListItem> Events { get; set; }
-        public DbSet<ConfigurationListItem> Configuration { get; set; }
+        public DbSet<EventListItem> Events { get; set; } = null!;
+        public DbSet<ConfigurationListItem> Configuration { get; set; } = null!;
 
-        public DbSet<Log> Logs { get; set; }
+        public DbSet<Log> Logs { get; set; } = null!;
 
-        public DbSet<MagdaCallReference> MagdaCallReferences { get; set; }
+        public DbSet<MagdaCallReference> MagdaCallReferences { get; set; } = null!;
 
-        public DbSet<BodyDetail> BodyDetail { get; set; }
-        public DbSet<BodyContactListItem> BodyContactList { get; set; }
-        public DbSet<BodyFormalFrameworkListItem> BodyFormalFrameworkList { get; set; }
-        public DbSet<BodyLifecyclePhaseListItem> BodyLifecyclePhaseList { get; set; }
-        public DbSet<BodyLifecyclePhaseValidity> BodyLifecyclePhaseValidities { get; set; }
-        public DbSet<BodyListItem> BodyList { get; set; }
-        public DbSet<BodyMandateListItem> BodyMandateList { get; set; }
-        public DbSet<BodySeatCacheItemForBodyMandateList> BodySeatCacheForBodyMandateList { get; set; }
-        public DbSet<BodyOrganisationListItem> BodyOrganisationList { get; set; }
-        public DbSet<BodySeatListItem> BodySeatList { get; set; }
-        public DbSet<BodyBodyClassificationListItem> BodyBodyClassificationList { get; set; }
+        public DbSet<BodyDetail> BodyDetail { get; set; } = null!;
+        public DbSet<BodyContactListItem> BodyContactList { get; set; } = null!;
+        public DbSet<BodyFormalFrameworkListItem> BodyFormalFrameworkList { get; set; } = null!;
+        public DbSet<BodyLifecyclePhaseListItem> BodyLifecyclePhaseList { get; set; } = null!;
+        public DbSet<BodyLifecyclePhaseValidity> BodyLifecyclePhaseValidities { get; set; } = null!;
+        public DbSet<BodyListItem> BodyList { get; set; } = null!;
+        public DbSet<BodyMandateListItem> BodyMandateList { get; set; } = null!;
+        public DbSet<BodySeatCacheItemForBodyMandateList> BodySeatCacheForBodyMandateList { get; set; } = null!;
+        public DbSet<BodyOrganisationListItem> BodyOrganisationList { get; set; } = null!;
+        public DbSet<BodySeatListItem> BodySeatList { get; set; } = null!;
+        public DbSet<BodyBodyClassificationListItem> BodyBodyClassificationList { get; set; } = null!;
 
-        public DbSet<BodyClassificationListItem> BodyClassificationList { get; set; }
-        public DbSet<BodyClassificationTypeListItem> BodyClassificationTypeList { get; set; }
+        public DbSet<BodyClassificationListItem> BodyClassificationList { get; set; } = null!;
+        public DbSet<BodyClassificationTypeListItem> BodyClassificationTypeList { get; set; } = null!;
 
-        public DbSet<DelegationListItem> DelegationList { get; set; }
-        public DbSet<DelegationAssignmentListItem> DelegationAssignmentList { get; set; }
-        public DbSet<Delegations.OrganisationPerBody> OrganisationPerBodyList { get; set; }
+        public DbSet<DelegationListItem> DelegationList { get; set; } = null!;
+        public DbSet<DelegationAssignmentListItem> DelegationAssignmentList { get; set; } = null!;
+        public DbSet<Delegations.OrganisationPerBody> OrganisationPerBodyList { get; set; } = null!;
 
-        public DbSet<ActiveBodyOrganisationListItem> ActiveBodyOrganisationList { get; set; }
-        public DbSet<FutureActiveBodyOrganisationListItem> FutureActiveBodyOrganisationList { get; set; }
+        public DbSet<ActiveBodyOrganisationListItem> ActiveBodyOrganisationList { get; set; } = null!;
+        public DbSet<FutureActiveBodyOrganisationListItem> FutureActiveBodyOrganisationList { get; set; } = null!;
 
-        public DbSet<ActivePeopleAssignedToBodyMandateListItem> ActivePeopleAssignedToBodyMandatesList { get; set; }
-        public DbSet<FuturePeopleAssignedToBodyMandatesListItem> FuturePeopleAssignedToBodyMandatesList { get; set; }
+        public DbSet<ActivePeopleAssignedToBodyMandateListItem> ActivePeopleAssignedToBodyMandatesList { get; set; } = null!;
+        public DbSet<FuturePeopleAssignedToBodyMandatesListItem> FuturePeopleAssignedToBodyMandatesList { get; set; } = null!;
 
-        public DbSet<BuildingListItem> BuildingList { get; set; }
-        public DbSet<CapacityListItem> CapacityList { get; set; }
-        public DbSet<ContactTypeListItem> ContactTypeList { get; set; }
-        public DbSet<FormalFrameworkListItem> FormalFrameworkList { get; set; }
-        public DbSet<FormalFrameworkCategoryListItem> FormalFrameworkCategoryList { get; set; }
-        public DbSet<FunctionTypeListItem> FunctionTypeList { get; set; }
-        public DbSet<KeyTypeListItem> KeyTypeList { get; set; }
-        public DbSet<LabelTypeListItem> LabelTypeList { get; set; }
-        public DbSet<LifecyclePhaseTypeListItem> LifecyclePhaseTypeList { get; set; }
-        public DbSet<LocationListItem> LocationList { get; set; }
-        public DbSet<MandateRoleTypeListItem> MandateRoleTypeList { get; set; }
-        public DbSet<SeatTypeListItem> SeatTypeList { get; set; }
-        public DbSet<LocationTypeListItem> LocationTypeList { get; set; }
-        public DbSet<RegulationThemeListItem> RegulationThemeList { get; set; }
-        public DbSet<RegulationSubThemeListItem> RegulationSubThemeList { get; set; }
+        public DbSet<BuildingListItem> BuildingList { get; set; } = null!;
+        public DbSet<CapacityListItem> CapacityList { get; set; } = null!;
+        public DbSet<ContactTypeListItem> ContactTypeList { get; set; } = null!;
+        public DbSet<FormalFrameworkListItem> FormalFrameworkList { get; set; } = null!;
+        public DbSet<FormalFrameworkCategoryListItem> FormalFrameworkCategoryList { get; set; } = null!;
+        public DbSet<FunctionTypeListItem> FunctionTypeList { get; set; } = null!;
+        public DbSet<KeyTypeListItem> KeyTypeList { get; set; } = null!;
+        public DbSet<LabelTypeListItem> LabelTypeList { get; set; } = null!;
+        public DbSet<LifecyclePhaseTypeListItem> LifecyclePhaseTypeList { get; set; } = null!;
+        public DbSet<LocationListItem> LocationList { get; set; } = null!;
+        public DbSet<MandateRoleTypeListItem> MandateRoleTypeList { get; set; } = null!;
+        public DbSet<SeatTypeListItem> SeatTypeList { get; set; } = null!;
+        public DbSet<LocationTypeListItem> LocationTypeList { get; set; } = null!;
+        public DbSet<RegulationThemeListItem> RegulationThemeList { get; set; } = null!;
+        public DbSet<RegulationSubThemeListItem> RegulationSubThemeList { get; set; } = null!;
 
-        public DbSet<OrganisationDetailItem> OrganisationDetail { get; set; }
-        public DbSet<OrganisationListItem> OrganisationList { get; set; }
-        public DbSet<OrganisationClassificationValidity> OrganisationClassificationValidities { get; set; }
-        public DbSet<OrganisationBodyListItem> OrganisationBodyList { get; set; }
-        public DbSet<OrganisationBuildingListItem> OrganisationBuildingList { get; set; }
-        public DbSet<OrganisationCapacityListItem> OrganisationCapacityList { get; set; }
-        public DbSet<OrganisationContactListItem> OrganisationContactList { get; set; }
-        public DbSet<OrganisationFunctionListItem> OrganisationFunctionList { get; set; }
-        public DbSet<OrganisationRelationListItem> OrganisationRelationList { get; set; }
-        public DbSet<OrganisationLabelListItem> OrganisationLabelList { get; set; }
-        public DbSet<OrganisationChildListItem> OrganisationChildrenList { get; set; }
-        public DbSet<OrganisationKeyListItem> OrganisationKeyList { get; set; }
-        public DbSet<OrganisationLocationListItem> OrganisationLocationList { get; set; }
-        public DbSet<OrganisationOrganisationClassificationListItem> OrganisationOrganisationClassificationList { get; set; }
-        public DbSet<OrganisationParentListItem> OrganisationParentList { get; set; }
-        public DbSet<OrganisationRegulationListItem> OrganisationRegulationList { get; set; }
+        public DbSet<OrganisationDetailItem> OrganisationDetail { get; set; } = null!;
+        public DbSet<OrganisationListItem> OrganisationList { get; set; } = null!;
+        public DbSet<OrganisationClassificationValidity> OrganisationClassificationValidities { get; set; } = null!;
+        public DbSet<OrganisationBodyListItem> OrganisationBodyList { get; set; } = null!;
+        public DbSet<OrganisationBuildingListItem> OrganisationBuildingList { get; set; } = null!;
+        public DbSet<OrganisationCapacityListItem> OrganisationCapacityList { get; set; } = null!;
+        public DbSet<OrganisationContactListItem> OrganisationContactList { get; set; } = null!;
+        public DbSet<OrganisationFunctionListItem> OrganisationFunctionList { get; set; } = null!;
+        public DbSet<OrganisationRelationListItem> OrganisationRelationList { get; set; } = null!;
+        public DbSet<OrganisationLabelListItem> OrganisationLabelList { get; set; } = null!;
+        public DbSet<OrganisationChildListItem> OrganisationChildrenList { get; set; } = null!;
+        public DbSet<OrganisationKeyListItem> OrganisationKeyList { get; set; } = null!;
+        public DbSet<OrganisationLocationListItem> OrganisationLocationList { get; set; } = null!;
+        public DbSet<OrganisationOrganisationClassificationListItem> OrganisationOrganisationClassificationList { get; set; } = null!;
+        public DbSet<OrganisationParentListItem> OrganisationParentList { get; set; } = null!;
+        public DbSet<OrganisationRegulationListItem> OrganisationRegulationList { get; set; } = null!;
 
-        public DbSet<OrganisationFormalFrameworkListItem> OrganisationFormalFrameworkList { get; set; }
-        public DbSet<OrganisationBankAccountListItem> OrganisationBankAccountList { get; set; }
-        public DbSet<OrganisationOpeningHourListItem> OrganisationOpeningHourList { get; set; }
+        public DbSet<OrganisationFormalFrameworkListItem> OrganisationFormalFrameworkList { get; set; } = null!;
+        public DbSet<OrganisationBankAccountListItem> OrganisationBankAccountList { get; set; } = null!;
+        public DbSet<OrganisationOpeningHourListItem> OrganisationOpeningHourList { get; set; } = null!;
 
-        public DbSet<ActiveOrganisationFormalFrameworkListItem> ActiveOrganisationFormalFrameworkList { get; set; }
-        public DbSet<FutureActiveOrganisationFormalFrameworkListItem> FutureActiveOrganisationFormalFrameworkList { get; set; }
+        public DbSet<ActiveOrganisationFormalFrameworkListItem> ActiveOrganisationFormalFrameworkList { get; set; } = null!;
+        public DbSet<FutureActiveOrganisationFormalFrameworkListItem> FutureActiveOrganisationFormalFrameworkList { get; set; } = null!;
 
-        public DbSet<ActiveOrganisationParentListItem> ActiveOrganisationParentList { get; set; }
-        public DbSet<FutureActiveOrganisationParentListItem> FutureActiveOrganisationParentList { get; set; }
+        public DbSet<ActiveOrganisationParentListItem> ActiveOrganisationParentList { get; set; } = null!;
+        public DbSet<FutureActiveOrganisationParentListItem> FutureActiveOrganisationParentList { get; set; } = null!;
 
-        public DbSet<OrganisationClassificationListItem> OrganisationClassificationList { get; set; }
-        public DbSet<OrganisationClassificationTypeListItem> OrganisationClassificationTypeList { get; set; }
-        public DbSet<OrganisationRelationTypeListItem> OrganisationRelationTypeList { get; set; }
+        public DbSet<OrganisationClassificationListItem> OrganisationClassificationList { get; set; } = null!;
+        public DbSet<OrganisationClassificationTypeListItem> OrganisationClassificationTypeList { get; set; } = null!;
+        public DbSet<OrganisationRelationTypeListItem> OrganisationRelationTypeList { get; set; } = null!;
 
-        public DbSet<OrganisationTerminationListItem> OrganisationTerminationList { get; set; }
+        public DbSet<OrganisationTerminationListItem> OrganisationTerminationList { get; set; } = null!;
 
-        public DbSet<PersonListItem> PersonList { get; set; }
-        public DbSet<PersonCapacityListItem> PersonCapacityList { get; set; }
-        public DbSet<PersonFunctionListItem> PersonFunctionList { get; set; }
-        public DbSet<PersonMandateListItem> PersonMandateList { get; set; }
+        public DbSet<PersonListItem> PersonList { get; set; } = null!;
+        public DbSet<PersonCapacityListItem> PersonCapacityList { get; set; } = null!;
+        public DbSet<PersonFunctionListItem> PersonFunctionList { get; set; } = null!;
+        public DbSet<PersonMandateListItem> PersonMandateList { get; set; } = null!;
 
-        public DbSet<PurposeListItem> PurposeList { get; set; }
-        public DbSet<OrganisationTreeItem> OrganisationTreeList { get; set; }
+        public DbSet<PurposeListItem> PurposeList { get; set; } = null!;
+        public DbSet<OrganisationTreeItem> OrganisationTreeList { get; set; } = null!;
 
-        public DbSet<ProjectionStateItem> ProjectionStates { get; set; }
+        public DbSet<ProjectionStateItem> ProjectionStates { get; set; } = null!;
 
         // ElasticSearch
-        public DbSet<ShowOnVlaamseOverheidSitesPerOrganisation> ShowOnVlaamseOverheidSitesPerOrganisationList { get; set; }
-        public DbSet<IsActivePerOrganisationCapacity> IsActivePerOrganisationCapacityList { get; set; }
-        public DbSet<ElasticSearchProjections.OrganisationPerBody> OrganisationPerBodyListForES { get; set; }
-        public DbSet<OrganisationToRebuild> OrganisationsToRebuild { get; set; }
+        public DbSet<ShowOnVlaamseOverheidSitesPerOrganisation> ShowOnVlaamseOverheidSitesPerOrganisationList { get; set; } = null!;
+        public DbSet<IsActivePerOrganisationCapacity> IsActivePerOrganisationCapacityList { get; set; } = null!;
+        public DbSet<ElasticSearchProjections.OrganisationPerBody> OrganisationPerBodyListForES { get; set; } = null!;
+        public DbSet<OrganisationToRebuild> OrganisationsToRebuild { get; set; } = null!;
 
-        public DbSet<OrganisationCacheItem> OrganisationCache { get; set; }
-        public DbSet<ContactTypeCacheItem> ContactTypeCache { get; set; }
-        public DbSet<BodySeatCacheItem> BodySeatCache { get; set; }
-        public DbSet<BodyCacheItem> BodyCache { get; set; }
+        public DbSet<OrganisationCacheItem> OrganisationCache { get; set; } = null!;
+        public DbSet<ContactTypeCacheItem> ContactTypeCache { get; set; } = null!;
+        public DbSet<BodySeatCacheItem> BodySeatCache { get; set; } = null!;
+        public DbSet<BodyCacheItem> BodyCache { get; set; } = null!;
 
 
         // Reporting
-        public DbSet<BodySeatGenderRatioOrganisationPerBodyListItem> BodySeatGenderRatioOrganisationPerBodyList { get; set; }
-        public DbSet<BodySeatGenderRatioPersonListItem> BodySeatGenderRatioPersonList { get; set; }
-        public DbSet<BodySeatGenderRatioOrganisationListItem> BodySeatGenderRatioOrganisationList { get; set; }
+        public DbSet<BodySeatGenderRatioOrganisationPerBodyListItem> BodySeatGenderRatioOrganisationPerBodyList { get; set; } = null!;
+        public DbSet<BodySeatGenderRatioPersonListItem> BodySeatGenderRatioPersonList { get; set; } = null!;
+        public DbSet<BodySeatGenderRatioOrganisationListItem> BodySeatGenderRatioOrganisationList { get; set; } = null!;
 
-        public DbSet<BodySeatGenderRatioBodyItem> BodySeatGenderRatioBodyList { get; set; }
-        public DbSet<BodySeatGenderRatioPostsPerTypeItem> BodySeatGenderRatioPostsPerTypeList { get; set; }
-        public DbSet<BodySeatGenderRatioBodyMandateItem> BodySeatGenderRatioBodyMandateList { get; set; }
-        public DbSet<BodySeatGenderRatioOrganisationClassificationItem> BodySeatGenderRatioOrganisationClassificationList { get; set; }
+        public DbSet<BodySeatGenderRatioBodyItem> BodySeatGenderRatioBodyList { get; set; } = null!;
+        public DbSet<BodySeatGenderRatioPostsPerTypeItem> BodySeatGenderRatioPostsPerTypeList { get; set; } = null!;
+        public DbSet<BodySeatGenderRatioBodyMandateItem> BodySeatGenderRatioBodyMandateList { get; set; } = null!;
+        public DbSet<BodySeatGenderRatioOrganisationClassificationItem> BodySeatGenderRatioOrganisationClassificationList { get; set; } = null!;
 
         //Kbo Sync Queue
-        public DbSet<KboSyncQueueItem> KboSyncQueue { get; set; }
+        public DbSet<KboSyncQueueItem> KboSyncQueue { get; set; } = null!;
 
         // Import
 
-        public DbSet<ImportOrganisationsStatusListItem> ImportOrganisationsStatusList { get; set; }
+        public DbSet<ImportOrganisationsStatusListItem> ImportOrganisationsStatusList { get; set; } = null!;
 
         // This needs to be DbContextOptions<T> for Autofac!
         public OrganisationRegistryContext(DbContextOptions<OrganisationRegistryContext> options)

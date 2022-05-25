@@ -54,7 +54,8 @@ namespace OrganisationRegistry.Projections.Delegations
 
         public async Task<bool> Run()
         {
-            _logger.LogInformation(ProgramInformation.Build(_delegationsRunnerConfiguration, _togglesConfiguration));
+            var message = ProgramInformation.Build(_delegationsRunnerConfiguration, _togglesConfiguration);
+            _logger.LogInformation("{Message}", message);
 
             if (!_togglesConfiguration.DelegationsRunnerAvailable)
                 return false;
@@ -86,7 +87,7 @@ namespace OrganisationRegistry.Projections.Delegations
             }
             catch (Exception ex)
             {
-                _logger.LogCritical(0, ex, "An exception occurred while handling envelopes.");
+                _logger.LogCritical(0, ex, "An exception occurred while handling envelopes");
                 throw;
             }
             finally
@@ -103,7 +104,7 @@ namespace OrganisationRegistry.Projections.Delegations
                 return;
 
             _logger.LogInformation("[{ProjectionName}] First run, initialising projections!", DelegationsRunnerProjectionName);
-            await ProcessEnvelope(new InitialiseProjection(typeof(DelegationListProjection).FullName).ToTypedEnvelope());
+            await ProcessEnvelope(new InitialiseProjection(typeof(DelegationListProjection).FullName!).ToTypedEnvelope());
         }
 
         private async Task UpdateProjectionState(int? newLastProcessedEventNumber)
@@ -135,14 +136,14 @@ namespace OrganisationRegistry.Projections.Delegations
 
         private void LogEnvelopeCount(IReadOnlyCollection<IEnvelope> envelopes)
         {
-            _logger.LogInformation("Found {NumberOfEnvelopes} envelopes to process.", envelopes.Count);
+            _logger.LogInformation("Found {NumberOfEnvelopes} envelopes to process", envelopes.Count);
             //_telemetryClient.TrackMetric("DelegationsRunner::EnvelopesToProcess", envelopes.Count);
 
             if (envelopes.Count > 0)
             {
                 var firstEnvelope = envelopes.First();
                 var lastEnvelope = envelopes.Last();
-                _logger.LogInformation("Starting at #{FirstEnvelopeNumber} to #{LastEnvelopeNumber}.", firstEnvelope.Number, lastEnvelope.Number);
+                _logger.LogInformation("Starting at #{FirstEnvelopeNumber} to #{LastEnvelopeNumber}", firstEnvelope.Number, lastEnvelope.Number);
             }
         }
     }

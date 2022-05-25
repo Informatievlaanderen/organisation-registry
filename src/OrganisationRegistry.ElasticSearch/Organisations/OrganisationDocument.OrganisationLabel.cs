@@ -14,7 +14,12 @@ namespace OrganisationRegistry.ElasticSearch.Organisations
             public string Value { get; set; }
             public Period Validity { get; set; }
 
-            protected OrganisationLabel() { }
+            protected OrganisationLabel()
+            {
+                LabelTypeName = string.Empty;
+                Value = string.Empty;
+                Validity = Period.Infinite();
+            }
 
             public OrganisationLabel(
                 Guid organisationLabelId,

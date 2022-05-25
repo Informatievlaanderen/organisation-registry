@@ -9,8 +9,8 @@ namespace OrganisationRegistry.SqlServer.ElasticSearchProjections
     public class BodySeatCacheItem
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string Number { get; set; }
+        public string Name { get; set; } = null!;
+        public string Number { get; set; } = null!;
         public bool IsPaid { get; set; }
     }
 

@@ -63,13 +63,13 @@ namespace OrganisationRegistry.IbanBic
                     validateBranchCode(bic);
                 }
             }
-            catch (UnsupportedCountry uce)
+            catch (UnsupportedCountry)
             {
-                throw uce;
+                throw;
             }
-            catch (InvalidBicFormat bex)
+            catch (InvalidBicFormat)
             {
-                throw bex;
+                throw;
             }
             catch (Exception ex)
             {
@@ -177,8 +177,8 @@ namespace OrganisationRegistry.IbanBic
 
         private static void validateBankCode(string bic)
         {
-            string bankCode = GetBankCode(bic);
-            foreach (char c in bankCode.ToCharArray())
+            var bankCode = GetBankCode(bic);
+            foreach (var c in bankCode)
             {
                 if (!char.IsLetter(c))
                 {
@@ -192,8 +192,8 @@ namespace OrganisationRegistry.IbanBic
         {
             validationResult = BicFormatViolation.NO_VIOLATION;
 
-            string bankCode = GetBankCode(bic);
-            foreach (char c in bankCode.ToCharArray())
+            var bankCode = GetBankCode(bic);
+            foreach (var c in bankCode)
             {
                 if (!char.IsLetter(c))
                 {
@@ -207,7 +207,7 @@ namespace OrganisationRegistry.IbanBic
 
         private static void validateCountryCode(string bic)
         {
-            string countryCode = GetCountryCode(bic);
+            var countryCode = GetCountryCode(bic);
             if (countryCode.Trim().Length < _COUNTRY_CODE_LENGTH || !countryCode.Equals(countryCode.ToUpper()) || !Char.IsLetter(countryCode[0]) || !Char.IsLetter(countryCode[1]))
             {
                 throw new InvalidBicFormat("BIC country code must contain upper case letters", BicFormatViolation.COUNTRY_CODE_ONLY_UPPER_CASE_LETTERS);
@@ -241,8 +241,8 @@ namespace OrganisationRegistry.IbanBic
 
         private static void validateLocationCode(string bic)
         {
-            string locationCode = GetLocationCode(bic);
-            foreach (char c in locationCode.ToCharArray())
+            var locationCode = GetLocationCode(bic);
+            foreach (var c in locationCode)
             {
                 if (!char.IsLetterOrDigit(c))
                 {
@@ -255,8 +255,8 @@ namespace OrganisationRegistry.IbanBic
         {
             validationResult = BicFormatViolation.NO_VIOLATION;
 
-            string locationCode = GetLocationCode(bic);
-            foreach (char c in locationCode.ToCharArray())
+            var locationCode = GetLocationCode(bic);
+            foreach (var c in locationCode)
             {
                 if (!char.IsLetterOrDigit(c))
                 {
@@ -270,8 +270,8 @@ namespace OrganisationRegistry.IbanBic
 
         private static void validateBranchCode(string bic)
         {
-            string branchCode = GetBranchCode(bic);
-            foreach (char c in branchCode.ToCharArray())
+            var branchCode = GetBranchCode(bic);
+            foreach (var c in branchCode)
             {
                 if (!char.IsLetterOrDigit(c))
                 {
@@ -284,8 +284,8 @@ namespace OrganisationRegistry.IbanBic
         {
             validationResult = BicFormatViolation.NO_VIOLATION;
 
-            string branchCode = GetBranchCode(bic);
-            foreach (char c in branchCode.ToCharArray())
+            var branchCode = GetBranchCode(bic);
+            foreach (var c in branchCode)
             {
                 if (!char.IsLetterOrDigit(c))
                 {

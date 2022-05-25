@@ -22,10 +22,10 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public Guid OrganisationId { get; set; }
 
         public Guid OrganisationClassificationTypeId { get; set; }
-        public string OrganisationClassificationTypeName { get; set; }
+        public string OrganisationClassificationTypeName { get; set; } = null!;
 
         public Guid OrganisationClassificationId { get; set; }
-        public string OrganisationClassificationName { get; set; }
+        public string OrganisationClassificationName { get; set; } = null!;
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
@@ -211,7 +211,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationUpdated> message)
         {
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var key = context.OrganisationOrganisationClassificationList.SingleOrDefault(item => item.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId);
+            var key = await context.OrganisationOrganisationClassificationList.SingleAsync(item => item.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId);
 
             key.OrganisationOrganisationClassificationId = message.Body.OrganisationOrganisationClassificationId;
             key.OrganisationId = message.Body.OrganisationId;

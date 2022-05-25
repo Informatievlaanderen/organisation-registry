@@ -5,6 +5,7 @@ namespace OrganisationRegistry.Infrastructure.Events
     using Messages;
     using Newtonsoft.Json;
 
+    // ReSharper disable once UnusedTypeParameter
     public interface IEvent<in T> : IEvent { }
 
     public interface IEvent : IMessage

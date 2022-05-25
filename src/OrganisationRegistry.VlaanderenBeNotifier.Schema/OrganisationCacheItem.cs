@@ -8,8 +8,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.Schema
     public class OrganisationCacheItem
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
-        public string OvoNumber { get; set; }
+        public string Name { get; set; } = null!;
+        public string OvoNumber { get; set; } = null!;
     }
 
     public class OrganisationCacheForEsConfiguration : EntityMappingConfiguration<OrganisationCacheItem>

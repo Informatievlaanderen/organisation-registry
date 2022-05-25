@@ -48,7 +48,8 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
 
         public async Task<bool> Run()
         {
-            _logger.LogInformation(ProgramInformation.Build(_vlaanderenBeNotifierConfiguration));
+            var message = ProgramInformation.Build(_vlaanderenBeNotifierConfiguration);
+            _logger.LogInformation("{Message}", message);
 
             if (!_togglesConfiguration.VlaanderenBeNotifierAvailable)
                 return false;
@@ -58,7 +59,6 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
 
             LogEnvelopeCount(envelopes);
 
-            var newLastProcessedEventNumber = new int?();
             try
             {
                 var db = new SqlConnection(_sqlServerConfiguration.ConnectionString);
@@ -67,7 +67,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
                 {
                     var tx = await db.BeginTransactionAsync(IsolationLevel.Serializable);
 
-                    newLastProcessedEventNumber = await ProcessEnvelope(envelope, db, tx);
+                    var newLastProcessedEventNumber = await ProcessEnvelope(envelope, db, tx);
                     await UpdateProjectionState(newLastProcessedEventNumber, db, tx);
 
                     await tx.CommitAsync();
@@ -75,7 +75,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
             }
             catch (Exception ex)
             {
-                _logger.LogCritical(0, ex, "An exception occurred while handling envelopes.");
+                _logger.LogCritical(0, ex, "An exception occurred while handling envelopes");
                 throw;
             }
 
@@ -114,11 +114,11 @@ namespace OrganisationRegistry.VlaanderenBeNotifier
 
         private void LogEnvelopeCount(IReadOnlyCollection<IEnvelope> envelopes)
         {
-            _logger.LogInformation("Found {NumberOfEnvelopes} envelopes to process.", envelopes.Count);
+            _logger.LogInformation("Found {NumberOfEnvelopes} envelopes to process", envelopes.Count);
             //_telemetryClient.TrackMetric("VlaanderenBeNotifier::EnvelopesToProcess", envelopes.Count);
 
             if (envelopes.Count > 0)
-                _logger.LogInformation("Starting at #{FirstEnvelopeNumber} to #{LastEnvelopeNumber}.", envelopes.First().Number, envelopes.Last().Number);
+                _logger.LogInformation("Starting at #{FirstEnvelopeNumber} to #{LastEnvelopeNumber}", envelopes.First().Number, envelopes.Last().Number);
         }
     }
 }

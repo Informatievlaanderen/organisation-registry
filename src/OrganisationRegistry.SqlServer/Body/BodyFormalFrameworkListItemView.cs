@@ -21,7 +21,7 @@
         public Guid BodyId { get; set; }
 
         public Guid FormalFrameworkId { get; set; }
-        public string FormalFrameworkName { get; set; }
+        public string FormalFrameworkName { get; set; } = null!;
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
@@ -111,7 +111,7 @@
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var bodyFormalFramework = context.BodyFormalFrameworkList.SingleOrDefault(item => item.BodyFormalFrameworkId == message.Body.BodyFormalFrameworkId);
+                var bodyFormalFramework = await context.BodyFormalFrameworkList.SingleAsync(item => item.BodyFormalFrameworkId == message.Body.BodyFormalFrameworkId);
 
                 bodyFormalFramework.BodyFormalFrameworkId = message.Body.BodyFormalFrameworkId;
                 bodyFormalFramework.BodyId = message.Body.BodyId;

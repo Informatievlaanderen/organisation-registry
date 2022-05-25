@@ -20,7 +20,7 @@ namespace OrganisationRegistry.SqlServer.Body
         public Guid BodyId { get; set; }
 
         public Guid OrganisationId { get; set; }
-        public string OrganisationName { get; set; }
+        public string OrganisationName { get; set; } = null!;
 
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
@@ -77,21 +77,25 @@ namespace OrganisationRegistry.SqlServer.Body
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdated> message)
         {
             UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationNameUpdated> message)
         {
             UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
             UpdateOrganisationName(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
+            await Task.CompletedTask;
         }
 
         private static void UpdateOrganisationName(
@@ -137,7 +141,7 @@ namespace OrganisationRegistry.SqlServer.Body
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var organisation = context.BodyOrganisationList.SingleOrDefault(item => item.BodyOrganisationId == message.Body.BodyOrganisationId);
+                var organisation = await context.BodyOrganisationList.SingleAsync(item => item.BodyOrganisationId == message.Body.BodyOrganisationId);
 
                 organisation.BodyOrganisationId = message.Body.BodyOrganisationId;
                 organisation.OrganisationId = message.Body.OrganisationId;

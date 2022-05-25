@@ -16,7 +16,11 @@ namespace OrganisationRegistry.ElasticSearch.Common
             Value = value;
         }
 
-        protected Contact() { }
+        protected Contact()
+        {
+            ContactTypeName = string.Empty;
+            Value = string.Empty;
+        }
 
         public static IPromise<IProperties> Mapping(PropertiesDescriptor<Contact> map) => map
             .Keyword(k => k

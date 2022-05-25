@@ -17,18 +17,9 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         }
 
         public static CachedOrganisation FromCache(BodySeatGenderRatioOrganisationListItem organisation)
-        {
-            return new CachedOrganisation(
-                organisation.OrganisationId,
-                organisation.OrganisationName,
-                organisation.OrganisationActive);
-        }
+            => new(organisation.OrganisationId, organisation.OrganisationName, organisation.OrganisationActive);
 
         public static CachedOrganisation Empty()
-        {
-            return new CachedOrganisation(
-                null,
-                null);
-        }
+            => new(null, string.Empty);
     }
 }

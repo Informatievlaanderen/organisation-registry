@@ -22,9 +22,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public Guid OrganisationId { get; set; }
 
-        public string OvoNumber { get; set; }
+        public string OvoNumber { get; set; } = null!;
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public string? ShortName { get; set; }
 
         public string? ParentOrganisation { get; set; }
@@ -373,7 +373,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
                 item.OrganisationId == message.Body.OrganisationId);
 
             organisationListItem.ParentOrganisationId = message.Body.ParentOrganisationId;
-            var parentOrganisation = GetParentOrganisation(context, message.Body.ParentOrganisationId);;
+            var parentOrganisation = GetParentOrganisation(context, message.Body.ParentOrganisationId);
             organisationListItem.ParentOrganisation = parentOrganisation.Name;
             organisationListItem.ParentOrganisationOvoNumber = parentOrganisation.OvoNumber;
             organisationListItem.ParentOrganisationsRelationshipId = message.Body.OrganisationFormalFrameworkId;
@@ -645,11 +645,13 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationAdded> message)
         {
             AddOrganisationClassification(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.OrganisationOrganisationClassificationId, message.Body.OrganisationClassificationId, message.Body.OrganisationClassificationTypeId, message.Body.ValidFrom, message.Body.ValidTo);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationAdded> message)
         {
             AddOrganisationClassification(dbConnection, dbTransaction, ContextFactory, message.Body.OrganisationId, message.Body.OrganisationOrganisationClassificationId, message.Body.OrganisationClassificationId, message.Body.OrganisationClassificationTypeId, message.Body.ValidFrom, message.Body.ValidTo);
+            await Task.CompletedTask;
         }
 
         private static void AddOrganisationClassification(
@@ -824,7 +826,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             var organisationListItem =
                 context.OrganisationList
-                    .Single(item =>
+                    .SingleOrDefault(item =>
                         item.FormalFrameworkId == formalFrameworkId &&
                         item.OrganisationId == organisationId);
 

@@ -14,7 +14,12 @@
             public string Value { get; set; }
             public Period Validity { get; set; }
 
-            protected OrganisationContact() { }
+            protected OrganisationContact()
+            {
+                ContactTypeName = string.Empty;
+                Value = string.Empty;
+                Validity = Period.Infinite();
+            }
 
             public OrganisationContact(
                 Guid organisationContactId,

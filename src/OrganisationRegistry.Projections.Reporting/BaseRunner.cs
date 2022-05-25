@@ -76,7 +76,7 @@ namespace OrganisationRegistry.Projections.Reporting
             }
             catch (Exception ex)
             {
-                _logger.LogCritical(0, ex, "[{ProjectionName}] An exception occurred while handling envelopes.", ProjectionName);
+                _logger.LogCritical(0, ex, "[{ProjectionName}] An exception occurred while handling envelopes", ProjectionName);
 
                 throw;
             }
@@ -127,12 +127,12 @@ namespace OrganisationRegistry.Projections.Reporting
 
         private void LogEnvelopeCount(IReadOnlyCollection<IEnvelope> envelopes)
         {
-            _logger.LogInformation("[{ProjectionName}] Found {NumberOfEnvelopes} envelopes to process.", ProjectionName, envelopes.Count);
+            _logger.LogInformation("[{ProjectionName}] Found {NumberOfEnvelopes} envelopes to process", ProjectionName, envelopes.Count);
 
             //_telemetryClient.TrackMetric($"ReportingProjections::{ProjectionName}::EnvelopesToProcess", envelopes.Count);
 
             if (envelopes.Count > 0)
-                _logger.LogInformation("[{ProjectionName}] Starting at #{FirstEnvelopeNumber} to #{LastEnvelopeNumber}.", ProjectionName, envelopes.First().Number, envelopes.Last().Number);
+                _logger.LogInformation("[{ProjectionName}] Starting at #{FirstEnvelopeNumber} to #{LastEnvelopeNumber}", ProjectionName, envelopes.First().Number, envelopes.Last().Number);
         }
     }
 }

@@ -13,13 +13,13 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
     public abstract class BaseProjection<T>
     {
-        protected readonly ILogger<T> Logger;
+        protected readonly ILogger Logger;
 
-        protected BaseProjection(ILogger<T> logger)
+        protected BaseProjection(ILogger logger)
         {
             Logger = logger;
 
-            Logger.LogTrace("Created EventHandler {ProjectionName}.", typeof(T));
+            Logger.LogTrace("Created EventHandler {ProjectionName}", typeof(T));
         }
     }
 
@@ -31,7 +31,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         protected abstract string[] ProjectionTableNames { get; }
         public abstract string Schema { get; }
 
-        protected Projection(ILogger<T> logger, IContextFactory contextFactory) : base(logger)
+        protected Projection(ILogger logger, IContextFactory contextFactory) : base(logger)
         {
             ContextFactory = contextFactory;
         }
@@ -52,8 +52,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
             try
             {
-                var eventTypes = this
-                    .GetType()
+                var eventTypes = GetType()
                     .GetInterfaces()
                     .Where(x => x.GetTypeInfo().IsGenericType)
                     .Where(x => x.GetGenericTypeDefinition() == typeof(IEventHandler<>))
@@ -61,7 +60,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                     .Except(new[] {typeof(RebuildProjection), typeof(Rollback), typeof(ResetMemoryCache)})
                     .ToArray();
 
-                Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} started.",
+                Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} started",
                     ProjectionTableNames, message.Body.ProjectionName);
 
                 using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
@@ -73,10 +72,10 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                     }
                 }
 
-                Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} finished.",
+                Logger.LogInformation("Initialization {ProjectionTableNames} for {ProjectionName} finished",
                     ProjectionTableNames, message.Body.ProjectionName);
 
-                Logger.LogInformation("Projection rebuild for {ProjectionName} started in batches of {BatchSize} events.",
+                Logger.LogInformation("Projection rebuild for {ProjectionName} started in batches of {BatchSize} events",
                     message.Body.ProjectionName, BatchSize);
 
                 var lastProcessed = 0;
@@ -96,18 +95,18 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
                     }
 
                     Logger.LogInformation(
-                        "Projection rebuild for {ProjectionName} processed up until #{LastProcessed}.",
+                        "Projection rebuild for {ProjectionName} processed up until #{LastProcessed}",
                         message.Body.ProjectionName, lastProcessed);
 
 
                 } while (envelopeCount == BatchSize); //if envelopeCount is smaller than BatchSize, the last event was processed
 
 
-                Logger.LogInformation("Projection rebuild for {ProjectionName} finished.", message.Body.ProjectionName);
+                Logger.LogInformation("Projection rebuild for {ProjectionName} finished", message.Body.ProjectionName);
             }
             catch (Exception ex)
             {
-                Logger.LogError("Projection rebuild for {ProjectionName} failed.", ex, message.Body.ProjectionName);
+                Logger.LogError(ex, "Projection rebuild for {ProjectionName} failed", message.Body.ProjectionName);
                 throw;
             }
         }

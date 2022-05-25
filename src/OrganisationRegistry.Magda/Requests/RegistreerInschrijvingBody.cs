@@ -8,6 +8,6 @@ namespace OrganisationRegistry.Magda.Requests
     public class RegistreerInschrijvingBody
     {
         [XmlElement(Namespace = "http://webservice.registreerinschrijvingdienst-02_01.repertorium-02_01.vip.vlaanderen.be")]
-        public RegistreerInschrijving RegistreerInschrijving { get; set; }
+        public RegistreerInschrijving RegistreerInschrijving { get; set; } = null!;
     }
 }

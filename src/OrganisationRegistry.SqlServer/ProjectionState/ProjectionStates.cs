@@ -36,9 +36,8 @@
             await using var context = connection != null && transaction != null ?
                 _contextFactory.CreateTransactional(connection, transaction) :
                 _contextFactory.Create();
-            var state =
-                await context.ProjectionStates
-                    .SingleOrDefaultAsync(item => item.Name == projectionName);
+            var state = await context.ProjectionStates
+                    .SingleAsync(item => item.Name == projectionName);
 
             if (state.EventNumber != lastEventNumber)
             {

@@ -5,6 +5,6 @@
 
     public interface IEventPublisher
     {
-        Task Publish<T>(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<T> envelope) where T : IEvent<T>;
+        Task Publish<T>(DbConnection? dbConnection, DbTransaction? dbTransaction, IEnvelope<T> envelope) where T : IEvent<T>;
     }
 }

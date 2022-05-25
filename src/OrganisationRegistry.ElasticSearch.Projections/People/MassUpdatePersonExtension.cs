@@ -54,7 +54,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People
             string listPropertyName,
             string idPropertyName,
             string namePropertyName,
-            object newName,
+            object? newName,
             int changeId,
             DateTimeOffset changeTime,
             int scrollSize = 100)

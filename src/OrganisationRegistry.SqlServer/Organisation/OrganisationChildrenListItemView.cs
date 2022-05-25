@@ -19,9 +19,9 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
-        public string OvoNumber { get; set; }
+        public string OvoNumber { get; set; } = null!;
 
         public Guid ParentOrganisationId { get; set; }
 
@@ -207,7 +207,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         {
             using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
             {
-                var key = context.OrganisationChildrenList.SingleOrDefault(item => item.OrganisationOrganisationParentId == message.Body.OrganisationOrganisationParentId);
+                var key = await context.OrganisationChildrenList.SingleAsync(item => item.OrganisationOrganisationParentId == message.Body.OrganisationOrganisationParentId);
 
                 key.OrganisationOrganisationParentId = message.Body.OrganisationOrganisationParentId;
                 key.Id = message.Body.OrganisationId;

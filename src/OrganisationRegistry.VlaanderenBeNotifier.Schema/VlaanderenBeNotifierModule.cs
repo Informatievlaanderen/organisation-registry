@@ -21,12 +21,7 @@ namespace OrganisationRegistry.VlaanderenBeNotifier.Schema
         {
             var logger = loggerFactory.CreateLogger<VlaanderenBeNotifierModule>();
 
-            logger.LogInformation(
-                "Added {Context} to services:" +
-                Environment.NewLine +
-                "\tSchema: {Schema}" +
-                Environment.NewLine +
-                "\tTableName: {TableName}",
+            logger.LogInformation("Added {Context} to services:\n\tSchema: {Schema}\n\tTableName: {TableName}",
                 nameof(VlaanderenBeNotifierContext), WellknownSchemas.BackofficeSchema, MigrationTables.Default);
         }
 

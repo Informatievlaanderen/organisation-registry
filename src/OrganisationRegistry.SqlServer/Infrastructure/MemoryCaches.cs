@@ -41,7 +41,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
         private Dictionary<Guid, string> _bodyNames = null!;
         private Dictionary<Guid, string> _bodySeatNames = null!;
-        private Dictionary<Guid, string?> _bodySeatNumbers = null!;
+        private Dictionary<Guid, string> _bodySeatNumbers = null!;
 
         private Dictionary<Guid, string> _contactTypeNames = null!;
 
@@ -82,7 +82,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
             ToReadOnlyDictionary(GetCache<bool>(MemoryCacheType.IsSeatPaid));
 
         public IList<Guid> UnderVlimpersManagement =>
-            new List<Guid>(GetSparseCache<Guid>(MemoryCacheType.UnderVlimpersManagement));
+            new List<Guid>(GetSparseCache(MemoryCacheType.UnderVlimpersManagement));
 
         public MemoryCaches(IContextFactory contextFactory, ILogger<MemoryCaches>? logger = null)
         {
@@ -134,7 +134,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
             }
         }
 
-        internal IList<Guid> GetSparseCache<T>(MemoryCacheType cacheType)
+        internal IList<Guid> GetSparseCache(MemoryCacheType cacheType)
         {
             switch (cacheType)
             {
@@ -269,12 +269,14 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.BodyNames)
                 .UpdateMemoryCache(message.Body.BodyId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<BodyInfoChanged> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.BodyNames)
                 .UpdateMemoryCache(message.Body.BodyId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<BodySeatAdded> message)
@@ -287,6 +289,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
             _memoryCaches.GetCache<bool>(MemoryCacheType.IsSeatPaid)
                 .UpdateMemoryCache(message.Body.BodySeatId, message.Body.PaidSeat);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<BodySeatUpdated> message)
@@ -296,18 +299,21 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
             _memoryCaches.GetCache<bool>(MemoryCacheType.IsSeatPaid)
                 .UpdateMemoryCache(message.Body.BodySeatId, message.Body.PaidSeat);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<ContactTypeCreated> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.ContactTypeNames)
                 .UpdateMemoryCache(message.Body.ContactTypeId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<ContactTypeUpdated> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.ContactTypeNames)
                 .UpdateMemoryCache(message.Body.ContactTypeId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationCreated> message)
@@ -323,6 +329,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
             _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidTos)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ValidTo);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationCreatedFromKbo> message)
@@ -338,6 +345,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
             _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidTos)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ValidTo);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationInfoUpdated> message)
@@ -353,12 +361,14 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
             _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidTos)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ValidTo);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationNameUpdated> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationNames)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationValidityUpdated> message)
@@ -368,6 +378,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
 
             _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidTos)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ValidTo);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationTerminated> message)
@@ -375,6 +386,7 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
             if (message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
                 _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidTos)
                     .UpdateMemoryCache(message.Body.OrganisationId, message.Body.FieldsToTerminate.OrganisationValidity);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationTerminatedV2> message)
@@ -382,48 +394,56 @@ namespace OrganisationRegistry.SqlServer.Infrastructure
             if (message.Body.FieldsToTerminate.OrganisationValidity.HasValue)
                 _memoryCaches.GetCache<DateTime?>(MemoryCacheType.OrganisationValidTos)
                     .UpdateMemoryCache(message.Body.OrganisationId, message.Body.FieldsToTerminate.OrganisationValidity);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationInfoUpdatedFromKbo> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationNames)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.Name);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationCouplingWithKboCancelled> message)
         {
             _memoryCaches.GetCache<string>(MemoryCacheType.OrganisationNames)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.NameBeforeKboCoupling);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<ParentAssignedToOrganisation> message)
         {
             _memoryCaches.GetCache<Guid?>(MemoryCacheType.OrganisationParents)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ParentOrganisationId);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<OrganisationParentUpdated> message)
         {
             _memoryCaches.GetCache<Guid?>(MemoryCacheType.OrganisationParents)
                 .UpdateMemoryCache(message.Body.OrganisationId, message.Body.ParentOrganisationId);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<ParentClearedFromOrganisation> message)
         {
             _memoryCaches.GetCache<Guid?>(MemoryCacheType.OrganisationParents)
                 .UpdateMemoryCache(message.Body.OrganisationId, null);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationPlacedUnderVlimpersManagement> message)
         {
-            _memoryCaches.GetSparseCache<Guid>(MemoryCacheType.UnderVlimpersManagement)
+            _memoryCaches.GetSparseCache(MemoryCacheType.UnderVlimpersManagement)
                 .Add(message.Body.OrganisationId);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationReleasedFromVlimpersManagement> message)
         {
-            _memoryCaches.GetSparseCache<Guid>(MemoryCacheType.UnderVlimpersManagement)
+            _memoryCaches.GetSparseCache(MemoryCacheType.UnderVlimpersManagement)
                 .Remove(message.Body.OrganisationId);
+            await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection _, DbTransaction __, IEnvelope<ResetMemoryCache> message)

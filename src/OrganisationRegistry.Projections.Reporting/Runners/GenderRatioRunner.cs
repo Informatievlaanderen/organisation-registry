@@ -10,7 +10,7 @@ namespace OrganisationRegistry.Projections.Reporting.Runners
     public class GenderRatioRunner : BaseRunner
     {
         private const string DbProjectionsProjectionName = "GenderRatioRunner";
-        private static readonly string ProjectionFullName = typeof(BodySeatGenderRatioProjection).FullName;
+        private static readonly string ProjectionFullName = typeof(BodySeatGenderRatioProjection).FullName!;
         private new const string ProjectionName = nameof(BodySeatGenderRatioProjection);
 
         private new static readonly Type[] EventHandlers =
@@ -22,7 +22,7 @@ namespace OrganisationRegistry.Projections.Reporting.Runners
         private new static readonly Type[] ReactionHandlers = { };
 
         public GenderRatioRunner(
-            ILogger<BaseRunner> logger,
+            ILogger<GenderRatioRunner> logger,
             IEventStore store,
             IProjectionStates projectionStates,
             IEventPublisher bus) :

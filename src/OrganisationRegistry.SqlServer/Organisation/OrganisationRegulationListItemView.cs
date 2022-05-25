@@ -23,7 +23,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
         public string? RegulationThemeName { get; set; }
         public Guid? RegulationSubThemeId { get; set; }
         public string? RegulationSubThemeName { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public DateTime? Date { get; set; }
         public string? Url { get; set; }
         public string? WorkRulesUrl { get; set; }
@@ -154,13 +154,12 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
         {
-            if (message.Body.FieldsToTerminate.Regulations == null ||
-                !message.Body.FieldsToTerminate.Regulations.Any())
+            if (!message.Body.FieldsToTerminate.Regulations.Any())
                 return;
 
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
             var regulations = context.OrganisationRegulationList.Where(item =>
-                message.Body.FieldsToTerminate.Regulations.Keys.Contains(item.OrganisationRegulationId));
+                message.Body.FieldsToTerminate.Regulations.ContainsKey(item.OrganisationRegulationId));
 
             foreach (var regulation in regulations)
                 regulation.ValidTo = message.Body.FieldsToTerminate.Regulations[regulation.OrganisationRegulationId];

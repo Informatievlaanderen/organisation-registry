@@ -20,7 +20,7 @@
         public Guid Id { get; set; }
 
         public string? BodyNumber { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public string? ShortName { get; set; }
 
         public string? Organisation { get; set; }

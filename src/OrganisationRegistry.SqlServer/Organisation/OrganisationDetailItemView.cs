@@ -20,11 +20,11 @@ namespace OrganisationRegistry.SqlServer.Organisation
     {
         public Guid Id { get; set; }
 
-        public string OvoNumber { get; set; }
+        public string OvoNumber { get; set; } = null!;
 
         public string? KboNumber { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public string? ShortName { get; set; }
         public string? Article { get; set; }
 
@@ -379,8 +379,7 @@ namespace OrganisationRegistry.SqlServer.Organisation
             IEnvelope<PurposeUpdated> message)
         {
             await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var organisationListItems = context.OrganisationDetail.Where(item =>
-                item.PurposeIds.Contains(message.Body.PurposeId.ToString()));
+            var organisationListItems = context.OrganisationDetail.Where(item => item.PurposeIds != null && item.PurposeIds.Contains(message.Body.PurposeId.ToString()));
 
             var previousPurposeName = message.Body.PreviousName;
             foreach (var organisationListItem in organisationListItems)

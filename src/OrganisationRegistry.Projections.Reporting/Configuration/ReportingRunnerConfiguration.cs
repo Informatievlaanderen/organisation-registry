@@ -11,10 +11,10 @@ namespace OrganisationRegistry.Projections.Reporting.Configuration
         [JsonConverter(typeof(TimestampConverter))]
         public DateTime Created => DateTime.Now;
 
-        public string LockRegionEndPoint { get; set; }
-        public string LockAccessKeyId { get; set; }
-        public string LockAccessKeySecret { get; set; }
-        public string LockTableName { get; set; }
+        public string LockRegionEndPoint { get; set; } = null!;
+        public string LockAccessKeyId { get; set; } = null!;
+        public string LockAccessKeySecret { get; set; } = null!;
+        public string LockTableName { get; set; } = null!;
         public int LockLeasePeriodInMinutes { get; set; }
         public bool LockEnabled { get; set; }
     }

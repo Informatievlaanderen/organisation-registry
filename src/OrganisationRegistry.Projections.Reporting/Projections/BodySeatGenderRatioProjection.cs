@@ -95,8 +95,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
         public override string Schema => WellknownSchemas.ReportingSchema;
 
         public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
-        {
-        }
+            => await Task.CompletedTask;
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCreated> message)
         {
@@ -322,11 +321,9 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
                 BodyId = message.Body.BodyId,
                 BodyName = message.Body.Name,
 
-                OrganisationId = organisation?.OrganisationId,
-                OrganisationName = organisation?.OrganisationName ?? string.Empty,
-                OrganisationIsActive = organisation?.OrganisationId != null &&
-                                       (GetOrganisationFromCache(context, organisation.OrganisationId.Value)
-                                           ?.OrganisationActive ?? false),
+                OrganisationId = organisation.OrganisationId,
+                OrganisationName = organisation.OrganisationName,
+                OrganisationIsActive = OrganisationIsActive(organisation, context),
 
                 LifecyclePhaseValidities = new List<BodySeatGenderRatioBodyLifecyclePhaseValidityItem>(),
                 PostsPerType = new List<BodySeatGenderRatioPostsPerTypeItem>(),
@@ -336,6 +333,9 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
             await context.SaveChangesAsync();
         }
+
+        private static bool OrganisationIsActive(CachedOrganisationForBody organisation, OrganisationRegistryContext context)
+            => organisation.OrganisationId is { } organisationId && GetOrganisationFromCache(context, organisationId).OrganisationActive;
 
         /// <summary>
         /// Update affected records in projection (body name)
@@ -855,7 +855,7 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
                 {
                     post.OrganisationId = message.Body.OrganisationId;
                     post.OrganisationName = message.Body.OrganisationName;
-                    post.OrganisationIsActive = cachedOrganisation?.OrganisationActive ?? false;
+                    post.OrganisationIsActive = cachedOrganisation.OrganisationActive;
                 });
 
             await context.SaveChangesAsync();
@@ -891,12 +891,14 @@ namespace OrganisationRegistry.Projections.Reporting.Projections
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationAdded> message)
         {
-            AddOrganisationClassification(message.Body.OrganisationOrganisationClassificationId, message.Body.OrganisationId, message.Body.OrganisationClassificationId, message.Body.OrganisationClassificationTypeId, message.Body.ValidFrom, message.Body.ValidTo);
+             AddOrganisationClassification(message.Body.OrganisationOrganisationClassificationId, message.Body.OrganisationId, message.Body.OrganisationClassificationId, message.Body.OrganisationClassificationTypeId, message.Body.ValidFrom, message.Body.ValidTo);
+             await Task.CompletedTask;
         }
 
         public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationAdded> message)
         {
             AddOrganisationClassification(message.Body.OrganisationOrganisationClassificationId, message.Body.OrganisationId, message.Body.OrganisationClassificationId, message.Body.OrganisationClassificationTypeId, message.Body.ValidFrom, message.Body.ValidTo);
+            await Task.CompletedTask;
         }
 
         private void AddOrganisationClassification(Guid organisationOrganisationClassificationId, Guid organisationId, Guid organisationClassificationId, Guid organisationClassificationTypeId, DateTime? validFrom, DateTime? validTo)

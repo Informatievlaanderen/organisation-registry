@@ -139,10 +139,10 @@ SELECT CAST(SCOPE_IDENTITY() as int)",
                                     Name = envelope.Body.GetType().FullName,
                                     Timestamp = envelope.Timestamp,
                                     Data = JsonConvert.SerializeObject(envelope.Body, _jsonSerializerSettings),
-                                    Ip = envelope.Ip ?? string.Empty,
-                                    LastName = envelope.LastName ?? string.Empty,
-                                    FirstName = envelope.FirstName ?? string.Empty,
-                                    UserId = envelope.UserId ?? string.Empty,
+                                    Ip = envelope.Ip,
+                                    LastName = envelope.LastName,
+                                    FirstName = envelope.FirstName,
+                                    UserId = envelope.UserId,
                                 }, tx)).Single();
 
                             envelope.Number = number;
@@ -177,7 +177,7 @@ SELECT CAST(SCOPE_IDENTITY() as int)",
                     try
                     {
                         var eventType = e.Name.ToEventType();
-                        return (IEvent)JsonConvert.DeserializeObject(e.Data, eventType, _jsonSerializerSettings);
+                        return (IEvent)JsonConvert.DeserializeObject(e.Data, eventType, _jsonSerializerSettings)!;
                     }
                     catch (InvalidCastException ex)
                     {
@@ -240,7 +240,7 @@ SELECT CAST(SCOPE_IDENTITY() as int)",
                     try
                     {
                         var eventType = e.Name.ToEventType();
-                        var @event = (IEvent)JsonConvert.DeserializeObject(e.Data, eventType, settings);
+                        var @event = (IEvent)JsonConvert.DeserializeObject(e.Data, eventType, settings)!;
                         return @event.ToEnvelope(e.Number, e.Ip, e.LastName, e.FirstName, e.UserId);
                     }
                     catch (InvalidCastException ex)
