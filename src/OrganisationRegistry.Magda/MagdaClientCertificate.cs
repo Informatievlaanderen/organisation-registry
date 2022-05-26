@@ -15,7 +15,7 @@ namespace OrganisationRegistry.Magda
         {
         }
 
-        // todo: why not throw an exception instead of calling this obsolete empty constructor ?
+        // todo: refactor: redesign calling code so this constructor is not needed anymore
         private MagdaClientCertificate()
         {
         }
