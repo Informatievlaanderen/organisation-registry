@@ -10,7 +10,7 @@ namespace OrganisationRegistry.Organisation.Events
 
         public Guid OrganisationOrganisationClassificationId { get; }
         public Guid OrganisationClassificationTypeId { get; }
-        public string? OrganisationClassificationTypeName { get; }
+        public string OrganisationClassificationTypeName { get; }
         public Guid OrganisationClassificationId { get; }
         public string OrganisationClassificationName { get; }
         public DateTime? ValidFrom { get; }
@@ -57,7 +57,7 @@ namespace OrganisationRegistry.Organisation.Events
 
             OrganisationOrganisationClassificationId = organisationOrganisationClassificationId;
             OrganisationClassificationTypeId = organisationClassificationTypeId;
-            OrganisationClassificationTypeName = GetClassificationTypeName(organisationClassificationTypeName, classificationTypeName);
+            OrganisationClassificationTypeName = GetClassificationTypeName(organisationClassificationTypeName, classificationTypeName) ?? string.Empty;
             OrganisationClassificationId = organisationClassificationId;
             OrganisationClassificationName = organisationClassificationName;
             ValidFrom = validFrom;
