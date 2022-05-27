@@ -1,13 +1,12 @@
 namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFramework;
 
 using System;
-using System.Collections.Generic;
-using FluentAssertions;
+using System.Threading.Tasks;
 using FormalFramework;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
 using OrganisationRegistry.Infrastructure.Events;
@@ -17,78 +16,77 @@ using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenUpdatingAnOrganisationFormalFrameworkWithCircularDependencies : ExceptionOldSpecification2<
+public class WhenUpdatingAnOrganisationFormalFrameworkWithCircularDependencies : Specification<
     UpdateOrganisationFormalFrameworkCommandHandler, UpdateOrganisationFormalFramework>
 {
-    private readonly SequentialOvoNumberGenerator _ovoNumberGenerator = new();
-    private Guid _grandParentBecameDaughterOfGrandParentId;
-    private Guid _formalFrameworkId;
-    private Guid _grandParentOrganisationId;
-    private Guid _childOrganisationId;
+    private readonly SequentialOvoNumberGenerator _ovoNumberGenerator;
+    private readonly Guid _grandParentBecameDaughterOfGrandParentId;
+    private readonly Guid _formalFrameworkId;
+    private readonly Guid _grandParentOrganisationId;
+    private readonly Guid _childOrganisationId;
+    private readonly Guid _categoryId;
+    private readonly string _categoryName;
+    private readonly Guid _parentOrganisationId;
+    private readonly Guid _greatGrandparentOrganisationId;
 
     public WhenUpdatingAnOrganisationFormalFrameworkWithCircularDependencies(ITestOutputHelper helper) : base(
         helper)
     {
+        _ovoNumberGenerator = new SequentialOvoNumberGenerator();
+
+        _categoryId = Guid.NewGuid();
+        _categoryName = "Formal Framework Category";
+        _grandParentBecameDaughterOfGrandParentId =
+            Guid.NewGuid();
+        _formalFrameworkId = Guid.NewGuid();
+        _greatGrandparentOrganisationId = Guid.NewGuid();
+        _grandParentOrganisationId = Guid.NewGuid();
+        _parentOrganisationId = Guid.NewGuid();
+        _childOrganisationId = Guid.NewGuid();
     }
 
-    protected override UpdateOrganisationFormalFrameworkCommandHandler BuildHandler()
+    protected override UpdateOrganisationFormalFrameworkCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<UpdateOrganisationFormalFrameworkCommandHandler>>().Object,
-            Session,
+            session,
             new DateTimeProvider(),
             new OrganisationRegistryConfigurationStub());
 
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
-    {
-        var childOrganisationCreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
-        var parentOrganisationCreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
-        var grandParentOrganisationCreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
-        var greatGrandParentOrganisationCreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
-        var formalFrameworkCategoryCreatedBuilder = new FormalFrameworkCategoryCreatedBuilder();
-        var formalFrameworkCreated = new FormalFrameworkCreatedBuilder(
-            formalFrameworkCategoryCreatedBuilder.Id,
-            formalFrameworkCategoryCreatedBuilder.Name);
-        var childBecameDaughterOfParent =
-            new OrganisationFormalFrameworkAddedBuilder(
-                childOrganisationCreated.Id,
-                formalFrameworkCreated.Id,
-                parentOrganisationCreated.Id);
-        var parentBecameDaughterOfGrandParent =
-            new OrganisationFormalFrameworkAddedBuilder(
-                parentOrganisationCreated.Id,
-                formalFrameworkCreated.Id,
-                grandParentOrganisationCreated.Id);
-        var grandParentBecameDaughterOfGrandParent =
-            new OrganisationFormalFrameworkAddedBuilder(
-                grandParentOrganisationCreated.Id,
-                formalFrameworkCreated.Id,
-                greatGrandParentOrganisationCreated.Id);
-
-        _grandParentBecameDaughterOfGrandParentId = grandParentBecameDaughterOfGrandParent.OrganisationFormalFrameworkId;
-        _formalFrameworkId = formalFrameworkCreated.Id;
-        _grandParentOrganisationId = grandParentOrganisationCreated.Id;
-        _childOrganisationId = childOrganisationCreated.Id;
-
-        return new List<IEvent>
+    private IEvent[] Events
+        => new IEvent[]
         {
-            childOrganisationCreated.Build(),
-            parentOrganisationCreated.Build(),
-            grandParentOrganisationCreated.Build(),
-            greatGrandParentOrganisationCreated.Build(),
-            formalFrameworkCategoryCreatedBuilder.Build(),
-            formalFrameworkCreated.Build(),
-            childBecameDaughterOfParent.Build(),
-            parentBecameDaughterOfGrandParent.Build(),
-            grandParentBecameDaughterOfGrandParent.Build()
+            new OrganisationCreatedBuilder(_ovoNumberGenerator)
+                .WithId(new OrganisationId(_childOrganisationId)).Build(),
+            new OrganisationCreatedBuilder(_ovoNumberGenerator)
+                .WithId(new OrganisationId(_parentOrganisationId)).Build(),
+            new OrganisationCreatedBuilder(_ovoNumberGenerator)
+                .WithId(new OrganisationId(_grandParentOrganisationId)).Build(),
+            new OrganisationCreatedBuilder(_ovoNumberGenerator).Build(), new FormalFrameworkCategoryCreatedBuilder()
+                .WithId(_categoryId)
+                .WithName(_categoryName)
+                .Build(),
+            new FormalFrameworkCreatedBuilder(
+                    _categoryId,
+                    _categoryName)
+                .WithId(new FormalFrameworkId(_formalFrameworkId))
+                .Build(),
+            new OrganisationFormalFrameworkAddedBuilder(
+                _childOrganisationId,
+                _formalFrameworkId,
+                _parentOrganisationId).Build(),
+            new OrganisationFormalFrameworkAddedBuilder(
+                _parentOrganisationId,
+                _formalFrameworkId,
+                _grandParentOrganisationId).Build(),
+            new OrganisationFormalFrameworkAddedBuilder(
+                    _grandParentOrganisationId,
+                    _formalFrameworkId,
+                    _greatGrandparentOrganisationId)
+                .WithId(_grandParentBecameDaughterOfGrandParentId)
+                .Build()
         };
-    }
 
-    protected override UpdateOrganisationFormalFramework When()
+    private UpdateOrganisationFormalFramework UpdateOrganisationFormalFrameworkCommand
         => new(
             _grandParentBecameDaughterOfGrandParentId,
             new FormalFrameworkId(_formalFrameworkId),
@@ -97,12 +95,17 @@ public class WhenUpdatingAnOrganisationFormalFrameworkWithCircularDependencies :
             new ValidFrom(),
             new ValidTo());
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task PublishesNoEvents()
+    {
+        await Given(Events).When(UpdateOrganisationFormalFrameworkCommand, UserBuilder.AlgemeenBeheerder())
+            .ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
 
     [Fact]
-    public void ThrowsADomainException()
+    public async Task ThrowsADomainException()
     {
-        Exception.Should().BeOfType<CircularRelationInFormalFramework>();
+        await Given(Events).When(UpdateOrganisationFormalFrameworkCommand, UserBuilder.AlgemeenBeheerder())
+            .ThenThrows<CircularRelationInFormalFramework>();
     }
 }

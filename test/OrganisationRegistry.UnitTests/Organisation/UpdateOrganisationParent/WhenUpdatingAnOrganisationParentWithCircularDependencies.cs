@@ -1,12 +1,12 @@
 namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent;
 
 using System;
-using System.Collections.Generic;
-using FluentAssertions;
+using System.Threading.Tasks;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
 using OrganisationRegistry.Infrastructure.Events;
@@ -16,77 +16,76 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenUpdatingAnOrganisationParentWithCircularDependencies
-    : ExceptionOldSpecification2<UpdateOrganisationParentCommandHandler, UpdateOrganisationParent>
+    : Specification<UpdateOrganisationParentCommandHandler, UpdateOrganisationParent>
 {
-    private readonly DateTimeProviderStub _dateTimeProviderStub = new(new DateTime(2016, 6, 1));
-
-    private readonly SequentialOvoNumberGenerator
-        _sequentialOvoNumberGenerator = new();
-
-    private string _ovoNumberA = null!;
-    private Guid _organisationId;
-    private Guid _organisationParentId;
-    private Guid _organisationOrganisationParentId;
+    private readonly DateTimeProviderStub _dateTimeProviderStub;
+    private readonly SequentialOvoNumberGenerator _sequentialOvoNumberGenerator;
+    private readonly string _ovoNumberA;
+    private readonly Guid _organisationOrganisationParentId;
+    private readonly Guid _organisationAId;
+    private readonly Guid _organisationBId;
 
 
     public WhenUpdatingAnOrganisationParentWithCircularDependencies(ITestOutputHelper helper) : base(helper)
     {
+        _dateTimeProviderStub = new DateTimeProviderStub(new DateTime(2016, 6, 1));
+        _sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
+        _organisationAId = Guid.NewGuid();
+        _ovoNumberA = _sequentialOvoNumberGenerator.GenerateNumber();
+        _organisationBId = Guid.NewGuid();
+        _organisationOrganisationParentId = Guid.NewGuid();
     }
 
-    protected override UpdateOrganisationParentCommandHandler BuildHandler()
+    protected override UpdateOrganisationParentCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<UpdateOrganisationParentCommandHandler>>().Object,
-            Session,
+            session,
             _dateTimeProviderStub);
 
-    protected override IUser User
+    private IUser User
         => new UserBuilder()
             .AddOrganisations(_ovoNumberA)
             .AddRoles(Role.DecentraalBeheerder)
             .Build();
 
-    protected override IEnumerable<IEvent> Given()
-    {
-        var organisationACreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
-        var organisationBCreated = new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator);
-        var organisationABecameDaughterOfOrganisationBFor2016 =
-            new OrganisationParentAddedBuilder(organisationACreated.Id, organisationBCreated.Id)
-                .WithValidity(new DateTime(2016, 1, 1), new DateTime(2016, 12, 31));
-        var organisationBBecameDaughterOfOrganisationFor2017 =
-            new OrganisationParentAddedBuilder(
-                    organisationACreated.Id,
-                    organisationBCreated.Id)
-                .WithValidity(new DateTime(2017, 1, 1), new DateTime(2017, 12, 31));
-
-        _ovoNumberA = organisationACreated.OvoNumber;
-        _organisationId = organisationBBecameDaughterOfOrganisationFor2017.OrganisationId;
-        _organisationParentId = organisationBBecameDaughterOfOrganisationFor2017.ParentOrganisationId;
-        _organisationOrganisationParentId =
-            organisationBBecameDaughterOfOrganisationFor2017.OrganisationOrganisationParentId;
-
-        return new List<IEvent>
+    private IEvent[] Events
+        => new IEvent[]
         {
-            organisationACreated.Build(),
-            organisationBCreated.Build(),
-            organisationABecameDaughterOfOrganisationBFor2016.Build(),
-            organisationBBecameDaughterOfOrganisationFor2017.Build()
+            new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator)
+                .WithId(new OrganisationId(_organisationAId))
+                .WithOvoNumber(_ovoNumberA)
+                .Build(),
+            new OrganisationCreatedBuilder(_sequentialOvoNumberGenerator)
+                .WithId(new OrganisationId(_organisationBId))
+                .Build(),
+            new OrganisationParentAddedBuilder(_organisationAId, _organisationBId)
+                .WithValidity(new DateTime(2016, 1, 1), new DateTime(2016, 12, 31)).Build(),
+            new OrganisationParentAddedBuilder(
+                    _organisationAId,
+                    _organisationBId)
+                .WithOrganisationOrganisationParentId(_organisationOrganisationParentId)
+                .WithValidity(new DateTime(2017, 1, 1), new DateTime(2017, 12, 31)).Build()
         };
-    }
 
-    protected override UpdateOrganisationParent When()
+    private UpdateOrganisationParent UpdateOrganisationParentCommand
         => new(
             _organisationOrganisationParentId,
-            new OrganisationId(_organisationId),
-            new OrganisationId(_organisationParentId),
+            new OrganisationId(_organisationAId),
+            new OrganisationId(_organisationBId),
             new ValidFrom(new DateTime(2016, 1, 1)),
             new ValidTo(new DateTime(2016, 12, 31)));
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
 
     [Fact]
-    public void ThrowsADomainException()
+    public async Task PublishesNoEvents()
     {
-        Exception.Should().BeOfType<OrganisationAlreadyCoupledToParentInThisPeriod>();
+        await Given(Events).When(UpdateOrganisationParentCommand, User).ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
+
+    [Fact]
+    public async Task ThrowsADomainException()
+    {
+        await Given(Events).When(UpdateOrganisationParentCommand, User)
+            .ThenThrows<OrganisationAlreadyCoupledToParentInThisPeriod>();
     }
 }

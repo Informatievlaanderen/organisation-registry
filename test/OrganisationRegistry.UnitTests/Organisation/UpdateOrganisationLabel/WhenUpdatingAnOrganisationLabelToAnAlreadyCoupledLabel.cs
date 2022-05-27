@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLabel;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using LabelType;
@@ -9,7 +10,7 @@ using LabelType.Events;
 using OrganisationRegistry.Infrastructure.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using OrganisationRegistry.Organisation.Exceptions;
@@ -18,36 +19,30 @@ using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenUpdatingAnOrganisationLabelToAnAlreadyCoupledLabel : ExceptionOldSpecification2<
-    UpdateOrganisationLabelCommandHandler, UpdateOrganisationLabel>
+public class WhenUpdatingAnOrganisationLabelToAnAlreadyCoupledLabel :
+    Specification<UpdateOrganisationLabelCommandHandler, UpdateOrganisationLabel>
 {
-    private Guid _organisationId;
-    private Guid _labelTypeAId;
-    private Guid _labelTypeBId;
-    private Guid _organisationLabelBId;
+    private readonly Guid _organisationId;
+    private readonly Guid _labelTypeAId;
+    private readonly Guid _labelTypeBId;
+    private readonly Guid _organisationLabelBId;
 
     public WhenUpdatingAnOrganisationLabelToAnAlreadyCoupledLabel(ITestOutputHelper helper) : base(helper)
-    {
-    }
-
-    protected override UpdateOrganisationLabelCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<UpdateOrganisationLabelCommandHandler>>().Object,
-            Session,
-            new OrganisationRegistryConfigurationStub());
-
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
     {
         _organisationId = Guid.NewGuid();
         _labelTypeAId = Guid.NewGuid();
         _labelTypeBId = Guid.NewGuid();
         _organisationLabelBId = Guid.NewGuid();
-        return new List<IEvent>
+    }
+
+    protected override UpdateOrganisationLabelCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<UpdateOrganisationLabelCommandHandler>>().Object,
+            session,
+            new OrganisationRegistryConfigurationStub());
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -62,8 +57,7 @@ public class WhenUpdatingAnOrganisationLabelToAnAlreadyCoupledLabel : ExceptionO
                 null,
                 null,
                 null),
-            new LabelTypeCreated(_labelTypeAId, "Label A"),
-            new LabelTypeCreated(_labelTypeBId, "Label B"),
+            new LabelTypeCreated(_labelTypeAId, "Label A"), new LabelTypeCreated(_labelTypeBId, "Label B"),
             new OrganisationLabelAdded(
                 _organisationId,
                 Guid.NewGuid(),
@@ -81,9 +75,8 @@ public class WhenUpdatingAnOrganisationLabelToAnAlreadyCoupledLabel : ExceptionO
                 null,
                 null) { Version = 3 }
         };
-    }
 
-    protected override UpdateOrganisationLabel When()
+    private UpdateOrganisationLabel UpdateOrganisationLabelCommand
         => new(
             _organisationLabelBId,
             new OrganisationId(_organisationId),
@@ -92,13 +85,18 @@ public class WhenUpdatingAnOrganisationLabelToAnAlreadyCoupledLabel : ExceptionO
             new ValidFrom(null),
             new ValidTo(null));
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task PublishesNoEvents()
+    {
+        await Given(Events).When(UpdateOrganisationLabelCommand, UserBuilder.AlgemeenBeheerder())
+            .ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
 
     [Fact]
-    public void ThrowsAnException()
+    public async Task ThrowsAnException()
     {
-        Exception.Should().BeOfType<LabelAlreadyCoupledToInThisPeriod>();
-        Exception?.Message.Should().Be("Dit label is in deze periode reeds gekoppeld aan de organisatie.");
+        await Given(Events).When(UpdateOrganisationLabelCommand, UserBuilder.AlgemeenBeheerder())
+            .ThenThrows<LabelAlreadyCoupledToInThisPeriod>()
+            .WithMessage("Dit label is in deze periode reeds gekoppeld aan de organisatie.");
     }
 }

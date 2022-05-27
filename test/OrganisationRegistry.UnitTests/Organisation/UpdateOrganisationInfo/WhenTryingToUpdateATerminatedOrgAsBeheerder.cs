@@ -2,12 +2,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoFixture;
-using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Purpose;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
@@ -19,47 +20,44 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenTryingToUpdateATerminatedOrgAsBeheerder : ExceptionOldSpecification2<UpdateOrganisationCommandHandler,
-        UpdateOrganisationInfo>
+    WhenTryingToUpdateATerminatedOrgAsBeheerder :
+        Specification<UpdateOrganisationCommandHandler, UpdateOrganisationInfo>
 {
-    private string _ovoNumber = null!;
-    private Guid _organisationId;
+    private readonly string _ovoNumber;
+    private readonly Guid _organisationId;
+    private readonly Fixture _fixture;
 
     public WhenTryingToUpdateATerminatedOrgAsBeheerder(ITestOutputHelper helper) : base(helper)
     {
+        _fixture = new Fixture();
+        _ovoNumber = new SequentialOvoNumberGenerator().GenerateNumber();
+        _organisationId = Guid.NewGuid();
     }
 
-    protected override UpdateOrganisationCommandHandler BuildHandler()
+    protected override UpdateOrganisationCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<UpdateOrganisationCommandHandler>>().Object,
-            Session,
+            session,
             new DateTimeProviderStub(DateTime.Today));
 
-    protected override IUser User
+    private IUser User
         => new UserBuilder()
             .AddRoles(Role.DecentraalBeheerder)
             .AddOrganisations(_ovoNumber)
             .Build();
 
-    protected override IEnumerable<IEvent> Given()
-    {
-        var fixture = new Fixture();
-        var organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
-
-        _ovoNumber = organisationCreatedBuilder.OvoNumber;
-        _organisationId = organisationCreatedBuilder.Id;
-
-        return new List<IEvent>
-        {
-            organisationCreatedBuilder
+    private IEvent[] Events
+        => new IEvent[] {
+            new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator())
+                .WithId(new OrganisationId(_organisationId))
+                .WithOvoNumber(_ovoNumber)
                 .WithValidity(null, null)
                 .Build(),
-            new OrganisationBecameActive(organisationCreatedBuilder.Id),
-            new OrganisationTerminatedV2(
-                organisationCreatedBuilder.Id,
-                fixture.Create<string>(),
-                fixture.Create<string>(),
-                fixture.Create<DateTime>(),
+            new OrganisationBecameActive(_organisationId), new OrganisationTerminatedV2(
+                _organisationId,
+                _fixture.Create<string>(),
+                _fixture.Create<string>(),
+                _fixture.Create<DateTime>(),
                 new FieldsToTerminateV2(
                     null,
                     new Dictionary<Guid, DateTime>(),
@@ -81,13 +79,12 @@ public class
                     new KeyValuePair<Guid, DateTime>?(),
                     new KeyValuePair<Guid, DateTime>?()
                 ),
-                fixture.Create<bool>(),
-                fixture.Create<DateTime?>()
-            ),
+                _fixture.Create<bool>(),
+                _fixture.Create<DateTime?>()
+            )
         };
-    }
 
-    protected override UpdateOrganisationInfo When()
+    private UpdateOrganisationInfo UpdateOrganisationInfoCommand
         => new(
             new OrganisationId(_organisationId),
             "Test",
@@ -101,12 +98,14 @@ public class
             new ValidFrom(),
             new ValidTo());
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
-
     [Fact]
-    public void ThrowsOrganisationTerminatedException()
+    public async Task PublishesNoEvents()
     {
-        Exception.Should().BeOfType<OrganisationAlreadyTerminated>();
+        await Given(Events).When(UpdateOrganisationInfoCommand, User).ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
+    [Fact]
+    public async Task ThrowsOrganisationTerminatedException()
+    {
+        await Given(Events).When(UpdateOrganisationInfoCommand, User).ThenThrows<OrganisationAlreadyTerminated>();
     }
 }
