@@ -76,6 +76,6 @@ public class WhenMainLocationIsStillActive : Specification<UpdateMainLocationCom
     [Fact]
     public async Task PublishesNoEvents()
     {
-        await Given(Events).When(UpdateMainLocationCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(0);
+        await Given(Events).When(UpdateMainLocationCommand, TestUser.User).ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 }

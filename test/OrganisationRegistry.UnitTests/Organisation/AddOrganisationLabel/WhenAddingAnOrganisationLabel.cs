@@ -77,21 +77,21 @@ public class WhenAddingAnOrganisationLabel : Specification<AddOrganisationLabelC
     public async Task PublishesOneEvent()
     {
         await Given(Events)
-            .When(AddOrganisationLabelCommand, UserBuilder.AlgemeenBeheerder())
+            .When(AddOrganisationLabelCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
     [Fact]
     public async Task AnOrganisationLabelAddedEventIsPublished()
     {
-        await Given(Events).When(AddOrganisationLabelCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(AddOrganisationLabelCommand, TestUser.AlgemeenBeheerder).Then();
         PublishedEvents[0].Should().BeOfType<Envelope<OrganisationLabelAdded>>();
     }
 
     [Fact]
     public async Task TheEventContainsTheCorrectData()
     {
-        await Given(Events).When(AddOrganisationLabelCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(AddOrganisationLabelCommand, TestUser.AlgemeenBeheerder).Then();
 
         PublishedEvents[0]
             .UnwrapBody<OrganisationLabelAdded>()

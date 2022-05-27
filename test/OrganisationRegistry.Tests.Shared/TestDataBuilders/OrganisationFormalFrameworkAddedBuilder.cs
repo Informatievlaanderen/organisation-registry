@@ -5,16 +5,19 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
 
     public class OrganisationFormalFrameworkAddedBuilder
     {
-        public Guid OrganisationFormalFrameworkId { get; set; }
+        public Guid OrganisationFormalFrameworkId { get; private set; }
         public Guid OrganisationId { get; }
         public Guid FormalFrameworkId { get; }
-        public string FormalFrameworkName { get; set; }
+        public string FormalFrameworkName { get; }
         public Guid ParentOrganisationId { get; }
         public string ParentOrganisationName { get; }
         public DateTime? ValidFrom { get; private set; }
         public DateTime? ValidTo { get; private set; }
 
-        public OrganisationFormalFrameworkAddedBuilder(Guid organisationId, Guid formalFrameworkId, Guid parentOrganisationId)
+        public OrganisationFormalFrameworkAddedBuilder(
+            Guid organisationId,
+            Guid formalFrameworkId,
+            Guid parentOrganisationId)
         {
             OrganisationFormalFrameworkId = Guid.NewGuid();
             OrganisationId = organisationId;
@@ -37,12 +40,15 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
             => new(
                 OrganisationId,
                 OrganisationFormalFrameworkId,
-                FormalFrameworkId, FormalFrameworkName,
-                ParentOrganisationId, ParentOrganisationName,
+                FormalFrameworkId,
+                FormalFrameworkName,
+                ParentOrganisationId,
+                ParentOrganisationName,
                 ValidFrom,
                 ValidTo);
 
-        public static implicit operator OrganisationFormalFrameworkAdded(OrganisationFormalFrameworkAddedBuilder builder)
+        public static implicit operator OrganisationFormalFrameworkAdded(
+            OrganisationFormalFrameworkAddedBuilder builder)
             => builder.Build();
 
         public OrganisationFormalFrameworkAddedBuilder WithId(Guid organisationFormalFrameworkId)

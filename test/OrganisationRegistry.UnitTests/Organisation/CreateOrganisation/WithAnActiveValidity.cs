@@ -52,13 +52,13 @@ public class WithAnActiveValidity : Specification<CreateOrganisationCommandHandl
     [Fact]
     public async Task PublishesFiveEvents()
     {
-        await Given(Events).When(CreateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).ThenItPublishesTheCorrectNumberOfEvents(2);
+        await Given(Events).When(CreateOrganisationCommand, TestUser.AlgemeenBeheerder).ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
     [Fact]
     public async Task CreatesAnOrganisation()
     {
-        await Given(Events).When(CreateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(CreateOrganisationCommand, TestUser.AlgemeenBeheerder).Then();
         PublishedEvents[0]
             .UnwrapBody<OrganisationCreated>().Should().NotBeNull();
     }
@@ -66,7 +66,7 @@ public class WithAnActiveValidity : Specification<CreateOrganisationCommandHandl
     [Fact]
     public async Task TheOrganisationBecomesActive()
     {
-        await Given(Events).When(CreateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(CreateOrganisationCommand, TestUser.AlgemeenBeheerder).Then();
 
         PublishedEvents[1].UnwrapBody<OrganisationBecameActive>().Should().NotBeNull();
     }

@@ -71,12 +71,12 @@ public class
     [Fact]
     public async Task PublishesNoEvents()
     {
-        await Given(Events).When(UpdateOrganisationInfoCommand, UserBuilder.AlgemeenBeheerder()).ThenItPublishesTheCorrectNumberOfEvents(0);
+        await Given(Events).When(UpdateOrganisationInfoCommand, TestUser.AlgemeenBeheerder).ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
     [Fact]
     public async Task TheOrganisationBecomesActive()
     {
-        await Given(Events).When(UpdateOrganisationInfoCommand, UserBuilder.AlgemeenBeheerder()).ThenThrows<CannotChangeDataOwnedByKbo>();
+        await Given(Events).When(UpdateOrganisationInfoCommand, TestUser.AlgemeenBeheerder).ThenThrows<CannotChangeDataOwnedByKbo>();
     }
 }

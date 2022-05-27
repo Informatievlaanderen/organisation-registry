@@ -66,6 +66,6 @@ public class WhenMainBuildingIsStillActive : Specification<UpdateMainBuildingCom
     [Fact]
    public async Task PublishesNoEvents()
     {
-        await Given(Events).When(UpdateMainBuildingCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(0);
+        await Given(Events).When(UpdateMainBuildingCommand, TestUser.User).ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 }

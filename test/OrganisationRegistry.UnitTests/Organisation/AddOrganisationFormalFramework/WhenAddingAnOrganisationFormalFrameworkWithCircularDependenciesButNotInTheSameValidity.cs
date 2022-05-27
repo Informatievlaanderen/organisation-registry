@@ -95,7 +95,7 @@ public class WhenAddingAnOrganisationFormalFrameworkWithCircularDependenciesButN
     public async Task PublishesOneEvent()
     {
         await Given(Events)
-            .When(AddOrganisationFormalFrameworkCommand, UserBuilder.AlgemeenBeheerder())
+            .When(AddOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
@@ -103,7 +103,7 @@ public class WhenAddingAnOrganisationFormalFrameworkWithCircularDependenciesButN
     public async Task AnOrganisationParentWasAdded()
     {
         await Given(Events)
-            .When(AddOrganisationFormalFrameworkCommand, UserBuilder.AlgemeenBeheerder())
+            .When(AddOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder)
             .Then();
 
         PublishedEvents[0]

@@ -65,14 +65,14 @@ public class WithOrganisationNotUnderVlimpersManagement : Specification<ReleaseF
     [Fact]
     public async Task PublishesOneEvent()
     {
-        await Given(Events).When(ReleaseFromVlimpersManagementCommand, UserBuilder.AlgemeenBeheerder())
+        await Given(Events).When(ReleaseFromVlimpersManagementCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
     [Fact]
     public async Task PlacesTheOrganisationUnderVlimpersManagement()
     {
-        await Given(Events).When(ReleaseFromVlimpersManagementCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(ReleaseFromVlimpersManagementCommand, TestUser.AlgemeenBeheerder).Then();
         PublishedEvents.Single().Should().BeOfType<Envelope<OrganisationReleasedFromVlimpersManagement>>();
     }
 }

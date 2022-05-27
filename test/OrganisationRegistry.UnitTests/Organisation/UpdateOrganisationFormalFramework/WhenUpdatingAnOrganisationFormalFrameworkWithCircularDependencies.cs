@@ -98,14 +98,14 @@ public class WhenUpdatingAnOrganisationFormalFrameworkWithCircularDependencies :
     [Fact]
     public async Task PublishesNoEvents()
     {
-        await Given(Events).When(UpdateOrganisationFormalFrameworkCommand, UserBuilder.AlgemeenBeheerder())
+        await Given(Events).When(UpdateOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
     [Fact]
     public async Task ThrowsADomainException()
     {
-        await Given(Events).When(UpdateOrganisationFormalFrameworkCommand, UserBuilder.AlgemeenBeheerder())
+        await Given(Events).When(UpdateOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder)
             .ThenThrows<CircularRelationInFormalFramework>();
     }
 }

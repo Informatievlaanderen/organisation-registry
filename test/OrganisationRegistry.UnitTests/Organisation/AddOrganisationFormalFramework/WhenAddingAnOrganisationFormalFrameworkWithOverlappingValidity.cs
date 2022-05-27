@@ -93,7 +93,7 @@ public class WhenAddingAnOrganisationFormalFrameworkWithOverlappingValidity : Sp
     public async Task PublishesNoEvents()
     {
         await Given(Events)
-            .When(AddOrganisationFormalFrameworkCommand, UserBuilder.AlgemeenBeheerder())
+            .When(AddOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
@@ -101,7 +101,7 @@ public class WhenAddingAnOrganisationFormalFrameworkWithOverlappingValidity : Sp
     public async Task ThrowsADomainException()
     {
         await Given(Events)
-            .When(AddOrganisationFormalFrameworkCommand, UserBuilder.AlgemeenBeheerder())
+            .When(AddOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder)
             .ThenThrows<OrganisationAlreadyCoupledToFormalFrameworkParentInThisPeriod>();
     }
 }

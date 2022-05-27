@@ -86,7 +86,7 @@ public class
     public async Task PublishesNoEvents()
     {
         await Given(Events)
-            .When(AddOrganisationLabelCommand, UserBuilder.AlgemeenBeheerder())
+            .When(AddOrganisationLabelCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
@@ -94,7 +94,7 @@ public class
     public async Task ThrowsAnException()
     {
         await Given(Events)
-            .When(AddOrganisationLabelCommand, UserBuilder.AlgemeenBeheerder())
+            .When(AddOrganisationLabelCommand, TestUser.AlgemeenBeheerder)
             .ThenThrows<LabelAlreadyCoupledToInThisPeriod>()
             .WithMessage("Dit label is in deze periode reeds gekoppeld aan de organisatie.");
     }

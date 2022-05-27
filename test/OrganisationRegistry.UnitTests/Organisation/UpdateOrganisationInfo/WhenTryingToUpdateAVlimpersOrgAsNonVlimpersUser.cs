@@ -64,13 +64,13 @@ public class
     [Fact]
     public async Task PublishesNoEvents()
     {
-        await Given(Events).When(UpdateOrganisationInfoCommand, UserBuilder.VlimpersBeheerder())
+        await Given(Events).When(UpdateOrganisationInfoCommand, TestUser.VlimpersBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
     [Fact]
     public async Task ThrowsAnException()
     {
-        await Given(Events).When(UpdateOrganisationInfoCommand, UserBuilder.User()).ThenThrows<InsufficientRights>();
+        await Given(Events).When(UpdateOrganisationInfoCommand, TestUser.User).ThenThrows<InsufficientRights>();
     }
 }

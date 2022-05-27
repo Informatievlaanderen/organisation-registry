@@ -87,14 +87,14 @@ public class WhenAddingAVlimpersOrganisationParentAndUserIsVlimpers
     [Fact]
     public async Task PublishesTwoEvents()
     {
-        await Given(Events).When(AddOrganisationParentCommand, UserBuilder.VlimpersBeheerder())
+        await Given(Events).When(AddOrganisationParentCommand, TestUser.VlimpersBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
     [Fact]
     public async Task AddsAnOrganisationParent()
     {
-        await Given(Events).When(AddOrganisationParentCommand, UserBuilder.VlimpersBeheerder()).Then();
+        await Given(Events).When(AddOrganisationParentCommand, TestUser.VlimpersBeheerder).Then();
 
         PublishedEvents[0]
             .UnwrapBody<OrganisationParentAdded>()
@@ -113,7 +113,7 @@ public class WhenAddingAVlimpersOrganisationParentAndUserIsVlimpers
     [Fact]
     public async Task AssignsAParent()
     {
-        await Given(Events).When(AddOrganisationParentCommand, UserBuilder.VlimpersBeheerder()).Then();
+        await Given(Events).When(AddOrganisationParentCommand, TestUser.VlimpersBeheerder).Then();
 
         PublishedEvents[1]
             .UnwrapBody<ParentAssignedToOrganisation>()

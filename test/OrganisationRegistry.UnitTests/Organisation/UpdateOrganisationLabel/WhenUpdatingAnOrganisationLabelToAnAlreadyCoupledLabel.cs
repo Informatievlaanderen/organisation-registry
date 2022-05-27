@@ -88,14 +88,14 @@ public class WhenUpdatingAnOrganisationLabelToAnAlreadyCoupledLabel :
     [Fact]
     public async Task PublishesNoEvents()
     {
-        await Given(Events).When(UpdateOrganisationLabelCommand, UserBuilder.AlgemeenBeheerder())
+        await Given(Events).When(UpdateOrganisationLabelCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
     [Fact]
     public async Task ThrowsAnException()
     {
-        await Given(Events).When(UpdateOrganisationLabelCommand, UserBuilder.AlgemeenBeheerder())
+        await Given(Events).When(UpdateOrganisationLabelCommand, TestUser.AlgemeenBeheerder)
             .ThenThrows<LabelAlreadyCoupledToInThisPeriod>()
             .WithMessage("Dit label is in deze periode reeds gekoppeld aan de organisatie.");
     }

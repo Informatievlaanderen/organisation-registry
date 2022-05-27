@@ -86,14 +86,14 @@ public class WhenAddingANonVlimpersOrganisationAsParentForAVlimpersOrganisation
     [Fact]
     public async Task PublishesNoEvents()
         => await Given(Events)
-            .When(AddOrganisationParentCommand, UserBuilder.VlimpersBeheerder())
+            .When(AddOrganisationParentCommand, TestUser.VlimpersBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
 
     [Fact]
     public async Task ThrowsAnException()
     {
         await Given(Events)
-            .When(AddOrganisationParentCommand, UserBuilder.VlimpersBeheerder())
+            .When(AddOrganisationParentCommand, TestUser.VlimpersBeheerder)
             .ThenThrows<VlimpersAndNonVlimpersOrganisationCannotBeInParentalRelationship>();
     }
 }

@@ -1,13 +1,13 @@
 namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFrameworkParents;
 
 using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using FormalFramework;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
 using OrganisationRegistry.Infrastructure.Events;
@@ -16,19 +16,20 @@ using OrganisationRegistry.Organisation.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenAnotherParentIsNowActive: OldSpecification2<UpdateOrganisationFormalFrameworkParentsCommandHandler, UpdateOrganisationFormalFrameworkParents>
+public class WhenAnotherParentIsNowActive : Specification<UpdateOrganisationFormalFrameworkParentsCommandHandler,
+    UpdateOrganisationFormalFrameworkParents>
 {
-    private readonly DateTimeProviderStub _dateTimeProvider = new(DateTime.Now);
+    private readonly DateTimeProviderStub _dateTimeProvider;
     private Guid _organisationCreatedId;
     private Guid _parentOrganisationCreatedId;
     private Guid _formalFrameworkCreatedId;
 
-    public WhenAnotherParentIsNowActive(ITestOutputHelper helper) : base(helper) { }
+    public WhenAnotherParentIsNowActive(ITestOutputHelper helper) : base(helper)
+    {
+        _dateTimeProvider = new DateTimeProviderStub(DateTime.Now);
+    }
 
-    protected override IUser User
-        => new UserBuilder().Build();
-
-    protected override IEnumerable<IEvent> Given()
+    private IEvent[] Events()
     {
         var sequentialOvoNumberGenerator = new SequentialOvoNumberGenerator();
 
@@ -41,10 +42,14 @@ public class WhenAnotherParentIsNowActive: OldSpecification2<UpdateOrganisationF
         var newParentOrganisationCreated = new OrganisationCreatedBuilder(sequentialOvoNumberGenerator);
 
         var formalFrameworkCategoryCreated = new FormalFrameworkCategoryCreatedBuilder();
-        var formalFrameworkCreated = new FormalFrameworkCreatedBuilder(formalFrameworkCategoryCreated.Id, formalFrameworkCategoryCreated.Name);
+        var formalFrameworkCreated = new FormalFrameworkCreatedBuilder(
+            formalFrameworkCategoryCreated.Id,
+            formalFrameworkCategoryCreated.Name);
         _formalFrameworkCreatedId = formalFrameworkCreated.Id;
 
-        var anotherFormalFrameworkCreated = new FormalFrameworkCreatedBuilder(formalFrameworkCategoryCreated.Id, formalFrameworkCategoryCreated.Name);
+        var anotherFormalFrameworkCreated = new FormalFrameworkCreatedBuilder(
+            formalFrameworkCategoryCreated.Id,
+            formalFrameworkCategoryCreated.Name);
 
         var organisationFormalFrameworkAdded =
             new OrganisationFormalFrameworkAddedBuilder(
@@ -66,33 +71,35 @@ public class WhenAnotherParentIsNowActive: OldSpecification2<UpdateOrganisationF
             organisationFormalFrameworkAdded.OrganisationId,
             organisationFormalFrameworkAdded.ParentOrganisationId);
 
-        return new List<IEvent>
+        return new IEvent[]
         {
-            organisationCreated.Build(),
-            parentOrganisationCreated.Build(),
-            newParentOrganisationCreated.Build(),
-            formalFrameworkCategoryCreated.Build(),
-            formalFrameworkCreated.Build(),
-            organisationFormalFrameworkAdded.Build(),
-            newOrganisationFormalFrameworkAdded.Build(),
+            organisationCreated.Build(), parentOrganisationCreated.Build(), newParentOrganisationCreated.Build(),
+            formalFrameworkCategoryCreated.Build(), formalFrameworkCreated.Build(),
+            organisationFormalFrameworkAdded.Build(), newOrganisationFormalFrameworkAdded.Build(),
             formalFrameworkAssignedToOrganisation.Build()
         };
     }
 
-    protected override UpdateOrganisationFormalFrameworkParents When()
+    private UpdateOrganisationFormalFrameworkParents UpdateOrganisationFormalFrameworkParentsCommand
         => new(new OrganisationId(_organisationCreatedId), new FormalFrameworkId(_formalFrameworkCreatedId));
 
-    protected override UpdateOrganisationFormalFrameworkParentsCommandHandler BuildHandler()
+    protected override UpdateOrganisationFormalFrameworkParentsCommandHandler BuildHandler(ISession session)
         => new(
             Mock.Of<ILogger<UpdateOrganisationFormalFrameworkParentsCommandHandler>>(),
-            Session,
+            session,
             _dateTimeProvider);
 
-    protected override int ExpectedNumberOfEvents => 1;
+    [Fact]
+    public async Task PublishesOneEvent()
+    {
+        await Given(Events()).When(UpdateOrganisationFormalFrameworkParentsCommand, TestUser.User)
+            .ThenItPublishesTheCorrectNumberOfEvents(1);
+    }
 
     [Fact]
-    public void PublishesFormalFrameworkClearedFromOrganisation()
+    public async Task PublishesFormalFrameworkClearedFromOrganisation()
     {
+        await Given(Events()).When(UpdateOrganisationFormalFrameworkParentsCommand, TestUser.User).Then();
         var @event = PublishedEvents[0];
         @event.Should().BeOfType<Envelope<FormalFrameworkClearedFromOrganisation>>();
         var formalFrameworkClearedFromOrganisation = @event.UnwrapBody<FormalFrameworkClearedFromOrganisation>();

@@ -150,14 +150,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         [Fact]
         public async Task PublishesTwoEvents()
         {
-            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User())
+            await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.User)
                 .ThenItPublishesTheCorrectNumberOfEvents(2);
         }
 
         [Fact]
         public async Task UpdatesLegalForms()
         {
-            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
+            await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.User).Then();
             var legalFormOrganisationOrganisationClassificationEnded = PublishedEvents[0]
                 .UnwrapBody<KboLegalFormOrganisationOrganisationClassificationRemoved>();
             legalFormOrganisationOrganisationClassificationEnded.Should().NotBeNull();
@@ -180,7 +180,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         [Fact]
         public async Task MarksAsSynced()
         {
-            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
+            await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.User).Then();
             var organisationSyncedFromKbo = PublishedEvents[1].UnwrapBody<OrganisationSyncedFromKbo>();
             organisationSyncedFromKbo.Should().NotBeNull();
 

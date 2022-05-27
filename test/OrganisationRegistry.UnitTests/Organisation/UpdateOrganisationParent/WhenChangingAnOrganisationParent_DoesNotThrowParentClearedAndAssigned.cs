@@ -3,11 +3,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationParent;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -16,44 +18,43 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenChangingAnOrganisationParent_DoesNotThrowParentClearedAndAssigned
-    : OldSpecification2<UpdateOrganisationParentCommandHandler, UpdateOrganisationParent>
+    : Specification<UpdateOrganisationParentCommandHandler, UpdateOrganisationParent>
 {
-    private Guid _organisationAId;
-    private Guid _organisationBId;
-    private Guid _organisationCId;
-    private Guid _organisationOrganisationParentId;
-    private const string OvoNumber = "OVO000012345";
+    private readonly Guid _organisationAId;
+    private readonly Guid _organisationBId;
+    private readonly Guid _organisationCId;
+    private readonly Guid _organisationOrganisationParentId;
+    private readonly string _ovoNumber;
 
     public WhenChangingAnOrganisationParent_DoesNotThrowParentClearedAndAssigned(ITestOutputHelper helper) : base(
         helper)
     {
+        _ovoNumber = "OVO000012345";
+        _organisationOrganisationParentId = Guid.NewGuid();
+        _organisationAId = Guid.NewGuid();
+        _organisationBId = Guid.NewGuid();
+        _organisationCId = Guid.NewGuid();
     }
 
-    protected override UpdateOrganisationParentCommandHandler BuildHandler()
+    protected override UpdateOrganisationParentCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<UpdateOrganisationParentCommandHandler>>().Object,
-            Session,
+            session,
             new DateTimeProvider());
 
-    protected override IUser User
+    private IUser User
         => new UserBuilder()
-            .AddOrganisations(OvoNumber)
+            .AddOrganisations(_ovoNumber)
             .AddRoles(Role.DecentraalBeheerder)
             .Build();
 
-    protected override IEnumerable<IEvent> Given()
-    {
-        _organisationOrganisationParentId = Guid.NewGuid();
-        _organisationAId = new OrganisationId(Guid.NewGuid());
-        _organisationBId = new OrganisationId(Guid.NewGuid());
-        _organisationCId = new OrganisationId(Guid.NewGuid());
-
-        return new List<IEvent>
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationAId,
                 "Kind en Gezin",
-                OvoNumber,
+                _ovoNumber,
                 "K&G",
                 Article.None,
                 "Kindjes en gezinnetjes",
@@ -96,11 +97,10 @@ public class WhenChangingAnOrganisationParent_DoesNotThrowParentClearedAndAssign
                 "Ouder en Gezin",
                 null,
                 null),
-            new ParentAssignedToOrganisation(_organisationAId, _organisationBId, _organisationOrganisationParentId),
+            new ParentAssignedToOrganisation(_organisationAId, _organisationBId, _organisationOrganisationParentId)
         };
-    }
 
-    protected override UpdateOrganisationParent When()
+    private UpdateOrganisationParent UpdateOrganisationParentCommand
         => new(
             _organisationOrganisationParentId,
             new OrganisationId(_organisationAId),
@@ -108,12 +108,16 @@ public class WhenChangingAnOrganisationParent_DoesNotThrowParentClearedAndAssign
             new ValidFrom(),
             new ValidTo());
 
-    protected override int ExpectedNumberOfEvents
-        => 1;
+   [Fact]
+    public async Task PublishesOneEvent()
+    {
+        await Given(Events).When(UpdateOrganisationParentCommand, User).ThenItPublishesTheCorrectNumberOfEvents(1);
+    }
 
     [Fact]
-    public void UpdatesTheOrganisationParent()
+    public async Task UpdatesTheOrganisationParent()
     {
+        await Given(Events).When(UpdateOrganisationParentCommand, User).Then();
         PublishedEvents[0].Should().BeOfType<Envelope<OrganisationParentUpdated>>();
 
         var organisationParentUpdated = PublishedEvents.First().UnwrapBody<OrganisationParentUpdated>();

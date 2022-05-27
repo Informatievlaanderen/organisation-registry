@@ -124,13 +124,13 @@ public class TerminateOrganisationThatBecomesInvalid : Specification<TerminateOr
     [Fact]
     public async Task PublishesThreeEvents()
     {
-        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).ThenItPublishesTheCorrectNumberOfEvents(3);
+        await Given(Events).When(TerminateOrganisationCommand, TestUser.AlgemeenBeheerder).ThenItPublishesTheCorrectNumberOfEvents(3);
     }
 
     [Fact]
     public async Task TerminatesTheOrganisation()
     {
-        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(TerminateOrganisationCommand, TestUser.AlgemeenBeheerder).Then();
         var organisationTerminated = PublishedEvents[0].UnwrapBody<OrganisationTerminatedV2>();
         organisationTerminated.Should().NotBeNull();
 
@@ -160,7 +160,7 @@ public class TerminateOrganisationThatBecomesInvalid : Specification<TerminateOr
     [Fact]
     public async Task OrganisationBecomesInactive()
     {
-        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(TerminateOrganisationCommand, TestUser.AlgemeenBeheerder).Then();
 
         var organisationBecameInactive = PublishedEvents[1].UnwrapBody<OrganisationBecameInactive>();
         organisationBecameInactive.Should().NotBeNull();
@@ -171,7 +171,7 @@ public class TerminateOrganisationThatBecomesInvalid : Specification<TerminateOr
     [Fact]
     public async Task FormalFrameworkClearedFromOrganisation()
     {
-        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(TerminateOrganisationCommand, TestUser.AlgemeenBeheerder).Then();
 
         var frameworkClearedFromOrganisation = PublishedEvents[2].UnwrapBody<FormalFrameworkClearedFromOrganisation>();
         frameworkClearedFromOrganisation.Should().NotBeNull();

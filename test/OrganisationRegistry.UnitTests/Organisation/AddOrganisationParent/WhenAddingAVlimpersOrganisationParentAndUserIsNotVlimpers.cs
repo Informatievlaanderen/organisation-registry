@@ -83,14 +83,14 @@ public class WhenAddingAVlimpersOrganisationParentAndUserIsNotVlimpers
     [Fact]
     public async Task PublishesNoEvents()
     {
-        await Given(Events).When(AddOrganisationParentCommand, UserBuilder.User())
+        await Given(Events).When(AddOrganisationParentCommand, TestUser.User)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
     [Fact]
     public async Task ThrowsException()
     {
-        await Given(Events).When(AddOrganisationParentCommand, UserBuilder.User())
+        await Given(Events).When(AddOrganisationParentCommand, TestUser.User)
             .ThenThrows<UserIsNotAuthorizedForVlimpersOrganisations>();
     }
 }

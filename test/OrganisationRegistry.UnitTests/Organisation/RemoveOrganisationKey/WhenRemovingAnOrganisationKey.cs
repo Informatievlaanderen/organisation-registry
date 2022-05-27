@@ -79,20 +79,20 @@ public class WhenRemovingAnOrganisationKey : Specification<RemoveOrganisationKey
     [Fact]
     public async Task PublishesOneEvent()
     {
-        await Given(Events).When(RemoveOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder())
+        await Given(Events).When(RemoveOrganisationKeyCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
     [Fact]
     public async Task AnOrganisationKeyRemovedEventIsPublished()
     {
-        await Given(Events).When(RemoveOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(RemoveOrganisationKeyCommand, TestUser.AlgemeenBeheerder).Then();
         PublishedEvents.First().Should().BeOfType<Envelope<OrganisationKeyRemoved>>();
     }
 
     [Fact]
     public async Task TheEventContainsTheCorrectData()
     {
-        await Given(Events).When(RemoveOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(RemoveOrganisationKeyCommand, TestUser.AlgemeenBeheerder).Then();
         var organisationKeyRemoved = PublishedEvents.First().UnwrapBody<OrganisationKeyRemoved>();
         organisationKeyRemoved.OrganisationId.Should().Be(_organisationId);
         organisationKeyRemoved.OrganisationKeyId.Should().Be(_organisationKeyId);

@@ -3,6 +3,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Location.Events;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
@@ -10,6 +11,7 @@ using Location;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -18,47 +20,50 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenUpdatingAnActiveMainOrganisationLocationToAnInactiveOne : OldSpecification2<
-        UpdateOrganisationLocationCommandHandler, UpdateOrganisationLocation>
+    WhenUpdatingAnActiveMainOrganisationLocationToAnInactiveOne :
+        Specification<UpdateOrganisationLocationCommandHandler, UpdateOrganisationLocation>
 {
-    private Guid _organisationId;
-    private Guid _locationId;
-    private Guid _organisationLocationId;
-    private bool _isMainLocation;
-    private DateTime _validTo;
-    private DateTime _validFrom;
-    private readonly DateTimeProviderStub _dateTimeProvider = new(DateTime.Today);
-    private const string OvoNumber = "OVO000012345";
+    private readonly Guid _organisationId;
+    private readonly Guid _locationId;
+    private readonly Guid _organisationLocationId;
+    private readonly bool _isMainLocation;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
+    private readonly DateTimeProviderStub _dateTimeProvider;
+    private readonly string _ovoNumber;
 
     public WhenUpdatingAnActiveMainOrganisationLocationToAnInactiveOne(ITestOutputHelper helper) : base(helper)
     {
-    }
-
-    protected override UpdateOrganisationLocationCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<UpdateOrganisationLocationCommandHandler>>().Object,
-            Session,
-            _dateTimeProvider
-        );
-
-    protected override IUser User
-        => new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(OvoNumber).Build();
-
-    protected override IEnumerable<IEvent> Given()
-    {
+        _dateTimeProvider = new DateTimeProviderStub(DateTime.Today);
+        _ovoNumber = "OVO000012345";
         _organisationId = Guid.NewGuid();
-
         _locationId = Guid.NewGuid();
         _organisationLocationId = Guid.NewGuid();
         _isMainLocation = true;
         _validFrom = _dateTimeProvider.Today;
         _validTo = _dateTimeProvider.Today;
-        return new List<IEvent>
+    }
+
+    protected override UpdateOrganisationLocationCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<UpdateOrganisationLocationCommandHandler>>().Object,
+            session,
+            _dateTimeProvider
+        );
+
+    private IUser User
+        => new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(_ovoNumber)
+            .Build();
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
                 "Kind en Gezin",
-                OvoNumber,
+                _ovoNumber,
                 "K&G",
                 Article.None,
                 "Kindjes en gezinnetjes",
@@ -88,24 +93,28 @@ public class
                 _validTo),
             new MainLocationAssignedToOrganisation(_organisationId, _locationId, _organisationLocationId)
         };
-    }
 
-    protected override UpdateOrganisationLocation When()
+    private UpdateOrganisationLocation UpdateOrganisationLocationCommand
         => new(
             _organisationLocationId,
             new OrganisationId(_organisationId),
             new LocationId(_locationId),
             _isMainLocation,
-            null,                new ValidFrom(_validFrom.AddYears(1)),
+            null,
+            new ValidFrom(_validFrom.AddYears(1)),
             new ValidTo(_validTo.AddYears(1)),
             Source.Wegwijs);
 
-    protected override int ExpectedNumberOfEvents
-        => 2;
+    [Fact]
+    public async Task Publishes2Events()
+    {
+        await Given(Events).When(UpdateOrganisationLocationCommand, User).ThenItPublishesTheCorrectNumberOfEvents(2);
+    }
 
     [Fact]
-    public void UpdatesTheOrganisationLocation()
+    public async Task UpdatesTheOrganisationLocation()
     {
+        await Given(Events).When(UpdateOrganisationLocationCommand, User).Then();
         PublishedEvents[0].Should().BeOfType<Envelope<OrganisationLocationUpdated>>();
 
         var organisationLocationUpdated = PublishedEvents.First().UnwrapBody<OrganisationLocationUpdated>();
@@ -117,8 +126,9 @@ public class
     }
 
     [Fact]
-    public void ClearsTheMainLocation()
+    public async Task ClearsTheMainLocation()
     {
+        await Given(Events).When(UpdateOrganisationLocationCommand, User).Then();
         PublishedEvents[1].Should().BeOfType<Envelope<MainLocationClearedFromOrganisation>>();
 
         var organisationLocationUpdated = PublishedEvents[1].UnwrapBody<MainLocationClearedFromOrganisation>();

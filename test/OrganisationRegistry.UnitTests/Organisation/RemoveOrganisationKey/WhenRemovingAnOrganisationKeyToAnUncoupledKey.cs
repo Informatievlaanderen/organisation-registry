@@ -60,7 +60,7 @@ public class
     [Fact]
     public async Task PublishesNoEvents()
     {
-        await Given(Events).When(RemoveOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder())
+        await Given(Events).When(RemoveOrganisationKeyCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 }
