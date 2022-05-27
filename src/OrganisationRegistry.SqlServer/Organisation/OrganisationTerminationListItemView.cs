@@ -24,8 +24,8 @@ namespace OrganisationRegistry.SqlServer.Organisation
 
         public TerminationStatus Status { get; set; }
         public DateTime Date { get; set; }
-        public string Code { get; set; }
-        public string Reason { get; set; }
+        public string Code { get; set; } = null!;
+        public string Reason { get; set; } = null!;
     }
 
     public class OrganisationTerminationListConfiguration : EntityMappingConfiguration<OrganisationTerminationListItem>

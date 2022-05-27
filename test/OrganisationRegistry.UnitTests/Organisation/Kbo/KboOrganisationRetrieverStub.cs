@@ -39,16 +39,16 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
 
     public class LegalFormStub : IMagdaLegalForm
     {
-        public string? Code { get; set; }
+        public string Code { get; set; } = null!;
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }
     }
 
     public class AddressStub : IMagdaAddress
     {
-        public string? Country { get; set; }
-        public string? City { get; set; }
-        public string? ZipCode { get; set; }
+        public string Country { get; set; } = null!;
+        public string City { get; set; } = null!;
+        public string ZipCode { get; set; } = null!;
         public string Street { get; set; } = null!;
         public DateTime? ValidFrom { get; set; }
         public DateTime? ValidTo { get; set; }

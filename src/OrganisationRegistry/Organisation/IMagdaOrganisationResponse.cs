@@ -16,7 +16,7 @@ namespace OrganisationRegistry.Organisation
 
     public interface IMagdaName
     {
-        string? Value { get; }
+        string Value { get; }
         DateTime? ValidFrom { get; }
     }
 
@@ -30,17 +30,16 @@ namespace OrganisationRegistry.Organisation
 
     public interface IMagdaLegalForm
     {
-        string? Code { get; }
+        string Code { get; }
         DateTime? ValidFrom { get; }
         DateTime? ValidTo { get; }
     }
 
-
     public interface IMagdaAddress
     {
-        string? Country { get; }
-        string? City { get; }
-        string? ZipCode { get; }
+        string Country { get; }
+        string City { get; }
+        string ZipCode { get; }
         string Street { get; }
         DateTime? ValidFrom { get; }
         DateTime? ValidTo { get; }

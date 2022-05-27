@@ -31,13 +31,13 @@ namespace OrganisationRegistry.IbanBic.Exceptions
     /// </summary>
     public class InvalidIbanFormat : Exception
     {
-        public IbanFormatViolation FormatViolation { get; private set; }
-        public object ExpectedObject { get; private set; }
-        public object ActualObject { get; private set; }
-        public BBanEntryType BBanEntryType { get; private set; }
-        public char InvalidCharacter { get; private set; }
+        public IbanFormatViolation FormatViolation { get; }
+        public object? ExpectedObject { get; }
+        public object? ActualObject { get; }
+        public BBanEntryType BBanEntryType { get; }
+        public char InvalidCharacter { get; }
 
-        public InvalidIbanFormat() : base()
+        public InvalidIbanFormat()
         { }
 
         public InvalidIbanFormat(string message) : base(message)

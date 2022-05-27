@@ -11,7 +11,7 @@ namespace OrganisationRegistry.Organisation
         public string FormattedAddress { get; }
         public bool IsMainLocation { get; set; }
         public Guid? LocationTypeId { get; }
-        public string LocationTypeName { get; }
+        public string? LocationTypeName { get; }
         public Period Validity { get; }
         public Source Source { get; }
 
@@ -22,7 +22,7 @@ namespace OrganisationRegistry.Organisation
             string formattedAddress,
             bool isMainLocation,
             Guid? locationTypeId,
-            string locationTypeName,
+            string? locationTypeName,
             Period validity,
             Source source)
         {

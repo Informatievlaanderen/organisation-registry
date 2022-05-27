@@ -20,8 +20,8 @@ namespace OrganisationRegistry.Organisation.Events
         public Guid? LocationTypeId { get; }
         public Guid? PreviousLocationTypeId { get; }
 
-        public string LocationTypeName { get; }
-        public string PreviousLocationTypeName { get; }
+        public string? LocationTypeName { get; }
+        public string? PreviousLocationTypeName { get; }
 
         public DateTime? ValidFrom { get; }
         public DateTime? PreviouslyValidFrom { get; }
@@ -36,14 +36,14 @@ namespace OrganisationRegistry.Organisation.Events
             string locationFormattedAddress,
             bool isMainLocation,
             Guid? locationTypeId,
-            string locationTypeName,
+            string? locationTypeName,
             DateTime? validFrom,
             DateTime? validTo,
             Guid previousLocationId,
             string previousLocationFormattedAddress,
             bool previousIsMainLocation,
             Guid? previousLocationTypeId,
-            string previousLocationTypeName,
+            string? previousLocationTypeName,
             DateTime? previouslyValidFrom,
             DateTime? previouslyValidTo)
         {

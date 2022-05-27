@@ -10,8 +10,8 @@ namespace OrganisationRegistry.LifecyclePhaseType
 
         public static implicit operator string(LifecyclePhaseTypeName cast) => cast.Value;
 
-        public override bool Equals(object obj) => obj is LifecyclePhaseTypeName && Equals((LifecyclePhaseTypeName) obj);
-        public bool Equals(LifecyclePhaseTypeName other) => Value == other.Value;
+        public override bool Equals(object? obj) => obj is LifecyclePhaseTypeName && Equals((LifecyclePhaseTypeName) obj);
+        public bool Equals(LifecyclePhaseTypeName? other) => other is { } && Value == other.Value;
         public override int GetHashCode() => Value.GetHashCode();
     }
 }

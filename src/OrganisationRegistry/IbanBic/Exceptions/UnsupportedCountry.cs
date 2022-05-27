@@ -28,9 +28,9 @@ namespace OrganisationRegistry.IbanBic.Exceptions
     /// </summary>
     public class UnsupportedCountry : Exception
     {
-        public string CountryCode { get; private set; }
+        public string? CountryCode { get; }
 
-        public UnsupportedCountry() : base()
+        public UnsupportedCountry()
         { }
 
         public UnsupportedCountry(string message) : base(message)

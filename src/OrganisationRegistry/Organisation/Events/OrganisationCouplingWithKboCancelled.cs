@@ -11,7 +11,7 @@ namespace OrganisationRegistry.Organisation.Events
         public string NameBeforeKboCoupling { get; }
         public string ShortNameBeforeKboCoupling { get; }
         public string NameFromKboCoupling { get; }
-        public string ShortNameFromKboCoupling { get; }
+        public string? ShortNameFromKboCoupling { get; }
         public string OvoNumber { get; }
         public Guid? LegalFormOrganisationOrganisationClassificationIdToCancel { get; }
         public Guid? FormalNameOrganisationLabelIdToCancel { get; }
@@ -23,7 +23,7 @@ namespace OrganisationRegistry.Organisation.Events
             string nameBeforeKboCoupling,
             string shortNameBeforeKboCoupling,
             string nameFromKboCoupling,
-            string shortNameFromKboCoupling,
+            string? shortNameFromKboCoupling,
             string ovoNumber,
             Guid? legalFormOrganisationOrganisationClassificationIdToCancel,
             Guid? formalNameOrganisationLabelIdToCancel,

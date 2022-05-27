@@ -30,11 +30,11 @@ namespace OrganisationRegistry.IbanBic.Exceptions
     /// </summary>
     public class InvalidBicFormat : Exception
     {
-        public object ExpectedObject { get; private set; }
-        public object ActualObject { get; private set; }
-        public BicFormatViolation FormatViolation { get; private set; }
+        public object? ExpectedObject { get; }
+        public object? ActualObject { get; }
+        public BicFormatViolation FormatViolation { get; }
 
-        public InvalidBicFormat() : base()
+        public InvalidBicFormat()
         { }
 
         public InvalidBicFormat(string message) : base(message)

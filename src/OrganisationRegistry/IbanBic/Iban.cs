@@ -31,7 +31,7 @@ namespace OrganisationRegistry.IbanBic
     {
         public const string DEFAULT_CHECK_DIGIT = "00";
 
-        public string Value { get; private set; }
+        public string Value { get; }
 
         private Iban(string value)
         {
@@ -50,7 +50,7 @@ namespace OrganisationRegistry.IbanBic
             return new Iban(iban);
         }
 
-        public CountryCodeEntry GetCountryCode() => CountryCode.GetCountryCode(IbanUtils.GetCountryCode(Value));
+        public CountryCodeEntry? GetCountryCode() => CountryCode.GetCountryCode(IbanUtils.GetCountryCode(Value));
 
         public string GetCheckDigit() => IbanUtils.GetCheckDigit(Value);
 
@@ -78,38 +78,24 @@ namespace OrganisationRegistry.IbanBic
         /// <returns>Formatted string for printing</returns>
         public string ToFormattedString()
         {
-            string result = "";
-            StringBuilder sb = new StringBuilder(Value);
-            int length = sb.Length;
+            var sb = new StringBuilder(Value);
+            var length = sb.Length;
 
-            for (int i = 0; i < length / 4; i++)
+            for (var i = 0; i < length / 4; i++)
             {
                 sb.Insert((i + 1) * 4 + i, ' ');
             }
 
-            result = sb.ToString().Trim();
-
-            return result;
+            return sb.ToString().Trim();
         }
 
-        public override bool Equals(object obj)
-        {
-            if (obj is Iban)
-            {
-                return Value.Equals((obj as Iban).Value);
-            }
-
-            return false;
-        }
+        public override bool Equals(object? obj)
+            => obj is Iban iban && Value.Equals(iban.Value);
 
         public override int GetHashCode()
-        {
-            return Value.GetHashCode();
-        }
+            => Value.GetHashCode();
 
         public override string ToString()
-        {
-            return Value;
-        }
+            => Value;
     }
 }
