@@ -77,13 +77,13 @@ namespace OrganisationRegistry.Api.Infrastructure.Magda
 
         public class Name : IMagdaName
         {
-            public string? Value { get; }
+            public string Value { get; }
             public DateTime? ValidFrom { get; }
 
             public Name(NaamOndernemingType[]? namen)
             {
                 var name = FirstValidDutchOrOtherwise(namen);
-                Value = name?.Naam.Trim();
+                Value = name?.Naam.Trim() ?? string.Empty;
                 ValidFrom = ParseKboDate(name?.DatumBegin);
             }
 
@@ -151,13 +151,13 @@ namespace OrganisationRegistry.Api.Infrastructure.Magda
 
         public class MagdaLegalForm : IMagdaLegalForm
         {
-            public string? Code { get; }
+            public string Code { get; }
             public DateTime? ValidFrom { get; }
             public DateTime? ValidTo { get; }
 
             public MagdaLegalForm(RechtsvormExtentieType rechtsvormExtentieType)
             {
-                Code = rechtsvormExtentieType.Code?.Value;
+                Code = rechtsvormExtentieType.Code?.Value ?? string.Empty;
                 ValidFrom = ParseKboDate(rechtsvormExtentieType.DatumBegin);
                 ValidTo = ParseKboDate(rechtsvormExtentieType.DatumEinde);
             }
@@ -165,18 +165,18 @@ namespace OrganisationRegistry.Api.Infrastructure.Magda
 
         public class MagdaAddress : IMagdaAddress
         {
-            public string? Country { get; }
-            public string? City { get; }
-            public string? ZipCode { get; }
+            public string Country { get; }
+            public string City { get; }
+            public string ZipCode { get; }
             public string Street { get; }
             public DateTime? ValidFrom { get; }
             public DateTime? ValidTo { get; }
 
             public MagdaAddress(AdresOndernemingType adresOndernemingType)
             {
-                Country = adresOndernemingType.Descripties?[0].Adres?.Land?.Naam?.Trim();
-                City = adresOndernemingType.Descripties?[0].Adres?.Gemeente?.Naam?.Trim();
-                ZipCode = adresOndernemingType.Gemeente?.PostCode?.Trim();
+                Country = adresOndernemingType.Descripties?[0].Adres?.Land?.Naam?.Trim() ?? string.Empty;
+                City = adresOndernemingType.Descripties?[0].Adres?.Gemeente?.Naam?.Trim() ?? string.Empty;
+                ZipCode = adresOndernemingType.Gemeente?.PostCode?.Trim() ?? string.Empty;
 
                 var streetName = adresOndernemingType
                     .Descripties?[0]

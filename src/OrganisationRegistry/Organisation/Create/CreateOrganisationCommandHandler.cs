@@ -1,5 +1,6 @@
 ﻿namespace OrganisationRegistry.Organisation;
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Exceptions;
@@ -75,8 +76,11 @@ public class CreateOrganisationCommandHandler :
 
     private Task CreateDaughter(IUser user, CreateOrganisation message)
     {
+        if (message.ParentOrganisationId is not { } parentId)
+            throw new NullReferenceException("parentOrganisationId should not be null when creating a daughter");
+
         return Handler.For(user, Session)
-            .WithVlimpersPolicy(Session.Get<Organisation>(message.ParentOrganisationId))
+            .WithVlimpersPolicy(Session.Get<Organisation>(parentId))
             .Handle(
                 session =>
                 {

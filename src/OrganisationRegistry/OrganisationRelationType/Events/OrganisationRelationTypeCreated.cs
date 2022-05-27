@@ -7,7 +7,7 @@ namespace OrganisationRegistry.OrganisationRelationType.Events
         public Guid OrganisationRelationTypeId => Id;
 
         public string Name { get; }
-        public string? InverseName { get; set; }
+        public string InverseName { get; set; }
 
         public OrganisationRelationTypeCreated(
             Guid organisationRelationTypeId,
@@ -17,7 +17,7 @@ namespace OrganisationRegistry.OrganisationRelationType.Events
             Id = organisationRelationTypeId;
 
             Name = name;
-            InverseName = inverseName;
+            InverseName = inverseName ?? string.Empty;
         }
     }
 }

@@ -28,10 +28,10 @@ namespace OrganisationRegistry.IbanBic.Exceptions
     /// </summary>
     public class InvalidCheckDigit : Exception
     {
-        public string ActualString { get; private set; }
-        public string ExpectedString { get; private set; }
+        public string? ActualString { get; }
+        public string? ExpectedString { get; }
 
-        public InvalidCheckDigit() : base()
+        public InvalidCheckDigit()
         { }
 
         public InvalidCheckDigit(string message) : base(message)

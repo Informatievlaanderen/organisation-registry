@@ -103,7 +103,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationLocationUpdated> message)
-            => await UpdateOrganisationLocation(message.Body.OrganisationId, message.Number, message.Timestamp, message.Body.OrganisationLocationId, message.Body.LocationId, message.Body.LocationFormattedAddress, message.Body.IsMainLocation, message.Body.LocationTypeId, message.Body.LocationTypeName, message.Body.ValidFrom, message.Body.ValidTo);
+            => await UpdateOrganisationLocation(
+                message.Body.OrganisationId,
+                message.Number,
+                message.Timestamp,
+                message.Body.OrganisationLocationId,
+                message.Body.LocationId,
+                message.Body.LocationFormattedAddress,
+                message.Body.IsMainLocation,
+                message.Body.LocationTypeId,
+                message.Body.LocationTypeName,
+                message.Body.ValidFrom,
+                message.Body.ValidTo);
 
         private static async Task<IElasticChange> AddOrganisationLocation(Guid organisationId, Guid locationId, string locationFormattedAddress, bool isMainLocation, Guid? locationTypeId, string? locationTypeName, DateTime? validFrom, DateTime? validTo, int documentChangeId, DateTimeOffset timestamp, Guid organisationLocationId)
         {
@@ -131,7 +142,18 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
             ).ToAsyncResult();
         }
 
-        private static async Task<IElasticChange> UpdateOrganisationLocation(Guid bodyOrganisationId, int organisationDocumentChangeId, DateTimeOffset organisationDocumentChangeTime, Guid bodyOrganisationLocationId, Guid bodyLocationId, string bodyLocationFormattedAddress, bool bodyIsMainLocation, Guid? bodyLocationTypeId, string bodyLocationTypeName, DateTime? bodyValidFrom, DateTime? bodyValidTo)
+        private static async Task<IElasticChange> UpdateOrganisationLocation(
+            Guid bodyOrganisationId,
+            int organisationDocumentChangeId,
+            DateTimeOffset organisationDocumentChangeTime,
+            Guid bodyOrganisationLocationId,
+            Guid bodyLocationId,
+            string bodyLocationFormattedAddress,
+            bool bodyIsMainLocation,
+            Guid? bodyLocationTypeId,
+            string? bodyLocationTypeName,
+            DateTime? bodyValidFrom,
+            DateTime? bodyValidTo)
         {
             return await new ElasticPerDocumentChange<OrganisationDocument>
             (

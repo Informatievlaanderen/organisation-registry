@@ -266,10 +266,10 @@ namespace OrganisationRegistry.Organisation
         }
 
         public void UpdateInfoNotLimitedByVlimpers(string? description,
-            List<Purpose> purposes,
+            IEnumerable<Purpose> purposes,
             bool showOnVlaamseOverheidSites)
         {
-            if(!description.Equals(State.Description))
+            if(IsDifferent(State.Description, description))
                 ApplyChange(new OrganisationDescriptionUpdated(Id, description));
 
             var purposes2 = purposes.Select(x => new Events.Purpose(x.Id, x.Name)).ToList();
@@ -281,6 +281,11 @@ namespace OrganisationRegistry.Organisation
             if(!showOnVlaamseOverheidSites.Equals(State.ShowOnVlaamseOverheidSites))
                 ApplyChange(new OrganisationShowOnVlaamseOverheidSitesUpdated(Id, showOnVlaamseOverheidSites));
         }
+
+        private static bool IsDifferent(string? maybeOldDescription, string? maybeNewDescription)
+            => maybeOldDescription is { } oldDescription && maybeNewDescription is { } newDescription
+                ? !oldDescription.Equals(newDescription)
+                : maybeOldDescription is { } || maybeNewDescription is { };
 
         public void UpdateVlimpersOrganisationInfo(
             Article article,
@@ -1373,9 +1378,9 @@ namespace OrganisationRegistry.Organisation
                 dayOfWeek,
                 previousOpeningHour.DayOfWeek,
                 validity.Start,
-                previousOpeningHour.Validity?.Start,
+                previousOpeningHour.Validity.Start,
                 validity.End,
-                previousOpeningHour.Validity?.End));
+                previousOpeningHour.Validity.End));
         }
 
         public void AddRegulation(Guid organisationRegulationId,

@@ -13,7 +13,7 @@ namespace OrganisationRegistry.SqlServer.Reporting
 
         // Body
         public Guid BodyId { get; set; }
-        public BodySeatGenderRatioBodyItem Body { get; set; }
+        public BodySeatGenderRatioBodyItem Body { get; set; } = null!;
 
         // Seat
         public Guid BodySeatId { get; set; }

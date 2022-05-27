@@ -83,7 +83,7 @@ namespace OrganisationRegistry.Organisation
             var organisation = Session.Get<Organisation>(organisationId);
 
             var kboOrganisationResult =
-                await _kboOrganisationRetriever.RetrieveOrganisation(user, organisation.KboState.KboNumber);
+                await _kboOrganisationRetriever.RetrieveOrganisation(user, organisation.KboState.KboNumber!);
 
             if (kboOrganisationResult.HasErrors)
                 throw new KboOrganisationNotFound(kboOrganisationResult.ErrorMessages);
@@ -119,7 +119,7 @@ namespace OrganisationRegistry.Organisation
             await Session.Commit(user);
         }
 
-        private KboRegisteredOffice GetOrAddLocations(IMagdaAddress address)
+        private KboRegisteredOffice? GetOrAddLocations(IMagdaAddress? address)
         {
             if (address == null)
                 return null;
@@ -161,7 +161,7 @@ namespace OrganisationRegistry.Organisation
         }
 
         private void AddAddresses(Organisation organisation,
-            KboRegisteredOffice address,
+            KboRegisteredOffice? address,
             LocationType registeredOfficeLocationType)
         {
             if (address == null)
@@ -176,7 +176,7 @@ namespace OrganisationRegistry.Organisation
                     new ValidTo(address.ValidTo)));
         }
 
-        private void AddLegalForm(Organisation organisation, IMagdaLegalForm legalForm,
+        private void AddLegalForm(Organisation organisation, IMagdaLegalForm? legalForm,
             OrganisationClassificationType legalFormOrganisationClassificationType)
         {
             if (legalForm == null)
@@ -257,7 +257,7 @@ namespace OrganisationRegistry.Organisation
                 kboOrganisation,
                 ovoNumber,
                 parentOrganisation,
-                purposes,
+                purposes ?? new List<Purpose>(),
                 _dateTimeProvider);
 
             Session.Add(organisation);

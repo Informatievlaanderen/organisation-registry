@@ -22,6 +22,7 @@
 namespace OrganisationRegistry.IbanBic
 {
     using System;
+    using System.Collections.Generic;
     using System.Text;
     using Exceptions;
 
@@ -30,14 +31,14 @@ namespace OrganisationRegistry.IbanBic
     /// </summary>
     public static class IbanUtils
     {
-        private const int _MOD = 97;
-        private const long _MAX = 999999999;
+        private const int Mod = 97;
+        private const long Max = 999999999;
 
-        private const int _COUNTRY_CODE_INDEX = 0;
-        private const int _COUNTRY_CODE_LENGTH = 2;
-        private const int _CHECK_DIGIT_INDEX = _COUNTRY_CODE_LENGTH;
-        private const int _CHECK_DIGIT_LENGTH = 2;
-        private const int _BBAN_INDEX = _CHECK_DIGIT_INDEX + _CHECK_DIGIT_LENGTH;
+        private const int Country_Code_Index = 0;
+        private const int Country_Code_Length = 2;
+        private const int Check_Digit_Index = Country_Code_Length;
+        private const int Check_Digit_Length = 2;
+        private const int Bban_Index = Check_Digit_Index + Check_Digit_Length;
 
         /// <summary>
         /// Validation of IBAN string
@@ -50,27 +51,27 @@ namespace OrganisationRegistry.IbanBic
         {
             try
             {
-                validateEmpty(iban);
-                validateCountryCode(iban);
-                validateCheckDigitPresence(iban);
+                ValidateEmpty(iban);
+                ValidateCountryCode(iban);
+                ValidateCheckDigitPresence(iban);
 
-                BBanStructure structure = getBbanStructure(iban);
-                validateBbanLength(iban, structure);
-                validateBbanEntries(iban, structure);
+                var structure = GetBbanStructure(iban);
+                ValidateBbanLength(iban, structure);
+                ValidateBbanEntries(iban, structure);
 
-                validateCheckDigit(iban);
+                ValidateCheckDigit(iban);
             }
-            catch (InvalidCheckDigit icex)
+            catch (InvalidCheckDigit)
             {
-                throw icex;
+                throw;
             }
-            catch (InvalidIbanFormat iex)
+            catch (InvalidIbanFormat)
             {
-                throw iex;
+                throw;
             }
-            catch (UnsupportedCountry ucex)
+            catch (UnsupportedCountry)
             {
-                throw ucex;
+                throw;
             }
             catch (Exception ex)
             {
@@ -86,32 +87,21 @@ namespace OrganisationRegistry.IbanBic
         /// <returns>True if IBAN string is valid, false if it encounters any problem</returns>
         public static bool IsValid(string iban, out IbanFormatViolation validationResult)
         {
-            bool result = false;
+            var result = false;
             validationResult = IbanFormatViolation.NO_VIOLATION;
 
-            if (!string.IsNullOrEmpty(iban))
+            if (string.IsNullOrEmpty(iban))
             {
-                if (hasValidCountryCode(iban, out validationResult))
-                {
-                    if (hasValidCheckDigit(iban, out validationResult))
-                    {
-                        BBanStructure structure = getBbanStructure(iban);
-                        if (hasValidBbanLength(iban, structure, out validationResult))
-                        {
-                            if (hasValidBbanEntries(iban, structure, out validationResult))
-                            {
-                                if (hasValidCheckDigitValue(iban, out validationResult))
-                                {
-                                    result = true;
-                                }
-                            }
-                        }
-                    }
-                }
+                validationResult = IbanFormatViolation.IBAN_NOT_EMPTY_OR_NULL;
             }
             else
             {
-                validationResult = IbanFormatViolation.IBAN_NOT_EMPTY_OR_NULL;
+                if (!HasValidCountryCode(iban, out validationResult)) return result;
+                if (!HasValidCheckDigit(iban, out validationResult)) return result;
+                var structure = GetBbanStructure(iban);
+                if (!HasValidBbanLength(iban, structure, out validationResult)) return result;
+                if (!HasValidBbanEntries(iban, structure, out validationResult)) return result;
+                if (HasValidCheckDigitValue(iban, out validationResult)) result = true;
             }
 
             return result;
@@ -123,7 +113,7 @@ namespace OrganisationRegistry.IbanBic
         /// </summary>
         /// <param name="countryCode">Country code object</param>
         /// <returns>True if country code is supported, othewise false</returns>
-        public static bool IsSupportedCountry(CountryCodeEntry countryCode) => (CountryCode.GetCountryCode(countryCode?.Alpha2) != null) && (Bban.GetStructureForCountry(countryCode) != null);
+        public static bool IsSupportedCountry(CountryCodeEntry? countryCode) => (CountryCode.GetCountryCode(countryCode?.Alpha2) != null) && (Bban.GetStructureForCountry(countryCode) != null);
 
 
         /// <summary>
@@ -139,14 +129,14 @@ namespace OrganisationRegistry.IbanBic
         /// </summary>
         /// <param name="countryCode">Country code object</param>
         /// <returns>The length of IBAN for the specified country</returns>
-        public static int GetIbanLength(CountryCodeEntry countryCode)
+        public static int GetIbanLength(CountryCodeEntry? countryCode)
         {
-            int result = 0;
-            BBanStructure structure = getBbanStructure(countryCode);
+            var result = 0;
+            var structure = GetBbanStructure(countryCode);
 
             if (structure != null)
             {
-                result = _COUNTRY_CODE_LENGTH + _CHECK_DIGIT_LENGTH + structure.GetBBanLength();
+                result = Country_Code_Length + Check_Digit_Length + structure.GetBBanLength();
             }
 
             return result;
@@ -162,7 +152,7 @@ namespace OrganisationRegistry.IbanBic
         public static string CalculateCheckDigit(string iban)
         {
             string reformattedIban = ReplaceCheckDigit(iban, Iban.DEFAULT_CHECK_DIGIT);
-            int modResult = calculateMod(reformattedIban);
+            int modResult = CalculateMod(reformattedIban);
             int checkDigitValue = (98 - modResult);
             string checkDigit = checkDigitValue.ToString();
 
@@ -183,7 +173,7 @@ namespace OrganisationRegistry.IbanBic
         /// </summary>
         /// <param name="iban">IBAN string value</param>
         /// <returns>Check digit string</returns>
-        public static string GetCheckDigit(string iban) => iban.Substring(_CHECK_DIGIT_INDEX, _CHECK_DIGIT_LENGTH);
+        public static string GetCheckDigit(string iban) => iban.Substring(Check_Digit_Index, Check_Digit_Length);
 
 
         /// <summary>
@@ -191,14 +181,14 @@ namespace OrganisationRegistry.IbanBic
         /// </summary>
         /// <param name="iban">IBAN string value</param>
         /// <returns>IBAN's country code string</returns>
-        public static string GetCountryCode(string iban) => iban.Substring(_COUNTRY_CODE_INDEX, _COUNTRY_CODE_LENGTH);
+        public static string GetCountryCode(string iban) => iban.Substring(Country_Code_Index, Country_Code_Length);
 
         /// <summary>
         /// Returns IBAN'S country code and check digit
         /// </summary>
         /// <param name="iban">IBAN string vlaue</param>
         /// <returns>IBAN's country code and check digit string</returns>
-        public static string GetCountryCodeAndCheckDigit(string iban) => iban.Substring(_COUNTRY_CODE_INDEX, _COUNTRY_CODE_LENGTH + _CHECK_DIGIT_LENGTH);
+        public static string GetCountryCodeAndCheckDigit(string iban) => iban.Substring(Country_Code_Index, Country_Code_Length + Check_Digit_Length);
 
         /// <summary>
         /// Returns IBAN's BBAN code
@@ -206,14 +196,14 @@ namespace OrganisationRegistry.IbanBic
         /// </summary>
         /// <param name="iban">Iban string value</param>
         /// <returns>BBAN string</returns>
-        public static string GetBBan(string iban) => iban.Substring(_BBAN_INDEX);
+        public static string GetBBan(string iban) => iban.Substring(Bban_Index);
 
         /// <summary>
         /// Returns IBAN's account number
         /// </summary>
         /// <param name="iban">IBAN string value</param>
         /// <returns>IBAN's account number as string</returns>
-        public static string GetAccountNumber(string iban) => extractBbanEntry(iban, BBanEntryType.ACCOUNT_NUMBER);
+        public static string GetAccountNumber(string iban) => ExtractBbanEntry(iban, BBanEntryType.ACCOUNT_NUMBER);
 
 
         /// <summary>
@@ -221,7 +211,7 @@ namespace OrganisationRegistry.IbanBic
         /// </summary>
         /// <param name="iban">IBAN string value</param>
         /// <returns>IBAN's account number as string (if it is present)</returns>
-        public static string GetAccountNumberPrefix(string iban) => extractBbanEntry(iban, BBanEntryType.ACCOUNT_NUMBER_PREFIX);
+        public static string GetAccountNumberPrefix(string iban) => ExtractBbanEntry(iban, BBanEntryType.ACCOUNT_NUMBER_PREFIX);
 
         /// <summary>
         /// Returns a new IBAN string with changed account number
@@ -231,7 +221,7 @@ namespace OrganisationRegistry.IbanBic
         /// <param name="newAccountNumber">The new account number</param>
         /// <returns>IBAN with changed account number and recalculated check digit</returns>
         /// <exception cref="InvalidIbanFormat">Thrown when new account number is longer, than that is specified in BBAN rules</exception>
-        public static string ChangeAccountNumber(string iban, string newAccountNumber) => changeBbanEntry(iban, newAccountNumber, BBanEntryType.ACCOUNT_NUMBER);
+        public static string ChangeAccountNumber(string iban, string newAccountNumber) => ChangeBbanEntry(iban, newAccountNumber, BBanEntryType.ACCOUNT_NUMBER);
 
         /// <summary>
         /// Returns a new IBAN string with changed account number prefix
@@ -241,14 +231,14 @@ namespace OrganisationRegistry.IbanBic
         /// <param name="newAccountNumberPrefix">The new account number prefix</param>
         /// <returns>IBAN with changed account number prefix and recalculated check digit</returns>
         /// <exception cref="InvalidIbanFormat">Thrown when new account number is longer, than that is specified in BBAN rules</exception>
-        public static string ChangeAccountNumberPrefix(string iban, string newAccountNumberPrefix) => changeBbanEntry(iban, newAccountNumberPrefix, BBanEntryType.ACCOUNT_NUMBER_PREFIX);
+        public static string ChangeAccountNumberPrefix(string iban, string newAccountNumberPrefix) => ChangeBbanEntry(iban, newAccountNumberPrefix, BBanEntryType.ACCOUNT_NUMBER_PREFIX);
 
         /// <summary>
         /// Returns IBAN'S bank code
         /// </summary>
         /// <param name="iban">Iban string value</param>
         /// <returns>IBAN's bank code</returns>
-        public static string GetBankCode(string iban) => extractBbanEntry(iban, BBanEntryType.BANK_CODE);
+        public static string GetBankCode(string iban) => ExtractBbanEntry(iban, BBanEntryType.BANK_CODE);
 
         /// <summary>
         /// Return a new IBAN string with changed bank code
@@ -258,42 +248,42 @@ namespace OrganisationRegistry.IbanBic
         /// <param name="newBankCode">The new bank code</param>
         /// <returns>IBAN with changed bank code and recalculated check digit</returns>
         /// <exception cref="InvalidIbanFormat">Thrown when new bank code is longer, than that is specified in BBAN rules</exception>
-        public static string ChangeBankCode(string iban, string newBankCode) => changeBbanEntry(iban, newBankCode, BBanEntryType.BANK_CODE);
+        public static string ChangeBankCode(string iban, string newBankCode) => ChangeBbanEntry(iban, newBankCode, BBanEntryType.BANK_CODE);
 
         /// <summary>
         /// Returns IBAN's branch code
         /// </summary>
         /// <param name="iban">Iban string value</param>
         /// <returns>IBAN's branch code string</returns>
-        public static string GetBranchCode(string iban) => extractBbanEntry(iban, BBanEntryType.BRANCH_CODE);
+        public static string GetBranchCode(string iban) => ExtractBbanEntry(iban, BBanEntryType.BRANCH_CODE);
 
         /// <summary>
         /// Returns IBAN's national check digit
         /// </summary>
         /// <param name="iban">Iban value string</param>
         /// <returns>IBAN's national check digit string</returns>
-        public static string GetNationalCheckDigit(string iban) => extractBbanEntry(iban, BBanEntryType.NATIONAL_CHECK_DIGIT);
+        public static string GetNationalCheckDigit(string iban) => ExtractBbanEntry(iban, BBanEntryType.NATIONAL_CHECK_DIGIT);
 
         /// <summary>
         /// Returns IBAN's account type
         /// </summary>
         /// <param name="iban">Iban string value</param>
         /// <returns>IBAN's account type string</returns>
-        public static string GetAccountType(string iban) => extractBbanEntry(iban, BBanEntryType.ACCOUNT_TYPE);
+        public static string GetAccountType(string iban) => ExtractBbanEntry(iban, BBanEntryType.ACCOUNT_TYPE);
 
         /// <summary>
         /// Returns IBAN'S owner account type
         /// </summary>
         /// <param name="iban">Iban string value</param>
         /// <returns>IBAN's owner account type string</returns>
-        public static string GetOwnerAccountType(string iban) => extractBbanEntry(iban, BBanEntryType.OWNER_ACCOUNT_NUMBER);
+        public static string GetOwnerAccountType(string iban) => ExtractBbanEntry(iban, BBanEntryType.OWNER_ACCOUNT_NUMBER);
 
         /// <summary>
         /// Returns IBAN's identification number
         /// </summary>
         /// <param name="iban">Iban string value</param>
         /// <returns>IBAN's identifcation number string</returns>
-        public static string GetIdentificationNumber(string iban) => extractBbanEntry(iban, BBanEntryType.IDENTIFICATION_NUMBER);
+        public static string GetIdentificationNumber(string iban) => ExtractBbanEntry(iban, BBanEntryType.IDENTIFICATION_NUMBER);
 
 
 
@@ -307,9 +297,9 @@ namespace OrganisationRegistry.IbanBic
 
 
 
-        private static void validateCheckDigit(string iban)
+        private static void ValidateCheckDigit(string iban)
         {
-            if (calculateMod(iban) != 1)
+            if (CalculateMod(iban) != 1)
             {
                 string checkDigit = GetCheckDigit(iban);
                 string expectedCheckDigit = CalculateCheckDigit(iban);
@@ -318,11 +308,11 @@ namespace OrganisationRegistry.IbanBic
             }
         }
 
-        private static bool hasValidCheckDigitValue(string iban, out IbanFormatViolation validationResult)
+        private static bool HasValidCheckDigitValue(string iban, out IbanFormatViolation validationResult)
         {
             validationResult = IbanFormatViolation.NO_VIOLATION;
 
-            if (calculateMod(iban) != 1)
+            if (CalculateMod(iban) != 1)
             {
                 validationResult = IbanFormatViolation.IBAN_INVALID_CHECK_DIGIT_VALUE;
             }
@@ -330,7 +320,7 @@ namespace OrganisationRegistry.IbanBic
             return (validationResult == IbanFormatViolation.NO_VIOLATION);
         }
 
-        private static void validateEmpty(string iban)
+        private static void ValidateEmpty(string iban)
         {
             if (string.IsNullOrEmpty(iban))
             {
@@ -338,59 +328,59 @@ namespace OrganisationRegistry.IbanBic
             }
         }
 
-        private static void validateCountryCode(string iban)
+        private static void ValidateCountryCode(string iban)
         {
-            if (iban.Length < _COUNTRY_CODE_LENGTH)
+            if (iban.Length < Country_Code_Length)
             {
                 throw new InvalidIbanFormat("Input must contain 2 letters for country code", IbanFormatViolation.COUNTRY_CODE_TWO_LETTERS, iban);
             }
 
-            string countryCode = GetCountryCode(iban);
+            var countryCode = GetCountryCode(iban);
 
             if (!countryCode.Equals(countryCode.ToUpper()) || !char.IsLetter(iban[0]) || !char.IsLetter(iban[1]))
             {
                 throw new InvalidIbanFormat("IBAN's country code must contain upper case letters", IbanFormatViolation.COUNTRY_CODE_UPPER_CASE_LETTERS, iban);
             }
 
-            CountryCodeEntry countryEntry = CountryCode.GetCountryCode(countryCode);
+            var countryEntry = CountryCode.GetCountryCode(countryCode);
 
             if (countryEntry == null)
             {
                 throw new InvalidIbanFormat("IBAN contains non existing country code", IbanFormatViolation.COUNTRY_CODE_EXISTS, iban);
             }
 
-            BBanStructure structure = Bban.GetStructureForCountry(countryEntry);
+            var structure = Bban.GetStructureForCountry(countryEntry);
             if (structure == null)
             {
                 throw new UnsupportedCountry("IBAN contains not supported country code", countryCode);
             }
         }
 
-        private static bool hasValidCountryCode(string iban, out IbanFormatViolation validationResult)
+        private static bool HasValidCountryCode(string iban, out IbanFormatViolation validationResult)
         {
             validationResult = IbanFormatViolation.NO_VIOLATION;
 
-            if (iban.Length < _COUNTRY_CODE_LENGTH)
+            if (iban.Length < Country_Code_Length)
             {
                 validationResult = IbanFormatViolation.COUNTRY_CODE_TWO_LETTERS;
             }
             else
             {
-                string countryCode = GetCountryCode(iban);
+                var countryCode = GetCountryCode(iban);
                 if (!countryCode.Equals(countryCode.ToUpper()) || !char.IsLetter(iban[0]) || !char.IsLetter(iban[1]))
                 {
                     validationResult = IbanFormatViolation.COUNTRY_CODE_UPPER_CASE_LETTERS;
                 }
                 else
                 {
-                    CountryCodeEntry countryEntry = CountryCode.GetCountryCode(countryCode);
+                    var countryEntry = CountryCode.GetCountryCode(countryCode);
                     if (countryEntry == null)
                     {
                         validationResult = IbanFormatViolation.COUNTRY_CODE_EXISTS;
                     }
                     else
                     {
-                        BBanStructure structure = Bban.GetStructureForCountry(countryEntry);
+                        var structure = Bban.GetStructureForCountry(countryEntry);
                         if (structure == null)
                         {
                             validationResult = IbanFormatViolation.COUNTRY_CODE_UNSUPPORTED;
@@ -402,11 +392,11 @@ namespace OrganisationRegistry.IbanBic
             return (validationResult == IbanFormatViolation.NO_VIOLATION);
         }
 
-        private static void validateCheckDigitPresence(string iban)
+        private static void ValidateCheckDigitPresence(string iban)
         {
-            if (iban.Length < (_COUNTRY_CODE_LENGTH + _CHECK_DIGIT_LENGTH))
+            if (iban.Length < (Country_Code_Length + Check_Digit_Length))
             {
-                throw new InvalidIbanFormat("IBAN must contain 2 digit check digit", IbanFormatViolation.CHECK_DIGIT_TWO_DIGITS, iban.Substring(_COUNTRY_CODE_LENGTH));
+                throw new InvalidIbanFormat("IBAN must contain 2 digit check digit", IbanFormatViolation.CHECK_DIGIT_TWO_DIGITS, iban.Substring(Country_Code_Length));
             }
 
             string checkDigit = GetCheckDigit(iban);
@@ -416,11 +406,11 @@ namespace OrganisationRegistry.IbanBic
             }
         }
 
-        private static bool hasValidCheckDigit(string iban, out IbanFormatViolation validationResult)
+        private static bool HasValidCheckDigit(string iban, out IbanFormatViolation validationResult)
         {
             validationResult = IbanFormatViolation.NO_VIOLATION;
 
-            if ((iban.Length < (_COUNTRY_CODE_LENGTH + _CHECK_DIGIT_LENGTH)))
+            if ((iban.Length < (Country_Code_Length + Check_Digit_Length)))
             {
                 validationResult = IbanFormatViolation.CHECK_DIGIT_TWO_DIGITS;
             }
@@ -436,11 +426,11 @@ namespace OrganisationRegistry.IbanBic
             return (validationResult == IbanFormatViolation.NO_VIOLATION);
         }
 
-        private static void validateBbanLength(string iban, BBanStructure structure)
+        private static void ValidateBbanLength(string iban, BBanStructure? structure)
         {
-            int expectedBbanLength = structure.GetBBanLength();
-            string bban = GetBBan(iban);
-            int bbanLength = bban.Length;
+            var expectedBbanLength = structure?.GetBBanLength() ?? 0;
+            var bban = GetBBan(iban);
+            var bbanLength = bban.Length;
 
             if (expectedBbanLength != bbanLength)
             {
@@ -449,13 +439,13 @@ namespace OrganisationRegistry.IbanBic
             }
         }
 
-        private static bool hasValidBbanLength(string iban, BBanStructure structure, out IbanFormatViolation validationResult)
+        private static bool HasValidBbanLength(string iban, BBanStructure? structure, out IbanFormatViolation validationResult)
         {
             validationResult = IbanFormatViolation.NO_VIOLATION;
 
-            int expectedBbanLength = structure.GetBBanLength();
-            string bban = GetBBan(iban);
-            int bbanLength = bban.Length;
+            var expectedBbanLength = structure?.GetBBanLength() ?? 0;
+            var bban = GetBBan(iban);
+            var bbanLength = bban.Length;
 
             if (expectedBbanLength != bbanLength)
             {
@@ -465,37 +455,37 @@ namespace OrganisationRegistry.IbanBic
             return (validationResult == IbanFormatViolation.NO_VIOLATION);
         }
 
-        private static void validateBbanEntries(string iban, BBanStructure structure)
+        private static void ValidateBbanEntries(string iban, BBanStructure? structure)
         {
-            string bban = GetBBan(iban);
-            int bbanOffset = 0;
+            var bban = GetBBan(iban);
+            var bbanOffset = 0;
 
-            foreach (BBanEntry entry in structure.Entries)
+            foreach (var entry in structure?.Entries ?? new List<BBanEntry>())
             {
-                int entryLength = entry.Length;
-                string entryValue = bban.Substring(bbanOffset, entryLength);
+                var entryLength = entry.Length;
+                var entryValue = bban.Substring(bbanOffset, entryLength);
 
                 bbanOffset += entryLength;
 
-                validateBbanEntryCharacterType(entry, entryValue);
+                ValidateBbanEntryCharacterType(entry, entryValue);
             }
         }
 
-        private static bool hasValidBbanEntries(string iban, BBanStructure structure, out IbanFormatViolation validationResult)
+        private static bool HasValidBbanEntries(string iban, BBanStructure? structure, out IbanFormatViolation validationResult)
         {
             validationResult = IbanFormatViolation.NO_VIOLATION;
 
-            string bban = GetBBan(iban);
-            int bbanOffset = 0;
+            var bban = GetBBan(iban);
+            var bbanOffset = 0;
 
-            foreach (BBanEntry entry in structure.Entries)
+            foreach (var entry in structure?.Entries ?? new List<BBanEntry>())
             {
-                int entryLength = entry.Length;
-                string entryValue = bban.Substring(bbanOffset, entryLength);
+                var entryLength = entry.Length;
+                var entryValue = bban.Substring(bbanOffset, entryLength);
 
                 bbanOffset += entryLength;
 
-                if (!hasValidBbanEntryCharacterType(entry, entryValue, out validationResult))
+                if (!HasValidBbanEntryCharacterType(entry, entryValue, out validationResult))
                 {
                     break;
                 }
@@ -504,12 +494,12 @@ namespace OrganisationRegistry.IbanBic
             return (validationResult == IbanFormatViolation.NO_VIOLATION);
         }
 
-        private static void validateBbanEntryCharacterType(BBanEntry entry, string entryValue)
+        private static void ValidateBbanEntryCharacterType(BBanEntry entry, string entryValue)
         {
             switch (entry.CharacterType)
             {
                 case BBanEntryCharacterType.A:
-                    foreach (char c in entryValue.ToCharArray())
+                    foreach (var c in entryValue)
                     {
                         if (!char.IsUpper(c))
                         {
@@ -519,7 +509,7 @@ namespace OrganisationRegistry.IbanBic
                     }
                     break;
                 case BBanEntryCharacterType.C:
-                    foreach (char c in entryValue.ToCharArray())
+                    foreach (var c in entryValue)
                     {
                         if (!char.IsLetterOrDigit(c))
                         {
@@ -529,7 +519,7 @@ namespace OrganisationRegistry.IbanBic
                     }
                     break;
                 case BBanEntryCharacterType.N:
-                    foreach (char c in entryValue.ToCharArray())
+                    foreach (var c in entryValue)
                     {
                         if (!char.IsDigit(c))
                         {
@@ -541,14 +531,14 @@ namespace OrganisationRegistry.IbanBic
             }
         }
 
-        private static bool hasValidBbanEntryCharacterType(BBanEntry entry, string entryValue, out IbanFormatViolation validationResult)
+        private static bool HasValidBbanEntryCharacterType(BBanEntry entry, string entryValue, out IbanFormatViolation validationResult)
         {
             validationResult = IbanFormatViolation.NO_VIOLATION;
 
             switch (entry.CharacterType)
             {
                 case BBanEntryCharacterType.A:
-                    foreach (char c in entryValue.ToCharArray())
+                    foreach (var c in entryValue)
                     {
                         if (!char.IsUpper(c))
                         {
@@ -558,7 +548,7 @@ namespace OrganisationRegistry.IbanBic
                     }
                     break;
                 case BBanEntryCharacterType.C:
-                    foreach (char c in entryValue.ToCharArray())
+                    foreach (var c in entryValue)
                     {
                         if (!char.IsLetterOrDigit(c))
                         {
@@ -568,7 +558,7 @@ namespace OrganisationRegistry.IbanBic
                     }
                     break;
                 case BBanEntryCharacterType.N:
-                    foreach (char c in entryValue.ToCharArray())
+                    foreach (var c in entryValue)
                     {
                         if (!char.IsDigit(c))
                         {
@@ -582,7 +572,7 @@ namespace OrganisationRegistry.IbanBic
             return (validationResult == IbanFormatViolation.NO_VIOLATION);
         }
 
-        private static int calculateMod(string iban)
+        private static int CalculateMod(string iban)
         {
             string reformattedIban = GetBBan(iban) + GetCountryCodeAndCheckDigit(iban);
             double total = 0;
@@ -600,35 +590,35 @@ namespace OrganisationRegistry.IbanBic
 
                 total = (numericValue > 9 ? total * 100 : total * 10) + numericValue;
 
-                if (total > _MAX)
+                if (total > Max)
                 {
-                    total = (total % _MOD);
+                    total = (total % Mod);
                 }
             }
 
-            return (int)(total % _MOD);
+            return (int)(total % Mod);
         }
 
-        private static BBanStructure getBbanStructure(string iban)
+        private static BBanStructure? GetBbanStructure(string iban)
         {
             string countryCode = GetCountryCode(iban);
-            return getBbanStructure(CountryCode.GetCountryCode(countryCode));
+            return GetBbanStructure(CountryCode.GetCountryCode(countryCode));
         }
 
-        private static BBanStructure getBbanStructure(CountryCodeEntry countryCode) => Bban.GetStructureForCountry(countryCode);
+        private static BBanStructure? GetBbanStructure(CountryCodeEntry? countryCode) => Bban.GetStructureForCountry(countryCode);
 
-        private static string extractBbanEntry(string iban, BBanEntryType entryType)
+        private static string ExtractBbanEntry(string iban, BBanEntryType entryType)
         {
-            string result = "";
+            var result = "";
 
-            string bban = GetBBan(iban);
-            BBanStructure structure = getBbanStructure(iban);
-            int bbanOffset = 0;
+            var bban = GetBBan(iban);
+            var structure = GetBbanStructure(iban);
+            var bbanOffset = 0;
 
-            foreach (BBanEntry entry in structure.Entries)
+            foreach (var entry in structure?.Entries ?? new List<BBanEntry>())
             {
-                int entryLength = entry.Length;
-                string entryValue = bban.Substring(bbanOffset, entryLength);
+                var entryLength = entry.Length;
+                var entryValue = bban.Substring(bbanOffset, entryLength);
 
                 bbanOffset += entryLength;
 
@@ -642,17 +632,17 @@ namespace OrganisationRegistry.IbanBic
             return result;
         }
 
-        private static string changeBbanEntry(string iban, string newValue, BBanEntryType entryType)
+        private static string ChangeBbanEntry(string iban, string newValue, BBanEntryType entryType)
         {
 
-            string bban = GetBBan(iban);
-            string newIban = GetCountryCode(iban) + Iban.DEFAULT_CHECK_DIGIT;
+            var bban = GetBBan(iban);
+            var newIban = GetCountryCode(iban) + Iban.DEFAULT_CHECK_DIGIT;
 
-            BBanStructure structure = getBbanStructure(iban);
-            int bbanOffset = 0;
-            StringBuilder sb = new StringBuilder(bban);
+            var structure = GetBbanStructure(iban);
+            var bbanOffset = 0;
+            var sb = new StringBuilder(bban);
 
-            foreach (BBanEntry entry in structure.Entries)
+            foreach (var entry in structure?.Entries ?? new List<BBanEntry>())
             {
                 if (entry.EntryType == entryType)
                 {

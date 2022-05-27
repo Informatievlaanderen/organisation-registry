@@ -12,7 +12,7 @@
         public Guid Id { get; set; }
 
         public Guid BodyMandateId { get; set; }
-        public BodySeatGenderRatioBodyMandateItem BodyMandate { get; set; }
+        public BodySeatGenderRatioBodyMandateItem BodyMandate { get; set; } = null!;
 
 
         public Guid? DelegationAssignmentId { get; set; }
