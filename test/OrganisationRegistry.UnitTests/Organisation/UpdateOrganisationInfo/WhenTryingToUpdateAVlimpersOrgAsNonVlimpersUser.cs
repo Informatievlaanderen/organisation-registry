@@ -2,11 +2,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo;
 
 using System;
 using System.Collections.Generic;
-using FluentAssertions;
+using System.Threading.Tasks;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Purpose;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
@@ -18,42 +18,36 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenTryingToUpdateAVlimpersOrgAsNonVlimpersUser : ExceptionOldSpecification2<UpdateOrganisationCommandHandler,
+    WhenTryingToUpdateAVlimpersOrgAsNonVlimpersUser : Specification<UpdateOrganisationCommandHandler,
         UpdateOrganisationInfo>
 {
-    private readonly DateTime _yesterday = DateTime.Today.AddDays(-1);
-    private Guid _organisationId;
+    private readonly DateTime _yesterday;
+    private readonly Guid _organisationId;
 
     public WhenTryingToUpdateAVlimpersOrgAsNonVlimpersUser(ITestOutputHelper helper) : base(helper)
     {
+        _yesterday = DateTime.Today.AddDays(-1);
+        _organisationId = Guid.NewGuid();
     }
 
-    protected override UpdateOrganisationCommandHandler BuildHandler()
+    protected override UpdateOrganisationCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<UpdateOrganisationCommandHandler>>().Object,
-            Session,
+            session,
             new DateTimeProviderStub(DateTime.Today));
 
-    protected override IUser User
-        => new UserBuilder().Build();
-
-    protected override IEnumerable<IEvent> Given()
-    {
-        var organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
-
-        _organisationId = organisationCreatedBuilder.Id;
-
-        return new List<IEvent>
+    private IEvent[] Events
+        => new IEvent[]
         {
-            organisationCreatedBuilder
+            new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator())
+                .WithId(new OrganisationId(_organisationId))
                 .WithValidity(null, null)
                 .Build(),
-            new OrganisationBecameActive(organisationCreatedBuilder.Id),
-            new OrganisationPlacedUnderVlimpersManagement(organisationCreatedBuilder.Id)
+            new OrganisationBecameActive(_organisationId),
+            new OrganisationPlacedUnderVlimpersManagement(_organisationId)
         };
-    }
 
-    protected override UpdateOrganisationInfo When()
+    private UpdateOrganisationInfo UpdateOrganisationInfoCommand
         => new(
             new OrganisationId(_organisationId),
             "Test",
@@ -67,12 +61,16 @@ public class
             new ValidFrom(),
             new ValidTo());
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task PublishesNoEvents()
+    {
+        await Given(Events).When(UpdateOrganisationInfoCommand, UserBuilder.VlimpersBeheerder())
+            .ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
 
     [Fact]
-    public void ThrowsAnException()
+    public async Task ThrowsAnException()
     {
-        Exception.Should().BeOfType<InsufficientRights>();
+        await Given(Events).When(UpdateOrganisationInfoCommand, UserBuilder.User()).ThenThrows<InsufficientRights>();
     }
 }

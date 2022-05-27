@@ -2,11 +2,11 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo;
 
 using System;
 using System.Collections.Generic;
-using FluentAssertions;
+using System.Threading.Tasks;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Purpose;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
@@ -18,48 +18,43 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenTryingToChangeKboOwnedData : ExceptionOldSpecification2<UpdateOrganisationCommandHandler, UpdateOrganisationInfo>
+    WhenTryingToChangeKboOwnedData : Specification<UpdateOrganisationCommandHandler, UpdateOrganisationInfo>
 {
-    private readonly DateTime _yesterday = DateTime.Today.AddDays(-1);
-    private Guid _organisationId;
+    private readonly DateTime _yesterday;
+    private readonly Guid _organisationId;
+    private readonly string _organistationName;
 
     public WhenTryingToChangeKboOwnedData(ITestOutputHelper helper) : base(helper)
     {
+
+        _organisationId = Guid.NewGuid();
+        _yesterday = DateTime.Today.AddDays(-1);
+        _organistationName = "Organisation Name";
     }
 
-    protected override UpdateOrganisationCommandHandler BuildHandler()
+    protected override UpdateOrganisationCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<UpdateOrganisationCommandHandler>>().Object,
-            Session,
+            session,
             new DateTimeProviderStub(DateTime.Today));
 
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
-    {
-        var organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
-
-        _organisationId = organisationCreatedBuilder.Id;
-
-        return new List<IEvent>
-        {
-            organisationCreatedBuilder
+    private IEvent[] Events
+        => new IEvent[] {
+            new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator())
+                .WithId(new OrganisationId(_organisationId))
+                .WithName(_organistationName)
                 .WithValidity(null, null)
                 .Build(),
             new OrganisationCoupledWithKbo(
-                organisationCreatedBuilder.Id,
+                _organisationId,
                 "012313212",
-                organisationCreatedBuilder.Name,
+                _organistationName,
                 "OVO999999",
                 new DateTime()),
-            new OrganisationBecameActive(organisationCreatedBuilder.Id)
+            new OrganisationBecameActive(_organisationId)
         };
-    }
 
-    protected override UpdateOrganisationInfo When()
+    private UpdateOrganisationInfo UpdateOrganisationInfoCommand
         => new(
             new OrganisationId(_organisationId),
             "Test",
@@ -73,12 +68,15 @@ public class
             new ValidFrom(),
             new ValidTo());
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task PublishesNoEvents()
+    {
+        await Given(Events).When(UpdateOrganisationInfoCommand, UserBuilder.AlgemeenBeheerder()).ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
 
     [Fact]
-    public void TheOrganisationBecomesActive()
+    public async Task TheOrganisationBecomesActive()
     {
-        Exception.Should().BeOfType<CannotChangeDataOwnedByKbo>();
+        await Given(Events).When(UpdateOrganisationInfoCommand, UserBuilder.AlgemeenBeheerder()).ThenThrows<CannotChangeDataOwnedByKbo>();
     }
 }

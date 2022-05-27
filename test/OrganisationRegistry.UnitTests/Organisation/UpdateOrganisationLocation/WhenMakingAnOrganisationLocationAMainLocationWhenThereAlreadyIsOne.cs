@@ -2,6 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Location;
@@ -10,6 +11,7 @@ using Location.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using OrganisationRegistry.Organisation.Exceptions;
@@ -17,47 +19,45 @@ using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenMakingAnOrganisationLocationAMainLocationWhenThereAlreadyIsOne : ExceptionOldSpecification2<
-    UpdateOrganisationLocationCommandHandler, UpdateOrganisationLocation>
+public class WhenMakingAnOrganisationLocationAMainLocationWhenThereAlreadyIsOne :
+    Specification<UpdateOrganisationLocationCommandHandler, UpdateOrganisationLocation>
 {
-    private Guid _organisationId;
-    private Guid _organisationLocationId;
-    private DateTime _validTo;
-    private DateTime _validFrom;
-    private Guid _locationAId;
-    private Guid _locationBId;
-    private const string OvoNumber = "OVO000012345";
+    private readonly Guid _organisationId;
+    private readonly Guid _organisationLocationId;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
+    private readonly Guid _locationAId;
+    private readonly Guid _locationBId;
+    private readonly string _ovoNumber;
 
     public WhenMakingAnOrganisationLocationAMainLocationWhenThereAlreadyIsOne(ITestOutputHelper helper) : base(
         helper)
     {
-    }
-
-    protected override UpdateOrganisationLocationCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<UpdateOrganisationLocationCommandHandler>>().Object,
-            Session,
-            new DateTimeProvider());
-
-    protected override IUser User
-        => new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(OvoNumber).Build();
-
-    protected override IEnumerable<IEvent> Given()
-    {
         _organisationId = Guid.NewGuid();
-
         _organisationLocationId = Guid.NewGuid();
         _validFrom = DateTime.Now.AddDays(1);
         _validTo = DateTime.Now.AddDays(2);
         _locationAId = Guid.NewGuid();
         _locationBId = Guid.NewGuid();
+        _ovoNumber = "OVO000012345";
+    }
 
-        return new List<IEvent>
+    protected override UpdateOrganisationLocationCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<UpdateOrganisationLocationCommandHandler>>().Object,
+            session,
+            new DateTimeProvider());
+
+    private IUser User
+        => new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build();
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
                 "Kind en Gezin",
-                OvoNumber,
+                _ovoNumber,
                 "K&G",
                 Article.None,
                 "Kindjes en gezinnetjes",
@@ -104,9 +104,8 @@ public class WhenMakingAnOrganisationLocationAMainLocationWhenThereAlreadyIsOne 
                 _validFrom,
                 _validTo)
         };
-    }
 
-    protected override UpdateOrganisationLocation When()
+    private UpdateOrganisationLocation UpdateOrganisationLocationCommand
         => new(
             _organisationLocationId,
             new OrganisationId(_organisationId),
@@ -117,13 +116,17 @@ public class WhenMakingAnOrganisationLocationAMainLocationWhenThereAlreadyIsOne 
             new ValidTo(_validTo),
             Source.Wegwijs);
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task PublishesNoEvents()
+    {
+        await Given(Events).When(UpdateOrganisationLocationCommand, User).ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
 
     [Fact]
-    public void ThrowsAnException()
+    public async Task ThrowsAnException()
     {
-        Exception.Should().BeOfType<OrganisationAlreadyHasAMainLocationInThisPeriod>();
-        Exception?.Message.Should().Be("Deze organisatie heeft reeds een hoofdlocatie binnen deze periode.");
+        await Given(Events).When(UpdateOrganisationLocationCommand, User)
+            .ThenThrows<OrganisationAlreadyHasAMainLocationInThisPeriod>()
+            .WithMessage("Deze organisatie heeft reeds een hoofdlocatie binnen deze periode.");
     }
 }

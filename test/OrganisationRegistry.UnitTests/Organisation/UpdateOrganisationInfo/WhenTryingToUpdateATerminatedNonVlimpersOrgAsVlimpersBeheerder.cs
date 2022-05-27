@@ -2,12 +2,12 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoFixture;
-using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
 using OrganisationRegistry.Infrastructure.Events;
@@ -17,43 +17,37 @@ using OrganisationRegistry.Organisation.Exceptions;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser : ExceptionOldSpecification2<UpdateOrganisationInfoLimitedToVlimpersCommandHandler, UpdateOrganisationInfoLimitedToVlimpers>
+public class WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser : Specification<
+    UpdateOrganisationInfoLimitedToVlimpersCommandHandler, UpdateOrganisationInfoLimitedToVlimpers>
 {
-    private Guid _organisationId;
+    private readonly Guid _organisationId;
+    private readonly Fixture _fixture;
 
     public WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser(ITestOutputHelper helper) : base(helper)
     {
+        _fixture = new Fixture();
+        _organisationId = Guid.NewGuid();
     }
 
-    protected override UpdateOrganisationInfoLimitedToVlimpersCommandHandler BuildHandler()
+    protected override UpdateOrganisationInfoLimitedToVlimpersCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<UpdateOrganisationInfoLimitedToVlimpersCommandHandler>>().Object,
-            Session,
+            session,
             new DateTimeProviderStub(DateTime.Today));
 
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.VlimpersBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
-    {
-        var fixture = new Fixture();
-        var organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
-
-        _organisationId = organisationCreatedBuilder.Id;
-
-        return new List<IEvent>
+    private IEvent[] Events
+        => new IEvent[]
         {
-            organisationCreatedBuilder
+            new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator())
+                .WithId(new OrganisationId(_organisationId))
                 .WithValidity(null, null)
                 .Build(),
-            new OrganisationBecameActive(organisationCreatedBuilder.Id),
+            new OrganisationBecameActive(_organisationId),
             new OrganisationTerminatedV2(
-                organisationCreatedBuilder.Id,
-                fixture.Create<string>(),
-                fixture.Create<string>(),
-                fixture.Create<DateTime>(),
+                _organisationId,
+                _fixture.Create<string>(),
+                _fixture.Create<string>(),
+                _fixture.Create<DateTime>(),
                 new FieldsToTerminateV2(
                     null,
                     new Dictionary<Guid, DateTime>(),
@@ -75,13 +69,12 @@ public class WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser : Excepti
                     new KeyValuePair<Guid, DateTime>?(),
                     new KeyValuePair<Guid, DateTime>?()
                 ),
-                fixture.Create<bool>(),
-                fixture.Create<DateTime?>()
+                _fixture.Create<bool>(),
+                _fixture.Create<DateTime?>()
             ),
         };
-    }
 
-    protected override UpdateOrganisationInfoLimitedToVlimpers When()
+    private UpdateOrganisationInfoLimitedToVlimpers UpdateOrganisationInfoLimitedToVlimpersCommand
         => new(
             new OrganisationId(_organisationId),
             "Test",
@@ -92,12 +85,17 @@ public class WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser : Excepti
             new ValidFrom(),
             new ValidTo());
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task PublishesNoEvents()
+    {
+        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, UserBuilder.VlimpersBeheerder())
+            .ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
 
     [Fact]
-    public void UpdatesOrganisationName()
+    public async Task UpdatesOrganisationName()
     {
-        Exception.Should().BeOfType<InsufficientRights>();
+        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, UserBuilder.VlimpersBeheerder())
+            .ThenThrows<InsufficientRights>();
     }
 }

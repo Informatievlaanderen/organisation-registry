@@ -5,7 +5,7 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
 
     public class OrganisationFormalFrameworkAddedBuilder
     {
-        public Guid OrganisationFormalFrameworkId { get; }
+        public Guid OrganisationFormalFrameworkId { get; set; }
         public Guid OrganisationId { get; }
         public Guid FormalFrameworkId { get; }
         public string FormalFrameworkName { get; set; }
@@ -44,5 +44,11 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
 
         public static implicit operator OrganisationFormalFrameworkAdded(OrganisationFormalFrameworkAddedBuilder builder)
             => builder.Build();
+
+        public OrganisationFormalFrameworkAddedBuilder WithId(Guid organisationFormalFrameworkId)
+        {
+            OrganisationFormalFrameworkId = organisationFormalFrameworkId;
+            return this;
+        }
     }
 }

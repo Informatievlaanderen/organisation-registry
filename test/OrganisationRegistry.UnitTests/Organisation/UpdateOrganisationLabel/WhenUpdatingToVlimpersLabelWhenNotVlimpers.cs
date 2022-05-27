@@ -2,7 +2,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLabel;
 
 using System;
 using System.Collections.Generic;
-using FluentAssertions;
+using System.Threading.Tasks;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using LabelType;
 using LabelType.Events;
@@ -10,6 +10,7 @@ using OrganisationRegistry.Infrastructure.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using OrganisationRegistry.Organisation.Exceptions;
@@ -19,47 +20,25 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class WhenUpdatingToVlimpersLabelWhenNotVlimpers
-    : ExceptionOldSpecification2<UpdateOrganisationLabelCommandHandler, UpdateOrganisationLabel>
+    : Specification<UpdateOrganisationLabelCommandHandler, UpdateOrganisationLabel>
 {
-    private Guid _organisationId;
-    private Guid _vlimpersLabelTypeId;
-    private Guid _organisationLabelId;
-    private DateTime _validTo;
-    private DateTime _validFrom;
-    private Guid _nonVlimpersLabelTypeId;
-    private const string NonVlimpersLabelTypeName = "Niet vlimpers";
-    private const string OvoNumber = "OVO000012345";
-    private const string Value = "13135/123lk.,m";
-    private const string VlimpersLabelTypeName = "Vlimpers";
+    private readonly Guid _organisationId;
+    private readonly Guid _vlimpersLabelTypeId;
+    private readonly Guid _organisationLabelId;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
+    private readonly Guid _nonVlimpersLabelTypeId;
+    private readonly string _nonVlimpersLabelTypeName;
+    private readonly string _ovoNumber;
+    private readonly string _value;
+    private readonly string _vlimpersLabelTypeName;
 
     public WhenUpdatingToVlimpersLabelWhenNotVlimpers(ITestOutputHelper helper) : base(helper)
     {
-    }
-
-    protected override UpdateOrganisationLabelCommandHandler BuildHandler()
-    {
-        var configuration = new OrganisationRegistryConfigurationStub
-        {
-            Authorization = new AuthorizationConfigurationStub
-            {
-                LabelIdsAllowedForVlimpers = new[] { _vlimpersLabelTypeId }
-            }
-        };
-
-        return new UpdateOrganisationLabelCommandHandler(
-            new Mock<ILogger<UpdateOrganisationLabelCommandHandler>>().Object,
-            Session,
-            configuration);
-    }
-
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.DecentraalBeheerder)
-            .AddOrganisations(OvoNumber)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
-    {
+        _nonVlimpersLabelTypeName = "Niet vlimpers";
+        _ovoNumber = "OVO000012345";
+        _value = "13135/123lk.,m";
+        _vlimpersLabelTypeName = "Vlimpers";
         _organisationId = Guid.NewGuid();
 
         _vlimpersLabelTypeId = Guid.NewGuid();
@@ -68,13 +47,33 @@ public class WhenUpdatingToVlimpersLabelWhenNotVlimpers
         _organisationLabelId = Guid.NewGuid();
         _validFrom = DateTime.Now.AddDays(1);
         _validTo = DateTime.Now.AddDays(2);
+    }
 
-        return new List<IEvent>
+    protected override UpdateOrganisationLabelCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<UpdateOrganisationLabelCommandHandler>>().Object,
+            session,
+            new OrganisationRegistryConfigurationStub
+            {
+                Authorization = new AuthorizationConfigurationStub
+                {
+                    LabelIdsAllowedForVlimpers = new[] { _vlimpersLabelTypeId }
+                }
+            });
+
+    private IUser User
+        => new UserBuilder()
+            .AddRoles(Role.DecentraalBeheerder)
+            .AddOrganisations(_ovoNumber)
+            .Build();
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
                 "Kind en Gezin",
-                OvoNumber,
+                _ovoNumber,
                 "K&G",
                 Article.None,
                 "Kindjes en gezinnetjes",
@@ -84,35 +83,37 @@ public class WhenUpdatingToVlimpersLabelWhenNotVlimpers
                 null,
                 null,
                 null),
-            new LabelTypeCreated(_vlimpersLabelTypeId, VlimpersLabelTypeName),
-            new LabelTypeCreated(_nonVlimpersLabelTypeId, NonVlimpersLabelTypeName),
-            new OrganisationPlacedUnderVlimpersManagement(_organisationId),
-            new OrganisationLabelAdded(
+            new LabelTypeCreated(_vlimpersLabelTypeId, _vlimpersLabelTypeName),
+            new LabelTypeCreated(_nonVlimpersLabelTypeId, _nonVlimpersLabelTypeName),
+            new OrganisationPlacedUnderVlimpersManagement(_organisationId), new OrganisationLabelAdded(
                 _organisationId,
                 _organisationLabelId,
                 _nonVlimpersLabelTypeId,
-                NonVlimpersLabelTypeName,
-                Value,
+                _nonVlimpersLabelTypeName,
+                _value,
                 _validFrom,
                 _validTo)
         };
-    }
 
-    protected override UpdateOrganisationLabel When()
+    private UpdateOrganisationLabel UpdateOrganisationLabelCommand
         => new(
             _organisationLabelId,
             new OrganisationId(_organisationId),
             new LabelTypeId(_vlimpersLabelTypeId),
-            Value,
+            _value,
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    protected override int ExpectedNumberOfEvents
-        => 0;
+    [Fact]
+    public async Task PublishesNoEvents()
+    {
+        await Given(Events).When(UpdateOrganisationLabelCommand, User)
+            .ThenItPublishesTheCorrectNumberOfEvents(0);
+    }
 
     [Fact]
-    public void ThrowsAnException()
+    public async Task ThrowsAnException()
     {
-        Exception.Should().BeOfType<InsufficientRights>();
+        await Given(Events).When(UpdateOrganisationLabelCommand, User).ThenThrows<InsufficientRights>();
     }
 }
