@@ -3,7 +3,6 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLabel;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using LabelType;
 using LabelType.Events;
@@ -23,12 +22,12 @@ using Xunit.Abstractions;
 public class WhenUpdatingFromVlimpersLabelWhenNotVlimpers :
     Specification<UpdateOrganisationLabelCommandHandler, UpdateOrganisationLabel>
 {
-    private Guid _organisationId;
-    private Guid _vlimpersLabelTypeId;
-    private Guid _organisationLabelId;
-    private DateTime _validTo;
-    private DateTime _validFrom;
-    private Guid _nonVlimpersLabelTypeId;
+    private readonly Guid _organisationId;
+    private readonly Guid _vlimpersLabelTypeId;
+    private readonly Guid _organisationLabelId;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
+    private readonly Guid _nonVlimpersLabelTypeId;
     private readonly string _value;
     private readonly string _vlimpersLabelTypeName;
     private readonly string _nonVlimpersLabelTypeName;
@@ -67,13 +66,13 @@ public class WhenUpdatingFromVlimpersLabelWhenNotVlimpers :
             configuration);
     }
 
-    protected IUser User
+    private IUser User
         => new UserBuilder()
             .AddRoles(Role.DecentraalBeheerder)
             .AddOrganisations(_ovoNumber)
             .Build();
 
-    protected IEvent[] Events
+    private IEvent[] Events
         => new IEvent[] {
             new OrganisationCreated(
                 _organisationId,
@@ -98,7 +97,7 @@ public class WhenUpdatingFromVlimpersLabelWhenNotVlimpers :
                 _validTo)
         };
 
-    protected UpdateOrganisationLabel UpdateOrganisationLabelCommand
+    private UpdateOrganisationLabel UpdateOrganisationLabelCommand
         => new(
             _organisationLabelId,
             new OrganisationId(_organisationId),

@@ -156,13 +156,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         [Fact]
         public async Task ThrowsOrganisationAlreadyCoupledWithKbo()
             => await Given(Events)
-                .When(CoupleOrganisationToKboCommand, UserBuilder.User())
+                .When(CoupleOrganisationToKboCommand, TestUser.User)
                 .ThenThrows<OrganisationAlreadyCoupledWithKbo>();
 
         [Fact]
         public async Task PublishesNoEvents()
             => await Given(Events)
-                .When(CoupleOrganisationToKboCommand, UserBuilder.User())
+                .When(CoupleOrganisationToKboCommand, TestUser.User)
                 .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 }

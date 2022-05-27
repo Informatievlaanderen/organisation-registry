@@ -1,12 +1,12 @@
 namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo;
 
 using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
 using OrganisationRegistry.Infrastructure.Events;
@@ -15,8 +15,8 @@ using OrganisationRegistry.Organisation.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenTryingToUpdateAVlimpersOrgAsVlimpersUser : OldSpecification2<
-    UpdateOrganisationInfoLimitedToVlimpersCommandHandler, UpdateOrganisationInfoLimitedToVlimpers>
+public class WhenTryingToUpdateAVlimpersOrgAsVlimpersUser :
+    Specification<UpdateOrganisationInfoLimitedToVlimpersCommandHandler, UpdateOrganisationInfoLimitedToVlimpers>
 {
     private Guid _organisationId;
 
@@ -24,24 +24,19 @@ public class WhenTryingToUpdateAVlimpersOrgAsVlimpersUser : OldSpecification2<
     {
     }
 
-    protected override UpdateOrganisationInfoLimitedToVlimpersCommandHandler BuildHandler()
+    protected override UpdateOrganisationInfoLimitedToVlimpersCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<UpdateOrganisationInfoLimitedToVlimpersCommandHandler>>().Object,
-            Session,
+            session,
             new DateTimeProviderStub(DateTime.Today));
 
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.VlimpersBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
+    private IEvent[] Events()
     {
         var organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
 
         _organisationId = organisationCreatedBuilder.Id;
 
-        return new List<IEvent>
+        return new IEvent[]
         {
             organisationCreatedBuilder
                 .WithValidity(null, null)
@@ -51,7 +46,7 @@ public class WhenTryingToUpdateAVlimpersOrgAsVlimpersUser : OldSpecification2<
         };
     }
 
-    protected override UpdateOrganisationInfoLimitedToVlimpers When()
+    private UpdateOrganisationInfoLimitedToVlimpers UpdateOrganisationInfoLimitedToVlimpersCommand
         => new(
             new OrganisationId(_organisationId),
             "Test",
@@ -62,33 +57,41 @@ public class WhenTryingToUpdateAVlimpersOrgAsVlimpersUser : OldSpecification2<
             new ValidFrom(),
             new ValidTo());
 
-    protected override int ExpectedNumberOfEvents
-        => 4;
+    [Fact]
+    public async Task PublishesFourEvents()
+    {
+        await Given(Events()).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder)
+            .ThenItPublishesTheCorrectNumberOfEvents(4);
+    }
 
     [Fact]
-    public void UpdatesOrganisationName()
+    public async Task UpdatesOrganisationName()
     {
+        await Given(Events()).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder).Then();
         var organisationCreated = PublishedEvents[0].UnwrapBody<OrganisationNameUpdated>();
         organisationCreated.Should().NotBeNull();
     }
 
     [Fact]
-    public void UpdatesShortName()
+    public async Task UpdatesShortName()
     {
+        await Given(Events()).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder).Then();
         var organisationCreated = PublishedEvents[1].UnwrapBody<OrganisationShortNameUpdated>();
         organisationCreated.Should().NotBeNull();
     }
 
     [Fact]
-    public void UpdatesOrganisationValidity()
+    public async Task UpdatesOrganisationValidity()
     {
+        await Given(Events()).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder).Then();
         var organisationCreated = PublishedEvents[2].UnwrapBody<OrganisationValidityUpdated>();
         organisationCreated.Should().NotBeNull();
     }
 
     [Fact]
-    public void UpdatesOrganisationOperationalValidity()
+    public async Task UpdatesOrganisationOperationalValidity()
     {
+        await Given(Events()).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder).Then();
         var organisationCreated = PublishedEvents[3].UnwrapBody<OrganisationOperationalValidityUpdated>();
         organisationCreated.Should().NotBeNull();
     }

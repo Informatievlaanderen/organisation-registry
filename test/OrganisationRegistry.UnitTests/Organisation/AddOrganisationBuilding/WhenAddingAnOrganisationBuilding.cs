@@ -81,13 +81,13 @@ public class WhenAddingAMainOrganisationBuilding
     [Fact]
     public async Task PublishesTwoEvents()
     {
-        await Given(Events).When(AddOrganisationBuildingCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(2);
+        await Given(Events).When(AddOrganisationBuildingCommand, TestUser.User).ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
     [Fact]
     public async Task AddsAnOrganisationBuilding()
     {
-        await Given(Events).When(AddOrganisationBuildingCommand, UserBuilder.User()).Then();
+        await Given(Events).When(AddOrganisationBuildingCommand, TestUser.User).Then();
 
         PublishedEvents
             .First()
@@ -110,7 +110,7 @@ public class WhenAddingAMainOrganisationBuilding
     [Fact]
     public async Task AssignsAMainBuilding()
     {
-        await Given(Events).When(AddOrganisationBuildingCommand, UserBuilder.User()).Then();
+        await Given(Events).When(AddOrganisationBuildingCommand, TestUser.User).Then();
 
         PublishedEvents[1]
             .UnwrapBody<MainBuildingAssignedToOrganisation>()

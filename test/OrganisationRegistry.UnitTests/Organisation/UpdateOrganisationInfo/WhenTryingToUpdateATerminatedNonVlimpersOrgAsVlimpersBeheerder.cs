@@ -88,14 +88,14 @@ public class WhenTryingToUpdateATerminatedNonVlimpersOrgAsVlimpersUser : Specifi
     [Fact]
     public async Task PublishesNoEvents()
     {
-        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, UserBuilder.VlimpersBeheerder())
+        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
     [Fact]
     public async Task UpdatesOrganisationName()
     {
-        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, UserBuilder.VlimpersBeheerder())
+        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder)
             .ThenThrows<InsufficientRights>();
     }
 }

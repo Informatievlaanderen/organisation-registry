@@ -83,14 +83,14 @@ public class WhenAnotherMainBuildingIsNowActive :
     [Fact]
     public async Task PublishesTwoEvents()
     {
-        await Given(Events).When(UpdateMainBuildingCommand, UserBuilder.User())
+        await Given(Events).When(UpdateMainBuildingCommand, TestUser.User)
             .ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
     [Fact]
     public async Task ClearsTheMainBuilding()
     {
-        await Given(Events).When(UpdateMainBuildingCommand, UserBuilder.User()).Then();
+        await Given(Events).When(UpdateMainBuildingCommand, TestUser.User).Then();
 
         PublishedEvents[0].Should().BeOfType<Envelope<MainBuildingClearedFromOrganisation>>();
     }
@@ -98,7 +98,7 @@ public class WhenAnotherMainBuildingIsNowActive :
     [Fact]
     public async Task AssignsTheNewBuilding()
     {
-        await Given(Events).When(UpdateMainBuildingCommand, UserBuilder.User()).Then();
+        await Given(Events).When(UpdateMainBuildingCommand, TestUser.User).Then();
 
         var mainBuildingAssignedToOrganisation =
             PublishedEvents[1].UnwrapBody<MainBuildingAssignedToOrganisation>();

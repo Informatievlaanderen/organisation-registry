@@ -43,6 +43,5 @@ namespace OrganisationRegistry.Tests.Shared.TestDataBuilders
             Id = formalFrameworkId;
             return this;
         }
-
     }
 }

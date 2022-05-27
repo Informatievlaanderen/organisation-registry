@@ -67,14 +67,14 @@ public class
     [Fact]
     public async Task PublishesOneEvent()
     {
-        await Given(Events).When(PlaceUnderVlimpersManagementCommand, UserBuilder.AlgemeenBeheerder())
+        await Given(Events).When(PlaceUnderVlimpersManagementCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
     [Fact]
     public async Task PlacesTheOrganisationUnderVlimpersManagement()
     {
-        await Given(Events).When(PlaceUnderVlimpersManagementCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(PlaceUnderVlimpersManagementCommand, TestUser.AlgemeenBeheerder).Then();
         PublishedEvents.Single().Should().BeOfType<Envelope<OrganisationPlacedUnderVlimpersManagement>>();
     }
 }

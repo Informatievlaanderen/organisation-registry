@@ -91,14 +91,14 @@ public class
     [Fact]
     public async Task PublishesNoEvents()
     {
-        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder())
+        await Given(Events).When(TerminateOrganisationCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
     [Fact]
     public async Task ThrowsOrganisationAlreadyCoupledWithKbo()
     {
-        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder())
+        await Given(Events).When(TerminateOrganisationCommand, TestUser.AlgemeenBeheerder)
             .ThenThrows<OrganisationAlreadyTerminated>();
     }
 }

@@ -219,14 +219,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         [Fact]
         public async Task PublishesElevenEvents()
         {
-            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User())
+            await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.User)
                 .ThenItPublishesTheCorrectNumberOfEvents(11);
         }
 
         [Fact]
         public async Task CreatesTheMissingLocationsOnceBeforeCreatingTheOrganisation()
         {
-            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
+            await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.User).Then();
             var organisationCreated = PublishedEvents[0]
                     .UnwrapBody<LocationCreated>();
             organisationCreated.Should().NotBeNull();
@@ -243,7 +243,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         [Fact]
         public async Task UpdatesTheOrganisationInfoFromKbo()
         {
-            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
+            await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.User).Then();
 
             var organisationCoupledWithKbo = PublishedEvents[1].UnwrapBody<OrganisationInfoUpdatedFromKbo>();
             organisationCoupledWithKbo.Should().NotBeNull();
@@ -256,7 +256,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         [Fact]
         public async Task UpdatesTheLocations()
         {
-            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
+            await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.User).Then();
 
             var organisationLocationRemoved =
                 PublishedEvents[2].UnwrapBody<KboRegisteredOfficeOrganisationLocationRemoved>();
@@ -293,7 +293,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         [Fact]
         public async Task UpdatesTheFormalNameLabel()
         {
-            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
+            await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.User).Then();
 
             var kboFormalNameLabelRemoved = PublishedEvents[4].UnwrapBody<KboFormalNameLabelRemoved>();
             kboFormalNameLabelRemoved.Should().NotBeNull();
@@ -324,7 +324,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         [Fact]
         public async Task UpdatesLegalForms()
         {
-            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
+            await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.User).Then();
 
             var legalFormOrganisationOrganisationClassificationEnded = PublishedEvents[6]
                 .UnwrapBody<KboLegalFormOrganisationOrganisationClassificationRemoved>();
@@ -366,7 +366,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         [Fact]
         public async Task AddsBankAccounts()
         {
-            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
+            await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.User).Then();
             var organisationBankAccountRemoved = PublishedEvents[8].UnwrapBody<KboOrganisationBankAccountRemoved>();
             organisationBankAccountRemoved.Should().NotBeNull();
 
@@ -395,7 +395,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         [Fact]
         public async Task MarksAsSynced()
         {
-            await Given(Events).When(SyncOrganisationWithKboCommand, UserBuilder.User()).Then();
+            await Given(Events).When(SyncOrganisationWithKboCommand, TestUser.User).Then();
 
             var organisationSyncedFromKbo = PublishedEvents[10].UnwrapBody<OrganisationSyncedFromKbo>();
             organisationSyncedFromKbo.Should().NotBeNull();

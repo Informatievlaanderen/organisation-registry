@@ -146,7 +146,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         public async Task CouplesTheOrganisationWithTheKboNumber()
         {
             await Given(Events)
-                .When(CoupleOrganisationToKboCommand, UserBuilder.User())
+                .When(CoupleOrganisationToKboCommand, TestUser.User)
                 .Then();
 
             var organisationCoupledWithKbo = PublishedEvents[0].UnwrapBody<OrganisationCoupledWithKbo>();
@@ -163,7 +163,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         public async Task UpdatesTheOrganisationInfoFromKbo()
         {
             await Given(Events)
-                .When(CoupleOrganisationToKboCommand, UserBuilder.User())
+                .When(CoupleOrganisationToKboCommand, TestUser.User)
                 .Then();
 
             var organisationCoupledWithKbo = PublishedEvents[1].UnwrapBody<OrganisationInfoUpdatedFromKbo>();
@@ -178,7 +178,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         public async Task AddsBankAccounts()
         {
             await Given(Events)
-                .When(CoupleOrganisationToKboCommand, UserBuilder.User())
+                .When(CoupleOrganisationToKboCommand, TestUser.User)
                 .Then();
 
             var organisationBankAccountAdded = PublishedEvents[2].UnwrapBody<KboOrganisationBankAccountAdded>();
@@ -198,7 +198,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         public async Task AddsFormalNameLabel()
         {
             await Given(Events)
-                .When(CoupleOrganisationToKboCommand, UserBuilder.User())
+                .When(CoupleOrganisationToKboCommand, TestUser.User)
                 .Then();
 
             var organisationLabelAdded = PublishedEvents[3].UnwrapBody<KboFormalNameLabelAdded>();
@@ -217,7 +217,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         [Fact]
         public async Task PublishesTheCorrectNumberOfEvents()
             => await Given(Events)
-                .When(CoupleOrganisationToKboCommand, UserBuilder.User())
+                .When(CoupleOrganisationToKboCommand, TestUser.User)
                 .ThenItPublishesTheCorrectNumberOfEvents(4);
     }
 }

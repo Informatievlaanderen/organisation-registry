@@ -87,14 +87,14 @@ public class WhenAddingAnOrganisationKey : Specification<AddOrganisationKeyComma
     [Fact]
     public async Task AnOrganisationKeyAddedEventIsPublished()
     {
-        await Given(Events).When(AddOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(AddOrganisationKeyCommand, TestUser.AlgemeenBeheerder).Then();
         PublishedEvents.First().Should().BeOfType<Envelope<OrganisationKeyAdded>>();
     }
 
     [Fact]
     public async Task TheEventContainsTheCorrectData()
     {
-        await Given(Events).When(AddOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(AddOrganisationKeyCommand, TestUser.AlgemeenBeheerder).Then();
         PublishedEvents.First().UnwrapBody<OrganisationKeyAdded>()
             .Should()
             .BeEquivalentTo(
@@ -117,7 +117,7 @@ public class WhenAddingAnOrganisationKey : Specification<AddOrganisationKeyComma
     public async Task PublishesOneEvent()
     {
         await Given(Events)
-            .When(AddOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder())
+            .When(AddOrganisationKeyCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 }

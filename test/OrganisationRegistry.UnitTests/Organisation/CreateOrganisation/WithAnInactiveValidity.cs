@@ -58,14 +58,14 @@ public class WithAnInactiveValidity : Specification<CreateOrganisationCommandHan
     [Fact]
     public async Task PublishesOneEvent()
     {
-        await Given(Events).When(CreateOrganisationCommand, UserBuilder.AlgemeenBeheerder())
+        await Given(Events).When(CreateOrganisationCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
     [Fact]
     public async Task CreatesAnOrganisation()
     {
-        await Given(Events).When(CreateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(CreateOrganisationCommand, TestUser.AlgemeenBeheerder).Then();
         PublishedEvents[0]
             .UnwrapBody<OrganisationCreated>()
             .Should().NotBeNull();

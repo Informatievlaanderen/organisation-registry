@@ -85,13 +85,13 @@ public class WhenUpdatingAnOrganisationBuildingToAnAlreadyCoupledBuilding : Spec
     [Fact]
     public async Task PublishesNoEvents()
     {
-        await Given(Events).When(UpdateOrganisationBuildingCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(0);
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User).ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
     [Fact]
     public async Task ThrowsAnException()
     {
-        await Given(Events).When(UpdateOrganisationBuildingCommand, UserBuilder.User())
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User)
             .ThenThrows<BuildingAlreadyCoupledToInThisPeriod>()
             .WithMessage("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.");
     }

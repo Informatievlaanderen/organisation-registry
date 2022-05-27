@@ -98,7 +98,7 @@ public class
     public async Task PublishesNoEvents()
     {
         await Given(Events)
-            .When(AddOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder())
+            .When(AddOrganisationKeyCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
@@ -106,7 +106,7 @@ public class
     public async Task ThrowsAnException()
     {
         await Given(Events)
-            .When(AddOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder())
+            .When(AddOrganisationKeyCommand, TestUser.AlgemeenBeheerder)
             .ThenThrows<KeyAlreadyCoupledToInThisPeriod>()
             .WithMessage("Deze sleutel is in deze periode reeds gekoppeld aan de organisatie.");
     }

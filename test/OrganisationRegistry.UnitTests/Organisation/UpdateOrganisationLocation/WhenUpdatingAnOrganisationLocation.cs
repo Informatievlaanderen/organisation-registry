@@ -3,6 +3,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationLocation
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Location;
@@ -11,40 +12,27 @@ using Location.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
 using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
-public class
-    WhenUpdatingAnOrganisationLocation : OldSpecification2<UpdateOrganisationLocationCommandHandler,
-        UpdateOrganisationLocation>
+public class WhenUpdatingAnOrganisationLocation :
+    Specification<UpdateOrganisationLocationCommandHandler, UpdateOrganisationLocation>
 {
-    private Guid _organisationId;
-    private Guid _locationId;
-    private Guid _organisationLocationId;
-    private bool _isMainLocation;
-    private DateTime _validTo;
-    private DateTime _validFrom;
-    private const string OvoNumber = "OVO000012345";
+    private readonly Guid _organisationId;
+    private readonly Guid _locationId;
+    private readonly Guid _organisationLocationId;
+    private readonly bool _isMainLocation;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
+    private readonly string _ovoNumber;
 
     public WhenUpdatingAnOrganisationLocation(ITestOutputHelper helper) : base(helper)
     {
-    }
-
-    protected override UpdateOrganisationLocationCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<UpdateOrganisationLocationCommandHandler>>().Object,
-            Session,
-            new DateTimeProvider()
-        );
-
-    protected override IUser User
-        => new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(OvoNumber).Build();
-
-    protected override IEnumerable<IEvent> Given()
-    {
+        _ovoNumber = "OVO000012345";
         _organisationId = Guid.NewGuid();
 
         _locationId = Guid.NewGuid();
@@ -52,12 +40,25 @@ public class
         _isMainLocation = true;
         _validFrom = DateTime.Now.AddDays(1);
         _validTo = DateTime.Now.AddDays(2);
-        return new List<IEvent>
+    }
+
+    protected override UpdateOrganisationLocationCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<UpdateOrganisationLocationCommandHandler>>().Object,
+            session,
+            new DateTimeProvider()
+        );
+
+    private IUser User
+        => new UserBuilder().AddRoles(Role.DecentraalBeheerder).AddOrganisations(_ovoNumber).Build();
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
                 "Kind en Gezin",
-                OvoNumber,
+                _ovoNumber,
                 "K&G",
                 Article.None,
                 "Kindjes en gezinnetjes",
@@ -86,9 +87,8 @@ public class
                 _validFrom,
                 _validTo)
         };
-    }
 
-    protected override UpdateOrganisationLocation When()
+    private UpdateOrganisationLocation UpdateOrganisationLocationCommand
         => new(
             _organisationLocationId,
             new OrganisationId(_organisationId),
@@ -99,12 +99,16 @@ public class
             new ValidTo(_validTo),
             Source.Wegwijs);
 
-    protected override int ExpectedNumberOfEvents
-        => 1;
+    [Fact]
+    public async Task PublishesEvent()
+    {
+        await Given(Events).When(UpdateOrganisationLocationCommand, User).ThenItPublishesTheCorrectNumberOfEvents(1);
+    }
 
     [Fact]
-    public void UpdatesTheOrganisationLocation()
+    public async Task UpdatesTheOrganisationLocation()
     {
+        await Given(Events).When(UpdateOrganisationLocationCommand, User).Then();
         PublishedEvents.First().Should().BeOfType<Envelope<OrganisationLocationUpdated>>();
 
         var organisationLocationAdded = PublishedEvents.First().UnwrapBody<OrganisationLocationUpdated>();

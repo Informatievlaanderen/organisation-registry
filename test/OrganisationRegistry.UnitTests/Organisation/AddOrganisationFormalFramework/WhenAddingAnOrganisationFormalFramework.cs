@@ -90,7 +90,7 @@ public class WhenAddingAnOrganisationFormalFramework : Specification<AddOrganisa
     public async Task PublishesTwoEvents()
     {
         await Given(Events)
-            .When(AddOrganisationFormalFrameworkCommand, UserBuilder.AlgemeenBeheerder())
+            .When(AddOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
@@ -98,7 +98,7 @@ public class WhenAddingAnOrganisationFormalFramework : Specification<AddOrganisa
     public async Task AddsAnOrganisationParent()
     {
         await Given(Events)
-            .When(AddOrganisationFormalFrameworkCommand, UserBuilder.AlgemeenBeheerder())
+            .When(AddOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder)
             .Then();
 
         PublishedEvents[0]
@@ -123,7 +123,7 @@ public class WhenAddingAnOrganisationFormalFramework : Specification<AddOrganisa
     public async Task AssignsAParent()
     {
         await Given(Events)
-            .When(AddOrganisationFormalFrameworkCommand, UserBuilder.AlgemeenBeheerder())
+            .When(AddOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder)
             .Then();
 
         PublishedEvents[1]

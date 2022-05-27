@@ -71,13 +71,13 @@ public class WhenMainBuildingIsNoLongerActive : Specification<UpdateMainBuilding
    [Fact]
     public async Task PublishesOneEvent()
     {
-        await Given(Events).When(UpdateMainBuildingCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(1);
+        await Given(Events).When(UpdateMainBuildingCommand, TestUser.User).ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
     [Fact]
     public async Task ClearsTheMainBuilding()
     {
-        await Given(Events).When(UpdateMainBuildingCommand, UserBuilder.User()).Then();
+        await Given(Events).When(UpdateMainBuildingCommand, TestUser.User).Then();
         PublishedEvents[0].Should().BeOfType<Envelope<MainBuildingClearedFromOrganisation>>();
     }
 }

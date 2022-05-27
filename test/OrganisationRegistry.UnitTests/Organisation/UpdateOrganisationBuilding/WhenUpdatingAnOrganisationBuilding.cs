@@ -3,13 +3,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Building;
 using Building.Events;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -18,31 +19,17 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class
-    WhenUpdatingAnOrganisationBuilding : OldSpecification2<UpdateOrganisationBuildingCommandHandler,
+    WhenUpdatingAnOrganisationBuilding : Specification<UpdateOrganisationBuildingCommandHandler,
         UpdateOrganisationBuilding>
 {
-    private Guid _organisationId;
-    private Guid _buildingId;
-    private Guid _organisationBuildingId;
-    private bool _isMainBuilding;
-    private DateTime _validTo;
-    private DateTime _validFrom;
+    private readonly Guid _organisationId;
+    private readonly Guid _buildingId;
+    private readonly Guid _organisationBuildingId;
+    private readonly bool _isMainBuilding;
+    private readonly DateTime _validTo;
+    private readonly DateTime _validFrom;
 
     public WhenUpdatingAnOrganisationBuilding(ITestOutputHelper helper) : base(helper)
-    {
-    }
-
-    protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<UpdateOrganisationBuildingCommandHandler>>().Object,
-            Session,
-            new DateTimeProvider()
-        );
-
-    protected override IUser User
-        => new UserBuilder().Build();
-
-    protected override IEnumerable<IEvent> Given()
     {
         _organisationId = Guid.NewGuid();
 
@@ -51,8 +38,17 @@ public class
         _isMainBuilding = true;
         _validFrom = DateTime.Now.AddDays(1);
         _validTo = DateTime.Now.AddDays(2);
+    }
 
-        return new List<IEvent>
+    protected override UpdateOrganisationBuildingCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<UpdateOrganisationBuildingCommandHandler>>().Object,
+            session,
+            new DateTimeProvider()
+        );
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -67,8 +63,7 @@ public class
                 null,
                 null,
                 null),
-            new BuildingCreated(_buildingId, "Gebouw A", 12345),
-            new OrganisationBuildingAdded(
+            new BuildingCreated(_buildingId, "Gebouw A", 12345), new OrganisationBuildingAdded(
                 _organisationId,
                 _organisationBuildingId,
                 _buildingId,
@@ -77,9 +72,8 @@ public class
                 _validFrom,
                 _validTo)
         };
-    }
 
-    protected override UpdateOrganisationBuilding When()
+    private UpdateOrganisationBuilding UpdateOrganisationBuildingCommand
         => new(
             _organisationBuildingId,
             new OrganisationId(_organisationId),
@@ -88,14 +82,16 @@ public class
             new ValidFrom(_validFrom),
             new ValidTo(_validTo));
 
-    protected override int ExpectedNumberOfEvents
-        => 1;
-
     [Fact]
-    public void UpdatesTheOrganisationBuilding()
+    public async Task PublishesOneEvent()
     {
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User).ThenItPublishesTheCorrectNumberOfEvents(1);
+    }
+    [Fact]
+    public async Task UpdatesTheOrganisationBuilding()
+    {
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User).Then();
         PublishedEvents.First().Should().BeOfType<Envelope<OrganisationBuildingUpdated>>();
-
         var organisationBuildingAdded = PublishedEvents.First().UnwrapBody<OrganisationBuildingUpdated>();
         organisationBuildingAdded.OrganisationId.Should().Be(_organisationId);
         organisationBuildingAdded.BuildingId.Should().Be(_buildingId);

@@ -2,12 +2,13 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationInfo;
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
 using OrganisationRegistry.Infrastructure.Events;
@@ -16,45 +17,36 @@ using OrganisationRegistry.Organisation.Events;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser : OldSpecification2<
-    UpdateOrganisationInfoLimitedToVlimpersCommandHandler, UpdateOrganisationInfoLimitedToVlimpers>
+public class WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser :
+    Specification<UpdateOrganisationInfoLimitedToVlimpersCommandHandler, UpdateOrganisationInfoLimitedToVlimpers>
 {
-    private Guid _organisationId;
+    private readonly Guid _organisationId;
+    private readonly Fixture _fixture;
 
     public WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser(ITestOutputHelper helper) : base(helper)
     {
+        _fixture = new Fixture();
+
+        _organisationId = Guid.NewGuid();
     }
 
-    protected override UpdateOrganisationInfoLimitedToVlimpersCommandHandler BuildHandler()
+    protected override UpdateOrganisationInfoLimitedToVlimpersCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<UpdateOrganisationInfoLimitedToVlimpersCommandHandler>>().Object,
-            Session,
+            session,
             new DateTimeProviderStub(DateTime.Today));
 
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.VlimpersBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
-    {
-        var fixture = new Fixture();
-        var organisationCreatedBuilder = new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator());
-
-        _organisationId = organisationCreatedBuilder.Id;
-
-        return new List<IEvent>
-        {
-            organisationCreatedBuilder
+    private IEvent[] Events
+        => new IEvent[] {
+            new OrganisationCreatedBuilder(new SequentialOvoNumberGenerator())
+                .WithId(new OrganisationId(_organisationId))
                 .WithValidity(null, null)
                 .Build(),
-            new OrganisationBecameActive(organisationCreatedBuilder.Id),
-            new OrganisationPlacedUnderVlimpersManagement(organisationCreatedBuilder.Id),
-            new OrganisationTerminatedV2(
-                organisationCreatedBuilder.Id,
-                fixture.Create<string>(),
-                fixture.Create<string>(),
-                fixture.Create<DateTime>(),
+            new OrganisationBecameActive(_organisationId), new OrganisationPlacedUnderVlimpersManagement(_organisationId), new OrganisationTerminatedV2(
+                _organisationId,
+                _fixture.Create<string>(),
+                _fixture.Create<string>(),
+                _fixture.Create<DateTime>(),
                 new FieldsToTerminateV2(
                     null,
                     new Dictionary<Guid, DateTime>(),
@@ -76,13 +68,12 @@ public class WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser : OldSpecifi
                     new KeyValuePair<Guid, DateTime>?(),
                     new KeyValuePair<Guid, DateTime>?()
                 ),
-                fixture.Create<bool>(),
-                fixture.Create<DateTime?>()
-            ),
+                _fixture.Create<bool>(),
+                _fixture.Create<DateTime?>()
+            )
         };
-    }
 
-    protected override UpdateOrganisationInfoLimitedToVlimpers When()
+    private UpdateOrganisationInfoLimitedToVlimpers UpdateOrganisationInfoLimitedToVlimpersCommand
         => new(
             new OrganisationId(_organisationId),
             "Test",
@@ -93,33 +84,46 @@ public class WhenTryingToUpdateATerminatedVlimpersOrgAsVlimpersUser : OldSpecifi
             new ValidFrom(),
             new ValidTo());
 
-    protected override int ExpectedNumberOfEvents
-        => 4;
 
     [Fact]
-    public void UpdatesOrganisationName()
+    public async Task PublishesFourEvents()
     {
+        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder)
+            .ThenItPublishesTheCorrectNumberOfEvents(4);
+    }
+
+    [Fact]
+    public async Task UpdatesOrganisationName()
+    {
+        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder)
+            .Then();
         var organisationCreated = PublishedEvents[0].UnwrapBody<OrganisationNameUpdated>();
         organisationCreated.Should().NotBeNull();
     }
 
     [Fact]
-    public void UpdatesShortName()
+    public async Task UpdatesShortName()
     {
+        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder)
+            .Then();
         var organisationCreated = PublishedEvents[1].UnwrapBody<OrganisationShortNameUpdated>();
         organisationCreated.Should().NotBeNull();
     }
 
     [Fact]
-    public void UpdatesOrganisationValidity()
+    public async Task UpdatesOrganisationValidity()
     {
+        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder)
+            .Then();
         var organisationCreated = PublishedEvents[2].UnwrapBody<OrganisationValidityUpdated>();
         organisationCreated.Should().NotBeNull();
     }
 
     [Fact]
-    public void UpdatesOrganisationOperationalValidity()
+    public async Task UpdatesOrganisationOperationalValidity()
     {
+        await Given(Events).When(UpdateOrganisationInfoLimitedToVlimpersCommand, TestUser.VlimpersBeheerder)
+            .Then();
         var organisationCreated = PublishedEvents[3].UnwrapBody<OrganisationOperationalValidityUpdated>();
         organisationCreated.Should().NotBeNull();
     }

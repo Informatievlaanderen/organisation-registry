@@ -107,14 +107,14 @@ public class
     [Fact]
     public async Task PublishesTwoEvents()
     {
-        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder())
+        await Given(Events).When(TerminateOrganisationCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
     [Fact]
     public async Task TerminatesTheOrganisation()
     {
-        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(TerminateOrganisationCommand, TestUser.AlgemeenBeheerder).Then();
 
         var organisationTerminated = PublishedEvents[0].UnwrapBody<OrganisationTerminatedV2>();
         organisationTerminated.Should().NotBeNull();
@@ -146,7 +146,7 @@ public class
     [Fact]
     public async Task OrganisationTerminationSyncedWithKbo()
     {
-        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(TerminateOrganisationCommand, TestUser.AlgemeenBeheerder).Then();
 
         var organisationTerminationSyncedWithKbo =
             PublishedEvents[1].UnwrapBody<OrganisationTerminationSyncedWithKbo>();

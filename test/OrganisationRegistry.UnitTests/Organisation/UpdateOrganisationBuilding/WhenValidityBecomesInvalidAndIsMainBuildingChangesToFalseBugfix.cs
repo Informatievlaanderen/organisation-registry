@@ -3,13 +3,14 @@ namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationBuilding
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Building;
 using FluentAssertions;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Building.Events;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using OrganisationRegistry.Infrastructure.Events;
 using OrganisationRegistry.Organisation;
 using OrganisationRegistry.Organisation.Events;
@@ -17,30 +18,16 @@ using Tests.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix : OldSpecification2<
-    UpdateOrganisationBuildingCommandHandler, UpdateOrganisationBuilding>
+public class WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix :
+    Specification<UpdateOrganisationBuildingCommandHandler, UpdateOrganisationBuilding>
 {
-    private Guid _organisationId;
-    private Guid _buildingId;
-    private Guid _organisationBuildingId;
-    private DateTime? _validTo;
-    private DateTime _validFrom;
+    private readonly Guid _organisationId;
+    private readonly Guid _buildingId;
+    private readonly Guid _organisationBuildingId;
+    private readonly DateTime? _validTo;
+    private readonly DateTime _validFrom;
 
     public WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix(ITestOutputHelper helper) : base(helper)
-    {
-    }
-
-    protected override UpdateOrganisationBuildingCommandHandler BuildHandler()
-        => new(
-            new Mock<ILogger<UpdateOrganisationBuildingCommandHandler>>().Object,
-            Session,
-            new DateTimeProviderStub(new DateTime(2017, 01, 19))
-        );
-
-    protected override IUser User
-        => new UserBuilder().Build();
-
-    protected override IEnumerable<IEvent> Given()
     {
         _organisationId = Guid.NewGuid();
 
@@ -48,8 +35,17 @@ public class WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix : O
         _organisationBuildingId = Guid.NewGuid();
         _validFrom = new DateTime(1980, 10, 17);
         _validTo = null;
+    }
 
-        return new List<IEvent>
+    protected override UpdateOrganisationBuildingCommandHandler BuildHandler(ISession session)
+        => new(
+            new Mock<ILogger<UpdateOrganisationBuildingCommandHandler>>().Object,
+            session,
+            new DateTimeProviderStub(new DateTime(2017, 01, 19))
+        );
+
+    private IEvent[] Events
+        => new IEvent[]
         {
             new OrganisationCreated(
                 _organisationId,
@@ -64,8 +60,7 @@ public class WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix : O
                 null,
                 null,
                 null),
-            new BuildingCreated(_buildingId, "Gebouw A", 12345),
-            new OrganisationBuildingAdded(
+            new BuildingCreated(_buildingId, "Gebouw A", 12345), new OrganisationBuildingAdded(
                 _organisationId,
                 _organisationBuildingId,
                 _buildingId,
@@ -75,11 +70,9 @@ public class WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix : O
                 _validTo),
             new MainBuildingAssignedToOrganisation(_organisationId, _buildingId, _organisationBuildingId)
         };
-    }
 
-    protected override UpdateOrganisationBuilding When()
-    {
-        return new UpdateOrganisationBuilding(
+    private UpdateOrganisationBuilding UpdateOrganisationBuildingCommand
+        => new(
             _organisationBuildingId,
             new OrganisationId(_organisationId),
             new BuildingId(_buildingId),
@@ -94,14 +87,18 @@ public class WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix : O
                     2016,
                     06,
                     16)));
-    }
-
-    protected override int ExpectedNumberOfEvents
-        => 2;
 
     [Fact]
-    public void UpdatesTheOrganisationBuilding()
+    public async Task Publishes2Events()
     {
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User)
+            .ThenItPublishesTheCorrectNumberOfEvents(2);
+    }
+
+    [Fact]
+    public async Task UpdatesTheOrganisationBuilding()
+    {
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User).Then();
         var @event = PublishedEvents[0];
         @event.Should().BeOfType<Envelope<OrganisationBuildingUpdated>>();
 
@@ -114,8 +111,10 @@ public class WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix : O
     }
 
     [Fact]
-    public void ClearsTheMainBuilding()
+    public async Task ClearsTheMainBuilding()
     {
+        await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User).Then();
+
         var @event = PublishedEvents[1];
         @event.Should().BeOfType<Envelope<MainBuildingClearedFromOrganisation>>();
 

@@ -1,13 +1,13 @@
 namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFramework;
 
 using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using FluentAssertions;
 using FormalFramework;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
 using OrganisationRegistry.Infrastructure.Events;
@@ -17,37 +17,31 @@ using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenUpdatingAnOrganisationFormalFrameworkValidityToToday : OldSpecification2<
-    UpdateOrganisationFormalFrameworkCommandHandler, UpdateOrganisationFormalFramework>
+public class WhenUpdatingAnOrganisationFormalFrameworkValidityToToday :
+    Specification<UpdateOrganisationFormalFrameworkCommandHandler, UpdateOrganisationFormalFramework>
 {
-    private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);
-    private readonly SequentialOvoNumberGenerator _ovoNumberGenerator = new();
+    private readonly DateTimeProviderStub _dateTimeProviderStub;
+    private readonly SequentialOvoNumberGenerator _ovoNumberGenerator;
 
     private Guid _organisationFormalFrameworkId;
     private Guid _formalFrameworkBId;
     private Guid _childOrganisationId;
     private Guid _parentOrganisationBId;
 
-    private DateTime Tomorrow
-        => _dateTimeProviderStub.Today.AddDays(1);
-
     public WhenUpdatingAnOrganisationFormalFrameworkValidityToToday(ITestOutputHelper helper) : base(helper)
     {
+        _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
+        _ovoNumberGenerator = new SequentialOvoNumberGenerator();
     }
 
-    protected override UpdateOrganisationFormalFrameworkCommandHandler BuildHandler()
+    protected override UpdateOrganisationFormalFrameworkCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<UpdateOrganisationFormalFrameworkCommandHandler>>().Object,
-            Session,
+            session,
             new DateTimeProvider(),
             new OrganisationRegistryConfigurationStub());
 
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
+    private IEvent[] Events()
     {
         var childOrganisationCreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
         var parentOrganisationACreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
@@ -70,19 +64,15 @@ public class WhenUpdatingAnOrganisationFormalFrameworkValidityToToday : OldSpeci
         _childOrganisationId = childOrganisationCreated.Id;
         _parentOrganisationBId = parentOrganisationBCreated.Id;
 
-        return new List<IEvent>
+        return new IEvent[]
         {
-            childOrganisationCreated.Build(),
-            parentOrganisationACreated.Build(),
-            parentOrganisationBCreated.Build(),
-            formalFrameworkCategoryCreatedBuilder.Build(),
-            formalFrameworkACreated.Build(),
-            formalFrameworkBCreated.Build(),
-            childBecameDaughterOfParent.Build()
+            childOrganisationCreated.Build(), parentOrganisationACreated.Build(), parentOrganisationBCreated.Build(),
+            formalFrameworkCategoryCreatedBuilder.Build(), formalFrameworkACreated.Build(),
+            formalFrameworkBCreated.Build(), childBecameDaughterOfParent.Build()
         };
     }
 
-    protected override UpdateOrganisationFormalFramework When()
+    private UpdateOrganisationFormalFramework UpdateOrganisationFormalFrameworkCommand
         => new(
             _organisationFormalFrameworkId,
             new FormalFrameworkId(_formalFrameworkBId),
@@ -91,12 +81,17 @@ public class WhenUpdatingAnOrganisationFormalFrameworkValidityToToday : OldSpeci
             new ValidFrom(_dateTimeProviderStub.Today),
             new ValidTo(_dateTimeProviderStub.Today));
 
-    protected override int ExpectedNumberOfEvents
-        => 2;
+    [Fact]
+    public async Task Publishes2Events()
+    {
+        await Given(Events()).When(UpdateOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder)
+            .ThenItPublishesTheCorrectNumberOfEvents(2);
+    }
 
     [Fact]
-    public void UpdatesTheOrganisationFormalFramework()
+    public async Task UpdatesTheOrganisationFormalFramework()
     {
+        await Given(Events()).When(UpdateOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder).Then();
         PublishedEvents[0].Should().BeOfType<Envelope<OrganisationFormalFrameworkUpdated>>();
 
         var organisationFormalFrameworkUpdated =
@@ -108,8 +103,9 @@ public class WhenUpdatingAnOrganisationFormalFrameworkValidityToToday : OldSpeci
     }
 
     [Fact]
-    public void AssignsAParent()
+    public async Task AssignsAParent()
     {
+        await Given(Events()).When(UpdateOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder).Then();
         var frameworkAssignedToOrganisation =
             PublishedEvents[1].UnwrapBody<FormalFrameworkAssignedToOrganisation>();
         frameworkAssignedToOrganisation.OrganisationId.Should().Be(_childOrganisationId);

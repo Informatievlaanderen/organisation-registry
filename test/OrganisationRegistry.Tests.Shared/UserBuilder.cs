@@ -65,23 +65,5 @@ namespace OrganisationRegistry.Tests.Shared
             => new(
                 _firstName,
                 _lastName, _userId, _ip, _roles.ToArray(), _organisations);
-
-        public static User AlgemeenBeheerder()
-            => new UserBuilder().AddRoles(Role.AlgemeenBeheerder).Build();
-
-        public static User DecentraalBeheerder()
-            => new UserBuilder().AddRoles(Role.DecentraalBeheerder).Build();
-
-        public static User OrgaanBeheerder()
-            => new UserBuilder().AddRoles(Role.OrgaanBeheerder).Build();
-
-        public static User RegelgevingBeheerder()
-            => new UserBuilder().AddRoles(Role.RegelgevingBeheerder).Build();
-
-        public static User VlimpersBeheerder()
-            => new UserBuilder().AddRoles(Role.VlimpersBeheerder).Build();
-
-        public static User User()
-            => new UserBuilder().Build();
     }
 }

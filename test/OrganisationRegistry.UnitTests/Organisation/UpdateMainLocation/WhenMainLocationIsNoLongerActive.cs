@@ -81,13 +81,13 @@ public class WhenMainLocationIsNoLongerActive : Specification<UpdateMainLocation
     [Fact]
     public async Task PublishesOneEvent()
     {
-        await Given(Events).When(UpdateMainLocationCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(1);
+        await Given(Events).When(UpdateMainLocationCommand, TestUser.User).ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
     [Fact]
     public async Task ClearsTheMainLocation()
     {
-        await Given(Events).When(UpdateMainLocationCommand, UserBuilder.User()).Then();
+        await Given(Events).When(UpdateMainLocationCommand, TestUser.User).Then();
         PublishedEvents[0].Should().BeOfType<Envelope<MainLocationClearedFromOrganisation>>();
     }
 }

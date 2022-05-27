@@ -62,13 +62,13 @@ public class AsDaughterOfVlimpersOrganisation : Specification<CreateOrganisation
     [Fact]
     public async Task PublishesFiveEvents()
     {
-        await Given(Events).When(CreateOrganisationCommand, UserBuilder.VlimpersBeheerder()).ThenItPublishesTheCorrectNumberOfEvents(5);
+        await Given(Events).When(CreateOrganisationCommand, TestUser.VlimpersBeheerder).ThenItPublishesTheCorrectNumberOfEvents(5);
     }
 
     [Fact]
     public async Task CreatesAnOrganisation()
     {
-        await Given(Events).When(CreateOrganisationCommand, UserBuilder.VlimpersBeheerder()).Then();
+        await Given(Events).When(CreateOrganisationCommand, TestUser.VlimpersBeheerder).Then();
         PublishedEvents[0]
             .UnwrapBody<OrganisationCreated>()
             .Should()
@@ -78,7 +78,7 @@ public class AsDaughterOfVlimpersOrganisation : Specification<CreateOrganisation
     [Fact]
     public async Task TheOrganisationIsPlacedUnderVlimpersManagement()
     {
-        await Given(Events).When(CreateOrganisationCommand, UserBuilder.VlimpersBeheerder()).Then();
+        await Given(Events).When(CreateOrganisationCommand, TestUser.VlimpersBeheerder).Then();
         PublishedEvents[4]
             .UnwrapBody<OrganisationPlacedUnderVlimpersManagement>()
             .Should()

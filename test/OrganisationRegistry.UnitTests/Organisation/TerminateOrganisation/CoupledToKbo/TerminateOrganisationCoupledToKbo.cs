@@ -99,14 +99,14 @@ public class
     [Fact]
     public async Task PublishesOneEvent()
     {
-        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder())
+        await Given(Events).When(TerminateOrganisationCommand, TestUser.AlgemeenBeheerder)
             .ThenItPublishesTheCorrectNumberOfEvents(1);
     }
 
     [Fact]
     public async Task TerminatesTheOrganisation()
     {
-        await Given(Events).When(TerminateOrganisationCommand, UserBuilder.AlgemeenBeheerder()).Then();
+        await Given(Events).When(TerminateOrganisationCommand, TestUser.AlgemeenBeheerder).Then();
 
         var organisationTerminated = PublishedEvents[0].UnwrapBody<OrganisationTerminatedV2>();
         organisationTerminated.Should().NotBeNull();

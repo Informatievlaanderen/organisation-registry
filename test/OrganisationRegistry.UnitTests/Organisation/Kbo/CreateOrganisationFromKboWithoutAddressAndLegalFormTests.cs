@@ -167,7 +167,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         public async Task CreatesAnOrganisation()
         {
             await Given(Events)
-                .When(CreateOrganisationFromKboCommand, UserBuilder.User())
+                .When(CreateOrganisationFromKboCommand, TestUser.User)
                 .Then();
 
             var organisationCreated = PublishedEvents[0].UnwrapBody<OrganisationCreatedFromKbo>();
@@ -189,7 +189,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         public async Task TheOrganisationBecomesActive()
         {
             await Given(Events)
-                .When(CreateOrganisationFromKboCommand, UserBuilder.User())
+                .When(CreateOrganisationFromKboCommand, TestUser.User)
                 .Then();
 
             var organisationBecameActive = PublishedEvents[1].UnwrapBody<OrganisationBecameActive>();
@@ -200,7 +200,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         public async Task TheParentOrganisationWasAdded()
         {
             await Given(Events)
-                .When(CreateOrganisationFromKboCommand, UserBuilder.User())
+                .When(CreateOrganisationFromKboCommand, TestUser.User)
                 .Then();
 
             var parentAdded = PublishedEvents[2].UnwrapBody<OrganisationParentAdded>();
@@ -211,7 +211,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         public async Task TheParentOrganisationBecameActive()
         {
             await Given(Events)
-                .When(CreateOrganisationFromKboCommand, UserBuilder.User())
+                .When(CreateOrganisationFromKboCommand, TestUser.User)
                 .Then();
 
             var parentAssignedToOrganisation = PublishedEvents[3].UnwrapBody<ParentAssignedToOrganisation>();
@@ -222,7 +222,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         public async Task AddsBankAccounts()
         {
             await Given(Events)
-                .When(CreateOrganisationFromKboCommand, UserBuilder.User())
+                .When(CreateOrganisationFromKboCommand, TestUser.User)
                 .Then();
 
             var organisationBankAccountAdded = PublishedEvents[4].UnwrapBody<KboOrganisationBankAccountAdded>();
@@ -242,7 +242,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         public async Task AddsFormalNameLabel()
         {
             await Given(Events)
-                .When(CreateOrganisationFromKboCommand, UserBuilder.User())
+                .When(CreateOrganisationFromKboCommand, TestUser.User)
                 .Then();
 
             var organisationLabelAdded = PublishedEvents[5].UnwrapBody<KboFormalNameLabelAdded>();
@@ -261,7 +261,7 @@ namespace OrganisationRegistry.UnitTests.Organisation.Kbo
         [Fact]
         public async Task PublishesTheCorrectNumberOfEvents()
             => await Given(Events)
-                .When(CreateOrganisationFromKboCommand, UserBuilder.User())
+                .When(CreateOrganisationFromKboCommand, TestUser.User)
                 .ThenItPublishesTheCorrectNumberOfEvents(6);
     }
 }

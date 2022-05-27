@@ -95,13 +95,13 @@ public class
     [Fact]
     public async Task PublishesNoEvents()
     {
-        await Given(Events).When(UpdateOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder()).ThenItPublishesTheCorrectNumberOfEvents(0);
+        await Given(Events).When(UpdateOrganisationKeyCommand, TestUser.AlgemeenBeheerder).ThenItPublishesTheCorrectNumberOfEvents(0);
     }
 
     [Fact]
     public async Task ThrowsAnException()
     {
-        await Given(Events).When(UpdateOrganisationKeyCommand, UserBuilder.AlgemeenBeheerder())
+        await Given(Events).When(UpdateOrganisationKeyCommand, TestUser.AlgemeenBeheerder)
             .ThenThrows<KeyAlreadyCoupledToInThisPeriod>()
             .WithMessage("Deze sleutel is in deze periode reeds gekoppeld aan de organisatie.");
     }

@@ -103,20 +103,20 @@ public class WhenAnotherMainLocationIsNowActive :
    [Fact]
     public async Task PublishesTwoEvents()
     {
-        await Given(Events).When(UpdateMainLocationCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(2);
+        await Given(Events).When(UpdateMainLocationCommand, TestUser.User).ThenItPublishesTheCorrectNumberOfEvents(2);
     }
 
     [Fact]
     public async Task ClearsTheMainLocation()
     {
-        await Given(Events).When(UpdateMainLocationCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(2);
+        await Given(Events).When(UpdateMainLocationCommand, TestUser.User).ThenItPublishesTheCorrectNumberOfEvents(2);
         PublishedEvents[0].Should().BeOfType<Envelope<MainLocationClearedFromOrganisation>>();
     }
 
     [Fact]
     public async Task AssignsTheNewLocation()
     {
-        await Given(Events).When(UpdateMainLocationCommand, UserBuilder.User()).ThenItPublishesTheCorrectNumberOfEvents(2);
+        await Given(Events).When(UpdateMainLocationCommand, TestUser.User).ThenItPublishesTheCorrectNumberOfEvents(2);
 
         var mainLocationAssignedToOrganisation =
             PublishedEvents[1].UnwrapBody<MainLocationAssignedToOrganisation>();

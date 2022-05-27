@@ -1,14 +1,14 @@
 namespace OrganisationRegistry.UnitTests.Organisation.UpdateOrganisationFormalFramework;
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using FormalFramework;
 using Infrastructure.Tests.Extensions.TestHelpers;
 using Microsoft.Extensions.Logging;
 using Moq;
-using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Domain;
 using Tests.Shared;
 using Tests.Shared.TestDataBuilders;
 using OrganisationRegistry.Infrastructure.Events;
@@ -18,15 +18,12 @@ using Tests.Shared.Stubs;
 using Xunit;
 using Xunit.Abstractions;
 
-public class WhenUpdatingAnOrganisationFormalFrameworkValidityToTheFuture : OldSpecification2<
-    UpdateOrganisationFormalFrameworkCommandHandler, UpdateOrganisationFormalFramework>
+public class WhenUpdatingAnOrganisationFormalFrameworkValidityToTheFuture :
+    Specification<UpdateOrganisationFormalFrameworkCommandHandler, UpdateOrganisationFormalFramework>
 {
-    private readonly DateTimeProviderStub _dateTimeProviderStub = new(DateTime.Now);
-    private readonly SequentialOvoNumberGenerator _ovoNumberGenerator = new();
+    private readonly SequentialOvoNumberGenerator _ovoNumberGenerator;
 
-    private DateTime? Tomorrow
-        => _dateTimeProviderStub.Today.AddDays(1);
-
+    private readonly DateTime? _tomorrow;
     private Guid _childOrganisationCreatedId;
     private Guid _parentOrganisationBCreatedId;
     private Guid _formalFrameworkACreatedId;
@@ -34,21 +31,19 @@ public class WhenUpdatingAnOrganisationFormalFrameworkValidityToTheFuture : OldS
 
     public WhenUpdatingAnOrganisationFormalFrameworkValidityToTheFuture(ITestOutputHelper helper) : base(helper)
     {
+        var dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
+        _ovoNumberGenerator = new SequentialOvoNumberGenerator();
+        _tomorrow = dateTimeProviderStub.Today.AddDays(1);
     }
 
-    protected override UpdateOrganisationFormalFrameworkCommandHandler BuildHandler()
+    protected override UpdateOrganisationFormalFrameworkCommandHandler BuildHandler(ISession session)
         => new(
             new Mock<ILogger<UpdateOrganisationFormalFrameworkCommandHandler>>().Object,
-            Session,
+            session,
             new DateTimeProvider(),
             new OrganisationRegistryConfigurationStub());
 
-    protected override IUser User
-        => new UserBuilder()
-            .AddRoles(Role.AlgemeenBeheerder)
-            .Build();
-
-    protected override IEnumerable<IEvent> Given()
+    private IEvent[] Events()
     {
         var childOrganisationCreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
         var parentOrganisationACreated = new OrganisationCreatedBuilder(_ovoNumberGenerator);
@@ -74,46 +69,48 @@ public class WhenUpdatingAnOrganisationFormalFrameworkValidityToTheFuture : OldS
         _childBecameDaughterOfParentOrganisationFormalFrameworkId =
             childBecameDaughterOfParent.OrganisationFormalFrameworkId;
 
-        return new List<IEvent>
+        return new IEvent[]
         {
-            childOrganisationCreated.Build(),
-            parentOrganisationACreated.Build(),
-            parentOrganisationBCreated.Build(),
-            formalFrameworkCategoryCreatedBuilder.Build(),
-            formalFrameworkACreated.Build(),
-            childBecameDaughterOfParent.Build(),
-            formalFrameworkAssignedToOrg.Build()
+            childOrganisationCreated.Build(), parentOrganisationACreated.Build(), parentOrganisationBCreated.Build(),
+            formalFrameworkCategoryCreatedBuilder.Build(), formalFrameworkACreated.Build(),
+            childBecameDaughterOfParent.Build(), formalFrameworkAssignedToOrg.Build()
         };
     }
 
-    protected override UpdateOrganisationFormalFramework When()
+    private UpdateOrganisationFormalFramework UpdateOrganisationFormalFrameworkCommand
         => new(
             _childBecameDaughterOfParentOrganisationFormalFrameworkId,
             new FormalFrameworkId(_formalFrameworkACreatedId),
             new OrganisationId(_childOrganisationCreatedId),
             new OrganisationId(_parentOrganisationBCreatedId),
-            new ValidFrom(Tomorrow),
-            new ValidTo(Tomorrow));
-
-    protected override int ExpectedNumberOfEvents
-        => 2;
+            new ValidFrom(_tomorrow),
+            new ValidTo(_tomorrow));
 
     [Fact]
-    public void UpdatesTheOrganisationFormalFramework()
+    public async Task Publishes2Events()
     {
+        await Given(Events()).When(UpdateOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder)
+            .ThenItPublishesTheCorrectNumberOfEvents(2);
+    }
+
+    [Fact]
+    public async Task UpdatesTheOrganisationFormalFramework()
+    {
+        await Given(Events()).When(UpdateOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder).Then();
         PublishedEvents[0].Should().BeOfType<Envelope<OrganisationFormalFrameworkUpdated>>();
 
         var organisationFormalFrameworkUpdated =
             PublishedEvents.First().UnwrapBody<OrganisationFormalFrameworkUpdated>();
         organisationFormalFrameworkUpdated.OrganisationId.Should().Be(_childOrganisationCreatedId);
         organisationFormalFrameworkUpdated.ParentOrganisationId.Should().Be(_parentOrganisationBCreatedId);
-        organisationFormalFrameworkUpdated.ValidFrom.Should().Be(Tomorrow);
-        organisationFormalFrameworkUpdated.ValidTo.Should().Be(Tomorrow);
+        organisationFormalFrameworkUpdated.ValidFrom.Should().Be(_tomorrow);
+        organisationFormalFrameworkUpdated.ValidTo.Should().Be(_tomorrow);
     }
 
     [Fact]
-    public void ClearsAParent()
+    public async Task ClearsAParent()
     {
+        await Given(Events()).When(UpdateOrganisationFormalFrameworkCommand, TestUser.AlgemeenBeheerder).Then();
         var formalFrameworkClearedFromOrganisation =
             PublishedEvents[1].UnwrapBody<FormalFrameworkClearedFromOrganisation>();
         formalFrameworkClearedFromOrganisation.OrganisationId.Should().Be(_childOrganisationCreatedId);
