@@ -15,14 +15,7 @@ namespace OrganisationRegistry.Magda
         {
         }
 
-        // todo: refactor: redesign calling code so this constructor is not needed anymore
-        private MagdaClientCertificate()
-        {
-        }
-
         public static MagdaClientCertificate Create(string base64Cert, string password)
-            => !string.IsNullOrWhiteSpace(base64Cert)
-                ? new MagdaClientCertificate(base64Cert, password)
-                : new MagdaClientCertificate();
+            => new(base64Cert, password);
     }
 }

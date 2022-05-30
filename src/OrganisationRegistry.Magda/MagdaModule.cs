@@ -11,9 +11,7 @@ namespace OrganisationRegistry.Magda
         {
             var apiConfiguration = configuration.GetSection("Api");
 
-            var certificate = MagdaClientCertificate.Create(
-                apiConfiguration["KboCertificate"],
-                apiConfiguration["RijksRegisterCertificatePwd"]);
+            var certificate = GetMaybeMagdaClientCertificate(apiConfiguration["KboCertificate"], apiConfiguration["RijksRegisterCertificatePwd"]);
 
             MagdaConfiguration = new MagdaConfiguration(
                 certificate,
@@ -26,6 +24,11 @@ namespace OrganisationRegistry.Magda
                 apiConfiguration["RepertoriumCapacity"]);
         }
 
+        private static MagdaClientCertificate? GetMaybeMagdaClientCertificate(string? maybeCertificateString, string pwd)
+            => maybeCertificateString is { } certificateString && !string.IsNullOrWhiteSpace(certificateString)
+                ? MagdaClientCertificate.Create(certificateString, pwd)
+                : null;
+
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterInstance(MagdaConfiguration)
@@ -37,7 +40,7 @@ namespace OrganisationRegistry.Magda
 
     public class MagdaConfiguration
     {
-        public MagdaClientCertificate ClientCertificate { get; }
+        public MagdaClientCertificate? ClientCertificate { get; }
         public int Timeout { get; }
 
         public string Sender { get; }
@@ -49,7 +52,7 @@ namespace OrganisationRegistry.Magda
         public string RepertoriumCapacity { get; set; }
 
         public MagdaConfiguration(
-            MagdaClientCertificate clientCertificate,
+            MagdaClientCertificate? clientCertificate,
             int timeout,
             string sender,
             string capacity,

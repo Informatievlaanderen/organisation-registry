@@ -15,13 +15,14 @@ namespace OrganisationRegistry.UI.Infrastructure
     using Configuration.Database.Configuration;
     using Microsoft.AspNetCore.ResponseCompression;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Hosting;
     using OrganisationRegistry.Infrastructure;
 
     public class Startup
     {
         public IConfiguration Configuration { get; }
 
-        public Startup(IHostingEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -73,7 +74,7 @@ namespace OrganisationRegistry.UI.Infrastructure
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             // TODO: redirect index.html to / (and remove from web.config)
 
@@ -148,7 +149,7 @@ namespace OrganisationRegistry.UI.Infrastructure
                    string.Equals(context.Request.Path.Value.ToLowerInvariant(), "/config.js", StringComparison.OrdinalIgnoreCase);
         }
 
-        private string BuildConfigJavascript(IHostingEnvironment env)
+        private string BuildConfigJavascript(IWebHostEnvironment env)
         {
             var version = Assembly.GetEntryAssembly()!.GetName().Version!.ToString();
 
