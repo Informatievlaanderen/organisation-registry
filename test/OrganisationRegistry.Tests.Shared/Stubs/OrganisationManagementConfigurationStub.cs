@@ -1,9 +1,8 @@
-namespace OrganisationRegistry.Tests.Shared.Stubs
-{
-    using Infrastructure.Configuration;
+namespace OrganisationRegistry.Tests.Shared.Stubs;
 
-    public class OrganisationManagementConfigurationStub: IOrganisationManagementConfiguration
-    {
-        public string Vlimpers { get; set; } = null!;
-    }
+using Infrastructure.Configuration;
+
+public class OrganisationManagementConfigurationStub: IOrganisationManagementConfiguration
+{
+    public string Vlimpers { get; set; } = null!;
 }

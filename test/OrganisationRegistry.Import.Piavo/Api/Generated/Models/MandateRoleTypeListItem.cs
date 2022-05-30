@@ -2,33 +2,32 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class MandateRoleTypeListItem
 {
-    public partial class MandateRoleTypeListItem
+    /// <summary>
+    /// Initializes a new instance of the MandateRoleTypeListItem class.
+    /// </summary>
+    public MandateRoleTypeListItem() { }
+
+    /// <summary>
+    /// Initializes a new instance of the MandateRoleTypeListItem class.
+    /// </summary>
+    public MandateRoleTypeListItem(System.Guid? id = default(System.Guid?), string name = default(string))
     {
-        /// <summary>
-        /// Initializes a new instance of the MandateRoleTypeListItem class.
-        /// </summary>
-        public MandateRoleTypeListItem() { }
-
-        /// <summary>
-        /// Initializes a new instance of the MandateRoleTypeListItem class.
-        /// </summary>
-        public MandateRoleTypeListItem(System.Guid? id = default(System.Guid?), string name = default(string))
-        {
-            Id = id;
-            Name = name;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
-        public System.Guid? Id { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
-
+        Id = id;
+        Name = name;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
+    public System.Guid? Id { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
+    public string Name { get; set; }
+
 }

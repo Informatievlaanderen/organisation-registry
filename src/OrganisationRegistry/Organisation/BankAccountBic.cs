@@ -1,44 +1,43 @@
-namespace OrganisationRegistry.Organisation
+namespace OrganisationRegistry.Organisation;
+
+using System;
+using Exceptions;
+using IbanBic;
+
+public class BankAccountBic
 {
-    using System;
-    using Exceptions;
-    using IbanBic;
+    public static BankAccountBic CreateWithExpectedValidity(string? bic, bool isValidBic)
+        => new(bic, isValidBic);
 
-    public class BankAccountBic
+    public static BankAccountBic CreateWithUnknownValidity(string bic)
     {
-        public static BankAccountBic CreateWithExpectedValidity(string? bic, bool isValidBic)
-            => new(bic, isValidBic);
+        var isValidBic = BicUtils.IsValid(bic, out _);
+        return new BankAccountBic(bic, isValidBic);
+    }
 
-        public static BankAccountBic CreateWithUnknownValidity(string bic)
+    public string Bic { get; }
+    public bool IsValidBic { get; }
+
+    private BankAccountBic(
+        string? bic,
+        bool isValidBic)
+    {
+        IsValidBic = isValidBic;
+        Bic = bic ?? string.Empty;
+
+        if (isValidBic)
+            ValidateBicOrThrow();
+    }
+
+    private void ValidateBicOrThrow()
+    {
+        try
         {
-            var isValidBic = BicUtils.IsValid(bic, out _);
-            return new BankAccountBic(bic, isValidBic);
+            BicUtils.ValidateBIC(Bic);
         }
-
-        public string Bic { get; }
-        public bool IsValidBic { get; }
-
-        private BankAccountBic(
-            string? bic,
-            bool isValidBic)
+        catch (Exception ex)
         {
-            IsValidBic = isValidBic;
-            Bic = bic ?? string.Empty;
-
-            if (isValidBic)
-                ValidateBicOrThrow();
-        }
-
-        private void ValidateBicOrThrow()
-        {
-            try
-            {
-                BicUtils.ValidateBIC(Bic);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidIbanFormat(ex);
-            }
+            throw new InvalidIbanFormat(ex);
         }
     }
 }

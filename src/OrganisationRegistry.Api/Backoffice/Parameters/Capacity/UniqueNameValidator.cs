@@ -1,30 +1,29 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.Capacity
+﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.Capacity;
+
+using System;
+using System.Linq;
+using OrganisationRegistry.Capacity;
+using SqlServer.Infrastructure;
+
+public class UniqueNameValidator : IUniqueNameValidator<Capacity>
 {
-    using System;
-    using System.Linq;
-    using OrganisationRegistry.Capacity;
-    using SqlServer.Infrastructure;
+    private readonly OrganisationRegistryContext _context;
 
-    public class UniqueNameValidator : IUniqueNameValidator<Capacity>
+    public UniqueNameValidator(OrganisationRegistryContext context)
     {
-        private readonly OrganisationRegistryContext _context;
+        _context = context;
+    }
 
-        public UniqueNameValidator(OrganisationRegistryContext context)
-        {
-            _context = context;
-        }
+    public bool IsNameTaken(string name)
+    {
+        return _context.CapacityList.Any(item => item.Name == name);
+    }
 
-        public bool IsNameTaken(string name)
-        {
-            return _context.CapacityList.Any(item => item.Name == name);
-        }
-
-        public bool IsNameTaken(Guid id, string name)
-        {
-            return _context.CapacityList
-                .AsQueryable()
-                .Where(item => item.Id != id)
-                .Any(item => item.Name == name);
-        }
+    public bool IsNameTaken(Guid id, string name)
+    {
+        return _context.CapacityList
+            .AsQueryable()
+            .Where(item => item.Id != id)
+            .Any(item => item.Name == name);
     }
 }

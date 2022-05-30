@@ -2,69 +2,68 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class ClassificationOrganisation
 {
-    public partial class ClassificationOrganisation
+    /// <summary>
+    /// Initializes a new instance of the ClassificationOrganisation class.
+    /// </summary>
+    public ClassificationOrganisation() { }
+
+    /// <summary>
+    /// Initializes a new instance of the ClassificationOrganisation class.
+    /// </summary>
+    public ClassificationOrganisation(System.Guid? parentOrganisationId = default(System.Guid?), string parentOrganisationName = default(string), System.Guid? organisationId = default(System.Guid?), string organisationName = default(string), string organisationShortName = default(string), string organisationNameFrench = default(string), string organisationNameEnglish = default(string), string organisationNameGerman = default(string))
     {
-        /// <summary>
-        /// Initializes a new instance of the ClassificationOrganisation class.
-        /// </summary>
-        public ClassificationOrganisation() { }
-
-        /// <summary>
-        /// Initializes a new instance of the ClassificationOrganisation class.
-        /// </summary>
-        public ClassificationOrganisation(System.Guid? parentOrganisationId = default(System.Guid?), string parentOrganisationName = default(string), System.Guid? organisationId = default(System.Guid?), string organisationName = default(string), string organisationShortName = default(string), string organisationNameFrench = default(string), string organisationNameEnglish = default(string), string organisationNameGerman = default(string))
-        {
-            ParentOrganisationId = parentOrganisationId;
-            ParentOrganisationName = parentOrganisationName;
-            OrganisationId = organisationId;
-            OrganisationName = organisationName;
-            OrganisationShortName = organisationShortName;
-            OrganisationNameFrench = organisationNameFrench;
-            OrganisationNameEnglish = organisationNameEnglish;
-            OrganisationNameGerman = organisationNameGerman;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "parentOrganisationId")]
-        public System.Guid? ParentOrganisationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "parentOrganisationName")]
-        public string ParentOrganisationName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationId")]
-        public System.Guid? OrganisationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationName")]
-        public string OrganisationName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationShortName")]
-        public string OrganisationShortName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationNameFrench")]
-        public string OrganisationNameFrench { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationNameEnglish")]
-        public string OrganisationNameEnglish { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationNameGerman")]
-        public string OrganisationNameGerman { get; set; }
-
+        ParentOrganisationId = parentOrganisationId;
+        ParentOrganisationName = parentOrganisationName;
+        OrganisationId = organisationId;
+        OrganisationName = organisationName;
+        OrganisationShortName = organisationShortName;
+        OrganisationNameFrench = organisationNameFrench;
+        OrganisationNameEnglish = organisationNameEnglish;
+        OrganisationNameGerman = organisationNameGerman;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "parentOrganisationId")]
+    public System.Guid? ParentOrganisationId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "parentOrganisationName")]
+    public string ParentOrganisationName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationId")]
+    public System.Guid? OrganisationId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationName")]
+    public string OrganisationName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationShortName")]
+    public string OrganisationShortName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationNameFrench")]
+    public string OrganisationNameFrench { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationNameEnglish")]
+    public string OrganisationNameEnglish { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationNameGerman")]
+    public string OrganisationNameGerman { get; set; }
+
 }

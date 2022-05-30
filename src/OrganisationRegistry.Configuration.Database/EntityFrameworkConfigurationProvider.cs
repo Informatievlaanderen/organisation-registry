@@ -1,45 +1,45 @@
-namespace OrganisationRegistry.Configuration.Database
+namespace OrganisationRegistry.Configuration.Database;
+
+using System;
+using System.Linq;
+using Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+
+public class EntityFrameworkConfigurationSource : IConfigurationSource
 {
-    using System;
-    using System.Linq;
-    using Infrastructure;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
+    private readonly Action<DbContextOptionsBuilder> _optionsAction;
 
-    public class EntityFrameworkConfigurationSource : IConfigurationSource
+    public EntityFrameworkConfigurationSource(Action<DbContextOptionsBuilder> optionsAction)
     {
-        private readonly Action<DbContextOptionsBuilder> _optionsAction;
-
-        public EntityFrameworkConfigurationSource(Action<DbContextOptionsBuilder> optionsAction)
-        {
-            _optionsAction = optionsAction;
-        }
-
-        public IConfigurationProvider Build(IConfigurationBuilder builder)
-        {
-            return new EntityFrameworkConfigurationProvider(_optionsAction);
-        }
+        _optionsAction = optionsAction;
     }
 
-    public class EntityFrameworkConfigurationProvider : ConfigurationProvider
+    public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        private readonly Action<DbContextOptionsBuilder> _optionsAction;
+        return new EntityFrameworkConfigurationProvider(_optionsAction);
+    }
+}
 
-        public EntityFrameworkConfigurationProvider(Action<DbContextOptionsBuilder> optionsAction)
+public class EntityFrameworkConfigurationProvider : ConfigurationProvider
+{
+    private readonly Action<DbContextOptionsBuilder> _optionsAction;
+
+    public EntityFrameworkConfigurationProvider(Action<DbContextOptionsBuilder> optionsAction)
+    {
+        _optionsAction = optionsAction;
+    }
+
+    public override void Load()
+    {
+        var builder = new DbContextOptionsBuilder<ConfigurationContext>();
+        _optionsAction(builder);
+
+        using (var context = new ConfigurationContext(builder.Options))
         {
-            _optionsAction = optionsAction;
-        }
+            context.Database.EnsureCreated();
 
-        public override void Load()
-        {
-            var builder = new DbContextOptionsBuilder<ConfigurationContext>();
-            _optionsAction(builder);
-
-            using (var context = new ConfigurationContext(builder.Options))
-            {
-                context.Database.EnsureCreated();
-
-                context.Database.ExecuteSqlRaw(@$"
+            context.Database.ExecuteSqlRaw(@$"
 IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = N'OrganisationRegistry')
     EXEC('CREATE SCHEMA [{WellknownSchemas.OrganisationRegistrySchema}] AUTHORIZATION [dbo]');
 
@@ -51,8 +51,7 @@ IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Configuration' AND xtype = '
         CONSTRAINT [PK_Configuration] PRIMARY KEY CLUSTERED ([Key])
     );");
 
-                Data = context.Configuration.ToDictionary(x => x.Key, x => x.Value);
-            }
+            Data = context.Configuration.ToDictionary(x => x.Key, x => x.Value);
         }
     }
 }

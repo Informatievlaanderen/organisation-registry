@@ -2,75 +2,74 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class OrganisationCapacity
 {
-    public partial class OrganisationCapacity
+    /// <summary>
+    /// Initializes a new instance of the OrganisationCapacity class.
+    /// </summary>
+    public OrganisationCapacity() { }
+
+    /// <summary>
+    /// Initializes a new instance of the OrganisationCapacity class.
+    /// </summary>
+    public OrganisationCapacity(System.Guid? organisationCapacityId = default(System.Guid?), System.Guid? capacityId = default(System.Guid?), string capacityName = default(string), System.Guid? personId = default(System.Guid?), string personName = default(string), System.Guid? functionId = default(System.Guid?), string functionName = default(string), System.Collections.Generic.IList<Contact> contacts = default(System.Collections.Generic.IList<Contact>), Period validity = default(Period))
     {
-        /// <summary>
-        /// Initializes a new instance of the OrganisationCapacity class.
-        /// </summary>
-        public OrganisationCapacity() { }
-
-        /// <summary>
-        /// Initializes a new instance of the OrganisationCapacity class.
-        /// </summary>
-        public OrganisationCapacity(System.Guid? organisationCapacityId = default(System.Guid?), System.Guid? capacityId = default(System.Guid?), string capacityName = default(string), System.Guid? personId = default(System.Guid?), string personName = default(string), System.Guid? functionId = default(System.Guid?), string functionName = default(string), System.Collections.Generic.IList<Contact> contacts = default(System.Collections.Generic.IList<Contact>), Period validity = default(Period))
-        {
-            OrganisationCapacityId = organisationCapacityId;
-            CapacityId = capacityId;
-            CapacityName = capacityName;
-            PersonId = personId;
-            PersonName = personName;
-            FunctionId = functionId;
-            FunctionName = functionName;
-            Contacts = contacts;
-            Validity = validity;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationCapacityId")]
-        public System.Guid? OrganisationCapacityId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "capacityId")]
-        public System.Guid? CapacityId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "capacityName")]
-        public string CapacityName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "personId")]
-        public System.Guid? PersonId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "personName")]
-        public string PersonName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "functionId")]
-        public System.Guid? FunctionId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "functionName")]
-        public string FunctionName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "contacts")]
-        public System.Collections.Generic.IList<Contact> Contacts { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validity")]
-        public Period Validity { get; set; }
-
+        OrganisationCapacityId = organisationCapacityId;
+        CapacityId = capacityId;
+        CapacityName = capacityName;
+        PersonId = personId;
+        PersonName = personName;
+        FunctionId = functionId;
+        FunctionName = functionName;
+        Contacts = contacts;
+        Validity = validity;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationCapacityId")]
+    public System.Guid? OrganisationCapacityId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "capacityId")]
+    public System.Guid? CapacityId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "capacityName")]
+    public string CapacityName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "personId")]
+    public System.Guid? PersonId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "personName")]
+    public string PersonName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "functionId")]
+    public System.Guid? FunctionId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "functionName")]
+    public string FunctionName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "contacts")]
+    public System.Collections.Generic.IList<Contact> Contacts { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validity")]
+    public Period Validity { get; set; }
+
 }

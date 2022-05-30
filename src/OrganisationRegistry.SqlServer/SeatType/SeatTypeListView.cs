@@ -1,108 +1,107 @@
-namespace OrganisationRegistry.SqlServer.SeatType
+namespace OrganisationRegistry.SqlServer.SeatType;
+
+using System;
+using System.Data.Common;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using Infrastructure;
+using Microsoft.Extensions.Logging;
+using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.SeatType.Events;
+
+public class SeatTypeListItem
 {
-    using System;
-    using System.Data.Common;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using Microsoft.EntityFrameworkCore;
-    using Infrastructure;
-    using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.SeatType.Events;
+    public Guid Id { get; set; }
 
-    public class SeatTypeListItem
+    public string Name { get; set; } = null!;
+
+    public int? Order { get; set; }
+
+    public bool IsEffective { get; set; }
+}
+
+public class SeatTypeListConfiguration : EntityMappingConfiguration<SeatTypeListItem>
+{
+    public const int NameLength = 500;
+
+    public override void Map(EntityTypeBuilder<SeatTypeListItem> b)
     {
-        public Guid Id { get; set; }
+        b.ToTable(nameof(SeatTypeListView.ProjectionTables.SeatTypeList), WellknownSchemas.BackofficeSchema)
+            .HasKey(p => p.Id)
+            .IsClustered(false);
 
-        public string Name { get; set; } = null!;
+        b.Property(p => p.Name)
+            .HasMaxLength(NameLength)
+            .IsRequired();
 
-        public int? Order { get; set; }
+        b.Property(p => p.Order);
 
-        public bool IsEffective { get; set; }
+        b.Property(p => p.IsEffective)
+            .HasDefaultValue(true)
+            .ValueGeneratedNever();
+
+        b.HasIndex(x => x.Name).IsUnique().IsClustered();
+    }
+}
+
+public class SeatTypeListView :
+    Projection<SeatTypeListView>,
+    IEventHandler<SeatTypeCreated>,
+    IEventHandler<SeatTypeUpdated>
+{
+    protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+    public override string Schema => WellknownSchemas.BackofficeSchema;
+
+    public enum ProjectionTables
+    {
+        SeatTypeList
     }
 
-    public class SeatTypeListConfiguration : EntityMappingConfiguration<SeatTypeListItem>
+    private readonly IEventStore _eventStore;
+
+    public SeatTypeListView(
+        ILogger<SeatTypeListView> logger,
+        IEventStore eventStore,
+        IContextFactory contextFactory) : base(logger, contextFactory)
     {
-        public const int NameLength = 500;
+        _eventStore = eventStore;
+    }
 
-        public override void Map(EntityTypeBuilder<SeatTypeListItem> b)
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeCreated> message)
+    {
+        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
         {
-            b.ToTable(nameof(SeatTypeListView.ProjectionTables.SeatTypeList), WellknownSchemas.BackofficeSchema)
-                .HasKey(p => p.Id)
-                .IsClustered(false);
+            var seatType = new SeatTypeListItem
+            {
+                Id = message.Body.SeatTypeId,
+                Name = message.Body.Name,
+                Order= message.Body.Order,
+                IsEffective =  message.Body.IsEffective ?? true
+            };
 
-            b.Property(p => p.Name)
-                .HasMaxLength(NameLength)
-                .IsRequired();
-
-            b.Property(p => p.Order);
-
-            b.Property(p => p.IsEffective)
-                .HasDefaultValue(true)
-                .ValueGeneratedNever();
-
-            b.HasIndex(x => x.Name).IsUnique().IsClustered();
+            await context.SeatTypeList.AddAsync(seatType);
+            await context.SaveChangesAsync();
         }
     }
 
-    public class SeatTypeListView :
-        Projection<SeatTypeListView>,
-        IEventHandler<SeatTypeCreated>,
-        IEventHandler<SeatTypeUpdated>
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeUpdated> message)
     {
-        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-        public override string Schema => WellknownSchemas.BackofficeSchema;
-
-        public enum ProjectionTables
+        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
         {
-            SeatTypeList
+            var seatType = context.SeatTypeList.Single(x => x.Id == message.Body.SeatTypeId);
+
+            seatType.Name = message.Body.Name;
+            seatType.Order = message.Body.Order;
+            seatType.IsEffective = message.Body.IsEffective ?? true;
+            await context.SaveChangesAsync();
         }
+    }
 
-        private readonly IEventStore _eventStore;
-
-        public SeatTypeListView(
-            ILogger<SeatTypeListView> logger,
-            IEventStore eventStore,
-            IContextFactory contextFactory) : base(logger, contextFactory)
-        {
-            _eventStore = eventStore;
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeCreated> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var seatType = new SeatTypeListItem
-                {
-                    Id = message.Body.SeatTypeId,
-                    Name = message.Body.Name,
-                    Order= message.Body.Order,
-                    IsEffective =  message.Body.IsEffective ?? true
-                };
-
-                await context.SeatTypeList.AddAsync(seatType);
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<SeatTypeUpdated> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var seatType = context.SeatTypeList.Single(x => x.Id == message.Body.SeatTypeId);
-
-                seatType.Name = message.Body.Name;
-                seatType.Order = message.Body.Order;
-                seatType.IsEffective = message.Body.IsEffective ?? true;
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
-        {
-            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
-        }
+    public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+    {
+        await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
     }
 }

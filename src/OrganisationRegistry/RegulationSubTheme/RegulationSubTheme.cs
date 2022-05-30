@@ -1,70 +1,69 @@
-namespace OrganisationRegistry.RegulationSubTheme
+namespace OrganisationRegistry.RegulationSubTheme;
+
+using System;
+using Events;
+using Infrastructure.Domain;
+using RegulationTheme;
+
+public class RegulationSubTheme : AggregateRoot
 {
-    using System;
-    using Events;
-    using Infrastructure.Domain;
-    using RegulationTheme;
+    public RegulationSubThemeName Name { get; private set; }
+    public RegulationThemeId RegulationThemeId { get; private set; }
 
-    public class RegulationSubTheme : AggregateRoot
+    private RegulationThemeName _regulationThemeName;
+
+    private RegulationSubTheme()
     {
-        public RegulationSubThemeName Name { get; private set; }
-        public RegulationThemeId RegulationThemeId { get; private set; }
+        _regulationThemeName = new RegulationThemeName(string.Empty);
 
-        private RegulationThemeName _regulationThemeName;
+        Name = new RegulationSubThemeName(string.Empty);
+        RegulationThemeId = new RegulationThemeId(Guid.Empty);
+    }
 
-        private RegulationSubTheme()
-        {
-            _regulationThemeName = new RegulationThemeName(string.Empty);
+    public RegulationSubTheme(
+        RegulationSubThemeId id,
+        RegulationSubThemeName name,
+        RegulationTheme regulationTheme)
+    {
+        _regulationThemeName = new RegulationThemeName(string.Empty);
 
-            Name = new RegulationSubThemeName(string.Empty);
-            RegulationThemeId = new RegulationThemeId(Guid.Empty);
-        }
+        Name = new RegulationSubThemeName(string.Empty);
+        RegulationThemeId = new RegulationThemeId(Guid.Empty);
 
-        public RegulationSubTheme(
-            RegulationSubThemeId id,
-            RegulationSubThemeName name,
-            RegulationTheme regulationTheme)
-        {
-            _regulationThemeName = new RegulationThemeName(string.Empty);
+        ApplyChange(
+            new RegulationSubThemeCreated(
+                id,
+                name,
+                regulationTheme.Id,
+                regulationTheme.Name));
+    }
 
-            Name = new RegulationSubThemeName(string.Empty);
-            RegulationThemeId = new RegulationThemeId(Guid.Empty);
+    public void Update(
+        RegulationSubThemeName name,
+        RegulationTheme regulationTheme)
+    {
+        ApplyChange(
+            new RegulationSubThemeUpdated(
+                Id,
+                name,
+                regulationTheme.Id,
+                regulationTheme.Name,
+                Name,
+                RegulationThemeId,
+                _regulationThemeName));
+    }
 
-            ApplyChange(
-                new RegulationSubThemeCreated(
-                    id,
-                    name,
-                    regulationTheme.Id,
-                    regulationTheme.Name));
-        }
+    private void Apply(RegulationSubThemeCreated @event)
+    {
+        Id = @event.RegulationSubThemeId;
+        Name = new RegulationSubThemeName(@event.Name);
+        RegulationThemeId = new RegulationThemeId(@event.RegulationThemeId);
+    }
 
-        public void Update(
-            RegulationSubThemeName name,
-            RegulationTheme regulationTheme)
-        {
-            ApplyChange(
-                new RegulationSubThemeUpdated(
-                    Id,
-                    name,
-                    regulationTheme.Id,
-                    regulationTheme.Name,
-                    Name,
-                    RegulationThemeId,
-                    _regulationThemeName));
-        }
-
-        private void Apply(RegulationSubThemeCreated @event)
-        {
-            Id = @event.RegulationSubThemeId;
-            Name = new RegulationSubThemeName(@event.Name);
-            RegulationThemeId = new RegulationThemeId(@event.RegulationThemeId);
-        }
-
-        private void Apply(RegulationSubThemeUpdated @event)
-        {
-            Name = new RegulationSubThemeName(@event.Name);
-            RegulationThemeId = new RegulationThemeId(@event.RegulationThemeId);
-            _regulationThemeName = new RegulationThemeName(@event.RegulationThemeName);
-        }
+    private void Apply(RegulationSubThemeUpdated @event)
+    {
+        Name = new RegulationSubThemeName(@event.Name);
+        RegulationThemeId = new RegulationThemeId(@event.RegulationThemeId);
+        _regulationThemeName = new RegulationThemeName(@event.RegulationThemeName);
     }
 }

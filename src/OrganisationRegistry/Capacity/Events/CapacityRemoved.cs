@@ -1,13 +1,12 @@
-namespace OrganisationRegistry.Capacity.Events
+namespace OrganisationRegistry.Capacity.Events;
+
+using System;
+
+public class CapacityRemoved : BaseEvent<CapacityRemoved>
 {
-    using System;
+    public Guid CapacityId
+        => Id;
 
-    public class CapacityRemoved : BaseEvent<CapacityRemoved>
-    {
-        public Guid CapacityId
-            => Id;
-
-        public CapacityRemoved(Guid capacityId)
-            => Id = capacityId;
-    }
+    public CapacityRemoved(Guid capacityId)
+        => Id = capacityId;
 }

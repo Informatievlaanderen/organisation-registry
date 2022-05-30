@@ -1,15 +1,14 @@
-namespace OrganisationRegistry.UnitTests.Organisation.Kbo
+namespace OrganisationRegistry.UnitTests.Organisation.Kbo;
+
+using OrganisationRegistry.Organisation;
+
+public class UniqueKboNumberValidatorStub : IUniqueKboValidator
 {
-    using OrganisationRegistry.Organisation;
+    private readonly bool _returnValue;
 
-    public class UniqueKboNumberValidatorStub : IUniqueKboValidator
-    {
-        private readonly bool _returnValue;
+    public UniqueKboNumberValidatorStub(bool returnValue)
+        => _returnValue = returnValue;
 
-        public UniqueKboNumberValidatorStub(bool returnValue)
-            => _returnValue = returnValue;
-
-        public bool IsKboNumberTaken(KboNumber kboNumber)
-            => _returnValue;
-    }
+    public bool IsKboNumberTaken(KboNumber kboNumber)
+        => _returnValue;
 }

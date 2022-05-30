@@ -1,25 +1,24 @@
-namespace OrganisationRegistry.Api.Infrastructure.Configuration
+namespace OrganisationRegistry.Api.Infrastructure.Configuration;
+
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrganisationRegistry.Infrastructure.EventStore;
+using SqlServer.Configuration;
+
+public static class InitialiseAndUpdateDatabaseExtension
 {
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using OrganisationRegistry.Infrastructure.EventStore;
-    using SqlServer.Configuration;
-
-    public static class InitialiseAndUpdateDatabaseExtension
+    public static IApplicationBuilder InitialiseAndUpdateDatabase(this IApplicationBuilder app)
     {
-        public static IApplicationBuilder InitialiseAndUpdateDatabase(this IApplicationBuilder app)
-        {
-            var loggerFactory = app.ApplicationServices.GetRequiredService<ILoggerFactory>();
-            var sqlServerOptions = app.ApplicationServices.GetRequiredService<IOptions<SqlServerConfiguration>>();
-            var sqlServerEventStore = app.ApplicationServices.GetRequiredService<SqlServerEventStore>();
+        var loggerFactory = app.ApplicationServices.GetRequiredService<ILoggerFactory>();
+        var sqlServerOptions = app.ApplicationServices.GetRequiredService<IOptions<SqlServerConfiguration>>();
+        var sqlServerEventStore = app.ApplicationServices.GetRequiredService<SqlServerEventStore>();
 
-            Migrations.Run(sqlServerOptions.Value, loggerFactory);
+        Migrations.Run(sqlServerOptions.Value, loggerFactory);
 
-            sqlServerEventStore.InitaliseEventStore();
+        sqlServerEventStore.InitaliseEventStore();
 
-            return app;
-        }
+        return app;
     }
 }

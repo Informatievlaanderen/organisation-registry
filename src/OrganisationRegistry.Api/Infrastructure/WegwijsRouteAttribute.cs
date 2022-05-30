@@ -1,11 +1,10 @@
-namespace OrganisationRegistry.Api.Infrastructure
-{
-    using Be.Vlaanderen.Basisregisters.Api;
+namespace OrganisationRegistry.Api.Infrastructure;
 
-    public class OrganisationRegistryRouteAttribute : ApiRouteAttribute
+using Be.Vlaanderen.Basisregisters.Api;
+
+public class OrganisationRegistryRouteAttribute : ApiRouteAttribute
+{
+    public OrganisationRegistryRouteAttribute(string template) : base(template)
     {
-        public OrganisationRegistryRouteAttribute(string template) : base(template)
-        {
-        }
     }
 }

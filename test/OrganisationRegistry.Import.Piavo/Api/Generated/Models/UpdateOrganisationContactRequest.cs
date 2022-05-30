@@ -2,53 +2,52 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class UpdateOrganisationContactRequest
 {
-    public partial class UpdateOrganisationContactRequest
+    /// <summary>
+    /// Initializes a new instance of the UpdateOrganisationContactRequest
+    /// class.
+    /// </summary>
+    public UpdateOrganisationContactRequest() { }
+
+    /// <summary>
+    /// Initializes a new instance of the UpdateOrganisationContactRequest
+    /// class.
+    /// </summary>
+    public UpdateOrganisationContactRequest(System.Guid? organisationContactId = default(System.Guid?), System.Guid? contactTypeId = default(System.Guid?), string contactValue = default(string), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
     {
-        /// <summary>
-        /// Initializes a new instance of the UpdateOrganisationContactRequest
-        /// class.
-        /// </summary>
-        public UpdateOrganisationContactRequest() { }
-
-        /// <summary>
-        /// Initializes a new instance of the UpdateOrganisationContactRequest
-        /// class.
-        /// </summary>
-        public UpdateOrganisationContactRequest(System.Guid? organisationContactId = default(System.Guid?), System.Guid? contactTypeId = default(System.Guid?), string contactValue = default(string), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
-        {
-            OrganisationContactId = organisationContactId;
-            ContactTypeId = contactTypeId;
-            ContactValue = contactValue;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationContactId")]
-        public System.Guid? OrganisationContactId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "contactTypeId")]
-        public System.Guid? ContactTypeId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "contactValue")]
-        public string ContactValue { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
-        public System.DateTime? ValidFrom { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
-        public System.DateTime? ValidTo { get; set; }
-
+        OrganisationContactId = organisationContactId;
+        ContactTypeId = contactTypeId;
+        ContactValue = contactValue;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationContactId")]
+    public System.Guid? OrganisationContactId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "contactTypeId")]
+    public System.Guid? ContactTypeId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "contactValue")]
+    public string ContactValue { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
+    public System.DateTime? ValidFrom { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
+    public System.DateTime? ValidTo { get; set; }
+
 }

@@ -1,14 +1,13 @@
-namespace OrganisationRegistry.Organisation.Events
+namespace OrganisationRegistry.Organisation.Events;
+
+using System;
+
+public class OrganisationReleasedFromVlimpersManagement : BaseEvent<OrganisationReleasedFromVlimpersManagement>
 {
-    using System;
+    public Guid OrganisationId => Id;
 
-    public class OrganisationReleasedFromVlimpersManagement : BaseEvent<OrganisationReleasedFromVlimpersManagement>
+    public OrganisationReleasedFromVlimpersManagement(Guid organisationId)
     {
-        public Guid OrganisationId => Id;
-
-        public OrganisationReleasedFromVlimpersManagement(Guid organisationId)
-        {
-            Id = organisationId;
-        }
+        Id = organisationId;
     }
 }

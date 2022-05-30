@@ -2,53 +2,52 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class AddOrganisationLabelRequest
 {
-    public partial class AddOrganisationLabelRequest
+    /// <summary>
+    /// Initializes a new instance of the AddOrganisationLabelRequest
+    /// class.
+    /// </summary>
+    public AddOrganisationLabelRequest() { }
+
+    /// <summary>
+    /// Initializes a new instance of the AddOrganisationLabelRequest
+    /// class.
+    /// </summary>
+    public AddOrganisationLabelRequest(System.Guid? organisationLabelId = default(System.Guid?), System.Guid? labelTypeId = default(System.Guid?), string labelValue = default(string), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
     {
-        /// <summary>
-        /// Initializes a new instance of the AddOrganisationLabelRequest
-        /// class.
-        /// </summary>
-        public AddOrganisationLabelRequest() { }
-
-        /// <summary>
-        /// Initializes a new instance of the AddOrganisationLabelRequest
-        /// class.
-        /// </summary>
-        public AddOrganisationLabelRequest(System.Guid? organisationLabelId = default(System.Guid?), System.Guid? labelTypeId = default(System.Guid?), string labelValue = default(string), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
-        {
-            OrganisationLabelId = organisationLabelId;
-            LabelTypeId = labelTypeId;
-            LabelValue = labelValue;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationLabelId")]
-        public System.Guid? OrganisationLabelId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "labelTypeId")]
-        public System.Guid? LabelTypeId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "labelValue")]
-        public string LabelValue { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
-        public System.DateTime? ValidFrom { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
-        public System.DateTime? ValidTo { get; set; }
-
+        OrganisationLabelId = organisationLabelId;
+        LabelTypeId = labelTypeId;
+        LabelValue = labelValue;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationLabelId")]
+    public System.Guid? OrganisationLabelId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "labelTypeId")]
+    public System.Guid? LabelTypeId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "labelValue")]
+    public string LabelValue { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
+    public System.DateTime? ValidFrom { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
+    public System.DateTime? ValidTo { get; set; }
+
 }

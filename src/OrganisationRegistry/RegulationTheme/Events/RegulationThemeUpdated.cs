@@ -1,36 +1,35 @@
-namespace OrganisationRegistry.RegulationTheme.Events
+namespace OrganisationRegistry.RegulationTheme.Events;
+
+using System;
+using Newtonsoft.Json;
+
+public class RegulationThemeUpdated : BaseEvent<RegulationThemeUpdated>
 {
-    using System;
-    using Newtonsoft.Json;
+    public Guid RegulationThemeId => Id;
 
-    public class RegulationThemeUpdated : BaseEvent<RegulationThemeUpdated>
+    public string Name { get; }
+    public string PreviousName { get; }
+
+    public RegulationThemeUpdated(
+        RegulationThemeId regulationThemeId,
+        RegulationThemeName name,
+        RegulationThemeName previousName)
     {
-        public Guid RegulationThemeId => Id;
+        Id = regulationThemeId;
 
-        public string Name { get; }
-        public string PreviousName { get; }
+        Name = name;
+        PreviousName = previousName;
+    }
 
-        public RegulationThemeUpdated(
-            RegulationThemeId regulationThemeId,
-            RegulationThemeName name,
-            RegulationThemeName previousName)
-        {
-            Id = regulationThemeId;
-
-            Name = name;
-            PreviousName = previousName;
-        }
-
-        [JsonConstructor]
-        public RegulationThemeUpdated(
-            Guid regulationThemeId,
-            string name,
-            string previousName)
+    [JsonConstructor]
+    public RegulationThemeUpdated(
+        Guid regulationThemeId,
+        string name,
+        string previousName)
         : this(
             new RegulationThemeId(regulationThemeId),
             new RegulationThemeName(name),
             new RegulationThemeName(previousName))
-        {
-        }
+    {
     }
 }

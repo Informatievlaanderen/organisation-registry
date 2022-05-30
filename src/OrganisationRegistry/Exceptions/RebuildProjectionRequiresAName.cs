@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Exceptions
+namespace OrganisationRegistry.Exceptions;
+
+public class RebuildProjectionRequiresAName : DomainException
 {
-    public class RebuildProjectionRequiresAName : DomainException
-    {
-        public RebuildProjectionRequiresAName()
-            : base("Voor het rebuilden van de projections is een naam vereist.") { }
-    }
+    public RebuildProjectionRequiresAName()
+        : base("Voor het rebuilden van de projections is een naam vereist.") { }
 }

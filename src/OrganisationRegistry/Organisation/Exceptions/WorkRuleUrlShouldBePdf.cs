@@ -1,7 +1,6 @@
-﻿namespace OrganisationRegistry.Organisation.Exceptions
+﻿namespace OrganisationRegistry.Organisation.Exceptions;
+
+public class WorkRuleUrlShouldBePdf : DomainException
 {
-    public class WorkRuleUrlShouldBePdf : DomainException
-    {
-        public WorkRuleUrlShouldBePdf() : base("Arbeidsreglement moet een Pdf zijn.") { }
-    }
+    public WorkRuleUrlShouldBePdf() : base("Arbeidsreglement moet een Pdf zijn.") { }
 }

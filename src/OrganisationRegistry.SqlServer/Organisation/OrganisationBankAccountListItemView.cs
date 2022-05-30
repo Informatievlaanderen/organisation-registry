@@ -1,245 +1,244 @@
-namespace OrganisationRegistry.SqlServer.Organisation
+namespace OrganisationRegistry.SqlServer.Organisation;
+
+using System;
+using System.Data.Common;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Infrastructure;
+using Microsoft.Extensions.Logging;
+using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.Organisation.Events;
+
+public class OrganisationBankAccountListItem
 {
-    using System;
-    using System.Data.Common;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using Infrastructure;
-    using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Organisation.Events;
+    public Guid OrganisationBankAccountId { get; set; }
+    public Guid OrganisationId { get; set; }
+    public string BankAccountNumber { get; set; }
+    public bool IsIban { get; set; }
+    public string? Bic { get; set; }
+    public bool IsBic { get; set; }
+    public DateTime? ValidFrom { get; set; }
+    public DateTime? ValidTo { get; set; }
 
-    public class OrganisationBankAccountListItem
+    public string? Source { get; set; }
+
+    public bool IsEditable => Source != OrganisationRegistry.Organisation.Source.Kbo;
+
+    public OrganisationBankAccountListItem()
     {
-        public Guid OrganisationBankAccountId { get; set; }
-        public Guid OrganisationId { get; set; }
-        public string BankAccountNumber { get; set; }
-        public bool IsIban { get; set; }
-        public string? Bic { get; set; }
-        public bool IsBic { get; set; }
-        public DateTime? ValidFrom { get; set; }
-        public DateTime? ValidTo { get; set; }
-
-        public string? Source { get; set; }
-
-        public bool IsEditable => Source != OrganisationRegistry.Organisation.Source.Kbo;
-
-        public OrganisationBankAccountListItem()
-        {
-            BankAccountNumber = string.Empty;
-        }
-
-        public OrganisationBankAccountListItem(
-            Guid organisationBankAccountId,
-            Guid organisationId,
-            string bankAccountNumber,
-            bool isIban,
-            string bic,
-            bool isBic,
-            DateTime? validFrom,
-            DateTime? validTo,
-            string? source = null)
-        {
-            OrganisationBankAccountId = organisationBankAccountId;
-            OrganisationId = organisationId;
-            BankAccountNumber = bankAccountNumber;
-            IsIban = isIban;
-            Bic = bic;
-            IsBic = isBic;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-            Source = source;
-        }
+        BankAccountNumber = string.Empty;
     }
 
-    public class OrganisationBankAccountListConfiguration : EntityMappingConfiguration<OrganisationBankAccountListItem>
+    public OrganisationBankAccountListItem(
+        Guid organisationBankAccountId,
+        Guid organisationId,
+        string bankAccountNumber,
+        bool isIban,
+        string bic,
+        bool isBic,
+        DateTime? validFrom,
+        DateTime? validTo,
+        string? source = null)
     {
-        public override void Map(EntityTypeBuilder<OrganisationBankAccountListItem> b)
-        {
-            b.ToTable(nameof(OrganisationBankAccountListView.ProjectionTables.OrganisationBankAccountList), WellknownSchemas.BackofficeSchema)
-                .HasKey(p => p.OrganisationBankAccountId)
-                .IsClustered(false);
+        OrganisationBankAccountId = organisationBankAccountId;
+        OrganisationId = organisationId;
+        BankAccountNumber = bankAccountNumber;
+        IsIban = isIban;
+        Bic = bic;
+        IsBic = isBic;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
+        Source = source;
+    }
+}
 
-            b.Property(p => p.OrganisationId).IsRequired();
+public class OrganisationBankAccountListConfiguration : EntityMappingConfiguration<OrganisationBankAccountListItem>
+{
+    public override void Map(EntityTypeBuilder<OrganisationBankAccountListItem> b)
+    {
+        b.ToTable(nameof(OrganisationBankAccountListView.ProjectionTables.OrganisationBankAccountList), WellknownSchemas.BackofficeSchema)
+            .HasKey(p => p.OrganisationBankAccountId)
+            .IsClustered(false);
 
-            b.Property(p => p.BankAccountNumber).IsRequired();
-            b.Property(p => p.Bic);
+        b.Property(p => p.OrganisationId).IsRequired();
 
-            b.Property(p => p.IsIban);
-            b.Property(p => p.IsBic);
+        b.Property(p => p.BankAccountNumber).IsRequired();
+        b.Property(p => p.Bic);
 
-            b.Property(p => p.ValidFrom);
-            b.Property(p => p.ValidTo);
+        b.Property(p => p.IsIban);
+        b.Property(p => p.IsBic);
 
-            b.Property(p => p.Source);
+        b.Property(p => p.ValidFrom);
+        b.Property(p => p.ValidTo);
 
-            b.HasIndex(x => x.ValidFrom);
-            b.HasIndex(x => x.ValidTo);
-        }
+        b.Property(p => p.Source);
+
+        b.HasIndex(x => x.ValidFrom);
+        b.HasIndex(x => x.ValidTo);
+    }
+}
+
+public class OrganisationBankAccountListView :
+    Projection<OrganisationBankAccountListView>,
+    IEventHandler<OrganisationBankAccountAdded>,
+    IEventHandler<KboOrganisationBankAccountAdded>,
+    IEventHandler<KboOrganisationBankAccountRemoved>,
+    IEventHandler<OrganisationCouplingWithKboCancelled>,
+    IEventHandler<OrganisationTerminationSyncedWithKbo>,
+    IEventHandler<OrganisationBankAccountUpdated>,
+    IEventHandler<OrganisationTerminated>,
+    IEventHandler<OrganisationTerminatedV2>
+{
+    protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+    public override string Schema => WellknownSchemas.BackofficeSchema;
+
+    public enum ProjectionTables
+    {
+        OrganisationBankAccountList
     }
 
-    public class OrganisationBankAccountListView :
-        Projection<OrganisationBankAccountListView>,
-        IEventHandler<OrganisationBankAccountAdded>,
-        IEventHandler<KboOrganisationBankAccountAdded>,
-        IEventHandler<KboOrganisationBankAccountRemoved>,
-        IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationTerminationSyncedWithKbo>,
-        IEventHandler<OrganisationBankAccountUpdated>,
-        IEventHandler<OrganisationTerminated>,
-        IEventHandler<OrganisationTerminatedV2>
+    private readonly IEventStore _eventStore;
+    public OrganisationBankAccountListView(
+        ILogger<OrganisationBankAccountListView> logger,
+        IEventStore eventStore,
+        IContextFactory contextFactory) : base(logger, contextFactory)
     {
-        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-        public override string Schema => WellknownSchemas.BackofficeSchema;
+        _eventStore = eventStore;
+    }
 
-        public enum ProjectionTables
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountAdded> message)
+    {
+        var organisationBankAccountListItem = new OrganisationBankAccountListItem(
+            message.Body.OrganisationBankAccountId,
+            message.Body.OrganisationId,
+            message.Body.BankAccountNumber,
+            message.Body.IsIban,
+            message.Body.Bic,
+            message.Body.IsBic,
+            message.Body.ValidFrom,
+            message.Body.ValidTo);
+
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        await context.OrganisationBankAccountList.AddAsync(organisationBankAccountListItem);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountAdded> message)
+    {
+        var organisationBankAccountListItem = new OrganisationBankAccountListItem(
+            message.Body.OrganisationBankAccountId,
+            message.Body.OrganisationId,
+            message.Body.BankAccountNumber,
+            message.Body.IsIban,
+            message.Body.Bic,
+            message.Body.IsBic,
+            message.Body.ValidFrom,
+            message.Body.ValidTo,
+            OrganisationRegistry.Organisation.Source.Kbo);
+
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        await context.OrganisationBankAccountList.AddAsync(organisationBankAccountListItem);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var organisationBankAccountListItem = await context.OrganisationBankAccountList.SingleAsync(b => b.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
+
+        context.OrganisationBankAccountList.Remove(organisationBankAccountListItem);
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+    {
+        if (!message.Body.OrganisationBankAccountIdsToCancel.Any())
+            return;
+
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        foreach (var bankAccountId in message.Body.OrganisationBankAccountIdsToCancel)
         {
-            OrganisationBankAccountList
-        }
-
-        private readonly IEventStore _eventStore;
-        public OrganisationBankAccountListView(
-            ILogger<OrganisationBankAccountListView> logger,
-            IEventStore eventStore,
-            IContextFactory contextFactory) : base(logger, contextFactory)
-        {
-            _eventStore = eventStore;
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountAdded> message)
-        {
-            var organisationBankAccountListItem = new OrganisationBankAccountListItem(
-                message.Body.OrganisationBankAccountId,
-                message.Body.OrganisationId,
-                message.Body.BankAccountNumber,
-                message.Body.IsIban,
-                message.Body.Bic,
-                message.Body.IsBic,
-                message.Body.ValidFrom,
-                message.Body.ValidTo);
-
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            await context.OrganisationBankAccountList.AddAsync(organisationBankAccountListItem);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountAdded> message)
-        {
-            var organisationBankAccountListItem = new OrganisationBankAccountListItem(
-                message.Body.OrganisationBankAccountId,
-                message.Body.OrganisationId,
-                message.Body.BankAccountNumber,
-                message.Body.IsIban,
-                message.Body.Bic,
-                message.Body.IsBic,
-                message.Body.ValidFrom,
-                message.Body.ValidTo,
-                OrganisationRegistry.Organisation.Source.Kbo);
-
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            await context.OrganisationBankAccountList.AddAsync(organisationBankAccountListItem);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboOrganisationBankAccountRemoved> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var organisationBankAccountListItem = await context.OrganisationBankAccountList.SingleAsync(b => b.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
+            var organisationBankAccountListItem = await context.OrganisationBankAccountList.SingleAsync(b => b.OrganisationBankAccountId == bankAccountId);
 
             context.OrganisationBankAccountList.Remove(organisationBankAccountListItem);
-
-            await context.SaveChangesAsync();
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
+    {
+        if (!message.Body.OrganisationBankAccountIdsToTerminate.Any())
+            return;
+
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        foreach (var bankAccountId in message.Body.OrganisationBankAccountIdsToTerminate)
         {
-            if (!message.Body.OrganisationBankAccountIdsToCancel.Any())
-                return;
+            var organisationBankAccountListItem = await context.OrganisationBankAccountList.SingleAsync(b => b.OrganisationBankAccountId == bankAccountId);
 
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            foreach (var bankAccountId in message.Body.OrganisationBankAccountIdsToCancel)
-            {
-                var organisationBankAccountListItem = await context.OrganisationBankAccountList.SingleAsync(b => b.OrganisationBankAccountId == bankAccountId);
-
-                context.OrganisationBankAccountList.Remove(organisationBankAccountListItem);
-            }
-
-            await context.SaveChangesAsync();
+            organisationBankAccountListItem.ValidTo = message.Body.DateOfTermination;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
-        {
-            if (!message.Body.OrganisationBankAccountIdsToTerminate.Any())
-                return;
+        await context.SaveChangesAsync();
+    }
 
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            foreach (var bankAccountId in message.Body.OrganisationBankAccountIdsToTerminate)
-            {
-                var organisationBankAccountListItem = await context.OrganisationBankAccountList.SingleAsync(b => b.OrganisationBankAccountId == bankAccountId);
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountUpdated> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var organisationBankAccountListItem = context.OrganisationBankAccountList.Single(b => b.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
 
-                organisationBankAccountListItem.ValidTo = message.Body.DateOfTermination;
-            }
+        organisationBankAccountListItem.IsIban = message.Body.IsIban;
+        organisationBankAccountListItem.BankAccountNumber = message.Body.BankAccountNumber;
+        organisationBankAccountListItem.IsBic = message.Body.IsBic;
+        organisationBankAccountListItem.Bic = message.Body.Bic;
+        organisationBankAccountListItem.ValidFrom = message.Body.ValidFrom;
+        organisationBankAccountListItem.ValidTo = message.Body.ValidTo;
 
-            await context.SaveChangesAsync();
-        }
+        await context.SaveChangesAsync();
+    }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationBankAccountUpdated> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var organisationBankAccountListItem = context.OrganisationBankAccountList.Single(b => b.OrganisationBankAccountId == message.Body.OrganisationBankAccountId);
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var organisationBankAccountListItems =
+            context.OrganisationBankAccountList.Where(item => message.Body.FieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
 
-            organisationBankAccountListItem.IsIban = message.Body.IsIban;
-            organisationBankAccountListItem.BankAccountNumber = message.Body.BankAccountNumber;
-            organisationBankAccountListItem.IsBic = message.Body.IsBic;
-            organisationBankAccountListItem.Bic = message.Body.Bic;
-            organisationBankAccountListItem.ValidFrom = message.Body.ValidFrom;
-            organisationBankAccountListItem.ValidTo = message.Body.ValidTo;
+        foreach (var bankAccount in organisationBankAccountListItems)
+            bankAccount.ValidTo = message.Body.FieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
 
-            await context.SaveChangesAsync();
-        }
+        var kboOrganisationBankAccountListItems =
+            context.OrganisationBankAccountList.Where(item => message.Body.KboFieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var organisationBankAccountListItems =
-                context.OrganisationBankAccountList.Where(item => message.Body.FieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
+        foreach (var bankAccount in kboOrganisationBankAccountListItems)
+            bankAccount.ValidTo = message.Body.KboFieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
 
-            foreach (var bankAccount in organisationBankAccountListItems)
-                bankAccount.ValidTo = message.Body.FieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
+        await context.SaveChangesAsync();
+    }
 
-            var kboOrganisationBankAccountListItems =
-                context.OrganisationBankAccountList.Where(item => message.Body.KboFieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var organisationBankAccountListItems =
+            context.OrganisationBankAccountList.Where(item => message.Body.FieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
 
-            foreach (var bankAccount in kboOrganisationBankAccountListItems)
-                bankAccount.ValidTo = message.Body.KboFieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
+        foreach (var bankAccount in organisationBankAccountListItems)
+            bankAccount.ValidTo = message.Body.FieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
 
-            await context.SaveChangesAsync();
-        }
+        var kboOrganisationBankAccountListItems =
+            context.OrganisationBankAccountList.Where(item => message.Body.KboFieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var organisationBankAccountListItems =
-                context.OrganisationBankAccountList.Where(item => message.Body.FieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
+        foreach (var bankAccount in kboOrganisationBankAccountListItems)
+            bankAccount.ValidTo = message.Body.KboFieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
 
-            foreach (var bankAccount in organisationBankAccountListItems)
-                bankAccount.ValidTo = message.Body.FieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
+        await context.SaveChangesAsync();
+    }
 
-            var kboOrganisationBankAccountListItems =
-                context.OrganisationBankAccountList.Where(item => message.Body.KboFieldsToTerminate.BankAccounts.Keys.Contains(item.OrganisationBankAccountId));
-
-            foreach (var bankAccount in kboOrganisationBankAccountListItems)
-                bankAccount.ValidTo = message.Body.KboFieldsToTerminate.BankAccounts[bankAccount.OrganisationBankAccountId];
-
-            await context.SaveChangesAsync();
-        }
-
-        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
-        {
-            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
-        }
+    public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+    {
+        await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
     }
 }

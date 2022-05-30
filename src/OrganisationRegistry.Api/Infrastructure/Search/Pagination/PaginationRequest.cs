@@ -1,50 +1,49 @@
-namespace OrganisationRegistry.Api.Infrastructure.Search.Pagination
+namespace OrganisationRegistry.Api.Infrastructure.Search.Pagination;
+
+using System;
+using System.Linq;
+
+public interface IPaginationRequest
 {
-    using System;
-    using System.Linq;
+    PagedQueryable<T> Paginate<T>(IQueryable<T> source);
+}
 
-    public interface IPaginationRequest
+public class PaginationRequest : IPaginationRequest
+{
+    public int RequestedPage { get; }
+
+    public int ItemsPerPage { get; }
+
+    public PaginationRequest(int requestedPage, int itemsPerPage)
     {
-        PagedQueryable<T> Paginate<T>(IQueryable<T> source);
+        RequestedPage = requestedPage;
+        ItemsPerPage = itemsPerPage;
     }
 
-    public class PaginationRequest : IPaginationRequest
+    public PagedQueryable<T> Paginate<T>(IQueryable<T> source)
     {
-        public int RequestedPage { get; }
+        var itemsInRequestedPage = source
+            .Skip((RequestedPage - 1) * ItemsPerPage)
+            .Take(ItemsPerPage);
 
-        public int ItemsPerPage { get; }
+        var totalItemSize = source.Count();
+        var totalPages = (int)Math.Ceiling((double)totalItemSize / ItemsPerPage);
+        var paginationInfo = new PaginationInfo(RequestedPage, ItemsPerPage, totalItemSize, totalPages);
 
-        public PaginationRequest(int requestedPage, int itemsPerPage)
-        {
-            RequestedPage = requestedPage;
-            ItemsPerPage = itemsPerPage;
-        }
+        return new PagedQueryable<T>(itemsInRequestedPage, paginationInfo);
+    }
+}
 
-        public PagedQueryable<T> Paginate<T>(IQueryable<T> source)
-        {
-            var itemsInRequestedPage = source
-                .Skip((RequestedPage - 1) * ItemsPerPage)
-                .Take(ItemsPerPage);
-
-            var totalItemSize = source.Count();
-            var totalPages = (int)Math.Ceiling((double)totalItemSize / ItemsPerPage);
-            var paginationInfo = new PaginationInfo(RequestedPage, ItemsPerPage, totalItemSize, totalPages);
-
-            return new PagedQueryable<T>(itemsInRequestedPage, paginationInfo);
-        }
+public class NoPaginationRequest : IPaginationRequest
+{
+    public int TotalPages(int totalItemSize)
+    {
+        return 1;
     }
 
-    public class NoPaginationRequest : IPaginationRequest
+    public PagedQueryable<T> Paginate<T>(IQueryable<T> source)
     {
-        public int TotalPages(int totalItemSize)
-        {
-            return 1;
-        }
-
-        public PagedQueryable<T> Paginate<T>(IQueryable<T> source)
-        {
-            var itemsPerPage = source.Count();
-            return new PagedQueryable<T>(source, new PaginationInfo(1, itemsPerPage, itemsPerPage, 1));
-        }
+        var itemsPerPage = source.Count();
+        return new PagedQueryable<T>(source, new PaginationInfo(1, itemsPerPage, itemsPerPage, 1));
     }
 }

@@ -27,12 +27,11 @@
 
 using System;
 
-namespace OpenSearch.Net
-{
-	public interface IDateTimeProvider
-	{
-		DateTime Now();
+namespace OpenSearch.Net;
 
-		DateTime DeadTime(int attempts, TimeSpan? timeoutFactor, TimeSpan? maxDeadTimeout);
-	}
+public interface IDateTimeProvider
+{
+    DateTime Now();
+
+    DateTime DeadTime(int attempts, TimeSpan? timeoutFactor, TimeSpan? maxDeadTimeout);
 }

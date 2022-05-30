@@ -1,21 +1,20 @@
-namespace OrganisationRegistry.Api.Backoffice.Body.Validity
+namespace OrganisationRegistry.Api.Backoffice.Body.Validity;
+
+using System;
+using OrganisationRegistry.SqlServer.Body;
+
+public class BodyValidityResponse
 {
-    using System;
-    using OrganisationRegistry.SqlServer.Body;
+    public Guid Id { get; }
 
-    public class BodyValidityResponse
+    public DateTime? FormalValidFrom { get; }
+    public DateTime? FormalValidTo { get; }
+
+    public BodyValidityResponse(BodyDetail projectionItem)
     {
-        public Guid Id { get; }
+        Id = projectionItem.Id;
 
-        public DateTime? FormalValidFrom { get; }
-        public DateTime? FormalValidTo { get; }
-
-        public BodyValidityResponse(BodyDetail projectionItem)
-        {
-            Id = projectionItem.Id;
-
-            FormalValidFrom = projectionItem.FormalValidFrom;
-            FormalValidTo = projectionItem.FormalValidTo;
-        }
+        FormalValidFrom = projectionItem.FormalValidFrom;
+        FormalValidTo = projectionItem.FormalValidTo;
     }
 }

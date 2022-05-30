@@ -2,35 +2,34 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class UpdateOrganisationRelationTypeRequest
 {
-    public partial class UpdateOrganisationRelationTypeRequest
+    /// <summary>
+    /// Initializes a new instance of the
+    /// UpdateOrganisationRelationTypeRequest class.
+    /// </summary>
+    public UpdateOrganisationRelationTypeRequest() { }
+
+    /// <summary>
+    /// Initializes a new instance of the
+    /// UpdateOrganisationRelationTypeRequest class.
+    /// </summary>
+    public UpdateOrganisationRelationTypeRequest(string name = default(string), string inverseName = default(string))
     {
-        /// <summary>
-        /// Initializes a new instance of the
-        /// UpdateOrganisationRelationTypeRequest class.
-        /// </summary>
-        public UpdateOrganisationRelationTypeRequest() { }
-
-        /// <summary>
-        /// Initializes a new instance of the
-        /// UpdateOrganisationRelationTypeRequest class.
-        /// </summary>
-        public UpdateOrganisationRelationTypeRequest(string name = default(string), string inverseName = default(string))
-        {
-            Name = name;
-            InverseName = inverseName;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "inverseName")]
-        public string InverseName { get; set; }
-
+        Name = name;
+        InverseName = inverseName;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "inverseName")]
+    public string InverseName { get; set; }
+
 }

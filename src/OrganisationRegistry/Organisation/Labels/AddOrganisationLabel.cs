@@ -1,33 +1,32 @@
-﻿namespace OrganisationRegistry.Organisation
+﻿namespace OrganisationRegistry.Organisation;
+
+using System;
+using LabelType;
+
+public class AddOrganisationLabel : BaseCommand<OrganisationId>
 {
-    using System;
-    using LabelType;
+    public OrganisationId OrganisationId => Id;
 
-    public class AddOrganisationLabel : BaseCommand<OrganisationId>
+    public Guid OrganisationLabelId { get; }
+    public LabelTypeId LabelTypeId { get; }
+    public string LabelValue { get; }
+    public ValidFrom ValidFrom { get; }
+    public ValidTo ValidTo { get; }
+
+    public AddOrganisationLabel(
+        Guid organisationLabelId,
+        OrganisationId organisationId,
+        LabelTypeId labelTypeId,
+        string labelValue,
+        ValidFrom validFrom,
+        ValidTo validTo)
     {
-        public OrganisationId OrganisationId => Id;
+        Id = organisationId;
 
-        public Guid OrganisationLabelId { get; }
-        public LabelTypeId LabelTypeId { get; }
-        public string LabelValue { get; }
-        public ValidFrom ValidFrom { get; }
-        public ValidTo ValidTo { get; }
-
-        public AddOrganisationLabel(
-            Guid organisationLabelId,
-            OrganisationId organisationId,
-            LabelTypeId labelTypeId,
-            string labelValue,
-            ValidFrom validFrom,
-            ValidTo validTo)
-        {
-            Id = organisationId;
-
-            OrganisationLabelId = organisationLabelId;
-            LabelTypeId = labelTypeId;
-            LabelValue = labelValue;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
+        OrganisationLabelId = organisationLabelId;
+        LabelTypeId = labelTypeId;
+        LabelValue = labelValue;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
 }

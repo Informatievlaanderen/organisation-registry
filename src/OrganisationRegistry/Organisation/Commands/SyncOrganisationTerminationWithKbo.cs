@@ -1,14 +1,13 @@
-namespace OrganisationRegistry.Organisation.Commands
+namespace OrganisationRegistry.Organisation.Commands;
+
+public class SyncOrganisationTerminationWithKbo : BaseCommand<OrganisationId>
 {
-    public class SyncOrganisationTerminationWithKbo : BaseCommand<OrganisationId>
+    public OrganisationId OrganisationId => Id;
+
+
+    public SyncOrganisationTerminationWithKbo(
+        OrganisationId organisationId)
     {
-        public OrganisationId OrganisationId => Id;
-
-
-        public SyncOrganisationTerminationWithKbo(
-            OrganisationId organisationId)
-        {
-            Id = organisationId;
-        }
+        Id = organisationId;
     }
 }

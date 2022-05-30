@@ -1,32 +1,31 @@
-namespace OrganisationRegistry.VlaanderenBeNotifier.Schema
-{
-    using System;
-    using System.Data.Common;
-    using Autofac.Features.OwnedInstances;
+namespace OrganisationRegistry.VlaanderenBeNotifier.Schema;
 
-    public interface IContextFactory
+using System;
+using System.Data.Common;
+using Autofac.Features.OwnedInstances;
+
+public interface IContextFactory
+{
+    VlaanderenBeNotifierContext CreateTransactional(DbConnection connection, DbTransaction transaction);
+    VlaanderenBeNotifierContext Create();
+}
+
+public class ContextFactory : IContextFactory
+{
+    private readonly Func<Owned<VlaanderenBeNotifierContext>> _contextFunc;
+
+    public ContextFactory(Func<Owned<VlaanderenBeNotifierContext>> contextFunc)
     {
-        VlaanderenBeNotifierContext CreateTransactional(DbConnection connection, DbTransaction transaction);
-        VlaanderenBeNotifierContext Create();
+        _contextFunc = contextFunc;
     }
 
-    public class ContextFactory : IContextFactory
+    public VlaanderenBeNotifierContext CreateTransactional(DbConnection connection, DbTransaction transaction)
     {
-        private readonly Func<Owned<VlaanderenBeNotifierContext>> _contextFunc;
+        return new VlaanderenBeNotifierTransactionalContext(connection, transaction);
+    }
 
-        public ContextFactory(Func<Owned<VlaanderenBeNotifierContext>> contextFunc)
-        {
-            _contextFunc = contextFunc;
-        }
-
-        public VlaanderenBeNotifierContext CreateTransactional(DbConnection connection, DbTransaction transaction)
-        {
-            return new VlaanderenBeNotifierTransactionalContext(connection, transaction);
-        }
-
-        public VlaanderenBeNotifierContext Create()
-        {
-            return _contextFunc().Value;
-        }
+    public VlaanderenBeNotifierContext Create()
+    {
+        return _contextFunc().Value;
     }
 }

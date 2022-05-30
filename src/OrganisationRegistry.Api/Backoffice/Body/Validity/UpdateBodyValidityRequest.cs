@@ -1,52 +1,51 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Body.Validity
+﻿namespace OrganisationRegistry.Api.Backoffice.Body.Validity;
+
+using System;
+using FluentValidation;
+using OrganisationRegistry.Body;
+
+public class UpdateBodyValidityInternalRequest
 {
-    using System;
-    using FluentValidation;
-    using OrganisationRegistry.Body;
+    public Guid BodyId { get; set; }
+    public UpdateBodyValidityRequest Body { get; set; }
 
-    public class UpdateBodyValidityInternalRequest
+    public UpdateBodyValidityInternalRequest(Guid bodyId, UpdateBodyValidityRequest body)
     {
-        public Guid BodyId { get; set; }
-        public UpdateBodyValidityRequest Body { get; set; }
-
-        public UpdateBodyValidityInternalRequest(Guid bodyId, UpdateBodyValidityRequest body)
-        {
-            BodyId = bodyId;
-            Body = body;
-        }
+        BodyId = bodyId;
+        Body = body;
     }
+}
 
-    public class UpdateBodyValidityRequest
+public class UpdateBodyValidityRequest
+{
+    public DateTime? FormalValidFrom { get; set; }
+
+    public DateTime? FormalValidTo { get; set; }
+}
+
+public class UpdateBodyValidityRequestValidator : AbstractValidator<UpdateBodyValidityInternalRequest>
+{
+    public UpdateBodyValidityRequestValidator()
     {
-        public DateTime? FormalValidFrom { get; set; }
+        RuleFor(x => x.BodyId)
+            .NotEmpty()
+            .WithMessage("Id is required.");
 
-        public DateTime? FormalValidTo { get; set; }
+        RuleFor(x => x.Body.FormalValidTo)
+            .GreaterThanOrEqualTo(x => x.Body.FormalValidFrom)
+            .When(x => x.Body.FormalValidFrom.HasValue)
+            .WithMessage("Formal Valid To must be greater than or equal to Formal Valid From.");
     }
+}
 
-    public class UpdateBodyValidityRequestValidator : AbstractValidator<UpdateBodyValidityInternalRequest>
+public static class UpdateBodyValidityRequestMapping
+{
+    public static UpdateBodyValidity Map(UpdateBodyValidityInternalRequest message)
     {
-        public UpdateBodyValidityRequestValidator()
-        {
-            RuleFor(x => x.BodyId)
-                .NotEmpty()
-                .WithMessage("Id is required.");
-
-            RuleFor(x => x.Body.FormalValidTo)
-                .GreaterThanOrEqualTo(x => x.Body.FormalValidFrom)
-                .When(x => x.Body.FormalValidFrom.HasValue)
-                .WithMessage("Formal Valid To must be greater than or equal to Formal Valid From.");
-        }
-    }
-
-    public static class UpdateBodyValidityRequestMapping
-    {
-        public static UpdateBodyValidity Map(UpdateBodyValidityInternalRequest message)
-        {
-            return new UpdateBodyValidity(
-                new BodyId(message.BodyId),
-                new Period(
-                    new ValidFrom(message.Body.FormalValidFrom),
-                    new ValidTo(message.Body.FormalValidTo)));
-        }
+        return new UpdateBodyValidity(
+            new BodyId(message.BodyId),
+            new Period(
+                new ValidFrom(message.Body.FormalValidFrom),
+                new ValidTo(message.Body.FormalValidTo)));
     }
 }

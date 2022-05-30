@@ -1,30 +1,29 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.SeatType
+﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.SeatType;
+
+using System;
+using System.Linq;
+using OrganisationRegistry.SeatType;
+using SqlServer.Infrastructure;
+
+public class UniqueNameValidator : IUniqueNameValidator<SeatType>
 {
-    using System;
-    using System.Linq;
-    using OrganisationRegistry.SeatType;
-    using SqlServer.Infrastructure;
+    private readonly OrganisationRegistryContext _context;
 
-    public class UniqueNameValidator : IUniqueNameValidator<SeatType>
+    public UniqueNameValidator(OrganisationRegistryContext context)
     {
-        private readonly OrganisationRegistryContext _context;
+        _context = context;
+    }
 
-        public UniqueNameValidator(OrganisationRegistryContext context)
-        {
-            _context = context;
-        }
+    public bool IsNameTaken(string name)
+    {
+        return _context.SeatTypeList.Any(item => item.Name == name);
+    }
 
-        public bool IsNameTaken(string name)
-        {
-            return _context.SeatTypeList.Any(item => item.Name == name);
-        }
-
-        public bool IsNameTaken(Guid id, string name)
-        {
-            return _context.SeatTypeList
-                .AsQueryable()
-                .Where(item => item.Id != id)
-                .Any(item => item.Name == name);
-        }
+    public bool IsNameTaken(Guid id, string name)
+    {
+        return _context.SeatTypeList
+            .AsQueryable()
+            .Where(item => item.Id != id)
+            .Any(item => item.Name == name);
     }
 }

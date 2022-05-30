@@ -1,17 +1,16 @@
-namespace OrganisationRegistry.Infrastructure
+namespace OrganisationRegistry.Infrastructure;
+
+using System;
+using System.Linq;
+
+public static class StringExtensions
 {
-    using System;
-    using System.Linq;
+    public static Guid[] SplitGuids(this string? source)
+        => source?
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(Guid.Parse)
+            .ToArray() ?? Array.Empty<Guid>();
 
-    public static class StringExtensions
-    {
-        public static Guid[] SplitGuids(this string? source)
-            => source?
-                .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                .Select(Guid.Parse)
-                .ToArray() ?? Array.Empty<Guid>();
-
-        public static bool IsNotEmptyOrWhiteSpace(this string source)
-            => source.Trim().Any();
-    }
+    public static bool IsNotEmptyOrWhiteSpace(this string source)
+        => source.Trim().Any();
 }

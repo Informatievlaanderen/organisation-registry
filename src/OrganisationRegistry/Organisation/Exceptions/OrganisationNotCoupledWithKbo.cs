@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Organisation.Exceptions
+namespace OrganisationRegistry.Organisation.Exceptions;
+
+public class OrganisationNotCoupledWithKbo: DomainException
 {
-    public class OrganisationNotCoupledWithKbo: DomainException
-    {
-        public OrganisationNotCoupledWithKbo()
-            : base("Deze organisatie is niet gekoppeld aan een KBO nummer.") { }
-    }
+    public OrganisationNotCoupledWithKbo()
+        : base("Deze organisatie is niet gekoppeld aan een KBO nummer.") { }
 }

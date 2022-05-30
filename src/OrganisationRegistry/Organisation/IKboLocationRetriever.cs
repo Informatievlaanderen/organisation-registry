@@ -1,9 +1,8 @@
-namespace OrganisationRegistry.Organisation
-{
-    using System;
+namespace OrganisationRegistry.Organisation;
 
-    public interface IKboLocationRetriever
-    {
-        Guid? RetrieveLocation(IMagdaAddress address);
-    }
+using System;
+
+public interface IKboLocationRetriever
+{
+    Guid? RetrieveLocation(IMagdaAddress address);
 }

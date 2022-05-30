@@ -1,48 +1,47 @@
-namespace OrganisationRegistry.KboMutations
+namespace OrganisationRegistry.KboMutations;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Logging;
+using SqlServer.Infrastructure;
+using SqlServer.KboSyncQueue;
+
+public class KboMutationsPersister : IKboMutationsPersister
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.Extensions.Logging;
-    using SqlServer.Infrastructure;
-    using SqlServer.KboSyncQueue;
+    private readonly ILogger<KboMutationsPersister> _logger;
 
-    public class KboMutationsPersister : IKboMutationsPersister
+    public KboMutationsPersister(ILogger<KboMutationsPersister> logger)
     {
-        private readonly ILogger<KboMutationsPersister> _logger;
+        _logger = logger;
+    }
 
-        public KboMutationsPersister(ILogger<KboMutationsPersister> logger)
+    public void Persist(
+        OrganisationRegistryContext context,
+        string fullName,
+        IEnumerable<MutationsLine> mutations)
+    {
+        var mutationsLines = mutations.ToList();
+
+        _logger.LogInformation(
+            "Persisting {FileName} with {NumberOfMutationLines} mutation lines",
+            fullName,
+            mutationsLines.Count);
+
+        foreach (var mutation in mutationsLines)
         {
-            _logger = logger;
-        }
-
-        public void Persist(
-            OrganisationRegistryContext context,
-            string fullName,
-            IEnumerable<MutationsLine> mutations)
-        {
-            var mutationsLines = mutations.ToList();
-
-            _logger.LogInformation(
-                "Persisting {FileName} with {NumberOfMutationLines} mutation lines",
-                fullName,
-                mutationsLines.Count);
-
-            foreach (var mutation in mutationsLines)
+            context.KboSyncQueue.Add(new KboSyncQueueItem
             {
-                context.KboSyncQueue.Add(new KboSyncQueueItem
-                {
-                    Id = Guid.NewGuid(),
-                    SourceFileName = fullName,
-                    SourceOrganisationStatus = mutation.StatusCode,
-                    SourceOrganisationKboNumber = mutation.Ondernemingsnummer,
-                    SourceOrganisationName = mutation.MaatschappelijkeNaam,
-                    SourceOrganisationModifiedAt = mutation.DatumModificatie,
-                    MutationReadAt = DateTime.UtcNow,
-                });
-            }
-
-            context.SaveChanges();
+                Id = Guid.NewGuid(),
+                SourceFileName = fullName,
+                SourceOrganisationStatus = mutation.StatusCode,
+                SourceOrganisationKboNumber = mutation.Ondernemingsnummer,
+                SourceOrganisationName = mutation.MaatschappelijkeNaam,
+                SourceOrganisationModifiedAt = mutation.DatumModificatie,
+                MutationReadAt = DateTime.UtcNow,
+            });
         }
+
+        context.SaveChanges();
     }
 }

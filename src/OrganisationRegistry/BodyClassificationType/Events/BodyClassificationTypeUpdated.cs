@@ -1,25 +1,24 @@
-namespace OrganisationRegistry.BodyClassificationType.Events
+namespace OrganisationRegistry.BodyClassificationType.Events;
+
+using System;
+using Newtonsoft.Json;
+
+public class BodyClassificationTypeUpdated : BaseEvent<BodyClassificationTypeUpdated>
 {
-    using System;
-    using Newtonsoft.Json;
+    public Guid BodyClassificationTypeId => Id;
 
-    public class BodyClassificationTypeUpdated : BaseEvent<BodyClassificationTypeUpdated>
+    public string Name { get; }
+    public string PreviousName { get; }
+
+    [JsonConstructor]
+    public BodyClassificationTypeUpdated(
+        Guid bodyClassificationTypeId,
+        string name,
+        string previousName)
     {
-        public Guid BodyClassificationTypeId => Id;
+        Id = bodyClassificationTypeId;
 
-        public string Name { get; }
-        public string PreviousName { get; }
-
-        [JsonConstructor]
-        public BodyClassificationTypeUpdated(
-            Guid bodyClassificationTypeId,
-            string name,
-            string previousName)
-        {
-            Id = bodyClassificationTypeId;
-
-            Name = name;
-            PreviousName = previousName;
-        }
+        Name = name;
+        PreviousName = previousName;
     }
 }

@@ -1,20 +1,19 @@
-﻿namespace OrganisationRegistry.Body.Events
+﻿namespace OrganisationRegistry.Body.Events;
+
+using System;
+
+public class BodyNumberAssigned : BaseEvent<BodyNumberAssigned>
 {
-    using System;
+    public Guid BodyId => Id;
 
-    public class BodyNumberAssigned : BaseEvent<BodyNumberAssigned>
+    public string BodyNumber { get; }
+
+    public BodyNumberAssigned(
+        Guid bodyId,
+        string bodyNumber)
     {
-        public Guid BodyId => Id;
+        Id = bodyId;
 
-        public string BodyNumber { get; }
-
-        public BodyNumberAssigned(
-            Guid bodyId,
-            string bodyNumber)
-        {
-            Id = bodyId;
-
-            BodyNumber = bodyNumber;
-        }
+        BodyNumber = bodyNumber;
     }
 }

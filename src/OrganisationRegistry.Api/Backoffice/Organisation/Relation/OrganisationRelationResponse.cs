@@ -1,35 +1,34 @@
-namespace OrganisationRegistry.Api.Backoffice.Organisation.Relation
+namespace OrganisationRegistry.Api.Backoffice.Organisation.Relation;
+
+using System;
+using OrganisationRegistry.SqlServer.Organisation;
+
+public class OrganisationRelationResponse
 {
-    using System;
-    using OrganisationRegistry.SqlServer.Organisation;
+    public Guid OrganisationRelationId { get; set; }
+    public Guid OrganisationId { get; set; }
 
-    public class OrganisationRelationResponse
+    public Guid RelationId { get; set; }
+    public string RelationName { get; set; }
+
+    public Guid RelatedOrganisationId { get; set; }
+    public string RelatedOrganisationName { get; set; }
+
+    public DateTime? ValidFrom { get; set; }
+    public DateTime? ValidTo { get; set; }
+
+    public OrganisationRelationResponse(OrganisationRelationListItem organisationRelation)
     {
-        public Guid OrganisationRelationId { get; set; }
-        public Guid OrganisationId { get; set; }
+        OrganisationRelationId = organisationRelation.OrganisationRelationId;
+        OrganisationId = organisationRelation.OrganisationId;
 
-        public Guid RelationId { get; set; }
-        public string RelationName { get; set; }
+        RelationId = organisationRelation.RelationId;
+        RelationName = organisationRelation.RelationName;
 
-        public Guid RelatedOrganisationId { get; set; }
-        public string RelatedOrganisationName { get; set; }
+        RelatedOrganisationId = organisationRelation.RelatedOrganisationId;
+        RelatedOrganisationName = organisationRelation.RelatedOrganisationName;
 
-        public DateTime? ValidFrom { get; set; }
-        public DateTime? ValidTo { get; set; }
-
-        public OrganisationRelationResponse(OrganisationRelationListItem organisationRelation)
-        {
-            OrganisationRelationId = organisationRelation.OrganisationRelationId;
-            OrganisationId = organisationRelation.OrganisationId;
-
-            RelationId = organisationRelation.RelationId;
-            RelationName = organisationRelation.RelationName;
-
-            RelatedOrganisationId = organisationRelation.RelatedOrganisationId;
-            RelatedOrganisationName = organisationRelation.RelatedOrganisationName;
-
-            ValidFrom = organisationRelation.ValidFrom;
-            ValidTo = organisationRelation.ValidTo;
-        }
+        ValidFrom = organisationRelation.ValidFrom;
+        ValidTo = organisationRelation.ValidTo;
     }
 }

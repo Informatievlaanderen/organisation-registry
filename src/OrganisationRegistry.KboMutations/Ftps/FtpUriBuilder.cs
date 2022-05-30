@@ -1,51 +1,50 @@
-namespace OrganisationRegistry.KboMutations.Ftps
+namespace OrganisationRegistry.KboMutations.Ftps;
+
+using System;
+using System.Linq;
+
+public class FtpUriBuilder : UriBuilder
 {
-    using System;
-    using System.Linq;
+    private const string FtpScheme = "ftp";
 
-    public class FtpUriBuilder : UriBuilder
+    public string FileName => Uri.Segments.Last();
+
+    public FtpUriBuilder(string host, int port) 
+        : this(FtpScheme, host, port) { }
+
+    private FtpUriBuilder(string scheme, string host, int port) 
+        : base(scheme, host, port) { }
+
+    public FtpUriBuilder AppendDir(string sourcePath)
     {
-        private const string FtpScheme = "ftp";
-
-        public string FileName => Uri.Segments.Last();
-
-        public FtpUriBuilder(string host, int port) 
-            : this(FtpScheme, host, port) { }
-
-        private FtpUriBuilder(string scheme, string host, int port) 
-            : base(scheme, host, port) { }
-
-        public FtpUriBuilder AppendDir(string sourcePath)
+        return new FtpUriBuilder(
+            Scheme,
+            Host,
+            Port)
         {
-            return new FtpUriBuilder(
-                Scheme,
-                Host,
-                Port)
-            {
-                Path = $"{Path}{sourcePath.Trim('/')}/"
-            };
-        }
+            Path = $"{Path}{sourcePath.Trim('/')}/"
+        };
+    }
 
-        public FtpUriBuilder WithPath(string fullPath)
+    public FtpUriBuilder WithPath(string fullPath)
+    {
+        return new FtpUriBuilder(
+            Scheme,
+            Host,
+            Port)
         {
-            return new FtpUriBuilder(
-                Scheme,
-                Host,
-                Port)
-            {
-                Path = fullPath
-            };
-        }
+            Path = fullPath
+        };
+    }
 
-        public FtpUriBuilder AppendFileName(string fileName)
+    public FtpUriBuilder AppendFileName(string fileName)
+    {
+        return new FtpUriBuilder(
+            Scheme,
+            Host,
+            Port)
         {
-            return new FtpUriBuilder(
-                Scheme,
-                Host,
-                Port)
-            {
-                Path = $"{Path}{fileName}"
-            };
-        }
+            Path = $"{Path}{fileName}"
+        };
     }
 }

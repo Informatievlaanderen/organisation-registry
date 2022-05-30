@@ -1,31 +1,30 @@
-﻿namespace OrganisationRegistry.Body.Events
+﻿namespace OrganisationRegistry.Body.Events;
+
+using System;
+
+public class BodyFormalValidityChanged : BaseEvent<BodyFormalValidityChanged>
 {
-    using System;
+    public Guid BodyId => Id;
 
-    public class BodyFormalValidityChanged : BaseEvent<BodyFormalValidityChanged>
+    public DateTime? FormalValidFrom { get; }
+    public DateTime? FormalValidTo { get; }
+
+    public DateTime? PreviouslyFormallyValidFrom { get; }
+    public DateTime? PreviouslyFormallyValidTo { get; }
+
+    public BodyFormalValidityChanged(
+        Guid bodyId,
+        DateTime? formalValidFrom,
+        DateTime? formalValidTo,
+        DateTime? previouslyFormallyValidFrom,
+        DateTime? previouslyFormallyValidTo)
     {
-        public Guid BodyId => Id;
+        Id = bodyId;
 
-        public DateTime? FormalValidFrom { get; }
-        public DateTime? FormalValidTo { get; }
+        FormalValidFrom = formalValidFrom;
+        FormalValidTo = formalValidTo;
 
-        public DateTime? PreviouslyFormallyValidFrom { get; }
-        public DateTime? PreviouslyFormallyValidTo { get; }
-
-        public BodyFormalValidityChanged(
-            Guid bodyId,
-            DateTime? formalValidFrom,
-            DateTime? formalValidTo,
-            DateTime? previouslyFormallyValidFrom,
-            DateTime? previouslyFormallyValidTo)
-        {
-            Id = bodyId;
-
-            FormalValidFrom = formalValidFrom;
-            FormalValidTo = formalValidTo;
-
-            PreviouslyFormallyValidFrom = previouslyFormallyValidFrom;
-            PreviouslyFormallyValidTo = previouslyFormallyValidTo;
-        }
+        PreviouslyFormallyValidFrom = previouslyFormallyValidFrom;
+        PreviouslyFormallyValidTo = previouslyFormallyValidTo;
     }
 }

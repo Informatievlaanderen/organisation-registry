@@ -1,30 +1,29 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.LocationType
+﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.LocationType;
+
+using System;
+using System.Linq;
+using OrganisationRegistry.LocationType;
+using SqlServer.Infrastructure;
+
+public class UniqueNameValidator : IUniqueNameValidator<LocationType>
 {
-    using System;
-    using System.Linq;
-    using OrganisationRegistry.LocationType;
-    using SqlServer.Infrastructure;
+    private readonly OrganisationRegistryContext _context;
 
-    public class UniqueNameValidator : IUniqueNameValidator<LocationType>
+    public UniqueNameValidator(OrganisationRegistryContext context)
     {
-        private readonly OrganisationRegistryContext _context;
+        _context = context;
+    }
 
-        public UniqueNameValidator(OrganisationRegistryContext context)
-        {
-            _context = context;
-        }
+    public bool IsNameTaken(string name)
+    {
+        return _context.LocationTypeList.Any(item => item.Name == name);
+    }
 
-        public bool IsNameTaken(string name)
-        {
-            return _context.LocationTypeList.Any(item => item.Name == name);
-        }
-
-        public bool IsNameTaken(Guid id, string name)
-        {
-            return _context.LocationTypeList
-                .AsQueryable()
-                .Where(item => item.Id != id)
-                .Any(item => item.Name == name);
-        }
+    public bool IsNameTaken(Guid id, string name)
+    {
+        return _context.LocationTypeList
+            .AsQueryable()
+            .Where(item => item.Id != id)
+            .Any(item => item.Name == name);
     }
 }

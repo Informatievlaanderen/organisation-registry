@@ -2,39 +2,38 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class BodyValidityResponse
 {
-    public partial class BodyValidityResponse
+    /// <summary>
+    /// Initializes a new instance of the BodyValidityResponse class.
+    /// </summary>
+    public BodyValidityResponse() { }
+
+    /// <summary>
+    /// Initializes a new instance of the BodyValidityResponse class.
+    /// </summary>
+    public BodyValidityResponse(System.Guid? id = default(System.Guid?), System.DateTime? formalValidFrom = default(System.DateTime?), System.DateTime? formalValidTo = default(System.DateTime?))
     {
-        /// <summary>
-        /// Initializes a new instance of the BodyValidityResponse class.
-        /// </summary>
-        public BodyValidityResponse() { }
-
-        /// <summary>
-        /// Initializes a new instance of the BodyValidityResponse class.
-        /// </summary>
-        public BodyValidityResponse(System.Guid? id = default(System.Guid?), System.DateTime? formalValidFrom = default(System.DateTime?), System.DateTime? formalValidTo = default(System.DateTime?))
-        {
-            Id = id;
-            FormalValidFrom = formalValidFrom;
-            FormalValidTo = formalValidTo;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
-        public System.Guid? Id { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "formalValidFrom")]
-        public System.DateTime? FormalValidFrom { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "formalValidTo")]
-        public System.DateTime? FormalValidTo { get; private set; }
-
+        Id = id;
+        FormalValidFrom = formalValidFrom;
+        FormalValidTo = formalValidTo;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
+    public System.Guid? Id { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "formalValidFrom")]
+    public System.DateTime? FormalValidFrom { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "formalValidTo")]
+    public System.DateTime? FormalValidTo { get; private set; }
+
 }

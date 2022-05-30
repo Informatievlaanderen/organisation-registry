@@ -2,53 +2,52 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class UpdateOrganisationKeyRequest
 {
-    public partial class UpdateOrganisationKeyRequest
+    /// <summary>
+    /// Initializes a new instance of the UpdateOrganisationKeyRequest
+    /// class.
+    /// </summary>
+    public UpdateOrganisationKeyRequest() { }
+
+    /// <summary>
+    /// Initializes a new instance of the UpdateOrganisationKeyRequest
+    /// class.
+    /// </summary>
+    public UpdateOrganisationKeyRequest(System.Guid? organisationKeyId = default(System.Guid?), System.Guid? keyTypeId = default(System.Guid?), string keyValue = default(string), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
     {
-        /// <summary>
-        /// Initializes a new instance of the UpdateOrganisationKeyRequest
-        /// class.
-        /// </summary>
-        public UpdateOrganisationKeyRequest() { }
-
-        /// <summary>
-        /// Initializes a new instance of the UpdateOrganisationKeyRequest
-        /// class.
-        /// </summary>
-        public UpdateOrganisationKeyRequest(System.Guid? organisationKeyId = default(System.Guid?), System.Guid? keyTypeId = default(System.Guid?), string keyValue = default(string), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
-        {
-            OrganisationKeyId = organisationKeyId;
-            KeyTypeId = keyTypeId;
-            KeyValue = keyValue;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationKeyId")]
-        public System.Guid? OrganisationKeyId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "keyTypeId")]
-        public System.Guid? KeyTypeId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "keyValue")]
-        public string KeyValue { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
-        public System.DateTime? ValidFrom { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
-        public System.DateTime? ValidTo { get; set; }
-
+        OrganisationKeyId = organisationKeyId;
+        KeyTypeId = keyTypeId;
+        KeyValue = keyValue;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationKeyId")]
+    public System.Guid? OrganisationKeyId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "keyTypeId")]
+    public System.Guid? KeyTypeId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "keyValue")]
+    public string KeyValue { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
+    public System.DateTime? ValidFrom { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
+    public System.DateTime? ValidTo { get; set; }
+
 }

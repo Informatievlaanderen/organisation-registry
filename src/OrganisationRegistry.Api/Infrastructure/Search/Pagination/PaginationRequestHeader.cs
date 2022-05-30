@@ -1,15 +1,14 @@
-﻿namespace OrganisationRegistry.Api.Infrastructure.Search.Pagination
+﻿namespace OrganisationRegistry.Api.Infrastructure.Search.Pagination;
+
+public class PaginationRequestHeader
 {
-    public class PaginationRequestHeader
+    public int RequestedPage { get; }
+
+    public int ItemsPerPage { get; }
+
+    public PaginationRequestHeader(int requestedPage, int itemsPerPage)
     {
-        public int RequestedPage { get; }
-
-        public int ItemsPerPage { get; }
-
-        public PaginationRequestHeader(int requestedPage, int itemsPerPage)
-        {
-            RequestedPage = requestedPage;
-            ItemsPerPage = itemsPerPage;
-        }
+        RequestedPage = requestedPage;
+        ItemsPerPage = itemsPerPage;
     }
 }

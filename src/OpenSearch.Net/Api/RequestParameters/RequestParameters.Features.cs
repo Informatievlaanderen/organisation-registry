@@ -48,18 +48,17 @@ using System.Text;
 using System.Linq.Expressions;
 
 // ReSharper disable once CheckNamespace
-namespace OpenSearch.Net.Specification.FeaturesApi
+namespace OpenSearch.Net.Specification.FeaturesApi;
+
+///<summary>Request options for Get <para>h</para></summary>
+public class GetFeaturesRequestParameters : RequestParameters<GetFeaturesRequestParameters>
 {
-	///<summary>Request options for Get <para>h</para></summary>
-	public class GetFeaturesRequestParameters : RequestParameters<GetFeaturesRequestParameters>
-	{
-		public override HttpMethod DefaultHttpMethod => HttpMethod.GET;
-		public override bool SupportsBody => false;
-		///<summary>Explicit operation timeout for connection to master node</summary>
-		public TimeSpan MasterTimeout
-		{
-			get => Q<TimeSpan>("master_timeout");
-			set => Q("master_timeout", value);
-		}
-	}
+    public override HttpMethod DefaultHttpMethod => HttpMethod.GET;
+    public override bool SupportsBody => false;
+    ///<summary>Explicit operation timeout for connection to master node</summary>
+    public TimeSpan MasterTimeout
+    {
+        get => Q<TimeSpan>("master_timeout");
+        set => Q("master_timeout", value);
+    }
 }

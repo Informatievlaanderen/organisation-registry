@@ -2,45 +2,44 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class LifecyclePhaseTypeListItem
 {
-    public partial class LifecyclePhaseTypeListItem
+    /// <summary>
+    /// Initializes a new instance of the LifecyclePhaseTypeListItem class.
+    /// </summary>
+    public LifecyclePhaseTypeListItem() { }
+
+    /// <summary>
+    /// Initializes a new instance of the LifecyclePhaseTypeListItem class.
+    /// </summary>
+    public LifecyclePhaseTypeListItem(System.Guid? id = default(System.Guid?), string name = default(string), bool? representsActivePhase = default(bool?), bool? isDefaultPhase = default(bool?))
     {
-        /// <summary>
-        /// Initializes a new instance of the LifecyclePhaseTypeListItem class.
-        /// </summary>
-        public LifecyclePhaseTypeListItem() { }
-
-        /// <summary>
-        /// Initializes a new instance of the LifecyclePhaseTypeListItem class.
-        /// </summary>
-        public LifecyclePhaseTypeListItem(System.Guid? id = default(System.Guid?), string name = default(string), bool? representsActivePhase = default(bool?), bool? isDefaultPhase = default(bool?))
-        {
-            Id = id;
-            Name = name;
-            RepresentsActivePhase = representsActivePhase;
-            IsDefaultPhase = isDefaultPhase;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
-        public System.Guid? Id { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "representsActivePhase")]
-        public bool? RepresentsActivePhase { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "isDefaultPhase")]
-        public bool? IsDefaultPhase { get; set; }
-
+        Id = id;
+        Name = name;
+        RepresentsActivePhase = representsActivePhase;
+        IsDefaultPhase = isDefaultPhase;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
+    public System.Guid? Id { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "representsActivePhase")]
+    public bool? RepresentsActivePhase { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "isDefaultPhase")]
+    public bool? IsDefaultPhase { get; set; }
+
 }

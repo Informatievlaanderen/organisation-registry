@@ -2,63 +2,62 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class OrganisationLocation
 {
-    public partial class OrganisationLocation
+    /// <summary>
+    /// Initializes a new instance of the OrganisationLocation class.
+    /// </summary>
+    public OrganisationLocation() { }
+
+    /// <summary>
+    /// Initializes a new instance of the OrganisationLocation class.
+    /// </summary>
+    public OrganisationLocation(System.Guid? organisationLocationId = default(System.Guid?), System.Guid? locationId = default(System.Guid?), string formattedAddress = default(string), bool? isMainLocation = default(bool?), System.Guid? locationTypeId = default(System.Guid?), string locationTypeName = default(string), Period validity = default(Period))
     {
-        /// <summary>
-        /// Initializes a new instance of the OrganisationLocation class.
-        /// </summary>
-        public OrganisationLocation() { }
-
-        /// <summary>
-        /// Initializes a new instance of the OrganisationLocation class.
-        /// </summary>
-        public OrganisationLocation(System.Guid? organisationLocationId = default(System.Guid?), System.Guid? locationId = default(System.Guid?), string formattedAddress = default(string), bool? isMainLocation = default(bool?), System.Guid? locationTypeId = default(System.Guid?), string locationTypeName = default(string), Period validity = default(Period))
-        {
-            OrganisationLocationId = organisationLocationId;
-            LocationId = locationId;
-            FormattedAddress = formattedAddress;
-            IsMainLocation = isMainLocation;
-            LocationTypeId = locationTypeId;
-            LocationTypeName = locationTypeName;
-            Validity = validity;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationLocationId")]
-        public System.Guid? OrganisationLocationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "locationId")]
-        public System.Guid? LocationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "formattedAddress")]
-        public string FormattedAddress { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "isMainLocation")]
-        public bool? IsMainLocation { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "locationTypeId")]
-        public System.Guid? LocationTypeId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "locationTypeName")]
-        public string LocationTypeName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validity")]
-        public Period Validity { get; set; }
-
+        OrganisationLocationId = organisationLocationId;
+        LocationId = locationId;
+        FormattedAddress = formattedAddress;
+        IsMainLocation = isMainLocation;
+        LocationTypeId = locationTypeId;
+        LocationTypeName = locationTypeName;
+        Validity = validity;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationLocationId")]
+    public System.Guid? OrganisationLocationId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "locationId")]
+    public System.Guid? LocationId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "formattedAddress")]
+    public string FormattedAddress { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "isMainLocation")]
+    public bool? IsMainLocation { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "locationTypeId")]
+    public System.Guid? LocationTypeId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "locationTypeName")]
+    public string LocationTypeName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validity")]
+    public Period Validity { get; set; }
+
 }

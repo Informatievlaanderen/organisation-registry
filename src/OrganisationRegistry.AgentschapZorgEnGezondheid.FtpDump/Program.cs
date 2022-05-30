@@ -1,157 +1,156 @@
-namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
+namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump;
+
+using System;
+using System.IO;
+using System.Threading;
+using Amazon;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
+using Configuration;
+using Destructurama;
+using Infrastructure;
+using Infrastructure.Configuration;
+using Infrastructure.Infrastructure.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Serilog;
+using OrganisationRegistry.Configuration.Database;
+using OrganisationRegistry.Configuration.Database.Configuration;
+
+internal class Program
 {
-    using System;
-    using System.IO;
-    using System.Threading;
-    using Amazon;
-    using Autofac;
-    using Autofac.Extensions.DependencyInjection;
-    using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
-    using Configuration;
-    using Destructurama;
-    using Infrastructure;
-    using Infrastructure.Configuration;
-    using Infrastructure.Infrastructure.Json;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using Newtonsoft.Json;
-    using Serilog;
-    using OrganisationRegistry.Configuration.Database;
-    using OrganisationRegistry.Configuration.Database.Configuration;
-
-    internal class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        Console.WriteLine("Starting Agentschap Zorg en Gezondheid FTP Dump");
+
+        JsonConvert.DefaultSettings =
+            () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
+
+        var builder = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true)
+            .AddEnvironmentVariables();
+
+        var sqlConfiguration = builder.Build().GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>();
+        var configuration = builder
+            .AddEntityFramework(x => x.UseSqlServer(
+                sqlConfiguration.ConnectionString,
+                y => y.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)))
+            .Build();
+
+        RunProgram<Runner>(configuration);
+    }
+
+    private static void RunProgram<T>(IConfiguration configuration) where T : Runner
+    {
+        var services = new ServiceCollection();
+
+        services.AddLogging(loggingBuilder =>
         {
-            Console.WriteLine("Starting Agentschap Zorg en Gezondheid FTP Dump");
+            var loggerConfiguration = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .Enrich.FromLogContext()
+                .Enrich.WithMachineName()
+                .Enrich.WithThreadId()
+                .Enrich.WithEnvironmentUserName()
+                .Destructure.JsonNetTypes();
 
-            JsonConvert.DefaultSettings =
-                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
+            Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
 
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true)
-                .AddEnvironmentVariables();
+            Log.Logger = loggerConfiguration.CreateLogger();
 
-            var sqlConfiguration = builder.Build().GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>();
-            var configuration = builder
-                .AddEntityFramework(x => x.UseSqlServer(
-                    sqlConfiguration.ConnectionString,
-                    y => y.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)))
-                .Build();
+            loggingBuilder.AddSerilog();
+        });
 
-            RunProgram<Runner>(configuration);
+        var app = ConfigureServices(services, configuration);
+
+        var logger = app.GetService<ILogger<Program>>();
+
+        if (!app.GetService<IOptions<TogglesConfigurationSection>>().Value.ApplicationAvailable)
+        {
+            logger.LogInformation("Application offline, exiting program.");
+            return;
         }
 
-        private static void RunProgram<T>(IConfiguration configuration) where T : Runner
+        var options = app.GetService<IOptions<AgentschapZorgEnGezondheidFtpDumpConfiguration>>().Value;
+
+        var distributedLock = new DistributedLock<T>(
+            new DistributedLockOptions
+            {
+                Region = RegionEndpoint.GetBySystemName(options.LockRegionEndPoint),
+                AwsAccessKeyId = options.LockAccessKeyId,
+                AwsSecretAccessKey = options.LockAccessKeySecret,
+                TableName = options.LockTableName,
+                LeasePeriod = TimeSpan.FromMinutes(options.LockLeasePeriodInMinutes),
+                ThrowOnFailedRenew = true,
+                TerminateApplicationOnFailedRenew = true,
+                Enabled = options.LockEnabled
+            }, logger);
+
+        var acquiredLock = false;
+        try
         {
-            var services = new ServiceCollection();
+            logger.LogInformation("Trying to acquire lock.");
+            acquiredLock = distributedLock.AcquireLock();
 
-            services.AddLogging(loggingBuilder =>
+            if (!acquiredLock)
             {
-                var loggerConfiguration = new LoggerConfiguration()
-                    .ReadFrom.Configuration(configuration)
-                    .Enrich.FromLogContext()
-                    .Enrich.WithMachineName()
-                    .Enrich.WithThreadId()
-                    .Enrich.WithEnvironmentUserName()
-                    .Destructure.JsonNetTypes();
-
-                Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
-
-                Log.Logger = loggerConfiguration.CreateLogger();
-
-                loggingBuilder.AddSerilog();
-            });
-
-            var app = ConfigureServices(services, configuration);
-
-            var logger = app.GetService<ILogger<Program>>();
-
-            if (!app.GetService<IOptions<TogglesConfigurationSection>>().Value.ApplicationAvailable)
-            {
-                logger.LogInformation("Application offline, exiting program.");
+                logger.LogInformation("Could not get lock, another instance is busy");
                 return;
             }
 
-            var options = app.GetService<IOptions<AgentschapZorgEnGezondheidFtpDumpConfiguration>>().Value;
-
-            var distributedLock = new DistributedLock<T>(
-                new DistributedLockOptions
-                {
-                    Region = RegionEndpoint.GetBySystemName(options.LockRegionEndPoint),
-                    AwsAccessKeyId = options.LockAccessKeyId,
-                    AwsSecretAccessKey = options.LockAccessKeySecret,
-                    TableName = options.LockTableName,
-                    LeasePeriod = TimeSpan.FromMinutes(options.LockLeasePeriodInMinutes),
-                    ThrowOnFailedRenew = true,
-                    TerminateApplicationOnFailedRenew = true,
-                    Enabled = options.LockEnabled
-                }, logger);
-
-            var acquiredLock = false;
-            try
+            if (app.GetService<IOptions<TogglesConfigurationSection>>().Value.AgentschapZorgEnGezondheidFtpDumpAvailable)
             {
-                logger.LogInformation("Trying to acquire lock.");
-                acquiredLock = distributedLock.AcquireLock();
-
-                if (!acquiredLock)
-                {
-                    logger.LogInformation("Could not get lock, another instance is busy");
-                    return;
-                }
-
-                if (app.GetService<IOptions<TogglesConfigurationSection>>().Value.AgentschapZorgEnGezondheidFtpDumpAvailable)
-                {
-                    var runner = app.GetService<T>();
-                    ExecuteRunner(runner);
-                    logger.LogInformation("Processing completed successfully, exiting program.");
-                }
-                else
-                {
-                    logger.LogInformation("AgentschapZorgEnGezondheidFtpDump Toggle not enabled, exiting program.");
-                }
-
-                FlushLoggerAndTelemetry();
+                var runner = app.GetService<T>();
+                ExecuteRunner(runner);
+                logger.LogInformation("Processing completed successfully, exiting program.");
             }
-            catch (Exception e)
+            else
             {
-                logger.LogCritical(0, e, "Encountered a fatal exception, exiting program."); // dotnet core only supports global exceptionhandler starting from 1.2
-                FlushLoggerAndTelemetry();
-                throw;
+                logger.LogInformation("AgentschapZorgEnGezondheidFtpDump Toggle not enabled, exiting program.");
             }
-            finally
-            {
-                if (acquiredLock)
-                    distributedLock.ReleaseLock();
-            }
+
+            FlushLoggerAndTelemetry();
         }
-
-        private static void ExecuteRunner(Runner runner) => runner.Run();
-
-        private static void FlushLoggerAndTelemetry()
+        catch (Exception e)
         {
-            Log.CloseAndFlush();
-
-            // Allow some time for flushing before shutdown.
-            Thread.Sleep(1000);
+            logger.LogCritical(0, e, "Encountered a fatal exception, exiting program."); // dotnet core only supports global exceptionhandler starting from 1.2
+            FlushLoggerAndTelemetry();
+            throw;
         }
-
-        private static IServiceProvider ConfigureServices(
-            IServiceCollection services,
-            IConfiguration configuration)
+        finally
         {
-            services.AddOptions();
-
-            var serviceProvider = services.BuildServiceProvider();
-
-            var builder = new ContainerBuilder();
-            builder.RegisterModule(new AgentschapZorgEnGezondheidFtpDumpModule(configuration, services, serviceProvider.GetService<ILoggerFactory>()));
-            return new AutofacServiceProvider(builder.Build());
+            if (acquiredLock)
+                distributedLock.ReleaseLock();
         }
+    }
+
+    private static void ExecuteRunner(Runner runner) => runner.Run();
+
+    private static void FlushLoggerAndTelemetry()
+    {
+        Log.CloseAndFlush();
+
+        // Allow some time for flushing before shutdown.
+        Thread.Sleep(1000);
+    }
+
+    private static IServiceProvider ConfigureServices(
+        IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddOptions();
+
+        var serviceProvider = services.BuildServiceProvider();
+
+        var builder = new ContainerBuilder();
+        builder.RegisterModule(new AgentschapZorgEnGezondheidFtpDumpModule(configuration, services, serviceProvider.GetService<ILoggerFactory>()));
+        return new AutofacServiceProvider(builder.Build());
     }
 }

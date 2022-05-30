@@ -2,35 +2,34 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class PagedQueryableOrganisationClassificationListQueryResult
 {
-    public partial class PagedQueryableOrganisationClassificationListQueryResult
+    /// <summary>
+    /// Initializes a new instance of the
+    /// PagedQueryableOrganisationClassificationListQueryResult class.
+    /// </summary>
+    public PagedQueryableOrganisationClassificationListQueryResult() { }
+
+    /// <summary>
+    /// Initializes a new instance of the
+    /// PagedQueryableOrganisationClassificationListQueryResult class.
+    /// </summary>
+    public PagedQueryableOrganisationClassificationListQueryResult(System.Collections.Generic.IList<OrganisationClassificationListQueryResult> items = default(System.Collections.Generic.IList<OrganisationClassificationListQueryResult>), PaginationInfo paginationInfo = default(PaginationInfo))
     {
-        /// <summary>
-        /// Initializes a new instance of the
-        /// PagedQueryableOrganisationClassificationListQueryResult class.
-        /// </summary>
-        public PagedQueryableOrganisationClassificationListQueryResult() { }
-
-        /// <summary>
-        /// Initializes a new instance of the
-        /// PagedQueryableOrganisationClassificationListQueryResult class.
-        /// </summary>
-        public PagedQueryableOrganisationClassificationListQueryResult(System.Collections.Generic.IList<OrganisationClassificationListQueryResult> items = default(System.Collections.Generic.IList<OrganisationClassificationListQueryResult>), PaginationInfo paginationInfo = default(PaginationInfo))
-        {
-            Items = items;
-            PaginationInfo = paginationInfo;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "items")]
-        public System.Collections.Generic.IList<OrganisationClassificationListQueryResult> Items { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "paginationInfo")]
-        public PaginationInfo PaginationInfo { get; private set; }
-
+        Items = items;
+        PaginationInfo = paginationInfo;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "items")]
+    public System.Collections.Generic.IList<OrganisationClassificationListQueryResult> Items { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "paginationInfo")]
+    public PaginationInfo PaginationInfo { get; private set; }
+
 }

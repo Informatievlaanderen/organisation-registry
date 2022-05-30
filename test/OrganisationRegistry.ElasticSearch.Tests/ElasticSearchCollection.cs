@@ -1,10 +1,9 @@
-namespace OrganisationRegistry.ElasticSearch.Tests
+namespace OrganisationRegistry.ElasticSearch.Tests;
+
+using Xunit;
+
+[CollectionDefinition(nameof(ElasticSearchFixture))]
+public class ElasticSearchCollection : ICollectionFixture<ElasticSearchFixture>
 {
-    using Xunit;
 
-    [CollectionDefinition(nameof(ElasticSearchFixture))]
-    public class ElasticSearchCollection : ICollectionFixture<ElasticSearchFixture>
-    {
-
-    }
 }

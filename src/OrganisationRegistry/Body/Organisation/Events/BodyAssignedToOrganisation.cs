@@ -1,30 +1,29 @@
-namespace OrganisationRegistry.Body.Events
+namespace OrganisationRegistry.Body.Events;
+
+using System;
+
+public class BodyAssignedToOrganisation : BaseEvent<BodyAssignedToOrganisation>
 {
-    using System;
+    public Guid BodyId => Id;
+    public string BodyName { get; }
 
-    public class BodyAssignedToOrganisation : BaseEvent<BodyAssignedToOrganisation>
+    public Guid BodyOrganisationId { get; }
+
+    public Guid OrganisationId { get; }
+    public string OrganisationName { get; }
+
+    public BodyAssignedToOrganisation(
+        Guid bodyId,
+        string bodyName,
+        Guid organisationId,
+        string organisationName,
+        Guid bodyOrganisationId)
     {
-        public Guid BodyId => Id;
-        public string BodyName { get; }
+        Id = bodyId;
 
-        public Guid BodyOrganisationId { get; }
-
-        public Guid OrganisationId { get; }
-        public string OrganisationName { get; }
-
-        public BodyAssignedToOrganisation(
-            Guid bodyId,
-            string bodyName,
-            Guid organisationId,
-            string organisationName,
-            Guid bodyOrganisationId)
-        {
-            Id = bodyId;
-
-            BodyName = bodyName;
-            OrganisationId = organisationId;
-            OrganisationName = organisationName;
-            BodyOrganisationId = bodyOrganisationId;
-        }
+        BodyName = bodyName;
+        OrganisationId = organisationId;
+        OrganisationName = organisationName;
+        BodyOrganisationId = bodyOrganisationId;
     }
 }

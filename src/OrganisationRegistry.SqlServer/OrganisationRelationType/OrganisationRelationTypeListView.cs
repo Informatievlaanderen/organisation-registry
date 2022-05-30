@@ -1,105 +1,104 @@
-namespace OrganisationRegistry.SqlServer.OrganisationRelationType
+namespace OrganisationRegistry.SqlServer.OrganisationRelationType;
+
+using System;
+using System.Data.Common;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using Infrastructure;
+using Microsoft.Extensions.Logging;
+using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.OrganisationRelationType.Events;
+
+public class OrganisationRelationTypeListItem
 {
-    using System;
-    using System.Data.Common;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using Microsoft.EntityFrameworkCore;
-    using Infrastructure;
-    using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.OrganisationRelationType.Events;
+    public Guid Id { get; set; }
 
-    public class OrganisationRelationTypeListItem
+    public string Name { get; set; } = null!;
+
+    public string InverseName { get; set; } = null!;
+}
+
+public class OrganisationRelationTypeListConfiguration : EntityMappingConfiguration<OrganisationRelationTypeListItem>
+{
+    public const int NameLength = 500;
+
+    public override void Map(EntityTypeBuilder<OrganisationRelationTypeListItem> b)
     {
-        public Guid Id { get; set; }
+        b.ToTable(nameof(OrganisationRelationTypeListView.ProjectionTables.OrganisationRelationTypeList), WellknownSchemas.BackofficeSchema)
+            .HasKey(p => p.Id)
+            .IsClustered(false);
 
-        public string Name { get; set; } = null!;
+        b.Property(p => p.Name)
+            .HasMaxLength(NameLength)
+            .IsRequired();
 
-        public string InverseName { get; set; } = null!;
+        b.Property(p => p.InverseName)
+            .HasMaxLength(NameLength)
+            .IsRequired();
+
+        b.HasIndex(x => x.Name).IsUnique().IsClustered();
+    }
+}
+
+public class OrganisationRelationTypeListView :
+    Projection<OrganisationRelationTypeListView>,
+    IEventHandler<OrganisationRelationTypeCreated>,
+    IEventHandler<OrganisationRelationTypeUpdated>
+{
+    protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+    public override string Schema => WellknownSchemas.BackofficeSchema;
+
+    public enum ProjectionTables
+    {
+        OrganisationRelationTypeList
     }
 
-    public class OrganisationRelationTypeListConfiguration : EntityMappingConfiguration<OrganisationRelationTypeListItem>
+    private readonly IEventStore _eventStore;
+
+    public OrganisationRelationTypeListView(
+        ILogger<OrganisationRelationTypeListView> logger,
+        IEventStore eventStore,
+        IContextFactory contextFactory) : base(logger, contextFactory)
     {
-        public const int NameLength = 500;
+        _eventStore = eventStore;
+    }
 
-        public override void Map(EntityTypeBuilder<OrganisationRelationTypeListItem> b)
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationTypeCreated> message)
+    {
+        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
         {
-            b.ToTable(nameof(OrganisationRelationTypeListView.ProjectionTables.OrganisationRelationTypeList), WellknownSchemas.BackofficeSchema)
-                .HasKey(p => p.Id)
-                .IsClustered(false);
+            var organisationRelationType = new OrganisationRelationTypeListItem
+            {
+                Id = message.Body.OrganisationRelationTypeId,
+                Name = message.Body.Name,
+                InverseName = message.Body.InverseName
+            };
 
-            b.Property(p => p.Name)
-                .HasMaxLength(NameLength)
-                .IsRequired();
-
-            b.Property(p => p.InverseName)
-                .HasMaxLength(NameLength)
-                .IsRequired();
-
-            b.HasIndex(x => x.Name).IsUnique().IsClustered();
+            await context.OrganisationRelationTypeList.AddAsync(organisationRelationType);
+            await context.SaveChangesAsync();
         }
     }
 
-    public class OrganisationRelationTypeListView :
-        Projection<OrganisationRelationTypeListView>,
-        IEventHandler<OrganisationRelationTypeCreated>,
-        IEventHandler<OrganisationRelationTypeUpdated>
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationTypeUpdated> message)
     {
-        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-        public override string Schema => WellknownSchemas.BackofficeSchema;
-
-        public enum ProjectionTables
+        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
         {
-            OrganisationRelationTypeList
+            var organisationRelationType = context.OrganisationRelationTypeList.SingleOrDefault(x => x.Id == message.Body.OrganisationRelationTypeId);
+            if (organisationRelationType == null)
+                return; // TODO: Error?
+
+            organisationRelationType.Name = message.Body.Name;
+            organisationRelationType.InverseName = message.Body.InverseName;
+
+            await context.SaveChangesAsync();
         }
+    }
 
-        private readonly IEventStore _eventStore;
-
-        public OrganisationRelationTypeListView(
-            ILogger<OrganisationRelationTypeListView> logger,
-            IEventStore eventStore,
-            IContextFactory contextFactory) : base(logger, contextFactory)
-        {
-            _eventStore = eventStore;
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationTypeCreated> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationRelationType = new OrganisationRelationTypeListItem
-                {
-                    Id = message.Body.OrganisationRelationTypeId,
-                    Name = message.Body.Name,
-                    InverseName = message.Body.InverseName
-                };
-
-                await context.OrganisationRelationTypeList.AddAsync(organisationRelationType);
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationTypeUpdated> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var organisationRelationType = context.OrganisationRelationTypeList.SingleOrDefault(x => x.Id == message.Body.OrganisationRelationTypeId);
-                if (organisationRelationType == null)
-                    return; // TODO: Error?
-
-                organisationRelationType.Name = message.Body.Name;
-                organisationRelationType.InverseName = message.Body.InverseName;
-
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
-        {
-            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
-        }
+    public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+    {
+        await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
     }
 }

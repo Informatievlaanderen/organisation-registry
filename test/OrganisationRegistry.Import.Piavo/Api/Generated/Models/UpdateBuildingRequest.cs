@@ -2,33 +2,32 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class UpdateBuildingRequest
 {
-    public partial class UpdateBuildingRequest
+    /// <summary>
+    /// Initializes a new instance of the UpdateBuildingRequest class.
+    /// </summary>
+    public UpdateBuildingRequest() { }
+
+    /// <summary>
+    /// Initializes a new instance of the UpdateBuildingRequest class.
+    /// </summary>
+    public UpdateBuildingRequest(string name = default(string), int? vimId = default(int?))
     {
-        /// <summary>
-        /// Initializes a new instance of the UpdateBuildingRequest class.
-        /// </summary>
-        public UpdateBuildingRequest() { }
-
-        /// <summary>
-        /// Initializes a new instance of the UpdateBuildingRequest class.
-        /// </summary>
-        public UpdateBuildingRequest(string name = default(string), int? vimId = default(int?))
-        {
-            Name = name;
-            VimId = vimId;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "vimId")]
-        public int? VimId { get; set; }
-
+        Name = name;
+        VimId = vimId;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "vimId")]
+    public int? VimId { get; set; }
+
 }

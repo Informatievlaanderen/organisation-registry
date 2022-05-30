@@ -1,41 +1,40 @@
-namespace OrganisationRegistry.Api.Backoffice.Parameters.MandateRoleType.Requests
+namespace OrganisationRegistry.Api.Backoffice.Parameters.MandateRoleType.Requests;
+
+using System;
+using FluentValidation;
+using OrganisationRegistry.MandateRoleType;
+using OrganisationRegistry.MandateRoleType.Commands;
+using SqlServer.MandateRoleType;
+
+public class CreateMandateRoleTypeRequest
 {
-    using System;
-    using FluentValidation;
-    using OrganisationRegistry.MandateRoleType;
-    using OrganisationRegistry.MandateRoleType.Commands;
-    using SqlServer.MandateRoleType;
+    public Guid Id { get; set; }
 
-    public class CreateMandateRoleTypeRequest
+    public string Name { get; set; } = null!;
+}
+
+public class CreateMandateRoleTypeRequestValidator : AbstractValidator<CreateMandateRoleTypeRequest>
+{
+    public CreateMandateRoleTypeRequestValidator()
     {
-        public Guid Id { get; set; }
+        RuleFor(x => x.Id)
+            .NotEmpty()
+            .WithMessage("Id is required.");
 
-        public string Name { get; set; } = null!;
+        RuleFor(x => x.Name)
+            .NotEmpty()
+            .WithMessage("Name is required.");
+
+        RuleFor(x => x.Name)
+            .Length(0, MandateRoleTypeListConfiguration.NameLength)
+            .WithMessage($"Name cannot be longer than {MandateRoleTypeListConfiguration.NameLength}.");
     }
+}
 
-    public class CreateMandateRoleTypeRequestValidator : AbstractValidator<CreateMandateRoleTypeRequest>
-    {
-        public CreateMandateRoleTypeRequestValidator()
-        {
-            RuleFor(x => x.Id)
-                .NotEmpty()
-                .WithMessage("Id is required.");
-
-            RuleFor(x => x.Name)
-                .NotEmpty()
-                .WithMessage("Name is required.");
-
-            RuleFor(x => x.Name)
-                .Length(0, MandateRoleTypeListConfiguration.NameLength)
-                .WithMessage($"Name cannot be longer than {MandateRoleTypeListConfiguration.NameLength}.");
-        }
-    }
-
-    public static class CreateMandateRoleTypeRequestMapping
-    {
-        public static CreateMandateRoleType Map(CreateMandateRoleTypeRequest message)
-            => new(
-                new MandateRoleTypeId(message.Id),
-                new MandateRoleTypeName(message.Name));
-    }
+public static class CreateMandateRoleTypeRequestMapping
+{
+    public static CreateMandateRoleType Map(CreateMandateRoleTypeRequest message)
+        => new(
+            new MandateRoleTypeId(message.Id),
+            new MandateRoleTypeName(message.Name));
 }

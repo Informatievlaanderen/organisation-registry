@@ -1,10 +1,9 @@
-namespace OrganisationRegistry.Organisation
-{
-    using System;
+namespace OrganisationRegistry.Organisation;
 
-    public interface IOrganisationField
-    {
-        Guid Id { get; }
-        Period Validity { get; }
-    }
+using System;
+
+public interface IOrganisationField
+{
+    Guid Id { get; }
+    Period Validity { get; }
 }

@@ -29,23 +29,22 @@ using System.Runtime.Serialization;
 
 // ReSharper disable InconsistentNaming
 
-namespace OpenSearch.Net
+namespace OpenSearch.Net;
+
+public enum HttpMethod
 {
-	public enum HttpMethod
-	{
-		[EnumMember(Value = "GET")]
-		GET,
+    [EnumMember(Value = "GET")]
+    GET,
 
-		[EnumMember(Value = "POST")]
-		POST,
+    [EnumMember(Value = "POST")]
+    POST,
 
-		[EnumMember(Value = "PUT")]
-		PUT,
+    [EnumMember(Value = "PUT")]
+    PUT,
 
-		[EnumMember(Value = "DELETE")]
-		DELETE,
+    [EnumMember(Value = "DELETE")]
+    DELETE,
 
-		[EnumMember(Value = "HEAD")]
-		HEAD
-	}
+    [EnumMember(Value = "HEAD")]
+    HEAD
 }

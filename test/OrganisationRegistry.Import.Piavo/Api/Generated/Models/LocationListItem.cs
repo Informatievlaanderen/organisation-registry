@@ -2,66 +2,65 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+using System;
+using Newtonsoft.Json;
+
+public partial class LocationListItem
 {
-    using System;
-    using Newtonsoft.Json;
+    /// <summary>
+    /// Initializes a new instance of the LocationListItem class.
+    /// </summary>
+    public LocationListItem() { }
 
-    public partial class LocationListItem
+    /// <summary>
+    /// Initializes a new instance of the LocationListItem class.
+    /// </summary>
+    public LocationListItem(Guid? id = default(Guid?), string crabLocationId = default(string), string formattedAddress = default(string), string street = default(string), string zipCode = default(string), string city = default(string), string country = default(string))
     {
-        /// <summary>
-        /// Initializes a new instance of the LocationListItem class.
-        /// </summary>
-        public LocationListItem() { }
-
-        /// <summary>
-        /// Initializes a new instance of the LocationListItem class.
-        /// </summary>
-        public LocationListItem(Guid? id = default(Guid?), string crabLocationId = default(string), string formattedAddress = default(string), string street = default(string), string zipCode = default(string), string city = default(string), string country = default(string))
-        {
-            Id = id;
-            CrabLocationId = crabLocationId;
-            FormattedAddress = formattedAddress;
-            Street = street;
-            ZipCode = zipCode;
-            City = city;
-            Country = country;
-        }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "id")]
-        public Guid? Id { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "crabLocationId")]
-        public string CrabLocationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "formattedAddress")]
-        public string FormattedAddress { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "street")]
-        public string Street { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "zipCode")]
-        public string ZipCode { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "city")]
-        public string City { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "country")]
-        public string Country { get; set; }
-
+        Id = id;
+        CrabLocationId = crabLocationId;
+        FormattedAddress = formattedAddress;
+        Street = street;
+        ZipCode = zipCode;
+        City = city;
+        Country = country;
     }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "id")]
+    public Guid? Id { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "crabLocationId")]
+    public string CrabLocationId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "formattedAddress")]
+    public string FormattedAddress { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "street")]
+    public string Street { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "zipCode")]
+    public string ZipCode { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "city")]
+    public string City { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "country")]
+    public string Country { get; set; }
+
 }

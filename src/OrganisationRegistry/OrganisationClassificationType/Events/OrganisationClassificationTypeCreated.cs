@@ -1,29 +1,28 @@
-namespace OrganisationRegistry.OrganisationClassificationType.Events
+namespace OrganisationRegistry.OrganisationClassificationType.Events;
+
+using System;
+using Newtonsoft.Json;
+
+public class OrganisationClassificationTypeCreated : BaseEvent<OrganisationClassificationTypeCreated>
 {
-    using System;
-    using Newtonsoft.Json;
+    public Guid OrganisationClassificationTypeId => Id;
 
-    public class OrganisationClassificationTypeCreated : BaseEvent<OrganisationClassificationTypeCreated>
+    public string Name { get; }
+
+    public OrganisationClassificationTypeCreated(
+        OrganisationClassificationTypeId organisationClassificationTypeId,
+        OrganisationClassificationTypeName name)
     {
-        public Guid OrganisationClassificationTypeId => Id;
+        Id = organisationClassificationTypeId;
 
-        public string Name { get; }
-
-        public OrganisationClassificationTypeCreated(
-            OrganisationClassificationTypeId organisationClassificationTypeId,
-            OrganisationClassificationTypeName name)
-        {
-            Id = organisationClassificationTypeId;
-
-            Name = name;
-        }
-
-        [JsonConstructor]
-        public OrganisationClassificationTypeCreated(
-            Guid organisationClassificationTypeId,
-            string name)
-            : this(
-                new OrganisationClassificationTypeId(organisationClassificationTypeId),
-                new OrganisationClassificationTypeName(name)) { }
+        Name = name;
     }
+
+    [JsonConstructor]
+    public OrganisationClassificationTypeCreated(
+        Guid organisationClassificationTypeId,
+        string name)
+        : this(
+            new OrganisationClassificationTypeId(organisationClassificationTypeId),
+            new OrganisationClassificationTypeName(name)) { }
 }

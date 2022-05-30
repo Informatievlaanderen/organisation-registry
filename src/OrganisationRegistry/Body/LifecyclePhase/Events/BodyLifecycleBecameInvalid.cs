@@ -1,14 +1,13 @@
-﻿namespace OrganisationRegistry.Body.Events
+﻿namespace OrganisationRegistry.Body.Events;
+
+using System;
+
+public class BodyLifecycleBecameInvalid : BaseEvent<BodyLifecycleBecameInvalid>
 {
-    using System;
+    public Guid BodyId => Id;
 
-    public class BodyLifecycleBecameInvalid : BaseEvent<BodyLifecycleBecameInvalid>
+    public BodyLifecycleBecameInvalid(Guid bodyId)
     {
-        public Guid BodyId => Id;
-
-        public BodyLifecycleBecameInvalid(Guid bodyId)
-        {
-            Id = bodyId;
-        }
+        Id = bodyId;
     }
 }

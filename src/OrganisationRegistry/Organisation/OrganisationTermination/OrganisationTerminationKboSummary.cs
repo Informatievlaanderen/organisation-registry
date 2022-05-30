@@ -1,18 +1,17 @@
-namespace OrganisationRegistry.Organisation
+namespace OrganisationRegistry.Organisation;
+
+using System;
+using System.Collections.Generic;
+
+public class OrganisationTerminationKboSummary
 {
-    using System;
-    using System.Collections.Generic;
+    public Dictionary<Guid, DateTime> KboBankAccounts { get; init; }
+    public KeyValuePair<Guid, DateTime>? KboRegisteredOfficeLocation { get; init; }
+    public KeyValuePair<Guid, DateTime>? KboFormalNameLabel { get; init; }
+    public KeyValuePair<Guid, DateTime>? KboLegalForm { get; init; }
 
-    public class OrganisationTerminationKboSummary
+    public OrganisationTerminationKboSummary()
     {
-        public Dictionary<Guid, DateTime> KboBankAccounts { get; init; }
-        public KeyValuePair<Guid, DateTime>? KboRegisteredOfficeLocation { get; init; }
-        public KeyValuePair<Guid, DateTime>? KboFormalNameLabel { get; init; }
-        public KeyValuePair<Guid, DateTime>? KboLegalForm { get; init; }
-
-        public OrganisationTerminationKboSummary()
-        {
-            KboBankAccounts = new Dictionary<Guid, DateTime>();
-        }
+        KboBankAccounts = new Dictionary<Guid, DateTime>();
     }
 }

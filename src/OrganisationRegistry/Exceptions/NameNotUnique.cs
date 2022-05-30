@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Exceptions
+namespace OrganisationRegistry.Exceptions;
+
+public class NameNotUnique : DomainException
 {
-    public class NameNotUnique : DomainException
-    {
-        public NameNotUnique()
-            : base("Naam is niet uniek.") { }
-    }
+    public NameNotUnique()
+        : base("Naam is niet uniek.") { }
 }

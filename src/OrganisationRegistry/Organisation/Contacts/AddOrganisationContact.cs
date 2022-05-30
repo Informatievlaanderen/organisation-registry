@@ -1,33 +1,32 @@
-﻿namespace OrganisationRegistry.Organisation
+﻿namespace OrganisationRegistry.Organisation;
+
+using System;
+using ContactType;
+
+public class AddOrganisationContact : BaseCommand<OrganisationId>
 {
-    using System;
-    using ContactType;
+    public OrganisationId OrganisationId => Id;
 
-    public class AddOrganisationContact : BaseCommand<OrganisationId>
+    public Guid OrganisationContactId { get; }
+    public ContactTypeId ContactTypeId { get; }
+    public string ContactValue { get; }
+    public ValidFrom ValidFrom { get; }
+    public ValidTo ValidTo { get; }
+
+    public AddOrganisationContact(
+        Guid organisationContactId,
+        OrganisationId organisationId,
+        ContactTypeId contactTypeId,
+        string contactValue,
+        ValidFrom validFrom,
+        ValidTo validTo)
     {
-        public OrganisationId OrganisationId => Id;
+        Id = organisationId;
 
-        public Guid OrganisationContactId { get; }
-        public ContactTypeId ContactTypeId { get; }
-        public string ContactValue { get; }
-        public ValidFrom ValidFrom { get; }
-        public ValidTo ValidTo { get; }
-
-        public AddOrganisationContact(
-            Guid organisationContactId,
-            OrganisationId organisationId,
-            ContactTypeId contactTypeId,
-            string contactValue,
-            ValidFrom validFrom,
-            ValidTo validTo)
-        {
-            Id = organisationId;
-
-            OrganisationContactId = organisationContactId;
-            ContactTypeId = contactTypeId;
-            ContactValue = contactValue;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
+        OrganisationContactId = organisationContactId;
+        ContactTypeId = contactTypeId;
+        ContactValue = contactValue;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
 }

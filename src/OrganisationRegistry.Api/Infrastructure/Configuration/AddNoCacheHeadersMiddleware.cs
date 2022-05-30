@@ -1,25 +1,24 @@
-namespace OrganisationRegistry.Api.Infrastructure.Configuration
+namespace OrganisationRegistry.Api.Infrastructure.Configuration;
+
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
+
+/// <summary>
+/// Add headers to the response to prevent any caching.
+/// </summary>
+public class AddNoCacheHeadersMiddleware
 {
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.Net.Http.Headers;
+    private readonly RequestDelegate _next;
 
-    /// <summary>
-    /// Add headers to the response to prevent any caching.
-    /// </summary>
-    public class AddNoCacheHeadersMiddleware
+    public AddNoCacheHeadersMiddleware(RequestDelegate next) => _next = next;
+
+    public Task Invoke(HttpContext context)
     {
-        private readonly RequestDelegate _next;
+        context.Response.Headers.Add(HeaderNames.CacheControl, "no-store, no-cache, must-revalidate");
+        context.Response.Headers.Add(HeaderNames.Pragma, "no-cache");
+        context.Response.Headers.Add(HeaderNames.Expires, "0");
 
-        public AddNoCacheHeadersMiddleware(RequestDelegate next) => _next = next;
-
-        public Task Invoke(HttpContext context)
-        {
-            context.Response.Headers.Add(HeaderNames.CacheControl, "no-store, no-cache, must-revalidate");
-            context.Response.Headers.Add(HeaderNames.Pragma, "no-cache");
-            context.Response.Headers.Add(HeaderNames.Expires, "0");
-
-            return _next(context);
-        }
+        return _next(context);
     }
 }

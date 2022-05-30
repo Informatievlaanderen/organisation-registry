@@ -1,9 +1,8 @@
-namespace OrganisationRegistry.Handling.Authorization
-{
-    using Infrastructure.Authorization;
+namespace OrganisationRegistry.Handling.Authorization;
 
-    public interface ISecurityPolicy
-    {
-        public AuthorizationResult Check(IUser user);
-    }
+using Infrastructure.Authorization;
+
+public interface ISecurityPolicy
+{
+    public AuthorizationResult Check(IUser user);
 }

@@ -1,15 +1,14 @@
-namespace OrganisationRegistry.Organisation.Events
+namespace OrganisationRegistry.Organisation.Events;
+
+using System;
+
+public class OrganisationManuallySyncedWithKbo : BaseEvent<OrganisationManuallySyncedWithKbo>
 {
-    using System;
+    public Guid OrganisationId => Id;
 
-    public class OrganisationManuallySyncedWithKbo : BaseEvent<OrganisationManuallySyncedWithKbo>
+    public OrganisationManuallySyncedWithKbo(
+        Guid organisationId)
     {
-        public Guid OrganisationId => Id;
-
-        public OrganisationManuallySyncedWithKbo(
-            Guid organisationId)
-        {
-            Id = organisationId;
-        }
+        Id = organisationId;
     }
 }

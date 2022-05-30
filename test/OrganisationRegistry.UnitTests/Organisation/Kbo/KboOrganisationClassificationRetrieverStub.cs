@@ -1,25 +1,24 @@
-namespace OrganisationRegistry.UnitTests.Organisation.Kbo
+namespace OrganisationRegistry.UnitTests.Organisation.Kbo;
+
+using System;
+using OrganisationRegistry.Organisation;
+
+public class KboOrganisationClassificationRetrieverStub: IKboOrganisationClassificationRetriever
 {
-    using System;
-    using OrganisationRegistry.Organisation;
+    private readonly string _legalFormCodeToMatch;
+    private readonly Guid _organisationClassificationIdToReturn;
 
-    public class KboOrganisationClassificationRetrieverStub: IKboOrganisationClassificationRetriever
+    public KboOrganisationClassificationRetrieverStub(string legalFormCodeToMatch, Guid organisationClassificationIdToReturn)
     {
-        private readonly string _legalFormCodeToMatch;
-        private readonly Guid _organisationClassificationIdToReturn;
+        _legalFormCodeToMatch = legalFormCodeToMatch;
+        _organisationClassificationIdToReturn = organisationClassificationIdToReturn;
+    }
 
-        public KboOrganisationClassificationRetrieverStub(string legalFormCodeToMatch, Guid organisationClassificationIdToReturn)
-        {
-            _legalFormCodeToMatch = legalFormCodeToMatch;
-            _organisationClassificationIdToReturn = organisationClassificationIdToReturn;
-        }
+    public Guid? FetchOrganisationClassificationForLegalFormCode(string legalFormCode)
+    {
+        if (_legalFormCodeToMatch == legalFormCode)
+            return _organisationClassificationIdToReturn;
 
-        public Guid? FetchOrganisationClassificationForLegalFormCode(string legalFormCode)
-        {
-            if (_legalFormCodeToMatch == legalFormCode)
-                return _organisationClassificationIdToReturn;
-
-            return null;
-        }
+        return null;
     }
 }

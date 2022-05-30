@@ -1,4 +1,3 @@
-﻿namespace OrganisationRegistry.Projections.Reporting
-{
-    public class OrganisationRegistryReportingRunnerAssemblyTokenClass { }
-}
+﻿namespace OrganisationRegistry.Projections.Reporting;
+
+public class OrganisationRegistryReportingRunnerAssemblyTokenClass { }

@@ -1,8 +1,7 @@
-﻿namespace OrganisationRegistry.Person
+﻿namespace OrganisationRegistry.Person;
+
+public enum Sex
 {
-    public enum Sex
-    {
-        Male,
-        Female
-    }
+    Male,
+    Female
 }

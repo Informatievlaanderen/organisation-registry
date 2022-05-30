@@ -1,94 +1,93 @@
-﻿namespace OrganisationRegistry.UnitTests
+﻿namespace OrganisationRegistry.UnitTests;
+
+using System;
+using System.Linq;
+using FluentAssertions;
+using Tests.Shared.TestDataBuilders;
+using OrganisationRegistry.Organisation;
+using Xunit;
+
+public class OrganisationBuildingsTests
 {
-    using System;
-    using System.Linq;
-    using FluentAssertions;
-    using Tests.Shared.TestDataBuilders;
-    using OrganisationRegistry.Organisation;
-    using Xunit;
-
-    public class OrganisationBuildingsTests
+    [Fact]
+    public void NewOrganisationBuildingsIsEmpty()
     {
-        [Fact]
-        public void NewOrganisationBuildingsIsEmpty()
-        {
-            new OrganisationBuildings().Should().BeEmpty();
-        }
+        new OrganisationBuildings().Should().BeEmpty();
+    }
 
-        [Fact]
-        public void NewOrganisationBuildingsFromIEnumerableAddsAllOrganisationBuildings()
-        {
-            new OrganisationBuildings(
-                Enumerable.Repeat(new OrganisationBuildingBuilder().Build(), 10)
-            ).Count.Should().Be(10);
-        }
+    [Fact]
+    public void NewOrganisationBuildingsFromIEnumerableAddsAllOrganisationBuildings()
+    {
+        new OrganisationBuildings(
+            Enumerable.Repeat(new OrganisationBuildingBuilder().Build(), 10)
+        ).Count.Should().Be(10);
+    }
 
-        [Fact]
-        public void NewOrganisationBuildingsFromParamsAddsAllOrganisationBuildings()
-        {
-            new OrganisationBuildings(
-                new OrganisationBuildingBuilder(),
-                new OrganisationBuildingBuilder()
-            ).Count.Should().Be(2);
-        }
+    [Fact]
+    public void NewOrganisationBuildingsFromParamsAddsAllOrganisationBuildings()
+    {
+        new OrganisationBuildings(
+            new OrganisationBuildingBuilder(),
+            new OrganisationBuildingBuilder()
+        ).Count.Should().Be(2);
+    }
 
-        [Fact]
-        public void OrganisationAlreadyHasAMainBuildingInTheSamePeriod_WhenItHas()
-        {
-            var organisationBuilding =
-                new OrganisationBuildingBuilder()
+    [Fact]
+    public void OrganisationAlreadyHasAMainBuildingInTheSamePeriod_WhenItHas()
+    {
+        var organisationBuilding =
+            new OrganisationBuildingBuilder()
                 .WithValidity(new Period(new ValidFrom(DateTime.Today), new ValidTo(DateTime.Today)))
                 .WithMainBuilding(true).Build();
 
-            var organisationBuildings = new OrganisationBuildings(organisationBuilding);
+        var organisationBuildings = new OrganisationBuildings(organisationBuilding);
 
-            var anotherOrganisationBuilding =
-                new OrganisationBuildingBuilder()
-                    .WithOrganisationId(organisationBuilding.OrganisationId)
-                    .WithBuildingId(organisationBuilding.BuildingId)
-                    .WithValidity(new Period(new ValidFrom(DateTime.Today), new ValidTo(DateTime.Today)))
-                    .WithMainBuilding(true);
+        var anotherOrganisationBuilding =
+            new OrganisationBuildingBuilder()
+                .WithOrganisationId(organisationBuilding.OrganisationId)
+                .WithBuildingId(organisationBuilding.BuildingId)
+                .WithValidity(new Period(new ValidFrom(DateTime.Today), new ValidTo(DateTime.Today)))
+                .WithMainBuilding(true);
 
-            organisationBuildings
-                .OrganisationAlreadyHasAMainBuildingInTheSamePeriod(anotherOrganisationBuilding)
-                .Should().BeTrue();
-        }
+        organisationBuildings
+            .OrganisationAlreadyHasAMainBuildingInTheSamePeriod(anotherOrganisationBuilding)
+            .Should().BeTrue();
+    }
 
-        [Fact]
-        public void OrganisationDoesNotHaveAMainBuildingInTheSamePeriod_WhenItHasnt()
-        {
-            var organisationBuilding =
-                new OrganisationBuildingBuilder()
+    [Fact]
+    public void OrganisationDoesNotHaveAMainBuildingInTheSamePeriod_WhenItHasnt()
+    {
+        var organisationBuilding =
+            new OrganisationBuildingBuilder()
                 .WithValidity(new Period(new ValidFrom(DateTime.Today), new ValidTo(DateTime.Today)))
                 .WithMainBuilding(true).Build();
 
-            var organisationBuildings = new OrganisationBuildings(organisationBuilding);
+        var organisationBuildings = new OrganisationBuildings(organisationBuilding);
 
-            var anotherOrganisationBuilding =
-                new OrganisationBuildingBuilder()
-                    .WithOrganisationId(organisationBuilding.OrganisationId)
-                    .WithBuildingId(organisationBuilding.BuildingId)
-                    .WithValidity(new Period(new ValidFrom(DateTime.Today.AddDays(1)), new ValidTo(DateTime.Today.AddDays(1))))
-                    .WithMainBuilding(true);
+        var anotherOrganisationBuilding =
+            new OrganisationBuildingBuilder()
+                .WithOrganisationId(organisationBuilding.OrganisationId)
+                .WithBuildingId(organisationBuilding.BuildingId)
+                .WithValidity(new Period(new ValidFrom(DateTime.Today.AddDays(1)), new ValidTo(DateTime.Today.AddDays(1))))
+                .WithMainBuilding(true);
 
-            organisationBuildings
-                .OrganisationAlreadyHasAMainBuildingInTheSamePeriod(anotherOrganisationBuilding)
-                .Should().BeFalse();
-        }
+        organisationBuildings
+            .OrganisationAlreadyHasAMainBuildingInTheSamePeriod(anotherOrganisationBuilding)
+            .Should().BeFalse();
+    }
 
-        [Fact]
-        public void OrganisationAlreadyHasAMainBuildingInTheSamePeriod_DisregardsTheSameOrganisationBuilding()
-        {
-            var organisationBuilding =
-                new OrganisationBuildingBuilder()
+    [Fact]
+    public void OrganisationAlreadyHasAMainBuildingInTheSamePeriod_DisregardsTheSameOrganisationBuilding()
+    {
+        var organisationBuilding =
+            new OrganisationBuildingBuilder()
                 .WithValidity(new Period(new ValidFrom(DateTime.Today), new ValidTo(DateTime.Today)))
                 .WithMainBuilding(true).Build();
 
-            var organisationBuildings = new OrganisationBuildings(organisationBuilding);
+        var organisationBuildings = new OrganisationBuildings(organisationBuilding);
 
-            organisationBuildings
-                .OrganisationAlreadyHasAMainBuildingInTheSamePeriod(organisationBuilding)
-                .Should().BeFalse();
-        }
+        organisationBuildings
+            .OrganisationAlreadyHasAMainBuildingInTheSamePeriod(organisationBuilding)
+            .Should().BeFalse();
     }
 }

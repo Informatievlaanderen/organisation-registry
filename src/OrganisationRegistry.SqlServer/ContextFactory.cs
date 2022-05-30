@@ -1,33 +1,32 @@
-namespace OrganisationRegistry.SqlServer
-{
-    using System;
-    using System.Data.Common;
-    using Autofac.Features.OwnedInstances;
-    using Infrastructure;
+namespace OrganisationRegistry.SqlServer;
 
-    public interface IContextFactory
+using System;
+using System.Data.Common;
+using Autofac.Features.OwnedInstances;
+using Infrastructure;
+
+public interface IContextFactory
+{
+    OrganisationRegistryContext CreateTransactional(DbConnection connection, DbTransaction transaction);
+    OrganisationRegistryContext Create();
+}
+
+public class ContextFactory : IContextFactory
+{
+    private readonly Func<Owned<OrganisationRegistryContext>> _contextFunc;
+
+    public ContextFactory(Func<Owned<OrganisationRegistryContext>> contextFunc)
     {
-        OrganisationRegistryContext CreateTransactional(DbConnection connection, DbTransaction transaction);
-        OrganisationRegistryContext Create();
+        _contextFunc = contextFunc;
     }
 
-    public class ContextFactory : IContextFactory
+    public OrganisationRegistryContext CreateTransactional(DbConnection connection, DbTransaction transaction)
     {
-        private readonly Func<Owned<OrganisationRegistryContext>> _contextFunc;
+        return new OrganisationRegistryTransactionalContext(connection, transaction);
+    }
 
-        public ContextFactory(Func<Owned<OrganisationRegistryContext>> contextFunc)
-        {
-            _contextFunc = contextFunc;
-        }
-
-        public OrganisationRegistryContext CreateTransactional(DbConnection connection, DbTransaction transaction)
-        {
-            return new OrganisationRegistryTransactionalContext(connection, transaction);
-        }
-
-        public OrganisationRegistryContext Create()
-        {
-            return _contextFunc().Value;
-        }
+    public OrganisationRegistryContext Create()
+    {
+        return _contextFunc().Value;
     }
 }

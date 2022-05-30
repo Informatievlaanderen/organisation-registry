@@ -1,19 +1,18 @@
-namespace OrganisationRegistry.VlaanderenBeNotifier.SendGrid
+namespace OrganisationRegistry.VlaanderenBeNotifier.SendGrid;
+
+public class SendGridEmail
 {
-    public class SendGridEmail
+    public string Email { get; set; }
+    public string? Name { get; set; }
+
+    public SendGridEmail()
     {
-        public string Email { get; set; }
-        public string? Name { get; set; }
+        Email = string.Empty;
+    }
 
-        public SendGridEmail()
-        {
-            Email = string.Empty;
-        }
-
-        public SendGridEmail(string email, string? name = null)
-        {
-            Email = email;
-            Name = name;
-        }
+    public SendGridEmail(string email, string? name = null)
+    {
+        Email = email;
+        Name = name;
     }
 }

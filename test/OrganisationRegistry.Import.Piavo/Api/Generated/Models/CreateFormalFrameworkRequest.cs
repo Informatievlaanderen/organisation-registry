@@ -2,47 +2,46 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class CreateFormalFrameworkRequest
 {
-    public partial class CreateFormalFrameworkRequest
+    /// <summary>
+    /// Initializes a new instance of the CreateFormalFrameworkRequest
+    /// class.
+    /// </summary>
+    public CreateFormalFrameworkRequest() { }
+
+    /// <summary>
+    /// Initializes a new instance of the CreateFormalFrameworkRequest
+    /// class.
+    /// </summary>
+    public CreateFormalFrameworkRequest(System.Guid? id = default(System.Guid?), string name = default(string), string code = default(string), System.Guid? formalFrameworkCategoryId = default(System.Guid?))
     {
-        /// <summary>
-        /// Initializes a new instance of the CreateFormalFrameworkRequest
-        /// class.
-        /// </summary>
-        public CreateFormalFrameworkRequest() { }
-
-        /// <summary>
-        /// Initializes a new instance of the CreateFormalFrameworkRequest
-        /// class.
-        /// </summary>
-        public CreateFormalFrameworkRequest(System.Guid? id = default(System.Guid?), string name = default(string), string code = default(string), System.Guid? formalFrameworkCategoryId = default(System.Guid?))
-        {
-            Id = id;
-            Name = name;
-            Code = code;
-            FormalFrameworkCategoryId = formalFrameworkCategoryId;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
-        public System.Guid? Id { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "code")]
-        public string Code { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "formalFrameworkCategoryId")]
-        public System.Guid? FormalFrameworkCategoryId { get; set; }
-
+        Id = id;
+        Name = name;
+        Code = code;
+        FormalFrameworkCategoryId = formalFrameworkCategoryId;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
+    public System.Guid? Id { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "code")]
+    public string Code { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "formalFrameworkCategoryId")]
+    public System.Guid? FormalFrameworkCategoryId { get; set; }
+
 }

@@ -1,12 +1,11 @@
-﻿namespace OrganisationRegistry.Infrastructure.Messages
-{
-    using System;
+﻿namespace OrganisationRegistry.Infrastructure.Messages;
 
-    public interface IMessage
-    {
-        /// <summary>
-        /// The ID of the Aggregate being affected by this event
-        /// </summary>
-        Guid Id { get; set; }
-    }
+using System;
+
+public interface IMessage
+{
+    /// <summary>
+    /// The ID of the Aggregate being affected by this event
+    /// </summary>
+    Guid Id { get; set; }
 }

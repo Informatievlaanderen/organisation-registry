@@ -1,22 +1,21 @@
-namespace OrganisationRegistry.FormalFrameworkCategory.Events
+namespace OrganisationRegistry.FormalFrameworkCategory.Events;
+
+using System;
+
+public class FormalFrameworkCategoryUpdated : BaseEvent<FormalFrameworkCategoryUpdated>
 {
-    using System;
+    public Guid FormalFrameworkCategoryId => Id;
 
-    public class FormalFrameworkCategoryUpdated : BaseEvent<FormalFrameworkCategoryUpdated>
+    public string Name { get; }
+    public string PreviousName { get; }
+
+    public FormalFrameworkCategoryUpdated(
+        Guid formalFrameworkCategoryId,
+        string name,
+        string previousName)
     {
-        public Guid FormalFrameworkCategoryId => Id;
-
-        public string Name { get; }
-        public string PreviousName { get; }
-
-        public FormalFrameworkCategoryUpdated(
-            Guid formalFrameworkCategoryId,
-            string name,
-            string previousName)
-        {
-            Id = formalFrameworkCategoryId;
-            Name = name;
-            PreviousName = previousName;
-        }
+        Id = formalFrameworkCategoryId;
+        Name = name;
+        PreviousName = previousName;
     }
 }

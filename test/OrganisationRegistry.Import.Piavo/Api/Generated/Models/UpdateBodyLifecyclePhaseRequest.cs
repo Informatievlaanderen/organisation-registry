@@ -2,47 +2,46 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class UpdateBodyLifecyclePhaseRequest
 {
-    public partial class UpdateBodyLifecyclePhaseRequest
+    /// <summary>
+    /// Initializes a new instance of the UpdateBodyLifecyclePhaseRequest
+    /// class.
+    /// </summary>
+    public UpdateBodyLifecyclePhaseRequest() { }
+
+    /// <summary>
+    /// Initializes a new instance of the UpdateBodyLifecyclePhaseRequest
+    /// class.
+    /// </summary>
+    public UpdateBodyLifecyclePhaseRequest(System.Guid? bodyLifecyclePhaseId = default(System.Guid?), System.Guid? lifecyclePhaseTypeId = default(System.Guid?), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
     {
-        /// <summary>
-        /// Initializes a new instance of the UpdateBodyLifecyclePhaseRequest
-        /// class.
-        /// </summary>
-        public UpdateBodyLifecyclePhaseRequest() { }
-
-        /// <summary>
-        /// Initializes a new instance of the UpdateBodyLifecyclePhaseRequest
-        /// class.
-        /// </summary>
-        public UpdateBodyLifecyclePhaseRequest(System.Guid? bodyLifecyclePhaseId = default(System.Guid?), System.Guid? lifecyclePhaseTypeId = default(System.Guid?), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
-        {
-            BodyLifecyclePhaseId = bodyLifecyclePhaseId;
-            LifecyclePhaseTypeId = lifecyclePhaseTypeId;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "bodyLifecyclePhaseId")]
-        public System.Guid? BodyLifecyclePhaseId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "lifecyclePhaseTypeId")]
-        public System.Guid? LifecyclePhaseTypeId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
-        public System.DateTime? ValidFrom { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
-        public System.DateTime? ValidTo { get; set; }
-
+        BodyLifecyclePhaseId = bodyLifecyclePhaseId;
+        LifecyclePhaseTypeId = lifecyclePhaseTypeId;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "bodyLifecyclePhaseId")]
+    public System.Guid? BodyLifecyclePhaseId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "lifecyclePhaseTypeId")]
+    public System.Guid? LifecyclePhaseTypeId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
+    public System.DateTime? ValidFrom { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
+    public System.DateTime? ValidTo { get; set; }
+
 }

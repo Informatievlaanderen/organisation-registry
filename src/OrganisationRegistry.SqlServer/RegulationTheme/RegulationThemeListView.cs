@@ -1,92 +1,91 @@
-﻿namespace OrganisationRegistry.SqlServer.RegulationTheme
+﻿namespace OrganisationRegistry.SqlServer.RegulationTheme;
+
+using System;
+using System.Data.Common;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using Infrastructure;
+using Microsoft.Extensions.Logging;
+using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.RegulationTheme.Events;
+
+public class RegulationThemeListItem
 {
-    using System;
-    using System.Data.Common;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using Microsoft.EntityFrameworkCore;
-    using Infrastructure;
-    using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.RegulationTheme.Events;
+    public Guid Id { get; set; }
 
-    public class RegulationThemeListItem
+    public string Name { get; set; } = null!;
+}
+
+public class RegulationThemeListConfiguration : EntityMappingConfiguration<RegulationThemeListItem>
+{
+    public const int NameLength = 500;
+
+    public override void Map(EntityTypeBuilder<RegulationThemeListItem> b)
     {
-        public Guid Id { get; set; }
+        b.ToTable(nameof(RegulationThemeListView.ProjectionTables.RegulationThemeList), WellknownSchemas.BackofficeSchema)
+            .HasKey(p => p.Id)
+            .IsClustered(false);
 
-        public string Name { get; set; } = null!;
+        b.Property(p => p.Name)
+            .HasMaxLength(NameLength)
+            .IsRequired();
+
+        b.HasIndex(x => x.Name).IsUnique().IsClustered();
+    }
+}
+
+public class RegulationThemeListView :
+    Projection<RegulationThemeListView>,
+    IEventHandler<RegulationThemeCreated>,
+    IEventHandler<RegulationThemeUpdated>
+{
+    protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+    public override string Schema => WellknownSchemas.BackofficeSchema;
+
+    public enum ProjectionTables
+    {
+        RegulationThemeList
     }
 
-    public class RegulationThemeListConfiguration : EntityMappingConfiguration<RegulationThemeListItem>
+    private readonly IEventStore _eventStore;
+
+    public RegulationThemeListView(
+        ILogger<RegulationThemeListView> logger,
+        IEventStore eventStore,
+        IContextFactory contextFactory) : base(logger, contextFactory)
     {
-        public const int NameLength = 500;
-
-        public override void Map(EntityTypeBuilder<RegulationThemeListItem> b)
-        {
-            b.ToTable(nameof(RegulationThemeListView.ProjectionTables.RegulationThemeList), WellknownSchemas.BackofficeSchema)
-                .HasKey(p => p.Id)
-                .IsClustered(false);
-
-            b.Property(p => p.Name)
-                .HasMaxLength(NameLength)
-                .IsRequired();
-
-            b.HasIndex(x => x.Name).IsUnique().IsClustered();
-        }
+        _eventStore = eventStore;
     }
 
-    public class RegulationThemeListView :
-        Projection<RegulationThemeListView>,
-        IEventHandler<RegulationThemeCreated>,
-        IEventHandler<RegulationThemeUpdated>
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RegulationThemeCreated> message)
     {
-        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-        public override string Schema => WellknownSchemas.BackofficeSchema;
-
-        public enum ProjectionTables
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var regulationTheme = new RegulationThemeListItem
         {
-            RegulationThemeList
-        }
+            Id = message.Body.RegulationThemeId,
+            Name = message.Body.Name,
+        };
 
-        private readonly IEventStore _eventStore;
+        await context.RegulationThemeList.AddAsync(regulationTheme);
+        await context.SaveChangesAsync();
+    }
 
-        public RegulationThemeListView(
-            ILogger<RegulationThemeListView> logger,
-            IEventStore eventStore,
-            IContextFactory contextFactory) : base(logger, contextFactory)
-        {
-            _eventStore = eventStore;
-        }
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RegulationThemeUpdated> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var regulationTheme = context.RegulationThemeList.SingleOrDefault(x => x.Id == message.Body.RegulationThemeId);
+        if (regulationTheme == null)
+            return; // TODO: Error?
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RegulationThemeCreated> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var regulationTheme = new RegulationThemeListItem
-            {
-                Id = message.Body.RegulationThemeId,
-                Name = message.Body.Name,
-            };
+        regulationTheme.Name = message.Body.Name;
+        await context.SaveChangesAsync();
+    }
 
-            await context.RegulationThemeList.AddAsync(regulationTheme);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RegulationThemeUpdated> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var regulationTheme = context.RegulationThemeList.SingleOrDefault(x => x.Id == message.Body.RegulationThemeId);
-            if (regulationTheme == null)
-                return; // TODO: Error?
-
-            regulationTheme.Name = message.Body.Name;
-            await context.SaveChangesAsync();
-        }
-
-        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
-        {
-            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
-        }
+    public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+    {
+        await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
     }
 }

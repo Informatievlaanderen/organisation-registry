@@ -2,59 +2,58 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class OrganisationFormalFramework
 {
-    public partial class OrganisationFormalFramework
+    /// <summary>
+    /// Initializes a new instance of the OrganisationFormalFramework
+    /// class.
+    /// </summary>
+    public OrganisationFormalFramework() { }
+
+    /// <summary>
+    /// Initializes a new instance of the OrganisationFormalFramework
+    /// class.
+    /// </summary>
+    public OrganisationFormalFramework(System.Guid? organisationFormalFrameworkId = default(System.Guid?), System.Guid? formalFrameworkId = default(System.Guid?), string formalFrameworkName = default(string), System.Guid? parentOrganisationId = default(System.Guid?), string parentOrganisationName = default(string), Period validity = default(Period))
     {
-        /// <summary>
-        /// Initializes a new instance of the OrganisationFormalFramework
-        /// class.
-        /// </summary>
-        public OrganisationFormalFramework() { }
-
-        /// <summary>
-        /// Initializes a new instance of the OrganisationFormalFramework
-        /// class.
-        /// </summary>
-        public OrganisationFormalFramework(System.Guid? organisationFormalFrameworkId = default(System.Guid?), System.Guid? formalFrameworkId = default(System.Guid?), string formalFrameworkName = default(string), System.Guid? parentOrganisationId = default(System.Guid?), string parentOrganisationName = default(string), Period validity = default(Period))
-        {
-            OrganisationFormalFrameworkId = organisationFormalFrameworkId;
-            FormalFrameworkId = formalFrameworkId;
-            FormalFrameworkName = formalFrameworkName;
-            ParentOrganisationId = parentOrganisationId;
-            ParentOrganisationName = parentOrganisationName;
-            Validity = validity;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationFormalFrameworkId")]
-        public System.Guid? OrganisationFormalFrameworkId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "formalFrameworkId")]
-        public System.Guid? FormalFrameworkId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "formalFrameworkName")]
-        public string FormalFrameworkName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "parentOrganisationId")]
-        public System.Guid? ParentOrganisationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "parentOrganisationName")]
-        public string ParentOrganisationName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validity")]
-        public Period Validity { get; set; }
-
+        OrganisationFormalFrameworkId = organisationFormalFrameworkId;
+        FormalFrameworkId = formalFrameworkId;
+        FormalFrameworkName = formalFrameworkName;
+        ParentOrganisationId = parentOrganisationId;
+        ParentOrganisationName = parentOrganisationName;
+        Validity = validity;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationFormalFrameworkId")]
+    public System.Guid? OrganisationFormalFrameworkId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "formalFrameworkId")]
+    public System.Guid? FormalFrameworkId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "formalFrameworkName")]
+    public string FormalFrameworkName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "parentOrganisationId")]
+    public System.Guid? ParentOrganisationId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "parentOrganisationName")]
+    public string ParentOrganisationName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validity")]
+    public Period Validity { get; set; }
+
 }

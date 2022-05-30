@@ -2,39 +2,38 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class ConfigurationValue
 {
-    public partial class ConfigurationValue
+    /// <summary>
+    /// Initializes a new instance of the ConfigurationValue class.
+    /// </summary>
+    public ConfigurationValue() { }
+
+    /// <summary>
+    /// Initializes a new instance of the ConfigurationValue class.
+    /// </summary>
+    public ConfigurationValue(string key = default(string), string description = default(string), string value = default(string))
     {
-        /// <summary>
-        /// Initializes a new instance of the ConfigurationValue class.
-        /// </summary>
-        public ConfigurationValue() { }
-
-        /// <summary>
-        /// Initializes a new instance of the ConfigurationValue class.
-        /// </summary>
-        public ConfigurationValue(string key = default(string), string description = default(string), string value = default(string))
-        {
-            Key = key;
-            Description = description;
-            Value = value;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "key")]
-        public string Key { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "description")]
-        public string Description { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "value")]
-        public string Value { get; set; }
-
+        Key = key;
+        Description = description;
+        Value = value;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "key")]
+    public string Key { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "description")]
+    public string Description { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "value")]
+    public string Value { get; set; }
+
 }

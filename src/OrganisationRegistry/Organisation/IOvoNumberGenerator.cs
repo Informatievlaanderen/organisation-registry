@@ -1,7 +1,6 @@
-﻿namespace OrganisationRegistry.Organisation
+﻿namespace OrganisationRegistry.Organisation;
+
+public interface IOvoNumberGenerator
 {
-    public interface IOvoNumberGenerator
-    {
-        string GenerateNumber();
-    }
+    string GenerateNumber();
 }

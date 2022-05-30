@@ -1,21 +1,20 @@
-namespace OrganisationRegistry.MagdaReRegistration.Configuration
+namespace OrganisationRegistry.MagdaReRegistration.Configuration;
+
+using System;
+using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
+using Newtonsoft.Json;
+
+public class MagdaReRegistrationConfiguration
 {
-    using System;
-    using Be.Vlaanderen.Basisregisters.Converters.Timestamp;
-    using Newtonsoft.Json;
+    public static string Section = "MagdaReRegistration";
 
-    public class MagdaReRegistrationConfiguration
+    [JsonConverter(typeof(TimestampConverter))]
+    public DateTime Created => DateTime.Now;
+
+    public string OrganisationRegistryApiUri { get; set; }
+
+    public MagdaReRegistrationConfiguration Obfuscate()
     {
-        public static string Section = "MagdaReRegistration";
-
-        [JsonConverter(typeof(TimestampConverter))]
-        public DateTime Created => DateTime.Now;
-
-        public string OrganisationRegistryApiUri { get; set; }
-
-        public MagdaReRegistrationConfiguration Obfuscate()
-        {
-            return new MagdaReRegistrationConfiguration();
-        }
+        return new MagdaReRegistrationConfiguration();
     }
 }

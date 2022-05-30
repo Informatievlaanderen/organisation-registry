@@ -1,40 +1,39 @@
-namespace OrganisationRegistry.Body.Events
+namespace OrganisationRegistry.Body.Events;
+
+using System;
+using Newtonsoft.Json;
+
+public class BodyBalancedParticipationChanged : BaseEvent<BodyBalancedParticipationChanged>
 {
-    using System;
-    using Newtonsoft.Json;
+    public Guid BodyId => Id;
 
-    public class BodyBalancedParticipationChanged : BaseEvent<BodyBalancedParticipationChanged>
+    public bool? BalancedParticipationObligatory { get; }
+    public bool? PreviousBalancedParticipationObligatory { get; }
+
+    public string? BalancedParticipationExtraRemark { get; }
+    public string? PreviousBalancedParticipationExtraRemark { get; }
+
+    public string? BalancedParticipationExceptionMeasure { get; }
+    public string? PreviousBalancedParticipationExceptionMeasure { get; }
+
+    [JsonConstructor]
+    public BodyBalancedParticipationChanged(
+        Guid bodyId,
+        bool? balancedParticipationObligatory,
+        string? balancedParticipationExtraRemark,
+        string? balancedParticipationExceptionMeasure,
+        bool? previousBalancedParticipationObligatory,
+        string? previousBalancedParticipationExtraRemark,
+        string? previousBalancedParticipationExceptionMeasure)
     {
-        public Guid BodyId => Id;
+        Id = bodyId;
 
-        public bool? BalancedParticipationObligatory { get; }
-        public bool? PreviousBalancedParticipationObligatory { get; }
+        BalancedParticipationObligatory = balancedParticipationObligatory;
+        BalancedParticipationExtraRemark = balancedParticipationExtraRemark;
+        BalancedParticipationExceptionMeasure = balancedParticipationExceptionMeasure;
 
-        public string? BalancedParticipationExtraRemark { get; }
-        public string? PreviousBalancedParticipationExtraRemark { get; }
-
-        public string? BalancedParticipationExceptionMeasure { get; }
-        public string? PreviousBalancedParticipationExceptionMeasure { get; }
-
-        [JsonConstructor]
-        public BodyBalancedParticipationChanged(
-            Guid bodyId,
-            bool? balancedParticipationObligatory,
-            string? balancedParticipationExtraRemark,
-            string? balancedParticipationExceptionMeasure,
-            bool? previousBalancedParticipationObligatory,
-            string? previousBalancedParticipationExtraRemark,
-            string? previousBalancedParticipationExceptionMeasure)
-        {
-            Id = bodyId;
-
-            BalancedParticipationObligatory = balancedParticipationObligatory;
-            BalancedParticipationExtraRemark = balancedParticipationExtraRemark;
-            BalancedParticipationExceptionMeasure = balancedParticipationExceptionMeasure;
-
-            PreviousBalancedParticipationObligatory = previousBalancedParticipationObligatory;
-            PreviousBalancedParticipationExtraRemark = previousBalancedParticipationExtraRemark;
-            PreviousBalancedParticipationExceptionMeasure = previousBalancedParticipationExceptionMeasure;
-        }
+        PreviousBalancedParticipationObligatory = previousBalancedParticipationObligatory;
+        PreviousBalancedParticipationExtraRemark = previousBalancedParticipationExtraRemark;
+        PreviousBalancedParticipationExceptionMeasure = previousBalancedParticipationExceptionMeasure;
     }
 }

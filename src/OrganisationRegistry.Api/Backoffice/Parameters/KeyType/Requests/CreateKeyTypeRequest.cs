@@ -1,41 +1,40 @@
-namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Requests
+namespace OrganisationRegistry.Api.Backoffice.Parameters.KeyType.Requests;
+
+using System;
+using FluentValidation;
+using KeyTypes;
+using KeyTypes.Commands;
+using SqlServer.KeyType;
+
+public class CreateKeyTypeRequest
 {
-    using System;
-    using FluentValidation;
-    using KeyTypes;
-    using KeyTypes.Commands;
-    using SqlServer.KeyType;
+    public Guid Id { get; set; }
 
-    public class CreateKeyTypeRequest
+    public string Name { get; set; } = null!;
+}
+
+public class CreateKeyTypeRequestValidator : AbstractValidator<CreateKeyTypeRequest>
+{
+    public CreateKeyTypeRequestValidator()
     {
-        public Guid Id { get; set; }
+        RuleFor(x => x.Id)
+            .NotEmpty()
+            .WithMessage("Id is required.");
 
-        public string Name { get; set; } = null!;
+        RuleFor(x => x.Name)
+            .NotEmpty()
+            .WithMessage("Name is required.");
+
+        RuleFor(x => x.Name)
+            .Length(0, KeyTypeListConfiguration.NameLength)
+            .WithMessage($"Name cannot be longer than {KeyTypeListConfiguration.NameLength}.");
     }
+}
 
-    public class CreateKeyTypeRequestValidator : AbstractValidator<CreateKeyTypeRequest>
-    {
-        public CreateKeyTypeRequestValidator()
-        {
-            RuleFor(x => x.Id)
-                .NotEmpty()
-                .WithMessage("Id is required.");
-
-            RuleFor(x => x.Name)
-                .NotEmpty()
-                .WithMessage("Name is required.");
-
-            RuleFor(x => x.Name)
-                .Length(0, KeyTypeListConfiguration.NameLength)
-                .WithMessage($"Name cannot be longer than {KeyTypeListConfiguration.NameLength}.");
-        }
-    }
-
-    public static class CreateKeyTypeRequestMapping
-    {
-        public static CreateKeyType Map(CreateKeyTypeRequest message)
-            => new(
-                new KeyTypeId(message.Id),
-                new KeyTypeName(message.Name));
-    }
+public static class CreateKeyTypeRequestMapping
+{
+    public static CreateKeyType Map(CreateKeyTypeRequest message)
+        => new(
+            new KeyTypeId(message.Id),
+            new KeyTypeName(message.Name));
 }

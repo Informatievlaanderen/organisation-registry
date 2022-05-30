@@ -1,22 +1,21 @@
-namespace OrganisationRegistry.Capacity.Events
+namespace OrganisationRegistry.Capacity.Events;
+
+using System;
+
+public class CapacityUpdated : BaseEvent<CapacityUpdated>
 {
-    using System;
+    public Guid CapacityId => Id;
 
-    public class CapacityUpdated : BaseEvent<CapacityUpdated>
+    public string Name { get; }
+    public string PreviousName { get; }
+
+    public CapacityUpdated(
+        Guid capacityId,
+        string name,
+        string previousName)
     {
-        public Guid CapacityId => Id;
-
-        public string Name { get; }
-        public string PreviousName { get; }
-
-        public CapacityUpdated(
-            Guid capacityId,
-            string name,
-            string previousName)
-        {
-            Id = capacityId;
-            Name = name;
-            PreviousName = previousName;
-        }
+        Id = capacityId;
+        Name = name;
+        PreviousName = previousName;
     }
 }

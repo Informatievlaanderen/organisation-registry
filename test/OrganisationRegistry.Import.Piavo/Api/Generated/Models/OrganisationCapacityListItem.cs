@@ -2,92 +2,91 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+using System;
+using Newtonsoft.Json;
+
+public partial class OrganisationCapacityListItem
 {
-    using System;
-    using Newtonsoft.Json;
+    /// <summary>
+    /// Initializes a new instance of the OrganisationCapacityListItem
+    /// class.
+    /// </summary>
+    public OrganisationCapacityListItem() { }
 
-    public partial class OrganisationCapacityListItem
+    /// <summary>
+    /// Initializes a new instance of the OrganisationCapacityListItem
+    /// class.
+    /// </summary>
+    public OrganisationCapacityListItem(Guid? organisationCapacityId = default(Guid?), Guid? organisationId = default(Guid?), Guid? capacityId = default(Guid?), string capacityName = default(string), Guid? personId = default(Guid?), string personName = default(string), Guid? functionId = default(Guid?), string functionName = default(string), string contactsJson = default(string), DateTime? validFrom = default(DateTime?), DateTime? validTo = default(DateTime?))
     {
-        /// <summary>
-        /// Initializes a new instance of the OrganisationCapacityListItem
-        /// class.
-        /// </summary>
-        public OrganisationCapacityListItem() { }
-
-        /// <summary>
-        /// Initializes a new instance of the OrganisationCapacityListItem
-        /// class.
-        /// </summary>
-        public OrganisationCapacityListItem(Guid? organisationCapacityId = default(Guid?), Guid? organisationId = default(Guid?), Guid? capacityId = default(Guid?), string capacityName = default(string), Guid? personId = default(Guid?), string personName = default(string), Guid? functionId = default(Guid?), string functionName = default(string), string contactsJson = default(string), DateTime? validFrom = default(DateTime?), DateTime? validTo = default(DateTime?))
-        {
-            OrganisationCapacityId = organisationCapacityId;
-            OrganisationId = organisationId;
-            CapacityId = capacityId;
-            CapacityName = capacityName;
-            PersonId = personId;
-            PersonName = personName;
-            FunctionId = functionId;
-            FunctionName = functionName;
-            ContactsJson = contactsJson;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "organisationCapacityId")]
-        public Guid? OrganisationCapacityId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "organisationId")]
-        public Guid? OrganisationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "capacityId")]
-        public Guid? CapacityId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "capacityName")]
-        public string CapacityName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "personId")]
-        public Guid? PersonId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "personName")]
-        public string PersonName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "functionId")]
-        public Guid? FunctionId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "functionName")]
-        public string FunctionName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "contactsJson")]
-        public string ContactsJson { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "validFrom")]
-        public DateTime? ValidFrom { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [JsonProperty(PropertyName = "validTo")]
-        public DateTime? ValidTo { get; set; }
-
+        OrganisationCapacityId = organisationCapacityId;
+        OrganisationId = organisationId;
+        CapacityId = capacityId;
+        CapacityName = capacityName;
+        PersonId = personId;
+        PersonName = personName;
+        FunctionId = functionId;
+        FunctionName = functionName;
+        ContactsJson = contactsJson;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "organisationCapacityId")]
+    public Guid? OrganisationCapacityId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "organisationId")]
+    public Guid? OrganisationId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "capacityId")]
+    public Guid? CapacityId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "capacityName")]
+    public string CapacityName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "personId")]
+    public Guid? PersonId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "personName")]
+    public string PersonName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "functionId")]
+    public Guid? FunctionId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "functionName")]
+    public string FunctionName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "contactsJson")]
+    public string ContactsJson { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "validFrom")]
+    public DateTime? ValidFrom { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [JsonProperty(PropertyName = "validTo")]
+    public DateTime? ValidTo { get; set; }
+
 }

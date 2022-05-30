@@ -1,19 +1,18 @@
-namespace OrganisationRegistry.Organisation.Events
+namespace OrganisationRegistry.Organisation.Events;
+
+using System;
+
+public class OrganisationNameUpdated : BaseEvent<OrganisationNameUpdated>
 {
-    using System;
+    public Guid OrganisationId => Id;
 
-    public class OrganisationNameUpdated : BaseEvent<OrganisationNameUpdated>
-    {
-        public Guid OrganisationId => Id;
+    public string Name { get; }
 
-        public string Name { get; }
+    public OrganisationNameUpdated(
+        Guid organisationId,
+        string name){
+        Id = organisationId;
 
-        public OrganisationNameUpdated(
-            Guid organisationId,
-            string name){
-            Id = organisationId;
-
-            Name = name;
-        }
+        Name = name;
     }
 }

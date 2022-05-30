@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Organisation.Exceptions
+namespace OrganisationRegistry.Organisation.Exceptions;
+
+public class StartDateCannotBeAfterEndDate : DomainException
 {
-    public class StartDateCannotBeAfterEndDate : DomainException
-    {
-        public StartDateCannotBeAfterEndDate()
-            : base("De startdatum mag niet na de einddatum vallen.") { }
-    }
+    public StartDateCannotBeAfterEndDate()
+        : base("De startdatum mag niet na de einddatum vallen.") { }
 }

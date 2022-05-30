@@ -1,20 +1,19 @@
-namespace OrganisationRegistry.VlaanderenBeNotifier.SendGrid
+namespace OrganisationRegistry.VlaanderenBeNotifier.SendGrid;
+
+public class SendGridContent
 {
-    public class SendGridContent
+    public string Type { get; set; }
+    public string Value { get; set; }
+
+    public SendGridContent()
     {
-        public string Type { get; set; }
-        public string Value { get; set; }
+        Type = string.Empty;
+        Value = string.Empty;
+    }
 
-        public SendGridContent()
-        {
-            Type = string.Empty;
-            Value = string.Empty;
-        }
-
-        public SendGridContent(string type, string content)
-        {
-            Type = type;
-            Value = content;
-        }
+    public SendGridContent(string type, string content)
+    {
+        Type = type;
+        Value = content;
     }
 }

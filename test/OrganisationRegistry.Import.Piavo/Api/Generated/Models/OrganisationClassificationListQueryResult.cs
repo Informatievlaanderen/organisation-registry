@@ -2,53 +2,52 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class OrganisationClassificationListQueryResult
 {
-    public partial class OrganisationClassificationListQueryResult
+    /// <summary>
+    /// Initializes a new instance of the
+    /// OrganisationClassificationListQueryResult class.
+    /// </summary>
+    public OrganisationClassificationListQueryResult() { }
+
+    /// <summary>
+    /// Initializes a new instance of the
+    /// OrganisationClassificationListQueryResult class.
+    /// </summary>
+    public OrganisationClassificationListQueryResult(System.Guid? id = default(System.Guid?), bool? active = default(bool?), string name = default(string), int? order = default(int?), string organisationClassificationTypeName = default(string))
     {
-        /// <summary>
-        /// Initializes a new instance of the
-        /// OrganisationClassificationListQueryResult class.
-        /// </summary>
-        public OrganisationClassificationListQueryResult() { }
-
-        /// <summary>
-        /// Initializes a new instance of the
-        /// OrganisationClassificationListQueryResult class.
-        /// </summary>
-        public OrganisationClassificationListQueryResult(System.Guid? id = default(System.Guid?), bool? active = default(bool?), string name = default(string), int? order = default(int?), string organisationClassificationTypeName = default(string))
-        {
-            Id = id;
-            Active = active;
-            Name = name;
-            Order = order;
-            OrganisationClassificationTypeName = organisationClassificationTypeName;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
-        public System.Guid? Id { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "active")]
-        public bool? Active { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
-        public string Name { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "order")]
-        public int? Order { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationClassificationTypeName")]
-        public string OrganisationClassificationTypeName { get; private set; }
-
+        Id = id;
+        Active = active;
+        Name = name;
+        Order = order;
+        OrganisationClassificationTypeName = organisationClassificationTypeName;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
+    public System.Guid? Id { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "active")]
+    public bool? Active { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
+    public string Name { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "order")]
+    public int? Order { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationClassificationTypeName")]
+    public string OrganisationClassificationTypeName { get; private set; }
+
 }

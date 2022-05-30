@@ -1,34 +1,33 @@
-﻿namespace OrganisationRegistry.SqlServer.ProjectionState
+﻿namespace OrganisationRegistry.SqlServer.ProjectionState;
+
+using System;
+using Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using OrganisationRegistry.Infrastructure;
+
+public class ProjectionStateItem
 {
-    using System;
-    using Infrastructure;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using OrganisationRegistry.Infrastructure;
+    public Guid Id { get; set; }
+    public string Name { get; set; } = null!;
+    public int EventNumber { get; set; }
+    public DateTimeOffset? LastUpdatedUtc { get; set; }
+}
 
-    public class ProjectionStateItem
+public class ProjectionStateListConfiguration : EntityMappingConfiguration<ProjectionStateItem>
+{
+    public const int NameLength = 500;
+
+    public override void Map(EntityTypeBuilder<ProjectionStateItem> b)
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; } = null!;
-        public int EventNumber { get; set; }
-        public DateTimeOffset? LastUpdatedUtc { get; set; }
-    }
+        b.ToTable("ProjectionStateList", WellknownSchemas.BackofficeSchema)
+            .HasKey(p => p.Id)
+            .IsClustered(false);
 
-    public class ProjectionStateListConfiguration : EntityMappingConfiguration<ProjectionStateItem>
-    {
-        public const int NameLength = 500;
+        b.Property(p => p.Name).IsRequired();
+        b.Property(p => p.EventNumber).IsRequired();
+        b.Property(p => p.LastUpdatedUtc);
 
-        public override void Map(EntityTypeBuilder<ProjectionStateItem> b)
-        {
-            b.ToTable("ProjectionStateList", WellknownSchemas.BackofficeSchema)
-                .HasKey(p => p.Id)
-                .IsClustered(false);
-
-            b.Property(p => p.Name).IsRequired();
-            b.Property(p => p.EventNumber).IsRequired();
-            b.Property(p => p.LastUpdatedUtc);
-
-            b.HasIndex(x => x.Name).IsUnique().IsClustered();
-        }
+        b.HasIndex(x => x.Name).IsUnique().IsClustered();
     }
 }

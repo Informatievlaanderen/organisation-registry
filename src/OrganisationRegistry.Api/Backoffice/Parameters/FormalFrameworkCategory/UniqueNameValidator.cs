@@ -1,30 +1,29 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFrameworkCategory
+﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.FormalFrameworkCategory;
+
+using System;
+using System.Linq;
+using OrganisationRegistry.FormalFrameworkCategory;
+using SqlServer.Infrastructure;
+
+public class UniqueNameValidator : IUniqueNameValidator<FormalFrameworkCategory>
 {
-    using System;
-    using System.Linq;
-    using OrganisationRegistry.FormalFrameworkCategory;
-    using SqlServer.Infrastructure;
+    private readonly OrganisationRegistryContext _context;
 
-    public class UniqueNameValidator : IUniqueNameValidator<FormalFrameworkCategory>
+    public UniqueNameValidator(OrganisationRegistryContext context)
     {
-        private readonly OrganisationRegistryContext _context;
+        _context = context;
+    }
 
-        public UniqueNameValidator(OrganisationRegistryContext context)
-        {
-            _context = context;
-        }
+    public bool IsNameTaken(string name)
+    {
+        return _context.FormalFrameworkCategoryList.Any(item => item.Name == name);
+    }
 
-        public bool IsNameTaken(string name)
-        {
-            return _context.FormalFrameworkCategoryList.Any(item => item.Name == name);
-        }
-
-        public bool IsNameTaken(Guid id, string name)
-        {
-            return _context.FormalFrameworkCategoryList
-                .AsQueryable()
-                .Where(item => item.Id != id)
-                .Any(item => item.Name == name);
-        }
+    public bool IsNameTaken(Guid id, string name)
+    {
+        return _context.FormalFrameworkCategoryList
+            .AsQueryable()
+            .Where(item => item.Id != id)
+            .Any(item => item.Name == name);
     }
 }

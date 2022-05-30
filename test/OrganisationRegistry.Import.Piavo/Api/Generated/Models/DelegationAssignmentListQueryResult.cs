@@ -2,53 +2,52 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class DelegationAssignmentListQueryResult
 {
-    public partial class DelegationAssignmentListQueryResult
+    /// <summary>
+    /// Initializes a new instance of the
+    /// DelegationAssignmentListQueryResult class.
+    /// </summary>
+    public DelegationAssignmentListQueryResult() { }
+
+    /// <summary>
+    /// Initializes a new instance of the
+    /// DelegationAssignmentListQueryResult class.
+    /// </summary>
+    public DelegationAssignmentListQueryResult(System.Guid? id = default(System.Guid?), System.Guid? personId = default(System.Guid?), string personName = default(string), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
     {
-        /// <summary>
-        /// Initializes a new instance of the
-        /// DelegationAssignmentListQueryResult class.
-        /// </summary>
-        public DelegationAssignmentListQueryResult() { }
-
-        /// <summary>
-        /// Initializes a new instance of the
-        /// DelegationAssignmentListQueryResult class.
-        /// </summary>
-        public DelegationAssignmentListQueryResult(System.Guid? id = default(System.Guid?), System.Guid? personId = default(System.Guid?), string personName = default(string), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
-        {
-            Id = id;
-            PersonId = personId;
-            PersonName = personName;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
-        public System.Guid? Id { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "personId")]
-        public System.Guid? PersonId { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "personName")]
-        public string PersonName { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
-        public System.DateTime? ValidFrom { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
-        public System.DateTime? ValidTo { get; private set; }
-
+        Id = id;
+        PersonId = personId;
+        PersonName = personName;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
+    public System.Guid? Id { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "personId")]
+    public System.Guid? PersonId { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "personName")]
+    public string PersonName { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
+    public System.DateTime? ValidFrom { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
+    public System.DateTime? ValidTo { get; private set; }
+
 }

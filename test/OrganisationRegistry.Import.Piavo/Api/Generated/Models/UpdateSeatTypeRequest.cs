@@ -2,33 +2,32 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class UpdateSeatTypeRequest
 {
-    public partial class UpdateSeatTypeRequest
+    /// <summary>
+    /// Initializes a new instance of the UpdateSeatTypeRequest class.
+    /// </summary>
+    public UpdateSeatTypeRequest() { }
+
+    /// <summary>
+    /// Initializes a new instance of the UpdateSeatTypeRequest class.
+    /// </summary>
+    public UpdateSeatTypeRequest(string name = default(string), int? order = default(int?))
     {
-        /// <summary>
-        /// Initializes a new instance of the UpdateSeatTypeRequest class.
-        /// </summary>
-        public UpdateSeatTypeRequest() { }
-
-        /// <summary>
-        /// Initializes a new instance of the UpdateSeatTypeRequest class.
-        /// </summary>
-        public UpdateSeatTypeRequest(string name = default(string), int? order = default(int?))
-        {
-            Name = name;
-            Order = order;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "order")]
-        public int? Order { get; set; }
-
+        Name = name;
+        Order = order;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "order")]
+    public int? Order { get; set; }
+
 }

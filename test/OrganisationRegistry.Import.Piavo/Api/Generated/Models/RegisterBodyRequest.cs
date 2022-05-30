@@ -2,81 +2,80 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class RegisterBodyRequest
 {
-    public partial class RegisterBodyRequest
+    /// <summary>
+    /// Initializes a new instance of the RegisterBodyRequest class.
+    /// </summary>
+    public RegisterBodyRequest() { }
+
+    /// <summary>
+    /// Initializes a new instance of the RegisterBodyRequest class.
+    /// </summary>
+    public RegisterBodyRequest(System.Guid? id = default(System.Guid?), string name = default(string), string bodyNumber = default(string), string shortName = default(string), System.Guid? organisationId = default(System.Guid?), string description = default(string), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?), System.DateTime? formalValidFrom = default(System.DateTime?), System.DateTime? formalValidTo = default(System.DateTime?))
     {
-        /// <summary>
-        /// Initializes a new instance of the RegisterBodyRequest class.
-        /// </summary>
-        public RegisterBodyRequest() { }
-
-        /// <summary>
-        /// Initializes a new instance of the RegisterBodyRequest class.
-        /// </summary>
-        public RegisterBodyRequest(System.Guid? id = default(System.Guid?), string name = default(string), string bodyNumber = default(string), string shortName = default(string), System.Guid? organisationId = default(System.Guid?), string description = default(string), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?), System.DateTime? formalValidFrom = default(System.DateTime?), System.DateTime? formalValidTo = default(System.DateTime?))
-        {
-            Id = id;
-            Name = name;
-            BodyNumber = bodyNumber;
-            ShortName = shortName;
-            OrganisationId = organisationId;
-            Description = description;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-            FormalValidFrom = formalValidFrom;
-            FormalValidTo = formalValidTo;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
-        public System.Guid? Id { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "bodyNumber")]
-        public string BodyNumber { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "shortName")]
-        public string ShortName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationId")]
-        public System.Guid? OrganisationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "description")]
-        public string Description { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
-        public System.DateTime? ValidFrom { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
-        public System.DateTime? ValidTo { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "formalValidFrom")]
-        public System.DateTime? FormalValidFrom { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "formalValidTo")]
-        public System.DateTime? FormalValidTo { get; set; }
-
+        Id = id;
+        Name = name;
+        BodyNumber = bodyNumber;
+        ShortName = shortName;
+        OrganisationId = organisationId;
+        Description = description;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
+        FormalValidFrom = formalValidFrom;
+        FormalValidTo = formalValidTo;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
+    public System.Guid? Id { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "bodyNumber")]
+    public string BodyNumber { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "shortName")]
+    public string ShortName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationId")]
+    public System.Guid? OrganisationId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "description")]
+    public string Description { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
+    public System.DateTime? ValidFrom { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
+    public System.DateTime? ValidTo { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "formalValidFrom")]
+    public System.DateTime? FormalValidFrom { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "formalValidTo")]
+    public System.DateTime? FormalValidTo { get; set; }
+
 }

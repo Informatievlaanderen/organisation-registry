@@ -1,11 +1,10 @@
-namespace OrganisationRegistry.Api.Security
+namespace OrganisationRegistry.Api.Security;
+
+using System.Security.Claims;
+
+public interface IOrganisationRegistryTokenBuilder
 {
-    using System.Security.Claims;
+    string BuildJwt(ClaimsIdentity identity);
 
-    public interface IOrganisationRegistryTokenBuilder
-    {
-        string BuildJwt(ClaimsIdentity identity);
-
-        ClaimsIdentity ParseRoles(ClaimsIdentity identity);
-    }
+    ClaimsIdentity ParseRoles(ClaimsIdentity identity);
 }

@@ -2,27 +2,26 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class NotFoundResult
 {
-    public partial class NotFoundResult
+    /// <summary>
+    /// Initializes a new instance of the NotFoundResult class.
+    /// </summary>
+    public NotFoundResult() { }
+
+    /// <summary>
+    /// Initializes a new instance of the NotFoundResult class.
+    /// </summary>
+    public NotFoundResult(int? statusCode = default(int?))
     {
-        /// <summary>
-        /// Initializes a new instance of the NotFoundResult class.
-        /// </summary>
-        public NotFoundResult() { }
-
-        /// <summary>
-        /// Initializes a new instance of the NotFoundResult class.
-        /// </summary>
-        public NotFoundResult(int? statusCode = default(int?))
-        {
-            StatusCode = statusCode;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "statusCode")]
-        public int? StatusCode { get; private set; }
-
+        StatusCode = statusCode;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "statusCode")]
+    public int? StatusCode { get; private set; }
+
 }

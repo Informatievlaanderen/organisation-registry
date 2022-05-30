@@ -1,13 +1,12 @@
-namespace OrganisationRegistry.Api.Infrastructure.Security
-{
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Authorization;
+namespace OrganisationRegistry.Api.Infrastructure.Security;
 
-    public class OrganisationRegistryAuthorizeAttribute : AuthorizeAttribute
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+
+public class OrganisationRegistryAuthorizeAttribute : AuthorizeAttribute
+{
+    public OrganisationRegistryAuthorizeAttribute()
     {
-        public OrganisationRegistryAuthorizeAttribute()
-        {
-            AuthenticationSchemes = string.Join(", ", JwtBearerDefaults.AuthenticationScheme);
-        }
+        AuthenticationSchemes = string.Join(", ", JwtBearerDefaults.AuthenticationScheme);
     }
 }

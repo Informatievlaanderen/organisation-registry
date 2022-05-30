@@ -55,28 +55,27 @@ using static OpenSearch.Net.HttpMethod;
 // ReSharper disable once CheckNamespace
 // ReSharper disable InterpolatedStringExpressionIsNotIFormattable
 // ReSharper disable RedundantExtendsListEntry
-namespace OpenSearch.Net.Specification.FeaturesApi
-{
-	///<summary>
-	/// Features APIs.
-	/// <para>Not intended to be instantiated directly. Use the <see cref = "IOpenSearchLowLevelClient.Features"/> property
-	/// on <see cref = "IOpenSearchLowLevelClient"/>.
-	///</para>
-	///</summary>
-	public partial class LowLevelFeaturesNamespace : NamespacedClientProxy
-	{
-		internal LowLevelFeaturesNamespace(OpenSearchLowLevelClient client): base(client)
-		{
-		}
+namespace OpenSearch.Net.Specification.FeaturesApi;
 
-		///<summary>GET on /_features <para>h</para></summary>
-		///<param name = "requestParameters">Request specific configuration such as querystring parameters &amp; request specific connection settings.</param>
-		public TResponse Get<TResponse>(GetFeaturesRequestParameters requestParameters = null)
-			where TResponse : class, IOpenSearchResponse, new() => DoRequest<TResponse>(GET, "_features", null, RequestParams(requestParameters));
-		///<summary>GET on /_features <para>h</para></summary>
-		///<param name = "requestParameters">Request specific configuration such as querystring parameters &amp; request specific connection settings.</param>
-		[MapsApi("features.get_features", "")]
-		public Task<TResponse> GetAsync<TResponse>(GetFeaturesRequestParameters requestParameters = null, CancellationToken ctx = default)
-			where TResponse : class, IOpenSearchResponse, new() => DoRequestAsync<TResponse>(GET, "_features", ctx, null, RequestParams(requestParameters));
-	}
+///<summary>
+/// Features APIs.
+/// <para>Not intended to be instantiated directly. Use the <see cref = "IOpenSearchLowLevelClient.Features"/> property
+/// on <see cref = "IOpenSearchLowLevelClient"/>.
+///</para>
+///</summary>
+public partial class LowLevelFeaturesNamespace : NamespacedClientProxy
+{
+    internal LowLevelFeaturesNamespace(OpenSearchLowLevelClient client): base(client)
+    {
+    }
+
+    ///<summary>GET on /_features <para>h</para></summary>
+    ///<param name = "requestParameters">Request specific configuration such as querystring parameters &amp; request specific connection settings.</param>
+    public TResponse Get<TResponse>(GetFeaturesRequestParameters requestParameters = null)
+        where TResponse : class, IOpenSearchResponse, new() => DoRequest<TResponse>(GET, "_features", null, RequestParams(requestParameters));
+    ///<summary>GET on /_features <para>h</para></summary>
+    ///<param name = "requestParameters">Request specific configuration such as querystring parameters &amp; request specific connection settings.</param>
+    [MapsApi("features.get_features", "")]
+    public Task<TResponse> GetAsync<TResponse>(GetFeaturesRequestParameters requestParameters = null, CancellationToken ctx = default)
+        where TResponse : class, IOpenSearchResponse, new() => DoRequestAsync<TResponse>(GET, "_features", ctx, null, RequestParams(requestParameters));
 }

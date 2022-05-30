@@ -1,7 +1,6 @@
-namespace OrganisationRegistry.Infrastructure.Configuration
+namespace OrganisationRegistry.Infrastructure.Configuration;
+
+public interface ICachingConfiguration
 {
-    public interface ICachingConfiguration
-    {
-        int UserCacheSlidingExpirationInMinutes { get; }
-    }
+    int UserCacheSlidingExpirationInMinutes { get; }
 }

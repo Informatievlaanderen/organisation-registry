@@ -1,7 +1,6 @@
-namespace OrganisationRegistry.Api.Backoffice.Vlimpers
+namespace OrganisationRegistry.Api.Backoffice.Vlimpers;
+
+public class VlimpersRequest
 {
-    public class VlimpersRequest
-    {
-        public bool VlimpersManagement { get; set; }
-    }
+    public bool VlimpersManagement { get; set; }
 }

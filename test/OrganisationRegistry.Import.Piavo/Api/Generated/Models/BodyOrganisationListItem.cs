@@ -2,57 +2,56 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class BodyOrganisationListItem
 {
-    public partial class BodyOrganisationListItem
+    /// <summary>
+    /// Initializes a new instance of the BodyOrganisationListItem class.
+    /// </summary>
+    public BodyOrganisationListItem() { }
+
+    /// <summary>
+    /// Initializes a new instance of the BodyOrganisationListItem class.
+    /// </summary>
+    public BodyOrganisationListItem(System.Guid? bodyOrganisationId = default(System.Guid?), System.Guid? bodyId = default(System.Guid?), System.Guid? organisationId = default(System.Guid?), string organisationName = default(string), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
     {
-        /// <summary>
-        /// Initializes a new instance of the BodyOrganisationListItem class.
-        /// </summary>
-        public BodyOrganisationListItem() { }
-
-        /// <summary>
-        /// Initializes a new instance of the BodyOrganisationListItem class.
-        /// </summary>
-        public BodyOrganisationListItem(System.Guid? bodyOrganisationId = default(System.Guid?), System.Guid? bodyId = default(System.Guid?), System.Guid? organisationId = default(System.Guid?), string organisationName = default(string), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
-        {
-            BodyOrganisationId = bodyOrganisationId;
-            BodyId = bodyId;
-            OrganisationId = organisationId;
-            OrganisationName = organisationName;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "bodyOrganisationId")]
-        public System.Guid? BodyOrganisationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "bodyId")]
-        public System.Guid? BodyId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationId")]
-        public System.Guid? OrganisationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationName")]
-        public string OrganisationName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
-        public System.DateTime? ValidFrom { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
-        public System.DateTime? ValidTo { get; set; }
-
+        BodyOrganisationId = bodyOrganisationId;
+        BodyId = bodyId;
+        OrganisationId = organisationId;
+        OrganisationName = organisationName;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "bodyOrganisationId")]
+    public System.Guid? BodyOrganisationId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "bodyId")]
+    public System.Guid? BodyId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationId")]
+    public System.Guid? OrganisationId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationName")]
+    public string OrganisationName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
+    public System.DateTime? ValidFrom { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
+    public System.DateTime? ValidTo { get; set; }
+
 }

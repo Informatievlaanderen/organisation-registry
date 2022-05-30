@@ -1,13 +1,12 @@
-﻿namespace OrganisationRegistry.Infrastructure.Domain
+﻿namespace OrganisationRegistry.Infrastructure.Domain;
+
+using System;
+using System.Threading.Tasks;
+using Authorization;
+
+public interface IRepository
 {
-    using System;
-    using System.Threading.Tasks;
-    using Authorization;
+    Task Save<T>(T aggregate, IUser user, int? expectedVersion = null) where T : AggregateRoot;
 
-    public interface IRepository
-    {
-        Task Save<T>(T aggregate, IUser user, int? expectedVersion = null) where T : AggregateRoot;
-
-        T Get<T>(Guid aggregateId) where T : AggregateRoot;
-    }
+    T Get<T>(Guid aggregateId) where T : AggregateRoot;
 }

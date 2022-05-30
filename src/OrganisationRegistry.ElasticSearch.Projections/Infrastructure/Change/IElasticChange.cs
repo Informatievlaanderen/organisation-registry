@@ -1,7 +1,6 @@
-namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure.Change
-{
-    public interface IElasticChange
-    {
+namespace OrganisationRegistry.ElasticSearch.Projections.Infrastructure.Change;
 
-    }
+public interface IElasticChange
+{
+
 }

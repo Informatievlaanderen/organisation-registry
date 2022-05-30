@@ -1,39 +1,38 @@
-namespace OrganisationRegistry.ContactType
+namespace OrganisationRegistry.ContactType;
+
+using Events;
+using Infrastructure.Domain;
+
+public class ContactType : AggregateRoot
 {
-    using Events;
-    using Infrastructure.Domain;
+    public string Name { get; private set; }
 
-    public class ContactType : AggregateRoot
+    private ContactType()
     {
-        public string Name { get; private set; }
+        Name = string.Empty;
+    }
 
-        private ContactType()
-        {
-            Name = string.Empty;
-        }
+    public ContactType(ContactTypeId id, string name)
+    {
+        Name = string.Empty;
 
-        public ContactType(ContactTypeId id, string name)
-        {
-            Name = string.Empty;
+        ApplyChange(new ContactTypeCreated(id, name));
+    }
 
-            ApplyChange(new ContactTypeCreated(id, name));
-        }
+    public void Update(string name)
+    {
+        var @event = new ContactTypeUpdated(Id, name, Name);
+        ApplyChange(@event);
+    }
 
-        public void Update(string name)
-        {
-            var @event = new ContactTypeUpdated(Id, name, Name);
-            ApplyChange(@event);
-        }
+    private void Apply(ContactTypeCreated @event)
+    {
+        Id = @event.ContactTypeId;
+        Name = @event.Name;
+    }
 
-        private void Apply(ContactTypeCreated @event)
-        {
-            Id = @event.ContactTypeId;
-            Name = @event.Name;
-        }
-
-        private void Apply(ContactTypeUpdated @event)
-        {
-            Name = @event.Name;
-        }
+    private void Apply(ContactTypeUpdated @event)
+    {
+        Name = @event.Name;
     }
 }

@@ -1,24 +1,23 @@
-namespace OrganisationRegistry.UnitTests.Magda
+namespace OrganisationRegistry.UnitTests.Magda;
+
+using Api.Infrastructure.Magda;
+using FluentAssertions;
+using global::Magda.GeefOnderneming;
+using Xunit;
+
+public class MagdaNameTests
 {
-    using Api.Infrastructure.Magda;
-    using FluentAssertions;
-    using global::Magda.GeefOnderneming;
-    using Xunit;
-
-    public class MagdaNameTests
+    [Fact]
+    public void TrimsName()
     {
-        [Fact]
-        public void TrimsName()
+        var name = new MagdaOrganisationResponse.Name(new[]
         {
-            var name = new MagdaOrganisationResponse.Name(new[]
+            new NaamOndernemingType
             {
-                new NaamOndernemingType
-                {
-                    Naam = " Test "
-                }
-            });
+                Naam = " Test "
+            }
+        });
 
-            name.Value.Should().Be("Test");
-        }
+        name.Value.Should().Be("Test");
     }
 }

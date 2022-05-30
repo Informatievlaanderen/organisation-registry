@@ -1,33 +1,32 @@
-namespace OrganisationRegistry
+namespace OrganisationRegistry;
+
+using System;
+
+public abstract class NumberGenerator
 {
-    using System;
+    private readonly string _prefix;
+    private readonly string _name;
+    private readonly Func<string?> _maxNumberFunc;
 
-    public abstract class NumberGenerator
+    protected NumberGenerator(
+        string prefix,
+        string name,
+        Func<string?> maxNumberFunc)
     {
-        private readonly string _prefix;
-        private readonly string _name;
-        private readonly Func<string?> _maxNumberFunc;
+        _prefix = prefix;
+        _name = name;
+        _maxNumberFunc = maxNumberFunc;
+    }
 
-        protected NumberGenerator(
-            string prefix,
-            string name,
-            Func<string?> maxNumberFunc)
-        {
-            _prefix = prefix;
-            _name = name;
-            _maxNumberFunc = maxNumberFunc;
-        }
+    public string GenerateNumber()
+    {
+        var maxNumber = _maxNumberFunc();
+        if (string.IsNullOrWhiteSpace(maxNumber))
+            maxNumber = "0";
 
-        public string GenerateNumber()
-        {
-            var maxNumber = _maxNumberFunc();
-            if (string.IsNullOrWhiteSpace(maxNumber))
-                maxNumber = "0";
+        if (!int.TryParse(maxNumber.Replace(_prefix, ""), out var number))
+            throw new InvalidOperationException($"{_name} moet een integer getal zijn");
 
-            if (!int.TryParse(maxNumber.Replace(_prefix, ""), out var number))
-                throw new InvalidOperationException($"{_name} moet een integer getal zijn");
-
-            return $"{_prefix}{number + 1:D6}";
-        }
+        return $"{_prefix}{number + 1:D6}";
     }
 }

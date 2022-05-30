@@ -1,17 +1,16 @@
-namespace OrganisationRegistry.Organisation.Commands
+namespace OrganisationRegistry.Organisation.Commands;
+
+public class RemoveOrganisationKey : BaseCommand<OrganisationId>
 {
-    public class RemoveOrganisationKey : BaseCommand<OrganisationId>
+    public OrganisationId OrganisationId => Id;
+
+    public OrganisationKeyId OrganisationKeyId { get; }
+
+    public RemoveOrganisationKey(
+        OrganisationId organisationId,
+        OrganisationKeyId organisationKeyId)
     {
-        public OrganisationId OrganisationId => Id;
-
-        public OrganisationKeyId OrganisationKeyId { get; }
-
-        public RemoveOrganisationKey(
-            OrganisationId organisationId,
-            OrganisationKeyId organisationKeyId)
-        {
-            OrganisationKeyId = organisationKeyId;
-            Id = organisationId;
-        }
+        OrganisationKeyId = organisationKeyId;
+        Id = organisationId;
     }
 }

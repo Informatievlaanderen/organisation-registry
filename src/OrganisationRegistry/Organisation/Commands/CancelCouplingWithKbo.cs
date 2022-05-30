@@ -1,14 +1,13 @@
-namespace OrganisationRegistry.Organisation.Commands
+namespace OrganisationRegistry.Organisation.Commands;
+
+public class CancelCouplingWithKbo : BaseCommand<OrganisationId>
 {
-    public class CancelCouplingWithKbo : BaseCommand<OrganisationId>
+    public OrganisationId OrganisationId => Id;
+
+
+    public CancelCouplingWithKbo(
+        OrganisationId organisationId)
     {
-        public OrganisationId OrganisationId => Id;
-
-
-        public CancelCouplingWithKbo(
-            OrganisationId organisationId)
-        {
-            Id = organisationId;
-        }
+        Id = organisationId;
     }
 }

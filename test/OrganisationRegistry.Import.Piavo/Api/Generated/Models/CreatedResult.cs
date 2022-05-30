@@ -2,57 +2,56 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class CreatedResult
 {
-    public partial class CreatedResult
+    /// <summary>
+    /// Initializes a new instance of the CreatedResult class.
+    /// </summary>
+    public CreatedResult() { }
+
+    /// <summary>
+    /// Initializes a new instance of the CreatedResult class.
+    /// </summary>
+    public CreatedResult(string location = default(string), object value = default(object), System.Collections.Generic.IList<object> formatters = default(System.Collections.Generic.IList<object>), System.Collections.Generic.IList<string> contentTypes = default(System.Collections.Generic.IList<string>), string declaredType = default(string), int? statusCode = default(int?))
     {
-        /// <summary>
-        /// Initializes a new instance of the CreatedResult class.
-        /// </summary>
-        public CreatedResult() { }
-
-        /// <summary>
-        /// Initializes a new instance of the CreatedResult class.
-        /// </summary>
-        public CreatedResult(string location = default(string), object value = default(object), System.Collections.Generic.IList<object> formatters = default(System.Collections.Generic.IList<object>), System.Collections.Generic.IList<string> contentTypes = default(System.Collections.Generic.IList<string>), string declaredType = default(string), int? statusCode = default(int?))
-        {
-            Location = location;
-            Value = value;
-            Formatters = formatters;
-            ContentTypes = contentTypes;
-            DeclaredType = declaredType;
-            StatusCode = statusCode;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "location")]
-        public string Location { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "value")]
-        public object Value { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "formatters")]
-        public System.Collections.Generic.IList<object> Formatters { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "contentTypes")]
-        public System.Collections.Generic.IList<string> ContentTypes { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "declaredType")]
-        public string DeclaredType { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "statusCode")]
-        public int? StatusCode { get; set; }
-
+        Location = location;
+        Value = value;
+        Formatters = formatters;
+        ContentTypes = contentTypes;
+        DeclaredType = declaredType;
+        StatusCode = statusCode;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "location")]
+    public string Location { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "value")]
+    public object Value { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "formatters")]
+    public System.Collections.Generic.IList<object> Formatters { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "contentTypes")]
+    public System.Collections.Generic.IList<string> ContentTypes { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "declaredType")]
+    public string DeclaredType { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "statusCode")]
+    public int? StatusCode { get; set; }
+
 }

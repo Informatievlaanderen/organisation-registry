@@ -1,26 +1,25 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Body.Info
+﻿namespace OrganisationRegistry.Api.Backoffice.Body.Info;
+
+using System;
+using OrganisationRegistry.SqlServer.Body;
+
+public class BodyInfoResponse
 {
-    using System;
-    using OrganisationRegistry.SqlServer.Body;
+    public Guid Id { get; }
 
-    public class BodyInfoResponse
+    public string BodyNumber { get; }
+    public string Name { get; }
+    public string? ShortName { get; }
+
+    public string? Description { get; }
+
+    public BodyInfoResponse(BodyDetail projectionItem)
     {
-        public Guid Id { get; }
+        Id = projectionItem.Id;
 
-        public string BodyNumber { get; }
-        public string Name { get; }
-        public string? ShortName { get; }
-
-        public string? Description { get; }
-
-        public BodyInfoResponse(BodyDetail projectionItem)
-        {
-            Id = projectionItem.Id;
-
-            BodyNumber = projectionItem.BodyNumber;
-            Name = projectionItem.Name;
-            ShortName = projectionItem.ShortName;
-            Description = projectionItem.Description;
-        }
+        BodyNumber = projectionItem.BodyNumber;
+        Name = projectionItem.Name;
+        ShortName = projectionItem.ShortName;
+        Description = projectionItem.Description;
     }
 }

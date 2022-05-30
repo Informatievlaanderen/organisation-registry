@@ -2,45 +2,44 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class OrganisationBody
 {
-    public partial class OrganisationBody
+    /// <summary>
+    /// Initializes a new instance of the OrganisationBody class.
+    /// </summary>
+    public OrganisationBody() { }
+
+    /// <summary>
+    /// Initializes a new instance of the OrganisationBody class.
+    /// </summary>
+    public OrganisationBody(System.Guid? bodyOrganisationId = default(System.Guid?), System.Guid? bodyId = default(System.Guid?), string bodyName = default(string), Period validity = default(Period))
     {
-        /// <summary>
-        /// Initializes a new instance of the OrganisationBody class.
-        /// </summary>
-        public OrganisationBody() { }
-
-        /// <summary>
-        /// Initializes a new instance of the OrganisationBody class.
-        /// </summary>
-        public OrganisationBody(System.Guid? bodyOrganisationId = default(System.Guid?), System.Guid? bodyId = default(System.Guid?), string bodyName = default(string), Period validity = default(Period))
-        {
-            BodyOrganisationId = bodyOrganisationId;
-            BodyId = bodyId;
-            BodyName = bodyName;
-            Validity = validity;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "bodyOrganisationId")]
-        public System.Guid? BodyOrganisationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "bodyId")]
-        public System.Guid? BodyId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "bodyName")]
-        public string BodyName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validity")]
-        public Period Validity { get; set; }
-
+        BodyOrganisationId = bodyOrganisationId;
+        BodyId = bodyId;
+        BodyName = bodyName;
+        Validity = validity;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "bodyOrganisationId")]
+    public System.Guid? BodyOrganisationId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "bodyId")]
+    public System.Guid? BodyId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "bodyName")]
+    public string BodyName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validity")]
+    public Period Validity { get; set; }
+
 }

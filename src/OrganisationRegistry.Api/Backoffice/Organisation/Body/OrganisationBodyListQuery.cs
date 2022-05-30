@@ -1,96 +1,95 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Body
+﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Body;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using Infrastructure.Search;
+using Infrastructure.Search.Filtering;
+using Infrastructure.Search.Sorting;
+using SqlServer.Infrastructure;
+using SqlServer.Organisation;
+
+public class OrganisationBodyListQueryResult
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using Infrastructure.Search;
-    using Infrastructure.Search.Filtering;
-    using Infrastructure.Search.Sorting;
-    using SqlServer.Infrastructure;
-    using SqlServer.Organisation;
+    public Guid OrganisationBodyId { get; }
+    public Guid BodyId { get; }
+    public string BodyName { get; }
+    public DateTime? ValidFrom { get; }
+    public DateTime? ValidTo { get; }
 
-    public class OrganisationBodyListQueryResult
+    public bool IsActive { get; }
+
+    public OrganisationBodyListQueryResult(
+        Guid organisationBodyId,
+        Guid bodyId,
+        string bodyName,
+        DateTime? validFrom,
+        DateTime? validTo)
     {
-        public Guid OrganisationBodyId { get; }
-        public Guid BodyId { get; }
-        public string BodyName { get; }
-        public DateTime? ValidFrom { get; }
-        public DateTime? ValidTo { get; }
+        OrganisationBodyId = organisationBodyId;
+        BodyId = bodyId;
+        BodyName = bodyName;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
 
-        public bool IsActive { get; }
+        IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
+    }
+}
 
-        public OrganisationBodyListQueryResult(
-            Guid organisationBodyId,
-            Guid bodyId,
-            string bodyName,
-            DateTime? validFrom,
-            DateTime? validTo)
-        {
-            OrganisationBodyId = organisationBodyId;
-            BodyId = bodyId;
-            BodyName = bodyName;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
+public class OrganisationBodyListQuery : Query<OrganisationBodyListItem, OrganisationBodyListItemFilter, OrganisationBodyListQueryResult>
+{
+    private readonly OrganisationRegistryContext _context;
+    private readonly Guid _organisationId;
 
-            IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
-        }
+    protected override ISorting Sorting => new OrganisationBodyListSorting();
+
+    protected override Expression<Func<OrganisationBodyListItem, OrganisationBodyListQueryResult>> Transformation =>
+        x => new OrganisationBodyListQueryResult(
+            x.OrganisationBodyId,
+            x.BodyId,
+            x.BodyName,
+            x.ValidFrom,
+            x.ValidTo);
+
+    public OrganisationBodyListQuery(OrganisationRegistryContext context, Guid organisationId)
+    {
+        _context = context;
+        _organisationId = organisationId;
     }
 
-    public class OrganisationBodyListQuery : Query<OrganisationBodyListItem, OrganisationBodyListItemFilter, OrganisationBodyListQueryResult>
+    protected override IQueryable<OrganisationBodyListItem> Filter(FilteringHeader<OrganisationBodyListItemFilter> filtering)
     {
-        private readonly OrganisationRegistryContext _context;
-        private readonly Guid _organisationId;
+        var organisationBodies = _context.OrganisationBodyList
+            .AsQueryable()
+            .Where(x => x.OrganisationId == _organisationId).AsQueryable();
 
-        protected override ISorting Sorting => new OrganisationBodyListSorting();
-
-        protected override Expression<Func<OrganisationBodyListItem, OrganisationBodyListQueryResult>> Transformation =>
-            x => new OrganisationBodyListQueryResult(
-                x.OrganisationBodyId,
-                x.BodyId,
-                x.BodyName,
-                x.ValidFrom,
-                x.ValidTo);
-
-        public OrganisationBodyListQuery(OrganisationRegistryContext context, Guid organisationId)
-        {
-            _context = context;
-            _organisationId = organisationId;
-        }
-
-        protected override IQueryable<OrganisationBodyListItem> Filter(FilteringHeader<OrganisationBodyListItemFilter> filtering)
-        {
-            var organisationBodies = _context.OrganisationBodyList
-                .AsQueryable()
-                .Where(x => x.OrganisationId == _organisationId).AsQueryable();
-
-            if (filtering.Filter is not { } filter)
-                return organisationBodies;
-
-            if (filter.ActiveOnly)
-                organisationBodies = organisationBodies.Where(x =>
-                    (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
-                    (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));
-
+        if (filtering.Filter is not { } filter)
             return organisationBodies;
-        }
 
-        private class OrganisationBodyListSorting : ISorting
-        {
-            public IEnumerable<string> SortableFields { get; } = new[]
-            {
-                nameof(OrganisationBodyListItem.BodyName),
-                nameof(OrganisationBodyListItem.ValidFrom),
-                nameof(OrganisationBodyListItem.ValidTo)
-            };
+        if (filter.ActiveOnly)
+            organisationBodies = organisationBodies.Where(x =>
+                (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
+                (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));
 
-            public SortingHeader DefaultSortingHeader { get; } =
-                new SortingHeader(nameof(OrganisationBodyListItem.BodyName), SortOrder.Ascending);
-        }
+        return organisationBodies;
     }
 
-    public class OrganisationBodyListItemFilter
+    private class OrganisationBodyListSorting : ISorting
     {
-        public bool ActiveOnly { get; set; }
+        public IEnumerable<string> SortableFields { get; } = new[]
+        {
+            nameof(OrganisationBodyListItem.BodyName),
+            nameof(OrganisationBodyListItem.ValidFrom),
+            nameof(OrganisationBodyListItem.ValidTo)
+        };
+
+        public SortingHeader DefaultSortingHeader { get; } =
+            new SortingHeader(nameof(OrganisationBodyListItem.BodyName), SortOrder.Ascending);
     }
+}
+
+public class OrganisationBodyListItemFilter
+{
+    public bool ActiveOnly { get; set; }
 }

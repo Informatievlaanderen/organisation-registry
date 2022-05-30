@@ -1,275 +1,274 @@
-namespace OrganisationRegistry.SqlServer.Organisation
+namespace OrganisationRegistry.SqlServer.Organisation;
+
+using System;
+using System.Data.Common;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Infrastructure;
+using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.Organisation.Events;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using OrganisationClassification;
+using OrganisationClassificationType;
+using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.OrganisationClassificationType.Events;
+using OrganisationRegistry.OrganisationClassification.Events;
+
+public class OrganisationOrganisationClassificationListItem
 {
-    using System;
-    using System.Data.Common;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using Infrastructure;
-    using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Organisation.Events;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
-    using OrganisationClassification;
-    using OrganisationClassificationType;
-    using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.OrganisationClassificationType.Events;
-    using OrganisationRegistry.OrganisationClassification.Events;
+    public Guid OrganisationOrganisationClassificationId { get; set; }
+    public Guid OrganisationId { get; set; }
 
-    public class OrganisationOrganisationClassificationListItem
+    public Guid OrganisationClassificationTypeId { get; set; }
+    public string OrganisationClassificationTypeName { get; set; } = null!;
+
+    public Guid OrganisationClassificationId { get; set; }
+    public string OrganisationClassificationName { get; set; } = null!;
+
+    public DateTime? ValidFrom { get; set; }
+    public DateTime? ValidTo { get; set; }
+
+    public string? Source { get; set; }
+
+    public bool IsEditable => Source != OrganisationRegistry.Organisation.Source.Kbo;
+}
+
+public class OrganisationOrganisationClassificationListConfiguration : EntityMappingConfiguration<OrganisationOrganisationClassificationListItem>
+{
+    public override void Map(EntityTypeBuilder<OrganisationOrganisationClassificationListItem> b)
     {
-        public Guid OrganisationOrganisationClassificationId { get; set; }
-        public Guid OrganisationId { get; set; }
+        b.ToTable(nameof(OrganisationOrganisationClassificationListView.ProjectionTables.OrganisationOrganisationClassificationList), WellknownSchemas.BackofficeSchema)
+            .HasKey(p => p.OrganisationOrganisationClassificationId)
+            .IsClustered(false);
 
-        public Guid OrganisationClassificationTypeId { get; set; }
-        public string OrganisationClassificationTypeName { get; set; } = null!;
+        b.Property(p => p.OrganisationId).IsRequired();
 
-        public Guid OrganisationClassificationId { get; set; }
-        public string OrganisationClassificationName { get; set; } = null!;
+        b.Property(p => p.OrganisationClassificationTypeId).IsRequired();
+        b.Property(p => p.OrganisationClassificationTypeName).HasMaxLength(OrganisationClassificationTypeListConfiguration.NameLength).IsRequired();
 
-        public DateTime? ValidFrom { get; set; }
-        public DateTime? ValidTo { get; set; }
+        b.Property(p => p.OrganisationClassificationId).IsRequired();
+        b.Property(p => p.OrganisationClassificationName).HasMaxLength(OrganisationClassificationListConfiguration.NameLength).IsRequired();
 
-        public string? Source { get; set; }
+        b.Property(p => p.ValidFrom);
+        b.Property(p => p.ValidTo);
 
-        public bool IsEditable => Source != OrganisationRegistry.Organisation.Source.Kbo;
+        b.Property(p => p.Source);
+
+        b.HasIndex(x => x.OrganisationClassificationTypeName).IsClustered();
+        b.HasIndex(x => x.OrganisationClassificationName);
+        b.HasIndex(x => x.ValidFrom);
+        b.HasIndex(x => x.ValidTo);
+    }
+}
+
+public class OrganisationOrganisationClassificationListView :
+    Projection<OrganisationOrganisationClassificationListView>,
+    IEventHandler<OrganisationOrganisationClassificationAdded>,
+    IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
+    IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
+    IEventHandler<OrganisationCouplingWithKboCancelled>,
+    IEventHandler<OrganisationTerminationSyncedWithKbo>,
+    IEventHandler<OrganisationOrganisationClassificationUpdated>,
+    IEventHandler<OrganisationClassificationTypeUpdated>,
+    IEventHandler<OrganisationClassificationUpdated>,
+    IEventHandler<OrganisationTerminated>,
+    IEventHandler<OrganisationTerminatedV2>
+{
+    protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+    public override string Schema => WellknownSchemas.BackofficeSchema;
+
+    public enum ProjectionTables
+    {
+        OrganisationOrganisationClassificationList
     }
 
-    public class OrganisationOrganisationClassificationListConfiguration : EntityMappingConfiguration<OrganisationOrganisationClassificationListItem>
+    private readonly IEventStore _eventStore;
+
+    public OrganisationOrganisationClassificationListView(
+        ILogger<OrganisationOrganisationClassificationListView> logger,
+        IEventStore eventStore,
+        IContextFactory contextFactory) : base(logger, contextFactory)
     {
-        public override void Map(EntityTypeBuilder<OrganisationOrganisationClassificationListItem> b)
-        {
-            b.ToTable(nameof(OrganisationOrganisationClassificationListView.ProjectionTables.OrganisationOrganisationClassificationList), WellknownSchemas.BackofficeSchema)
-                .HasKey(p => p.OrganisationOrganisationClassificationId)
-                .IsClustered(false);
-
-            b.Property(p => p.OrganisationId).IsRequired();
-
-            b.Property(p => p.OrganisationClassificationTypeId).IsRequired();
-            b.Property(p => p.OrganisationClassificationTypeName).HasMaxLength(OrganisationClassificationTypeListConfiguration.NameLength).IsRequired();
-
-            b.Property(p => p.OrganisationClassificationId).IsRequired();
-            b.Property(p => p.OrganisationClassificationName).HasMaxLength(OrganisationClassificationListConfiguration.NameLength).IsRequired();
-
-            b.Property(p => p.ValidFrom);
-            b.Property(p => p.ValidTo);
-
-            b.Property(p => p.Source);
-
-            b.HasIndex(x => x.OrganisationClassificationTypeName).IsClustered();
-            b.HasIndex(x => x.OrganisationClassificationName);
-            b.HasIndex(x => x.ValidFrom);
-            b.HasIndex(x => x.ValidTo);
-        }
+        _eventStore = eventStore;
     }
 
-    public class OrganisationOrganisationClassificationListView :
-        Projection<OrganisationOrganisationClassificationListView>,
-        IEventHandler<OrganisationOrganisationClassificationAdded>,
-        IEventHandler<KboLegalFormOrganisationOrganisationClassificationAdded>,
-        IEventHandler<KboLegalFormOrganisationOrganisationClassificationRemoved>,
-        IEventHandler<OrganisationCouplingWithKboCancelled>,
-        IEventHandler<OrganisationTerminationSyncedWithKbo>,
-        IEventHandler<OrganisationOrganisationClassificationUpdated>,
-        IEventHandler<OrganisationClassificationTypeUpdated>,
-        IEventHandler<OrganisationClassificationUpdated>,
-        IEventHandler<OrganisationTerminated>,
-        IEventHandler<OrganisationTerminatedV2>
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationTypeUpdated> message)
     {
-        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-        public override string Schema => WellknownSchemas.BackofficeSchema;
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var organisationOrganisationClassifications =
+            context.OrganisationOrganisationClassificationList
+                .Where(x => x.OrganisationClassificationTypeId == message.Body.OrganisationClassificationTypeId);
 
-        public enum ProjectionTables
+        if (!organisationOrganisationClassifications.Any())
+            return;
+
+        foreach (var organisationOrganisationClassification in organisationOrganisationClassifications)
+            organisationOrganisationClassification.OrganisationClassificationTypeName = message.Body.Name;
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationUpdated> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var organisationOrganisationClassifications =
+            context.OrganisationOrganisationClassificationList.Where(x =>
+                x.OrganisationClassificationId == message.Body.OrganisationClassificationId);
+
+        if (!organisationOrganisationClassifications.Any())
+            return;
+
+        foreach (var organisationOrganisationClassification in organisationOrganisationClassifications)
         {
-            OrganisationOrganisationClassificationList
+            organisationOrganisationClassification.OrganisationClassificationTypeId = message.Body.OrganisationClassificationTypeId;
+            organisationOrganisationClassification.OrganisationClassificationTypeName = message.Body.OrganisationClassificationTypeName;
+            organisationOrganisationClassification.OrganisationClassificationName = message.Body.Name;
         }
 
-        private readonly IEventStore _eventStore;
+        await context.SaveChangesAsync();
+    }
 
-        public OrganisationOrganisationClassificationListView(
-            ILogger<OrganisationOrganisationClassificationListView> logger,
-            IEventStore eventStore,
-            IContextFactory contextFactory) : base(logger, contextFactory)
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationAdded> message)
+    {
+        var organisationOrganisationClassificationListItem = new OrganisationOrganisationClassificationListItem
         {
-            _eventStore = eventStore;
+            OrganisationOrganisationClassificationId = message.Body.OrganisationOrganisationClassificationId,
+            OrganisationId = message.Body.OrganisationId,
+            OrganisationClassificationTypeId = message.Body.OrganisationClassificationTypeId,
+            OrganisationClassificationId = message.Body.OrganisationClassificationId,
+            OrganisationClassificationTypeName = message.Body.OrganisationClassificationTypeName,
+            OrganisationClassificationName = message.Body.OrganisationClassificationName,
+            ValidFrom = message.Body.ValidFrom,
+            ValidTo = message.Body.ValidTo
+        };
+
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        await context.OrganisationOrganisationClassificationList.AddAsync(organisationOrganisationClassificationListItem);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationAdded> message)
+    {
+        var organisationOrganisationClassificationListItem = new OrganisationOrganisationClassificationListItem
+        {
+            OrganisationOrganisationClassificationId = message.Body.OrganisationOrganisationClassificationId,
+            OrganisationId = message.Body.OrganisationId,
+            OrganisationClassificationTypeId = message.Body.OrganisationClassificationTypeId,
+            OrganisationClassificationId = message.Body.OrganisationClassificationId,
+            OrganisationClassificationTypeName = message.Body.OrganisationClassificationTypeName,
+            OrganisationClassificationName = message.Body.OrganisationClassificationName,
+            ValidFrom = message.Body.ValidFrom,
+            ValidTo = message.Body.ValidTo
+        };
+
+        organisationOrganisationClassificationListItem.Source = OrganisationRegistry.Organisation.Source.Kbo;
+
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        await context.OrganisationOrganisationClassificationList.AddAsync(organisationOrganisationClassificationListItem);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationRemoved> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var key = context.OrganisationOrganisationClassificationList.Single(item => item.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId);
+
+        context.OrganisationOrganisationClassificationList.Remove(key);
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
+    {
+        if (message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel == null)
+            return;
+
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var organisationLocationListItem = context.OrganisationOrganisationClassificationList.Single(b =>
+            b.OrganisationOrganisationClassificationId == message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel.Value);
+
+        context.OrganisationOrganisationClassificationList.Remove(organisationLocationListItem);
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
+    {
+        if (message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate == null)
+            return;
+
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var legalFormOrganisationClassification = context.OrganisationOrganisationClassificationList.Single(b =>
+            b.OrganisationOrganisationClassificationId == message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate);
+
+        legalFormOrganisationClassification.ValidTo = message.Body.DateOfTermination;
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationUpdated> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var key = await context.OrganisationOrganisationClassificationList.SingleAsync(item => item.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId);
+
+        key.OrganisationOrganisationClassificationId = message.Body.OrganisationOrganisationClassificationId;
+        key.OrganisationId = message.Body.OrganisationId;
+        key.OrganisationClassificationTypeId = message.Body.OrganisationClassificationTypeId;
+        key.OrganisationClassificationId = message.Body.OrganisationClassificationId;
+        key.OrganisationClassificationTypeName = message.Body.OrganisationClassificationTypeName;
+        key.OrganisationClassificationName = message.Body.OrganisationClassificationName;
+        key.ValidFrom = message.Body.ValidFrom;
+        key.ValidTo = message.Body.ValidTo;
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var classifications = context.OrganisationOrganisationClassificationList.Where(item =>
+            message.Body.FieldsToTerminate.Classifications.Keys.Contains(item.OrganisationOrganisationClassificationId));
+
+        foreach (var classification in classifications)
+            classification.ValidTo = message.Body.FieldsToTerminate.Classifications[classification.OrganisationOrganisationClassificationId];
+
+        if (message.Body.KboFieldsToTerminate.LegalForm.HasValue)
+        {
+            var kboLegalForm =
+                await context.OrganisationOrganisationClassificationList.SingleAsync(item =>
+                    message.Body.KboFieldsToTerminate.LegalForm.Value.Key == item.OrganisationOrganisationClassificationId);
+
+            kboLegalForm.ValidTo = message.Body.KboFieldsToTerminate.LegalForm.Value.Value;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationTypeUpdated> message)
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var classifications = context.OrganisationOrganisationClassificationList.Where(item =>
+            message.Body.FieldsToTerminate.Classifications.Keys.Contains(item.OrganisationOrganisationClassificationId));
+
+        foreach (var classification in classifications)
+            classification.ValidTo = message.Body.FieldsToTerminate.Classifications[classification.OrganisationOrganisationClassificationId];
+
+        if (message.Body.KboFieldsToTerminate.LegalForm.HasValue)
         {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var organisationOrganisationClassifications =
-                context.OrganisationOrganisationClassificationList
-                    .Where(x => x.OrganisationClassificationTypeId == message.Body.OrganisationClassificationTypeId);
+            var kboLegalForm =
+                await context.OrganisationOrganisationClassificationList.SingleAsync(item =>
+                    message.Body.KboFieldsToTerminate.LegalForm.Value.Key == item.OrganisationOrganisationClassificationId);
 
-            if (!organisationOrganisationClassifications.Any())
-                return;
-
-            foreach (var organisationOrganisationClassification in organisationOrganisationClassifications)
-                organisationOrganisationClassification.OrganisationClassificationTypeName = message.Body.Name;
-
-            await context.SaveChangesAsync();
+            kboLegalForm.ValidTo = message.Body.KboFieldsToTerminate.LegalForm.Value.Value;
         }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationClassificationUpdated> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var organisationOrganisationClassifications =
-                context.OrganisationOrganisationClassificationList.Where(x =>
-                    x.OrganisationClassificationId == message.Body.OrganisationClassificationId);
+        await context.SaveChangesAsync();
+    }
 
-            if (!organisationOrganisationClassifications.Any())
-                return;
-
-            foreach (var organisationOrganisationClassification in organisationOrganisationClassifications)
-            {
-                organisationOrganisationClassification.OrganisationClassificationTypeId = message.Body.OrganisationClassificationTypeId;
-                organisationOrganisationClassification.OrganisationClassificationTypeName = message.Body.OrganisationClassificationTypeName;
-                organisationOrganisationClassification.OrganisationClassificationName = message.Body.Name;
-            }
-
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationAdded> message)
-        {
-            var organisationOrganisationClassificationListItem = new OrganisationOrganisationClassificationListItem
-            {
-                OrganisationOrganisationClassificationId = message.Body.OrganisationOrganisationClassificationId,
-                OrganisationId = message.Body.OrganisationId,
-                OrganisationClassificationTypeId = message.Body.OrganisationClassificationTypeId,
-                OrganisationClassificationId = message.Body.OrganisationClassificationId,
-                OrganisationClassificationTypeName = message.Body.OrganisationClassificationTypeName,
-                OrganisationClassificationName = message.Body.OrganisationClassificationName,
-                ValidFrom = message.Body.ValidFrom,
-                ValidTo = message.Body.ValidTo
-            };
-
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            await context.OrganisationOrganisationClassificationList.AddAsync(organisationOrganisationClassificationListItem);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationAdded> message)
-        {
-            var organisationOrganisationClassificationListItem = new OrganisationOrganisationClassificationListItem
-            {
-                OrganisationOrganisationClassificationId = message.Body.OrganisationOrganisationClassificationId,
-                OrganisationId = message.Body.OrganisationId,
-                OrganisationClassificationTypeId = message.Body.OrganisationClassificationTypeId,
-                OrganisationClassificationId = message.Body.OrganisationClassificationId,
-                OrganisationClassificationTypeName = message.Body.OrganisationClassificationTypeName,
-                OrganisationClassificationName = message.Body.OrganisationClassificationName,
-                ValidFrom = message.Body.ValidFrom,
-                ValidTo = message.Body.ValidTo
-            };
-
-            organisationOrganisationClassificationListItem.Source = OrganisationRegistry.Organisation.Source.Kbo;
-
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            await context.OrganisationOrganisationClassificationList.AddAsync(organisationOrganisationClassificationListItem);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<KboLegalFormOrganisationOrganisationClassificationRemoved> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var key = context.OrganisationOrganisationClassificationList.Single(item => item.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId);
-
-            context.OrganisationOrganisationClassificationList.Remove(key);
-
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationCouplingWithKboCancelled> message)
-        {
-            if (message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel == null)
-                return;
-
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var organisationLocationListItem = context.OrganisationOrganisationClassificationList.Single(b =>
-                b.OrganisationOrganisationClassificationId == message.Body.LegalFormOrganisationOrganisationClassificationIdToCancel.Value);
-
-            context.OrganisationOrganisationClassificationList.Remove(organisationLocationListItem);
-
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminationSyncedWithKbo> message)
-        {
-            if (message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate == null)
-                return;
-
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var legalFormOrganisationClassification = context.OrganisationOrganisationClassificationList.Single(b =>
-                b.OrganisationOrganisationClassificationId == message.Body.LegalFormOrganisationOrganisationClassificationIdToTerminate);
-
-            legalFormOrganisationClassification.ValidTo = message.Body.DateOfTermination;
-
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationOrganisationClassificationUpdated> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var key = await context.OrganisationOrganisationClassificationList.SingleAsync(item => item.OrganisationOrganisationClassificationId == message.Body.OrganisationOrganisationClassificationId);
-
-            key.OrganisationOrganisationClassificationId = message.Body.OrganisationOrganisationClassificationId;
-            key.OrganisationId = message.Body.OrganisationId;
-            key.OrganisationClassificationTypeId = message.Body.OrganisationClassificationTypeId;
-            key.OrganisationClassificationId = message.Body.OrganisationClassificationId;
-            key.OrganisationClassificationTypeName = message.Body.OrganisationClassificationTypeName;
-            key.OrganisationClassificationName = message.Body.OrganisationClassificationName;
-            key.ValidFrom = message.Body.ValidFrom;
-            key.ValidTo = message.Body.ValidTo;
-
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var classifications = context.OrganisationOrganisationClassificationList.Where(item =>
-                message.Body.FieldsToTerminate.Classifications.Keys.Contains(item.OrganisationOrganisationClassificationId));
-
-            foreach (var classification in classifications)
-                classification.ValidTo = message.Body.FieldsToTerminate.Classifications[classification.OrganisationOrganisationClassificationId];
-
-            if (message.Body.KboFieldsToTerminate.LegalForm.HasValue)
-            {
-                var kboLegalForm =
-                    await context.OrganisationOrganisationClassificationList.SingleAsync(item =>
-                        message.Body.KboFieldsToTerminate.LegalForm.Value.Key == item.OrganisationOrganisationClassificationId);
-
-                kboLegalForm.ValidTo = message.Body.KboFieldsToTerminate.LegalForm.Value.Value;
-            }
-
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var classifications = context.OrganisationOrganisationClassificationList.Where(item =>
-                message.Body.FieldsToTerminate.Classifications.Keys.Contains(item.OrganisationOrganisationClassificationId));
-
-            foreach (var classification in classifications)
-                classification.ValidTo = message.Body.FieldsToTerminate.Classifications[classification.OrganisationOrganisationClassificationId];
-
-            if (message.Body.KboFieldsToTerminate.LegalForm.HasValue)
-            {
-                var kboLegalForm =
-                    await context.OrganisationOrganisationClassificationList.SingleAsync(item =>
-                        message.Body.KboFieldsToTerminate.LegalForm.Value.Key == item.OrganisationOrganisationClassificationId);
-
-                kboLegalForm.ValidTo = message.Body.KboFieldsToTerminate.LegalForm.Value.Value;
-            }
-
-            await context.SaveChangesAsync();
-        }
-
-        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
-        {
-            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
-        }
+    public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+    {
+        await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
     }
 }

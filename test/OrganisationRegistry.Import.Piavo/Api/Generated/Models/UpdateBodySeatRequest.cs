@@ -2,63 +2,62 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class UpdateBodySeatRequest
 {
-    public partial class UpdateBodySeatRequest
+    /// <summary>
+    /// Initializes a new instance of the UpdateBodySeatRequest class.
+    /// </summary>
+    public UpdateBodySeatRequest() { }
+
+    /// <summary>
+    /// Initializes a new instance of the UpdateBodySeatRequest class.
+    /// </summary>
+    public UpdateBodySeatRequest(System.Guid? bodySeatId = default(System.Guid?), string name = default(string), bool? paidSeat = default(bool?), bool? entitledToVote = default(bool?), System.Guid? seatTypeId = default(System.Guid?), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
     {
-        /// <summary>
-        /// Initializes a new instance of the UpdateBodySeatRequest class.
-        /// </summary>
-        public UpdateBodySeatRequest() { }
-
-        /// <summary>
-        /// Initializes a new instance of the UpdateBodySeatRequest class.
-        /// </summary>
-        public UpdateBodySeatRequest(System.Guid? bodySeatId = default(System.Guid?), string name = default(string), bool? paidSeat = default(bool?), bool? entitledToVote = default(bool?), System.Guid? seatTypeId = default(System.Guid?), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
-        {
-            BodySeatId = bodySeatId;
-            Name = name;
-            PaidSeat = paidSeat;
-            EntitledToVote = entitledToVote;
-            SeatTypeId = seatTypeId;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "bodySeatId")]
-        public System.Guid? BodySeatId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "paidSeat")]
-        public bool? PaidSeat { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "entitledToVote")]
-        public bool? EntitledToVote { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "seatTypeId")]
-        public System.Guid? SeatTypeId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
-        public System.DateTime? ValidFrom { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
-        public System.DateTime? ValidTo { get; set; }
-
+        BodySeatId = bodySeatId;
+        Name = name;
+        PaidSeat = paidSeat;
+        EntitledToVote = entitledToVote;
+        SeatTypeId = seatTypeId;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "bodySeatId")]
+    public System.Guid? BodySeatId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "paidSeat")]
+    public bool? PaidSeat { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "entitledToVote")]
+    public bool? EntitledToVote { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "seatTypeId")]
+    public System.Guid? SeatTypeId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
+    public System.DateTime? ValidFrom { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
+    public System.DateTime? ValidTo { get; set; }
+
 }

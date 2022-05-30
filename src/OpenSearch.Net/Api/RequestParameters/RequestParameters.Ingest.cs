@@ -48,78 +48,77 @@ using System.Text;
 using System.Linq.Expressions;
 
 // ReSharper disable once CheckNamespace
-namespace OpenSearch.Net.Specification.IngestApi
+namespace OpenSearch.Net.Specification.IngestApi;
+
+///<summary>Request options for DeletePipeline <para></para></summary>
+public class DeletePipelineRequestParameters : RequestParameters<DeletePipelineRequestParameters>
 {
-	///<summary>Request options for DeletePipeline <para></para></summary>
-	public class DeletePipelineRequestParameters : RequestParameters<DeletePipelineRequestParameters>
-	{
-		public override HttpMethod DefaultHttpMethod => HttpMethod.DELETE;
-		public override bool SupportsBody => false;
-		///<summary>Explicit operation timeout for connection to master node</summary>
-		public TimeSpan MasterTimeout
-		{
-			get => Q<TimeSpan>("master_timeout");
-			set => Q("master_timeout", value);
-		}
+    public override HttpMethod DefaultHttpMethod => HttpMethod.DELETE;
+    public override bool SupportsBody => false;
+    ///<summary>Explicit operation timeout for connection to master node</summary>
+    public TimeSpan MasterTimeout
+    {
+        get => Q<TimeSpan>("master_timeout");
+        set => Q("master_timeout", value);
+    }
 
-		///<summary>Explicit operation timeout</summary>
-		public TimeSpan Timeout
-		{
-			get => Q<TimeSpan>("timeout");
-			set => Q("timeout", value);
-		}
-	}
+    ///<summary>Explicit operation timeout</summary>
+    public TimeSpan Timeout
+    {
+        get => Q<TimeSpan>("timeout");
+        set => Q("timeout", value);
+    }
+}
 
-	///<summary>Request options for GetPipeline <para></para></summary>
-	public class GetPipelineRequestParameters : RequestParameters<GetPipelineRequestParameters>
-	{
-		public override HttpMethod DefaultHttpMethod => HttpMethod.GET;
-		public override bool SupportsBody => false;
-		///<summary>Explicit operation timeout for connection to master node</summary>
-		public TimeSpan MasterTimeout
-		{
-			get => Q<TimeSpan>("master_timeout");
-			set => Q("master_timeout", value);
-		}
-	}
+///<summary>Request options for GetPipeline <para></para></summary>
+public class GetPipelineRequestParameters : RequestParameters<GetPipelineRequestParameters>
+{
+    public override HttpMethod DefaultHttpMethod => HttpMethod.GET;
+    public override bool SupportsBody => false;
+    ///<summary>Explicit operation timeout for connection to master node</summary>
+    public TimeSpan MasterTimeout
+    {
+        get => Q<TimeSpan>("master_timeout");
+        set => Q("master_timeout", value);
+    }
+}
 
-	///<summary>Request options for GrokProcessorPatterns <para></para></summary>
-	public class GrokProcessorPatternsRequestParameters : RequestParameters<GrokProcessorPatternsRequestParameters>
-	{
-		public override HttpMethod DefaultHttpMethod => HttpMethod.GET;
-		public override bool SupportsBody => false;
-	}
+///<summary>Request options for GrokProcessorPatterns <para></para></summary>
+public class GrokProcessorPatternsRequestParameters : RequestParameters<GrokProcessorPatternsRequestParameters>
+{
+    public override HttpMethod DefaultHttpMethod => HttpMethod.GET;
+    public override bool SupportsBody => false;
+}
 
-	///<summary>Request options for PutPipeline <para></para></summary>
-	public class PutPipelineRequestParameters : RequestParameters<PutPipelineRequestParameters>
-	{
-		public override HttpMethod DefaultHttpMethod => HttpMethod.PUT;
-		public override bool SupportsBody => true;
-		///<summary>Explicit operation timeout for connection to master node</summary>
-		public TimeSpan MasterTimeout
-		{
-			get => Q<TimeSpan>("master_timeout");
-			set => Q("master_timeout", value);
-		}
+///<summary>Request options for PutPipeline <para></para></summary>
+public class PutPipelineRequestParameters : RequestParameters<PutPipelineRequestParameters>
+{
+    public override HttpMethod DefaultHttpMethod => HttpMethod.PUT;
+    public override bool SupportsBody => true;
+    ///<summary>Explicit operation timeout for connection to master node</summary>
+    public TimeSpan MasterTimeout
+    {
+        get => Q<TimeSpan>("master_timeout");
+        set => Q("master_timeout", value);
+    }
 
-		///<summary>Explicit operation timeout</summary>
-		public TimeSpan Timeout
-		{
-			get => Q<TimeSpan>("timeout");
-			set => Q("timeout", value);
-		}
-	}
+    ///<summary>Explicit operation timeout</summary>
+    public TimeSpan Timeout
+    {
+        get => Q<TimeSpan>("timeout");
+        set => Q("timeout", value);
+    }
+}
 
-	///<summary>Request options for SimulatePipeline <para></para></summary>
-	public class SimulatePipelineRequestParameters : RequestParameters<SimulatePipelineRequestParameters>
-	{
-		public override HttpMethod DefaultHttpMethod => HttpMethod.POST;
-		public override bool SupportsBody => true;
-		///<summary>Verbose mode. Display data output for each processor in executed pipeline</summary>
-		public bool? Verbose
-		{
-			get => Q<bool? >("verbose");
-			set => Q("verbose", value);
-		}
-	}
+///<summary>Request options for SimulatePipeline <para></para></summary>
+public class SimulatePipelineRequestParameters : RequestParameters<SimulatePipelineRequestParameters>
+{
+    public override HttpMethod DefaultHttpMethod => HttpMethod.POST;
+    public override bool SupportsBody => true;
+    ///<summary>Verbose mode. Display data output for each processor in executed pipeline</summary>
+    public bool? Verbose
+    {
+        get => Q<bool? >("verbose");
+        set => Q("verbose", value);
+    }
 }

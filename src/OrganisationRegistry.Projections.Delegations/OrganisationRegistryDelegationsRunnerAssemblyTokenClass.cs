@@ -1,6 +1,5 @@
-﻿namespace OrganisationRegistry.Projections.Delegations
+﻿namespace OrganisationRegistry.Projections.Delegations;
+
+public class OrganisationRegistryDelegationsRunnerAssemblyTokenClass
 {
-    public class OrganisationRegistryDelegationsRunnerAssemblyTokenClass
-    {
-    }
 }

@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Organisation.Exceptions
+namespace OrganisationRegistry.Organisation.Exceptions;
+
+public class LabelAlreadyCoupledToInThisPeriod : DomainException
 {
-    public class LabelAlreadyCoupledToInThisPeriod : DomainException
-    {
-        public LabelAlreadyCoupledToInThisPeriod()
-            : base("Dit label is in deze periode reeds gekoppeld aan de organisatie.") { }
-    }
+    public LabelAlreadyCoupledToInThisPeriod()
+        : base("Dit label is in deze periode reeds gekoppeld aan de organisatie.") { }
 }

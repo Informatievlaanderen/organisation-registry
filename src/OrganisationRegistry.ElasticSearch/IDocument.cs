@@ -1,14 +1,13 @@
-namespace OrganisationRegistry.ElasticSearch
+namespace OrganisationRegistry.ElasticSearch;
+
+using System;
+
+public interface IDocument
 {
-    using System;
+    Guid Id { get; set; }
 
-    public interface IDocument
-    {
-        Guid Id { get; set; }
+    string Name { get; set; }
+    int ChangeId { get; set; }
 
-        string Name { get; set; }
-        int ChangeId { get; set; }
-
-        DateTimeOffset ChangeTime { get; set; }
-    }
+    DateTimeOffset ChangeTime { get; set; }
 }

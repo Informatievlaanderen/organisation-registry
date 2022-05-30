@@ -1,59 +1,58 @@
-namespace OrganisationRegistry.Body.Events
+namespace OrganisationRegistry.Body.Events;
+
+using System;
+using System.Collections.Generic;
+
+public class AssignedPersonToBodySeat : BaseEvent<AssignedPersonToBodySeat>
 {
-    using System;
-    using System.Collections.Generic;
+    public Guid BodyId => Id;
 
-    public class AssignedPersonToBodySeat : BaseEvent<AssignedPersonToBodySeat>
+    public Guid BodyMandateId { get; }
+    public Guid BodySeatId { get; }
+    public Guid PersonId { get; }
+    public DateTime? ValidFrom { get; }
+    public DateTime? ValidTo { get; }
+
+    public string BodySeatNumber { get; }
+    public string BodySeatName { get; }
+    public string PersonFirstName { get; }
+    public string PersonName { get; }
+
+    public Dictionary<Guid, string> Contacts { get; }
+
+    public int? BodySeatTypeOrder { get; }
+
+    public AssignedPersonToBodySeat(
+        Guid bodyId,
+        Guid bodyMandateId,
+        Guid bodySeatId,
+        string bodySeatNumber,
+        string bodySeatName,
+        int? bodySeatTypeOrder,
+        Guid personId,
+        string personFirstName,
+        string personName,
+        Dictionary<Guid, string> contacts,
+        DateTime? validFrom,
+        DateTime? validTo)
     {
-        public Guid BodyId => Id;
+        Id = bodyId;
 
-        public Guid BodyMandateId { get; }
-        public Guid BodySeatId { get; }
-        public Guid PersonId { get; }
-        public DateTime? ValidFrom { get; }
-        public DateTime? ValidTo { get; }
+        BodyMandateId = bodyMandateId;
 
-        public string BodySeatNumber { get; }
-        public string BodySeatName { get; }
-        public string PersonFirstName { get; }
-        public string PersonName { get; }
+        BodySeatId = bodySeatId;
+        BodySeatNumber = bodySeatNumber;
+        BodySeatName = bodySeatName;
 
-        public Dictionary<Guid, string> Contacts { get; }
+        BodySeatTypeOrder = bodySeatTypeOrder;
 
-        public int? BodySeatTypeOrder { get; }
+        PersonId = personId;
+        PersonFirstName = personFirstName;
+        PersonName = personName;
 
-        public AssignedPersonToBodySeat(
-            Guid bodyId,
-            Guid bodyMandateId,
-            Guid bodySeatId,
-            string bodySeatNumber,
-            string bodySeatName,
-            int? bodySeatTypeOrder,
-            Guid personId,
-            string personFirstName,
-            string personName,
-            Dictionary<Guid, string> contacts,
-            DateTime? validFrom,
-            DateTime? validTo)
-        {
-            Id = bodyId;
+        Contacts = contacts;
 
-            BodyMandateId = bodyMandateId;
-
-            BodySeatId = bodySeatId;
-            BodySeatNumber = bodySeatNumber;
-            BodySeatName = bodySeatName;
-
-            BodySeatTypeOrder = bodySeatTypeOrder;
-
-            PersonId = personId;
-            PersonFirstName = personFirstName;
-            PersonName = personName;
-
-            Contacts = contacts;
-
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
 }

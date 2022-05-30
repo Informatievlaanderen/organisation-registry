@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Organisation.Exceptions
+namespace OrganisationRegistry.Organisation.Exceptions;
+
+public class UserCannotCoupleKboRegisteredOffice : DomainException
 {
-    public class UserCannotCoupleKboRegisteredOffice : DomainException
-    {
-        public UserCannotCoupleKboRegisteredOffice()
-            : base("Dit locatie type kan niet handmatig gekoppeld worden aan de organisatie.") { }
-    }
+    public UserCannotCoupleKboRegisteredOffice()
+        : base("Dit locatie type kan niet handmatig gekoppeld worden aan de organisatie.") { }
 }

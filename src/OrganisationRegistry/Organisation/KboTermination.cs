@@ -1,38 +1,37 @@
-namespace OrganisationRegistry.Organisation
+namespace OrganisationRegistry.Organisation;
+
+using System;
+
+public readonly struct KboTermination
 {
-    using System;
+    public DateTime Date { get; }
+    public string Code { get; }
+    public string Reason { get; }
 
-    public readonly struct KboTermination
+    public KboTermination(DateTime date, string code, string reason)
     {
-        public DateTime Date { get; }
-        public string Code { get; }
-        public string Reason { get; }
+        Date = date;
+        Code = code;
+        Reason = reason;
+    }
 
-        public KboTermination(DateTime date, string code, string reason)
-        {
-            Date = date;
-            Code = code;
-            Reason = reason;
-        }
+    public static KboTermination FromMagda(IMagdaTermination termination)
+    {
+        return new KboTermination(termination.Date, termination.Code, termination.Reason);
+    }
 
-        public static KboTermination FromMagda(IMagdaTermination termination)
-        {
-            return new KboTermination(termination.Date, termination.Code, termination.Reason);
-        }
+    public bool Equals(KboTermination other)
+    {
+        return Date.Equals(other.Date) && Code == other.Code && Reason == other.Reason;
+    }
 
-        public bool Equals(KboTermination other)
-        {
-            return Date.Equals(other.Date) && Code == other.Code && Reason == other.Reason;
-        }
+    public override bool Equals(object? obj)
+    {
+        return obj is KboTermination other && Equals(other);
+    }
 
-        public override bool Equals(object? obj)
-        {
-            return obj is KboTermination other && Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Date, Code, Reason);
-        }
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Date, Code, Reason);
     }
 }

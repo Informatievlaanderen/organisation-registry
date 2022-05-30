@@ -1,164 +1,163 @@
-﻿namespace OrganisationRegistry.SqlServer.Organisation.ScheduledActions.FormalFramework
+﻿namespace OrganisationRegistry.SqlServer.Organisation.ScheduledActions.FormalFramework;
+
+using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Linq;
+using System.Threading.Tasks;
+using Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Logging;
+using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.Organisation.Events;
+using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
+
+public class ActiveOrganisationFormalFrameworkListItem
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Data.Common;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Infrastructure;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Organisation.Events;
-    using RebuildProjection = OrganisationRegistry.Infrastructure.Events.RebuildProjection;
+    public Guid OrganisationFormalFrameworkId { get; set; }
 
-    public class ActiveOrganisationFormalFrameworkListItem
+    public Guid OrganisationId { get; set; }
+
+    public Guid FormalFrameworkId { get; set; }
+
+    public DateTime? ValidTo { get; set; }
+}
+
+public class ActiveOrganisationFormalFrameworkListConfiguration : EntityMappingConfiguration<ActiveOrganisationFormalFrameworkListItem>
+{
+    public override void Map(EntityTypeBuilder<ActiveOrganisationFormalFrameworkListItem> b)
     {
-        public Guid OrganisationFormalFrameworkId { get; set; }
+        b.ToTable(nameof(ActiveOrganisationFormalFrameworkListView.ProjectionTables.ActiveOrganisationFormalFrameworkList), WellknownSchemas.BackofficeSchema)
+            .HasKey(p => p.OrganisationFormalFrameworkId)
+            .IsClustered(false);
 
-        public Guid OrganisationId { get; set; }
+        b.Property(p => p.OrganisationId).IsRequired();
 
-        public Guid FormalFrameworkId { get; set; }
+        b.Property(p => p.FormalFrameworkId).IsRequired();
 
-        public DateTime? ValidTo { get; set; }
+        b.Property(p => p.ValidTo);
+
+        b.HasIndex(x => x.ValidTo);
+    }
+}
+
+public class ActiveOrganisationFormalFrameworkListView :
+    Projection<ActiveOrganisationFormalFrameworkListView>,
+    IEventHandler<OrganisationFormalFrameworkAdded>,
+    IEventHandler<OrganisationFormalFrameworkUpdated>,
+    IEventHandler<FormalFrameworkAssignedToOrganisation>,
+    IEventHandler<FormalFrameworkClearedFromOrganisation>
+{
+    private readonly Dictionary<Guid, ValidTo> _endDatePerOrganisationFormalFrameworkId;
+    private readonly IEventStore _eventStore;
+    private readonly IDateTimeProvider _dateTimeProvider;
+    public ActiveOrganisationFormalFrameworkListView(
+        ILogger<ActiveOrganisationFormalFrameworkListView> logger,
+        IEventStore eventStore,
+        IDateTimeProvider dateTimeProvider,
+        IContextFactory contextFactory) : base(logger, contextFactory)
+    {
+        _eventStore = eventStore;
+        _dateTimeProvider = dateTimeProvider;
+
+        using (var context = contextFactory.Create())
+        {
+            _endDatePerOrganisationFormalFrameworkId =
+                context.OrganisationFormalFrameworkList
+                    .AsNoTracking()
+                    .ToDictionary(
+                        item => item.OrganisationFormalFrameworkId,
+                        item => new ValidTo(item.ValidTo));
+        }
     }
 
-    public class ActiveOrganisationFormalFrameworkListConfiguration : EntityMappingConfiguration<ActiveOrganisationFormalFrameworkListItem>
+    protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+    public override string Schema => WellknownSchemas.BackofficeSchema;
+
+    public enum ProjectionTables
     {
-        public override void Map(EntityTypeBuilder<ActiveOrganisationFormalFrameworkListItem> b)
+        ActiveOrganisationFormalFrameworkList
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkAdded> message)
+    {
+        // cache ValidTo for the OrganisationFormalFrameworkId,
+        // because we will need it when FormalFrameworkAssignedToOrganisation is published, which does not contain the ValidTo.
+        _endDatePerOrganisationFormalFrameworkId.UpdateMemoryCache(message.Body.OrganisationFormalFrameworkId, new ValidTo(message.Body.ValidTo));
+        await Task.CompletedTask;
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkUpdated> message)
+    {
+        // cache ValidTo for the OrganisationFormalFrameworkId,
+        // because we will need it when FormalFrameworkAssignedToOrganisation is published, which does not contain the ValidTo.
+        var validTo = new ValidTo(message.Body.ValidTo);
+        _endDatePerOrganisationFormalFrameworkId.UpdateMemoryCache(message.Body.OrganisationFormalFrameworkId, validTo);
+
+        if (validTo.IsInPastOf(_dateTimeProvider.Today))
+            return;
+
+        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
         {
-            b.ToTable(nameof(ActiveOrganisationFormalFrameworkListView.ProjectionTables.ActiveOrganisationFormalFrameworkList), WellknownSchemas.BackofficeSchema)
-                .HasKey(p => p.OrganisationFormalFrameworkId)
-                .IsClustered(false);
+            var activeOrganisationFormalFramework =
+                context.ActiveOrganisationFormalFrameworkList.SingleOrDefault(item => item.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
 
-            b.Property(p => p.OrganisationId).IsRequired();
+            if (activeOrganisationFormalFramework == null)
+                return;
 
-            b.Property(p => p.FormalFrameworkId).IsRequired();
+            activeOrganisationFormalFramework.OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId;
+            activeOrganisationFormalFramework.OrganisationId = message.Body.OrganisationId;
+            activeOrganisationFormalFramework.FormalFrameworkId = message.Body.FormalFrameworkId;
+            activeOrganisationFormalFramework.ValidTo = validTo;
 
-            b.Property(p => p.ValidTo);
-
-            b.HasIndex(x => x.ValidTo);
+            await context.SaveChangesAsync();
         }
     }
 
-    public class ActiveOrganisationFormalFrameworkListView :
-        Projection<ActiveOrganisationFormalFrameworkListView>,
-        IEventHandler<OrganisationFormalFrameworkAdded>,
-        IEventHandler<OrganisationFormalFrameworkUpdated>,
-        IEventHandler<FormalFrameworkAssignedToOrganisation>,
-        IEventHandler<FormalFrameworkClearedFromOrganisation>
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkAssignedToOrganisation> message)
     {
-        private readonly Dictionary<Guid, ValidTo> _endDatePerOrganisationFormalFrameworkId;
-        private readonly IEventStore _eventStore;
-        private readonly IDateTimeProvider _dateTimeProvider;
-        public ActiveOrganisationFormalFrameworkListView(
-            ILogger<ActiveOrganisationFormalFrameworkListView> logger,
-            IEventStore eventStore,
-            IDateTimeProvider dateTimeProvider,
-            IContextFactory contextFactory) : base(logger, contextFactory)
-        {
-            _eventStore = eventStore;
-            _dateTimeProvider = dateTimeProvider;
+        var validTo = _endDatePerOrganisationFormalFrameworkId[message.Body.OrganisationFormalFrameworkId];
 
-            using (var context = contextFactory.Create())
-            {
-                _endDatePerOrganisationFormalFrameworkId =
-                    context.OrganisationFormalFrameworkList
-                        .AsNoTracking()
-                        .ToDictionary(
-                            item => item.OrganisationFormalFrameworkId,
-                            item => new ValidTo(item.ValidTo));
-            }
+        if (validTo.IsInPastOf(_dateTimeProvider.Today))
+            return;
+
+        var activeOrganisationFormalFrameworkListItem = new ActiveOrganisationFormalFrameworkListItem
+        {
+            OrganisationId = message.Body.OrganisationId,
+            FormalFrameworkId = message.Body.FormalFrameworkId,
+            OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId,
+            ValidTo = validTo
+        };
+
+        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
+        {
+            await context.ActiveOrganisationFormalFrameworkList.AddAsync(activeOrganisationFormalFrameworkListItem);
+            await context.SaveChangesAsync();
         }
+    }
 
-        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-        public override string Schema => WellknownSchemas.BackofficeSchema;
-
-        public enum ProjectionTables
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkClearedFromOrganisation> message)
+    {
+        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
         {
-            ActiveOrganisationFormalFrameworkList
-        }
+            var activeOrganisationFormalFramework =
+                context.ActiveOrganisationFormalFrameworkList
+                    .SingleOrDefault(item => item.OrganisationFormalFrameworkId ==
+                                             message.Body.OrganisationFormalFrameworkId);
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkAdded> message)
-        {
-            // cache ValidTo for the OrganisationFormalFrameworkId,
-            // because we will need it when FormalFrameworkAssignedToOrganisation is published, which does not contain the ValidTo.
-            _endDatePerOrganisationFormalFrameworkId.UpdateMemoryCache(message.Body.OrganisationFormalFrameworkId, new ValidTo(message.Body.ValidTo));
-            await Task.CompletedTask;
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFormalFrameworkUpdated> message)
-        {
-            // cache ValidTo for the OrganisationFormalFrameworkId,
-            // because we will need it when FormalFrameworkAssignedToOrganisation is published, which does not contain the ValidTo.
-            var validTo = new ValidTo(message.Body.ValidTo);
-            _endDatePerOrganisationFormalFrameworkId.UpdateMemoryCache(message.Body.OrganisationFormalFrameworkId, validTo);
-
-            if (validTo.IsInPastOf(_dateTimeProvider.Today))
+            if (activeOrganisationFormalFramework == null)
                 return;
 
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var activeOrganisationFormalFramework =
-                    context.ActiveOrganisationFormalFrameworkList.SingleOrDefault(item => item.OrganisationFormalFrameworkId == message.Body.OrganisationFormalFrameworkId);
+            context.ActiveOrganisationFormalFrameworkList.Remove(activeOrganisationFormalFramework);
 
-                if (activeOrganisationFormalFramework == null)
-                    return;
-
-                activeOrganisationFormalFramework.OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId;
-                activeOrganisationFormalFramework.OrganisationId = message.Body.OrganisationId;
-                activeOrganisationFormalFramework.FormalFrameworkId = message.Body.FormalFrameworkId;
-                activeOrganisationFormalFramework.ValidTo = validTo;
-
-                await context.SaveChangesAsync();
-            }
+            await context.SaveChangesAsync();
         }
+    }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkAssignedToOrganisation> message)
-        {
-            var validTo = _endDatePerOrganisationFormalFrameworkId[message.Body.OrganisationFormalFrameworkId];
-
-            if (validTo.IsInPastOf(_dateTimeProvider.Today))
-                return;
-
-            var activeOrganisationFormalFrameworkListItem = new ActiveOrganisationFormalFrameworkListItem
-            {
-                OrganisationId = message.Body.OrganisationId,
-                FormalFrameworkId = message.Body.FormalFrameworkId,
-                OrganisationFormalFrameworkId = message.Body.OrganisationFormalFrameworkId,
-                ValidTo = validTo
-            };
-
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                await context.ActiveOrganisationFormalFrameworkList.AddAsync(activeOrganisationFormalFrameworkListItem);
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FormalFrameworkClearedFromOrganisation> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var activeOrganisationFormalFramework =
-                    context.ActiveOrganisationFormalFrameworkList
-                        .SingleOrDefault(item => item.OrganisationFormalFrameworkId ==
-                                                 message.Body.OrganisationFormalFrameworkId);
-
-                if (activeOrganisationFormalFramework == null)
-                    return;
-
-                context.ActiveOrganisationFormalFrameworkList.Remove(activeOrganisationFormalFramework);
-
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
-        {
-            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
-        }
+    public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+    {
+        await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
     }
 }

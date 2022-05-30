@@ -1,51 +1,50 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.ContactType.Requests
+﻿namespace OrganisationRegistry.Api.Backoffice.Parameters.ContactType.Requests;
+
+using System;
+using FluentValidation;
+using OrganisationRegistry.ContactType;
+using OrganisationRegistry.ContactType.Commands;
+using SqlServer.ContactType;
+
+public class UpdateContactTypeInternalRequest
 {
-    using System;
-    using FluentValidation;
-    using OrganisationRegistry.ContactType;
-    using OrganisationRegistry.ContactType.Commands;
-    using SqlServer.ContactType;
+    public Guid ContactTypeId { get; set; }
+    public UpdateContactTypeRequest Body { get; set; }
 
-    public class UpdateContactTypeInternalRequest
+    public UpdateContactTypeInternalRequest(Guid contactTypeId, UpdateContactTypeRequest body)
     {
-        public Guid ContactTypeId { get; set; }
-        public UpdateContactTypeRequest Body { get; set; }
-
-        public UpdateContactTypeInternalRequest(Guid contactTypeId, UpdateContactTypeRequest body)
-        {
-            ContactTypeId = contactTypeId;
-            Body = body;
-        }
+        ContactTypeId = contactTypeId;
+        Body = body;
     }
+}
 
-    public class UpdateContactTypeRequest
+public class UpdateContactTypeRequest
+{
+    public string Name { get; set; } = null!;
+}
+
+public class UpdateContactTypeRequestValidator : AbstractValidator<UpdateContactTypeInternalRequest>
+{
+    public UpdateContactTypeRequestValidator()
     {
-        public string Name { get; set; } = null!;
+        RuleFor(x => x.ContactTypeId)
+            .NotEmpty()
+            .WithMessage("Id is required.");
+
+        RuleFor(x => x.Body.Name)
+            .NotEmpty()
+            .WithMessage("Name is required.");
+
+        RuleFor(x => x.Body.Name)
+            .Length(0, ContactTypeListConfiguration.NameLength)
+            .WithMessage($"Name cannot be longer than {ContactTypeListConfiguration.NameLength}.");
     }
+}
 
-    public class UpdateContactTypeRequestValidator : AbstractValidator<UpdateContactTypeInternalRequest>
-    {
-        public UpdateContactTypeRequestValidator()
-        {
-            RuleFor(x => x.ContactTypeId)
-                .NotEmpty()
-                .WithMessage("Id is required.");
-
-            RuleFor(x => x.Body.Name)
-                .NotEmpty()
-                .WithMessage("Name is required.");
-
-            RuleFor(x => x.Body.Name)
-                .Length(0, ContactTypeListConfiguration.NameLength)
-                .WithMessage($"Name cannot be longer than {ContactTypeListConfiguration.NameLength}.");
-        }
-    }
-
-    public static class UpdateContactTypeRequestMapping
-    {
-        public static UpdateContactType Map(UpdateContactTypeInternalRequest message)
-            => new(
-                new ContactTypeId(message.ContactTypeId),
-                message.Body.Name);
-    }
+public static class UpdateContactTypeRequestMapping
+{
+    public static UpdateContactType Map(UpdateContactTypeInternalRequest message)
+        => new(
+            new ContactTypeId(message.ContactTypeId),
+            message.Body.Name);
 }

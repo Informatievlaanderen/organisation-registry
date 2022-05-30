@@ -1,97 +1,96 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Contact
+﻿namespace OrganisationRegistry.Api.Backoffice.Organisation.Contact;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using Infrastructure.Search;
+using Infrastructure.Search.Filtering;
+using Infrastructure.Search.Sorting;
+using SqlServer.Infrastructure;
+using SqlServer.Organisation;
+
+public class OrganisationContactListQueryResult
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Linq.Expressions;
-    using Infrastructure.Search;
-    using Infrastructure.Search.Filtering;
-    using Infrastructure.Search.Sorting;
-    using SqlServer.Infrastructure;
-    using SqlServer.Organisation;
+    public Guid OrganisationContactId { get; set; }
+    public string ContactTypeName { get; set; }
+    public string ContactValue { get; set; }
+    public DateTime? ValidFrom { get; set; }
+    public DateTime? ValidTo { get; set; }
 
-    public class OrganisationContactListQueryResult
+    public bool IsActive { get; }
+
+    public OrganisationContactListQueryResult(
+        Guid organisationContactId,
+        string contactTypeName,
+        string contactValue,
+        DateTime? validFrom,
+        DateTime? validTo)
     {
-        public Guid OrganisationContactId { get; set; }
-        public string ContactTypeName { get; set; }
-        public string ContactValue { get; set; }
-        public DateTime? ValidFrom { get; set; }
-        public DateTime? ValidTo { get; set; }
+        OrganisationContactId = organisationContactId;
+        ContactTypeName = contactTypeName;
+        ContactValue = contactValue;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
 
-        public bool IsActive { get; }
+        IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
+    }
+}
 
-        public OrganisationContactListQueryResult(
-            Guid organisationContactId,
-            string contactTypeName,
-            string contactValue,
-            DateTime? validFrom,
-            DateTime? validTo)
-        {
-            OrganisationContactId = organisationContactId;
-            ContactTypeName = contactTypeName;
-            ContactValue = contactValue;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
+public class OrganisationContactListQuery : Query<OrganisationContactListItem, OrganisationContactListItemFilter, OrganisationContactListQueryResult>
+{
+    private readonly OrganisationRegistryContext _context;
+    private readonly Guid _organisationId;
 
-            IsActive = new Period(new ValidFrom(validFrom), new ValidTo(validTo)).OverlapsWith(DateTime.Today);
-        }
+    protected override ISorting Sorting => new OrganisationContactListSorting();
+
+    protected override Expression<Func<OrganisationContactListItem, OrganisationContactListQueryResult>> Transformation =>
+        x => new OrganisationContactListQueryResult(
+            x.OrganisationContactId,
+            x.ContactTypeName,
+            x.ContactValue,
+            x.ValidFrom,
+            x.ValidTo);
+
+    public OrganisationContactListQuery(OrganisationRegistryContext context, Guid organisationId)
+    {
+        _context = context;
+        _organisationId = organisationId;
     }
 
-    public class OrganisationContactListQuery : Query<OrganisationContactListItem, OrganisationContactListItemFilter, OrganisationContactListQueryResult>
+    protected override IQueryable<OrganisationContactListItem> Filter(FilteringHeader<OrganisationContactListItemFilter> filtering)
     {
-        private readonly OrganisationRegistryContext _context;
-        private readonly Guid _organisationId;
+        var organisationContacts = _context.OrganisationContactList
+            .AsQueryable()
+            .Where(x => x.OrganisationId == _organisationId).AsQueryable();
 
-        protected override ISorting Sorting => new OrganisationContactListSorting();
-
-        protected override Expression<Func<OrganisationContactListItem, OrganisationContactListQueryResult>> Transformation =>
-            x => new OrganisationContactListQueryResult(
-                x.OrganisationContactId,
-                x.ContactTypeName,
-                x.ContactValue,
-                x.ValidFrom,
-                x.ValidTo);
-
-        public OrganisationContactListQuery(OrganisationRegistryContext context, Guid organisationId)
-        {
-            _context = context;
-            _organisationId = organisationId;
-        }
-
-        protected override IQueryable<OrganisationContactListItem> Filter(FilteringHeader<OrganisationContactListItemFilter> filtering)
-        {
-            var organisationContacts = _context.OrganisationContactList
-                .AsQueryable()
-                .Where(x => x.OrganisationId == _organisationId).AsQueryable();
-
-            if (filtering.Filter is not { } filter)
-                return organisationContacts;
-
-            if (filter.ActiveOnly)
-                organisationContacts = organisationContacts.Where(x =>
-                    (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
-                    (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));
-
+        if (filtering.Filter is not { } filter)
             return organisationContacts;
-        }
 
-        private class OrganisationContactListSorting : ISorting
-        {
-            public IEnumerable<string> SortableFields { get; } = new[]
-            {
-                nameof(OrganisationContactListItem.ContactTypeName),
-                nameof(OrganisationContactListItem.ContactValue),
-                nameof(OrganisationContactListItem.ValidFrom),
-                nameof(OrganisationContactListItem.ValidTo)
-            };
+        if (filter.ActiveOnly)
+            organisationContacts = organisationContacts.Where(x =>
+                (!x.ValidFrom.HasValue || x.ValidFrom <= DateTime.Today) &&
+                (!x.ValidTo.HasValue || x.ValidTo >= DateTime.Today));
 
-            public SortingHeader DefaultSortingHeader { get; } =
-                new SortingHeader(nameof(OrganisationContactListItem.ContactTypeName), SortOrder.Ascending);
-        }
+        return organisationContacts;
     }
 
-    public class OrganisationContactListItemFilter
+    private class OrganisationContactListSorting : ISorting
     {
-        public bool ActiveOnly { get; set; }
+        public IEnumerable<string> SortableFields { get; } = new[]
+        {
+            nameof(OrganisationContactListItem.ContactTypeName),
+            nameof(OrganisationContactListItem.ContactValue),
+            nameof(OrganisationContactListItem.ValidFrom),
+            nameof(OrganisationContactListItem.ValidTo)
+        };
+
+        public SortingHeader DefaultSortingHeader { get; } =
+            new SortingHeader(nameof(OrganisationContactListItem.ContactTypeName), SortOrder.Ascending);
     }
+}
+
+public class OrganisationContactListItemFilter
+{
+    public bool ActiveOnly { get; set; }
 }

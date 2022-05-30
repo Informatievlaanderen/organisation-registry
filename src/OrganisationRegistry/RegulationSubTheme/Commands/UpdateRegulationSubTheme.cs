@@ -1,23 +1,22 @@
-namespace OrganisationRegistry.RegulationSubTheme.Commands
+namespace OrganisationRegistry.RegulationSubTheme.Commands;
+
+using RegulationTheme;
+
+public class UpdateRegulationSubTheme : BaseCommand<RegulationSubThemeId>
 {
-    using RegulationTheme;
+    public RegulationSubThemeId RegulationSubThemeId => Id;
 
-    public class UpdateRegulationSubTheme : BaseCommand<RegulationSubThemeId>
+    public RegulationSubThemeName Name { get; }
+    public RegulationThemeId RegulationThemeId { get; }
+
+    public UpdateRegulationSubTheme(
+        RegulationSubThemeId regulationSubThemeId,
+        RegulationSubThemeName name,
+        RegulationThemeId regulationThemeId)
     {
-        public RegulationSubThemeId RegulationSubThemeId => Id;
+        Id = regulationSubThemeId;
 
-        public RegulationSubThemeName Name { get; }
-        public RegulationThemeId RegulationThemeId { get; }
-
-        public UpdateRegulationSubTheme(
-            RegulationSubThemeId regulationSubThemeId,
-            RegulationSubThemeName name,
-            RegulationThemeId regulationThemeId)
-        {
-            Id = regulationSubThemeId;
-
-            Name = name;
-            RegulationThemeId = regulationThemeId;
-        }
+        Name = name;
+        RegulationThemeId = regulationThemeId;
     }
 }

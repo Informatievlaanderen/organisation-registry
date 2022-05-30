@@ -1,10 +1,9 @@
-namespace OrganisationRegistry.Api.Backoffice.Organisation.Detail
-{
-    using System;
+namespace OrganisationRegistry.Api.Backoffice.Organisation.Detail;
 
-    public class OrganisationTerminationRequest
-    {
-        public DateTime DateOfTermination { get; set; }
-        public bool ForceKboTermination { get; set; }
-    }
+using System;
+
+public class OrganisationTerminationRequest
+{
+    public DateTime DateOfTermination { get; set; }
+    public bool ForceKboTermination { get; set; }
 }

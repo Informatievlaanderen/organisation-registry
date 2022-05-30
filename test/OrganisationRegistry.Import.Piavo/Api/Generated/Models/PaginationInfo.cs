@@ -2,45 +2,44 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class PaginationInfo
 {
-    public partial class PaginationInfo
+    /// <summary>
+    /// Initializes a new instance of the PaginationInfo class.
+    /// </summary>
+    public PaginationInfo() { }
+
+    /// <summary>
+    /// Initializes a new instance of the PaginationInfo class.
+    /// </summary>
+    public PaginationInfo(int? currentPage = default(int?), int? itemsPerPage = default(int?), int? totalItems = default(int?), int? totalPages = default(int?))
     {
-        /// <summary>
-        /// Initializes a new instance of the PaginationInfo class.
-        /// </summary>
-        public PaginationInfo() { }
-
-        /// <summary>
-        /// Initializes a new instance of the PaginationInfo class.
-        /// </summary>
-        public PaginationInfo(int? currentPage = default(int?), int? itemsPerPage = default(int?), int? totalItems = default(int?), int? totalPages = default(int?))
-        {
-            CurrentPage = currentPage;
-            ItemsPerPage = itemsPerPage;
-            TotalItems = totalItems;
-            TotalPages = totalPages;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "currentPage")]
-        public int? CurrentPage { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "itemsPerPage")]
-        public int? ItemsPerPage { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "totalItems")]
-        public int? TotalItems { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "totalPages")]
-        public int? TotalPages { get; private set; }
-
+        CurrentPage = currentPage;
+        ItemsPerPage = itemsPerPage;
+        TotalItems = totalItems;
+        TotalPages = totalPages;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "currentPage")]
+    public int? CurrentPage { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "itemsPerPage")]
+    public int? ItemsPerPage { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "totalItems")]
+    public int? TotalItems { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "totalPages")]
+    public int? TotalPages { get; private set; }
+
 }

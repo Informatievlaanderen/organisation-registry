@@ -2,47 +2,46 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class UpdateBodyFormalFrameworkRequest
 {
-    public partial class UpdateBodyFormalFrameworkRequest
+    /// <summary>
+    /// Initializes a new instance of the UpdateBodyFormalFrameworkRequest
+    /// class.
+    /// </summary>
+    public UpdateBodyFormalFrameworkRequest() { }
+
+    /// <summary>
+    /// Initializes a new instance of the UpdateBodyFormalFrameworkRequest
+    /// class.
+    /// </summary>
+    public UpdateBodyFormalFrameworkRequest(System.Guid? bodyFormalFrameworkId = default(System.Guid?), System.Guid? formalFrameworkId = default(System.Guid?), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
     {
-        /// <summary>
-        /// Initializes a new instance of the UpdateBodyFormalFrameworkRequest
-        /// class.
-        /// </summary>
-        public UpdateBodyFormalFrameworkRequest() { }
-
-        /// <summary>
-        /// Initializes a new instance of the UpdateBodyFormalFrameworkRequest
-        /// class.
-        /// </summary>
-        public UpdateBodyFormalFrameworkRequest(System.Guid? bodyFormalFrameworkId = default(System.Guid?), System.Guid? formalFrameworkId = default(System.Guid?), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
-        {
-            BodyFormalFrameworkId = bodyFormalFrameworkId;
-            FormalFrameworkId = formalFrameworkId;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "bodyFormalFrameworkId")]
-        public System.Guid? BodyFormalFrameworkId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "formalFrameworkId")]
-        public System.Guid? FormalFrameworkId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
-        public System.DateTime? ValidFrom { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
-        public System.DateTime? ValidTo { get; set; }
-
+        BodyFormalFrameworkId = bodyFormalFrameworkId;
+        FormalFrameworkId = formalFrameworkId;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "bodyFormalFrameworkId")]
+    public System.Guid? BodyFormalFrameworkId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "formalFrameworkId")]
+    public System.Guid? FormalFrameworkId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
+    public System.DateTime? ValidFrom { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
+    public System.DateTime? ValidTo { get; set; }
+
 }

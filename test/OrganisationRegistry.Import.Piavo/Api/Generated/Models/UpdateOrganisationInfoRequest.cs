@@ -2,65 +2,64 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class UpdateOrganisationInfoRequest
 {
-    public partial class UpdateOrganisationInfoRequest
+    /// <summary>
+    /// Initializes a new instance of the UpdateOrganisationInfoRequest
+    /// class.
+    /// </summary>
+    public UpdateOrganisationInfoRequest() { }
+
+    /// <summary>
+    /// Initializes a new instance of the UpdateOrganisationInfoRequest
+    /// class.
+    /// </summary>
+    public UpdateOrganisationInfoRequest(string name = default(string), string description = default(string), string shortName = default(string), System.Collections.Generic.IList<System.Guid?> purposeIds = default(System.Collections.Generic.IList<System.Guid?>), bool? showOnVlaamseOverheidSites = default(bool?), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
     {
-        /// <summary>
-        /// Initializes a new instance of the UpdateOrganisationInfoRequest
-        /// class.
-        /// </summary>
-        public UpdateOrganisationInfoRequest() { }
-
-        /// <summary>
-        /// Initializes a new instance of the UpdateOrganisationInfoRequest
-        /// class.
-        /// </summary>
-        public UpdateOrganisationInfoRequest(string name = default(string), string description = default(string), string shortName = default(string), System.Collections.Generic.IList<System.Guid?> purposeIds = default(System.Collections.Generic.IList<System.Guid?>), bool? showOnVlaamseOverheidSites = default(bool?), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
-        {
-            Name = name;
-            Description = description;
-            ShortName = shortName;
-            PurposeIds = purposeIds;
-            ShowOnVlaamseOverheidSites = showOnVlaamseOverheidSites;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "description")]
-        public string Description { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "shortName")]
-        public string ShortName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "purposeIds")]
-        public System.Collections.Generic.IList<System.Guid?> PurposeIds { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "showOnVlaamseOverheidSites")]
-        public bool? ShowOnVlaamseOverheidSites { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
-        public System.DateTime? ValidFrom { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
-        public System.DateTime? ValidTo { get; set; }
-
+        Name = name;
+        Description = description;
+        ShortName = shortName;
+        PurposeIds = purposeIds;
+        ShowOnVlaamseOverheidSites = showOnVlaamseOverheidSites;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "description")]
+    public string Description { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "shortName")]
+    public string ShortName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "purposeIds")]
+    public System.Collections.Generic.IList<System.Guid?> PurposeIds { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "showOnVlaamseOverheidSites")]
+    public bool? ShowOnVlaamseOverheidSites { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
+    public System.DateTime? ValidFrom { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
+    public System.DateTime? ValidTo { get; set; }
+
 }

@@ -1,9 +1,8 @@
-﻿namespace OrganisationRegistry.Api.Infrastructure
-{
-    public class CsvFormatterOptions
-    {
-        public bool UseSingleLineHeaderInCsv { get; set; } = true;
+﻿namespace OrganisationRegistry.Api.Infrastructure;
 
-        public string CsvDelimiter { get; set; } = ";";
-    }
+public class CsvFormatterOptions
+{
+    public bool UseSingleLineHeaderInCsv { get; set; } = true;
+
+    public string CsvDelimiter { get; set; } = ";";
 }

@@ -1,7 +1,6 @@
-namespace OrganisationRegistry.Api.Infrastructure
-{
-    public class EmptyResult
-    {
+namespace OrganisationRegistry.Api.Infrastructure;
 
-    }
+public class EmptyResult
+{
+
 }

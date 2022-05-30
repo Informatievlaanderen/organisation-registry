@@ -1,62 +1,61 @@
-namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassification.Requests
+namespace OrganisationRegistry.Api.Backoffice.Parameters.OrganisationClassification.Requests;
+
+using System;
+using FluentValidation;
+using OrganisationRegistry.OrganisationClassification;
+using OrganisationRegistry.OrganisationClassification.Commands;
+using OrganisationRegistry.OrganisationClassificationType;
+using SqlServer.OrganisationClassification;
+
+public class CreateOrganisationClassificationRequest
 {
-    using System;
-    using FluentValidation;
-    using OrganisationRegistry.OrganisationClassification;
-    using OrganisationRegistry.OrganisationClassification.Commands;
-    using OrganisationRegistry.OrganisationClassificationType;
-    using SqlServer.OrganisationClassification;
+    public Guid Id { get; set; }
 
-    public class CreateOrganisationClassificationRequest
+    public string Name { get; set; } = null!;
+
+    public int Order { get; set; }
+
+    public string? ExternalKey { get; set; }
+
+    public bool Active { get; set; }
+
+    public Guid OrganisationClassificationTypeId { get; set; }
+}
+
+public class CreateOrganisationClassificationRequestValidator : AbstractValidator<CreateOrganisationClassificationRequest>
+{
+    public CreateOrganisationClassificationRequestValidator()
     {
-        public Guid Id { get; set; }
+        RuleFor(x => x.Id)
+            .NotEmpty()
+            .WithMessage("Id is required.");
 
-        public string Name { get; set; } = null!;
+        RuleFor(x => x.Name)
+            .NotEmpty()
+            .WithMessage("Name is required.");
 
-        public int Order { get; set; }
+        RuleFor(x => x.Name)
+            .Length(0, OrganisationClassificationListConfiguration.NameLength)
+            .WithMessage($"Name cannot be longer than {OrganisationClassificationListConfiguration.NameLength}.");
 
-        public string? ExternalKey { get; set; }
+        RuleFor(x => x.Order)
+            .GreaterThan(0)
+            .WithMessage("Order must be greater than 0.");
 
-        public bool Active { get; set; }
-
-        public Guid OrganisationClassificationTypeId { get; set; }
+        RuleFor(x => x.OrganisationClassificationTypeId)
+            .NotEmpty()
+            .WithMessage("OrganisationClassificationTypeId is required.");
     }
+}
 
-    public class CreateOrganisationClassificationRequestValidator : AbstractValidator<CreateOrganisationClassificationRequest>
-    {
-        public CreateOrganisationClassificationRequestValidator()
-        {
-            RuleFor(x => x.Id)
-                .NotEmpty()
-                .WithMessage("Id is required.");
-
-            RuleFor(x => x.Name)
-                .NotEmpty()
-                .WithMessage("Name is required.");
-
-            RuleFor(x => x.Name)
-                .Length(0, OrganisationClassificationListConfiguration.NameLength)
-                .WithMessage($"Name cannot be longer than {OrganisationClassificationListConfiguration.NameLength}.");
-
-            RuleFor(x => x.Order)
-                .GreaterThan(0)
-                .WithMessage("Order must be greater than 0.");
-
-            RuleFor(x => x.OrganisationClassificationTypeId)
-                .NotEmpty()
-                .WithMessage("OrganisationClassificationTypeId is required.");
-        }
-    }
-
-    public static class CreateOrganisationClassificationRequestMapping
-    {
-        public static CreateOrganisationClassification Map(CreateOrganisationClassificationRequest message)
-            => new(
-                new OrganisationClassificationId(message.Id),
-                new OrganisationClassificationName(message.Name),
-                message.Order,
-                message.ExternalKey,
-                message.Active,
-                new OrganisationClassificationTypeId(message.OrganisationClassificationTypeId));
-    }
+public static class CreateOrganisationClassificationRequestMapping
+{
+    public static CreateOrganisationClassification Map(CreateOrganisationClassificationRequest message)
+        => new(
+            new OrganisationClassificationId(message.Id),
+            new OrganisationClassificationName(message.Name),
+            message.Order,
+            message.ExternalKey,
+            message.Active,
+            new OrganisationClassificationTypeId(message.OrganisationClassificationTypeId));
 }

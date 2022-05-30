@@ -2,39 +2,38 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class UpdateBodyInfoRequest
 {
-    public partial class UpdateBodyInfoRequest
+    /// <summary>
+    /// Initializes a new instance of the UpdateBodyInfoRequest class.
+    /// </summary>
+    public UpdateBodyInfoRequest() { }
+
+    /// <summary>
+    /// Initializes a new instance of the UpdateBodyInfoRequest class.
+    /// </summary>
+    public UpdateBodyInfoRequest(string name = default(string), string shortName = default(string), string description = default(string))
     {
-        /// <summary>
-        /// Initializes a new instance of the UpdateBodyInfoRequest class.
-        /// </summary>
-        public UpdateBodyInfoRequest() { }
-
-        /// <summary>
-        /// Initializes a new instance of the UpdateBodyInfoRequest class.
-        /// </summary>
-        public UpdateBodyInfoRequest(string name = default(string), string shortName = default(string), string description = default(string))
-        {
-            Name = name;
-            ShortName = shortName;
-            Description = description;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "shortName")]
-        public string ShortName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "description")]
-        public string Description { get; set; }
-
+        Name = name;
+        ShortName = shortName;
+        Description = description;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "shortName")]
+    public string ShortName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "description")]
+    public string Description { get; set; }
+
 }

@@ -1,9 +1,8 @@
-﻿namespace OrganisationRegistry.Api.Backoffice.Admin.Task.Requests
+﻿namespace OrganisationRegistry.Api.Backoffice.Admin.Task.Requests;
+
+public enum TaskType
 {
-    public enum TaskType
-    {
-        RebuildProjection,
-        CompensatingAction,
-        SyncFromKbo
-    }
+    RebuildProjection,
+    CompensatingAction,
+    SyncFromKbo
 }

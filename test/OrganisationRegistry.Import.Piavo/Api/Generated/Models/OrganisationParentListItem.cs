@@ -2,57 +2,56 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class OrganisationParentListItem
 {
-    public partial class OrganisationParentListItem
+    /// <summary>
+    /// Initializes a new instance of the OrganisationParentListItem class.
+    /// </summary>
+    public OrganisationParentListItem() { }
+
+    /// <summary>
+    /// Initializes a new instance of the OrganisationParentListItem class.
+    /// </summary>
+    public OrganisationParentListItem(System.Guid? organisationOrganisationParentId = default(System.Guid?), System.Guid? organisationId = default(System.Guid?), System.Guid? parentOrganisationId = default(System.Guid?), string parentOrganisationName = default(string), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
     {
-        /// <summary>
-        /// Initializes a new instance of the OrganisationParentListItem class.
-        /// </summary>
-        public OrganisationParentListItem() { }
-
-        /// <summary>
-        /// Initializes a new instance of the OrganisationParentListItem class.
-        /// </summary>
-        public OrganisationParentListItem(System.Guid? organisationOrganisationParentId = default(System.Guid?), System.Guid? organisationId = default(System.Guid?), System.Guid? parentOrganisationId = default(System.Guid?), string parentOrganisationName = default(string), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
-        {
-            OrganisationOrganisationParentId = organisationOrganisationParentId;
-            OrganisationId = organisationId;
-            ParentOrganisationId = parentOrganisationId;
-            ParentOrganisationName = parentOrganisationName;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationOrganisationParentId")]
-        public System.Guid? OrganisationOrganisationParentId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationId")]
-        public System.Guid? OrganisationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "parentOrganisationId")]
-        public System.Guid? ParentOrganisationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "parentOrganisationName")]
-        public string ParentOrganisationName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
-        public System.DateTime? ValidFrom { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
-        public System.DateTime? ValidTo { get; set; }
-
+        OrganisationOrganisationParentId = organisationOrganisationParentId;
+        OrganisationId = organisationId;
+        ParentOrganisationId = parentOrganisationId;
+        ParentOrganisationName = parentOrganisationName;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationOrganisationParentId")]
+    public System.Guid? OrganisationOrganisationParentId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationId")]
+    public System.Guid? OrganisationId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "parentOrganisationId")]
+    public System.Guid? ParentOrganisationId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "parentOrganisationName")]
+    public string ParentOrganisationName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
+    public System.DateTime? ValidFrom { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
+    public System.DateTime? ValidTo { get; set; }
+
 }

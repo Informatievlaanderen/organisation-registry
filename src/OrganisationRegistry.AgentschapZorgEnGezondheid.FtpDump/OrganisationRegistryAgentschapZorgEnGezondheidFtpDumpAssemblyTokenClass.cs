@@ -1,4 +1,3 @@
-namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
-{
-    public class OrganisationRegistryAgentschapZorgEnGezondheidFtpDumpAssemblyTokenClass { }
-}
+namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump;
+
+public class OrganisationRegistryAgentschapZorgEnGezondheidFtpDumpAssemblyTokenClass { }

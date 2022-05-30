@@ -1,9 +1,8 @@
-namespace OrganisationRegistry.LifecyclePhaseType
+namespace OrganisationRegistry.LifecyclePhaseType;
+
+// Dont rename! Used in events!
+public enum LifecyclePhaseTypeStatus
 {
-    // Dont rename! Used in events!
-    public enum LifecyclePhaseTypeStatus
-    {
-        NonDefault,
-        Default
-    }
+    NonDefault,
+    Default
 }

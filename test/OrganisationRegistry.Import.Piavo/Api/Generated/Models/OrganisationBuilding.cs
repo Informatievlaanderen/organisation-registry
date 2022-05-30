@@ -2,51 +2,50 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class OrganisationBuilding
 {
-    public partial class OrganisationBuilding
+    /// <summary>
+    /// Initializes a new instance of the OrganisationBuilding class.
+    /// </summary>
+    public OrganisationBuilding() { }
+
+    /// <summary>
+    /// Initializes a new instance of the OrganisationBuilding class.
+    /// </summary>
+    public OrganisationBuilding(System.Guid? organisationBuildingId = default(System.Guid?), System.Guid? buildingId = default(System.Guid?), string buildingName = default(string), bool? isMainBuilding = default(bool?), Period validity = default(Period))
     {
-        /// <summary>
-        /// Initializes a new instance of the OrganisationBuilding class.
-        /// </summary>
-        public OrganisationBuilding() { }
-
-        /// <summary>
-        /// Initializes a new instance of the OrganisationBuilding class.
-        /// </summary>
-        public OrganisationBuilding(System.Guid? organisationBuildingId = default(System.Guid?), System.Guid? buildingId = default(System.Guid?), string buildingName = default(string), bool? isMainBuilding = default(bool?), Period validity = default(Period))
-        {
-            OrganisationBuildingId = organisationBuildingId;
-            BuildingId = buildingId;
-            BuildingName = buildingName;
-            IsMainBuilding = isMainBuilding;
-            Validity = validity;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationBuildingId")]
-        public System.Guid? OrganisationBuildingId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "buildingId")]
-        public System.Guid? BuildingId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "buildingName")]
-        public string BuildingName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "isMainBuilding")]
-        public bool? IsMainBuilding { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validity")]
-        public Period Validity { get; set; }
-
+        OrganisationBuildingId = organisationBuildingId;
+        BuildingId = buildingId;
+        BuildingName = buildingName;
+        IsMainBuilding = isMainBuilding;
+        Validity = validity;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationBuildingId")]
+    public System.Guid? OrganisationBuildingId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "buildingId")]
+    public System.Guid? BuildingId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "buildingName")]
+    public string BuildingName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "isMainBuilding")]
+    public bool? IsMainBuilding { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validity")]
+    public Period Validity { get; set; }
+
 }

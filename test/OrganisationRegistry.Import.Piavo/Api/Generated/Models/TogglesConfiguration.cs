@@ -2,132 +2,131 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class TogglesConfiguration
 {
-    public partial class TogglesConfiguration
+    /// <summary>
+    /// Initializes a new instance of the TogglesConfiguration class.
+    /// </summary>
+    public TogglesConfiguration() { }
+
+    /// <summary>
+    /// Initializes a new instance of the TogglesConfiguration class.
+    /// </summary>
+    public TogglesConfiguration(System.DateTime? created = default(System.DateTime?),
+        bool? applicationAvailable = default(bool?),
+        bool? logToElasticSearch = default(bool?),
+        bool? apiAvailable = default(bool?),
+        bool? elasticSearchProjectionsAvailable = default(bool?),
+        bool? vlaanderenBeNotifierAvailable = default(bool?),
+        bool? delegationsRunnerAvailable = default(bool?),
+        bool? elasticSearchJanitorAvailable = default(bool?),
+        bool? agentschapZorgEnGezondheidFtpDumpAvailable = default(bool?),
+        bool? sendVlaanderenBeNotifierMails = default(bool?),
+        bool? reportingRunnerAvailable = default(bool?),
+        bool? enableReporting = default(bool?),
+        bool? enableVademecumParticipationReporting = default(bool?),
+        bool? enableFormalFrameworkBodiesReporting = default(bool?),
+        bool? enableMonitoring = default(bool?),
+        bool? enableOrganisationRelations = default(bool?))
     {
-        /// <summary>
-        /// Initializes a new instance of the TogglesConfiguration class.
-        /// </summary>
-        public TogglesConfiguration() { }
-
-        /// <summary>
-        /// Initializes a new instance of the TogglesConfiguration class.
-        /// </summary>
-        public TogglesConfiguration(System.DateTime? created = default(System.DateTime?),
-            bool? applicationAvailable = default(bool?),
-            bool? logToElasticSearch = default(bool?),
-            bool? apiAvailable = default(bool?),
-            bool? elasticSearchProjectionsAvailable = default(bool?),
-            bool? vlaanderenBeNotifierAvailable = default(bool?),
-            bool? delegationsRunnerAvailable = default(bool?),
-            bool? elasticSearchJanitorAvailable = default(bool?),
-            bool? agentschapZorgEnGezondheidFtpDumpAvailable = default(bool?),
-            bool? sendVlaanderenBeNotifierMails = default(bool?),
-            bool? reportingRunnerAvailable = default(bool?),
-            bool? enableReporting = default(bool?),
-            bool? enableVademecumParticipationReporting = default(bool?),
-            bool? enableFormalFrameworkBodiesReporting = default(bool?),
-            bool? enableMonitoring = default(bool?),
-            bool? enableOrganisationRelations = default(bool?))
-        {
-            Created = created;
-            ApplicationAvailable = applicationAvailable;
-            LogToElasticSearch = logToElasticSearch;
-            ApiAvailable = apiAvailable;
-            ElasticSearchProjectionsAvailable = elasticSearchProjectionsAvailable;
-            VlaanderenBeNotifierAvailable = vlaanderenBeNotifierAvailable;
-            DelegationsRunnerAvailable = delegationsRunnerAvailable;
-            ElasticSearchJanitorAvailable = elasticSearchJanitorAvailable;
-            AgentschapZorgEnGezondheidFtpDumpAvailable = agentschapZorgEnGezondheidFtpDumpAvailable;
-            SendVlaanderenBeNotifierMails = sendVlaanderenBeNotifierMails;
-            ReportingRunnerAvailable = reportingRunnerAvailable;
-            EnableReporting = enableReporting;
-            EnableVademecumParticipationReporting = enableVademecumParticipationReporting;
-            EnableFormalFrameworkBodiesReporting = enableFormalFrameworkBodiesReporting;
-            EnableMonitoring = enableMonitoring;
-            EnableOrganisationRelations = enableOrganisationRelations;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "created")]
-        public System.DateTime? Created { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "applicationAvailable")]
-        public bool? ApplicationAvailable { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "logToElasticSearch")]
-        public bool? LogToElasticSearch { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "apiAvailable")]
-        public bool? ApiAvailable { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "elasticSearchProjectionsAvailable")]
-        public bool? ElasticSearchProjectionsAvailable { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "vlaanderenBeNotifierAvailable")]
-        public bool? VlaanderenBeNotifierAvailable { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "delegationsRunnerAvailable")]
-        public bool? DelegationsRunnerAvailable { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "elasticSearchJanitorAvailable")]
-        public bool? ElasticSearchJanitorAvailable { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "agentschapZorgEnGezondheidFtpDumpAvailable")]
-        public bool? AgentschapZorgEnGezondheidFtpDumpAvailable { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "sendVlaanderenBeNotifierMails")]
-        public bool? SendVlaanderenBeNotifierMails { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "reportingRunnerAvailable")]
-        public bool? ReportingRunnerAvailable { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "enableReporting")]
-        public bool? EnableReporting { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "enableVademecumParticipationReporting")]
-        public bool? EnableVademecumParticipationReporting { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "enableFormalFrameworkBodiesReporting")]
-        public bool? EnableFormalFrameworkBodiesReporting { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "enableMonitoring")]
-        public bool? EnableMonitoring { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "enableOrganisationRelations")]
-        public bool? EnableOrganisationRelations { get; set; }
-
+        Created = created;
+        ApplicationAvailable = applicationAvailable;
+        LogToElasticSearch = logToElasticSearch;
+        ApiAvailable = apiAvailable;
+        ElasticSearchProjectionsAvailable = elasticSearchProjectionsAvailable;
+        VlaanderenBeNotifierAvailable = vlaanderenBeNotifierAvailable;
+        DelegationsRunnerAvailable = delegationsRunnerAvailable;
+        ElasticSearchJanitorAvailable = elasticSearchJanitorAvailable;
+        AgentschapZorgEnGezondheidFtpDumpAvailable = agentschapZorgEnGezondheidFtpDumpAvailable;
+        SendVlaanderenBeNotifierMails = sendVlaanderenBeNotifierMails;
+        ReportingRunnerAvailable = reportingRunnerAvailable;
+        EnableReporting = enableReporting;
+        EnableVademecumParticipationReporting = enableVademecumParticipationReporting;
+        EnableFormalFrameworkBodiesReporting = enableFormalFrameworkBodiesReporting;
+        EnableMonitoring = enableMonitoring;
+        EnableOrganisationRelations = enableOrganisationRelations;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "created")]
+    public System.DateTime? Created { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "applicationAvailable")]
+    public bool? ApplicationAvailable { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "logToElasticSearch")]
+    public bool? LogToElasticSearch { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "apiAvailable")]
+    public bool? ApiAvailable { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "elasticSearchProjectionsAvailable")]
+    public bool? ElasticSearchProjectionsAvailable { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "vlaanderenBeNotifierAvailable")]
+    public bool? VlaanderenBeNotifierAvailable { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "delegationsRunnerAvailable")]
+    public bool? DelegationsRunnerAvailable { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "elasticSearchJanitorAvailable")]
+    public bool? ElasticSearchJanitorAvailable { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "agentschapZorgEnGezondheidFtpDumpAvailable")]
+    public bool? AgentschapZorgEnGezondheidFtpDumpAvailable { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "sendVlaanderenBeNotifierMails")]
+    public bool? SendVlaanderenBeNotifierMails { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "reportingRunnerAvailable")]
+    public bool? ReportingRunnerAvailable { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "enableReporting")]
+    public bool? EnableReporting { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "enableVademecumParticipationReporting")]
+    public bool? EnableVademecumParticipationReporting { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "enableFormalFrameworkBodiesReporting")]
+    public bool? EnableFormalFrameworkBodiesReporting { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "enableMonitoring")]
+    public bool? EnableMonitoring { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "enableOrganisationRelations")]
+    public bool? EnableOrganisationRelations { get; set; }
+
 }

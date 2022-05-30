@@ -1,19 +1,18 @@
-﻿namespace OrganisationRegistry.Api.Infrastructure
+﻿namespace OrganisationRegistry.Api.Infrastructure;
+
+using System;
+
+public class ApiException : Exception
 {
-    using System;
-
-    public class ApiException : Exception
+    public ApiException()
     {
-        public ApiException()
-        {
-        }
+    }
 
-        public ApiException(string message) : base(message)
-        {
-        }
+    public ApiException(string message) : base(message)
+    {
+    }
 
-        public ApiException(string message, Exception inner) : base(message, inner)
-        {
-        }
+    public ApiException(string message, Exception inner) : base(message, inner)
+    {
     }
 }

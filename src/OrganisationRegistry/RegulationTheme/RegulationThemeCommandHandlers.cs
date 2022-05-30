@@ -1,45 +1,44 @@
-﻿namespace OrganisationRegistry.RegulationTheme
+﻿namespace OrganisationRegistry.RegulationTheme;
+
+using System.Threading.Tasks;
+using Commands;
+using Exceptions;
+using Infrastructure.Commands;
+using Infrastructure.Domain;
+using Microsoft.Extensions.Logging;
+
+public class RegulationThemeCommandHandlers :
+    BaseCommandHandler<RegulationThemeCommandHandlers>,
+    ICommandEnvelopeHandler<CreateRegulationTheme>,
+    ICommandEnvelopeHandler<UpdateRegulationTheme>
 {
-    using System.Threading.Tasks;
-    using Commands;
-    using Exceptions;
-    using Infrastructure.Commands;
-    using Infrastructure.Domain;
-    using Microsoft.Extensions.Logging;
+    private readonly IUniqueNameValidator<RegulationTheme> _uniqueNameValidator;
 
-    public class RegulationThemeCommandHandlers :
-        BaseCommandHandler<RegulationThemeCommandHandlers>,
-        ICommandEnvelopeHandler<CreateRegulationTheme>,
-        ICommandEnvelopeHandler<UpdateRegulationTheme>
+    public RegulationThemeCommandHandlers(
+        ILogger<RegulationThemeCommandHandlers> logger,
+        ISession session,
+        IUniqueNameValidator<RegulationTheme> uniqueNameValidator) : base(logger, session)
     {
-        private readonly IUniqueNameValidator<RegulationTheme> _uniqueNameValidator;
+        _uniqueNameValidator = uniqueNameValidator;
+    }
 
-        public RegulationThemeCommandHandlers(
-            ILogger<RegulationThemeCommandHandlers> logger,
-            ISession session,
-            IUniqueNameValidator<RegulationTheme> uniqueNameValidator) : base(logger, session)
-        {
-            _uniqueNameValidator = uniqueNameValidator;
-        }
+    public async Task Handle(ICommandEnvelope<CreateRegulationTheme> envelope)
+    {
+        if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
+            throw new NameNotUnique();
 
-        public async Task Handle(ICommandEnvelope<CreateRegulationTheme> envelope)
-        {
-            if (_uniqueNameValidator.IsNameTaken(envelope.Command.Name))
-                throw new NameNotUnique();
+        var regulationTheme = new RegulationTheme(envelope.Command.RegulationThemeId, envelope.Command.Name);
+        Session.Add(regulationTheme);
+        await Session.Commit(envelope.User);
+    }
 
-            var regulationTheme = new RegulationTheme(envelope.Command.RegulationThemeId, envelope.Command.Name);
-            Session.Add(regulationTheme);
-            await Session.Commit(envelope.User);
-        }
+    public async Task Handle(ICommandEnvelope<UpdateRegulationTheme> envelope)
+    {
+        if (_uniqueNameValidator.IsNameTaken(envelope.Command.RegulationThemeId, envelope.Command.Name))
+            throw new NameNotUnique();
 
-        public async Task Handle(ICommandEnvelope<UpdateRegulationTheme> envelope)
-        {
-            if (_uniqueNameValidator.IsNameTaken(envelope.Command.RegulationThemeId, envelope.Command.Name))
-                throw new NameNotUnique();
-
-            var regulationTheme = Session.Get<RegulationTheme>(envelope.Command.RegulationThemeId);
-            regulationTheme.Update(envelope.Command.Name);
-            await Session.Commit(envelope.User);
-        }
+        var regulationTheme = Session.Get<RegulationTheme>(envelope.Command.RegulationThemeId);
+        regulationTheme.Update(envelope.Command.Name);
+        await Session.Commit(envelope.User);
     }
 }

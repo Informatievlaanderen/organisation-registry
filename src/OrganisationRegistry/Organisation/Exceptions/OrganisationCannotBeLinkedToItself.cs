@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Organisation.Exceptions
+namespace OrganisationRegistry.Organisation.Exceptions;
+
+public class OrganisationCannotBeLinkedToItself : DomainException
 {
-    public class OrganisationCannotBeLinkedToItself : DomainException
-    {
-        public OrganisationCannotBeLinkedToItself()
-            : base("Een organisatie kan niet aan zichzelf gekoppeld worden.") { }
-    }
+    public OrganisationCannotBeLinkedToItself()
+        : base("Een organisatie kan niet aan zichzelf gekoppeld worden.") { }
 }

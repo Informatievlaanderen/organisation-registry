@@ -1,22 +1,21 @@
-namespace OrganisationRegistry.MagdaReRegistration
+namespace OrganisationRegistry.MagdaReRegistration;
+
+using Autofac;
+using Configuration;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+public class MagdaReRegistrationModule : Module
 {
-    using Autofac;
-    using Configuration;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-
-    public class MagdaReRegistrationModule : Module
+    public MagdaReRegistrationModule(
+        IConfiguration configuration,
+        IServiceCollection services)
     {
-        public MagdaReRegistrationModule(
-            IConfiguration configuration,
-            IServiceCollection services)
-        {
-            services.Configure<MagdaReRegistrationConfiguration>(
-                configuration.GetSection(MagdaReRegistrationConfiguration.Section));
-        }
+        services.Configure<MagdaReRegistrationConfiguration>(
+            configuration.GetSection(MagdaReRegistrationConfiguration.Section));
+    }
 
-        protected override void Load(ContainerBuilder builder)
-        {
-        }
+    protected override void Load(ContainerBuilder builder)
+    {
     }
 }

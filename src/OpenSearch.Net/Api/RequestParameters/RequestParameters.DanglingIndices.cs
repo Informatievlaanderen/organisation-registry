@@ -48,66 +48,65 @@ using System.Text;
 using System.Linq.Expressions;
 
 // ReSharper disable once CheckNamespace
-namespace OpenSearch.Net.Specification.DanglingIndicesApi
+namespace OpenSearch.Net.Specification.DanglingIndicesApi;
+
+///<summary>Request options for DeleteDanglingIndex <para></para></summary>
+public class DeleteDanglingIndexRequestParameters : RequestParameters<DeleteDanglingIndexRequestParameters>
 {
-	///<summary>Request options for DeleteDanglingIndex <para></para></summary>
-	public class DeleteDanglingIndexRequestParameters : RequestParameters<DeleteDanglingIndexRequestParameters>
-	{
-		public override HttpMethod DefaultHttpMethod => HttpMethod.DELETE;
-		public override bool SupportsBody => false;
-		///<summary>Must be set to true in order to delete the dangling index</summary>
-		public bool? AcceptDataLoss
-		{
-			get => Q<bool? >("accept_data_loss");
-			set => Q("accept_data_loss", value);
-		}
+    public override HttpMethod DefaultHttpMethod => HttpMethod.DELETE;
+    public override bool SupportsBody => false;
+    ///<summary>Must be set to true in order to delete the dangling index</summary>
+    public bool? AcceptDataLoss
+    {
+        get => Q<bool? >("accept_data_loss");
+        set => Q("accept_data_loss", value);
+    }
 
-		///<summary>Specify timeout for connection to master</summary>
-		public TimeSpan MasterTimeout
-		{
-			get => Q<TimeSpan>("master_timeout");
-			set => Q("master_timeout", value);
-		}
+    ///<summary>Specify timeout for connection to master</summary>
+    public TimeSpan MasterTimeout
+    {
+        get => Q<TimeSpan>("master_timeout");
+        set => Q("master_timeout", value);
+    }
 
-		///<summary>Explicit operation timeout</summary>
-		public TimeSpan Timeout
-		{
-			get => Q<TimeSpan>("timeout");
-			set => Q("timeout", value);
-		}
-	}
+    ///<summary>Explicit operation timeout</summary>
+    public TimeSpan Timeout
+    {
+        get => Q<TimeSpan>("timeout");
+        set => Q("timeout", value);
+    }
+}
 
-	///<summary>Request options for ImportDanglingIndex <para></para></summary>
-	public class ImportDanglingIndexRequestParameters : RequestParameters<ImportDanglingIndexRequestParameters>
-	{
-		public override HttpMethod DefaultHttpMethod => HttpMethod.POST;
-		public override bool SupportsBody => false;
-		///<summary>Must be set to true in order to import the dangling index</summary>
-		public bool? AcceptDataLoss
-		{
-			get => Q<bool? >("accept_data_loss");
-			set => Q("accept_data_loss", value);
-		}
+///<summary>Request options for ImportDanglingIndex <para></para></summary>
+public class ImportDanglingIndexRequestParameters : RequestParameters<ImportDanglingIndexRequestParameters>
+{
+    public override HttpMethod DefaultHttpMethod => HttpMethod.POST;
+    public override bool SupportsBody => false;
+    ///<summary>Must be set to true in order to import the dangling index</summary>
+    public bool? AcceptDataLoss
+    {
+        get => Q<bool? >("accept_data_loss");
+        set => Q("accept_data_loss", value);
+    }
 
-		///<summary>Specify timeout for connection to master</summary>
-		public TimeSpan MasterTimeout
-		{
-			get => Q<TimeSpan>("master_timeout");
-			set => Q("master_timeout", value);
-		}
+    ///<summary>Specify timeout for connection to master</summary>
+    public TimeSpan MasterTimeout
+    {
+        get => Q<TimeSpan>("master_timeout");
+        set => Q("master_timeout", value);
+    }
 
-		///<summary>Explicit operation timeout</summary>
-		public TimeSpan Timeout
-		{
-			get => Q<TimeSpan>("timeout");
-			set => Q("timeout", value);
-		}
-	}
+    ///<summary>Explicit operation timeout</summary>
+    public TimeSpan Timeout
+    {
+        get => Q<TimeSpan>("timeout");
+        set => Q("timeout", value);
+    }
+}
 
-	///<summary>Request options for List <para></para></summary>
-	public class ListDanglingIndicesRequestParameters : RequestParameters<ListDanglingIndicesRequestParameters>
-	{
-		public override HttpMethod DefaultHttpMethod => HttpMethod.GET;
-		public override bool SupportsBody => false;
-	}
+///<summary>Request options for List <para></para></summary>
+public class ListDanglingIndicesRequestParameters : RequestParameters<ListDanglingIndicesRequestParameters>
+{
+    public override HttpMethod DefaultHttpMethod => HttpMethod.GET;
+    public override bool SupportsBody => false;
 }

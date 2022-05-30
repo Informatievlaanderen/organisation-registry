@@ -1,6 +1,5 @@
-namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers
-{
-    using Xunit;
+namespace OrganisationRegistry.UnitTests.Infrastructure.Tests.Extensions.TestHelpers;
 
-    public class ThenAttribute : FactAttribute { }
-}
+using Xunit;
+
+public class ThenAttribute : FactAttribute { }

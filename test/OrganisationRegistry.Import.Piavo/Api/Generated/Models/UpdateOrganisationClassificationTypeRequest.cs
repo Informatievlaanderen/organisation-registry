@@ -2,29 +2,28 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class UpdateOrganisationClassificationTypeRequest
 {
-    public partial class UpdateOrganisationClassificationTypeRequest
+    /// <summary>
+    /// Initializes a new instance of the
+    /// UpdateOrganisationClassificationTypeRequest class.
+    /// </summary>
+    public UpdateOrganisationClassificationTypeRequest() { }
+
+    /// <summary>
+    /// Initializes a new instance of the
+    /// UpdateOrganisationClassificationTypeRequest class.
+    /// </summary>
+    public UpdateOrganisationClassificationTypeRequest(string name = default(string))
     {
-        /// <summary>
-        /// Initializes a new instance of the
-        /// UpdateOrganisationClassificationTypeRequest class.
-        /// </summary>
-        public UpdateOrganisationClassificationTypeRequest() { }
-
-        /// <summary>
-        /// Initializes a new instance of the
-        /// UpdateOrganisationClassificationTypeRequest class.
-        /// </summary>
-        public UpdateOrganisationClassificationTypeRequest(string name = default(string))
-        {
-            Name = name;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
-
+        Name = name;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
+    public string Name { get; set; }
+
 }

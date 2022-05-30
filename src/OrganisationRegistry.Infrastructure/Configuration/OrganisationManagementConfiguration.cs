@@ -1,13 +1,12 @@
-namespace OrganisationRegistry.Infrastructure.Configuration
+namespace OrganisationRegistry.Infrastructure.Configuration;
+
+public class OrganisationManagementConfiguration : IOrganisationManagementConfiguration
 {
-    public class OrganisationManagementConfiguration : IOrganisationManagementConfiguration
+
+    public OrganisationManagementConfiguration(OrganisationManagementConfigurationSection organisationManagementConfigurationSection)
     {
-
-        public OrganisationManagementConfiguration(OrganisationManagementConfigurationSection organisationManagementConfigurationSection)
-        {
-            Vlimpers = organisationManagementConfigurationSection.Vlimpers;
-        }
-
-        public string Vlimpers { get; }
+        Vlimpers = organisationManagementConfigurationSection.Vlimpers;
     }
+
+    public string Vlimpers { get; }
 }

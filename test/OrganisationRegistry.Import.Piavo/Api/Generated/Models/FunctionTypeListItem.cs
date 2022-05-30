@@ -2,33 +2,32 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class FunctionTypeListItem
 {
-    public partial class FunctionTypeListItem
+    /// <summary>
+    /// Initializes a new instance of the FunctionTypeListItem class.
+    /// </summary>
+    public FunctionTypeListItem() { }
+
+    /// <summary>
+    /// Initializes a new instance of the FunctionTypeListItem class.
+    /// </summary>
+    public FunctionTypeListItem(System.Guid? id = default(System.Guid?), string name = default(string))
     {
-        /// <summary>
-        /// Initializes a new instance of the FunctionTypeListItem class.
-        /// </summary>
-        public FunctionTypeListItem() { }
-
-        /// <summary>
-        /// Initializes a new instance of the FunctionTypeListItem class.
-        /// </summary>
-        public FunctionTypeListItem(System.Guid? id = default(System.Guid?), string name = default(string))
-        {
-            Id = id;
-            Name = name;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
-        public System.Guid? Id { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
-
+        Id = id;
+        Name = name;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
+    public System.Guid? Id { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
+    public string Name { get; set; }
+
 }

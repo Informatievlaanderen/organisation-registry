@@ -1,56 +1,55 @@
-﻿namespace OrganisationRegistry.Organisation
+﻿namespace OrganisationRegistry.Organisation;
+
+using System;
+
+public class OrganisationBankAccount : IOrganisationField, IValidityBuilder<OrganisationBankAccount>
 {
-    using System;
+    public Guid Id => OrganisationBankAccountId;
+    public Guid OrganisationId { get; }
+    public Guid OrganisationBankAccountId { get; }
+    public string BankAccountNumber { get; }
+    public bool IsIban { get; }
+    public string Bic { get; }
+    public bool IsBic { get; }
+    public Period Validity { get; }
 
-    public class OrganisationBankAccount : IOrganisationField, IValidityBuilder<OrganisationBankAccount>
+    public OrganisationBankAccount(
+        Guid organisationBankAccountId,
+        Guid organisationId,
+        string bankAccountNumber,
+        bool isIban,
+        string bic,
+        bool isBic,
+        Period validity)
     {
-        public Guid Id => OrganisationBankAccountId;
-        public Guid OrganisationId { get; }
-        public Guid OrganisationBankAccountId { get; }
-        public string BankAccountNumber { get; }
-        public bool IsIban { get; }
-        public string Bic { get; }
-        public bool IsBic { get; }
-        public Period Validity { get; }
+        OrganisationId = organisationId;
+        OrganisationBankAccountId = organisationBankAccountId;
+        BankAccountNumber = bankAccountNumber;
+        IsIban = isIban;
+        Bic = bic;
+        IsBic = isBic;
+        Validity = validity;
+    }
 
-        public OrganisationBankAccount(
-            Guid organisationBankAccountId,
-            Guid organisationId,
-            string bankAccountNumber,
-            bool isIban,
-            string bic,
-            bool isBic,
-            Period validity)
-        {
-            OrganisationId = organisationId;
-            OrganisationBankAccountId = organisationBankAccountId;
-            BankAccountNumber = bankAccountNumber;
-            IsIban = isIban;
-            Bic = bic;
-            IsBic = isBic;
-            Validity = validity;
-        }
+    public OrganisationBankAccount WithValidity(Period period)
+    {
+        return new OrganisationBankAccount(
+            OrganisationBankAccountId,
+            OrganisationId,
+            BankAccountNumber,
+            IsIban,
+            Bic,
+            IsBic,
+            period);
+    }
 
-        public OrganisationBankAccount WithValidity(Period period)
-        {
-            return new OrganisationBankAccount(
-                OrganisationBankAccountId,
-                OrganisationId,
-                BankAccountNumber,
-                IsIban,
-                Bic,
-                IsBic,
-                period);
-        }
+    public OrganisationBankAccount WithValidFrom(ValidFrom validFrom)
+    {
+        return WithValidity(new Period(validFrom, Validity.End));
+    }
 
-        public OrganisationBankAccount WithValidFrom(ValidFrom validFrom)
-        {
-            return WithValidity(new Period(validFrom, Validity.End));
-        }
-
-        public OrganisationBankAccount WithValidTo(ValidTo validTo)
-        {
-            return WithValidity(new Period(Validity.Start, validTo));
-        }
+    public OrganisationBankAccount WithValidTo(ValidTo validTo)
+    {
+        return WithValidity(new Period(Validity.Start, validTo));
     }
 }

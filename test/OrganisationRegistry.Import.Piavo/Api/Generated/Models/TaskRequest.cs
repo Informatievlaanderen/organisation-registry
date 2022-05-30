@@ -2,37 +2,36 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class TaskRequest
 {
-    public partial class TaskRequest
+    /// <summary>
+    /// Initializes a new instance of the TaskRequest class.
+    /// </summary>
+    public TaskRequest() { }
+
+    /// <summary>
+    /// Initializes a new instance of the TaskRequest class.
+    /// </summary>
+    /// <param name="type">Possible values include: 'checkIfDayHasPassed',
+    /// 'rebuildProjection', 'compensatingAction'</param>
+    public TaskRequest(string type = default(string), System.Collections.Generic.IList<string> paramsProperty = default(System.Collections.Generic.IList<string>))
     {
-        /// <summary>
-        /// Initializes a new instance of the TaskRequest class.
-        /// </summary>
-        public TaskRequest() { }
-
-        /// <summary>
-        /// Initializes a new instance of the TaskRequest class.
-        /// </summary>
-        /// <param name="type">Possible values include: 'checkIfDayHasPassed',
-        /// 'rebuildProjection', 'compensatingAction'</param>
-        public TaskRequest(string type = default(string), System.Collections.Generic.IList<string> paramsProperty = default(System.Collections.Generic.IList<string>))
-        {
-            Type = type;
-            ParamsProperty = paramsProperty;
-        }
-
-        /// <summary>
-        /// Gets or sets possible values include: 'checkIfDayHasPassed',
-        /// 'rebuildProjection', 'compensatingAction'
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "type")]
-        public string Type { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "params")]
-        public System.Collections.Generic.IList<string> ParamsProperty { get; set; }
-
+        Type = type;
+        ParamsProperty = paramsProperty;
     }
+
+    /// <summary>
+    /// Gets or sets possible values include: 'checkIfDayHasPassed',
+    /// 'rebuildProjection', 'compensatingAction'
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "type")]
+    public string Type { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "params")]
+    public System.Collections.Generic.IList<string> ParamsProperty { get; set; }
+
 }

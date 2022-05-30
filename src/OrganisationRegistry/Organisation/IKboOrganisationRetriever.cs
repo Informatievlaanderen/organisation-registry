@@ -1,10 +1,9 @@
-namespace OrganisationRegistry.Organisation
-{
-    using System.Threading.Tasks;
-    using Infrastructure.Authorization;
+namespace OrganisationRegistry.Organisation;
 
-    public interface IKboOrganisationRetriever
-    {
-        Task<Result<IMagdaOrganisationResponse>> RetrieveOrganisation(IUser user, KboNumber kboNumber);
-    }
+using System.Threading.Tasks;
+using Infrastructure.Authorization;
+
+public interface IKboOrganisationRetriever
+{
+    Task<Result<IMagdaOrganisationResponse>> RetrieveOrganisation(IUser user, KboNumber kboNumber);
 }

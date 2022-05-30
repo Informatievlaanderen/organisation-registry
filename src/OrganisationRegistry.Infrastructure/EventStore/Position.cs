@@ -1,7 +1,6 @@
-namespace OrganisationRegistry.Infrastructure.EventStore
+namespace OrganisationRegistry.Infrastructure.EventStore;
+
+public static class Position
 {
-    public static class Position
-    {
-        public const int Initial = -1;
-    }
+    public const int Initial = -1;
 }

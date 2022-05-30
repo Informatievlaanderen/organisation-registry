@@ -1,22 +1,21 @@
-namespace OrganisationRegistry.Building.Events
+namespace OrganisationRegistry.Building.Events;
+
+using System;
+
+public class BuildingCreated : BaseEvent<BuildingCreated>
 {
-    using System;
+    public Guid BuildingId => Id;
 
-    public class BuildingCreated : BaseEvent<BuildingCreated>
+    public string Name { get; }
+    public int? VimId { get; }
+
+    public BuildingCreated(
+        Guid buildingId,
+        string name,
+        int? vimId)
     {
-        public Guid BuildingId => Id;
-
-        public string Name { get; }
-        public int? VimId { get; }
-
-        public BuildingCreated(
-            Guid buildingId,
-            string name,
-            int? vimId)
-        {
-            Id = buildingId;
-            Name = name;
-            VimId = vimId;
-        }
+        Id = buildingId;
+        Name = name;
+        VimId = vimId;
     }
 }

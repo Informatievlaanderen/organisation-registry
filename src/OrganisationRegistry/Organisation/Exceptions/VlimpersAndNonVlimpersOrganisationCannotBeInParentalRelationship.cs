@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Organisation.Exceptions
+namespace OrganisationRegistry.Organisation.Exceptions;
+
+public class VlimpersAndNonVlimpersOrganisationCannotBeInParentalRelationship : DomainException
 {
-    public class VlimpersAndNonVlimpersOrganisationCannotBeInParentalRelationship : DomainException
-    {
-        public VlimpersAndNonVlimpersOrganisationCannotBeInParentalRelationship()
-            : base("Organisaties niet onder Vlimpersbeheer kunnen niet worden gekoppeld aan organisaties onder Vlimpersbeheer.") { }
-    }
+    public VlimpersAndNonVlimpersOrganisationCannotBeInParentalRelationship()
+        : base("Organisaties niet onder Vlimpersbeheer kunnen niet worden gekoppeld aan organisaties onder Vlimpersbeheer.") { }
 }

@@ -1,34 +1,33 @@
-namespace OrganisationRegistry.Infrastructure.Configuration
+namespace OrganisationRegistry.Infrastructure.Configuration;
+
+using System;
+
+public class KboConfiguration : IKboConfiguration
 {
-    using System;
+    private readonly ApiConfigurationSection _configuration;
 
-    public class KboConfiguration : IKboConfiguration
+    public KboConfiguration(
+        ApiConfigurationSection configuration,
+        OrganisationTerminationConfigurationSection? terminationConfiguration)
     {
-        private readonly ApiConfigurationSection _configuration;
+        _configuration = configuration;
 
-        public KboConfiguration(
-            ApiConfigurationSection configuration,
-            OrganisationTerminationConfigurationSection? terminationConfiguration)
-        {
-            _configuration = configuration;
+        OrganisationCapacityIdsToTerminateEndOfNextYear =
+            terminationConfiguration?.OrganisationCapacityIdsToTerminateEndOfNextYear.SplitGuids();
 
-            OrganisationCapacityIdsToTerminateEndOfNextYear =
-                terminationConfiguration?.OrganisationCapacityIdsToTerminateEndOfNextYear.SplitGuids();
+        OrganisationClassificationTypeIdsToTerminateEndOfNextYear =
+            terminationConfiguration?.OrganisationClassificationTypeIdsToTerminateEndOfNextYear.SplitGuids();
 
-            OrganisationClassificationTypeIdsToTerminateEndOfNextYear =
-                terminationConfiguration?.OrganisationClassificationTypeIdsToTerminateEndOfNextYear.SplitGuids();
-
-            FormalFrameworkIdsToTerminateEndOfNextYear =
-                terminationConfiguration?.FormalFrameworkIdsToTerminateEndOfNextYear.SplitGuids();
-        }
-        public Guid KboV2FormalNameLabelTypeId => _configuration.KboV2FormalNameLabelTypeId;
-
-        public Guid KboV2RegisteredOfficeLocationTypeId => _configuration.KboV2RegisteredOfficeLocationTypeId;
-
-        public Guid KboV2LegalFormOrganisationClassificationTypeId => _configuration.KboV2LegalFormOrganisationClassificationTypeId;
-
-        public Guid[]? OrganisationCapacityIdsToTerminateEndOfNextYear { get; }
-        public Guid[]? OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; }
-        public Guid[]? FormalFrameworkIdsToTerminateEndOfNextYear { get; }
+        FormalFrameworkIdsToTerminateEndOfNextYear =
+            terminationConfiguration?.FormalFrameworkIdsToTerminateEndOfNextYear.SplitGuids();
     }
+    public Guid KboV2FormalNameLabelTypeId => _configuration.KboV2FormalNameLabelTypeId;
+
+    public Guid KboV2RegisteredOfficeLocationTypeId => _configuration.KboV2RegisteredOfficeLocationTypeId;
+
+    public Guid KboV2LegalFormOrganisationClassificationTypeId => _configuration.KboV2LegalFormOrganisationClassificationTypeId;
+
+    public Guid[]? OrganisationCapacityIdsToTerminateEndOfNextYear { get; }
+    public Guid[]? OrganisationClassificationTypeIdsToTerminateEndOfNextYear { get; }
+    public Guid[]? FormalFrameworkIdsToTerminateEndOfNextYear { get; }
 }

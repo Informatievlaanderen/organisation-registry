@@ -2,105 +2,104 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class CapacityPerson
 {
-    public partial class CapacityPerson
+    /// <summary>
+    /// Initializes a new instance of the CapacityPerson class.
+    /// </summary>
+    public CapacityPerson() { }
+
+    /// <summary>
+    /// Initializes a new instance of the CapacityPerson class.
+    /// </summary>
+    public CapacityPerson(System.Guid? parentOrganisationId = default(System.Guid?), string parentOrganisationName = default(string), System.Guid? organisationId = default(System.Guid?), string organisationName = default(string), string organisationShortName = default(string), System.Guid? personId = default(System.Guid?), string personName = default(string), System.Guid? functionTypeId = default(System.Guid?), string functionTypeName = default(string), string email = default(string), string location = default(string), string phone = default(string), string cellPhone = default(string), string policyDomain = default(string))
     {
-        /// <summary>
-        /// Initializes a new instance of the CapacityPerson class.
-        /// </summary>
-        public CapacityPerson() { }
-
-        /// <summary>
-        /// Initializes a new instance of the CapacityPerson class.
-        /// </summary>
-        public CapacityPerson(System.Guid? parentOrganisationId = default(System.Guid?), string parentOrganisationName = default(string), System.Guid? organisationId = default(System.Guid?), string organisationName = default(string), string organisationShortName = default(string), System.Guid? personId = default(System.Guid?), string personName = default(string), System.Guid? functionTypeId = default(System.Guid?), string functionTypeName = default(string), string email = default(string), string location = default(string), string phone = default(string), string cellPhone = default(string), string policyDomain = default(string))
-        {
-            ParentOrganisationId = parentOrganisationId;
-            ParentOrganisationName = parentOrganisationName;
-            OrganisationId = organisationId;
-            OrganisationName = organisationName;
-            OrganisationShortName = organisationShortName;
-            PersonId = personId;
-            PersonName = personName;
-            FunctionTypeId = functionTypeId;
-            FunctionTypeName = functionTypeName;
-            Email = email;
-            Location = location;
-            Phone = phone;
-            CellPhone = cellPhone;
-            PolicyDomain = policyDomain;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "parentOrganisationId")]
-        public System.Guid? ParentOrganisationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "parentOrganisationName")]
-        public string ParentOrganisationName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationId")]
-        public System.Guid? OrganisationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationName")]
-        public string OrganisationName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationShortName")]
-        public string OrganisationShortName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "personId")]
-        public System.Guid? PersonId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "personName")]
-        public string PersonName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "functionTypeId")]
-        public System.Guid? FunctionTypeId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "functionTypeName")]
-        public string FunctionTypeName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "email")]
-        public string Email { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "location")]
-        public string Location { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "phone")]
-        public string Phone { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "cellPhone")]
-        public string CellPhone { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "policyDomain")]
-        public string PolicyDomain { get; set; }
-
+        ParentOrganisationId = parentOrganisationId;
+        ParentOrganisationName = parentOrganisationName;
+        OrganisationId = organisationId;
+        OrganisationName = organisationName;
+        OrganisationShortName = organisationShortName;
+        PersonId = personId;
+        PersonName = personName;
+        FunctionTypeId = functionTypeId;
+        FunctionTypeName = functionTypeName;
+        Email = email;
+        Location = location;
+        Phone = phone;
+        CellPhone = cellPhone;
+        PolicyDomain = policyDomain;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "parentOrganisationId")]
+    public System.Guid? ParentOrganisationId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "parentOrganisationName")]
+    public string ParentOrganisationName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationId")]
+    public System.Guid? OrganisationId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationName")]
+    public string OrganisationName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationShortName")]
+    public string OrganisationShortName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "personId")]
+    public System.Guid? PersonId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "personName")]
+    public string PersonName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "functionTypeId")]
+    public System.Guid? FunctionTypeId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "functionTypeName")]
+    public string FunctionTypeName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "email")]
+    public string Email { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "location")]
+    public string Location { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "phone")]
+    public string Phone { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "cellPhone")]
+    public string CellPhone { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "policyDomain")]
+    public string PolicyDomain { get; set; }
+
 }

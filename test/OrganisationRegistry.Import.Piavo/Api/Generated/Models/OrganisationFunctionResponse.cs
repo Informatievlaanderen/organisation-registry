@@ -2,77 +2,76 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class OrganisationFunctionResponse
 {
-    public partial class OrganisationFunctionResponse
+    /// <summary>
+    /// Initializes a new instance of the OrganisationFunctionResponse
+    /// class.
+    /// </summary>
+    public OrganisationFunctionResponse() { }
+
+    /// <summary>
+    /// Initializes a new instance of the OrganisationFunctionResponse
+    /// class.
+    /// </summary>
+    public OrganisationFunctionResponse(System.Guid? organisationFunctionId = default(System.Guid?), System.Guid? organisationId = default(System.Guid?), System.Guid? functionId = default(System.Guid?), string functionName = default(string), System.Guid? personId = default(System.Guid?), string personName = default(string), System.Collections.Generic.IDictionary<string, string> contacts = default(System.Collections.Generic.IDictionary<string, string>), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
     {
-        /// <summary>
-        /// Initializes a new instance of the OrganisationFunctionResponse
-        /// class.
-        /// </summary>
-        public OrganisationFunctionResponse() { }
-
-        /// <summary>
-        /// Initializes a new instance of the OrganisationFunctionResponse
-        /// class.
-        /// </summary>
-        public OrganisationFunctionResponse(System.Guid? organisationFunctionId = default(System.Guid?), System.Guid? organisationId = default(System.Guid?), System.Guid? functionId = default(System.Guid?), string functionName = default(string), System.Guid? personId = default(System.Guid?), string personName = default(string), System.Collections.Generic.IDictionary<string, string> contacts = default(System.Collections.Generic.IDictionary<string, string>), System.DateTime? validFrom = default(System.DateTime?), System.DateTime? validTo = default(System.DateTime?))
-        {
-            OrganisationFunctionId = organisationFunctionId;
-            OrganisationId = organisationId;
-            FunctionId = functionId;
-            FunctionName = functionName;
-            PersonId = personId;
-            PersonName = personName;
-            Contacts = contacts;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationFunctionId")]
-        public System.Guid? OrganisationFunctionId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationId")]
-        public System.Guid? OrganisationId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "functionId")]
-        public System.Guid? FunctionId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "functionName")]
-        public string FunctionName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "personId")]
-        public System.Guid? PersonId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "personName")]
-        public string PersonName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "contacts")]
-        public System.Collections.Generic.IDictionary<string, string> Contacts { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
-        public System.DateTime? ValidFrom { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
-        public System.DateTime? ValidTo { get; set; }
-
+        OrganisationFunctionId = organisationFunctionId;
+        OrganisationId = organisationId;
+        FunctionId = functionId;
+        FunctionName = functionName;
+        PersonId = personId;
+        PersonName = personName;
+        Contacts = contacts;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationFunctionId")]
+    public System.Guid? OrganisationFunctionId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationId")]
+    public System.Guid? OrganisationId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "functionId")]
+    public System.Guid? FunctionId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "functionName")]
+    public string FunctionName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "personId")]
+    public System.Guid? PersonId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "personName")]
+    public string PersonName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "contacts")]
+    public System.Collections.Generic.IDictionary<string, string> Contacts { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validFrom")]
+    public System.DateTime? ValidFrom { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validTo")]
+    public System.DateTime? ValidTo { get; set; }
+
 }

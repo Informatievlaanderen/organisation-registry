@@ -2,59 +2,58 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class PersonListItem
 {
-    public partial class PersonListItem
+    /// <summary>
+    /// Initializes a new instance of the PersonListItem class.
+    /// </summary>
+    public PersonListItem() { }
+
+    /// <summary>
+    /// Initializes a new instance of the PersonListItem class.
+    /// </summary>
+    /// <param name="sex">Possible values include: 'male', 'female'</param>
+    public PersonListItem(System.Guid? id = default(System.Guid?), string firstName = default(string), string name = default(string), string fullName = default(string), string sex = default(string), System.DateTime? dateOfBirth = default(System.DateTime?))
     {
-        /// <summary>
-        /// Initializes a new instance of the PersonListItem class.
-        /// </summary>
-        public PersonListItem() { }
-
-        /// <summary>
-        /// Initializes a new instance of the PersonListItem class.
-        /// </summary>
-        /// <param name="sex">Possible values include: 'male', 'female'</param>
-        public PersonListItem(System.Guid? id = default(System.Guid?), string firstName = default(string), string name = default(string), string fullName = default(string), string sex = default(string), System.DateTime? dateOfBirth = default(System.DateTime?))
-        {
-            Id = id;
-            FirstName = firstName;
-            Name = name;
-            FullName = fullName;
-            Sex = sex;
-            DateOfBirth = dateOfBirth;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
-        public System.Guid? Id { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "firstName")]
-        public string FirstName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
-        public string Name { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "fullName")]
-        public string FullName { get; set; }
-
-        /// <summary>
-        /// Gets or sets possible values include: 'male', 'female'
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "sex")]
-        public string Sex { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "dateOfBirth")]
-        public System.DateTime? DateOfBirth { get; set; }
-
+        Id = id;
+        FirstName = firstName;
+        Name = name;
+        FullName = fullName;
+        Sex = sex;
+        DateOfBirth = dateOfBirth;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
+    public System.Guid? Id { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "firstName")]
+    public string FirstName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "fullName")]
+    public string FullName { get; set; }
+
+    /// <summary>
+    /// Gets or sets possible values include: 'male', 'female'
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "sex")]
+    public string Sex { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "dateOfBirth")]
+    public System.DateTime? DateOfBirth { get; set; }
+
 }

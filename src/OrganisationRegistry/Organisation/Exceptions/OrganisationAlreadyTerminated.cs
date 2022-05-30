@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Organisation.Exceptions
+namespace OrganisationRegistry.Organisation.Exceptions;
+
+public class OrganisationAlreadyTerminated: DomainException
 {
-    public class OrganisationAlreadyTerminated: DomainException
-    {
-        public OrganisationAlreadyTerminated()
-            : base("Deze organisatie is reeds stopgezet.") { }
-    }
+    public OrganisationAlreadyTerminated()
+        : base("Deze organisatie is reeds stopgezet.") { }
 }

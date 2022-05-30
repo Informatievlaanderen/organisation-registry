@@ -2,33 +2,32 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class UpdateBodyValidityRequest
 {
-    public partial class UpdateBodyValidityRequest
+    /// <summary>
+    /// Initializes a new instance of the UpdateBodyValidityRequest class.
+    /// </summary>
+    public UpdateBodyValidityRequest() { }
+
+    /// <summary>
+    /// Initializes a new instance of the UpdateBodyValidityRequest class.
+    /// </summary>
+    public UpdateBodyValidityRequest(System.DateTime? formalValidFrom = default(System.DateTime?), System.DateTime? formalValidTo = default(System.DateTime?))
     {
-        /// <summary>
-        /// Initializes a new instance of the UpdateBodyValidityRequest class.
-        /// </summary>
-        public UpdateBodyValidityRequest() { }
-
-        /// <summary>
-        /// Initializes a new instance of the UpdateBodyValidityRequest class.
-        /// </summary>
-        public UpdateBodyValidityRequest(System.DateTime? formalValidFrom = default(System.DateTime?), System.DateTime? formalValidTo = default(System.DateTime?))
-        {
-            FormalValidFrom = formalValidFrom;
-            FormalValidTo = formalValidTo;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "formalValidFrom")]
-        public System.DateTime? FormalValidFrom { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "formalValidTo")]
-        public System.DateTime? FormalValidTo { get; set; }
-
+        FormalValidFrom = formalValidFrom;
+        FormalValidTo = formalValidTo;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "formalValidFrom")]
+    public System.DateTime? FormalValidFrom { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "formalValidTo")]
+    public System.DateTime? FormalValidTo { get; set; }
+
 }

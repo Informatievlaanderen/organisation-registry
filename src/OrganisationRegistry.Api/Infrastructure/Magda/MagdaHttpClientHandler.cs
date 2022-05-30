@@ -1,16 +1,15 @@
-namespace OrganisationRegistry.Api.Infrastructure.Magda
-{
-    using System.Net.Http;
-    using System.Security.Authentication;
-    using System.Security.Cryptography.X509Certificates;
+namespace OrganisationRegistry.Api.Infrastructure.Magda;
 
-    public class MagdaHttpClientHandler : HttpClientHandler
+using System.Net.Http;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
+
+public class MagdaHttpClientHandler : HttpClientHandler
+{
+    public MagdaHttpClientHandler(X509Certificate magdaClientCertificate)
     {
-        public MagdaHttpClientHandler(X509Certificate magdaClientCertificate)
-        {
-            ClientCertificateOptions = ClientCertificateOption.Manual;
-            SslProtocols = SslProtocols.Tls12;
-            ClientCertificates.Add(magdaClientCertificate);
-        }
+        ClientCertificateOptions = ClientCertificateOption.Manual;
+        SslProtocols = SslProtocols.Tls12;
+        ClientCertificates.Add(magdaClientCertificate);
     }
 }

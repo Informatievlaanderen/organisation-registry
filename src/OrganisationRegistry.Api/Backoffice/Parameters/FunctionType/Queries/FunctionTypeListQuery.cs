@@ -1,47 +1,46 @@
-namespace OrganisationRegistry.Api.Backoffice.Parameters.FunctionType.Queries
+namespace OrganisationRegistry.Api.Backoffice.Parameters.FunctionType.Queries;
+
+using System.Collections.Generic;
+using System.Linq;
+using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
+using Infrastructure.Search;
+using Infrastructure.Search.Filtering;
+using Infrastructure.Search.Sorting;
+using SqlServer.FunctionType;
+using SqlServer.Infrastructure;
+
+public class FunctionTypeListQuery : Query<FunctionTypeListItem>
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using Be.Vlaanderen.Basisregisters.Api.Search.Helpers;
-    using Infrastructure.Search;
-    using Infrastructure.Search.Filtering;
-    using Infrastructure.Search.Sorting;
-    using SqlServer.FunctionType;
-    using SqlServer.Infrastructure;
+    private readonly OrganisationRegistryContext _context;
 
-    public class FunctionTypeListQuery : Query<FunctionTypeListItem>
+    protected override ISorting Sorting => new FunctionTypeListSorting();
+
+    public FunctionTypeListQuery(OrganisationRegistryContext context)
     {
-        private readonly OrganisationRegistryContext _context;
+        _context = context;
+    }
 
-        protected override ISorting Sorting => new FunctionTypeListSorting();
+    protected override IQueryable<FunctionTypeListItem> Filter(FilteringHeader<FunctionTypeListItem> filtering)
+    {
+        var functionTypes = _context.FunctionTypeList.AsQueryable();
 
-        public FunctionTypeListQuery(OrganisationRegistryContext context)
-        {
-            _context = context;
-        }
-
-        protected override IQueryable<FunctionTypeListItem> Filter(FilteringHeader<FunctionTypeListItem> filtering)
-        {
-            var functionTypes = _context.FunctionTypeList.AsQueryable();
-
-            if (filtering.Filter is not { } filter)
-                return functionTypes;
-
-            if (!filter.Name.IsNullOrWhiteSpace())
-                functionTypes = functionTypes.Where(x => x.Name.Contains(filter.Name));
-
+        if (filtering.Filter is not { } filter)
             return functionTypes;
-        }
 
-        private class FunctionTypeListSorting : ISorting
+        if (!filter.Name.IsNullOrWhiteSpace())
+            functionTypes = functionTypes.Where(x => x.Name.Contains(filter.Name));
+
+        return functionTypes;
+    }
+
+    private class FunctionTypeListSorting : ISorting
+    {
+        public IEnumerable<string> SortableFields { get; } = new[]
         {
-            public IEnumerable<string> SortableFields { get; } = new[]
-            {
-                nameof(FunctionTypeListItem.Name)
-            };
+            nameof(FunctionTypeListItem.Name)
+        };
 
-            public SortingHeader DefaultSortingHeader { get; } =
-                new SortingHeader(nameof(FunctionTypeListItem.Name), SortOrder.Ascending);
-        }
+        public SortingHeader DefaultSortingHeader { get; } =
+            new SortingHeader(nameof(FunctionTypeListItem.Name), SortOrder.Ascending);
     }
 }

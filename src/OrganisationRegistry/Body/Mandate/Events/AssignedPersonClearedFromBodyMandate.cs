@@ -1,26 +1,25 @@
-﻿namespace OrganisationRegistry.Body.Events
+﻿namespace OrganisationRegistry.Body.Events;
+
+using System;
+
+public class AssignedPersonClearedFromBodyMandate : BaseEvent<AssignedPersonClearedFromBodyMandate>
 {
-    using System;
+    public Guid BodyId => Id;
 
-    public class AssignedPersonClearedFromBodyMandate : BaseEvent<AssignedPersonClearedFromBodyMandate>
+    public Guid BodySeatId { get; }
+    public Guid BodyMandateId { get; }
+    public Guid DelegationAssignmentId { get; }
+
+    public AssignedPersonClearedFromBodyMandate(
+        Guid bodyId,
+        Guid bodySeatId,
+        Guid bodyMandateId,
+        Guid delegationAssignmentId)
     {
-        public Guid BodyId => Id;
+        Id = bodyId;
 
-        public Guid BodySeatId { get; }
-        public Guid BodyMandateId { get; }
-        public Guid DelegationAssignmentId { get; }
-
-        public AssignedPersonClearedFromBodyMandate(
-            Guid bodyId,
-            Guid bodySeatId,
-            Guid bodyMandateId,
-            Guid delegationAssignmentId)
-        {
-            Id = bodyId;
-
-            BodySeatId = bodySeatId;
-            BodyMandateId = bodyMandateId;
-            DelegationAssignmentId = delegationAssignmentId;
-        }
+        BodySeatId = bodySeatId;
+        BodyMandateId = bodyMandateId;
+        DelegationAssignmentId = delegationAssignmentId;
     }
 }

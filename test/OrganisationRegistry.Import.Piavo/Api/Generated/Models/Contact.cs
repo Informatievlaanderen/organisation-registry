@@ -2,39 +2,38 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class Contact
 {
-    public partial class Contact
+    /// <summary>
+    /// Initializes a new instance of the Contact class.
+    /// </summary>
+    public Contact() { }
+
+    /// <summary>
+    /// Initializes a new instance of the Contact class.
+    /// </summary>
+    public Contact(System.Guid? contactTypeId = default(System.Guid?), string contactTypeName = default(string), string value = default(string))
     {
-        /// <summary>
-        /// Initializes a new instance of the Contact class.
-        /// </summary>
-        public Contact() { }
-
-        /// <summary>
-        /// Initializes a new instance of the Contact class.
-        /// </summary>
-        public Contact(System.Guid? contactTypeId = default(System.Guid?), string contactTypeName = default(string), string value = default(string))
-        {
-            ContactTypeId = contactTypeId;
-            ContactTypeName = contactTypeName;
-            Value = value;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "contactTypeId")]
-        public System.Guid? ContactTypeId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "contactTypeName")]
-        public string ContactTypeName { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "value")]
-        public string Value { get; set; }
-
+        ContactTypeId = contactTypeId;
+        ContactTypeName = contactTypeName;
+        Value = value;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "contactTypeId")]
+    public System.Guid? ContactTypeId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "contactTypeName")]
+    public string ContactTypeName { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "value")]
+    public string Value { get; set; }
+
 }

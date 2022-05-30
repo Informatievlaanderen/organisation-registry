@@ -1,20 +1,19 @@
-﻿namespace OrganisationRegistry.Infrastructure
+﻿namespace OrganisationRegistry.Infrastructure;
+
+using Domain;
+using Events;
+
+public class ProjectionRebuilder : AggregateRoot
 {
-    using Domain;
-    using Events;
+    private ProjectionRebuilder() { }
 
-    public class ProjectionRebuilder : AggregateRoot
+    public ProjectionRebuilder(ProjectionRebuilderId projectionId)
     {
-        private ProjectionRebuilder() { }
+        Id = projectionId;
+    }
 
-        public ProjectionRebuilder(ProjectionRebuilderId projectionId)
-        {
-            Id = projectionId;
-        }
-
-        public void RebuildProjection(string projectionName)
-        {
-            ApplyChange(new RebuildProjection(projectionName));
-        }
+    public void RebuildProjection(string projectionName)
+    {
+        ApplyChange(new RebuildProjection(projectionName));
     }
 }

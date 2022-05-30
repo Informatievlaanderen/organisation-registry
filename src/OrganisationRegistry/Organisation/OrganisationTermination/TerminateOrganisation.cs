@@ -1,21 +1,20 @@
-namespace OrganisationRegistry.Organisation
+namespace OrganisationRegistry.Organisation;
+
+using System;
+
+public class TerminateOrganisation : BaseCommand<OrganisationId>
 {
-    using System;
+    public OrganisationId OrganisationId => Id;
+    public DateTime DateOfTermination { get; }
+    public bool ForceKboTermination { get; }
 
-    public class TerminateOrganisation : BaseCommand<OrganisationId>
+    public TerminateOrganisation(
+        OrganisationId organisationId,
+        DateTime dateOfTermination,
+        bool forceKboTermination)
     {
-        public OrganisationId OrganisationId => Id;
-        public DateTime DateOfTermination { get; }
-        public bool ForceKboTermination { get; }
-
-        public TerminateOrganisation(
-            OrganisationId organisationId,
-            DateTime dateOfTermination,
-            bool forceKboTermination)
-        {
-            Id = organisationId;
-            DateOfTermination = dateOfTermination;
-            ForceKboTermination = forceKboTermination;
-        }
+        Id = organisationId;
+        DateOfTermination = dateOfTermination;
+        ForceKboTermination = forceKboTermination;
     }
 }

@@ -1,9 +1,8 @@
-namespace OrganisationRegistry.Api.Backoffice.Report.Participation
+namespace OrganisationRegistry.Api.Backoffice.Report.Participation;
+
+public enum BodyParticipationCompliance
 {
-    public enum BodyParticipationCompliance
-    {
-        Unknown = 0,
-        NonCompliant = 1,
-        Compliant = 2,
-    }
+    Unknown = 0,
+    NonCompliant = 1,
+    Compliant = 2,
 }

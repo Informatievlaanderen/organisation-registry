@@ -1,75 +1,74 @@
-namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump
+namespace OrganisationRegistry.AgentschapZorgEnGezondheid.FtpDump;
+
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using Configuration;
+using FluentFTP;
+using Info;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Infrastructure.Configuration;
+
+public class Runner
 {
-    using System.IO;
-    using System.Net;
-    using System.Net.Http;
-    using Configuration;
-    using FluentFTP;
-    using Info;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using Infrastructure.Configuration;
+    public const string DelegationsRunnerProjectionName = "AgentschapZorgEnGezondheidFtpDump";
 
-    public class Runner
+    private readonly ILogger<Runner> _logger;
+    private readonly TogglesConfigurationSection _togglesConfiguration;
+    private readonly AgentschapZorgEnGezondheidFtpDumpConfiguration _ftpDumpConfiguration;
+
+    public Runner(
+        ILogger<Runner> logger,
+        IOptions<TogglesConfigurationSection> togglesConfigurationOptions,
+        IOptions<AgentschapZorgEnGezondheidFtpDumpConfiguration> ftpDumpConfiguration)
     {
-        public const string DelegationsRunnerProjectionName = "AgentschapZorgEnGezondheidFtpDump";
+        _logger = logger;
+        _ftpDumpConfiguration = ftpDumpConfiguration.Value;
+        _togglesConfiguration = togglesConfigurationOptions.Value;
+    }
 
-        private readonly ILogger<Runner> _logger;
-        private readonly TogglesConfigurationSection _togglesConfiguration;
-        private readonly AgentschapZorgEnGezondheidFtpDumpConfiguration _ftpDumpConfiguration;
+    public bool Run()
+    {
+        _logger.LogInformation(ProgramInformation.Build(_ftpDumpConfiguration));
 
-        public Runner(
-            ILogger<Runner> logger,
-            IOptions<TogglesConfigurationSection> togglesConfigurationOptions,
-            IOptions<AgentschapZorgEnGezondheidFtpDumpConfiguration> ftpDumpConfiguration)
-        {
-            _logger = logger;
-            _ftpDumpConfiguration = ftpDumpConfiguration.Value;
-            _togglesConfiguration = togglesConfigurationOptions.Value;
-        }
+        if (!_togglesConfiguration.AgentschapZorgEnGezondheidFtpDumpAvailable)
+            return false;
 
-        public bool Run()
-        {
-            _logger.LogInformation(ProgramInformation.Build(_ftpDumpConfiguration));
+        // Get XML via API, do a regular HTTP call as a consumer to avoid the entire DI setup
+        var xmlDump = FetchXmlDump();
 
-            if (!_togglesConfiguration.AgentschapZorgEnGezondheidFtpDumpAvailable)
-                return false;
+        // Upload to FTP
+        UploadFile(xmlDump);
 
-            // Get XML via API, do a regular HTTP call as a consumer to avoid the entire DI setup
-            var xmlDump = FetchXmlDump();
+        return true;
+    }
 
-            // Upload to FTP
-            UploadFile(xmlDump);
+    private byte[] FetchXmlDump()
+    {
+        _logger.LogInformation("Calling {XmlDumpEndpoint} to get Agentschap Zorg en Gezondheid XML data.", _ftpDumpConfiguration.XmlLocation);
+        var http = new HttpClient();
 
-            return true;
-        }
+        return http.GetByteArrayAsync(_ftpDumpConfiguration.XmlLocation).GetAwaiter().GetResult();
+    }
 
-        private byte[] FetchXmlDump()
-        {
-            _logger.LogInformation("Calling {XmlDumpEndpoint} to get Agentschap Zorg en Gezondheid XML data.", _ftpDumpConfiguration.XmlLocation);
-            var http = new HttpClient();
+    private void UploadFile(byte[] xmlDump)
+    {
+        // var fileName = $"OrganisatieRegister-{DateTime.UtcNow.Date:yyyy-MM-dd}.xml";
+        var fileName = $"OrganisatieRegister.xml";
+        _logger.LogInformation("Uploading {XmlDumpFileName} to Agentschap Zorg en Gezondheid FTP server.", fileName);
 
-            return http.GetByteArrayAsync(_ftpDumpConfiguration.XmlLocation).GetAwaiter().GetResult();
-        }
+        var path = Path.Combine(_ftpDumpConfiguration.FtpPath, fileName);
+        var login = new NetworkCredential(_ftpDumpConfiguration.User, _ftpDumpConfiguration.Pass);
+        var ftp = new FtpClient(_ftpDumpConfiguration.Host, login);
+        ftp.Connect();
 
-        private void UploadFile(byte[] xmlDump)
-        {
-            // var fileName = $"OrganisatieRegister-{DateTime.UtcNow.Date:yyyy-MM-dd}.xml";
-            var fileName = $"OrganisatieRegister.xml";
-            _logger.LogInformation("Uploading {XmlDumpFileName} to Agentschap Zorg en Gezondheid FTP server.", fileName);
+        if (ftp.FileExists(path))
+            _logger.LogWarning("File {XmlDumpFile} already exists on the FTP server at {XmlDumpPath}!", fileName, path);
 
-            var path = Path.Combine(_ftpDumpConfiguration.FtpPath, fileName);
-            var login = new NetworkCredential(_ftpDumpConfiguration.User, _ftpDumpConfiguration.Pass);
-            var ftp = new FtpClient(_ftpDumpConfiguration.Host, login);
-            ftp.Connect();
+        ftp.RetryAttempts = 3;
+        ftp.Upload(xmlDump, path);
 
-            if (ftp.FileExists(path))
-                _logger.LogWarning("File {XmlDumpFile} already exists on the FTP server at {XmlDumpPath}!", fileName, path);
-
-            ftp.RetryAttempts = 3;
-            ftp.Upload(xmlDump, path);
-
-            ftp.Disconnect();
-        }
+        ftp.Disconnect();
     }
 }

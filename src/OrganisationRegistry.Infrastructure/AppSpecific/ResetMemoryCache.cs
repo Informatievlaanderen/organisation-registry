@@ -1,28 +1,27 @@
-namespace OrganisationRegistry.Infrastructure.AppSpecific
+namespace OrganisationRegistry.Infrastructure.AppSpecific;
+
+using System;
+using System.Collections.Generic;
+using Events;
+using Messages;
+using System.Linq;
+
+public class ResetMemoryCache : IEvent<ResetMemoryCache>
 {
-    using System;
-    using System.Collections.Generic;
-    using Events;
-    using Messages;
-    using System.Linq;
+    protected Guid Id { get; set; }
 
-    public class ResetMemoryCache : IEvent<ResetMemoryCache>
+    public int Version { get; set; }
+
+    public DateTimeOffset Timestamp { get; set; }
+
+    Guid IMessage.Id
     {
-        protected Guid Id { get; set; }
-
-        public int Version { get; set; }
-
-        public DateTimeOffset Timestamp { get; set; }
-
-        Guid IMessage.Id
-        {
-            get => Id;
-            set => Id = value;
-        }
-
-        public List<IEvent> Events { get; }
-
-        public ResetMemoryCache(IEnumerable<IEvent> events)
-            => Events = events.ToList();
+        get => Id;
+        set => Id = value;
     }
+
+    public List<IEvent> Events { get; }
+
+    public ResetMemoryCache(IEnumerable<IEvent> events)
+        => Events = events.ToList();
 }

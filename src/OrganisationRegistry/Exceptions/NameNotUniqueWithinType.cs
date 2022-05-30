@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Exceptions
+namespace OrganisationRegistry.Exceptions;
+
+public class NameNotUniqueWithinType : DomainException
 {
-    public class NameNotUniqueWithinType : DomainException
-    {
-        public NameNotUniqueWithinType()
-            : base("Naam is niet uniek binnen type.") { }
-    }
+    public NameNotUniqueWithinType()
+        : base("Naam is niet uniek binnen type.") { }
 }

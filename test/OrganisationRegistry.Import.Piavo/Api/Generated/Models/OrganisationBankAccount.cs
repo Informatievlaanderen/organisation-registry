@@ -2,57 +2,56 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class OrganisationBankAccount
 {
-    public partial class OrganisationBankAccount
+    /// <summary>
+    /// Initializes a new instance of the OrganisationBankAccount class.
+    /// </summary>
+    public OrganisationBankAccount() { }
+
+    /// <summary>
+    /// Initializes a new instance of the OrganisationBankAccount class.
+    /// </summary>
+    public OrganisationBankAccount(System.Guid? organisationBankAccountId = default(System.Guid?), string bankAccountNumber = default(string), bool? isIban = default(bool?), string bic = default(string), bool? isBic = default(bool?), Period validity = default(Period))
     {
-        /// <summary>
-        /// Initializes a new instance of the OrganisationBankAccount class.
-        /// </summary>
-        public OrganisationBankAccount() { }
-
-        /// <summary>
-        /// Initializes a new instance of the OrganisationBankAccount class.
-        /// </summary>
-        public OrganisationBankAccount(System.Guid? organisationBankAccountId = default(System.Guid?), string bankAccountNumber = default(string), bool? isIban = default(bool?), string bic = default(string), bool? isBic = default(bool?), Period validity = default(Period))
-        {
-            OrganisationBankAccountId = organisationBankAccountId;
-            BankAccountNumber = bankAccountNumber;
-            IsIban = isIban;
-            Bic = bic;
-            IsBic = isBic;
-            Validity = validity;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "organisationBankAccountId")]
-        public System.Guid? OrganisationBankAccountId { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "bankAccountNumber")]
-        public string BankAccountNumber { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "isIban")]
-        public bool? IsIban { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "bic")]
-        public string Bic { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "isBic")]
-        public bool? IsBic { get; set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "validity")]
-        public Period Validity { get; set; }
-
+        OrganisationBankAccountId = organisationBankAccountId;
+        BankAccountNumber = bankAccountNumber;
+        IsIban = isIban;
+        Bic = bic;
+        IsBic = isBic;
+        Validity = validity;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "organisationBankAccountId")]
+    public System.Guid? OrganisationBankAccountId { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "bankAccountNumber")]
+    public string BankAccountNumber { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "isIban")]
+    public bool? IsIban { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "bic")]
+    public string Bic { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "isBic")]
+    public bool? IsBic { get; set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "validity")]
+    public Period Validity { get; set; }
+
 }

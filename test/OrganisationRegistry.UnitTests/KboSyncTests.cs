@@ -1,201 +1,200 @@
-namespace OrganisationRegistry.UnitTests
+namespace OrganisationRegistry.UnitTests;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Api.Backoffice.Admin.Task;
+using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
+using Moq;
+using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.Infrastructure.Authorization;
+using OrganisationRegistry.Infrastructure.Commands;
+using OrganisationRegistry.Infrastructure.Configuration;
+using OrganisationRegistry.Infrastructure.Domain.Exception;
+using OrganisationRegistry.Organisation.Commands;
+using SqlServer.Infrastructure;
+using SqlServer.KboSyncQueue;
+using SqlServer.Organisation;
+using Xunit;
+
+public class KboSyncTests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Api.Backoffice.Admin.Task;
-    using FluentAssertions;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Logging.Abstractions;
-    using Microsoft.Extensions.Options;
-    using Moq;
-    using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Authorization;
-    using OrganisationRegistry.Infrastructure.Commands;
-    using OrganisationRegistry.Infrastructure.Configuration;
-    using OrganisationRegistry.Infrastructure.Domain.Exception;
-    using OrganisationRegistry.Organisation.Commands;
-    using SqlServer.Infrastructure;
-    using SqlServer.KboSyncQueue;
-    using SqlServer.Organisation;
-    using Xunit;
+    private readonly DateTimeProviderStub _dateTimeProviderStub;
+    private readonly OptionsWrapper<ApiConfigurationSection> _apiConfiguration;
+    private readonly OrganisationRegistryContext _context;
+    private readonly User _user;
 
-    public class KboSyncTests
+    public KboSyncTests()
     {
-        private readonly DateTimeProviderStub _dateTimeProviderStub;
-        private readonly OptionsWrapper<ApiConfigurationSection> _apiConfiguration;
-        private readonly OrganisationRegistryContext _context;
-        private readonly User _user;
+        _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
+        _apiConfiguration = new OptionsWrapper<ApiConfigurationSection>(new ApiConfigurationSection { SyncFromKboBatchSize = 500 });
+        _context = new OrganisationRegistryContext(
+            new DbContextOptionsBuilder<OrganisationRegistryContext>()
+                .UseInMemoryDatabase(
+                    "kbo-sync-test-" + Guid.NewGuid(),
+                    _ => { })
+                .Options);
+        _user = WellknownUsers.KboSyncService;
+    }
 
-        public KboSyncTests()
-        {
-            _dateTimeProviderStub = new DateTimeProviderStub(DateTime.Now);
-            _apiConfiguration = new OptionsWrapper<ApiConfigurationSection>(new ApiConfigurationSection { SyncFromKboBatchSize = 500 });
-            _context = new OrganisationRegistryContext(
-                new DbContextOptionsBuilder<OrganisationRegistryContext>()
-                    .UseInMemoryDatabase(
-                        "kbo-sync-test-" + Guid.NewGuid(),
-                        _ => { })
-                    .Options);
-            _user = WellknownUsers.KboSyncService;
-        }
+    [Fact]
+    public async Task ProcessesSuccess()
+    {
+        var commandSender = Mock.Of<ICommandSender>();
 
-        [Fact]
-        public async Task ProcessesSuccess()
-        {
-            var commandSender = Mock.Of<ICommandSender>();
+        var kboSyncQueueItem = AddOrganisationToSync(_context, "0123456789", DateTimeOffset.Now.AddDays(-1));
+        var kboSyncQueueItem2 = AddOrganisationToSync(_context, "0998798798", DateTimeOffset.Now.AddDays(-2));
 
-            var kboSyncQueueItem = AddOrganisationToSync(_context, "0123456789", DateTimeOffset.Now.AddDays(-1));
-            var kboSyncQueueItem2 = AddOrganisationToSync(_context, "0998798798", DateTimeOffset.Now.AddDays(-2));
+        await _context.SaveChangesAsync();
 
-            await _context.SaveChangesAsync();
+        await new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(commandSender, _context, _user);
 
-            await new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(commandSender, _context, _user);
-
-            _context.KboSyncQueue.AsEnumerable().Should().BeEquivalentTo(
-                new List<KboSyncQueueItem>
-                {
-                    new()
-                    {
-                        Id = kboSyncQueueItem.Id,
-                        SourceOrganisationName = kboSyncQueueItem.SourceOrganisationName,
-                        MutationReadAt = kboSyncQueueItem.MutationReadAt,
-                        SourceFileName = kboSyncQueueItem.SourceFileName,
-                        SourceOrganisationKboNumber = kboSyncQueueItem.SourceOrganisationKboNumber,
-                        SourceOrganisationModifiedAt = kboSyncQueueItem.SourceOrganisationModifiedAt,
-                        SyncCompletedAt = _dateTimeProviderStub.UtcNow,
-                        SyncStatus = KboSync.SyncStatusSuccess,
-                        SyncInfo = string.Empty,
-                        SourceOrganisationStatus = kboSyncQueueItem.SourceOrganisationStatus,
-                    },
-                    new()
-                    {
-                        Id = kboSyncQueueItem2.Id,
-                        SourceOrganisationName = kboSyncQueueItem2.SourceOrganisationName,
-                        MutationReadAt = kboSyncQueueItem2.MutationReadAt,
-                        SourceFileName = kboSyncQueueItem2.SourceFileName,
-                        SourceOrganisationKboNumber = kboSyncQueueItem2.SourceOrganisationKboNumber,
-                        SourceOrganisationModifiedAt = kboSyncQueueItem2.SourceOrganisationModifiedAt,
-                        SyncCompletedAt = _dateTimeProviderStub.UtcNow,
-                        SyncStatus = KboSync.SyncStatusSuccess,
-                        SyncInfo = string.Empty,
-                        SourceOrganisationStatus = kboSyncQueueItem.SourceOrganisationStatus,
-                    }
-                }.AsEnumerable());
-        }
-
-        [Fact]
-        public async Task ProcessesErrors()
-        {
-            var commandSender = new Mock<ICommandSender>();
-
-            var kboSyncQueueItem = AddOrganisationToSync(_context, "0123456789", DateTimeOffset.Now.AddDays(-1));
-
-            var aggregateNotFoundException = new AggregateNotFoundException(
-                typeof(OrganisationRegistry.Organisation.Organisation),
-                kboSyncQueueItem.Id);
-
-            commandSender
-                .Setup(sender => sender.Send(It.IsAny<SyncOrganisationWithKbo>(), _user))
-                .Throws(aggregateNotFoundException);
-
-            await _context.SaveChangesAsync();
-
-            await new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(commandSender.Object, _context, _user);
-
-            _context.KboSyncQueue.AsEnumerable().Should().BeEquivalentTo(
-                new List<KboSyncQueueItem>
-                {
-                    new()
-                    {
-                        Id = kboSyncQueueItem.Id,
-                        SourceOrganisationName = kboSyncQueueItem.SourceOrganisationName,
-                        MutationReadAt = kboSyncQueueItem.MutationReadAt,
-                        SourceFileName = kboSyncQueueItem.SourceFileName,
-                        SourceOrganisationKboNumber = kboSyncQueueItem.SourceOrganisationKboNumber,
-                        SourceOrganisationModifiedAt = kboSyncQueueItem.SourceOrganisationModifiedAt,
-                        SyncCompletedAt = null,
-                        SyncStatus = KboSync.SyncStatusError,
-                        SyncInfo = aggregateNotFoundException.ToString(),
-                        SourceOrganisationStatus = kboSyncQueueItem.SourceOrganisationStatus,
-                    }
-                });
-        }
-
-        [Fact]
-        public async Task ProcessesNotFounds()
-        {
-            var commandSender = Mock.Of<ICommandSender>();
-
-            var kboSyncQueueItem = new KboSyncQueueItem
+        _context.KboSyncQueue.AsEnumerable().Should().BeEquivalentTo(
+            new List<KboSyncQueueItem>
             {
-                Id = Guid.NewGuid(),
-                SourceOrganisationName = "test",
-                MutationReadAt = DateTimeOffset.UtcNow,
-                SourceFileName = "test-file.fake",
-                SourceOrganisationKboNumber = "0123456789",
-                SourceOrganisationModifiedAt = DateTimeOffset.Now,
-                SyncCompletedAt = null,
-                SyncStatus = null,
-                SourceOrganisationStatus = "test",
-            };
-
-            _context.KboSyncQueue.Add(kboSyncQueueItem);
-
-            await _context.SaveChangesAsync();
-
-            await new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(
-                commandSender,
-                _context,
-                _user);
-
-            _context.KboSyncQueue.AsEnumerable().Should().BeEquivalentTo(
-                new List<KboSyncQueueItem>
+                new()
                 {
-                    new()
-                    {
-                        Id = kboSyncQueueItem.Id,
-                        SourceOrganisationName = kboSyncQueueItem.SourceOrganisationName,
-                        MutationReadAt = kboSyncQueueItem.MutationReadAt,
-                        SourceFileName = kboSyncQueueItem.SourceFileName,
-                        SourceOrganisationKboNumber = kboSyncQueueItem.SourceOrganisationKboNumber,
-                        SourceOrganisationModifiedAt = kboSyncQueueItem.SourceOrganisationModifiedAt,
-                        SyncCompletedAt = null,
-                        SyncStatus = KboSync.SyncStatusNotFound,
-                        SyncInfo = KboSync.SyncInfoNotFound,
-                        SourceOrganisationStatus = kboSyncQueueItem.SourceOrganisationStatus,
-                    }
-                });
-        }
+                    Id = kboSyncQueueItem.Id,
+                    SourceOrganisationName = kboSyncQueueItem.SourceOrganisationName,
+                    MutationReadAt = kboSyncQueueItem.MutationReadAt,
+                    SourceFileName = kboSyncQueueItem.SourceFileName,
+                    SourceOrganisationKboNumber = kboSyncQueueItem.SourceOrganisationKboNumber,
+                    SourceOrganisationModifiedAt = kboSyncQueueItem.SourceOrganisationModifiedAt,
+                    SyncCompletedAt = _dateTimeProviderStub.UtcNow,
+                    SyncStatus = KboSync.SyncStatusSuccess,
+                    SyncInfo = string.Empty,
+                    SourceOrganisationStatus = kboSyncQueueItem.SourceOrganisationStatus,
+                },
+                new()
+                {
+                    Id = kboSyncQueueItem2.Id,
+                    SourceOrganisationName = kboSyncQueueItem2.SourceOrganisationName,
+                    MutationReadAt = kboSyncQueueItem2.MutationReadAt,
+                    SourceFileName = kboSyncQueueItem2.SourceFileName,
+                    SourceOrganisationKboNumber = kboSyncQueueItem2.SourceOrganisationKboNumber,
+                    SourceOrganisationModifiedAt = kboSyncQueueItem2.SourceOrganisationModifiedAt,
+                    SyncCompletedAt = _dateTimeProviderStub.UtcNow,
+                    SyncStatus = KboSync.SyncStatusSuccess,
+                    SyncInfo = string.Empty,
+                    SourceOrganisationStatus = kboSyncQueueItem.SourceOrganisationStatus,
+                }
+            }.AsEnumerable());
+    }
 
-        private static KboSyncQueueItem AddOrganisationToSync(OrganisationRegistryContext context, string kboNumber, DateTimeOffset mutationReadAt)
+    [Fact]
+    public async Task ProcessesErrors()
+    {
+        var commandSender = new Mock<ICommandSender>();
+
+        var kboSyncQueueItem = AddOrganisationToSync(_context, "0123456789", DateTimeOffset.Now.AddDays(-1));
+
+        var aggregateNotFoundException = new AggregateNotFoundException(
+            typeof(OrganisationRegistry.Organisation.Organisation),
+            kboSyncQueueItem.Id);
+
+        commandSender
+            .Setup(sender => sender.Send(It.IsAny<SyncOrganisationWithKbo>(), _user))
+            .Throws(aggregateNotFoundException);
+
+        await _context.SaveChangesAsync();
+
+        await new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(commandSender.Object, _context, _user);
+
+        _context.KboSyncQueue.AsEnumerable().Should().BeEquivalentTo(
+            new List<KboSyncQueueItem>
+            {
+                new()
+                {
+                    Id = kboSyncQueueItem.Id,
+                    SourceOrganisationName = kboSyncQueueItem.SourceOrganisationName,
+                    MutationReadAt = kboSyncQueueItem.MutationReadAt,
+                    SourceFileName = kboSyncQueueItem.SourceFileName,
+                    SourceOrganisationKboNumber = kboSyncQueueItem.SourceOrganisationKboNumber,
+                    SourceOrganisationModifiedAt = kboSyncQueueItem.SourceOrganisationModifiedAt,
+                    SyncCompletedAt = null,
+                    SyncStatus = KboSync.SyncStatusError,
+                    SyncInfo = aggregateNotFoundException.ToString(),
+                    SourceOrganisationStatus = kboSyncQueueItem.SourceOrganisationStatus,
+                }
+            });
+    }
+
+    [Fact]
+    public async Task ProcessesNotFounds()
+    {
+        var commandSender = Mock.Of<ICommandSender>();
+
+        var kboSyncQueueItem = new KboSyncQueueItem
         {
-            var kboSyncQueueItem = new KboSyncQueueItem
+            Id = Guid.NewGuid(),
+            SourceOrganisationName = "test",
+            MutationReadAt = DateTimeOffset.UtcNow,
+            SourceFileName = "test-file.fake",
+            SourceOrganisationKboNumber = "0123456789",
+            SourceOrganisationModifiedAt = DateTimeOffset.Now,
+            SyncCompletedAt = null,
+            SyncStatus = null,
+            SourceOrganisationStatus = "test",
+        };
+
+        _context.KboSyncQueue.Add(kboSyncQueueItem);
+
+        await _context.SaveChangesAsync();
+
+        await new KboSync(_dateTimeProviderStub, _apiConfiguration, new NullLogger<KboSync>()).SyncFromKbo(
+            commandSender,
+            _context,
+            _user);
+
+        _context.KboSyncQueue.AsEnumerable().Should().BeEquivalentTo(
+            new List<KboSyncQueueItem>
             {
-                Id = Guid.NewGuid(),
-                SourceOrganisationName = "test",
-                MutationReadAt = mutationReadAt,
-                SourceFileName = "test-file.fake",
-                SourceOrganisationKboNumber = kboNumber,
-                SourceOrganisationModifiedAt = DateTimeOffset.Now,
-                SyncCompletedAt = null,
-                SyncStatus = null,
-                SourceOrganisationStatus = "test",
-            };
+                new()
+                {
+                    Id = kboSyncQueueItem.Id,
+                    SourceOrganisationName = kboSyncQueueItem.SourceOrganisationName,
+                    MutationReadAt = kboSyncQueueItem.MutationReadAt,
+                    SourceFileName = kboSyncQueueItem.SourceFileName,
+                    SourceOrganisationKboNumber = kboSyncQueueItem.SourceOrganisationKboNumber,
+                    SourceOrganisationModifiedAt = kboSyncQueueItem.SourceOrganisationModifiedAt,
+                    SyncCompletedAt = null,
+                    SyncStatus = KboSync.SyncStatusNotFound,
+                    SyncInfo = KboSync.SyncInfoNotFound,
+                    SourceOrganisationStatus = kboSyncQueueItem.SourceOrganisationStatus,
+                }
+            });
+    }
 
-            context.KboSyncQueue.Add(kboSyncQueueItem);
+    private static KboSyncQueueItem AddOrganisationToSync(OrganisationRegistryContext context, string kboNumber, DateTimeOffset mutationReadAt)
+    {
+        var kboSyncQueueItem = new KboSyncQueueItem
+        {
+            Id = Guid.NewGuid(),
+            SourceOrganisationName = "test",
+            MutationReadAt = mutationReadAt,
+            SourceFileName = "test-file.fake",
+            SourceOrganisationKboNumber = kboNumber,
+            SourceOrganisationModifiedAt = DateTimeOffset.Now,
+            SyncCompletedAt = null,
+            SyncStatus = null,
+            SourceOrganisationStatus = "test",
+        };
 
-            var organisationItem = new OrganisationDetailItem
-            {
-                Id = Guid.NewGuid(),
-                KboNumber = kboSyncQueueItem.SourceOrganisationKboNumber,
-                Name = "test",
-                OvoNumber = "test",
-            };
+        context.KboSyncQueue.Add(kboSyncQueueItem);
 
-            context.OrganisationDetail.Add(organisationItem);
-            return kboSyncQueueItem;
-        }
+        var organisationItem = new OrganisationDetailItem
+        {
+            Id = Guid.NewGuid(),
+            KboNumber = kboSyncQueueItem.SourceOrganisationKboNumber,
+            Name = "test",
+            OvoNumber = "test",
+        };
+
+        context.OrganisationDetail.Add(organisationItem);
+        return kboSyncQueueItem;
     }
 }

@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Exceptions
+namespace OrganisationRegistry.Exceptions;
+
+public class CompensatingActionRequiresAName : DomainException
 {
-    public class CompensatingActionRequiresAName : DomainException
-    {
-        public CompensatingActionRequiresAName()
-            : base("Voor het uitvoeren van een compensating action is een naam vereist.") { }
-    }
+    public CompensatingActionRequiresAName()
+        : base("Voor het uitvoeren van een compensating action is een naam vereist.") { }
 }

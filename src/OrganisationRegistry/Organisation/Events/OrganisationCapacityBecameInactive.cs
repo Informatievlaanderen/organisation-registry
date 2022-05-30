@@ -1,32 +1,31 @@
-namespace OrganisationRegistry.Organisation.Events
+namespace OrganisationRegistry.Organisation.Events;
+
+using System;
+
+public class OrganisationCapacityBecameInactive: BaseEvent<OrganisationCapacityBecameInactive>
 {
-    using System;
+    public Guid OrganisationId => Id;
 
-    public class OrganisationCapacityBecameInactive: BaseEvent<OrganisationCapacityBecameInactive>
+    public Guid OrganisationCapacityId { get; }
+    public Guid CapacityId { get; }
+    public Guid? PersonId { get; }
+    public Guid? FunctionTypeId { get; }
+    public DateTime? EndOfValidity { get; }
+
+    public OrganisationCapacityBecameInactive(
+        Guid organisationId,
+        Guid organisationCapacityId,
+        Guid capacityId,
+        Guid? personId,
+        Guid? functionTypeId,
+        DateTime? endOfValidity)
     {
-        public Guid OrganisationId => Id;
+        Id = organisationId;
 
-        public Guid OrganisationCapacityId { get; }
-        public Guid CapacityId { get; }
-        public Guid? PersonId { get; }
-        public Guid? FunctionTypeId { get; }
-        public DateTime? EndOfValidity { get; }
-
-        public OrganisationCapacityBecameInactive(
-            Guid organisationId,
-            Guid organisationCapacityId,
-            Guid capacityId,
-            Guid? personId,
-            Guid? functionTypeId,
-            DateTime? endOfValidity)
-        {
-            Id = organisationId;
-
-            OrganisationCapacityId = organisationCapacityId;
-            CapacityId = capacityId;
-            PersonId = personId;
-            FunctionTypeId = functionTypeId;
-            EndOfValidity = endOfValidity;
-        }
+        OrganisationCapacityId = organisationCapacityId;
+        CapacityId = capacityId;
+        PersonId = personId;
+        FunctionTypeId = functionTypeId;
+        EndOfValidity = endOfValidity;
     }
 }

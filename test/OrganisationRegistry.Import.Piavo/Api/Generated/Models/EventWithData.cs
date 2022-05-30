@@ -2,81 +2,80 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class EventWithData
 {
-    public partial class EventWithData
+    /// <summary>
+    /// Initializes a new instance of the EventWithData class.
+    /// </summary>
+    public EventWithData() { }
+
+    /// <summary>
+    /// Initializes a new instance of the EventWithData class.
+    /// </summary>
+    public EventWithData(System.Guid? id = default(System.Guid?), int? number = default(int?), int? version = default(int?), string name = default(string), System.DateTime? timestamp = default(System.DateTime?), IEvent data = default(IEvent), string ip = default(string), string lastName = default(string), string firstName = default(string), string userId = default(string))
     {
-        /// <summary>
-        /// Initializes a new instance of the EventWithData class.
-        /// </summary>
-        public EventWithData() { }
-
-        /// <summary>
-        /// Initializes a new instance of the EventWithData class.
-        /// </summary>
-        public EventWithData(System.Guid? id = default(System.Guid?), int? number = default(int?), int? version = default(int?), string name = default(string), System.DateTime? timestamp = default(System.DateTime?), IEvent data = default(IEvent), string ip = default(string), string lastName = default(string), string firstName = default(string), string userId = default(string))
-        {
-            Id = id;
-            Number = number;
-            Version = version;
-            Name = name;
-            Timestamp = timestamp;
-            Data = data;
-            Ip = ip;
-            LastName = lastName;
-            FirstName = firstName;
-            UserId = userId;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
-        public System.Guid? Id { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "number")]
-        public int? Number { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "version")]
-        public int? Version { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
-        public string Name { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "timestamp")]
-        public System.DateTime? Timestamp { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "data")]
-        public IEvent Data { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "ip")]
-        public string Ip { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "lastName")]
-        public string LastName { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "firstName")]
-        public string FirstName { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "userId")]
-        public string UserId { get; private set; }
-
+        Id = id;
+        Number = number;
+        Version = version;
+        Name = name;
+        Timestamp = timestamp;
+        Data = data;
+        Ip = ip;
+        LastName = lastName;
+        FirstName = firstName;
+        UserId = userId;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
+    public System.Guid? Id { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "number")]
+    public int? Number { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "version")]
+    public int? Version { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
+    public string Name { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "timestamp")]
+    public System.DateTime? Timestamp { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "data")]
+    public IEvent Data { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "ip")]
+    public string Ip { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "lastName")]
+    public string LastName { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "firstName")]
+    public string FirstName { get; private set; }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "userId")]
+    public string UserId { get; private set; }
+
 }

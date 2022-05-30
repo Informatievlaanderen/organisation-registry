@@ -1,28 +1,27 @@
-namespace OrganisationRegistry.SqlServer.ElasticSearchProjections
+namespace OrganisationRegistry.SqlServer.ElasticSearchProjections;
+
+using System;
+using Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using OrganisationRegistry.Infrastructure;
+
+public class BodyCacheItem
 {
-    using System;
-    using Infrastructure;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using OrganisationRegistry.Infrastructure;
+    public Guid Id { get; set; }
+    public string Name { get; set; } = null!;
+}
 
-    public class BodyCacheItem
+public class BodyCacheForEsConfiguration : EntityMappingConfiguration<BodyCacheItem>
+{
+    public const string TableName = "BodyCache";
+
+    public override void Map(EntityTypeBuilder<BodyCacheItem> b)
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; } = null!;
-    }
+        b.ToTable(TableName, WellknownSchemas.ElasticSearchProjectionsSchema)
+            .HasKey(p => p.Id)
+            .IsClustered(false);
 
-    public class BodyCacheForEsConfiguration : EntityMappingConfiguration<BodyCacheItem>
-    {
-        public const string TableName = "BodyCache";
-
-        public override void Map(EntityTypeBuilder<BodyCacheItem> b)
-        {
-            b.ToTable(TableName, WellknownSchemas.ElasticSearchProjectionsSchema)
-                .HasKey(p => p.Id)
-                .IsClustered(false);
-
-            b.Property(p => p.Name).IsRequired();
-        }
+        b.Property(p => p.Name).IsRequired();
     }
 }

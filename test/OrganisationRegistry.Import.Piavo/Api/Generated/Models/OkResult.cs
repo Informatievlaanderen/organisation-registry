@@ -2,27 +2,26 @@
 // Changes may cause incorrect behavior and will be lost if the code is
 // regenerated.
 
-namespace OrganisationRegistry.Import.Piavo.Models
+namespace OrganisationRegistry.Import.Piavo.Models;
+
+public partial class OkResult
 {
-    public partial class OkResult
+    /// <summary>
+    /// Initializes a new instance of the OkResult class.
+    /// </summary>
+    public OkResult() { }
+
+    /// <summary>
+    /// Initializes a new instance of the OkResult class.
+    /// </summary>
+    public OkResult(int? statusCode = default(int?))
     {
-        /// <summary>
-        /// Initializes a new instance of the OkResult class.
-        /// </summary>
-        public OkResult() { }
-
-        /// <summary>
-        /// Initializes a new instance of the OkResult class.
-        /// </summary>
-        public OkResult(int? statusCode = default(int?))
-        {
-            StatusCode = statusCode;
-        }
-
-        /// <summary>
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty(PropertyName = "statusCode")]
-        public int? StatusCode { get; private set; }
-
+        StatusCode = statusCode;
     }
+
+    /// <summary>
+    /// </summary>
+    [Newtonsoft.Json.JsonProperty(PropertyName = "statusCode")]
+    public int? StatusCode { get; private set; }
+
 }
