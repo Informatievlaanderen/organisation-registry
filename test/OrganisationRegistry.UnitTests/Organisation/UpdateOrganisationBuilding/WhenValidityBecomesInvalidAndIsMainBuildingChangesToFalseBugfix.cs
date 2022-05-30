@@ -68,7 +68,9 @@ public class WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix :
                 true,
                 _validFrom,
                 _validTo),
+#pragma warning disable CS0618
             new MainBuildingAssignedToOrganisation(_organisationId, _buildingId, _organisationBuildingId)
+#pragma warning restore CS0618
         };
 
     private UpdateOrganisationBuilding UpdateOrganisationBuildingCommand
@@ -116,9 +118,13 @@ public class WhenValidityBecomesInvalidAndIsMainBuildingChangesToFalseBugfix :
         await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User).Then();
 
         var @event = PublishedEvents[1];
+#pragma warning disable CS0618
         @event.Should().BeOfType<Envelope<MainBuildingClearedFromOrganisation>>();
+#pragma warning restore CS0618
 
+#pragma warning disable CS0618
         var mainBuildingClearedFromOrganisation = @event.UnwrapBody<MainBuildingClearedFromOrganisation>();
+#pragma warning restore CS0618
         mainBuildingClearedFromOrganisation.OrganisationId.Should().Be(_organisationId);
         mainBuildingClearedFromOrganisation.MainBuildingId.Should().Be(_buildingId);
     }

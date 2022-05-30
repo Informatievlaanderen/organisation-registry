@@ -57,7 +57,9 @@ public class WhenMainBuildingIsStillActive : Specification<UpdateMainBuildingCom
                 true,
                 DateTime.Today,
                 DateTime.Today),
+#pragma warning disable CS0618
             new MainBuildingAssignedToOrganisation(_organisationId, _buildingId, _organisationBuildingId)
+#pragma warning restore CS0618
         };
 
     private UpdateMainBuilding UpdateMainBuildingCommand

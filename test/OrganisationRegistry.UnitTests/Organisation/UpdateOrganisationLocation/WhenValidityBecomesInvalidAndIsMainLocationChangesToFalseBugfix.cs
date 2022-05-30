@@ -83,7 +83,9 @@ public class WhenValidityBecomesInvalidAndIsMainLocationChangesToFalseBugfix :
                 "Location Type A",
                 _validFrom,
                 _validTo),
+#pragma warning disable CS0618
             new MainLocationAssignedToOrganisation(_organisationId, _locationId, _organisationLocationId)
+#pragma warning restore CS0618
         };
 
     private UpdateOrganisationLocation UpdateOrganisationLocationCommand
@@ -123,9 +125,13 @@ public class WhenValidityBecomesInvalidAndIsMainLocationChangesToFalseBugfix :
     {
         await Given(Events).When(UpdateOrganisationLocationCommand, User).Then();
         var @event = PublishedEvents[1];
+#pragma warning disable CS0618
         @event.Should().BeOfType<Envelope<MainLocationClearedFromOrganisation>>();
+#pragma warning restore CS0618
 
+#pragma warning disable CS0618
         var mainLocationClearedFromOrganisation = @event.UnwrapBody<MainLocationClearedFromOrganisation>();
+#pragma warning restore CS0618
         mainLocationClearedFromOrganisation.OrganisationId.Should().Be(_organisationId);
         mainLocationClearedFromOrganisation.MainLocationId.Should().Be(_locationId);
     }

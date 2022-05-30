@@ -104,7 +104,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             DbTransaction dbTransaction,
             IEnvelope<OrganisationFunctionUpdated> message)
         {
-            var changes = new Dictionary<Guid, Action<PersonDocument>>();
+            var changes = new Dictionary<Guid, Func<PersonDocument, Task>>();
 
             // If previous exists and current is different, we need to delete and add
             if (message.Body.PreviousPersonId != message.Body.PersonId)
@@ -117,6 +117,8 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
 
                         document.Functions.RemoveExistingListItems(
                             x => x.PersonFunctionId == message.Body.OrganisationFunctionId);
+
+                        return Task.CompletedTask;
                     });
 
             changes.Add(

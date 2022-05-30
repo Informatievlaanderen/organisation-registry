@@ -34,20 +34,23 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
         {
             return await new ElasticMassChange
             (
-                elastic => elastic.TryAsync(async () => await elastic
-                    .MassUpdateOrganisationAsync(
-                        x => x.Bodies.Single().BodyId, message.Body.BodyId,
-                        "bodies", "bodyId",
-                        "bodyName", message.Body.Name,
-                        message.Number,
-                        message.Timestamp))
+                elastic => elastic.TryAsync(
+                    async () => await elastic
+                        .MassUpdateOrganisationAsync(
+                            x => x.Bodies.Single().BodyId,
+                            message.Body.BodyId,
+                            "bodies",
+                            "bodyId",
+                            "bodyName",
+                            message.Body.Name,
+                            message.Number,
+                            message.Timestamp))
             ).ToAsyncResult();
         }
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationAdded> message)
         {
-            return await new ElasticPerDocumentChange<OrganisationDocument>
-            (
+            return await new ElasticPerDocumentChange<OrganisationDocument>(
                 message.Body.OrganisationId,
                 document =>
                 {
@@ -68,45 +71,51 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<BodyOrganisationUpdated> message)
         {
-            var changes = new Dictionary<Guid, Action<OrganisationDocument>>();
-
-            changes.Add(message.Body.PreviousOrganisationId, document =>
+            var changes = new Dictionary<Guid, Func<OrganisationDocument, Task>>
             {
-                document.ChangeId = message.Number;
-                document.ChangeTime = message.Timestamp;
-
-                var bodyName = document.Bodies.First(x => x.BodyOrganisationId == message.Body.BodyOrganisationId).BodyName;
-                document.Bodies.RemoveExistingListItems(x => x.BodyOrganisationId == message.Body.BodyOrganisationId);
-
-                if (message.Body.PreviousOrganisationId == message.Body.OrganisationId)
                 {
-                    document.Bodies.Add(
-                        new OrganisationDocument.OrganisationBody(
-                            message.Body.BodyOrganisationId,
-                            message.Body.BodyId,
-                            bodyName,
-                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
+                    message.Body.PreviousOrganisationId, document =>
+                    {
+                        document.ChangeId = message.Number;
+                        document.ChangeTime = message.Timestamp;
+
+                        var bodyName = document.Bodies.First(x => x.BodyOrganisationId == message.Body.BodyOrganisationId).BodyName;
+                        document.Bodies.RemoveExistingListItems(x => x.BodyOrganisationId == message.Body.BodyOrganisationId);
+
+                        if (message.Body.PreviousOrganisationId == message.Body.OrganisationId)
+                        {
+                            document.Bodies.Add(
+                                new OrganisationDocument.OrganisationBody(
+                                    message.Body.BodyOrganisationId,
+                                    message.Body.BodyId,
+                                    bodyName,
+                                    Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
+                        }
+
+                        return Task.CompletedTask;
+                    }
                 }
-            });
+            };
 
             if (message.Body.PreviousOrganisationId != message.Body.OrganisationId)
             {
-                changes.Add(message.Body.OrganisationId, async document =>
-                {
-                    await using var organisationRegistryContext = _contextFactory.Create();
-                    var body = await organisationRegistryContext.BodyCache.SingleAsync(x => x.Id == message.Body.BodyId);
+                changes.Add(
+                    message.Body.OrganisationId,
+                    async document =>
+                    {
+                        await using var organisationRegistryContext = _contextFactory.Create();
+                        var body = await organisationRegistryContext.BodyCache.SingleAsync(x => x.Id == message.Body.BodyId);
 
-                    document.ChangeId = message.Number;
-                    document.ChangeTime = message.Timestamp;
+                        document.ChangeId = message.Number;
+                        document.ChangeTime = message.Timestamp;
 
-                    document.Bodies.Add(
-                        new OrganisationDocument.OrganisationBody(
-                            message.Body.BodyOrganisationId,
-                            message.Body.BodyId,
-                            body.Name,
-                            Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
-
-                });
+                        document.Bodies.Add(
+                            new OrganisationDocument.OrganisationBody(
+                                message.Body.BodyOrganisationId,
+                                message.Body.BodyId,
+                                body.Name,
+                                Period.FromDates(message.Body.ValidFrom, message.Body.ValidTo)));
+                    });
             }
 
             return await new ElasticPerDocumentChange<OrganisationDocument>(changes).ToAsyncResult();

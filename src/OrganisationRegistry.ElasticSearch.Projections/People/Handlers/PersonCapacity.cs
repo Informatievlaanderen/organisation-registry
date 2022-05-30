@@ -170,7 +170,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.People.Handlers
             if (!message.Body.PreviousPersonId.HasValue && !message.Body.PersonId.HasValue)
                 return new ElasticNoChange();
 
-            var changes = new Dictionary<Guid, Action<PersonDocument>>();
+            var changes = new Dictionary<Guid, Func<PersonDocument, Task>>();
             // If previous exists and current is different, we need to delete and add
             if (message.Body.PreviousPersonId.HasValue &&
                 message.Body.PreviousPersonId != message.Body.PersonId)

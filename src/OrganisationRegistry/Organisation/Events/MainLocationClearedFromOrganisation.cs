@@ -9,6 +9,7 @@ namespace OrganisationRegistry.Organisation.Events
 
         public Guid MainLocationId { get; }
 
+        [Obsolete("2020-01-22: No longer used in projections. Keep but don't use.")]
         public MainLocationClearedFromOrganisation(
             Guid organisationId,
             Guid mainLocationId)

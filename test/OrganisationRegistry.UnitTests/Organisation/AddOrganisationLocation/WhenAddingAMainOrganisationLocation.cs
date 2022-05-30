@@ -129,10 +129,14 @@ public class
         await Given(Events).When(AddOrganisationLocationCommand, User).Then();
 
         PublishedEvents[1]
+#pragma warning disable CS0618
             .UnwrapBody<MainLocationAssignedToOrganisation>()
+#pragma warning restore CS0618
             .Should()
             .BeEquivalentTo(
+#pragma warning disable CS0618
                 new MainLocationAssignedToOrganisation(
+#pragma warning restore CS0618
                     _organisationId,
                     _locationId,
                     _organisationLocationId),

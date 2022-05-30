@@ -66,7 +66,9 @@ public class WhenAnotherMainBuildingIsNowActive :
                 true,
                 DateTime.Today,
                 DateTime.Today),
+#pragma warning disable CS0618
             new MainBuildingAssignedToOrganisation(_organisationId, _buildingAId, _organisationBuildingAId),
+#pragma warning restore CS0618
             new OrganisationBuildingAdded(
                 _organisationId,
                 Guid.NewGuid(),
@@ -92,7 +94,9 @@ public class WhenAnotherMainBuildingIsNowActive :
     {
         await Given(Events).When(UpdateMainBuildingCommand, TestUser.User).Then();
 
+#pragma warning disable CS0618
         PublishedEvents[0].Should().BeOfType<Envelope<MainBuildingClearedFromOrganisation>>();
+#pragma warning restore CS0618
     }
 
     [Fact]
@@ -101,7 +105,9 @@ public class WhenAnotherMainBuildingIsNowActive :
         await Given(Events).When(UpdateMainBuildingCommand, TestUser.User).Then();
 
         var mainBuildingAssignedToOrganisation =
+#pragma warning disable CS0618
             PublishedEvents[1].UnwrapBody<MainBuildingAssignedToOrganisation>();
+#pragma warning restore CS0618
         mainBuildingAssignedToOrganisation.Should().NotBeNull();
         mainBuildingAssignedToOrganisation.MainBuildingId.Should().Be(_buildingBId);
     }

@@ -62,7 +62,9 @@ public class WhenMainBuildingIsNoLongerActive : Specification<UpdateMainBuilding
                 true,
                 DateTime.Today,
                 DateTime.Today),
+#pragma warning disable CS0618
             new MainBuildingAssignedToOrganisation(_organisationId, _buildingId, _organisationBuildingId)
+#pragma warning restore CS0618
         };
 
     private UpdateMainBuilding UpdateMainBuildingCommand
@@ -78,6 +80,8 @@ public class WhenMainBuildingIsNoLongerActive : Specification<UpdateMainBuilding
     public async Task ClearsTheMainBuilding()
     {
         await Given(Events).When(UpdateMainBuildingCommand, TestUser.User).Then();
+#pragma warning disable CS0618
         PublishedEvents[0].Should().BeOfType<Envelope<MainBuildingClearedFromOrganisation>>();
+#pragma warning restore CS0618
     }
 }

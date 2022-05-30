@@ -84,7 +84,9 @@ public class WhenAnotherMainLocationIsNowActive :
                 null,
                 DateTime.Today,
                 DateTime.Today),
+#pragma warning disable CS0618
             new MainLocationAssignedToOrganisation(_organisationId, _locationAId, _organisationLocationAId),
+#pragma warning restore CS0618
             new OrganisationLocationAdded(
                 _organisationId,
                 Guid.NewGuid(),
@@ -110,7 +112,9 @@ public class WhenAnotherMainLocationIsNowActive :
     public async Task ClearsTheMainLocation()
     {
         await Given(Events).When(UpdateMainLocationCommand, TestUser.User).ThenItPublishesTheCorrectNumberOfEvents(2);
+#pragma warning disable CS0618
         PublishedEvents[0].Should().BeOfType<Envelope<MainLocationClearedFromOrganisation>>();
+#pragma warning restore CS0618
     }
 
     [Fact]
@@ -119,7 +123,9 @@ public class WhenAnotherMainLocationIsNowActive :
         await Given(Events).When(UpdateMainLocationCommand, TestUser.User).ThenItPublishesTheCorrectNumberOfEvents(2);
 
         var mainLocationAssignedToOrganisation =
+#pragma warning disable CS0618
             PublishedEvents[1].UnwrapBody<MainLocationAssignedToOrganisation>();
+#pragma warning restore CS0618
         mainLocationAssignedToOrganisation.Should().NotBeNull();
         mainLocationAssignedToOrganisation.MainLocationId.Should().Be(_locationBId);
     }

@@ -127,7 +127,9 @@ public class
     {
         await Given(Events).When(UpdateOrganisationLocationCommand, User).Then();
         var mainLocationAssignedToOrganisation =
+#pragma warning disable CS0618
             PublishedEvents[1].UnwrapBody<MainLocationAssignedToOrganisation>();
+#pragma warning restore CS0618
         mainLocationAssignedToOrganisation.OrganisationLocationId.Should().Be(_organisationLocationId);
         mainLocationAssignedToOrganisation.OrganisationId.Should().Be(_organisationId);
         mainLocationAssignedToOrganisation.MainLocationId.Should().Be(_locationId);

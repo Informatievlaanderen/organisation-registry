@@ -10,6 +10,7 @@ namespace OrganisationRegistry.Organisation.Events
         public Guid MainLocationId { get; }
         public Guid OrganisationLocationId { get; }
 
+        [Obsolete("2020-01-22: No longer used in projections. Keep but don't use.")]
         public MainLocationAssignedToOrganisation(
             Guid organisationId,
             Guid mainLocationId,

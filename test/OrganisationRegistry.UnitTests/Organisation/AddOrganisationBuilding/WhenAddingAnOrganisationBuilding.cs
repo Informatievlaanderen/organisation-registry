@@ -113,10 +113,14 @@ public class WhenAddingAMainOrganisationBuilding
         await Given(Events).When(AddOrganisationBuildingCommand, TestUser.User).Then();
 
         PublishedEvents[1]
+#pragma warning disable CS0618
             .UnwrapBody<MainBuildingAssignedToOrganisation>()
+#pragma warning restore CS0618
             .Should()
             .BeEquivalentTo(
+#pragma warning disable CS0618
                 new MainBuildingAssignedToOrganisation(
+#pragma warning restore CS0618
                     _organisationId,
                     _buildingId,
                     _organisationBuildingId)

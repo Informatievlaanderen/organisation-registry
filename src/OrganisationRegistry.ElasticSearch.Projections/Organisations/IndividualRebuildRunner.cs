@@ -137,7 +137,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
                                 document = documentCache[documentChange.Key];
                             }
 
-                            documentChange.Value(document);
+                            await documentChange.Value(document);
                         }
 
                         break;

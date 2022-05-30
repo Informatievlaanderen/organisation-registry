@@ -71,7 +71,9 @@ public class WhenMainLocationIsNoLongerActive : Specification<UpdateMainLocation
                 null,
                 DateTime.Today,
                 DateTime.Today),
+#pragma warning disable CS0618
             new MainLocationAssignedToOrganisation(_organisationId, _locationId, _organisationLocationId)
+#pragma warning restore CS0618
         };
 
     private UpdateMainLocation UpdateMainLocationCommand
@@ -88,6 +90,8 @@ public class WhenMainLocationIsNoLongerActive : Specification<UpdateMainLocation
     public async Task ClearsTheMainLocation()
     {
         await Given(Events).When(UpdateMainLocationCommand, TestUser.User).Then();
+#pragma warning disable CS0618
         PublishedEvents[0].Should().BeOfType<Envelope<MainLocationClearedFromOrganisation>>();
+#pragma warning restore CS0618
     }
 }
