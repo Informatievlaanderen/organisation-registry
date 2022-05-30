@@ -1,3 +1,10 @@
+## [1.194.7](https://github.com/informatievlaanderen/organisation-registry/compare/v1.194.6...v1.194.7) (2022-05-30)
+
+
+### Bug Fixes
+
+* fix unittests ([3eee5fb](https://github.com/informatievlaanderen/organisation-registry/commit/3eee5fb722d66c3e6a69460ae45a2b113bfa65cc))
+
 ## [1.194.6](https://github.com/informatievlaanderen/organisation-registry/compare/v1.194.5...v1.194.6) (2022-05-30)
 
 
