@@ -1,3 +1,10 @@
+## [1.194.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.194.3...v1.194.4) (2022-05-30)
+
+
+### Bug Fixes
+
+* assert string.empty instead of null ([3b84b57](https://github.com/informatievlaanderen/organisation-registry/commit/3b84b57bea709b2237d7810538cee3740e935cca))
+
 ## [1.194.3](https://github.com/informatievlaanderen/organisation-registry/compare/v1.194.2...v1.194.3) (2022-05-27)
 
 ## [1.194.2](https://github.com/informatievlaanderen/organisation-registry/compare/v1.194.1...v1.194.2) (2022-05-27)
