@@ -13,6 +13,7 @@ public class ImportOrganisationsStatusListItem
     public string UserName { get; set; } = null!;
     public string FileName { get; set; } = null!;
     public string FileContent { get; set; } = null!;
+    public string? OutputFileContent { get; set; }
     public string Status { get; set; } = null!;
     public DateTimeOffset UploadedAt { get; set; }
     public DateTimeOffset? LastProcessedAt { get; set; }
@@ -38,6 +39,7 @@ public class ImportStatusListItemConfiguration : EntityMappingConfiguration<Impo
         b.Property(p => p.UserName);
         b.Property(p => p.FileName);
         b.Property(p => p.FileContent).HasMaxLength(int.MaxValue);
+        b.Property(p => p.OutputFileContent).HasMaxLength(int.MaxValue);
         b.Property(p => p.Status);
         b.Property(p => p.UploadedAt);
         b.Property(p => p.LastProcessedAt);

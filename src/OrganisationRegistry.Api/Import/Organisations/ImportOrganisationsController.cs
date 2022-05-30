@@ -114,6 +114,12 @@ public class ImportOrganisationsController : OrganisationRegistryController
         if (maybeImport is not { } import)
             return NotFound();
 
-        return File(Encoding.UTF8.GetBytes(import.FileContent), "text/csv");
+        if (import.Status == ImportProcessStatus.Processing)
+            return NotFound("File not yet processed");
+
+        if (import.OutputFileContent is not { } outputFileContent)
+            throw new OutputFileNotGenerated();
+
+        return File(Encoding.UTF8.GetBytes(outputFileContent), "text/csv");
     }
 }
