@@ -1568,12 +1568,16 @@ namespace OrganisationRegistry.Organisation
             var events = new List<IEvent>();
 
             if (_mainOrganisationBuilding != null && !_mainOrganisationBuilding.Validity.OverlapsWith(today))
+#pragma warning disable CS0618
                 events.Add(new MainBuildingClearedFromOrganisation(Id, _mainOrganisationBuilding.BuildingId));
+#pragma warning restore CS0618
 
             var newMainOrganisationBuilding = State.OrganisationBuildings.TryFindMainOrganisationBuildingValidFor(today);
 
             if (newMainOrganisationBuilding != null && !Equals(newMainOrganisationBuilding, _mainOrganisationBuilding))
+#pragma warning disable CS0618
                 events.Add(new MainBuildingAssignedToOrganisation(Id, newMainOrganisationBuilding.BuildingId, newMainOrganisationBuilding.OrganisationBuildingId));
+#pragma warning restore CS0618
 
             // WHY: applying the MainBuildingClearedFromOrganisation would cause the mainBuilding to be cleared,
             // which makes it harder to compare with the newMainOrganisationBuilding.
@@ -1585,12 +1589,16 @@ namespace OrganisationRegistry.Organisation
             var events = new List<IEvent>();
 
             if (_mainOrganisationLocation != null && !_mainOrganisationLocation.Validity.OverlapsWith(today))
+#pragma warning disable CS0618
                 events.Add(new MainLocationClearedFromOrganisation(Id, _mainOrganisationLocation.LocationId));
+#pragma warning restore CS0618
 
             var newMainOrganisationLocation = State.OrganisationLocations.TryFindMainOrganisationLocationValidFor(today);
 
             if (newMainOrganisationLocation != null && !Equals(newMainOrganisationLocation, _mainOrganisationLocation))
+#pragma warning disable CS0618
                 events.Add(new MainLocationAssignedToOrganisation(Id, newMainOrganisationLocation.LocationId, newMainOrganisationLocation.OrganisationLocationId));
+#pragma warning restore CS0618
 
             // WHY: applying the MainLocationClearedFromOrganisation would cause the mainLocation to be cleared,
             // which makes it harder to compare with the newMainOrganisationLocation.
@@ -1772,14 +1780,18 @@ namespace OrganisationRegistry.Organisation
                 organisationTermination.Buildings.ContainsKey(_mainOrganisationBuilding.OrganisationBuildingId) &&
                 organisationTermination.Buildings[_mainOrganisationBuilding.OrganisationBuildingId] < dateTimeProvider.Today)
             {
+#pragma warning disable CS0618
                 ApplyChange(new MainBuildingClearedFromOrganisation(Id, _mainOrganisationBuilding.BuildingId));
+#pragma warning restore CS0618
             }
 
             if (_mainOrganisationLocation != null &&
                 organisationTermination.Locations.ContainsKey(_mainOrganisationLocation.OrganisationLocationId) &&
                 organisationTermination.Locations[_mainOrganisationLocation.OrganisationLocationId] < dateTimeProvider.Today)
             {
+#pragma warning disable CS0618
                 ApplyChange(new MainLocationClearedFromOrganisation(Id, _mainOrganisationLocation.LocationId));
+#pragma warning restore CS0618
             }
 
             foreach (var (_, parent) in State.OrganisationFormalFrameworkParentsPerFormalFramework)
@@ -1903,7 +1915,9 @@ namespace OrganisationRegistry.Organisation
             if (Equals(_mainOrganisationBuilding, organisationBuilding) &&
                 (!organisationBuilding.IsMainBuilding || !organisationBuilding.Validity.OverlapsWith(today)))
             {
+#pragma warning disable CS0618
                 ApplyChange(new MainBuildingClearedFromOrganisation(
+#pragma warning restore CS0618
                     Id,
                     organisationBuilding.BuildingId));
             }
@@ -1911,7 +1925,9 @@ namespace OrganisationRegistry.Organisation
                      !organisationBuilding.IsMainBuilding &&
                      organisationBuilding.Validity.OverlapsWith(today))
             {
+#pragma warning disable CS0618
                 ApplyChange(new MainBuildingClearedFromOrganisation(
+#pragma warning restore CS0618
                     Id,
                     organisationBuilding.BuildingId));
             }
@@ -1920,11 +1936,15 @@ namespace OrganisationRegistry.Organisation
                      organisationBuilding.Validity.OverlapsWith(today))
             {
                 if (_mainOrganisationBuilding != null)
+#pragma warning disable CS0618
                     ApplyChange(new MainBuildingClearedFromOrganisation(
+#pragma warning restore CS0618
                         Id,
                         organisationBuilding.BuildingId));
 
+#pragma warning disable CS0618
                 ApplyChange(new MainBuildingAssignedToOrganisation(
+#pragma warning restore CS0618
                     Id,
                     organisationBuilding.BuildingId,
                     organisationBuilding.OrganisationBuildingId));
@@ -1938,7 +1958,9 @@ namespace OrganisationRegistry.Organisation
             if (Equals(_mainOrganisationLocation, organisationLocation) &&
                 (!organisationLocation.IsMainLocation || !organisationLocation.Validity.OverlapsWith(today)))
             {
+#pragma warning disable CS0618
                 ApplyChange(new MainLocationClearedFromOrganisation(
+#pragma warning restore CS0618
                     Id,
                     organisationLocation.LocationId));
             }
@@ -1947,11 +1969,15 @@ namespace OrganisationRegistry.Organisation
                      organisationLocation.Validity.OverlapsWith(today))
             {
                 if (_mainOrganisationLocation != null)
+#pragma warning disable CS0618
                     ApplyChange(new MainLocationClearedFromOrganisation(
+#pragma warning restore CS0618
                         Id,
                         organisationLocation.LocationId));
 
+#pragma warning disable CS0618
                 ApplyChange(new MainLocationAssignedToOrganisation(
+#pragma warning restore CS0618
                     Id,
                     organisationLocation.LocationId,
                     organisationLocation.OrganisationLocationId));
@@ -2480,21 +2506,29 @@ namespace OrganisationRegistry.Organisation
         private void Apply(FormalFrameworkClearedFromOrganisation @event)
             => State.OrganisationFormalFrameworkParentsPerFormalFramework.Remove(@event.FormalFrameworkId);
 
+#pragma warning disable CS0618
         private void Apply(MainBuildingAssignedToOrganisation @event)
+#pragma warning restore CS0618
             => _mainOrganisationBuilding = State.OrganisationBuildings.Single(ob => ob.OrganisationBuildingId == @event.OrganisationBuildingId);
 
+#pragma warning disable CS0618
         private void Apply(MainBuildingClearedFromOrganisation @event)
+#pragma warning restore CS0618
             => _mainOrganisationBuilding = null;
 
         private void Apply(KboRegisteredOfficeLocationIsMainLocationChanged @event)
             => KboState.KboRegisteredOffice!.IsMainLocation = @event.IsMainLocation;
 
+#pragma warning disable CS0618
         private void Apply(MainLocationAssignedToOrganisation @event)
+#pragma warning restore CS0618
             => _mainOrganisationLocation = KboState.KboRegisteredOffice?.IsMainLocation == true
                 ? KboState.KboRegisteredOffice
                 : State.OrganisationLocations.Single(ob => ob.OrganisationLocationId == @event.OrganisationLocationId);
 
+#pragma warning disable CS0618
         private void Apply(MainLocationClearedFromOrganisation @event)
+#pragma warning restore CS0618
             => _mainOrganisationLocation = null;
 
         private void Apply(OrganisationCapacityBecameActive @event)

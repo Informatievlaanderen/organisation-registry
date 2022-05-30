@@ -89,7 +89,9 @@ public class
                 "Loaction Type A",
                 _validFrom,
                 _validTo),
+#pragma warning disable CS0618
             new MainLocationAssignedToOrganisation(_organisationId, _locationId, _organisationLocationId)
+#pragma warning restore CS0618
         };
 
     private UpdateOrganisationLocation UpdateOrganisationLocationCommand
@@ -128,7 +130,9 @@ public class
     {
         await Given(Events).When(UpdateOrganisationLocationCommand, User).Then();
         var mainLocationAssignedToOrganisation =
+#pragma warning disable CS0618
             PublishedEvents[1].UnwrapBody<MainLocationClearedFromOrganisation>();
+#pragma warning restore CS0618
         mainLocationAssignedToOrganisation.OrganisationId.Should().Be(_organisationId);
         mainLocationAssignedToOrganisation.MainLocationId.Should().Be(_locationId);
     }

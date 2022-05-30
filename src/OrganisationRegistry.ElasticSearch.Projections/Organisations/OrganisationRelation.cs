@@ -38,7 +38,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationAdded> message)
         {
-            var changes = new Dictionary<Guid, Action<OrganisationDocument>>();
+            var changes = new Dictionary<Guid, Func<OrganisationDocument, Task>>();
             //initiator
             changes.Add(message.Body.OrganisationId, async document =>
             {
@@ -85,7 +85,7 @@ namespace OrganisationRegistry.ElasticSearch.Projections.Organisations
 
         public async Task<IElasticChange> Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationRelationUpdated> message)
         {
-            var changes = new Dictionary<Guid, Action<OrganisationDocument>>();
+            var changes = new Dictionary<Guid, Func<OrganisationDocument, Task>>();
 
             //initiator
             changes.Add(message.Body.OrganisationId, async document =>

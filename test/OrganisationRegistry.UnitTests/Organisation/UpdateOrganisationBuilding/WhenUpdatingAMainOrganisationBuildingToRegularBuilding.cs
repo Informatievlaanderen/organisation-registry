@@ -72,7 +72,9 @@ public class
                 true,
                 _validFrom,
                 _validTo),
+#pragma warning disable CS0618
             new MainBuildingAssignedToOrganisation(_organisationId, _buildingId, _organisationBuildingId)
+#pragma warning restore CS0618
         };
 
     private UpdateOrganisationBuilding UpdateOrganisationBuildingCommand
@@ -110,7 +112,9 @@ public class
     {
         await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User).Then();
         var mainBuildingAssignedToOrganisation =
+#pragma warning disable CS0618
             PublishedEvents[1].UnwrapBody<MainBuildingClearedFromOrganisation>();
+#pragma warning restore CS0618
         mainBuildingAssignedToOrganisation.OrganisationId.Should().Be(_organisationId);
         mainBuildingAssignedToOrganisation.MainBuildingId.Should().Be(_buildingId);
     }

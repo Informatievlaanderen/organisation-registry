@@ -72,7 +72,9 @@ public class WhenUpdatingAnActiveMainOrganisationBuildingToAnInactiveOne :
                 _isMainBuilding,
                 _validFrom,
                 _validTo),
+#pragma warning disable CS0618
             new MainBuildingAssignedToOrganisation(_organisationId, _buildingId, _organisationBuildingId)
+#pragma warning restore CS0618
         };
 
     private UpdateOrganisationBuilding UpdateOrganisationBuildingCommand
@@ -109,9 +111,13 @@ public class WhenUpdatingAnActiveMainOrganisationBuildingToAnInactiveOne :
     public async Task ClearsTheMainBuilding()
     {
         await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User).Then();
+#pragma warning disable CS0618
         PublishedEvents[1].Should().BeOfType<Envelope<MainBuildingClearedFromOrganisation>>();
+#pragma warning restore CS0618
 
+#pragma warning disable CS0618
         var organisationBuildingUpdated = PublishedEvents[1].UnwrapBody<MainBuildingClearedFromOrganisation>();
+#pragma warning restore CS0618
         organisationBuildingUpdated.OrganisationId.Should().Be(_organisationId);
         organisationBuildingUpdated.MainBuildingId.Should().Be(_buildingId);
     }

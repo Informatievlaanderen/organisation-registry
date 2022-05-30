@@ -64,7 +64,9 @@ public class
                 new ValidTo(),
                 null,
                 null),
+#pragma warning disable CS0618
             OrganisationTerminated.Create(
+#pragma warning restore CS0618
                 _organisationId,
                 new OrganisationState(),
                 new KboState(),

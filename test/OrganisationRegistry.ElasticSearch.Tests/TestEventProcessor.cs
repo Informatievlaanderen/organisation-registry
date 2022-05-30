@@ -85,7 +85,7 @@
                             document = documentCache[documentChange.Key];
                         }
 
-                        documentChange.Value(document);
+                        await documentChange.Value(document);
                     }
 
                     break;

@@ -36,7 +36,9 @@ namespace OrganisationRegistry.ElasticSearch.Tests.Scenario
             bool? forcedKboTermination = null,
             DateTime? dateOfTerminationAccordingToKbo = null,
             Dictionary<Guid, DateTime>? capacities = null)
+#pragma warning disable CS0618
             => new(
+#pragma warning restore CS0618
                 organisationId,
                 Create<string>(),
                 Create<string>(),

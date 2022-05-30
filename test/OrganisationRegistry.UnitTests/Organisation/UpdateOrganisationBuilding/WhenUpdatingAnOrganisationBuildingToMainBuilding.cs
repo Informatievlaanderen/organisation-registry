@@ -108,7 +108,9 @@ public class WhenUpdatingAnOrganisationBuildingToMainBuilding :
     {
         await Given(Events).When(UpdateOrganisationBuildingCommand, TestUser.User).Then();
         var mainBuildingAssignedToOrganisation =
+#pragma warning disable CS0618
             PublishedEvents[1].UnwrapBody<MainBuildingAssignedToOrganisation>();
+#pragma warning restore CS0618
         mainBuildingAssignedToOrganisation.OrganisationBuildingId.Should().Be(_organisationBuildingId);
         mainBuildingAssignedToOrganisation.OrganisationId.Should().Be(_organisationId);
         mainBuildingAssignedToOrganisation.MainBuildingId.Should().Be(_buildingId);
