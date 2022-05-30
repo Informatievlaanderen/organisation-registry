@@ -119,7 +119,7 @@ namespace OrganisationRegistry.UnitTests.Magda
             organisation.FormalName.Value.Should().Be("Bank J. Van Breda en Co");
             organisation.FormalName.ValidFrom.Should().Be(new DateTime(1930, 02, 21));
 
-            organisation.ShortName.Value.Should().BeNull();
+            organisation.ShortName.Value.Should().BeEmpty();
             organisation.ShortName.ValidFrom.Should().BeNull();
 
             organisation.LegalForm!.Code.Should().Be("014");
