@@ -3,12 +3,8 @@ namespace OrganisationRegistry.Api.Infrastructure.Magda
     using System;
     using System.IO;
     using System.Net.Http;
-    using System.Security.Cryptography;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Security.Cryptography.Xml;
     using System.Text;
     using System.Threading.Tasks;
-    using System.Xml;
     using System.Xml.Serialization;
     using Autofac.Features.OwnedInstances;
     using global::Magda.GeefOnderneming;
@@ -16,7 +12,6 @@ namespace OrganisationRegistry.Api.Infrastructure.Magda
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Magda;
     using OrganisationRegistry.Magda.Common;
-    using OrganisationRegistry.Magda.Helpers;
     using OrganisationRegistry.Magda.Requests;
     using OrganisationRegistry.Magda.Responses;
     using OrganisationRegistry.SqlServer.Infrastructure;
@@ -52,14 +47,21 @@ namespace OrganisationRegistry.Api.Infrastructure.Magda
             {
                 var reference = await CreateAndStoreReference(organisationRegistryContext, user);
 
+                var unsignedEnvelope = MakeEnvelope(
+                    new GeefOndernemingBody
+                    {
+                        GeefOnderneming = MakeGeefOndernemingRequest(kboNumberDotLess, reference)
+                    });
+
+                var maybeClientCertificate = _configuration.ClientCertificate;
+                if (maybeClientCertificate is not { } clientCertificate)
+                    throw new NullReferenceException("ClientCertificate should never be null");
+
+                var signedEnvelope = unsignedEnvelope.SignEnvelope(clientCertificate);
+
                 return await PerformMagdaRequest<GeefOndernemingResponseBody>(
                     $"{_configuration.KBOMagdaEndPoint}/GeefOndernemingDienst-02.00/soap/WebService",
-                    SignEnvelope(
-                        MakeEnvelope(
-                            new GeefOndernemingBody
-                            {
-                                GeefOnderneming = MakeGeefOndernemingRequest(kboNumberDotLess, reference)
-                            })));
+                    signedEnvelope);
             }
         }
 
@@ -206,63 +208,6 @@ namespace OrganisationRegistry.Api.Infrastructure.Magda
                 Header = new Header(),
                 Body = body
             };
-        }
-
-        private string SignEnvelope<T>(Envelope<T> unsignedEnvelope)
-        {
-            var unsignedXmlEnvelope = unsignedEnvelope
-                .SerializeObject()
-                .Replace("<s:Body>", @"<s:Body Id=""Body"">");
-
-            var xmlBody = new XmlDocument();
-            xmlBody.LoadXml(unsignedXmlEnvelope);
-            var signature = SignXml(
-                xmlBody,
-                _configuration.ClientCertificate);
-
-            var signedXmlEnvelope = unsignedXmlEnvelope
-                .Replace("<s:Header />", $"<s:Header>{signature}</s:Header>");
-
-            var signedXmlEnvelopeDocument = new XmlDocument();
-            signedXmlEnvelopeDocument.LoadXml(signedXmlEnvelope);
-            return signedXmlEnvelopeDocument.OuterXml;
-        }
-
-        private static string SignXml(XmlDocument document, X509Certificate2 cert)
-        {
-            var signedXml = new SignedXml(document) { SigningKey = cert.PrivateKey };
-
-            // Create a reference to be signed.
-            var reference = new Reference { Uri = "#Body" };
-
-            // Add an enveloped transformation to the reference.
-            var env = new XmlDsigEnvelopedSignatureTransform(true);
-            reference.AddTransform(env);
-
-            //canonicalize
-            var c14N = new XmlDsigC14NTransform();
-            reference.AddTransform(c14N);
-
-            // Add the reference to the SignedXml object.
-            signedXml.AddReference(reference);
-
-            var keyInfo = new KeyInfo();
-            var keyInfoData = new KeyInfoX509Data(cert);
-            //var kin = new KeyInfoName { Value = "Public key of certificate" };
-
-            var rsaProvider = (RSA)cert.PublicKey.Key;
-            var rkv = new RSAKeyValue(rsaProvider);
-            //keyInfo.AddClause(kin);
-            keyInfo.AddClause(rkv);
-            keyInfo.AddClause(keyInfoData);
-            signedXml.KeyInfo = keyInfo;
-
-            // Compute the signature.
-            signedXml.ComputeSignature();
-
-            // Get the XML representation of the signature and save
-            // it to an XmlElement object.
-            return signedXml.GetXml().OuterXml;
         }
     }
 }
