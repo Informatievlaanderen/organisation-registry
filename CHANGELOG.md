@@ -1,3 +1,10 @@
+## [1.194.8](https://github.com/informatievlaanderen/organisation-registry/compare/v1.194.7...v1.194.8) (2022-05-30)
+
+
+### Bug Fixes
+
+* or-1025 add quotes to column names in error messages ([b53020b](https://github.com/informatievlaanderen/organisation-registry/commit/b53020b1054ce3e8fdf434c92863fdfc26a55903))
+
 ## [1.194.7](https://github.com/informatievlaanderen/organisation-registry/compare/v1.194.6...v1.194.7) (2022-05-30)
 
 
