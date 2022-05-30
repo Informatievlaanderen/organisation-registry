@@ -42,7 +42,7 @@ namespace OrganisationRegistry.IbanBic
         /// <summary>
         /// Gets CountryCode object from map
         /// </summary>
-        /// <param name="code">2 or 3 letters code for country</param>
+        /// <param name="maybeCode">2 or 3 letters code for country</param>
         /// <returns>Found CountryCodeItem object or null if it is not found</returns>
         public static CountryCodeEntry? GetCountryCode(string? maybeCode)
             => maybeCode is { } code
