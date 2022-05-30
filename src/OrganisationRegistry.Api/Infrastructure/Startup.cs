@@ -26,6 +26,7 @@ namespace OrganisationRegistry.Api.Infrastructure
     using Microsoft.Net.Http.Headers;
     using Microsoft.OpenApi.Models;
     using Newtonsoft.Json;
+    using OrganisationRegistry.Infrastructure;
     using OrganisationRegistry.Infrastructure.Authorization;
     using OrganisationRegistry.Infrastructure.Authorization.Cache;
     using OrganisationRegistry.Infrastructure.Configuration;
@@ -45,6 +46,7 @@ namespace OrganisationRegistry.Api.Infrastructure
         private readonly ILoggerFactory _loggerFactory;
 
         private IContainer? _applicationContainer;
+        private readonly ILogger<Startup> _logger;
 
         public Startup(
             IConfiguration configuration,
@@ -52,6 +54,7 @@ namespace OrganisationRegistry.Api.Infrastructure
         {
             _configuration = configuration;
             _loggerFactory = loggerFactory;
+            _logger = _loggerFactory.CreateLogger<Startup>();
         }
 
         /// <summary>Configures services for the application.</summary>
@@ -69,9 +72,25 @@ namespace OrganisationRegistry.Api.Infrastructure
             var editApiConfiguration = _configuration.GetSection(EditApiConfigurationSection.Name)
                 .Get<EditApiConfigurationSection>();
 
-            var magdaClientCertificate = MagdaClientCertificate.Create(
-                apiConfiguration.KboCertificate,
-                apiConfiguration.RijksRegisterCertificatePwd);
+            if (apiConfiguration.KboCertificate is { } kboCertificate && kboCertificate.IsNotEmptyOrWhiteSpace())
+            {
+                var clientCertificate = MagdaClientCertificate.Create(
+                    kboCertificate,
+                    apiConfiguration.RijksRegisterCertificatePwd);
+
+                services
+                    .AddHttpClient()
+                    .AddHttpClient(MagdaModule.HttpClientName)
+                    .ConfigurePrimaryHttpMessageHandler(() => new MagdaHttpClientHandler(clientCertificate));
+            }
+            else
+            {
+                services
+                    .AddHttpClient()
+                    .AddHttpClient(MagdaModule.HttpClientName);
+
+                _logger.LogWarning("Magda clientcertificate not configured");
+            }
 
             services
                 .AddHostedService<ScheduledCommandsService>()
@@ -124,10 +143,6 @@ namespace OrganisationRegistry.Api.Infrastructure
                             .Get<HostedServicesConfigurationSection>()))
                 .AddFeatureManagement()
                 .Services
-                .AddHttpClient()
-                .AddHttpClient(MagdaModule.HttpClientName)
-                .ConfigurePrimaryHttpMessageHandler(() => new MagdaHttpClientHandler(magdaClientCertificate))
-                .Services
                 .ConfigureDefaultForApi<Startup>(
                     new StartupConfigureOptions
                     {
@@ -178,10 +193,7 @@ namespace OrganisationRegistry.Api.Infrastructure
                         },
                         MiddlewareHooks =
                         {
-                            ConfigureJsonOptions = options =>
-                            {
-                                options.SerializerSettings.ConfigureForOrganisationRegistry();
-                            },
+                            ConfigureJsonOptions = options => { options.SerializerSettings.ConfigureForOrganisationRegistry(); },
                             ConfigureMvcCore = cfg =>
                             {
                                 cfg.OutputFormatters.Add(new CsvOutputFormatter(new CsvFormatterOptions()));
