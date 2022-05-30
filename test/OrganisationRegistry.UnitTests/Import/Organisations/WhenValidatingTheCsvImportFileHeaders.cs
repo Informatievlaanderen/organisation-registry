@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-public class WhenValidatingACsvImportFile
+public class WhenValidatingTheCsvImportFileHeaders
 {
     private static CsvValidationResult Validate(string csvContent)
         => Validate("testfile.csv", csvContent);
@@ -25,30 +25,36 @@ public class WhenValidatingACsvImportFile
     }
 
     [Theory]
-    [InlineData("parent", "reference, name")]
-    [InlineData("reference; parent", "name")]
-    [InlineData("parent; name", "reference")]
-    [InlineData("reference; name", "parent")]
-    public void GivenACsvFileWithMissingRequiredColumns_ThenItReturnsInValid(string csvFile, string expectedMissingColumns)
+    [InlineData("parent", "'reference', 'name'")]
+    [InlineData("reference; parent", "'name'")]
+    [InlineData("parent; name", "'reference'")]
+    [InlineData("reference; name", "'parent'")]
+    public void GivenACsvFileWithMissingRequiredColumns_ThenItReturnsInValid(
+        string csvFile,
+        string expectedMissingColumns)
     {
         var validationResult = Validate(csvFile);
 
         validationResult.IsValid.Should().BeFalse();
-        validationResult.ValidationIssues.Single().Description.Should().Be(MissingRequiredColumns.FormatMessage(expectedMissingColumns));
+        validationResult.ValidationIssues.Single().Description.Should()
+            .Be(MissingRequiredColumns.FormatMessage(expectedMissingColumns));
     }
 
     [Theory]
-    [InlineData("reference; parent; parent; name", "parent")]
-    [InlineData("reference; reference; parent; parent; name", "reference, parent")]
-    [InlineData("reference; reference; parent; name; name; name", "reference, name")]
-    [InlineData("reference; parent; name; reference; parent; name", "reference, parent, name")]
-    [InlineData("name; parent; reference; name", "name")]
-    public void GivenACsvFileWithDuplicateColumnNames_ThenItReturnsInValid(string csvFile, string expectedDuplicateColumns)
+    [InlineData("reference; parent; parent; name", "'parent'")]
+    [InlineData("reference; reference; parent; parent; name", "'reference', 'parent'")]
+    [InlineData("reference; reference; parent; name; name; name", "'reference', 'name'")]
+    [InlineData("reference; parent; name; reference; parent; name", "'reference', 'parent', 'name'")]
+    [InlineData("name; parent; reference; name", "'name'")]
+    public void GivenACsvFileWithDuplicateColumnNames_ThenItReturnsInValid(
+        string csvFile,
+        string expectedDuplicateColumns)
     {
         var validationResult = Validate(csvFile);
 
         validationResult.IsValid.Should().BeFalse();
-        validationResult.ValidationIssues.Single().Description.Should().Be(DuplicateColumns.FormatMessage(expectedDuplicateColumns));
+        validationResult.ValidationIssues.Single().Description.Should()
+            .Be(DuplicateColumns.FormatMessage(expectedDuplicateColumns));
     }
 
     [Theory]
@@ -87,14 +93,15 @@ public class WhenValidatingACsvImportFile
     }
 
     [Theory]
-    [InlineData("reference; parent; name; blah", "blah")]
-    [InlineData("reference; parent; name; blah; operationalvalidity_start; allena", "blah, allena")]
+    [InlineData("reference; parent; name; blah", "'blah'")]
+    [InlineData("reference; parent; name; blah; operationalvalidity_start; allena", "'blah', 'allena'")]
     public void GivenACsvFileWithInvalidColumns_ThenItReturnsInvalid(string csvFile, string expectedInvalidColumns)
     {
         var validationResult = Validate(csvFile);
 
         validationResult.IsValid.Should().BeFalse();
-        validationResult.ValidationIssues.Single().Description.Should().Be(InvalidColumns.FormatMessage(expectedInvalidColumns));
+        validationResult.ValidationIssues.Single().Description.Should()
+            .Be(InvalidColumns.FormatMessage(expectedInvalidColumns));
     }
 
     [Fact]
@@ -103,8 +110,21 @@ public class WhenValidatingACsvImportFile
         var validationResult = Validate("reference; blah");
 
         validationResult.IsValid.Should().BeFalse();
-        validationResult.ValidationIssues[0].Description.Should().Be(MissingRequiredColumns.FormatMessage("parent, name"));
-        validationResult.ValidationIssues[1].Description.Should().Be(InvalidColumns.FormatMessage("blah"));
+        validationResult.ValidationIssues[0].Description.Should()
+            .Be(MissingRequiredColumns.FormatMessage("'parent', 'name'"));
+        validationResult.ValidationIssues[1].Description.Should().Be(InvalidColumns.FormatMessage("'blah'"));
+    }
+
+    [Fact]
+    public void GivenACsvFileWithCommasInsteadOfSemiColons_ThenItReturnsInvalid()
+    {
+        var validationResult = Validate("reference, parent, name");
+
+        validationResult.IsValid.Should().BeFalse();
+        validationResult.ValidationIssues[0].Description.Should()
+            .Be(MissingRequiredColumns.FormatMessage("'reference', 'parent', 'name'"));
+        validationResult.ValidationIssues[1].Description.Should()
+            .Be(InvalidColumns.FormatMessage("'reference, parent, name'"));
     }
 
     [Theory]
