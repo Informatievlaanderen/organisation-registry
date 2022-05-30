@@ -79,7 +79,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             registrar.RegisterEventHandlers(PeopleRunner.EventHandlers);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void InitializeProjection_CreatesIndex()
         {
             var scenario = new PersonScenario(Guid.NewGuid());
@@ -98,7 +98,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             indices.Should().NotBeEmpty();
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void PersonCreated_CreatesDocument()
         {
             var scenario = new PersonScenario(Guid.NewGuid());
@@ -119,7 +119,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             person.Source.Name.Should().Be(personCreated.Name);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void OrganisationTerminated()
         {
             var context = _testContextFactory.Create();
@@ -178,7 +178,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             person.Source.Capacities.First().Validity.End.Should().Be(dateOfTermination);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void OrganisationTerminatedV2()
         {
             var context = _testContextFactory.Create();

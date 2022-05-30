@@ -84,7 +84,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             registrar.RegisterEventHandlers(OrganisationsRunner.EventHandlers);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void InitializeProjection_CreatesIndex()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -100,7 +100,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             indices.Should().NotBeEmpty();
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void OrganisationCreated_CreatesDocument()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -123,7 +123,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             organisation.Source.Description.Should().Be(organisationCreated.Description);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void OrganisationCreated_CreatesParent()
         {
             var scenario = new ScenarioBase<Organisation>();
@@ -164,7 +164,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 .Be(parentNameUpdated.Name);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void OrganisationKboBankAccountAdded_AddsBankAccount()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -206,7 +206,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 });
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void OrganisationKboBankAccountRemoved_RemovesBankAccount()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -251,7 +251,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 });
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void OrganisationTerminated()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -286,7 +286,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             organisation.Source.Validity.End.Should().Be(organisationValidity);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void OrganisationTerminatedWithForcedKboTermination()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -320,7 +320,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             organisation.Source.KboNumber.Should().BeEmpty();
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void BugFix_OrganisationRegulationAdded_DifferentiatesBetweenUrlAndWorkRulesUrl()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -345,7 +345,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             organisation.Source.Regulations.First().WorkRulesUrl.Should().Be(organisationRegulationAdded.WorkRulesUrl);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void BugFix_OrganisationRegulationUpdated_DifferentiatesBetweenUrlAndWorkRulesUrl()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -373,7 +373,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             organisation.Source.Regulations.First().WorkRulesUrl.Should().Be(organisationRegulationUpdated.WorkRulesUrl);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void OrganisationRegulationAdded_UsesDescriptionRenderedForDescription()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
@@ -396,7 +396,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             organisation.Source.Regulations.First().Description.Should().Be(organisationRegulationAdded.DescriptionRendered);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void OrganisationRegulationUpdated_UsesDescriptionRenderedForDescription()
         {
             var scenario = new OrganisationScenario(Guid.NewGuid());
