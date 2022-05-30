@@ -48,7 +48,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             registrar.RegisterEventHandlers(BodyRunner.EventHandlers);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void InitializeProjection_CreatesIndex()
         {
             var scenario = new BodyScenario(Guid.NewGuid());
@@ -64,7 +64,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             indices.Should().NotBeEmpty();
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void BodyRegistered_CreatesDocument()
         {
             var scenario = new BodyScenario(Guid.NewGuid());
@@ -91,7 +91,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             bodyDocument.Source.LifecyclePhases.Count.Should().Be(0, "Lifecycle phases are added by a different event.");
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void LifecyclePhaseTypeUpdated_UpdatesExistingBodyLifecyclePhases()
         {
             var bodyId = Guid.NewGuid();
@@ -121,7 +121,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 .Should().Be(lifecyclePhaseTypeUpdated.Name);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void MultipleBodySeatAddeds_CreatesMultipleBodySeats()
         {
             var bodyId = Guid.NewGuid();
@@ -150,7 +150,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 .Count.Should().Be(2);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void AssignedPersonToBodySeat_AddsMandateToBodySeat()
         {
             var bodyId = Guid.NewGuid();
@@ -190,7 +190,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             bodyMandate.Validity.End.Should().Be(assignedPersonToBodySeat.ValidTo);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void ReassignedPersonToBodySeat_UpdatesMandate()
         {
             var bodyId = Guid.NewGuid();
@@ -232,7 +232,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             bodyMandate.Validity.End.Should().Be(reassignedPersonToBodySeat.ValidTo);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void ReassignedPersonToBodySeat_DoesNotUpdateOtherMandates()
         {
             var bodyId = Guid.NewGuid();
@@ -285,7 +285,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             otherBodyMandate.Validity.End.Should().Be(assignedOtherPersonToBodySeat.ValidTo);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void MultipleAssignPersonToBodySeat_CreatesMultipleBodyMandates()
         {
             var bodyId = Guid.NewGuid();
@@ -319,7 +319,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 .Count.Should().Be(2);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void ReassignedOrganisationToBodySeat_UpdatesMandate()
         {
             var bodyId = Guid.NewGuid();
@@ -361,7 +361,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             bodyMandate.Validity.End.Should().Be(reassignedOrganisationToBodySeat.ValidTo);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void ReassignedFunctionTypeToBodySeat_UpdatesMandate()
         {
             var bodyId = Guid.NewGuid();
@@ -403,7 +403,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             bodyMandate.Validity.End.Should().Be(reassignedFunctionToBodySeat.ValidTo);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void PersonAssignedToDelegation_AddsDelegation()
         {
             var bodyId = Guid.NewGuid();
@@ -453,7 +453,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             }
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void PersonAssignedToDelegationUpdated_UpdatesDelegation()
         {
             var bodyId = Guid.NewGuid();
@@ -505,7 +505,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             }
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void PersonAssignedToDelegationRemoved_RemovesDelegation()
         {
             var bodyId = Guid.NewGuid();
@@ -554,7 +554,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
                 .Count.Should().Be(0);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void PersonRenamed_RenamesInBodySeat()
         {
             var bodyId = Guid.NewGuid();
@@ -590,7 +590,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             delegation.PersonName.Should().Be(personUpdated.FirstName + " " + personUpdated.Name);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void OrganisationRenamed_RenamesInBodySeat()
         {
             var bodyId = Guid.NewGuid();
@@ -626,7 +626,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             delegation.OrganisationName.Should().Be(organisationInfoUpdated.Name);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void FunctionTypeRenamed_RenamesInBodySeat()
         {
             var bodyId = Guid.NewGuid();
@@ -662,7 +662,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             delegation.FunctionTypeName.Should().Be(functionTypeUpdated.Name);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void FunctionTypeOrOrganisationOrPersonRenamed_DoesNotCrashBecauseNoDocumentsFound()
         {
             var bodyId = Guid.NewGuid();
@@ -686,7 +686,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             );
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void SeatTypeUpdated_UpdatesBodySeatType()
         {
             var bodyId = Guid.NewGuid();
@@ -723,7 +723,7 @@ namespace OrganisationRegistry.ElasticSearch.Tests
             anotherBodySeat.SeatTypeName.Should().Be(anotherBodySeat.SeatTypeName);
         }
 
-        [EnvVarIgnoreFact]
+        [Fact]
         public async void PersonUpdated_UpdatesDelegationsPersonName()
         {
             var bodyId = Guid.NewGuid();
