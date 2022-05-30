@@ -1,3 +1,10 @@
+## [1.194.6](https://github.com/informatievlaanderen/organisation-registry/compare/v1.194.5...v1.194.6) (2022-05-30)
+
+
+### Bug Fixes
+
+* or-1013 handle single role ([cb085f0](https://github.com/informatievlaanderen/organisation-registry/commit/cb085f0f45a86f0a740fdc88fa75a6339f5b64d1))
+
 ## [1.194.5](https://github.com/informatievlaanderen/organisation-registry/compare/v1.194.4...v1.194.5) (2022-05-30)
 
 ## [1.194.4](https://github.com/informatievlaanderen/organisation-registry/compare/v1.194.3...v1.194.4) (2022-05-30)
