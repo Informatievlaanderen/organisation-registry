@@ -9,9 +9,9 @@ export class UserTokenResult {
         name: decodedJwtToken.family_name,
         firstName: decodedJwtToken.given_name,
         roles: decodedJwtToken.role,
-        translatedRoles: decodedJwtToken.role.map((x) =>
-          UserTokenResult.#translateRole(x)
-        ),
+        translatedRoles: []
+          .concat(decodedJwtToken.role)
+          .map((x) => UserTokenResult.#translateRole(x)),
       };
     }
   }
@@ -49,6 +49,7 @@ export class UserTokenResult {
     try {
       return new UserTokenResult(jwtDecode(jwt), true);
     } catch (e) {
+      console.error(e);
       return new UserTokenResult(null, false);
     }
   }
