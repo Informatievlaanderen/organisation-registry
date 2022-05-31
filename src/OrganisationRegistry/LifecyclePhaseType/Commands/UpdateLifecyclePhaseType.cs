@@ -1,23 +1,22 @@
-﻿namespace OrganisationRegistry.LifecyclePhaseType.Commands
+﻿namespace OrganisationRegistry.LifecyclePhaseType.Commands;
+
+public class UpdateLifecyclePhaseType : BaseCommand<LifecyclePhaseTypeId>
 {
-    public class UpdateLifecyclePhaseType : BaseCommand<LifecyclePhaseTypeId>
+    public LifecyclePhaseTypeId LifecyclePhaseTypeId => Id;
+
+    public LifecyclePhaseTypeName Name { get; }
+    public LifecyclePhaseTypeIsRepresentativeFor LifecyclePhaseTypeIsRepresentativeFor { get; }
+    public LifecyclePhaseTypeStatus Status { get; }
+
+    public UpdateLifecyclePhaseType(
+        LifecyclePhaseTypeId lifecyclePhaseTypeId,
+        LifecyclePhaseTypeName name,
+        LifecyclePhaseTypeIsRepresentativeFor lifecyclePhaseTypeIsRepresentativeFor,
+        LifecyclePhaseTypeStatus status)
     {
-        public LifecyclePhaseTypeId LifecyclePhaseTypeId => Id;
-
-        public LifecyclePhaseTypeName Name { get; }
-        public LifecyclePhaseTypeIsRepresentativeFor LifecyclePhaseTypeIsRepresentativeFor { get; }
-        public LifecyclePhaseTypeStatus Status { get; }
-
-        public UpdateLifecyclePhaseType(
-            LifecyclePhaseTypeId lifecyclePhaseTypeId,
-            LifecyclePhaseTypeName name,
-            LifecyclePhaseTypeIsRepresentativeFor lifecyclePhaseTypeIsRepresentativeFor,
-            LifecyclePhaseTypeStatus status)
-        {
-            Id = lifecyclePhaseTypeId;
-            Name = name;
-            LifecyclePhaseTypeIsRepresentativeFor = lifecyclePhaseTypeIsRepresentativeFor;
-            Status = status;
-        }
+        Id = lifecyclePhaseTypeId;
+        Name = name;
+        LifecyclePhaseTypeIsRepresentativeFor = lifecyclePhaseTypeIsRepresentativeFor;
+        Status = status;
     }
 }

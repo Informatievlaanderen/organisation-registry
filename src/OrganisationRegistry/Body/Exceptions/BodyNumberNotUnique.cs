@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Body.Exceptions
+namespace OrganisationRegistry.Body.Exceptions;
+
+public class BodyNumberNotUnique : DomainException
 {
-    public class BodyNumberNotUnique : DomainException
-    {
-        public BodyNumberNotUnique()
-            : base("Orgaan nummer is niet uniek.") { }
-    }
+    public BodyNumberNotUnique()
+        : base("Orgaan nummer is niet uniek.") { }
 }

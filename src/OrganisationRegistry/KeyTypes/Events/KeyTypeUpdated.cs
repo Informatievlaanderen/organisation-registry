@@ -1,34 +1,33 @@
-namespace OrganisationRegistry.KeyTypes.Events
+namespace OrganisationRegistry.KeyTypes.Events;
+
+using System;
+using Newtonsoft.Json;
+
+public class KeyTypeUpdated : BaseEvent<KeyTypeUpdated>
 {
-    using System;
-    using Newtonsoft.Json;
+    public Guid KeyTypeId => Id;
 
-    public class KeyTypeUpdated : BaseEvent<KeyTypeUpdated>
+    public string Name { get; }
+    public string PreviousName { get; }
+
+    public KeyTypeUpdated(
+        KeyTypeId keyTypeId,
+        KeyTypeName name,
+        KeyTypeName previousName)
     {
-        public Guid KeyTypeId => Id;
+        Id = keyTypeId;
 
-        public string Name { get; }
-        public string PreviousName { get; }
-
-        public KeyTypeUpdated(
-            KeyTypeId keyTypeId,
-            KeyTypeName name,
-            KeyTypeName previousName)
-        {
-            Id = keyTypeId;
-
-            Name = name;
-            PreviousName = previousName;
-        }
-
-        [JsonConstructor]
-        public KeyTypeUpdated(
-            Guid keyTypeId,
-            string name,
-            string previousName)
-            : this(
-                new KeyTypeId(keyTypeId),
-                new KeyTypeName(name),
-                new KeyTypeName(previousName)) { }
+        Name = name;
+        PreviousName = previousName;
     }
+
+    [JsonConstructor]
+    public KeyTypeUpdated(
+        Guid keyTypeId,
+        string name,
+        string previousName)
+        : this(
+            new KeyTypeId(keyTypeId),
+            new KeyTypeName(name),
+            new KeyTypeName(previousName)) { }
 }

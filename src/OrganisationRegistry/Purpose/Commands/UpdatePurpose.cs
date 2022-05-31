@@ -1,18 +1,17 @@
-namespace OrganisationRegistry.Purpose.Commands
+namespace OrganisationRegistry.Purpose.Commands;
+
+public class UpdatePurpose : BaseCommand<PurposeId>
 {
-    public class UpdatePurpose : BaseCommand<PurposeId>
+    public PurposeId PurposeId => Id;
+
+    public PurposeName Name { get; }
+
+    public UpdatePurpose(
+        PurposeId purposeId,
+        PurposeName name)
     {
-        public PurposeId PurposeId => Id;
+        Id = purposeId;
 
-        public PurposeName Name { get; }
-
-        public UpdatePurpose(
-            PurposeId purposeId,
-            PurposeName name)
-        {
-            Id = purposeId;
-
-            Name = name;
-        }
+        Name = name;
     }
 }

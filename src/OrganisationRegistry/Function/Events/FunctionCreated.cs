@@ -1,19 +1,18 @@
-namespace OrganisationRegistry.Function.Events
+namespace OrganisationRegistry.Function.Events;
+
+using System;
+
+public class FunctionCreated : BaseEvent<FunctionCreated>
 {
-    using System;
+    public Guid FunctionId => Id;
 
-    public class FunctionCreated : BaseEvent<FunctionCreated>
+    public string Name { get; }
+
+    public FunctionCreated(
+        Guid functionId,
+        string name)
     {
-        public Guid FunctionId => Id;
-
-        public string Name { get; }
-
-        public FunctionCreated(
-            Guid functionId,
-            string name)
-        {
-            Id = functionId;
-            Name = name;
-        }
+        Id = functionId;
+        Name = name;
     }
 }

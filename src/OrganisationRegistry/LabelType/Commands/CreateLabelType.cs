@@ -1,18 +1,17 @@
-namespace OrganisationRegistry.LabelType.Commands
+namespace OrganisationRegistry.LabelType.Commands;
+
+public class CreateLabelType : BaseCommand<LabelTypeId>
 {
-    public class CreateLabelType : BaseCommand<LabelTypeId>
+    public LabelTypeId LabelTypeId => Id;
+
+    public LabelTypeName Name { get; }
+
+    public CreateLabelType(
+        LabelTypeId labelTypeId,
+        LabelTypeName name)
     {
-        public LabelTypeId LabelTypeId => Id;
+        Id = labelTypeId;
 
-        public LabelTypeName Name { get; }
-
-        public CreateLabelType(
-            LabelTypeId labelTypeId,
-            LabelTypeName name)
-        {
-            Id = labelTypeId;
-
-            Name = name;
-        }
+        Name = name;
     }
 }

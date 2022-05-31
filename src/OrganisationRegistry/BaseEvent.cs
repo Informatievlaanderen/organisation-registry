@@ -1,21 +1,20 @@
-﻿namespace OrganisationRegistry
+﻿namespace OrganisationRegistry;
+
+using System;
+using Infrastructure.Events;
+using Infrastructure.Messages;
+
+public class BaseEvent<T> : IEvent<T>
 {
-    using System;
-    using Infrastructure.Events;
-    using Infrastructure.Messages;
+    protected Guid Id { get; set; }
 
-    public class BaseEvent<T> : IEvent<T>
+    public int Version { get; set; }
+
+    public DateTimeOffset Timestamp { get; set; }
+
+    Guid IMessage.Id
     {
-        protected Guid Id { get; set; }
-
-        public int Version { get; set; }
-
-        public DateTimeOffset Timestamp { get; set; }
-
-        Guid IMessage.Id
-        {
-            get => Id;
-            set => Id = value;
-        }
+        get => Id;
+        set => Id = value;
     }
 }

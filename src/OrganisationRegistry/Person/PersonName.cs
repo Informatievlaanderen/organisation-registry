@@ -1,10 +1,9 @@
-namespace OrganisationRegistry.Person
-{
-    using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using Newtonsoft.Json;
+namespace OrganisationRegistry.Person;
 
-    public class PersonName : StringValueObject<PersonName>
-    {
-        public PersonName([JsonProperty("name")] string personName) : base(personName) { }
-    }
+using Be.Vlaanderen.Basisregisters.AggregateSource;
+using Newtonsoft.Json;
+
+public class PersonName : StringValueObject<PersonName>
+{
+    public PersonName([JsonProperty("name")] string personName) : base(personName) { }
 }

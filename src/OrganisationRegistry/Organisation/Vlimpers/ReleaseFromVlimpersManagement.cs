@@ -1,13 +1,12 @@
-namespace OrganisationRegistry.Organisation
-{
-    public class ReleaseFromVlimpersManagement : BaseCommand<OrganisationId>
-    {
-        public OrganisationId OrganisationId => Id;
+namespace OrganisationRegistry.Organisation;
 
-        public ReleaseFromVlimpersManagement(
-            OrganisationId organisationId)
-        {
-            Id = organisationId;
-        }
+public class ReleaseFromVlimpersManagement : BaseCommand<OrganisationId>
+{
+    public OrganisationId OrganisationId => Id;
+
+    public ReleaseFromVlimpersManagement(
+        OrganisationId organisationId)
+    {
+        Id = organisationId;
     }
 }

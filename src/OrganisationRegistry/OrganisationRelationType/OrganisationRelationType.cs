@@ -1,45 +1,44 @@
-namespace OrganisationRegistry.OrganisationRelationType
+namespace OrganisationRegistry.OrganisationRelationType;
+
+using Events;
+using Infrastructure.Domain;
+
+public class OrganisationRelationType : AggregateRoot
 {
-    using Events;
-    using Infrastructure.Domain;
+    public string Name { get; private set; }
 
-    public class OrganisationRelationType : AggregateRoot
+    public string InverseName { get; private set; }
+
+    private OrganisationRelationType()
     {
-        public string Name { get; private set; }
+        Name = string.Empty;
+        InverseName = string.Empty;
+    }
 
-        public string InverseName { get; private set; }
+    public OrganisationRelationType(OrganisationRelationTypeId id, string name, string? inverseName)
+    {
+        Name = string.Empty;
+        InverseName = string.Empty;
 
-        private OrganisationRelationType()
-        {
-            Name = string.Empty;
-            InverseName = string.Empty;
-        }
+        ApplyChange(new OrganisationRelationTypeCreated(id, name, inverseName));
+    }
 
-        public OrganisationRelationType(OrganisationRelationTypeId id, string name, string? inverseName)
-        {
-            Name = string.Empty;
-            InverseName = string.Empty;
+    public void Update(string name, string? inverseName)
+    {
+        var @event = new OrganisationRelationTypeUpdated(Id, name, inverseName, Name, InverseName);
+        ApplyChange(@event);
+    }
 
-            ApplyChange(new OrganisationRelationTypeCreated(id, name, inverseName));
-        }
+    private void Apply(OrganisationRelationTypeCreated @event)
+    {
+        Id = @event.OrganisationRelationTypeId;
+        Name = @event.Name;
+        InverseName = @event.InverseName;
+    }
 
-        public void Update(string name, string? inverseName)
-        {
-            var @event = new OrganisationRelationTypeUpdated(Id, name, inverseName, Name, InverseName);
-            ApplyChange(@event);
-        }
-
-        private void Apply(OrganisationRelationTypeCreated @event)
-        {
-            Id = @event.OrganisationRelationTypeId;
-            Name = @event.Name;
-            InverseName = @event.InverseName;
-        }
-
-        private void Apply(OrganisationRelationTypeUpdated @event)
-        {
-            Name = @event.Name;
-            InverseName = @event.InverseName;
-        }
+    private void Apply(OrganisationRelationTypeUpdated @event)
+    {
+        Name = @event.Name;
+        InverseName = @event.InverseName;
     }
 }

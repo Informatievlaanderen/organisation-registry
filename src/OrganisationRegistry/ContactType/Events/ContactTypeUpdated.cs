@@ -1,23 +1,22 @@
-namespace OrganisationRegistry.ContactType.Events
+namespace OrganisationRegistry.ContactType.Events;
+
+using System;
+
+public class ContactTypeUpdated : BaseEvent<ContactTypeUpdated>
 {
-    using System;
+    public Guid ContactTypeId => Id;
 
-    public class ContactTypeUpdated : BaseEvent<ContactTypeUpdated>
+    public string Name { get; }
+    public string PreviousName { get; }
+
+    public ContactTypeUpdated(
+        Guid contactTypeId,
+        string name,
+        string previousName)
     {
-        public Guid ContactTypeId => Id;
+        Id = contactTypeId;
 
-        public string Name { get; }
-        public string PreviousName { get; }
-
-        public ContactTypeUpdated(
-            Guid contactTypeId,
-            string name,
-            string previousName)
-        {
-            Id = contactTypeId;
-
-            Name = name;
-            PreviousName = previousName;
-        }
+        Name = name;
+        PreviousName = previousName;
     }
 }

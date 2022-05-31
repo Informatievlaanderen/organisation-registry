@@ -1,18 +1,17 @@
-namespace OrganisationRegistry.Organisation.Events
+namespace OrganisationRegistry.Organisation.Events;
+
+using System;
+
+public class OrganisationSyncedFromKbo : BaseEvent<OrganisationSyncedFromKbo>
 {
-    using System;
+    public Guid OrganisationId => Id;
+    public Guid? KBOSyncItemId { get; }
 
-    public class OrganisationSyncedFromKbo : BaseEvent<OrganisationSyncedFromKbo>
+    public OrganisationSyncedFromKbo(
+        Guid organisationId,
+        Guid? kboSyncItemId)
     {
-        public Guid OrganisationId => Id;
-        public Guid? KBOSyncItemId { get; }
-
-        public OrganisationSyncedFromKbo(
-            Guid organisationId,
-            Guid? kboSyncItemId)
-        {
-            Id = organisationId;
-            KBOSyncItemId = kboSyncItemId;
-        }
+        Id = organisationId;
+        KBOSyncItemId = kboSyncItemId;
     }
 }

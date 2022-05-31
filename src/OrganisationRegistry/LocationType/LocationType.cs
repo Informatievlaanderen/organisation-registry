@@ -1,41 +1,40 @@
-namespace OrganisationRegistry.LocationType
+namespace OrganisationRegistry.LocationType;
+
+using Events;
+using Infrastructure.Domain;
+
+public class LocationType : AggregateRoot
 {
-    using Events;
-    using Infrastructure.Domain;
+    public LocationTypeName Name { get; private set; }
 
-    public class LocationType : AggregateRoot
+    private LocationType()
     {
-        public LocationTypeName Name { get; private set; }
+        Name = new LocationTypeName(string.Empty);
+    }
 
-        private LocationType()
-        {
-            Name = new LocationTypeName(string.Empty);
-        }
+    public LocationType(
+        LocationTypeId id,
+        LocationTypeName name)
+    {
+        Name = new LocationTypeName(string.Empty);
 
-        public LocationType(
-            LocationTypeId id,
-            LocationTypeName name)
-        {
-            Name = new LocationTypeName(string.Empty);
+        ApplyChange(new LocationTypeCreated(id, name));
+    }
 
-            ApplyChange(new LocationTypeCreated(id, name));
-        }
+    public void Update(LocationTypeName name)
+    {
+        var @event = new LocationTypeUpdated(Id, name, Name);
+        ApplyChange(@event);
+    }
 
-        public void Update(LocationTypeName name)
-        {
-            var @event = new LocationTypeUpdated(Id, name, Name);
-            ApplyChange(@event);
-        }
+    private void Apply(LocationTypeCreated @event)
+    {
+        Id = @event.LocationTypeId;
+        Name = new LocationTypeName(@event.Name);
+    }
 
-        private void Apply(LocationTypeCreated @event)
-        {
-            Id = @event.LocationTypeId;
-            Name = new LocationTypeName(@event.Name);
-        }
-
-        private void Apply(LocationTypeUpdated @event)
-        {
-            Name = new LocationTypeName(@event.Name);
-        }
+    private void Apply(LocationTypeUpdated @event)
+    {
+        Name = new LocationTypeName(@event.Name);
     }
 }

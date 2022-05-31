@@ -1,47 +1,46 @@
-﻿namespace OrganisationRegistry.Capacity
+﻿namespace OrganisationRegistry.Capacity;
+
+using Events;
+using Infrastructure.Domain;
+
+public class Capacity : AggregateRoot
 {
-    using Events;
-    using Infrastructure.Domain;
+    public string Name { get; private set; } = null!;
+    public bool IsRemoved { get; private set; }
 
-    public class Capacity : AggregateRoot
+    private Capacity() { }
+
+    public Capacity(CapacityId id, string name)
     {
-        public string Name { get; private set; } = null!;
-        public bool IsRemoved { get; private set; }
+        ApplyChange(new CapacityCreated(id, name));
+    }
 
-        private Capacity() { }
+    public void Update(string name)
+    {
+        var @event = new CapacityUpdated(Id, name, Name);
+        ApplyChange(@event);
+    }
 
-        public Capacity(CapacityId id, string name)
-        {
-            ApplyChange(new CapacityCreated(id, name));
-        }
+    public void Remove()
+    {
+        if (IsRemoved) return;
 
-        public void Update(string name)
-        {
-            var @event = new CapacityUpdated(Id, name, Name);
-            ApplyChange(@event);
-        }
+        ApplyChange(new CapacityRemoved(Id));
+    }
 
-        public void Remove()
-        {
-            if (IsRemoved) return;
+    private void Apply(CapacityCreated @event)
+    {
+        Id = @event.CapacityId;
+        Name = @event.Name;
+    }
 
-            ApplyChange(new CapacityRemoved(Id));
-        }
+    private void Apply(CapacityUpdated @event)
+    {
+        Name = @event.Name;
+    }
 
-        private void Apply(CapacityCreated @event)
-        {
-            Id = @event.CapacityId;
-            Name = @event.Name;
-        }
-
-        private void Apply(CapacityUpdated @event)
-        {
-            Name = @event.Name;
-        }
-
-        private void Apply(CapacityRemoved @event)
-        {
-            IsRemoved = true;
-        }
+    private void Apply(CapacityRemoved @event)
+    {
+        IsRemoved = true;
     }
 }

@@ -1,10 +1,9 @@
-namespace OrganisationRegistry.RegulationSubTheme
-{
-    using Be.Vlaanderen.Basisregisters.AggregateSource;
-    using Newtonsoft.Json;
+namespace OrganisationRegistry.RegulationSubTheme;
 
-    public class RegulationSubThemeName : StringValueObject<RegulationSubThemeName>
-    {
-        public RegulationSubThemeName([JsonProperty("name")] string regulationSubThemeName) : base(regulationSubThemeName) { }
-    }
+using Be.Vlaanderen.Basisregisters.AggregateSource;
+using Newtonsoft.Json;
+
+public class RegulationSubThemeName : StringValueObject<RegulationSubThemeName>
+{
+    public RegulationSubThemeName([JsonProperty("name")] string regulationSubThemeName) : base(regulationSubThemeName) { }
 }

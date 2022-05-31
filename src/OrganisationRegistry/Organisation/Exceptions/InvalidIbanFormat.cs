@@ -1,10 +1,9 @@
-namespace OrganisationRegistry.Organisation.Exceptions
-{
-    using System;
+namespace OrganisationRegistry.Organisation.Exceptions;
 
-    public class InvalidIbanFormat : DomainException
-    {
-        public InvalidIbanFormat(Exception ex)
-            : base("Ongeldige IBAN Code.", ex) { }
-    }
+using System;
+
+public class InvalidIbanFormat : DomainException
+{
+    public InvalidIbanFormat(Exception ex)
+        : base("Ongeldige IBAN Code.", ex) { }
 }

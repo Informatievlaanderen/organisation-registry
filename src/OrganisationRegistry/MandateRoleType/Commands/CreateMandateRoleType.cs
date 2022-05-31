@@ -1,17 +1,16 @@
-namespace OrganisationRegistry.MandateRoleType.Commands
+namespace OrganisationRegistry.MandateRoleType.Commands;
+
+public class CreateMandateRoleType : BaseCommand<MandateRoleTypeId>
 {
-    public class CreateMandateRoleType : BaseCommand<MandateRoleTypeId>
+    public MandateRoleTypeId MandateRoleTypeId => Id;
+
+    public MandateRoleTypeName Name { get; }
+
+    public CreateMandateRoleType(
+        MandateRoleTypeId mandateRoleTypeId,
+        MandateRoleTypeName name)
     {
-        public MandateRoleTypeId MandateRoleTypeId => Id;
-
-        public MandateRoleTypeName Name { get; }
-
-        public CreateMandateRoleType(
-            MandateRoleTypeId mandateRoleTypeId,
-            MandateRoleTypeName name)
-        {
-            Id = mandateRoleTypeId;
-            Name = name;
-        }
+        Id = mandateRoleTypeId;
+        Name = name;
     }
 }

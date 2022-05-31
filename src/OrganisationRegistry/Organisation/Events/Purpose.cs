@@ -1,18 +1,17 @@
-namespace OrganisationRegistry.Organisation.Events
+namespace OrganisationRegistry.Organisation.Events;
+
+using System;
+
+public class Purpose
 {
-    using System;
+    public Guid Id { get; }
+    public string Name { get; }
 
-    public class Purpose
+    public Purpose(
+        Guid id,
+        string name)
     {
-        public Guid Id { get; }
-        public string Name { get; }
-
-        public Purpose(
-            Guid id,
-            string name)
-        {
-            Id = id;
-            Name = name;
-        }
+        Id = id;
+        Name = name;
     }
 }

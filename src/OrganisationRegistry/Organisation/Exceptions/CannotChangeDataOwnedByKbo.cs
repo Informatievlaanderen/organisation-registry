@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Organisation.Exceptions
+namespace OrganisationRegistry.Organisation.Exceptions;
+
+public class CannotChangeDataOwnedByKbo: DomainException
 {
-    public class CannotChangeDataOwnedByKbo: DomainException
-    {
-        public CannotChangeDataOwnedByKbo()
-            : base("Deze data kan niet gewijzigd worden.") { }
-    }
+    public CannotChangeDataOwnedByKbo()
+        : base("Deze data kan niet gewijzigd worden.") { }
 }

@@ -1,34 +1,33 @@
-﻿namespace OrganisationRegistry.Organisation
+﻿namespace OrganisationRegistry.Organisation;
+
+using System;
+using OrganisationClassification;
+using OrganisationClassificationType;
+
+public class AddOrganisationOrganisationClassification : BaseCommand<OrganisationId>
 {
-    using System;
-    using OrganisationClassification;
-    using OrganisationClassificationType;
+    public OrganisationId OrganisationId => Id;
 
-    public class AddOrganisationOrganisationClassification : BaseCommand<OrganisationId>
+    public Guid OrganisationOrganisationClassificationId { get; }
+    public OrganisationClassificationTypeId OrganisationClassificationTypeId { get; }
+    public OrganisationClassificationId OrganisationClassificationId { get; }
+    public ValidFrom ValidFrom { get; }
+    public ValidTo ValidTo { get; }
+
+    public AddOrganisationOrganisationClassification(
+        Guid organisationOrganisationClassificationId,
+        OrganisationId organisationId,
+        OrganisationClassificationTypeId organisationClassificationTypeId,
+        OrganisationClassificationId organisationClassificationId,
+        ValidFrom validFrom,
+        ValidTo validTo)
     {
-        public OrganisationId OrganisationId => Id;
+        Id = organisationId;
 
-        public Guid OrganisationOrganisationClassificationId { get; }
-        public OrganisationClassificationTypeId OrganisationClassificationTypeId { get; }
-        public OrganisationClassificationId OrganisationClassificationId { get; }
-        public ValidFrom ValidFrom { get; }
-        public ValidTo ValidTo { get; }
-
-        public AddOrganisationOrganisationClassification(
-            Guid organisationOrganisationClassificationId,
-            OrganisationId organisationId,
-            OrganisationClassificationTypeId organisationClassificationTypeId,
-            OrganisationClassificationId organisationClassificationId,
-            ValidFrom validFrom,
-            ValidTo validTo)
-        {
-            Id = organisationId;
-
-            OrganisationOrganisationClassificationId = organisationOrganisationClassificationId;
-            OrganisationClassificationTypeId = organisationClassificationTypeId;
-            OrganisationClassificationId = organisationClassificationId;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
+        OrganisationOrganisationClassificationId = organisationOrganisationClassificationId;
+        OrganisationClassificationTypeId = organisationClassificationTypeId;
+        OrganisationClassificationId = organisationClassificationId;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
 }

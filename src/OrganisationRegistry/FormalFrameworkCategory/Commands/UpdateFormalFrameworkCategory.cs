@@ -1,17 +1,16 @@
-namespace OrganisationRegistry.FormalFrameworkCategory.Commands
+namespace OrganisationRegistry.FormalFrameworkCategory.Commands;
+
+public class UpdateFormalFrameworkCategory : BaseCommand<FormalFrameworkCategoryId>
 {
-    public class UpdateFormalFrameworkCategory : BaseCommand<FormalFrameworkCategoryId>
+    public FormalFrameworkCategoryId FormalFrameworkCategoryId => Id;
+
+    public string Name { get; }
+
+    public UpdateFormalFrameworkCategory(
+        FormalFrameworkCategoryId formalFrameworkCategoryId,
+        string name)
     {
-        public FormalFrameworkCategoryId FormalFrameworkCategoryId => Id;
-
-        public string Name { get; }
-
-        public UpdateFormalFrameworkCategory(
-            FormalFrameworkCategoryId formalFrameworkCategoryId,
-            string name)
-        {
-            Id = formalFrameworkCategoryId;
-            Name = name;
-        }
+        Id = formalFrameworkCategoryId;
+        Name = name;
     }
 }

@@ -1,31 +1,30 @@
-namespace OrganisationRegistry.OrganisationRelationType.Events
+namespace OrganisationRegistry.OrganisationRelationType.Events;
+
+using System;
+
+public class OrganisationRelationTypeUpdated : BaseEvent<OrganisationRelationTypeUpdated>
 {
-    using System;
+    public Guid OrganisationRelationTypeId => Id;
 
-    public class OrganisationRelationTypeUpdated : BaseEvent<OrganisationRelationTypeUpdated>
+    public string Name { get; }
+    public string PreviousName { get; }
+
+    public string InverseName { get; set; }
+    public string PreviousInverseName { get; set; }
+
+    public OrganisationRelationTypeUpdated(
+        Guid organisationRelationTypeId,
+        string name,
+        string? inverseName,
+        string previousName,
+        string? previousInverseName)
     {
-        public Guid OrganisationRelationTypeId => Id;
+        Id = organisationRelationTypeId;
 
-        public string Name { get; }
-        public string PreviousName { get; }
+        Name = name;
+        InverseName = inverseName ?? string.Empty;
 
-        public string InverseName { get; set; }
-        public string PreviousInverseName { get; set; }
-
-        public OrganisationRelationTypeUpdated(
-            Guid organisationRelationTypeId,
-            string name,
-            string? inverseName,
-            string previousName,
-            string? previousInverseName)
-        {
-            Id = organisationRelationTypeId;
-
-            Name = name;
-            InverseName = inverseName ?? string.Empty;
-
-            PreviousName = previousName;
-            PreviousInverseName = previousInverseName ?? string.Empty;
-        }
+        PreviousName = previousName;
+        PreviousInverseName = previousInverseName ?? string.Empty;
     }
 }
