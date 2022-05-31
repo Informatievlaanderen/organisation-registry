@@ -68,7 +68,7 @@ public class ProcessImportedFilesService : BackgroundService
         await context.SaveChangesAsync(cancellationToken);
     }
 
-    private static IEnumerable<ImportRecord> ParseImportFile(string importFileFileContent)
+    private static IEnumerable<OutputRecord> ParseImportFile(string importFileFileContent)
     {
         throw new NotImplementedException();
     }
@@ -118,64 +118,89 @@ public class ProcessImportedFilesService : BackgroundService
 
 public static class ImportFileParser
 {
-    public static IEnumerable<ImportRecord> Parse(string importFileFileContent)
+    public static IEnumerable<OutputRecord> Parse(string importFileFileContent)
     {
         using var reader = new StringReader(importFileFileContent);
         using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture) { Delimiter = ";" });
 
-        var importedRecords = new List<ImportRecord>();
+        var importedRecords = new List<OutputRecord>();
         csv.Read();
         csv.ReadHeader();
-        var csvHeaderRecord = csv.HeaderRecord
-            .Select(columnName => columnName.Trim().ToLower())
-            .Select((item, index) => (item, index))
-            .ToDictionary(tuple => tuple.item, tuple => tuple.index);
+        var csvHeaderRecord = GetHeaders(csv);
 
         while (csv.Read())
         {
-            var r = csv.Parser.Record;
-            if (r.Length != csvHeaderRecord.Count)
-            {
-                importedRecords.Add(
-                    new ImportRecord(ImmutableList.Create<string>("Rij heeft incorrect aantal kollomen.")));
-                continue;
-            }
-
-            var reference = GetField(csv, csvHeaderRecord["reference"]);
-            var name = GetField(csv, csvHeaderRecord["name"]);
-            var parent = GetField(csv, csvHeaderRecord["parent"]);
-            var record = new ImportRecord(reference.value, name.value, parent.value);
-            importedRecords.Add(record);
+            importedRecords.Add(GetRecord(csv, csvHeaderRecord));
         }
 
         return importedRecords;
     }
 
-    private static (bool found, string value) GetField(CsvReader csv, int index)
+    private static Dictionary<string, int> GetHeaders(CsvReader csv)
     {
-        // try
-        // {
-        //     return (true, csv.GetField(index).Trim());
-        // }
-        // catch (MissingFieldException)
-        // {
-        //     return (false, string.Empty);
-        // }
-        return (true, csv.GetField(index).Trim());
+        return csv.HeaderRecord
+            .Select(columnName => columnName.Trim().ToLower())
+            .Select((item, index) => (item, index))
+            .ToDictionary(tuple => tuple.item, tuple => tuple.index);
     }
+
+    private static OutputRecord GetRecord(IReaderRow csv, IReadOnlyDictionary<string, int> csvHeaderRecord)
+    {
+        if (ValidateNumberOfFields(csv) is { } numberOfFieldsErrorMessage)
+            return new OutputRecord(csv.Parser.RawRecord, ImmutableList.Create(numberOfFieldsErrorMessage));
+
+        var reference = GetField(csv, csvHeaderRecord[ColumnNames.Reference]);
+        var name = GetField(csv, csvHeaderRecord[ColumnNames.Name]);
+        var parent = GetField(csv, csvHeaderRecord[ColumnNames.Parent]);
+
+        if (ValidateRequiredFields(reference, name) is { } requiredFieldsErrorMessage)
+            return new OutputRecord(csv.Parser.RawRecord, ImmutableList.Create(requiredFieldsErrorMessage));
+
+        return new OutputRecord(reference, name, parent);
+    }
+
+    private static string? ValidateRequiredFields(string reference, string name)
+    {
+        var missingRequiredFields = new List<string>();
+
+        if (string.IsNullOrEmpty(reference)) missingRequiredFields.Add(ColumnNames.Reference);
+        if (string.IsNullOrEmpty(name)) missingRequiredFields.Add(ColumnNames.Name);
+
+        return missingRequiredFields.Any()
+            ? $"Rij ontbreekt waarde voor volgende kolommen: {string.Join(", ", missingRequiredFields.Select(f => $"'{f}'"))}."
+            : null;
+    }
+
+    private static string? ValidateNumberOfFields(IReaderRow csv)
+        => csv.Parser.Record.Length != csv.HeaderRecord.Length ? "Rij heeft incorrect aantal kolommen." : null;
+
+    private static string GetField(IReaderRow csv, int index)
+        => csv.GetField(index).Trim();
 }
 
-public class ImportRecord
+public static class ColumnNames
 {
-    public ImportRecord(string reference, string name, string? parent = null)
+    public const string Reference = "reference";
+    public const string Name = "name";
+    public const string Parent = "parent";
+    public const string Validity_Start = "validity_start";
+    public const string ShortName = "shortname";
+    public const string Article = "article";
+    public const string OperationalValidity_Start = "operationalvalidity_start";
+
+}
+public class OutputRecord
+{
+    public OutputRecord(string reference, string name, string? parent = null)
     {
         Reference = reference;
         Name = name;
         Parent = parent;
     }
 
-    public ImportRecord(IImmutableList<string> errors) : this(string.Empty, string.Empty)
+    public OutputRecord(string rawRecord, IImmutableList<string> errors) : this(string.Empty, string.Empty)
     {
+        RawRecord = rawRecord;
         Errors = errors;
     }
 
@@ -186,7 +211,8 @@ public class ImportRecord
     public string? ShortName { get; init; }
     public string? Article { get; init; }
     public string? OperationalValidity_Start { get; init; }
-    public IImmutableList<string> Errors { get; init; } = new ImmutableArray<string>();
+    public string? RawRecord { get; }
+    public IImmutableList<string> Errors { get; init; } = ImmutableList<string>.Empty;
 }
 
 public static class UniqueReferenceValidator
