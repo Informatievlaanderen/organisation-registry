@@ -1,44 +1,43 @@
-namespace OrganisationRegistry.Person.Events
+namespace OrganisationRegistry.Person.Events;
+
+using System;
+using Newtonsoft.Json;
+
+public class PersonCreated : BaseEvent<PersonCreated>
 {
-    using System;
-    using Newtonsoft.Json;
+    public Guid PersonId => Id;
 
-    public class PersonCreated : BaseEvent<PersonCreated>
+    public string FirstName { get; }
+    public string Name { get; }
+    public Sex? Sex { get; }
+    public DateTime? DateOfBirth { get; }
+
+    public PersonCreated(
+        PersonId personId,
+        PersonFirstName firstName,
+        PersonName name,
+        Sex? sex,
+        DateTime? dateOfBirth)
     {
-        public Guid PersonId => Id;
+        Id = personId;
 
-        public string FirstName { get; }
-        public string Name { get; }
-        public Sex? Sex { get; }
-        public DateTime? DateOfBirth { get; }
-
-        public PersonCreated(
-            PersonId personId,
-            PersonFirstName firstName,
-            PersonName name,
-            Sex? sex,
-            DateTime? dateOfBirth)
-        {
-            Id = personId;
-
-            FirstName = firstName;
-            Name = name;
-            Sex = sex;
-            DateOfBirth = dateOfBirth;
-        }
-
-        [JsonConstructor]
-        public PersonCreated(
-            Guid personId,
-            string firstName,
-            string name,
-            Sex? sex,
-            DateTime? dateOfBirth)
-            : this(
-                new PersonId(personId),
-                new PersonFirstName(firstName),
-                new PersonName(name),
-                sex,
-                dateOfBirth) { }
+        FirstName = firstName;
+        Name = name;
+        Sex = sex;
+        DateOfBirth = dateOfBirth;
     }
+
+    [JsonConstructor]
+    public PersonCreated(
+        Guid personId,
+        string firstName,
+        string name,
+        Sex? sex,
+        DateTime? dateOfBirth)
+        : this(
+            new PersonId(personId),
+            new PersonFirstName(firstName),
+            new PersonName(name),
+            sex,
+            dateOfBirth) { }
 }

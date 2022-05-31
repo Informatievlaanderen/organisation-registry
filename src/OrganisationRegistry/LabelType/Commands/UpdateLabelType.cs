@@ -1,18 +1,17 @@
-namespace OrganisationRegistry.LabelType.Commands
+namespace OrganisationRegistry.LabelType.Commands;
+
+public class UpdateLabelType : BaseCommand<LabelTypeId>
 {
-    public class UpdateLabelType : BaseCommand<LabelTypeId>
+    public LabelTypeId LabelTypeId => Id;
+
+    public LabelTypeName Name { get; }
+
+    public UpdateLabelType(
+        LabelTypeId labelTypeId,
+        LabelTypeName name)
     {
-        public LabelTypeId LabelTypeId => Id;
+        Id = labelTypeId;
 
-        public LabelTypeName Name { get; }
-
-        public UpdateLabelType(
-            LabelTypeId labelTypeId,
-            LabelTypeName name)
-        {
-            Id = labelTypeId;
-
-            Name = name;
-        }
+        Name = name;
     }
 }

@@ -1,9 +1,8 @@
-namespace OrganisationRegistry
-{
-    using Organisation;
+namespace OrganisationRegistry;
 
-    public interface IUniqueKboValidator
-    {
-        bool IsKboNumberTaken(KboNumber kboNumber);
-    }
+using Organisation;
+
+public interface IUniqueKboValidator
+{
+    bool IsKboNumberTaken(KboNumber kboNumber);
 }

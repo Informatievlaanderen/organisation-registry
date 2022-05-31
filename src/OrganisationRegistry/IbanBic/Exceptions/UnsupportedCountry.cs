@@ -19,30 +19,29 @@
  * limitations under the License.
  */
 
-namespace OrganisationRegistry.IbanBic.Exceptions
+namespace OrganisationRegistry.IbanBic.Exceptions;
+
+using System;
+
+/// <summary>
+/// Exception whis is thrown, when the requested country is not supported
+/// </summary>
+public class UnsupportedCountry : Exception
 {
-    using System;
+    public string? CountryCode { get; }
 
-    /// <summary>
-    /// Exception whis is thrown, when the requested country is not supported
-    /// </summary>
-    public class UnsupportedCountry : Exception
+    public UnsupportedCountry()
+    { }
+
+    public UnsupportedCountry(string message) : base(message)
+    { }
+
+    public UnsupportedCountry(string message, string countryCode) : base(message)
     {
-        public string? CountryCode { get; }
-
-        public UnsupportedCountry()
-        { }
-
-        public UnsupportedCountry(string message) : base(message)
-        { }
-
-        public UnsupportedCountry(string message, string countryCode) : base(message)
-        {
-            CountryCode = countryCode;
-        }
-
-        public UnsupportedCountry(string message, Exception innerException) : base(message, innerException)
-        { }
-
+        CountryCode = countryCode;
     }
+
+    public UnsupportedCountry(string message, Exception innerException) : base(message, innerException)
+    { }
+
 }

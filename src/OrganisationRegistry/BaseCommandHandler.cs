@@ -1,22 +1,21 @@
 ﻿// ReSharper disable ContextualLoggerProblem
-namespace OrganisationRegistry
+namespace OrganisationRegistry;
+
+using Infrastructure.Domain;
+using Microsoft.Extensions.Logging;
+
+public abstract class BaseCommandHandler<T>
 {
-    using Infrastructure.Domain;
-    using Microsoft.Extensions.Logging;
+    protected ILogger<T> Logger { get; }
+    protected ISession Session { get; }
 
-    public abstract class BaseCommandHandler<T>
+    protected BaseCommandHandler(
+        ILogger<T> logger,
+        ISession session)
     {
-        protected ILogger<T> Logger { get; }
-        protected ISession Session { get; }
+        Logger = logger;
+        Session = session;
 
-        protected BaseCommandHandler(
-            ILogger<T> logger,
-            ISession session)
-        {
-            Logger = logger;
-            Session = session;
-
-            Logger.LogTrace("Created CommandHandler {CommandHandlerName}", typeof(T));
-        }
+        Logger.LogTrace("Created CommandHandler {CommandHandlerName}", typeof(T));
     }
 }

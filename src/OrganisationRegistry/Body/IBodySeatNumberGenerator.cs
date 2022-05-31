@@ -1,7 +1,6 @@
-namespace OrganisationRegistry.Body
+namespace OrganisationRegistry.Body;
+
+public interface IBodySeatNumberGenerator
 {
-    public interface IBodySeatNumberGenerator
-    {
-        string GenerateNumber();
-    }
+    string GenerateNumber();
 }

@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Organisation.Exceptions
+namespace OrganisationRegistry.Organisation.Exceptions;
+
+public class KboOrganisationNotTerminated : DomainException
 {
-    public class KboOrganisationNotTerminated : DomainException
-    {
-        public KboOrganisationNotTerminated()
-            : base("Deze organisatie heeft geen stopzetting in de KBO.") { }
-    }
+    public KboOrganisationNotTerminated()
+        : base("Deze organisatie heeft geen stopzetting in de KBO.") { }
 }

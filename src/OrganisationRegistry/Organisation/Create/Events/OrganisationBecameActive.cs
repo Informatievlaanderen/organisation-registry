@@ -1,14 +1,13 @@
-﻿namespace OrganisationRegistry.Organisation.Events
+﻿namespace OrganisationRegistry.Organisation.Events;
+
+using System;
+
+public class OrganisationBecameActive: BaseEvent<OrganisationBecameActive>
 {
-    using System;
+    public Guid OrganisationId => Id;
 
-    public class OrganisationBecameActive: BaseEvent<OrganisationBecameActive>
+    public OrganisationBecameActive(Guid organisationId)
     {
-        public Guid OrganisationId => Id;
-
-        public OrganisationBecameActive(Guid organisationId)
-        {
-            Id = organisationId;
-        }
+        Id = organisationId;
     }
 }

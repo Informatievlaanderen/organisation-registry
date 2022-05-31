@@ -1,23 +1,22 @@
-namespace OrganisationRegistry.Function.Events
+namespace OrganisationRegistry.Function.Events;
+
+using System;
+
+public class FunctionUpdated : BaseEvent<FunctionUpdated>
 {
-    using System;
+    public Guid FunctionId => Id;
 
-    public class FunctionUpdated : BaseEvent<FunctionUpdated>
+    public string Name { get; }
+    public string PreviousName { get; }
+
+    public FunctionUpdated(
+        Guid functionId,
+        string name,
+        string previousName)
     {
-        public Guid FunctionId => Id;
+        Id = functionId;
 
-        public string Name { get; }
-        public string PreviousName { get; }
-
-        public FunctionUpdated(
-            Guid functionId,
-            string name,
-            string previousName)
-        {
-            Id = functionId;
-
-            Name = name;
-            PreviousName = previousName;
-        }
+        Name = name;
+        PreviousName = previousName;
     }
 }

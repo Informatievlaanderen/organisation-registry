@@ -1,9 +1,8 @@
-namespace OrganisationRegistry.Organisation
-{
-    using System;
+namespace OrganisationRegistry.Organisation;
 
-    public interface IKboOrganisationClassificationRetriever
-    {
-        Guid? FetchOrganisationClassificationForLegalFormCode(string legalFormCode);
-    }
+using System;
+
+public interface IKboOrganisationClassificationRetriever
+{
+    Guid? FetchOrganisationClassificationForLegalFormCode(string legalFormCode);
 }

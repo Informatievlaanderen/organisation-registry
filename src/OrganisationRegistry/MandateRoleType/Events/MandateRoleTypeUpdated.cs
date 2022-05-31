@@ -1,33 +1,32 @@
-namespace OrganisationRegistry.MandateRoleType.Events
+namespace OrganisationRegistry.MandateRoleType.Events;
+
+using System;
+using Newtonsoft.Json;
+
+public class MandateRoleTypeUpdated : BaseEvent<MandateRoleTypeUpdated>
 {
-    using System;
-    using Newtonsoft.Json;
+    public Guid MandateRoleTypeId => Id;
 
-    public class MandateRoleTypeUpdated : BaseEvent<MandateRoleTypeUpdated>
+    public string Name { get; }
+    public string PreviousName { get; }
+
+    public MandateRoleTypeUpdated(
+        MandateRoleTypeId mandateRoleTypeId,
+        MandateRoleTypeName name,
+        MandateRoleTypeName previousName)
     {
-        public Guid MandateRoleTypeId => Id;
-
-        public string Name { get; }
-        public string PreviousName { get; }
-
-        public MandateRoleTypeUpdated(
-            MandateRoleTypeId mandateRoleTypeId,
-            MandateRoleTypeName name,
-            MandateRoleTypeName previousName)
-        {
-            Id = mandateRoleTypeId;
-            Name = name;
-            PreviousName = previousName;
-        }
-
-        [JsonConstructor]
-        public MandateRoleTypeUpdated(
-            Guid mandateRoleTypeId,
-            string name,
-            string previousName)
-            : this(
-                new MandateRoleTypeId(mandateRoleTypeId),
-                new MandateRoleTypeName(name),
-                new MandateRoleTypeName(previousName)) { }
+        Id = mandateRoleTypeId;
+        Name = name;
+        PreviousName = previousName;
     }
+
+    [JsonConstructor]
+    public MandateRoleTypeUpdated(
+        Guid mandateRoleTypeId,
+        string name,
+        string previousName)
+        : this(
+            new MandateRoleTypeId(mandateRoleTypeId),
+            new MandateRoleTypeName(name),
+            new MandateRoleTypeName(previousName)) { }
 }

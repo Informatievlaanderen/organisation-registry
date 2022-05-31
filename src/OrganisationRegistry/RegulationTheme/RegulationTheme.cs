@@ -1,39 +1,38 @@
-namespace OrganisationRegistry.RegulationTheme
+namespace OrganisationRegistry.RegulationTheme;
+
+using Events;
+using Infrastructure.Domain;
+
+public class RegulationTheme : AggregateRoot
 {
-    using Events;
-    using Infrastructure.Domain;
+    public RegulationThemeName Name { get; private set; }
 
-    public class RegulationTheme : AggregateRoot
+    private RegulationTheme()
     {
-        public RegulationThemeName Name { get; private set; }
+        Name = new RegulationThemeName(string.Empty);
+    }
 
-        private RegulationTheme()
-        {
-            Name = new RegulationThemeName(string.Empty);
-        }
+    public RegulationTheme(RegulationThemeId id, RegulationThemeName name)
+    {
+        Name = new RegulationThemeName(string.Empty);
 
-        public RegulationTheme(RegulationThemeId id, RegulationThemeName name)
-        {
-            Name = new RegulationThemeName(string.Empty);
+        ApplyChange(new RegulationThemeCreated(id, name));
+    }
 
-            ApplyChange(new RegulationThemeCreated(id, name));
-        }
+    public void Update(RegulationThemeName name)
+    {
+        var @event = new RegulationThemeUpdated(Id, name, Name);
+        ApplyChange(@event);
+    }
 
-        public void Update(RegulationThemeName name)
-        {
-            var @event = new RegulationThemeUpdated(Id, name, Name);
-            ApplyChange(@event);
-        }
+    private void Apply(RegulationThemeCreated @event)
+    {
+        Id = @event.RegulationThemeId;
+        Name = new RegulationThemeName(@event.Name);
+    }
 
-        private void Apply(RegulationThemeCreated @event)
-        {
-            Id = @event.RegulationThemeId;
-            Name = new RegulationThemeName(@event.Name);
-        }
-
-        private void Apply(RegulationThemeUpdated @event)
-        {
-            Name = new RegulationThemeName(@event.Name);
-        }
+    private void Apply(RegulationThemeUpdated @event)
+    {
+        Name = new RegulationThemeName(@event.Name);
     }
 }

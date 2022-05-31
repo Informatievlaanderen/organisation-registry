@@ -1,29 +1,28 @@
-namespace OrganisationRegistry.Organisation.Events
+namespace OrganisationRegistry.Organisation.Events;
+
+using System;
+
+public class OrganisationCoupledWithKbo : BaseEvent<OrganisationCoupledWithKbo>
 {
-    using System;
+    public Guid OrganisationId => Id;
 
-    public class OrganisationCoupledWithKbo : BaseEvent<OrganisationCoupledWithKbo>
+    public string Name { get; }
+    public string OvoNumber { get; }
+    public DateTime? ValidFrom { get; }
+    public string KboNumber { get; }
+
+    public OrganisationCoupledWithKbo(
+        Guid organisationId,
+        string kboNumber,
+        string name,
+        string ovoNumber,
+        DateTime? validFrom)
     {
-        public Guid OrganisationId => Id;
+        Id = organisationId;
 
-        public string Name { get; }
-        public string OvoNumber { get; }
-        public DateTime? ValidFrom { get; }
-        public string KboNumber { get; }
-
-        public OrganisationCoupledWithKbo(
-            Guid organisationId,
-            string kboNumber,
-            string name,
-            string ovoNumber,
-            DateTime? validFrom)
-        {
-            Id = organisationId;
-
-            KboNumber = kboNumber;
-            Name = name;
-            OvoNumber = ovoNumber;
-            ValidFrom = validFrom;
-        }
+        KboNumber = kboNumber;
+        Name = name;
+        OvoNumber = ovoNumber;
+        ValidFrom = validFrom;
     }
 }

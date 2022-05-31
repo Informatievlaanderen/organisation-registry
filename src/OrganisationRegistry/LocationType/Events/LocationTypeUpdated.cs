@@ -1,34 +1,33 @@
-namespace OrganisationRegistry.LocationType.Events
+namespace OrganisationRegistry.LocationType.Events;
+
+using System;
+using Newtonsoft.Json;
+
+public class LocationTypeUpdated : BaseEvent<LocationTypeUpdated>
 {
-    using System;
-    using Newtonsoft.Json;
+    public Guid LocationTypeId => Id;
 
-    public class LocationTypeUpdated : BaseEvent<LocationTypeUpdated>
+    public string Name { get; }
+    public string PreviousName { get; }
+
+    public LocationTypeUpdated(
+        LocationTypeId locationTypeId,
+        LocationTypeName name,
+        LocationTypeName previousName)
     {
-        public Guid LocationTypeId => Id;
+        Id = locationTypeId;
 
-        public string Name { get; }
-        public string PreviousName { get; }
-
-        public LocationTypeUpdated(
-            LocationTypeId locationTypeId,
-            LocationTypeName name,
-            LocationTypeName previousName)
-        {
-            Id = locationTypeId;
-
-            Name = name;
-            PreviousName = previousName;
-        }
-
-        [JsonConstructor]
-        public LocationTypeUpdated(
-            Guid locationTypeId,
-            string name,
-            string previousName)
-            : this(
-                new LocationTypeId(locationTypeId),
-                new LocationTypeName(name),
-                new LocationTypeName(previousName)) { }
+        Name = name;
+        PreviousName = previousName;
     }
+
+    [JsonConstructor]
+    public LocationTypeUpdated(
+        Guid locationTypeId,
+        string name,
+        string previousName)
+        : this(
+            new LocationTypeId(locationTypeId),
+            new LocationTypeName(name),
+            new LocationTypeName(previousName)) { }
 }

@@ -1,37 +1,36 @@
-namespace OrganisationRegistry.Organisation
+namespace OrganisationRegistry.Organisation;
+
+using System;
+using Location;
+using LocationType;
+
+public class AddOrganisationLocation : BaseCommand<OrganisationId>
 {
-    using System;
-    using Location;
-    using LocationType;
+    public OrganisationId OrganisationId => Id;
 
-    public class AddOrganisationLocation : BaseCommand<OrganisationId>
+    public Guid OrganisationLocationId { get; }
+    public LocationId LocationId { get; }
+    public bool IsMainLocation { get; }
+    public LocationTypeId? LocationTypeId { get; }
+    public ValidFrom ValidFrom { get; }
+    public ValidTo ValidTo { get; }
+
+    public AddOrganisationLocation(
+        Guid organisationLocationId,
+        OrganisationId organisationId,
+        LocationId locationId,
+        bool isMainLocation,
+        LocationTypeId? locationTypeId,
+        ValidFrom validFrom,
+        ValidTo validTo)
     {
-        public OrganisationId OrganisationId => Id;
+        Id = organisationId;
 
-        public Guid OrganisationLocationId { get; }
-        public LocationId LocationId { get; }
-        public bool IsMainLocation { get; }
-        public LocationTypeId? LocationTypeId { get; }
-        public ValidFrom ValidFrom { get; }
-        public ValidTo ValidTo { get; }
-
-        public AddOrganisationLocation(
-            Guid organisationLocationId,
-            OrganisationId organisationId,
-            LocationId locationId,
-            bool isMainLocation,
-            LocationTypeId? locationTypeId,
-            ValidFrom validFrom,
-            ValidTo validTo)
-        {
-            Id = organisationId;
-
-            OrganisationLocationId = organisationLocationId;
-            LocationId = locationId;
-            IsMainLocation = isMainLocation;
-            LocationTypeId = locationTypeId;
-            ValidFrom = validFrom;
-            ValidTo = validTo;
-        }
+        OrganisationLocationId = organisationLocationId;
+        LocationId = locationId;
+        IsMainLocation = isMainLocation;
+        LocationTypeId = locationTypeId;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
     }
 }

@@ -1,13 +1,12 @@
-namespace OrganisationRegistry.Organisation
-{
-    public class PlaceUnderVlimpersManagement : BaseCommand<OrganisationId>
-    {
-        public OrganisationId OrganisationId => Id;
+namespace OrganisationRegistry.Organisation;
 
-        public PlaceUnderVlimpersManagement(
-            OrganisationId organisationId)
-        {
-            Id = organisationId;
-        }
+public class PlaceUnderVlimpersManagement : BaseCommand<OrganisationId>
+{
+    public OrganisationId OrganisationId => Id;
+
+    public PlaceUnderVlimpersManagement(
+        OrganisationId organisationId)
+    {
+        Id = organisationId;
     }
 }

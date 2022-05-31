@@ -19,56 +19,55 @@
  * limitations under the License.
  */
 
-namespace OrganisationRegistry.IbanBic.Exceptions
+namespace OrganisationRegistry.IbanBic.Exceptions;
+
+using System;
+
+/// <summary>
+/// Exception which is thrown, when the application attempts to convert a string to Bic or to validate Bic's string representation, but the
+/// string does not have the appropriate format.
+/// Contains a field for indication which rule of validation is broken.
+/// </summary>
+public class InvalidBicFormat : Exception
 {
-    using System;
+    public object? ExpectedObject { get; }
+    public object? ActualObject { get; }
+    public BicFormatViolation FormatViolation { get; }
 
-    /// <summary>
-    /// Exception which is thrown, when the application attempts to convert a string to Bic or to validate Bic's string representation, but the
-    /// string does not have the appropriate format.
-    /// Contains a field for indication which rule of validation is broken.
-    /// </summary>
-    public class InvalidBicFormat : Exception
+    public InvalidBicFormat()
+    { }
+
+    public InvalidBicFormat(string message) : base(message)
+    { }
+
+    public InvalidBicFormat(string format, params object[] args) : base(string.Format(format, args))
+    { }
+
+    public InvalidBicFormat(string message, Exception innerException) : base(message, innerException)
+    { }
+
+    public InvalidBicFormat(string message, BicFormatViolation violation, object actual, object expected) : base(message)
     {
-        public object? ExpectedObject { get; }
-        public object? ActualObject { get; }
-        public BicFormatViolation FormatViolation { get; }
-
-        public InvalidBicFormat()
-        { }
-
-        public InvalidBicFormat(string message) : base(message)
-        { }
-
-        public InvalidBicFormat(string format, params object[] args) : base(string.Format(format, args))
-        { }
-
-        public InvalidBicFormat(string message, Exception innerException) : base(message, innerException)
-        { }
-
-        public InvalidBicFormat(string message, BicFormatViolation violation, object actual, object expected) : base(message)
-        {
-            ActualObject = actual;
-            ExpectedObject = expected;
-            FormatViolation = violation;
-        }
-
-        public InvalidBicFormat(string message, BicFormatViolation violation) : base(message)
-        {
-            FormatViolation = violation;
-        }
-
-        public InvalidBicFormat(string message, BicFormatViolation violation, Exception innerException) : base(message, innerException)
-        {
-            FormatViolation = violation;
-        }
-
-        public InvalidBicFormat(string message, BicFormatViolation violation, object actual) : base(message)
-        {
-            ActualObject = actual;
-            FormatViolation = violation;
-        }
-
-
+        ActualObject = actual;
+        ExpectedObject = expected;
+        FormatViolation = violation;
     }
+
+    public InvalidBicFormat(string message, BicFormatViolation violation) : base(message)
+    {
+        FormatViolation = violation;
+    }
+
+    public InvalidBicFormat(string message, BicFormatViolation violation, Exception innerException) : base(message, innerException)
+    {
+        FormatViolation = violation;
+    }
+
+    public InvalidBicFormat(string message, BicFormatViolation violation, object actual) : base(message)
+    {
+        ActualObject = actual;
+        FormatViolation = violation;
+    }
+
+
 }

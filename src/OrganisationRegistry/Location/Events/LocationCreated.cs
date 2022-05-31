@@ -1,36 +1,35 @@
-namespace OrganisationRegistry.Location.Events
+namespace OrganisationRegistry.Location.Events;
+
+using System;
+
+public class LocationCreated : BaseEvent<LocationCreated>
 {
-    using System;
+    public Guid LocationId => Id;
 
-    public class LocationCreated : BaseEvent<LocationCreated>
+    public string? CrabLocationId { get; set; }
+
+    public string FormattedAddress { get; set; }
+    public string Street { get; set; }
+    public string ZipCode { get; set; }
+    public string City { get; set; }
+    public string Country { get; set; }
+
+    public LocationCreated(
+        Guid locationId,
+        string? crabLocationId,
+        string formattedAddress,
+        string street,
+        string zipCode,
+        string city,
+        string country)
     {
-        public Guid LocationId => Id;
+        Id = locationId;
 
-        public string? CrabLocationId { get; set; }
-
-        public string FormattedAddress { get; set; }
-        public string Street { get; set; }
-        public string ZipCode { get; set; }
-        public string City { get; set; }
-        public string Country { get; set; }
-
-        public LocationCreated(
-            Guid locationId,
-            string? crabLocationId,
-            string formattedAddress,
-            string street,
-            string zipCode,
-            string city,
-            string country)
-        {
-            Id = locationId;
-
-            CrabLocationId = crabLocationId;
-            FormattedAddress = formattedAddress;
-            Street = street;
-            ZipCode = zipCode;
-            City = city;
-            Country = country;
-        }
+        CrabLocationId = crabLocationId;
+        FormattedAddress = formattedAddress;
+        Street = street;
+        ZipCode = zipCode;
+        City = city;
+        Country = country;
     }
 }

@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Organisation.Exceptions
+namespace OrganisationRegistry.Organisation.Exceptions;
+
+public class OvoNumberNotUnique : DomainException
 {
-    public class OvoNumberNotUnique : DomainException
-    {
-        public OvoNumberNotUnique()
-            : base("OVO-nummer is niet uniek.") { }
-    }
+    public OvoNumberNotUnique()
+        : base("OVO-nummer is niet uniek.") { }
 }

@@ -1,40 +1,39 @@
-namespace OrganisationRegistry.Body
+namespace OrganisationRegistry.Body;
+
+using System;
+using System.Collections.Generic;
+using Organisation;
+using Person;
+
+public class OrganisationBodyMandate : BodyMandate
 {
-    using System;
-    using System.Collections.Generic;
-    using Organisation;
-    using Person;
+    public OrganisationId OrganisationId { get; }
+    public string OrganisationName { get; }
 
-    public class OrganisationBodyMandate : BodyMandate
+    public OrganisationBodyMandate(
+        BodyMandateId bodyMandateId,
+        OrganisationId organisationId,
+        string organisationName,
+        Period validity)
+        : base(bodyMandateId, validity)
     {
-        public OrganisationId OrganisationId { get; }
-        public string OrganisationName { get; }
+        OrganisationId = organisationId;
+        OrganisationName = organisationName;
+    }
 
-        public OrganisationBodyMandate(
-            BodyMandateId bodyMandateId,
-            OrganisationId organisationId,
-            string organisationName,
-            Period validity)
-            : base(bodyMandateId, validity)
-        {
-            OrganisationId = organisationId;
-            OrganisationName = organisationName;
-        }
-
-        public override void AssignPerson(
-            DelegationAssignmentId delegationAssignmentId,
-            PersonId personId,
-            string personFullName,
-            Dictionary<Guid, string> contacts,
-            Period period)
-        {
-            AddAssignment(
-                new Assignment(
-                    delegationAssignmentId,
-                    personId,
-                    personFullName,
-                    contacts,
-                    period));
-        }
+    public override void AssignPerson(
+        DelegationAssignmentId delegationAssignmentId,
+        PersonId personId,
+        string personFullName,
+        Dictionary<Guid, string> contacts,
+        Period period)
+    {
+        AddAssignment(
+            new Assignment(
+                delegationAssignmentId,
+                personId,
+                personFullName,
+                contacts,
+                period));
     }
 }

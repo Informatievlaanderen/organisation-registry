@@ -1,15 +1,14 @@
-namespace OrganisationRegistry.Handling.Authorization
-{
-    using Infrastructure.Authorization;
-    using Organisation.Exceptions;
+namespace OrganisationRegistry.Handling.Authorization;
 
-    public class AdminOnlyPolicy : ISecurityPolicy
+using Infrastructure.Authorization;
+using Organisation.Exceptions;
+
+public class AdminOnlyPolicy : ISecurityPolicy
+{
+    public AuthorizationResult Check(IUser user)
     {
-        public AuthorizationResult Check(IUser user)
-        {
-            return user.IsInRole(Role.AlgemeenBeheerder) ?
-                    AuthorizationResult.Success() :
-                    AuthorizationResult.Fail(new InsufficientRights());
-        }
+        return user.IsInRole(Role.AlgemeenBeheerder) ?
+            AuthorizationResult.Success() :
+            AuthorizationResult.Fail(new InsufficientRights());
     }
 }

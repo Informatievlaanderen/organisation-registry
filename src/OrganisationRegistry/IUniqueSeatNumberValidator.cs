@@ -1,10 +1,9 @@
-namespace OrganisationRegistry
-{
-    using System;
+namespace OrganisationRegistry;
 
-    public interface IUniqueSeatNumberValidator
-    {
-        bool IsBodyNumberTaken(string ovoNumber);
-        bool IsBodyNumberTaken(Guid id, string ovoNumber);
-    }
+using System;
+
+public interface IUniqueSeatNumberValidator
+{
+    bool IsBodyNumberTaken(string ovoNumber);
+    bool IsBodyNumberTaken(Guid id, string ovoNumber);
 }

@@ -1,29 +1,28 @@
-namespace OrganisationRegistry.Purpose.Events
+namespace OrganisationRegistry.Purpose.Events;
+
+using System;
+using Newtonsoft.Json;
+
+public class PurposeCreated : BaseEvent<PurposeCreated>
 {
-    using System;
-    using Newtonsoft.Json;
+    public Guid PurposeId => Id;
 
-    public class PurposeCreated : BaseEvent<PurposeCreated>
+    public string Name { get; }
+
+    public PurposeCreated(
+        PurposeId purposeId,
+        PurposeName name)
     {
-        public Guid PurposeId => Id;
+        Id = purposeId;
 
-        public string Name { get; }
-
-        public PurposeCreated(
-            PurposeId purposeId,
-            PurposeName name)
-        {
-            Id = purposeId;
-
-            Name = name;
-        }
-
-        [JsonConstructor]
-        public PurposeCreated(
-            Guid purposeId,
-            string name)
-            : this(
-                new PurposeId(purposeId),
-                new PurposeName(name)) { }
+        Name = name;
     }
+
+    [JsonConstructor]
+    public PurposeCreated(
+        Guid purposeId,
+        string name)
+        : this(
+            new PurposeId(purposeId),
+            new PurposeName(name)) { }
 }

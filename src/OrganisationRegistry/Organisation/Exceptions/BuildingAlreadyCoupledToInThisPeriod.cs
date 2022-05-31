@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Organisation.Exceptions
+namespace OrganisationRegistry.Organisation.Exceptions;
+
+public class BuildingAlreadyCoupledToInThisPeriod : DomainException
 {
-    public class BuildingAlreadyCoupledToInThisPeriod : DomainException
-    {
-        public BuildingAlreadyCoupledToInThisPeriod()
-            : base("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.") { }
-    }
+    public BuildingAlreadyCoupledToInThisPeriod()
+        : base("Dit gebouw is in deze periode reeds gekoppeld aan de organisatie.") { }
 }

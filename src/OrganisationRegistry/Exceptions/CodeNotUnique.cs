@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Exceptions
+namespace OrganisationRegistry.Exceptions;
+
+public class CodeNotUnique : DomainException
 {
-    public class CodeNotUnique : DomainException
-    {
-        public CodeNotUnique()
-            : base("Code is niet uniek.") { }
-    }
+    public CodeNotUnique()
+        : base("Code is niet uniek.") { }
 }

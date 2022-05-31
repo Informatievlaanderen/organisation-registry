@@ -1,26 +1,25 @@
-namespace OrganisationRegistry.Organisation.Events
+namespace OrganisationRegistry.Organisation.Events;
+
+using System;
+
+public class FormalFrameworkAssignedToOrganisation : BaseEvent<FormalFrameworkAssignedToOrganisation>
 {
-    using System;
+    public Guid OrganisationId => Id;
 
-    public class FormalFrameworkAssignedToOrganisation : BaseEvent<FormalFrameworkAssignedToOrganisation>
+    public Guid FormalFrameworkId { get; }
+    public Guid ParentOrganisationId { get; }
+    public Guid OrganisationFormalFrameworkId { get; }
+
+    public FormalFrameworkAssignedToOrganisation(
+        Guid organisationId,
+        Guid formalFrameworkId,
+        Guid parentOrganisationId,
+        Guid organisationFormalFrameworkId)
     {
-        public Guid OrganisationId => Id;
+        Id = organisationId;
 
-        public Guid FormalFrameworkId { get; }
-        public Guid ParentOrganisationId { get; }
-        public Guid OrganisationFormalFrameworkId { get; }
-
-        public FormalFrameworkAssignedToOrganisation(
-            Guid organisationId,
-            Guid formalFrameworkId,
-            Guid parentOrganisationId,
-            Guid organisationFormalFrameworkId)
-        {
-            Id = organisationId;
-
-            FormalFrameworkId = formalFrameworkId;
-            ParentOrganisationId = parentOrganisationId;
-            OrganisationFormalFrameworkId = organisationFormalFrameworkId;
-        }
+        FormalFrameworkId = formalFrameworkId;
+        ParentOrganisationId = parentOrganisationId;
+        OrganisationFormalFrameworkId = organisationFormalFrameworkId;
     }
 }

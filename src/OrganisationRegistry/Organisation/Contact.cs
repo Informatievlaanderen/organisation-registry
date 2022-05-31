@@ -1,18 +1,17 @@
-namespace OrganisationRegistry.Organisation
+namespace OrganisationRegistry.Organisation;
+
+using ContactType;
+
+public class Contact
 {
-    using ContactType;
+    public ContactType ContactType { get; }
+    public string Value { get; }
 
-    public class Contact
+    public Contact(
+        ContactType contactType,
+        string value)
     {
-        public ContactType ContactType { get; }
-        public string Value { get; }
-
-        public Contact(
-            ContactType contactType,
-            string value)
-        {
-            ContactType = contactType;
-            Value = value;
-        }
+        ContactType = contactType;
+        Value = value;
     }
 }

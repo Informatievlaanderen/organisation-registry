@@ -1,8 +1,7 @@
-namespace OrganisationRegistry.Organisation.Exceptions
+namespace OrganisationRegistry.Organisation.Exceptions;
+
+public class LocationNotFound : DomainException
 {
-    public class LocationNotFound : DomainException
-    {
-        public LocationNotFound(string location)
-            : base($"De volgende locatie werd niet gevonden: {location}") { }
-    }
+    public LocationNotFound(string location)
+        : base($"De volgende locatie werd niet gevonden: {location}") { }
 }

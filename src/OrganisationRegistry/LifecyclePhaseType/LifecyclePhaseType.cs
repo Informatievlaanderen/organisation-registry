@@ -1,63 +1,62 @@
-namespace OrganisationRegistry.LifecyclePhaseType
+namespace OrganisationRegistry.LifecyclePhaseType;
+
+using Events;
+using Infrastructure.Domain;
+
+public class LifecyclePhaseType : AggregateRoot
 {
-    using Events;
-    using Infrastructure.Domain;
+    public LifecyclePhaseTypeName Name { get; private set; }
+    public LifecyclePhaseTypeIsRepresentativeFor LifecyclePhaseTypeIsRepresentativeFor { get; private set; }
+    public LifecyclePhaseTypeStatus Status { get; private set; }
 
-    public class LifecyclePhaseType : AggregateRoot
+    public bool IsForActivePhase => LifecyclePhaseTypeIsRepresentativeFor ==
+                                    LifecyclePhaseTypeIsRepresentativeFor.ActivePhase;
+
+    public bool IsForInactivePhase => LifecyclePhaseTypeIsRepresentativeFor ==
+                                      LifecyclePhaseTypeIsRepresentativeFor.InactivePhase;
+
+    private LifecyclePhaseType()
     {
-        public LifecyclePhaseTypeName Name { get; private set; }
-        public LifecyclePhaseTypeIsRepresentativeFor LifecyclePhaseTypeIsRepresentativeFor { get; private set; }
-        public LifecyclePhaseTypeStatus Status { get; private set; }
+        Name = new LifecyclePhaseTypeName(string.Empty);
+    }
 
-        public bool IsForActivePhase => LifecyclePhaseTypeIsRepresentativeFor ==
-                                        LifecyclePhaseTypeIsRepresentativeFor.ActivePhase;
+    public LifecyclePhaseType(
+        LifecyclePhaseTypeId id,
+        LifecyclePhaseTypeName name,
+        LifecyclePhaseTypeIsRepresentativeFor lifecyclePhaseTypeIsRepresentativeFor,
+        LifecyclePhaseTypeStatus status)
+    {
+        Name = new LifecyclePhaseTypeName(string.Empty);
 
-        public bool IsForInactivePhase => LifecyclePhaseTypeIsRepresentativeFor ==
-                                        LifecyclePhaseTypeIsRepresentativeFor.InactivePhase;
+        ApplyChange(new LifecyclePhaseTypeCreated(id, name, lifecyclePhaseTypeIsRepresentativeFor, status));
+    }
 
-        private LifecyclePhaseType()
-        {
-            Name = new LifecyclePhaseTypeName(string.Empty);
-        }
+    public void Update(
+        LifecyclePhaseTypeName name,
+        LifecyclePhaseTypeIsRepresentativeFor lifecyclePhaseTypeIsRepresentativeFor,
+        LifecyclePhaseTypeStatus status)
+    {
+        var @event = new LifecyclePhaseTypeUpdated(
+            new LifecyclePhaseTypeId(Id),
+            name, Name,
+            lifecyclePhaseTypeIsRepresentativeFor, LifecyclePhaseTypeIsRepresentativeFor,
+            status, Status);
 
-        public LifecyclePhaseType(
-            LifecyclePhaseTypeId id,
-            LifecyclePhaseTypeName name,
-            LifecyclePhaseTypeIsRepresentativeFor lifecyclePhaseTypeIsRepresentativeFor,
-            LifecyclePhaseTypeStatus status)
-        {
-            Name = new LifecyclePhaseTypeName(string.Empty);
+        ApplyChange(@event);
+    }
 
-            ApplyChange(new LifecyclePhaseTypeCreated(id, name, lifecyclePhaseTypeIsRepresentativeFor, status));
-        }
+    private void Apply(LifecyclePhaseTypeCreated @event)
+    {
+        Id = @event.LifecyclePhaseTypeId;
+        Name = new LifecyclePhaseTypeName(@event.Name);
+        LifecyclePhaseTypeIsRepresentativeFor = @event.LifecyclePhaseTypeIsRepresentativeFor;
+        Status = @event.Status;
+    }
 
-        public void Update(
-            LifecyclePhaseTypeName name,
-            LifecyclePhaseTypeIsRepresentativeFor lifecyclePhaseTypeIsRepresentativeFor,
-            LifecyclePhaseTypeStatus status)
-        {
-            var @event = new LifecyclePhaseTypeUpdated(
-                new LifecyclePhaseTypeId(Id),
-                name, Name,
-                lifecyclePhaseTypeIsRepresentativeFor, LifecyclePhaseTypeIsRepresentativeFor,
-                status, Status);
-
-            ApplyChange(@event);
-        }
-
-        private void Apply(LifecyclePhaseTypeCreated @event)
-        {
-            Id = @event.LifecyclePhaseTypeId;
-            Name = new LifecyclePhaseTypeName(@event.Name);
-            LifecyclePhaseTypeIsRepresentativeFor = @event.LifecyclePhaseTypeIsRepresentativeFor;
-            Status = @event.Status;
-        }
-
-        private void Apply(LifecyclePhaseTypeUpdated @event)
-        {
-            Name = new LifecyclePhaseTypeName(@event.Name);
-            LifecyclePhaseTypeIsRepresentativeFor = @event.LifecyclePhaseTypeIsRepresentativeFor;
-            Status = @event.Status;
-        }
+    private void Apply(LifecyclePhaseTypeUpdated @event)
+    {
+        Name = new LifecyclePhaseTypeName(@event.Name);
+        LifecyclePhaseTypeIsRepresentativeFor = @event.LifecyclePhaseTypeIsRepresentativeFor;
+        Status = @event.Status;
     }
 }

@@ -1,20 +1,19 @@
-namespace OrganisationRegistry.Body.Events
+namespace OrganisationRegistry.Body.Events;
+
+using System;
+
+public class BodyClearedFromOrganisation : BaseEvent<BodyClearedFromOrganisation>
 {
-    using System;
+    public Guid BodyId => Id;
 
-    public class BodyClearedFromOrganisation : BaseEvent<BodyClearedFromOrganisation>
+    public Guid OrganisationId { get; }
+
+    public BodyClearedFromOrganisation(
+        Guid bodyId,
+        Guid organisationId)
     {
-        public Guid BodyId => Id;
+        Id = bodyId;
 
-        public Guid OrganisationId { get; }
-
-        public BodyClearedFromOrganisation(
-            Guid bodyId,
-            Guid organisationId)
-        {
-            Id = bodyId;
-
-            OrganisationId = organisationId;
-        }
+        OrganisationId = organisationId;
     }
 }

@@ -1,20 +1,19 @@
-namespace OrganisationRegistry.Organisation.Events
+namespace OrganisationRegistry.Organisation.Events;
+
+using System;
+
+public class ParentClearedFromOrganisation : BaseEvent<ParentClearedFromOrganisation>
 {
-    using System;
+    public Guid OrganisationId => Id;
 
-    public class ParentClearedFromOrganisation : BaseEvent<ParentClearedFromOrganisation>
+    public Guid ParentOrganisationId { get; }
+
+    public ParentClearedFromOrganisation(
+        Guid organisationId,
+        Guid parentOrganisationId)
     {
-        public Guid OrganisationId => Id;
+        Id = organisationId;
 
-        public Guid ParentOrganisationId { get; }
-
-        public ParentClearedFromOrganisation(
-            Guid organisationId,
-            Guid parentOrganisationId)
-        {
-            Id = organisationId;
-
-            ParentOrganisationId = parentOrganisationId;
-        }
+        ParentOrganisationId = parentOrganisationId;
     }
 }

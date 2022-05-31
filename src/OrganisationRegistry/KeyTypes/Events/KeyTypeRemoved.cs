@@ -1,13 +1,12 @@
-namespace OrganisationRegistry.KeyTypes.Events
+namespace OrganisationRegistry.KeyTypes.Events;
+
+using System;
+
+public class KeyTypeRemoved : BaseEvent<KeyTypeRemoved>
 {
-    using System;
+    public Guid KeyTypeId
+        => Id;
 
-    public class KeyTypeRemoved : BaseEvent<KeyTypeRemoved>
-    {
-        public Guid KeyTypeId
-            => Id;
-
-        public KeyTypeRemoved(Guid keyTypeId)
-            => Id = keyTypeId;
-    }
+    public KeyTypeRemoved(Guid keyTypeId)
+        => Id = keyTypeId;
 }

@@ -1,19 +1,18 @@
-namespace OrganisationRegistry.ContactType.Events
+namespace OrganisationRegistry.ContactType.Events;
+
+using System;
+
+public class ContactTypeCreated : BaseEvent<ContactTypeCreated>
 {
-    using System;
+    public Guid ContactTypeId => Id;
 
-    public class ContactTypeCreated : BaseEvent<ContactTypeCreated>
+    public string Name { get; }
+
+    public ContactTypeCreated(
+        Guid contactTypeId,
+        string name)
     {
-        public Guid ContactTypeId => Id;
-
-        public string Name { get; }
-
-        public ContactTypeCreated(
-            Guid contactTypeId,
-            string name)
-        {
-            Id = contactTypeId;
-            Name = name;
-        }
+        Id = contactTypeId;
+        Name = name;
     }
 }

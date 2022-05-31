@@ -1,25 +1,24 @@
-namespace OrganisationRegistry.Organisation.Events
+namespace OrganisationRegistry.Organisation.Events;
+
+using System;
+
+[Obsolete("2020-01-22: No longer used in projections. Keep but don't use.")]
+public class MainLocationAssignedToOrganisation : BaseEvent<MainLocationAssignedToOrganisation>
 {
-    using System;
+    public Guid OrganisationId => Id;
+
+    public Guid MainLocationId { get; }
+    public Guid OrganisationLocationId { get; }
 
     [Obsolete("2020-01-22: No longer used in projections. Keep but don't use.")]
-    public class MainLocationAssignedToOrganisation : BaseEvent<MainLocationAssignedToOrganisation>
+    public MainLocationAssignedToOrganisation(
+        Guid organisationId,
+        Guid mainLocationId,
+        Guid organisationLocationId)
     {
-        public Guid OrganisationId => Id;
+        Id = organisationId;
 
-        public Guid MainLocationId { get; }
-        public Guid OrganisationLocationId { get; }
-
-        [Obsolete("2020-01-22: No longer used in projections. Keep but don't use.")]
-        public MainLocationAssignedToOrganisation(
-            Guid organisationId,
-            Guid mainLocationId,
-            Guid organisationLocationId)
-        {
-            Id = organisationId;
-
-            MainLocationId = mainLocationId;
-            OrganisationLocationId = organisationLocationId;
-        }
+        MainLocationId = mainLocationId;
+        OrganisationLocationId = organisationLocationId;
     }
 }
