@@ -1,6 +1,5 @@
-namespace OrganisationRegistry.KboMutations
-{
-    using System.Collections.Generic;
+namespace OrganisationRegistry.KboMutations;
 
-    public record MutationsFile(string FullName, string Name, IEnumerable<MutationsLine> KboMutations);
-}
+using System.Collections.Generic;
+
+public record MutationsFile(string FullName, string Name, IEnumerable<MutationsLine> KboMutations);
