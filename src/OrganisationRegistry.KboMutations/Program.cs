@@ -1,150 +1,149 @@
-namespace OrganisationRegistry.KboMutations
+namespace OrganisationRegistry.KboMutations;
+
+using System;
+using System.IO;
+using System.Threading;
+using Amazon;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
+using Configuration;
+using Destructurama;
+using Infrastructure;
+using Infrastructure.Configuration;
+using Infrastructure.Infrastructure.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using OrganisationRegistry.Configuration.Database;
+using OrganisationRegistry.Configuration.Database.Configuration;
+using Serilog;
+
+internal class Program
 {
-    using System;
-    using System.IO;
-    using System.Threading;
-    using Amazon;
-    using Autofac;
-    using Autofac.Extensions.DependencyInjection;
-    using Be.Vlaanderen.Basisregisters.Aws.DistributedMutex;
-    using Configuration;
-    using Destructurama;
-    using Infrastructure;
-    using Infrastructure.Configuration;
-    using Infrastructure.Infrastructure.Json;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using Newtonsoft.Json;
-    using OrganisationRegistry.Configuration.Database;
-    using OrganisationRegistry.Configuration.Database.Configuration;
-    using Serilog;
-
-    internal class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        Console.WriteLine("Starting KboMutations");
+
+        JsonConvert.DefaultSettings =
+            () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
+
+        var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "development";
+        var builder =
+            new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.ToLowerInvariant()}.json", optional: true)
+                .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true)
+                .AddEnvironmentVariables();
+
+        var sqlConfiguration = builder.Build().GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>();
+        var configuration = builder
+            .AddEntityFramework(x => x.UseSqlServer(
+                sqlConfiguration.ConnectionString,
+                y => y.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)))
+            .Build();
+
+        var services = new ServiceCollection();
+
+        services.AddLogging(loggingBuilder =>
         {
-            Console.WriteLine("Starting KboMutations");
+            var loggerConfiguration = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .Enrich.FromLogContext()
+                .Enrich.WithMachineName()
+                .Enrich.WithThreadId()
+                .Enrich.WithEnvironmentUserName()
+                .Destructure.JsonNetTypes();
 
-            JsonConvert.DefaultSettings =
-                () => JsonSerializerSettingsProvider.CreateSerializerSettings().ConfigureForOrganisationRegistry();
+            Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
 
-            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "development";
-            var builder =
-                new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                    .AddJsonFile($"appsettings.{env.ToLowerInvariant()}.json", optional: true)
-                    .AddJsonFile($"appsettings.{Environment.MachineName.ToLowerInvariant()}.json", optional: true)
-                    .AddEnvironmentVariables();
+            Log.Logger = loggerConfiguration.CreateLogger();
 
-            var sqlConfiguration = builder.Build().GetSection(ConfigurationDatabaseConfiguration.Section).Get<ConfigurationDatabaseConfiguration>();
-            var configuration = builder
-                .AddEntityFramework(x => x.UseSqlServer(
-                    sqlConfiguration.ConnectionString,
-                    y => y.MigrationsHistoryTable("__EFMigrationsHistory", WellknownSchemas.BackofficeSchema)))
-                .Build();
+            loggingBuilder.AddSerilog();
+        });
 
-            var services = new ServiceCollection();
+        var app = ConfigureServices(services, configuration);
 
-            services.AddLogging(loggingBuilder =>
+        var logger = app.GetRequiredService<ILogger<Program>>();
+
+        if (!app.GetRequiredService<IOptions<TogglesConfigurationSection>>().Value.ApplicationAvailable)
+        {
+            logger.LogInformation("Application offline, exiting program");
+            return;
+        }
+
+        var kboMutationsConfiguration = app.GetRequiredService<IOptions<KboMutationsConfiguration>>().Value;
+
+        var distributedLock = new DistributedLock<Program>(
+            new DistributedLockOptions
             {
-                var loggerConfiguration = new LoggerConfiguration()
-                    .ReadFrom.Configuration(configuration)
-                    .Enrich.FromLogContext()
-                    .Enrich.WithMachineName()
-                    .Enrich.WithThreadId()
-                    .Enrich.WithEnvironmentUserName()
-                    .Destructure.JsonNetTypes();
+                Region = RegionEndpoint.GetBySystemName(kboMutationsConfiguration.LockRegionEndPoint),
+                AwsAccessKeyId = kboMutationsConfiguration.LockAccessKeyId,
+                AwsSecretAccessKey = kboMutationsConfiguration.LockAccessKeySecret,
+                TableName = kboMutationsConfiguration.LockTableName,
+                LeasePeriod = TimeSpan.FromMinutes(kboMutationsConfiguration.LockLeasePeriodInMinutes),
+                ThrowOnFailedRenew = true,
+                TerminateApplicationOnFailedRenew = true,
+                Enabled = kboMutationsConfiguration.LockEnabled
+            }, logger);
 
-                Serilog.Debugging.SelfLog.Enable(Console.WriteLine);
+        var acquiredLock = false;
+        try
+        {
+            logger.LogInformation("[KboMutations] Trying to acquire lock");
+            acquiredLock = distributedLock.AcquireLock();
 
-                Log.Logger = loggerConfiguration.CreateLogger();
-
-                loggingBuilder.AddSerilog();
-            });
-
-            var app = ConfigureServices(services, configuration);
-
-            var logger = app.GetRequiredService<ILogger<Program>>();
-
-            if (!app.GetRequiredService<IOptions<TogglesConfigurationSection>>().Value.ApplicationAvailable)
+            if (!acquiredLock)
             {
-                logger.LogInformation("Application offline, exiting program");
+                logger.LogInformation("[KboMutations] Could not get lock, another instance is busy");
                 return;
             }
 
-            var kboMutationsConfiguration = app.GetRequiredService<IOptions<KboMutationsConfiguration>>().Value;
-
-            var distributedLock = new DistributedLock<Program>(
-                new DistributedLockOptions
-                {
-                    Region = RegionEndpoint.GetBySystemName(kboMutationsConfiguration.LockRegionEndPoint),
-                    AwsAccessKeyId = kboMutationsConfiguration.LockAccessKeyId,
-                    AwsSecretAccessKey = kboMutationsConfiguration.LockAccessKeySecret,
-                    TableName = kboMutationsConfiguration.LockTableName,
-                    LeasePeriod = TimeSpan.FromMinutes(kboMutationsConfiguration.LockLeasePeriodInMinutes),
-                    ThrowOnFailedRenew = true,
-                    TerminateApplicationOnFailedRenew = true,
-                    Enabled = kboMutationsConfiguration.LockEnabled
-                }, logger);
-
-            var acquiredLock = false;
-            try
+            if (app.GetRequiredService<Runner>().Run())
             {
-                logger.LogInformation("[KboMutations] Trying to acquire lock");
-                acquiredLock = distributedLock.AcquireLock();
-
-                if (!acquiredLock)
-                {
-                    logger.LogInformation("[KboMutations] Could not get lock, another instance is busy");
-                    return;
-                }
-
-                if (app.GetRequiredService<Runner>().Run())
-                {
-                    logger.LogInformation("Processing completed successfully, exiting program");
-                }
-                else
-                {
-                    logger.LogInformation("KboMutations Toggle not enabled, exiting program");
-                }
-
-                FlushLoggerAndTelemetry();
+                logger.LogInformation("Processing completed successfully, exiting program");
             }
-            catch (Exception e)
+            else
             {
-                logger.LogCritical(0, e, "[KboMutations] Encountered a fatal exception, exiting program"); // dotnet core only supports global exceptionhandler starting from 1.2
-                FlushLoggerAndTelemetry();
-                throw;
+                logger.LogInformation("KboMutations Toggle not enabled, exiting program");
             }
-            finally
-            {
-                if (acquiredLock)
-                    distributedLock.ReleaseLock();
-            }
+
+            FlushLoggerAndTelemetry();
         }
-
-        private static void FlushLoggerAndTelemetry()
+        catch (Exception e)
         {
-            Log.CloseAndFlush();
-
-            // Allow some time for flushing before shutdown.
-            Thread.Sleep(1000);
+            logger.LogCritical(0, e, "[KboMutations] Encountered a fatal exception, exiting program"); // dotnet core only supports global exceptionhandler starting from 1.2
+            FlushLoggerAndTelemetry();
+            throw;
         }
-
-        private static IServiceProvider ConfigureServices(IServiceCollection services, IConfiguration configuration)
+        finally
         {
-            services.AddOptions();
-            services.AddHttpClient();
-
-            var serviceProvider = services.BuildServiceProvider();
-
-            var builder = new ContainerBuilder();
-            builder.RegisterModule(new KboMutationsRunnerModule(configuration, services, serviceProvider.GetRequiredService<ILoggerFactory>()));
-            return new AutofacServiceProvider(builder.Build());
+            if (acquiredLock)
+                distributedLock.ReleaseLock();
         }
+    }
+
+    private static void FlushLoggerAndTelemetry()
+    {
+        Log.CloseAndFlush();
+
+        // Allow some time for flushing before shutdown.
+        Thread.Sleep(1000);
+    }
+
+    private static IServiceProvider ConfigureServices(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddOptions();
+        services.AddHttpClient();
+
+        var serviceProvider = services.BuildServiceProvider();
+
+        var builder = new ContainerBuilder();
+        builder.RegisterModule(new KboMutationsRunnerModule(configuration, services, serviceProvider.GetRequiredService<ILoggerFactory>()));
+        return new AutofacServiceProvider(builder.Build());
     }
 }
