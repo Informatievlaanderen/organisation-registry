@@ -1,127 +1,126 @@
-namespace OrganisationRegistry.SqlServer.Person
+namespace OrganisationRegistry.SqlServer.Person;
+
+using System;
+using System.Data.Common;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using Infrastructure;
+using Microsoft.Extensions.Logging;
+using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.Person.Events;
+using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.Person;
+
+public class PersonListItem
 {
-    using System;
-    using System.Data.Common;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using Microsoft.EntityFrameworkCore;
-    using Infrastructure;
-    using Microsoft.Extensions.Logging;
-    using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Person.Events;
-    using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Person;
+    public Guid Id { get; set; }
 
-    public class PersonListItem
+    public string FirstName { get; set; } = null!;
+
+    public string Name { get; set; } = null!;
+
+    public string FullName { get; set; } = null!;
+
+    public Sex? Sex { get; set; }
+
+    public DateTime? DateOfBirth { get; set; }
+}
+
+public class PersonListConfiguration : EntityMappingConfiguration<PersonListItem>
+{
+    public const int FirstNameLength = 200;
+    public const int NameLength = 200;
+    public const int FullNameLength = FirstNameLength + NameLength + 1; // 1 for space
+
+    public override void Map(EntityTypeBuilder<PersonListItem> b)
     {
-        public Guid Id { get; set; }
+        b.ToTable(nameof(PersonListView.ProjectionTables.PersonList), WellknownSchemas.BackofficeSchema)
+            .HasKey(p => p.Id)
+            .IsClustered(false);
 
-        public string FirstName { get; set; } = null!;
+        b.Property(p => p.FirstName)
+            .HasMaxLength(FirstNameLength)
+            .IsRequired();
 
-        public string Name { get; set; } = null!;
+        b.Property(p => p.Name)
+            .HasMaxLength(NameLength)
+            .IsRequired();
 
-        public string FullName { get; set; } = null!;
+        b.Property(p => p.FullName)
+            .HasMaxLength(FullNameLength)
+            .IsRequired();
 
-        public Sex? Sex { get; set; }
+        b.Property(p => p.Sex);
+        b.Property(p => p.DateOfBirth);
 
-        public DateTime? DateOfBirth { get; set; }
+        b.HasIndex(x => x.Name).IsClustered();
+        b.HasIndex(x => x.FirstName);
+        b.HasIndex(x => x.FullName);
+    }
+}
+
+public class PersonListView :
+    Projection<PersonListView>,
+    IEventHandler<PersonCreated>,
+    IEventHandler<PersonUpdated>
+{
+    private readonly IEventStore _eventStore;
+    protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+    public override string Schema => WellknownSchemas.BackofficeSchema;
+
+    public enum ProjectionTables
+    {
+        PersonList
     }
 
-    public class PersonListConfiguration : EntityMappingConfiguration<PersonListItem>
+    public PersonListView(
+        ILogger<PersonListView> logger,
+        IEventStore eventStore,
+        IContextFactory contextFactory) : base(logger, contextFactory)
     {
-        public const int FirstNameLength = 200;
-        public const int NameLength = 200;
-        public const int FullNameLength = FirstNameLength + NameLength + 1; // 1 for space
+        _eventStore = eventStore;
+    }
 
-        public override void Map(EntityTypeBuilder<PersonListItem> b)
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonCreated> message)
+    {
+        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
         {
-            b.ToTable(nameof(PersonListView.ProjectionTables.PersonList), WellknownSchemas.BackofficeSchema)
-                .HasKey(p => p.Id)
-                .IsClustered(false);
+            var person = new PersonListItem
+            {
+                Id = message.Body.PersonId,
+                FirstName = message.Body.FirstName,
+                Name = message.Body.Name,
+                FullName = $"{message.Body.FirstName} {message.Body.Name}",
+                Sex = message.Body.Sex,
+                DateOfBirth = message.Body.DateOfBirth
+            };
 
-            b.Property(p => p.FirstName)
-                .HasMaxLength(FirstNameLength)
-                .IsRequired();
-
-            b.Property(p => p.Name)
-                .HasMaxLength(NameLength)
-                .IsRequired();
-
-            b.Property(p => p.FullName)
-                .HasMaxLength(FullNameLength)
-                .IsRequired();
-
-            b.Property(p => p.Sex);
-            b.Property(p => p.DateOfBirth);
-
-            b.HasIndex(x => x.Name).IsClustered();
-            b.HasIndex(x => x.FirstName);
-            b.HasIndex(x => x.FullName);
+            await context.PersonList.AddAsync(person);
+            await context.SaveChangesAsync();
         }
     }
 
-    public class PersonListView :
-        Projection<PersonListView>,
-        IEventHandler<PersonCreated>,
-        IEventHandler<PersonUpdated>
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
     {
-        private readonly IEventStore _eventStore;
-        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-        public override string Schema => WellknownSchemas.BackofficeSchema;
-
-        public enum ProjectionTables
+        using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
         {
-            PersonList
+            var person = context.PersonList.SingleOrDefault(x => x.Id == message.Body.PersonId);
+            if (person == null)
+                return; // TODO: Error?
+
+            person.FirstName = message.Body.FirstName;
+            person.Name = message.Body.Name;
+            person.FullName = $"{message.Body.FirstName} {message.Body.Name}";
+            person.Sex = message.Body.Sex;
+            person.DateOfBirth = message.Body.DateOfBirth;
+            await context.SaveChangesAsync();
         }
+    }
 
-        public PersonListView(
-            ILogger<PersonListView> logger,
-            IEventStore eventStore,
-            IContextFactory contextFactory) : base(logger, contextFactory)
-        {
-            _eventStore = eventStore;
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonCreated> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var person = new PersonListItem
-                {
-                    Id = message.Body.PersonId,
-                    FirstName = message.Body.FirstName,
-                    Name = message.Body.Name,
-                    FullName = $"{message.Body.FirstName} {message.Body.Name}",
-                    Sex = message.Body.Sex,
-                    DateOfBirth = message.Body.DateOfBirth
-                };
-
-                await context.PersonList.AddAsync(person);
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
-        {
-            using (var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction))
-            {
-                var person = context.PersonList.SingleOrDefault(x => x.Id == message.Body.PersonId);
-                if (person == null)
-                    return; // TODO: Error?
-
-                person.FirstName = message.Body.FirstName;
-                person.Name = message.Body.Name;
-                person.FullName = $"{message.Body.FirstName} {message.Body.Name}";
-                person.Sex = message.Body.Sex;
-                person.DateOfBirth = message.Body.DateOfBirth;
-                await context.SaveChangesAsync();
-            }
-        }
-
-        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
-        {
-            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
-        }
+    public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+    {
+        await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
     }
 }

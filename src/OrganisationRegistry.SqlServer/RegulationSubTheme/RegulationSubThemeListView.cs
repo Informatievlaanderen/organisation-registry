@@ -1,124 +1,123 @@
-namespace OrganisationRegistry.SqlServer.RegulationSubTheme
+namespace OrganisationRegistry.SqlServer.RegulationSubTheme;
+
+using System;
+using System.Data.Common;
+using System.Linq;
+using System.Threading.Tasks;
+using Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Extensions.Logging;
+using RegulationTheme;
+using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.RegulationSubTheme.Events;
+using OrganisationRegistry.RegulationTheme.Events;
+
+public class RegulationSubThemeListItem
 {
-    using System;
-    using System.Data.Common;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Infrastructure;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using Microsoft.Extensions.Logging;
-    using RegulationTheme;
-    using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.RegulationSubTheme.Events;
-    using OrganisationRegistry.RegulationTheme.Events;
+    public Guid Id { get; set; }
 
-    public class RegulationSubThemeListItem
+    public string Name { get; set; } = null!;
+
+    public Guid RegulationThemeId { get; set; }
+    public string RegulationThemeName { get; set; } = null!;
+}
+
+public class RegulationSubThemeListConfiguration : EntityMappingConfiguration<RegulationSubThemeListItem>
+{
+    public const int NameLength = 500;
+
+    public override void Map(EntityTypeBuilder<RegulationSubThemeListItem> b)
     {
-        public Guid Id { get; set; }
+        b.ToTable(nameof(RegulationSubThemeListView.ProjectionTables.RegulationSubThemeList), WellknownSchemas.BackofficeSchema)
+            .HasKey(p => p.Id)
+            .IsClustered(false);
 
-        public string Name { get; set; } = null!;
+        b.Property(p => p.Name)
+            .HasMaxLength(NameLength)
+            .IsRequired();
 
-        public Guid RegulationThemeId { get; set; }
-        public string RegulationThemeName { get; set; } = null!;
+        b.Property(p => p.RegulationThemeId).IsRequired();
+        b.Property(p => p.RegulationThemeName)
+            .HasMaxLength(RegulationThemeListConfiguration.NameLength)
+            .IsRequired();
+
+        b.HasIndex(x => x.Name).IsClustered();
+        b.HasIndex(x => x.RegulationThemeName);
+
+        b.HasIndex(x => new { x.Name, x.RegulationThemeId }).IsUnique();
+    }
+}
+
+public class RegulationSubThemeListView :
+    Projection<RegulationSubThemeListView>,
+    IEventHandler<RegulationSubThemeCreated>,
+    IEventHandler<RegulationSubThemeUpdated>,
+    IEventHandler<RegulationThemeUpdated>
+{
+    protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+    public override string Schema => WellknownSchemas.BackofficeSchema;
+
+    public enum ProjectionTables
+    {
+        RegulationSubThemeList
     }
 
-    public class RegulationSubThemeListConfiguration : EntityMappingConfiguration<RegulationSubThemeListItem>
+    private readonly IEventStore _eventStore;
+
+    public RegulationSubThemeListView(
+        ILogger<RegulationSubThemeListView> logger,
+        IEventStore eventStore,
+        IContextFactory contextFactory) : base(logger, contextFactory)
     {
-        public const int NameLength = 500;
-
-        public override void Map(EntityTypeBuilder<RegulationSubThemeListItem> b)
-        {
-            b.ToTable(nameof(RegulationSubThemeListView.ProjectionTables.RegulationSubThemeList), WellknownSchemas.BackofficeSchema)
-                .HasKey(p => p.Id)
-                .IsClustered(false);
-
-            b.Property(p => p.Name)
-                .HasMaxLength(NameLength)
-                .IsRequired();
-
-            b.Property(p => p.RegulationThemeId).IsRequired();
-            b.Property(p => p.RegulationThemeName)
-                .HasMaxLength(RegulationThemeListConfiguration.NameLength)
-                .IsRequired();
-
-            b.HasIndex(x => x.Name).IsClustered();
-            b.HasIndex(x => x.RegulationThemeName);
-
-            b.HasIndex(x => new { x.Name, x.RegulationThemeId }).IsUnique();
-        }
+        _eventStore = eventStore;
     }
 
-    public class RegulationSubThemeListView :
-        Projection<RegulationSubThemeListView>,
-        IEventHandler<RegulationSubThemeCreated>,
-        IEventHandler<RegulationSubThemeUpdated>,
-        IEventHandler<RegulationThemeUpdated>
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RegulationSubThemeCreated> message)
     {
-        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-        public override string Schema => WellknownSchemas.BackofficeSchema;
-
-        public enum ProjectionTables
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var regulationSubTheme = new RegulationSubThemeListItem
         {
-            RegulationSubThemeList
-        }
+            Id = message.Body.RegulationSubThemeId,
+            Name = message.Body.Name,
+            RegulationThemeId = message.Body.RegulationThemeId,
+            RegulationThemeName = message.Body.RegulationThemeName
+        };
 
-        private readonly IEventStore _eventStore;
+        await context.RegulationSubThemeList.AddAsync(regulationSubTheme);
+        await context.SaveChangesAsync();
+    }
 
-        public RegulationSubThemeListView(
-            ILogger<RegulationSubThemeListView> logger,
-            IEventStore eventStore,
-            IContextFactory contextFactory) : base(logger, contextFactory)
-        {
-            _eventStore = eventStore;
-        }
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RegulationSubThemeUpdated> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var regulationSubTheme = context.RegulationSubThemeList.SingleOrDefault(x => x.Id == message.Body.RegulationSubThemeId);
+        if (regulationSubTheme == null)
+            return; // TODO: Error?
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RegulationSubThemeCreated> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var regulationSubTheme = new RegulationSubThemeListItem
-            {
-                Id = message.Body.RegulationSubThemeId,
-                Name = message.Body.Name,
-                RegulationThemeId = message.Body.RegulationThemeId,
-                RegulationThemeName = message.Body.RegulationThemeName
-            };
+        regulationSubTheme.Name = message.Body.Name;
+        regulationSubTheme.RegulationThemeId = message.Body.RegulationThemeId;
+        regulationSubTheme.RegulationThemeName = message.Body.RegulationThemeName;
 
-            await context.RegulationSubThemeList.AddAsync(regulationSubTheme);
-            await context.SaveChangesAsync();
-        }
+        await context.SaveChangesAsync();
+    }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RegulationSubThemeUpdated> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var regulationSubTheme = context.RegulationSubThemeList.SingleOrDefault(x => x.Id == message.Body.RegulationSubThemeId);
-            if (regulationSubTheme == null)
-                return; // TODO: Error?
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RegulationThemeUpdated> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var regulationSubThemes = context.RegulationSubThemeList.Where(x => x.RegulationThemeId == message.Body.RegulationThemeId);
+        if (!regulationSubThemes.Any())
+            return;
 
-            regulationSubTheme.Name = message.Body.Name;
-            regulationSubTheme.RegulationThemeId = message.Body.RegulationThemeId;
-            regulationSubTheme.RegulationThemeName = message.Body.RegulationThemeName;
+        foreach (var regulationSubTheme in regulationSubThemes)
+            regulationSubTheme.RegulationThemeName = message.Body.Name;
 
-            await context.SaveChangesAsync();
-        }
+        await context.SaveChangesAsync();
+    }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RegulationThemeUpdated> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var regulationSubThemes = context.RegulationSubThemeList.Where(x => x.RegulationThemeId == message.Body.RegulationThemeId);
-            if (!regulationSubThemes.Any())
-                return;
-
-            foreach (var regulationSubTheme in regulationSubThemes)
-                regulationSubTheme.RegulationThemeName = message.Body.Name;
-
-            await context.SaveChangesAsync();
-        }
-
-        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
-        {
-            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
-        }
+    public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+    {
+        await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
     }
 }

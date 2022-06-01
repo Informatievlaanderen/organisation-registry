@@ -1,185 +1,184 @@
-﻿namespace OrganisationRegistry.SqlServer.Organisation
+﻿namespace OrganisationRegistry.SqlServer.Organisation;
+
+using System;
+using System.Data.Common;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Infrastructure;
+using OrganisationRegistry.Infrastructure.Events;
+using OrganisationRegistry.Organisation.Events;
+
+using System.Linq;
+using System.Threading.Tasks;
+using FunctionType;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Person;
+using Function.Events;
+using OrganisationRegistry.Infrastructure;
+using OrganisationRegistry.Person.Events;
+
+public class OrganisationFunctionListItem
 {
-    using System;
-    using System.Data.Common;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore.Metadata.Builders;
-    using Infrastructure;
-    using OrganisationRegistry.Infrastructure.Events;
-    using OrganisationRegistry.Organisation.Events;
+    public Guid OrganisationFunctionId { get; set; }
+    public Guid OrganisationId { get; set; }
 
-    using System.Linq;
-    using System.Threading.Tasks;
-    using FunctionType;
-    using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
-    using Person;
-    using Function.Events;
-    using OrganisationRegistry.Infrastructure;
-    using OrganisationRegistry.Person.Events;
+    public Guid FunctionId { get; set; }
+    public string FunctionName { get; set; } = null!;
 
-    public class OrganisationFunctionListItem
+    public Guid PersonId { get; set; }
+    public string PersonName { get; set; } = null!;
+
+    public string? ContactsJson { get; set; }
+
+    public DateTime? ValidFrom { get; set; }
+    public DateTime? ValidTo { get; set; }
+}
+
+public class OrganisationFunctionListConfiguration : EntityMappingConfiguration<OrganisationFunctionListItem>
+{
+    public override void Map(EntityTypeBuilder<OrganisationFunctionListItem> b)
     {
-        public Guid OrganisationFunctionId { get; set; }
-        public Guid OrganisationId { get; set; }
+        b.ToTable(nameof(OrganisationFunctionListView.ProjectionTables.OrganisationFunctionList), WellknownSchemas.BackofficeSchema)
+            .HasKey(p => p.OrganisationFunctionId)
+            .IsClustered(false);
 
-        public Guid FunctionId { get; set; }
-        public string FunctionName { get; set; } = null!;
+        b.Property(p => p.OrganisationId).IsRequired();
 
-        public Guid PersonId { get; set; }
-        public string PersonName { get; set; } = null!;
+        b.Property(p => p.FunctionId).IsRequired();
+        b.Property(p => p.FunctionName).HasMaxLength(FunctionTypeListConfiguration.NameLength).IsRequired();
 
-        public string? ContactsJson { get; set; }
+        b.Property(p => p.PersonId).IsRequired();
+        b.Property(p => p.PersonName).HasMaxLength(PersonListConfiguration.FullNameLength).IsRequired();
 
-        public DateTime? ValidFrom { get; set; }
-        public DateTime? ValidTo { get; set; }
+        b.Property(p => p.ContactsJson);
+
+        b.Property(p => p.ValidFrom);
+        b.Property(p => p.ValidTo);
+
+        b.HasIndex(x => x.PersonName).IsClustered();
+        b.HasIndex(x => x.FunctionName);
+        b.HasIndex(x => x.ValidFrom);
+        b.HasIndex(x => x.ValidTo);
+    }
+}
+
+public class OrganisationFunctionListView :
+    Projection<OrganisationFunctionListView>,
+    IEventHandler<OrganisationFunctionAdded>,
+    IEventHandler<OrganisationFunctionUpdated>,
+    IEventHandler<FunctionUpdated>,
+    IEventHandler<PersonUpdated>,
+    IEventHandler<OrganisationTerminated>,
+    IEventHandler<OrganisationTerminatedV2>
+{
+    protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
+    public override string Schema => WellknownSchemas.BackofficeSchema;
+
+    public enum ProjectionTables
+    {
+        OrganisationFunctionList
     }
 
-    public class OrganisationFunctionListConfiguration : EntityMappingConfiguration<OrganisationFunctionListItem>
+    private readonly IEventStore _eventStore;
+    public OrganisationFunctionListView(
+        ILogger<OrganisationFunctionListView> logger,
+        IEventStore eventStore,
+        IContextFactory contextFactory) : base(logger, contextFactory)
     {
-        public override void Map(EntityTypeBuilder<OrganisationFunctionListItem> b)
-        {
-            b.ToTable(nameof(OrganisationFunctionListView.ProjectionTables.OrganisationFunctionList), WellknownSchemas.BackofficeSchema)
-                .HasKey(p => p.OrganisationFunctionId)
-                .IsClustered(false);
-
-            b.Property(p => p.OrganisationId).IsRequired();
-
-            b.Property(p => p.FunctionId).IsRequired();
-            b.Property(p => p.FunctionName).HasMaxLength(FunctionTypeListConfiguration.NameLength).IsRequired();
-
-            b.Property(p => p.PersonId).IsRequired();
-            b.Property(p => p.PersonName).HasMaxLength(PersonListConfiguration.FullNameLength).IsRequired();
-
-            b.Property(p => p.ContactsJson);
-
-            b.Property(p => p.ValidFrom);
-            b.Property(p => p.ValidTo);
-
-            b.HasIndex(x => x.PersonName).IsClustered();
-            b.HasIndex(x => x.FunctionName);
-            b.HasIndex(x => x.ValidFrom);
-            b.HasIndex(x => x.ValidTo);
-        }
+        _eventStore = eventStore;
     }
 
-    public class OrganisationFunctionListView :
-        Projection<OrganisationFunctionListView>,
-        IEventHandler<OrganisationFunctionAdded>,
-        IEventHandler<OrganisationFunctionUpdated>,
-        IEventHandler<FunctionUpdated>,
-        IEventHandler<PersonUpdated>,
-        IEventHandler<OrganisationTerminated>,
-        IEventHandler<OrganisationTerminatedV2>
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
     {
-        protected override string[] ProjectionTableNames => Enum.GetNames(typeof(ProjectionTables));
-        public override string Schema => WellknownSchemas.BackofficeSchema;
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var organisationFunctions = context.OrganisationFunctionList.Where(x => x.FunctionId == message.Body.FunctionId);
+        if (!organisationFunctions.Any())
+            return;
 
-        public enum ProjectionTables
+        foreach (var organisationFunction in organisationFunctions)
+            organisationFunction.FunctionName = message.Body.Name;
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var organisationFunctions = context.OrganisationFunctionList.Where(x => x.PersonId == message.Body.PersonId);
+        if (!organisationFunctions.Any())
+            return;
+
+        foreach (var organisationFunction in organisationFunctions)
+            organisationFunction.PersonName = $"{message.Body.FirstName} {message.Body.Name}";
+
+        await context.SaveChangesAsync();
+    }
+
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionAdded> message)
+    {
+        var organisationFunctionListItem = new OrganisationFunctionListItem
         {
-            OrganisationFunctionList
-        }
+            OrganisationFunctionId = message.Body.OrganisationFunctionId,
+            OrganisationId = message.Body.OrganisationId,
+            FunctionId = message.Body.FunctionId,
+            PersonId = message.Body.PersonId,
+            FunctionName = message.Body.FunctionName,
+            PersonName = message.Body.PersonFullName,
+            ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts),
+            ValidFrom = message.Body.ValidFrom,
+            ValidTo = message.Body.ValidTo
+        };
 
-        private readonly IEventStore _eventStore;
-        public OrganisationFunctionListView(
-            ILogger<OrganisationFunctionListView> logger,
-            IEventStore eventStore,
-            IContextFactory contextFactory) : base(logger, contextFactory)
-        {
-            _eventStore = eventStore;
-        }
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        await context.OrganisationFunctionList.AddAsync(organisationFunctionListItem);
+        await context.SaveChangesAsync();
+    }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<FunctionUpdated> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var organisationFunctions = context.OrganisationFunctionList.Where(x => x.FunctionId == message.Body.FunctionId);
-            if (!organisationFunctions.Any())
-                return;
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionUpdated> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var key = await context.OrganisationFunctionList.SingleAsync(item => item.OrganisationFunctionId == message.Body.OrganisationFunctionId);
 
-            foreach (var organisationFunction in organisationFunctions)
-                organisationFunction.FunctionName = message.Body.Name;
+        key.OrganisationFunctionId = message.Body.OrganisationFunctionId;
+        key.OrganisationId = message.Body.OrganisationId;
+        key.FunctionId = message.Body.FunctionId;
+        key.PersonId = message.Body.PersonId;
+        key.FunctionName = message.Body.FunctionName;
+        key.PersonName = message.Body.PersonFullName;
+        key.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts);
+        key.ValidFrom = message.Body.ValidFrom;
+        key.ValidTo = message.Body.ValidTo;
 
-            await context.SaveChangesAsync();
-        }
+        await context.SaveChangesAsync();
+    }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<PersonUpdated> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var organisationFunctions = context.OrganisationFunctionList.Where(x => x.PersonId == message.Body.PersonId);
-            if (!organisationFunctions.Any())
-                return;
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var functions = context.OrganisationFunctionList.Where(item =>
+            message.Body.FieldsToTerminate.Functions.Keys.Contains(item.OrganisationFunctionId));
 
-            foreach (var organisationFunction in organisationFunctions)
-                organisationFunction.PersonName = $"{message.Body.FirstName} {message.Body.Name}";
+        foreach (var function in functions)
+            function.ValidTo = message.Body.FieldsToTerminate.Functions[function.OrganisationFunctionId];
 
-            await context.SaveChangesAsync();
-        }
+        await context.SaveChangesAsync();
+    }
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionAdded> message)
-        {
-            var organisationFunctionListItem = new OrganisationFunctionListItem
-            {
-                OrganisationFunctionId = message.Body.OrganisationFunctionId,
-                OrganisationId = message.Body.OrganisationId,
-                FunctionId = message.Body.FunctionId,
-                PersonId = message.Body.PersonId,
-                FunctionName = message.Body.FunctionName,
-                PersonName = message.Body.PersonFullName,
-                ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts),
-                ValidFrom = message.Body.ValidFrom,
-                ValidTo = message.Body.ValidTo
-            };
+    public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
+    {
+        await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
+        var functions = context.OrganisationFunctionList.Where(item =>
+            message.Body.FieldsToTerminate.Functions.Keys.Contains(item.OrganisationFunctionId));
 
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            await context.OrganisationFunctionList.AddAsync(organisationFunctionListItem);
-            await context.SaveChangesAsync();
-        }
+        foreach (var function in functions)
+            function.ValidTo = message.Body.FieldsToTerminate.Functions[function.OrganisationFunctionId];
 
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationFunctionUpdated> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var key = await context.OrganisationFunctionList.SingleAsync(item => item.OrganisationFunctionId == message.Body.OrganisationFunctionId);
+        await context.SaveChangesAsync();
+    }
 
-            key.OrganisationFunctionId = message.Body.OrganisationFunctionId;
-            key.OrganisationId = message.Body.OrganisationId;
-            key.FunctionId = message.Body.FunctionId;
-            key.PersonId = message.Body.PersonId;
-            key.FunctionName = message.Body.FunctionName;
-            key.PersonName = message.Body.PersonFullName;
-            key.ContactsJson = JsonConvert.SerializeObject(message.Body.Contacts);
-            key.ValidFrom = message.Body.ValidFrom;
-            key.ValidTo = message.Body.ValidTo;
-
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminated> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var functions = context.OrganisationFunctionList.Where(item =>
-                message.Body.FieldsToTerminate.Functions.Keys.Contains(item.OrganisationFunctionId));
-
-            foreach (var function in functions)
-                function.ValidTo = message.Body.FieldsToTerminate.Functions[function.OrganisationFunctionId];
-
-            await context.SaveChangesAsync();
-        }
-
-        public async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<OrganisationTerminatedV2> message)
-        {
-            await using var context = ContextFactory.CreateTransactional(dbConnection, dbTransaction);
-            var functions = context.OrganisationFunctionList.Where(item =>
-                message.Body.FieldsToTerminate.Functions.Keys.Contains(item.OrganisationFunctionId));
-
-            foreach (var function in functions)
-                function.ValidTo = message.Body.FieldsToTerminate.Functions[function.OrganisationFunctionId];
-
-            await context.SaveChangesAsync();
-        }
-
-        public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
-        {
-            await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
-        }
+    public override async Task Handle(DbConnection dbConnection, DbTransaction dbTransaction, IEnvelope<RebuildProjection> message)
+    {
+        await RebuildProjection(_eventStore, dbConnection, dbTransaction, message);
     }
 }
